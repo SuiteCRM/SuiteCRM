@@ -693,6 +693,7 @@ $mod_strings = array(
     'LBL_GSYNC_CAL' => 'Enable Calendar Sync',
     // END Google Token/Synchronization settings
 
+    'LNK_ACCESS_TOKENS' => 'API Access Tokens',
     'LNK_LIST_OUTBOUND_EMAIL_ACCOUNTS' => 'Outbound Email Accounts',
     'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Inbound Email Accounts',
     'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'External OAuth Connections',

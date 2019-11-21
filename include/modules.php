@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2019 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -536,7 +536,9 @@ $beanList['OAuth2Clients'] = 'OAuth2Clients';
 $beanFiles['OAuth2Clients'] = 'modules/OAuth2Clients/OAuth2Clients.php';
 $modInvisList[] = 'OAuth2Clients';
 
-
+$beanList['OAuth2AuthCodes'] = 'OAuth2AuthCodes';
+$beanFiles['OAuth2AuthCodes'] = 'modules/OAuth2AuthCodes/OAuth2AuthCodes.php';
+$modInvisList[] = 'OAuth2AuthCodes';
 
 $beanList['SurveyResponses'] = 'SurveyResponses';
 $beanFiles['SurveyResponses'] = 'modules/SurveyResponses/SurveyResponses.php';

@@ -61,10 +61,13 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
         $clientId = $accessTokenEntity->getClient()->getIdentifier();
         $userId = null;
 
-        /** @var User $user */
+        /** @var \OAuth2Client $client */
         $client = $this->beanManager->getBeanSafe('OAuth2Clients', $clientId);
 
         switch ($client->allowed_grant_type) {
+            case 'authorization_code':
+                $userId = $accessTokenEntity->getUserIdentifier();
+                break;
             case 'password':
                 $userId = $accessTokenEntity->getUserIdentifier();
                 break;

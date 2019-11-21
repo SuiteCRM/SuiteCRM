@@ -1,7 +1,7 @@
 <?php
 /**
  * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
- * Copyright (C) 2017 - 2025 SuiteCRM Ltd.
+ * Copyright (C) 2025 SuiteCRM Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -29,26 +29,27 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+
 /**
- * Class OAuth2Tokens
+ * Class OAuth2AuthCodes
  */
-#[\AllowDynamicProperties]
-class OAuth2Tokens extends SugarBean
+class OAuth2AuthCodes extends SugarBean
 {
     /**
      * @var string
      */
-    public $table_name = 'oauth2tokens';
+    public $table_name = 'oauth2authcodes';
 
     /**
      * @var string
      */
-    public $object_name = 'OAuth2Tokens';
+    public $object_name = 'OAuth2AuthCodes';
 
     /**
      * @var string
      */
-    public $module_dir = 'OAuth2Tokens';
+    public $module_dir = 'OAuth2AuthCodes';
 
     /**
      * @var bool
@@ -56,34 +57,19 @@ class OAuth2Tokens extends SugarBean
     public $disable_row_level_security = true;
 
     /**
-     * @var string
-     */
-    public $token_type;
-
-    /**
      * @var bool
      */
-    public $token_is_revoked;
+    public $auth_code_is_revoked;
 
     /**
      * @var string
      */
-    public $access_token_expires;
+    public $auth_code_expires;
 
     /**
      * @var string
      */
-    public $access_token;
-
-    /**
-     * @var string
-     */
-    public $refresh_token_expires;
-
-    /**
-     * @var string
-     */
-    public $refresh_token;
+    public $auth_code;
 
     /**
      * @var string
@@ -105,22 +91,39 @@ class OAuth2Tokens extends SugarBean
      */
     public function get_summary_text()
     {
-        return substr((string) $this->id, 0, 10) . '...';
+        return substr($this->id, 0, 10) . '...';
     }
 
     /**
-     * @return string
+     * @return boolean
+     * @throws Exception
      */
-    public static function getNowDateString()
+    public function is_revoked()
     {
-        /** @var DBManager */
-        global $db;
-        return $db->convert('', 'now');
+        return $this->id === null || $this->auth_code_is_revoked === '1' || new \DateTime() > new \DateTime($this->auth_code_expires);
     }
 
     /**
-     * @inheritDoc
+     * @param AuthorizationRequest $authRequest
+     * @return boolean
      */
+    public function is_scope_authorized(AuthorizationRequest $authRequest)
+    {
+        $this->retrieve_by_string_fields([
+            'client' => $authRequest->getClient()->getIdentifier(),
+            'assigned_user_id' => $authRequest->getUser()->getIdentifier(),
+            'auto_authorize' => '1',
+        ]);
+
+        // Check for scope changes here in future
+
+        if($this->id === null){
+            return false;
+        }
+
+        return true;
+    }
+
     public function create_new_list_query(
         $order_by,
         $where,
