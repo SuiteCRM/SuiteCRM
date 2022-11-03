@@ -67,7 +67,7 @@ class templateParser
             if (isset($field_def['name']) && $field_def['name'] != '') {
                 $fieldName = $field_def['name'];
 
-                if (empty($focus->$fieldName)) {
+                if (!isset($focus->$fieldName) || $focus->$fieldName === '') {
                     $repl_arr[$key . '_' . $fieldName] = '';
                     continue;
                 }
