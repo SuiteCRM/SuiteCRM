@@ -128,7 +128,7 @@ class ImportListView
         $this->ss->assign('navStrings', $navStrings);
         $this->ss->assign('pageData', $this->generatePaginationData());
         $this->ss->assign('tableID', $this->tableID);
-        $this->ss->assign('colCount', count($this->headerColumns));
+        $this->ss->assign('colCount', is_countable($this->headerColumns) ? count($this->headerColumns) : 0);
         $this->ss->assign('APP', $app_strings);
         $this->ss->assign('rowColor', array('oddListRow', 'evenListRow'));
         $this->ss->assign('displayColumns', $this->headerColumns);
