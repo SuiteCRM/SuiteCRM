@@ -186,7 +186,7 @@ class SearchForm
         $this->th->ss->assign('action', $this->action);
         $this->th->ss->assign('displayView', $this->displayView);
         $this->th->ss->assign('viewTab', $this->getViewTab());
-
+        $this->th->ss->assign('user_options', get_user_array(false));
 
         require_once('modules/MySettings/StoreQuery.php');
         $storeQuery = new StoreQuery();
