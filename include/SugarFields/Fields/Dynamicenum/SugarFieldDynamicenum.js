@@ -55,8 +55,19 @@ function addLoadEvent(func) {
 function loadDynamicEnum(field, subfield) {
 
     if (field != '') {
-        var el = document.getElementById(field);
-
+        var moduleName = module_sugar_grp1;
+        var recordId = $('input.listview-checkbox',$('form#EditView').closest('tr')).val();
+        if(action_sugar_grp1 == 'index' && recordId !== undefined ){
+                var dynamicFieldName = $('form#EditView select').attr('id');
+                var el = $('<input></input>',{
+                id:recordId+dynamicFieldName,
+                type: 'hidden',
+                value: getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName)
+            }).appendTo($('#'+subfield).parent());
+            updateDynamicEnum(recordId+dynamicFieldName, subfield)
+        } else {
+            var el = document.getElementById(field);
+        }      
         if (el) {
             if (el.addEventListener) {
                 el.addEventListener("change", function () {
@@ -98,7 +109,7 @@ function updateDynamicEnum(field, subfield) {
         document.getElementById(subfield).innerHTML = '';
 
         for (var key in de_entries[subfield]) {
-            if (key.indexOf(de_key + '_') == 0 || key == '') {
+            if (key.indexOf(de_key + '_') == 0 || key == '' || key == '__SugarMassUpdateClearField__') {
                 selector.options[selector.options.length] = new Option(de_entries[subfield][key], key);
             }
         }
@@ -117,5 +128,27 @@ function updateDynamicEnum(field, subfield) {
     }
     else
         selector.fireEvent("onchange");
+
+}
+
+/**
+ * 
+ * @param {module} 
+ * @param {*} id 
+ * @param {*} field 
+ * @returns 
+ */
+function getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName){
+
+    $.ajaxSetup({ async: false });
+    var result = $.getJSON("index.php", {
+        module: "Home",
+        action: "getParentValueFromDynamicEnum",
+        dynamicFieldName: dynamicFieldName,
+        moduleName: moduleName,
+        recordId: recordId
+    });
+    $.ajaxSetup({ async: true });
+    return result.responseText;
 
 }
