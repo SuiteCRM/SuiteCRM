@@ -91,7 +91,7 @@
     {/if}
 
     {foreach from=$resultsAsBean item=beans key=module}
-    <h3>{$module}</h3>
+    <h3>{$moduleLabel[$module]}</h3>
     <table class="list view">
         <thead>
             <tr>
