@@ -143,11 +143,74 @@ class SearchResults
 
                 $obj->load_relationships();
                 $fieldDefs = $obj->getFieldDefinitions();
+                $obj = $this->formatForDisplay($obj, $fieldDefs);
                 $parsed[$module][] = $this->updateFieldDefLinks($obj, $fieldDefs);
             }
         }
 
         return $parsed;
+    }
+
+    /**
+     * Format data so it can be correctly displayed on search results
+     *
+     * @param SugarBean $obj
+     * @param array $fieldDefs
+     * @return SugarBean
+     */
+    protected function formatForDisplay(SugarBean $obj, array $fieldDefs): SugarBean
+    {
+        global $app_list_strings, $locale;
+
+        foreach ($fieldDefs as $fieldDef) {
+            $value = $obj->{$fieldDef['name']};
+            if (isset($value)) {
+                switch ($fieldDef['type']){
+                    case 'enum':
+                    case 'dynamicenum':
+
+                        if (isset($app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']][$value]) && 
+                            isset($obj->field_name_map[$fieldDef['name']]['options'])
+                        ) {
+                            $obj->{$fieldDef['name']} = $app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']][$value];
+                        }
+                        break;
+
+                    case 'multienum':
+                        
+                        if (isset($obj->field_name_map[$fieldDef['name']]['options']) &&
+                            isset($app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']])
+                        ) {
+                            $multienumString = '';
+                            $multienumValues = unencodeMultienum($value);
+                            $arrayCount = count($multienumValues);
+                            $i = 0;
+                            foreach ($multienumValues as $multienumValue) {
+                                $i++;
+                                $multienumString .= $app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']][$multienumValue];
+                                if($i !== ($arrayCount)) $multienumString .= ", ";
+                            }
+                            $obj->{$fieldDef['name']} = $multienumString;
+                        }
+                        break;
+
+                    case 'currency':
+                        
+                        if (substr($fieldDef['name'], -9) !== '_usdollar') {
+                            $params['currency_id'] = getCurrencyId($obj->module_dir, $obj->id);
+                            $params['currency_symbol'] = $locale->currencies[$params['currency_id']]['symbol'];
+                        } else {
+                            $params['currency_id'] = $locale->getPrecedentPreference('currency');
+                            $params['currency_symbol'] = $locale->getPrecedentPreference('default_currency_symbol');
+                            $params['convert'] = true;
+                        }
+                        $obj->{$fieldDef['name']} = currency_format_number($value, $params);
+
+                        break;
+                }
+            }
+        }
+        return $obj;
     }
 
     /**
@@ -247,9 +310,9 @@ class SearchResults
      */
     protected function getLink(string $label, string $module, string $record, string $action): string
     {
-        global $sugar_config;
-
-        return "<a href=\"{$sugar_config['site_url']}/index.php?action={$action}&module={$module}&record={$record}&offset=1\"><span>{$label}</span></a>";
+        $link = ajaxLink("index.php?action={$action}&module={$module}&record={$record}");
+        
+        return "<a href=\"{$link}\"><span>{$label}</span></a>";
     }
 
     /**
