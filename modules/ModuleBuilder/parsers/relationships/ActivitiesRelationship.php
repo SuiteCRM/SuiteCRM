@@ -262,7 +262,7 @@ class ActivitiesRelationship extends OneToManyRelationship
             'order' => 20 ,
             'sort_order' => 'desc' ,
             'sort_by' => 'date_modified' ,
-            'title_key' => 'LBL_HISTORY' ,
+            'title_key' => 'LBL_HISTORY_SUBPANEL_TITLE' ,
             'type' => 'collection' ,
             'subpanel_name' => 'history' , //this values is not associated with a physical file.
             'module' => 'History' ,
