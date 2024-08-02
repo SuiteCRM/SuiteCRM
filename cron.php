@@ -57,7 +57,7 @@ if (!is_windows()) {
     $cronUser = getRunningUser();
  
     if ($cronUser == '') {
-        $GLOBALS['log']->warning('cron.php: can\'t determine running user. No cron user checks will occur.');
+        $GLOBALS['log']->warn('cron.php: can\'t determine running user. No cron user checks will occur.');
     } elseif (array_key_exists('cron', $sugar_config) && array_key_exists('allowed_cron_users', $sugar_config['cron'])) {
         if (!in_array($cronUser, $sugar_config['cron']['allowed_cron_users'])) {
             $GLOBALS['log']->fatal("cron.php: running as $cronUser is not allowed in allowed_cron_users ".
@@ -70,7 +70,7 @@ if (!is_windows()) {
             sugar_die('cron.php running with user that is not in allowed_cron_users in config.php');
         }
     } else {
-        $GLOBALS['log']->warning('cron.php: missing expected allowed_cron_users entry in config.php. ' .
+        $GLOBALS['log']->warn('cron.php: missing expected allowed_cron_users entry in config.php. ' .
                                  'No cron user checks will occur.');
     }
 }
