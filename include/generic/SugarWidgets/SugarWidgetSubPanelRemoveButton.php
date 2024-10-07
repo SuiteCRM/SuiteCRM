@@ -115,8 +115,7 @@ class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
             $hideremove = true;
         }
 
-        //based on listview since that lets you select records
-        if ($layout_def['ListView'] && !$hideremove) {
+        if ($layout_def['EditView'] && !$hideremove) {
             $retStr = "<a href=\"javascript:sub_p_rem('$subpanel', '$linked_field'"
                 . ", '$record', $refresh_page);\""
                 . ' class="listViewTdToolsS1"'
