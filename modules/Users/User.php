@@ -1826,7 +1826,7 @@ EOQ;
             } else {
                 $r = $user->db->query("SELECT value FROM config WHERE name = 'fromaddress'");
                 $a = $user->db->fetchByAssoc($r);
-                $fromddr = $a['value'];
+                $fromaddr = $a['value'];
             }
         }
 
