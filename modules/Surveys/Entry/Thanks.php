@@ -2,6 +2,7 @@
 
 $surveyName = !empty($_REQUEST['name']) ? $_REQUEST['name'] : 'Survey';
 
+$surveyThanks = translate('LBL_SURVEY_THANKS', 'Surveys');
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +24,7 @@ $surveyName = !empty($_REQUEST['name']) ? $_REQUEST['name'] : 'Survey';
     <div class="row well">
         <div class="col-md-offset-2 col-md-8">
             <h1><?= $surveyName; ?></h1>
-            <p>Thanks for completing this survey.</p>
+            <p><?= $surveyThanks; ?></p>
         </div>
     </div>
 </div>
