@@ -71,7 +71,7 @@ class ListView
     public $show_mass_update_form = true;
     public $query_where_has_changed = false;
     public $display_header_and_footer = true;
-    public $baseURL = '';
+    public $base_URL = '';
     public $is_dynamic = false;
     public $inline = false;
     public $start_link_wrapper = '';
@@ -91,6 +91,8 @@ class ListView
     public $force_mass_update=false;
     public $keep_mass_update_form_open=false;
     public $ignorePopulateOnly = false;
+    public $appendToBaseUrl = [];
+    public $sortby = [];
 
     public function setDataArray($value)
     {
@@ -1586,7 +1588,7 @@ class ListView
                 if ($this->base_URL == "/index.php") {
                     $this->base_URL .= "?";
                 } else {
-                    if ($fullRequestString == substr($this->baseURL, '-' . strlen($fullRequestString))) {
+                    if ($fullRequestString == substr($this->base_URL, '-' . strlen($fullRequestString))) {
                         $this->base_URL = preg_replace("/&" . $key . "\=.*/", "", $this->base_URL);
                     } else {
                         $this->base_URL = preg_replace("/&" . $key . "\=.*?&/", "&", $this->base_URL);

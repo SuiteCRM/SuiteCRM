@@ -234,6 +234,9 @@ EOD;
         $chart['keys'] = [];
         $total = 0;
         foreach ($data as $i) {
+            if (!isset($i['lead_source_key'])){
+                $i['lead_source_key'] = $i['lead_source'];
+            }
             $chart['labelsAndValues'][] = $i['lead_source'] . ' (' . $currency_symbol . (int)$i['total'] . $thousands_symbol . ')';
             //$chart['labelsAndValues'][]=$currency_symbol.(int)$i['total'].$thousands_symbol;
             $chart['labels'][] = $i['lead_source'];

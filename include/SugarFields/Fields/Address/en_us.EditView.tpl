@@ -70,7 +70,7 @@
 
         <tr>
 
-            <td id="{{$city}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%'
+            <td id="{{$city}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label|default:10}}%'
                 scope='row'>
                 <label for="{{$city}}">{sugar_translate label='LBL_CITY' module='{{$module}}'}:
                     {if $fields.{{$city}}.required || {{if $city|lower|in_array:$displayParams.required}}true{{else}}false{{/if}}}
@@ -85,7 +85,7 @@
         </tr>
 
         <tr>
-            <td id="{{$state}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%'
+            <td id="{{$state}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label|default:10}}%'
                 scope='row'>
                 <label for="{{$state}}">{sugar_translate label='LBL_STATE' module='{{$module}}'}:</label>
                 {if $fields.{{$state}}.required || {{if $state|lower|in_array:$displayParams.required}}true{{else}}false{{/if}}}
@@ -102,7 +102,7 @@
         <tr>
 
             <td id="{{$postalcode}}_label"
-                width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' scope='row'>
+                width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label|default:10}}%' scope='row'>
 
                 <label for="{{$postalcode}}">{sugar_translate label='LBL_POSTAL_CODE' module='{{$module}}'}:</label>
                 {if $fields.{{$postalcode}}.required || {{if $postalcode|lower|in_array:$displayParams.required}}true{{else}}false{{/if}}}
@@ -118,7 +118,7 @@
 
         <tr>
 
-            <td id="{{$country}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%'
+            <td id="{{$country}}_label" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label|default:10}}%'
                 scope='row'>
 
                 <label for="{{$country}}">{sugar_translate label='LBL_COUNTRY' module='{{$module}}'}:</label>

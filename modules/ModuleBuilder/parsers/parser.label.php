@@ -276,15 +276,15 @@ class ParserLabel
         // will overwrite stuff in custom/modules/{ModuleName}/Ext/Language/en_us.lang.ext.php after
         //  Quick Repair and Rebuild is applied.
         if ($forRelationshipLabel) {
-            if (!empty($_POST[view_module]) && !empty($_POST[relationship_name]) && !empty($_POST[rhs_label]) && !empty($_POST[lhs_module])) {
+            if (!empty($_POST['view_module']) && !empty($_POST['relationship_name']) && !empty($_POST['rhs_label']) && !empty($_POST['lhs_module'])) {
                 // 1. Overwrite custom/Extension/modules/{ModuleName}/Ext/Language
-                $extension_basepath = 'custom/Extension/modules/'.$_POST[view_module].'/Ext/Language';
+                $extension_basepath = 'custom/Extension/modules/'.$_POST['view_module'].'/Ext/Language';
                 mkdir_recursive($extension_basepath);
 
                 $headerString = "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n";
                 $out = $headerString;
 
-                $extension_filename = "$extension_basepath/$language.custom".$_POST[relationship_name].'.php';
+                $extension_filename = "$extension_basepath/$language.custom".$_POST['relationship_name'].'.php';
 
                 $mod_strings = array();
                 if (file_exists($extension_filename)) {
@@ -294,8 +294,8 @@ class ParserLabel
 
                 foreach ($labels as $key => $value) {
                     foreach ($mod_strings as $key_mod_string => $value_mod_string) {
-                        if (strpos($key_mod_string, strtoupper($_POST[relationship_name])) !== false) {
-                            $mod_strings[$key_mod_string] = to_html(strip_tags(from_html($_POST[rhs_label]))); // must match encoding used in view.labels.php
+                        if (strpos($key_mod_string, strtoupper($_POST['relationship_name'])) !== false) {
+                            $mod_strings[$key_mod_string] = to_html(strip_tags(from_html($_POST['rhs_label']))); // must match encoding used in view.labels.php
                         }
                     }
                 }
@@ -328,7 +328,7 @@ class ParserLabel
                 $headerString = "<?php\n//THIS FILE IS AUTO GENERATED, DO NOT MODIFY\n";
                 $out = $headerString;
 
-                $relationships_filename = "$relationships_basepath/".$_POST[lhs_module].'.php';
+                $relationships_filename = "$relationships_basepath/".$_POST['lhs_module'].'.php';
 
                 $mod_strings = array();
                 if (file_exists($relationships_filename)) {
@@ -339,8 +339,8 @@ class ParserLabel
                 $changed_mod_strings = false;
                 foreach ($labels as $key => $value) {
                     foreach ($mod_strings as $key_mod_string => $value_mod_string) {
-                        if (strpos($key_mod_string, strtoupper($_POST[relationship_name])) !== false) {
-                            $mod_strings[$key_mod_string] = to_html(strip_tags(from_html($_POST[rhs_label]))); // must match encoding used in view.labels.php
+                        if (strpos($key_mod_string, strtoupper($_POST['relationship_name'])) !== false) {
+                            $mod_strings[$key_mod_string] = to_html(strip_tags(from_html($_POST['rhs_label']))); // must match encoding used in view.labels.php
                             $changed_mod_strings = true;
                         }
                     }

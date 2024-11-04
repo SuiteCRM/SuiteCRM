@@ -98,7 +98,7 @@ class SearchResultsController extends Controller
 
     public function display(): void
     {
-        global $app_strings;
+        global $app_strings, $sugar_config;
         $headers = [];
 
         try {
@@ -135,11 +135,14 @@ class SearchResultsController extends Controller
             }
         }
 
+        $siteUrl = $sugar_config['site_url'] ?? '';
+
         $smarty = $this->view->getTemplate();
         $smarty->assign('total', $total);
         $smarty->assign('headers', $headers);
         $smarty->assign('results', $this->results);
         $smarty->assign('APP', $app_strings);
+        $smarty->assign('SITE_URL', $siteUrl);
         try {
             $smarty->assign('resultsAsBean', $this->results->getHitsAsBeans());
         } catch (\SuiteCRM\Exception\Exception $e) {

@@ -138,11 +138,11 @@ class SearchQuery implements JsonSerializable
      */
     public static function fromRequestArray(array $request): SearchQuery
     {
-        $searchQuery = self::filterArray($request, 'search-query-string', '', FILTER_SANITIZE_STRING);
-        $searchQueryAlt = self::filterArray($request, 'query_string', '', FILTER_SANITIZE_STRING);
+        $searchQuery = self::filterArray($request, 'search-query-string', '');
+        $searchQueryAlt = self::filterArray($request, 'query_string', '');
         $searchSize = self::filterArray($request, 'search-query-size', null, FILTER_SANITIZE_NUMBER_INT);
         $searchFrom = self::filterArray($request, 'search-query-from', 0, FILTER_SANITIZE_NUMBER_INT);
-        $searchEngine = self::filterArray($request, 'search-engine', null, FILTER_SANITIZE_STRING);
+        $searchEngine = self::filterArray($request, 'search-engine', null);
 
         if (!empty($searchQueryAlt) && empty($searchQuery)) {
             $searchQuery = $searchQueryAlt;
@@ -176,11 +176,11 @@ class SearchQuery implements JsonSerializable
      * @param array $array The array to filter
      * @param string $key The key of the array to load
      * @param mixed $default The default value in case the array value is empty
-     * @param null|string $filter Optional filter to be used. e.g. FILTER_SANITIZE_STRING
+     * @param int|string|null $filter Optional filter to be used. e.g. FILTER_SANITIZE_STRING
      *
      * @return mixed
      */
-    private static function filterArray(array $array, $key, $default, $filter = null)
+    private static function filterArray(array $array, $key, $default, int|string|null $filter = FILTER_DEFAULT)
     {
         if (!isset($array[$key])) {
             return $default;
@@ -375,7 +375,7 @@ class SearchQuery implements JsonSerializable
     }
 
     /** @inheritdoc */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'query' => $this->query,

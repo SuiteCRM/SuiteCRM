@@ -140,7 +140,7 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
         //$chartReadyData['data'] = [[1.1,2.2],[3.3,4.4]];
         $jsonData = json_encode($chartReadyData['data']);
         $jsonLabels = json_encode($chartReadyData['labels']);
-        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues']);
+        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues'] ?? '');
         $jsonTooltips = json_encode($chartReadyData['tooltips']);
 
         $total = $chartReadyData['total'];

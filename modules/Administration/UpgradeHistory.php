@@ -313,7 +313,7 @@ class UpgradeHistory extends SugarBean
     {
         global $timedate;
 
-        if (!$bean->date_entered) {
+        if (!isset($bean->date_entered)) {
             return $timedate->to_display_date_time($bean->date_modified);
         }
 

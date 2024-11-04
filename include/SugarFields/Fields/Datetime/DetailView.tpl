@@ -46,7 +46,7 @@
 {if !empty($vardef.date_formatted_value) }
     {assign var="value" value={$vardef.date_formatted_value} }
 {else}
-    {if strlen({{sugarvar key='value' string=true}}) <= 0}
+    {if !isset({{sugarvar key='value' string=true}})}
         {assign var="value" value={{sugarvar key='default_value' string=true}} }
     {else}
         {assign var="value" value={{sugarvar key='value' string=true}} }
@@ -55,7 +55,7 @@
 
 
 
-<span class="sugar_field" id="{{sugarvar key='name'}}">{$value}</span>
+<span class="sugar_field" id="{{sugarvar key='name'}}">{if isset($value)}{$value}{/if}</span>
 {{if !empty($displayParams.enableConnectors)}}
 {if !empty($value)}
 {{sugarvar_connector view='DetailView'}}

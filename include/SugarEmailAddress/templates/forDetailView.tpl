@@ -48,7 +48,7 @@
 							<span style="text-decoration: line-through;">
 						{elseif $address.key === 'primary'}
 							<b>
-						{elseif $address.key === 'reply_to' && $item.key != 0}
+						{elseif $address.key === 'reply_to' && (isset($item.key) && $item.key != 0)}
 							<i>
 						{/if}
 

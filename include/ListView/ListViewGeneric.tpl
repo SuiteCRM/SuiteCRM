@@ -261,7 +261,7 @@
                     {counter name="colCounter"}
 
                 {/foreach}
-                <td align='right'>{$pageData.additionalDetails.$id}</td>
+                <td align='right'>{$pageData.additionalDetails.$id|default:''}</td>
             </tr>
             {foreachelse}
             <tr height='20' class='{$rowColor[0]}S1'>

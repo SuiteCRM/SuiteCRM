@@ -1297,7 +1297,7 @@ HTML;
         global $current_user;
         global $app_strings;
 
-        if (!$user) {
+        if (empty($user)) {
             $user = $current_user;
         }
 

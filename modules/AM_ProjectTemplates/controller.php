@@ -257,9 +257,15 @@ class AM_ProjectTemplatesController extends SugarController
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function action_generate_chart()
     {
+        global $current_language;
         $db = DBManagerFactory::getInstance();
+        $mod_strings = return_module_language($current_language, 'AM_ProjectTemplates');
+
 
         include_once('modules/AM_ProjectTemplates/gantt.php');
         include_once('modules/AM_ProjectTemplates/project_table.php');
@@ -271,6 +277,10 @@ class AM_ProjectTemplatesController extends SugarController
         //Get project tasks
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
         $tasks = $project_template->get_linked_beans('am_tasktemplates_am_projecttemplates', 'AM_TaskTemplates');
+
+        if (empty($tasks)) {
+            return throw new Exception($mod_strings['LBL_TASKS_NOT_FOUND']);
+        }
 
         //--- get the gantt chart start and end
 

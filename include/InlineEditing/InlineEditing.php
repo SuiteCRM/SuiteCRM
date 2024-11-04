@@ -291,7 +291,6 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
     }
 
     if ($fieldlist[$fieldname]['type'] == 'currency' && $view != 'EditView') {
-        static $sfh;
 
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');

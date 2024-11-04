@@ -421,7 +421,7 @@ abstract class DashletGenericChart extends Dashlet
         foreach ($data_set as $row) {
             $sortby1[]  = $row[$keycolname1];
         }
-        $sortby1 = array_unique($sortby1);
+        $sortby1 = array_values($sortby1);
         //The data is from the database, the sorting should be done in the sql. So I will not do the sort here.
         if ($translate1) {
             $temp_sortby1 = array();

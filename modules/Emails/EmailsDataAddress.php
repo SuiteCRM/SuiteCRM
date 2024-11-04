@@ -104,7 +104,7 @@ class EmailsDataAddress
                 'name' => $outboundEmailName,
             ],
             'emailSignatures' => [
-                'html' => mb_convert_encoding(html_entity_decode($signatureResolver->getHtml()), 'UTF-8', 'ISO-8859-1'),
+                'html' => mb_convert_encoding(html_entity_decode($signatureResolver->getHtml() ?? ''), 'UTF-8', 'ISO-8859-1'),
                 'plain' => $signatureResolver->getPlaintext(),
                 'no_default_available' => $signatureResolver->isNoDefaultAvailable(),
             ],

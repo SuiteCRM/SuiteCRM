@@ -275,6 +275,10 @@ EOQ;
 
         $return_id = '';
         $assignedUserId = $_POST['assigned_user_id'] ?? '';
+
+        if (!isset($_POST['user_invitees'])){
+            $_POST['user_invitees'] = '';
+        }
         //add assigned user and current user if this is the first time bean is saved
         if (empty($focus->id) && !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] =='Calls' && !empty($_REQUEST['return_action']) && $_REQUEST['return_action'] =='DetailView') {
             //if return action is set to detail view and return module to call, then this is from the long form, do not add the assigned user (only the current user)
@@ -392,7 +396,9 @@ EOQ;
                     if (!in_array($a['lead_id'], $leadInvitees)) {
                         $deleteLeads[$a['lead_id']] = $a['lead_id'];
                     } else {
-                        $acceptStatusLeads[$a['user_id']] = $a['accept_status'];
+                        if (isset($a['user_id'])){
+                            $acceptStatusLeads[$a['user_id']] = $a['accept_status'];
+                        }
                     }
                 }
 

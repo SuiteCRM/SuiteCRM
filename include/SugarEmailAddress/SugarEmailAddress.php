@@ -549,6 +549,11 @@ class SugarEmailAddress extends SugarBean
         $module_dir = $this->getCorrectedModule($bean->module_dir);
         $this->addresses = $this->getAddressesByGUID($bean->id, $module_dir);
         $this->populateLegacyFields($bean);
+
+        if (empty($bean->fetched_row)){
+            return;
+        }
+
         if (isset($bean->email1) && !isset($bean->fetched_row['email1'])) {
             $bean->fetched_row['email1'] = $bean->email1;
         }

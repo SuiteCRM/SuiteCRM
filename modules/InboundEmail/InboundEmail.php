@@ -4704,8 +4704,10 @@ class InboundEmail extends SugarBean
     {
         $cacheDir = $GLOBALS['sugar_config']['cache_dir'] . 'images/';
 
-        if (isset($attach->id) &&
-            strpos((string) $attach->id, "..") !== false &&
+        $attachmentId = $attach->id ?? '';
+
+        if (!empty($attachmentId) &&
+            strpos((string) $attachmentId, "..") !== false &&
             $this->id !== null &&
             strpos((string) $this->id, "..") !== false
         ) {
@@ -4715,7 +4717,7 @@ class InboundEmail extends SugarBean
         $uploadDir = ($forDisplay) ? "{$this->EmailCachePath}/{$this->id}/attachments/" : "upload://";
 
         // decide what name to save file as
-        $fileName = htmlspecialchars((string) $attach->id);
+        $fileName = htmlspecialchars((string) $attachmentId);
 
         // download the attachment if we didn't do it yet
         if (!file_exists($uploadDir . $fileName)) {
@@ -4737,7 +4739,7 @@ class InboundEmail extends SugarBean
             }
         }
 
-        $this->tempAttachment[$fileName] = urldecode($attach->filename);
+        $this->tempAttachment[$fileName] = urldecode($attach->filename ?? '');
         // if all was successful, feel for inline and cache Note ID for display:
         if ((isset($part->disposition) && strtolower($part->disposition) == 'inline' && in_array($part->subtype, $this->imageTypes))
             || ($part->type == 5)
@@ -4748,8 +4750,10 @@ class InboundEmail extends SugarBean
             }
 
             if (copy($uploadDir . $fileName, sugar_cached("images/{$fileName}.") . strtolower($part->subtype))) {
-                $id = substr((string) $part->id, 1, -1); //strip <> around
-                $this->inlineImages[$id] = $attach->id . "." . strtolower($part->subtype);
+                if (isset($part->id)){
+                    $id = substr((string) $part->id, 1, -1); //strip <> around
+                    $this->inlineImages[$id] = $attachmentId . "." . strtolower($part->subtype);
+                }
             } else {
                 $GLOBALS['log']->debug('InboundEmail could not copy ' . $uploadDir . $fileName . ' to cache');
             }
@@ -6347,7 +6351,7 @@ class InboundEmail extends SugarBean
             $port = $this->port ?? '143';
             $connectString = '{' . $this->server_url . ':' . $port . '/service=' . $protocol . $service . '}';
         }
-        
+
         $mbox = empty($mbox) ? $this->mailbox : $mbox;
         $connectString .= ($includeMbox) ? $mbox : "";
 
@@ -7335,7 +7339,9 @@ class InboundEmail extends SugarBean
             $GLOBALS['log']->debug("NOOP: could not expunge deleted email.");
             $return = false;
         } else {
-            LoggerManager::getLogger()->info("INBOUNDEMAIL: hard-deleted mail with MSgno's' [ {$msgnos} ]");
+            if (!empty($msgnos)){
+                LoggerManager::getLogger()->info("INBOUNDEMAIL: hard-deleted mail with MSgno's' [ {$msgnos} ]");
+            }
         }
 
         return $return;

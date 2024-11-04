@@ -417,7 +417,7 @@ class SugarFeedDashlet extends DashletGeneric
         }
 
         $function = function ($a, $b) {
-            return $a["sort_key"] < $b["sort_key"];
+            return $b["sort_key"] <=> $a["sort_key"];
         };
 
         usort($resortQueue, $function);
@@ -442,7 +442,7 @@ class SugarFeedDashlet extends DashletGeneric
     }
     public function pushUserFeed()
     {
-        if (!empty($_REQUEST['text']) || (!empty($_REQUEST['link_url']) && !empty($_REQUEST['link_type']))) {
+        if (!empty($_REQUEST['text'] ?? '') || (!empty($_REQUEST['link_url'] ?? '') && !empty($_REQUEST['link_type'] ?? ''))) {
             $text = htmlspecialchars((string) $_REQUEST['text']);
             //allow for bold and italic user tags
             $text = preg_replace('/&amp;lt;(\/*[bi])&amp;gt;/i', '<$1>', $text);

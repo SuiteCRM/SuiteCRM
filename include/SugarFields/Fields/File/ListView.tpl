@@ -48,7 +48,7 @@
 {capture name=imageURLCapture assign=imageURL}
 	{sugar_getimagepath file=$imageName}
 {/capture}
-{if strlen($imageURL)>1}{sugar_getimage name=$imageName alt=$imageName other_attributes='border="0" '}{/if}
+{if strlen($imageURL|default:'')>1}{sugar_getimage name=$imageName alt=$imageName other_attributes='border="0" '}{/if}
 {/if}
 </a>&nbsp;
 

@@ -321,9 +321,8 @@ class ViewModulefield extends SugarView
         ksort($field_types);
         $fv->ss->assign('field_types', $field_types);
 
-
-        $fv->ss->assign('importable_options', $GLOBALS['app_list_strings']['custom_fields_importable_dom']);
-        $fv->ss->assign('duplicate_merge_options', $GLOBALS['app_list_strings']['custom_fields_merge_dup_dom']);
+        $fv->ss->assign('importable_options', $GLOBALS['app_list_strings']['custom_fields_importable_dom'] ?? []);
+        $fv->ss->assign('duplicate_merge_options', $GLOBALS['app_list_strings']['custom_fields_merge_dup_dom'] ?? []);
 
         $triggers = array() ;
         $existing_field_names = array() ;

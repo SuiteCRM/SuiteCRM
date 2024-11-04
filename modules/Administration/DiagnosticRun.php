@@ -251,7 +251,7 @@ function deleteDir($dir)
         $dir .= '/';
     }
 
-    if ($handle = opendir($dir)) {
+    if (is_dir($dir) && $handle = opendir($dir)) {
         while ($obj = readdir($handle)) {
             if ($obj != '.' && $obj != '..') {
                 if (is_dir($dir.$obj)) {

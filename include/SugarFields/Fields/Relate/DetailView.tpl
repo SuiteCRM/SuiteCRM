@@ -39,7 +39,7 @@
  */
 
 *}
-{{if !$nolink && !empty($vardef.id_name)}} 
+{{if !$nolink && !empty($vardef.id_name) && !empty($vardef.module)}}
 {if !empty({{sugarvar memberName='vardef.id_name' key='value' string='true'}})}
 {capture assign="detail_url"}index.php?module={{$vardef.module}}&action=DetailView&record={{sugarvar  memberName='vardef.id_name' key='value'}}{/capture}
 <a href="{sugar_ajax_url url=$detail_url}">{/if}

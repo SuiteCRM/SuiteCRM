@@ -204,7 +204,7 @@ class SugarLogger implements LoggerTemplate
         $level,
         $message
         ) {
-        global $sugar_config;
+        global $sugar_config, $timezone, $current_language;
 
         if (!$this->initialized) {
             return;
@@ -233,10 +233,19 @@ class SugarLogger implements LoggerTemplate
             $message .= ("\n" . $trace);
         }
 
+        $format = new IntlDateFormatter(
+            $current_language,
+            IntlDateFormatter::MEDIUM,
+            IntlDateFormatter::MEDIUM,
+            $timezone,
+            IntlDateFormatter::GREGORIAN,
+            "EEE MMM d yyyy 'at' HH:mm:ss",
+        );
+
         //write out to the file including the time in the dateFormat the process id , the user id , and the log level as well as the message
         fwrite(
             $this->fp,
-            strftime($this->dateFormat) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
+            $format->format(time()) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
             );
     }
 

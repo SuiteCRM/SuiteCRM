@@ -971,13 +971,21 @@ class TimeDate
      */
     protected function _convert($date, $fromFormat, $fromTZ, $toFormat, $toTZ, $expand = false)
     {
-        $date = trim($date);
         if (empty($date)) {
             return $date;
         }
+
+        if (is_string($date)) {
+            $date = trim($date);
+        }
+
         try {
             if ($expand && strlen($date) <= 10) {
                 $date = $this->expandDate($date, $fromFormat);
+            }
+            $toFormatDate = SugarDateTime::createFromFormat($toFormat, $date, $fromTZ);
+            if ($toFormatDate !== false){
+                return $date;
             }
             $phpdate = SugarDateTime::createFromFormat($fromFormat, $date, $fromTZ);
             if ($phpdate == false) {
@@ -2067,7 +2075,7 @@ class TimeDate
             return '';
         }
         $selected = array("am" => "", "pm" => "", "AM" => "", "PM" => "");
-        if (preg_match('/([ap]m)/i', $date, $match)) {
+        if (isset($date) && preg_match('/([ap]m)/i', $date, $match)) {
             $selected[$match[1]] = " selected";
         }
 

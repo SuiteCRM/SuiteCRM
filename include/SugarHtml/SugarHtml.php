@@ -201,7 +201,13 @@ class SugarHtml
                         if ($count++ > 0) {
                             $out .= ' ';
                         }
-                        $out .= (empty($value)) ? $attr : $attr.'="'.$value.'"';
+                        if (is_string($value)){
+                            $out .= (empty($value)) ? $attr : $attr.'="'.$value.'"';
+                            continue;
+                        }
+                        foreach($value as $key => $v) {
+                            $out .= (empty($v)) ? $key : $key.'="'.$v.'"';
+                        }
                     }
                 }
             }
@@ -304,7 +310,7 @@ class SugarHtml
 
         preg_match("/^[$\w]+/", $_str, $statement);
         $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0];
-        $_left = strlen($statement[0]);
+        $_left = strlen($statement[0] ?? '');
 
         $_right = strpos($code, $_smarty_closing, $offset);
         if ($_right === false) { //smarty closed itself

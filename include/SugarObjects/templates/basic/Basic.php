@@ -78,11 +78,11 @@ class Basic extends SugarBean
 
         /** @var EmailAddress $emailAddressBean */
         $emailAddressBean = BeanFactory::getBean('EmailAddresses');
-        
+
         // Fixed #5657: Only update state if email address is exist
         $emailAddressId = $this->getEmailAddressId($emailField);
         $emailAddressBean->retrieve($emailAddressId);
-        
+
         return $emailAddressBean;
     }
 
@@ -154,6 +154,10 @@ class Basic extends SugarBean
      */
     private function cleanUpEmailAddress($emailAddress)
     {
+        if (empty($emailAddress)){
+            return $emailAddress;
+        }
+
         $ret = $emailAddress;
         $ret = trim($ret);
         $ret = strtolower($ret);

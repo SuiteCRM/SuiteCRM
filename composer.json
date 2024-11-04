@@ -39,6 +39,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-zip": "*",
+    "ext-intl": "*",
     "consolidation/robo": "^3.0",
     "elasticsearch/elasticsearch": "^7.13",
     "ezyang/htmlpurifier": "^4.10",

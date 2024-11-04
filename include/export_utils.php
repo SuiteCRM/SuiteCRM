@@ -330,7 +330,7 @@ function export($type, $records = null, $members = false, $sample=false)
 
                 // Keep as $key => $value for post-processing
                 $cleanCSV = new CleanCSV();
-                $new_arr[$key] = preg_replace("/\"/", "\"\"", $cleanCSV->escapeField($value));
+                $new_arr[$key] = preg_replace("/\"/", "\"\"", $cleanCSV->escapeField($value) ?? '');
             }
 
             // Use Bean ID as key for records

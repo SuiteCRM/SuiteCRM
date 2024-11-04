@@ -151,7 +151,7 @@ class Call extends SugarBean
     {
         // don't check if call is being synced from Outlook
         if ($this->syncing == false) {
-            $view = strtolower($view);
+            $view = strtolower($view ?? '');
             switch ($view) {
                 case 'edit':
                 case 'save':

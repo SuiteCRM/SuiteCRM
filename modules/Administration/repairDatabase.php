@@ -146,7 +146,7 @@ if (is_admin($current_user) || isset($from_sync_client) || is_admin_for_any_modu
 
             $tablename = $meta['table'];
             $fielddefs = $meta['fields'];
-            $indices = $meta['indices'];
+            $indices = $meta['indices'] ?? [];
             $engine = isset($meta['engine'])?$meta['engine']:null;
             $sql .= $db->repairTableParams($tablename, $fielddefs, $indices, $execute, $engine);
             $repairedTables[$tablename] = true;

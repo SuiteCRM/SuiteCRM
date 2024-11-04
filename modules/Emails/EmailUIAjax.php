@@ -1826,7 +1826,9 @@ eoq;
     } // switch
 
     if (isset($cid) && $cid) {
-        $current_user->savePreferencesToDB();
+        if ($current_user !== null) {
+            $current_user->savePreferencesToDB();
+        }
         $current_user = BeanFactory::getBean('Users', $cid);
     }
 } // if

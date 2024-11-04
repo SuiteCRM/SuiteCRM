@@ -688,7 +688,7 @@ class AOW_WorkFlow extends Basic
      */
     public function check_valid_bean(SugarBean $bean)
     {
-        global $app_list_strings, $timedate;
+        global $app_list_strings, $timedate, $current_user;
 
         if (!$this->multiple_runs) {
             $processed = BeanFactory::getBean('AOW_Processed');
@@ -705,12 +705,24 @@ class AOW_WorkFlow extends Basic
         }
 
         if ($this->flow_run_on) {
-            $dateEntered = $timedate->fromUserType($this->date_entered, 'datetime')
-                ?: $timedate->fromDbType($this->date_entered, 'datetime');
-            $beanDateEntered = $timedate->fromUserType($bean->date_entered, 'datetime')
-                ?: $timedate->fromDbType($bean->date_entered, 'datetime');
-            $beanDateModified = $timedate->fromUserType($bean->date_modified, 'datetime')
-                ?: $timedate->fromDbType($bean->date_modified, 'datetime');
+
+            $dateEntered = $timedate->fromDbType($this->date_entered, 'datetime');
+            $beanDateEntered = $timedate->fromDbType($bean->date_entered, 'datetime');
+            $beanDateModified = $timedate->fromDbType($bean->date_modified, 'datetime');
+
+            $userFormat = $timedate->get_date_format($current_user);
+
+            if (SugarDateTime::createFromFormat($userFormat, $this->date_entered) !== false) {
+                $dateEntered = $timedate->fromUserType($this->date_entered, 'datetime');
+            }
+
+            if (SugarDateTime::createFromFormat($userFormat, $bean->date_entered) !== false) {
+                $beanDateEntered = $timedate->fromUserType($bean->date_entered, 'datetime');
+            }
+
+            if (SugarDateTime::createFromFormat($userFormat, $bean->date_modified) !== false) {
+                $beanDateModified = $timedate->fromUserType($bean->date_modified, 'datetime');
+            }
 
             switch ($this->flow_run_on) {
                 case'New_Records':

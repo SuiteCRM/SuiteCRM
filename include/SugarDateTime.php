@@ -158,7 +158,7 @@ class SugarDateTime extends DateTime
             // strip spaces before am/pm as our formats don't have them
             $time = preg_replace('/\s+(AM|PM)/i', '\1', $time);
             // TODO: better way to not risk locale stuff problems?
-            $data = strptime($time, $str_format);
+            $data = date_parse_from_format($str_format, $time);
             if (empty($data)) {
                 $GLOBALS['log']->error("Cannot parse $time for format $format");
                 return null;
@@ -178,7 +178,7 @@ class SugarDateTime extends DateTime
             $data += self::$data_init; // fill in missing parts
         } else {
             // Windows, etc. might not have strptime - we'd have to work harder here
-            $data = $res->_strptime($time, $format);
+            $data = date_parse_from_format($format, $time);
         }
         if (empty($data)) {
             $GLOBALS['log']->error("Cannot parse $time for format $format");

@@ -21,6 +21,10 @@
  */
 function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1')
 {
+    if (is_null($string)) {
+        return null;
+    }
+
     switch ($esc_type) {
         case 'html':
             return htmlspecialchars($string, ENT_QUOTES, $char_set);

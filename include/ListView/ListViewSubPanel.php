@@ -840,7 +840,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
                     if ($this->base_URL == "/index.php") {
                         $this->base_URL .= "?";
                     } else {
-                        if ($fullRequestString == substr($this->baseURL, '-' . strlen($fullRequestString))) {
+                        if ($fullRequestString == substr($this->base_URL, '-' . strlen($fullRequestString ?? ''))) {
                             $this->base_URL = preg_replace("/&" . $key . "\=.*/", "", $this->base_URL);
                         } else {
                             $this->base_URL = preg_replace("/&" . $key . "\=.*?&/", "&", $this->base_URL);

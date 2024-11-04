@@ -1811,7 +1811,7 @@ class Email extends Basic
             $email->description = $email->description;
             if (empty($email->description_html)) {
                 $email->description_html = $email->description;
-                $email->description_html = nl2br($email->description_html);
+                $email->description_html = nl2br($email->description_html ?? '');
             }
             //$ret->description_html = SugarCleaner::cleanHtml($ret->description_html);
             $email->retrieveEmailAddresses();
@@ -3958,6 +3958,9 @@ class Email extends Basic
      */
     public function trimLongTo($str)
     {
+        if (empty($str)) {
+            return $str;
+        }
         if (strpos($str, ',')) {
             $exStr = explode(',', $str);
 
@@ -4526,7 +4529,7 @@ eoq;
         }
 
 
-        $toEmailAddresses = preg_split('/[,;]/', (string) $bean->to_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $toEmailAddresses = preg_split('/[,;]/', (string) $bean->to_addrs, -1, PREG_SPLIT_NO_EMPTY);
         $bean->to_addr_arr = array();
         foreach ($toEmailAddresses as $ea => $address) {
             preg_match(
@@ -4569,7 +4572,7 @@ eoq;
             }
         }
 
-        $ccEmailAddresses = preg_split('/[,;]/', (string) $bean->cc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $ccEmailAddresses = preg_split('/[,;]/', (string) $bean->cc_addrs, -1, PREG_SPLIT_NO_EMPTY);
         $bean->cc_addrs_arr = array();
         foreach ($ccEmailAddresses as $ea => $address) {
             $email = '';
@@ -4613,7 +4616,7 @@ eoq;
             }
         }
 
-        $bccEmailAddresses = preg_split('/[,;]/', (string) $bean->bcc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $bccEmailAddresses = preg_split('/[,;]/', (string) $bean->bcc_addrs, -1, PREG_SPLIT_NO_EMPTY);
         $bean->bcc_addrs_arr = array();
         foreach ($bccEmailAddresses as $ea => $address) {
             $email = '';
@@ -4989,7 +4992,7 @@ eoq;
                 );
 
                 // embedded Images
-                if ($note->embed_flag == true) {
+                if (($note->embed_flag ?? false) == true) {
                     $cid = $filename;
                     $mail->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
                 }

@@ -910,7 +910,7 @@ class Imap2Handler implements ImapHandlerInterface
      * @param int $options
      * @return bool Returns TRUE on success or FALSE on failure.
      */
-    public function setFlagFull($sequence, $flag, $options = NIL)
+    public function setFlagFull($sequence, $flag, $options = 0)
     {
         $this->logCall(__FUNCTION__, func_get_args());
         $ret = imap2_setflag_full($this->getStream(), $sequence, $flag, $options);

@@ -457,7 +457,7 @@ EOQ;
 
                 if ($focus->hasCustomFields()) {
                     foreach ($focus->field_defs as $name=>$field) {
-                        if (!empty($field['source']) && $field['source'] == 'custom_fields') {
+                        if (!empty($field['source']) && $field['source'] == 'custom_fields' && isset($focus->$name)) {
                             $get .= "&Accounts$name=".urlencode($focus->$name);
                         }
                     }

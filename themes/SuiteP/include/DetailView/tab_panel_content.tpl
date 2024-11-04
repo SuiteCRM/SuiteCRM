@@ -100,7 +100,7 @@
                     {{elseif isset($colData.field.label)}}
                         {capture name="label" assign="label"}{sugar_translate label='{{$colData.field.label}}' module='{{$module}}'}{/capture}
                         {$label|strip_semicolon}:
-                    {{elseif isset($fields[$colData.field.name])}}
+                    {{elseif isset($fields[$colData.field.name].vname)}}
                         {capture name="label" assign="label"}{sugar_translate label='{{$fields[$colData.field.name].vname}}' module='{{$module}}'}{/capture}
                         {$label|strip_semicolon}:
                     {{else}}
@@ -144,7 +144,7 @@
                     {{if ($colData.field.customCode && !$colData.field.customCodeRenderField) || $colData.field.assign}}
                         {counter name="panelFieldCount" print=false}
                         <span id="{{$colData.field.name}}" class="sugar_field">{{sugar_evalcolumn var=$colData.field colData=$colData}}</span>
-                    {{elseif $fields[$colData.field.name] && !empty($colData.field.fields) }}
+                    {{elseif isset($fields[$colData.field.name]) && !empty($colData.field.fields) }}
 
                         {{foreach from=$colData.field.fields item=subField}}
                             {{if $fields[$subField]}}

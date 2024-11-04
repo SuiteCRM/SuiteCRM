@@ -408,7 +408,7 @@ function format_number($amount, $round = null, $decimals = null, $params = array
 
     $checkAmount = 0;
 
-    if (empty($params['human'])) {
+    if (empty($params['human']) && isset($amount)) {
         $amount = number_format(round($amount, $round), $decimals, $dec_sep, $num_grp_sep);
         $amount = format_place_symbol($amount, $symbol, (empty($params['symbol_space']) ? false : true));
     } else {
@@ -427,7 +427,7 @@ function format_number($amount, $round = null, $decimals = null, $params = array
         }
     }
 
-    if (!empty($params['percentage']) && $params['percentage']) {
+    if (!empty($params['percentage']) && isset($amount)) {
         $amount .= $app_strings['LBL_PERCENTAGE_SYMBOL'];
     }
     return $amount;

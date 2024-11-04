@@ -802,6 +802,9 @@ class AOR_Report extends Basic
                     if ($att['link'] && $links) {
                         $html .= "<a href='" . $sugar_config['site_url'] . "/index.php?module=" . $att['module'] . "&action=DetailView&record=" . $row[$att['alias'] . '_id'] . "'>";
                     }
+                    if (!isset($row[$name])){
+                        continue;
+                    }
 
                     $currency_id = isset($row[$att['alias'] . '_currency_id']) ? $row[$att['alias'] . '_currency_id'] : '';
 
@@ -1260,48 +1263,50 @@ class AOR_Report extends Basic
                         $field_module = $new_field_module;
                     }
                 }
-                $data = $field_module->field_defs[$field->field];
+                $data = $field_module->field_defs[$field->field] ?? [];
 
-                if ($data['type'] == 'relate' && isset($data['id_name'])) {
-                    $field->field = $data['id_name'];
-                    $data_new = $field_module->field_defs[$field->field];
-                    if (isset($data_new['source']) && $data_new['source'] == 'non-db' && $data_new['type'] != 'link' && isset($data['link'])) {
-                        $data_new['type'] = 'link';
-                        $data_new['relationship'] = $data['link'];
+                if (!empty($data)){
+                    if ($data['type'] == 'relate' && isset($data['id_name'])) {
+                        $field->field = $data['id_name'];
+                        $data_new = $field_module->field_defs[$field->field];
+                        if (isset($data_new['source']) && $data_new['source'] == 'non-db' && $data_new['type'] != 'link' && isset($data['link'])) {
+                            $data_new['type'] = 'link';
+                            $data_new['relationship'] = $data['link'];
+                        }
+                        $data = $data_new;
                     }
-                    $data = $data_new;
-                }
 
-                if ($data['type'] == 'link' && $data['source'] == 'non-db') {
-                    $new_field_module = new $beanList[getRelatedModule(
-                        $field_module->module_dir,
-                        $data['relationship']
-                    )];
-                    $table_alias = $data['relationship'];
-                    $query = $this->build_report_query_join(
-                        $data['relationship'],
-                        $table_alias,
-                        $oldAlias,
-                        $field_module,
-                        'relationship',
-                        $query,
-                        $new_field_module
-                    );
-                    $field_module = $new_field_module;
-                    $field->field = 'id';
-                }
+                    if ($data['type'] == 'link' && $data['source'] == 'non-db') {
+                        $new_field_module = new $beanList[getRelatedModule(
+                            $field_module->module_dir,
+                            $data['relationship']
+                        )];
+                        $table_alias = $data['relationship'];
+                        $query = $this->build_report_query_join(
+                            $data['relationship'],
+                            $table_alias,
+                            $oldAlias,
+                            $field_module,
+                            'relationship',
+                            $query,
+                            $new_field_module
+                        );
+                        $field_module = $new_field_module;
+                        $field->field = 'id';
+                    }
 
-                if ($data['type'] == 'currency' && isset($field_module->field_defs['currency_id']) && !stripos((string) $field->field,'_USD')) {
-                    if ((isset($field_module->field_defs['currency_id']['source']) && $field_module->field_defs['currency_id']['source'] == 'custom_fields')) {
-                        $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id AS '" . $table_alias . "_currency_id'";
-                        $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id";
-                    } else {
-                        $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias) . ".currency_id AS '" . $table_alias . "_currency_id'";
-                        $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias) . ".currency_id";
+                    if ($data['type'] == 'currency' && isset($field_module->field_defs['currency_id']) && !stripos((string) $field->field,'_USD')) {
+                        if ((isset($field_module->field_defs['currency_id']['source']) && $field_module->field_defs['currency_id']['source'] == 'custom_fields')) {
+                            $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id AS '" . $table_alias . "_currency_id'";
+                            $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id";
+                        } else {
+                            $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias) . ".currency_id AS '" . $table_alias . "_currency_id'";
+                            $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias) . ".currency_id";
+                        }
                     }
                 }
 
-                if ((isset($data['source']) && $data['source'] == 'custom_fields')) {
+                if (!empty($data) && (isset($data['source']) && $data['source'] == 'custom_fields')) {
                     $select_field = $this->db->quoteIdentifier($table_alias . '_cstm') . '.' . $field->field;
                     $query = $this->build_report_query_join(
                         $table_alias . '_cstm',
@@ -1316,7 +1321,7 @@ class AOR_Report extends Basic
                 }
                 $select_field_db = $select_field;
 
-                if ($field->format && in_array($data['type'], array('date', 'datetime', 'datetimecombo'))) {
+                if ($field->format && isset($data['type']) && in_array($data['type'], array('date', 'datetime', 'datetimecombo'))) {
                     if (in_array($data['type'], array('datetime', 'datetimecombo'))) {
                         $select_field = $this->db->convert($select_field, 'add_tz_offset');
                     }

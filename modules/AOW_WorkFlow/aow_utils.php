@@ -425,8 +425,10 @@ function getModuleField(
 
         // remove the special text entry field function 'getEmailAddressWidget'
         if (isset($vardef['function'])
-            && ($vardef['function'] == 'getEmailAddressWidget'
-                || $vardef['function']['name'] == 'getEmailAddressWidget')) {
+            && (
+                $vardef['function'] == 'getEmailAddressWidget'
+                || ($vardef['function']['name'] ?? '') == 'getEmailAddressWidget')
+        ) {
             unset($vardef['function']);
         }
 
@@ -470,7 +472,7 @@ function getModuleField(
             $contents = str_replace('{$fields.id.value}', '{$record_id}', $contents);
         }
         // hack to disable one of the js calls in this control
-        if (isset($vardef['function']) && ($vardef['function'] == 'getCurrencyDropDown' || $vardef['function']['name'] == 'getCurrencyDropDown')) {
+        if (isset($vardef['function']) && ($vardef['function'] == 'getCurrencyDropDown' || ($vardef['function']['name'] ?? '') == 'getCurrencyDropDown')) {
             $contents .= "{literal}<script>function CurrencyConvertAll() { return; }</script>{/literal}";
         }
 
@@ -534,7 +536,7 @@ function getModuleField(
         // that sets to blank an enum field which has a not blank default value, the template does not show the blank value (as expected)
         // but the default value. In order to properly show the expected blank value, we hack the vardef definition overriding default value 
         // with blank value when the stored workflow value (now in $value) is blank.
-        if ($fieldlist[$name]['type'] == 'enum' || $fieldlist[$name]['type'] == 'multienum' || $fieldlist[$name]['type'] == 'dynamicenum') {
+        if (isset($fieldlist[$name]['default']) && ($fieldlist[$name]['type'] == 'enum' || $fieldlist[$name]['type'] == 'multienum' || $fieldlist[$name]['type'] == 'dynamicenum')) {
             $fieldlist[$name]['default'] = $value === "" ? $value : $fieldlist[$name]['default'];
         }
     }
@@ -642,7 +644,6 @@ function getModuleField(
     $parentfieldlist = [];
 
     if (isset($fieldlist[$fieldname]['type']) && $fieldlist[$fieldname]['type'] == 'currency' && $view != 'EditView') {
-        static $sfh;
 
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');
