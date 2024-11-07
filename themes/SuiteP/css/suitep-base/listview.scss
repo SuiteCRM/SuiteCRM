@@ -266,6 +266,25 @@ tr#pagination {
   white-space: nowrap;
 }
 
+.list tr td[scope=record] {
+  padding: 10px 10px 10px 10px;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#errors_table .list tr th {
+  font-size: 13px;
+  padding: 13px 10px;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  white-space: nowrap;
+  font-weight: 700;
+  color: #534D64;
+}
+
 .edit .list tr th {
   font-size: 13px;
   font-weight: 800;
