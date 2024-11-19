@@ -126,6 +126,13 @@ SUGAR.ajaxUI = {
         }
         // End STIC CUSTOM
 
+        // STIC-Custom 20240911 MHP - Checking the status of the time registration button in calls with Ajax UI
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/385
+        if (!window.location.href.includes('action=Login') && !window.location.href.includes('module=Users')) {
+            checkTimeTrackerButtonStatus();
+        }
+        // END STIC-Custom
+
         var cont;
         if (typeof window.onbeforeunload == "function")
             window.onbeforeunload = null;
