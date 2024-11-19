@@ -523,6 +523,12 @@ class actionCreateRecord extends actionBase
                 return -1;
             }
         } else {
+            // STIC-Custom EPS 202041021 - When unchecked the value is 0 (false)
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/449
+            if (isset($params['copy_email_addresses'])) {
+                return 0;
+            }
+            // END STIC-Custom
             // exception
             LoggerManager::getLogger()->error('Given parameter should contains index "copy_email_addresses"');
             return -2;
@@ -530,7 +536,9 @@ class actionCreateRecord extends actionBase
         
         return $ret;
     }
-    
+
+
+
     /**
      *
      * @param arra $currentEmailAddress
