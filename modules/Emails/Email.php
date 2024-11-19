@@ -2653,6 +2653,16 @@ class Email extends Basic
             $note->file_mime_type = $note->file->mime_type;
             $note_id = $note->save();
 
+            // STIC-Custom 20240827 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/377
+            // Create relationship between Email and Note
+            global $db;
+            $query = "INSERT INTO emails_beans (id, email_id, bean_id, bean_module, deleted) 
+                      VALUES (UUID(), '{$this->id}', '{$note->id}', 'Notes', '0')";
+            if ($db->query($query)) {
+                $GLOBALS['log']->fatal("Line ".__LINE__.": ".__METHOD__.":  Error creating relationship between email ({$this->id}) and attached note ({$note->id})");
+            }
+            // END STIC-Custom
+
             $this->saved_attachments[] = $note;
 
             $note->id = $note_id;
@@ -2683,6 +2693,16 @@ class Email extends Basic
                 $docNote->parent_type = 'Emails';
                 $docNote->file_mime_type = $docRev->file_mime_type;
                 $docId = $docNote = $docNote->save();
+
+                // STIC-Custom 20240827 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/377
+                // // Create relationship between email and note created from attached document
+                global $db;
+                $query = "INSERT INTO emails_beans (id, email_id, bean_id, bean_module, deleted) 
+                        VALUES (UUID(), '{$this->id}', '{$docNote}', 'Notes', '0')";
+                if ($db->query($query)) {
+                    $GLOBALS['log']->fatal("Line ".__LINE__.": ".__METHOD__.":  Error creating relationship between email ({$this->id}) and attached note ({$docNote})");
+                }
+                // END STIC-Custom
 
                 $noteFile->duplicate_file($docRev->id, $docId, $docRev->filename);
             }
