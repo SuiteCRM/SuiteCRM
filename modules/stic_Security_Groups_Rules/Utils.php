@@ -433,6 +433,7 @@ class stic_Security_Groups_RulesUtils
             }
 
             // Create an array of security groups that are not inheritable under any circumstances for the current module
+            $notInheritableGroups = array();
             if (!empty($rulesBean->non_inherit_from_security_groups)) {
                 $notInheritableGroups = unencodeMultienum($rulesBean->non_inherit_from_security_groups);
             }
