@@ -55,12 +55,16 @@ FROM
 JOIN users u
 ON
     sp.assigned_user_id = u.id
+JOIN stic_payments_stic_payment_commitments_c spspcc 
+    ON sp.id = spspcc.stic_payments_stic_payment_commitmentsstic_payments_idb
 WHERE
     sp.deleted = 0
     AND u.deleted = 0
     AND MONTH(sp.payment_date) = MONTH(NOW())
+    AND YEAR(sp.payment_date) = YEAR(NOW())
     AND sp.payment_type = 'aggregated_services'
     AND sp.status != 'paid'
+    GROUP BY spspcc.stic_paymebfe2itments_ida
     ORDER BY sp.name ASC";
 
 $res = $db->query($includedPaymentsQuery);
@@ -90,6 +94,7 @@ while ($row = $db->fetchByAssoc($res)) {
     $includedPaymentsData[$paymentId] = $row;
     $includedPayments++;
 }
+$includePaymentIds = "'" . implode("','", array_keys($includedPaymentsData)) . "'";
 
 // Select attendances that should be included in current payments
 // but they can't due to lack of status and payment_exception values
@@ -131,9 +136,8 @@ WHERE
     AND sr.deleted = 0
     AND spcsrc.deleted = 0
     AND spspcc.deleted = 0
-    AND sp.deleted = 0
+    AND sp.id IN ($includePaymentIds)
     AND sa.deleted = 0
-    AND MONTH(sp.payment_date) = MONTH(NOW())
     AND sa.start_date < DATE_FORMAT(curdate(),'%Y-%m-01')
     AND CASE
             WHEN spc.periodicity = 'monthly' THEN sa.start_date >= subdate(DATE_FORMAT(curdate(),'%Y-%m-01'), INTERVAL 1 MONTH)
@@ -143,8 +147,6 @@ WHERE
             WHEN spc.periodicity = 'half_yearly' THEN sa.start_date >= subdate(DATE_FORMAT(curdate(),'%Y-%m-01'), INTERVAL 6 MONTH)
             WHEN spc.periodicity = 'yearly' THEN sa.start_date >= subdate(DATE_FORMAT(curdate(),'%Y-%m-01'), INTERVAL 12 MONTH)
         END
-    AND sp.payment_type = 'aggregated_services'
-    AND sp.status != 'paid'
     AND (sa.payment_exception IS NULL OR sa.payment_exception = '')
     AND (sa.status IS NULL OR sa.status = '')
     AND sa.id NOT IN (
@@ -223,9 +225,8 @@ WHERE
     AND sr.deleted = 0
     AND spcsrc.deleted = 0
     AND spspcc.deleted = 0
-    AND sp.deleted = 0
+    AND sp.id IN ($includePaymentIds)
     AND sa.deleted = 0
-    AND MONTH(sp.payment_date) = MONTH(NOW())
     AND sa.start_date < subdate(curdate(), (day(curdate())-1))
     AND CASE
             WHEN spc.periodicity = 'monthly' THEN sa.start_date >= subdate(subdate(curdate(), (day(curdate())-1)), INTERVAL 1 MONTH)
@@ -235,8 +236,6 @@ WHERE
             WHEN spc.periodicity = 'half_yearly' THEN sa.start_date >= subdate(subdate(curdate(), (day(curdate())-1)), INTERVAL 6 MONTH)
             WHEN spc.periodicity = 'yearly' THEN sa.start_date >= subdate(subdate(curdate(), (day(curdate())-1)), INTERVAL 12 MONTH)
         END
-    AND sp.payment_type = 'aggregated_services'
-    AND sp.status != 'paid'
     AND (sa.payment_exception IS NULL
         OR sa.payment_exception != 'exclude')
     AND (sa.status = 'yes'
