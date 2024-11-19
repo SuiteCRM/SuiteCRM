@@ -590,4 +590,9 @@ $sugar_config = array(
     // https://github.com/SinergiaTIC/SinergiaCRM/pull/253
     'disableAjaxUI' => true,
     // END STIC
+
+    // STIC-Custom 20240920 MHP - Change behavior so that tasks are synchronized by default
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/394
+    'show_tasks_as_events' => true,
+    // END STIC    
 );

@@ -230,10 +230,18 @@ class iCal extends vCal
             $hide_calls = true;
         }
 
-        $taskAsVTODO = true;
-        if (!empty($_REQUEST['show_tasks_as_events']) && ($_REQUEST['show_tasks_as_events'] == "1"  || $_REQUEST['show_tasks_as_events'] == "true")) {
-            $taskAsVTODO = false;
+        // STIC-Custom 20240920 MHP - Change behavior so that tasks are synchronized by default
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/394
+        // $taskAsVTODO = true;
+        // if (!empty($_REQUEST['show_tasks_as_events']) && ($_REQUEST['show_tasks_as_events'] == "1"  || $_REQUEST['show_tasks_as_events'] == "true")) {
+        //     $taskAsVTODO = false;
+        // }        
+        $taskAsVTODO = false;
+        if ((isset($_REQUEST['show_tasks_as_events']) && ($_REQUEST['show_tasks_as_events'] == "0"  || $_REQUEST['show_tasks_as_events'] == "false")) 
+         || (isset($sugar_config['show_tasks_as_events']) && $sugar_config['show_tasks_as_events'] == false)) {
+            $taskAsVTODO = true;
         }
+        // END STIC-Custom
 
         $activityList = array(
             "Meetings" => array(
