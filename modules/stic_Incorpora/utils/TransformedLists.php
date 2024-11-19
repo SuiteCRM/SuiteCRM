@@ -87,7 +87,7 @@ $stic_genders_list = array(
 
 $stic_incorpora_nationality_list = array (
     'extranjero' => 'extranjero',
-    'nacional' => 'nacional',
+    'espanola' => 'nacional',
     '**not_listed**' => 'extranjero',
 );
 
