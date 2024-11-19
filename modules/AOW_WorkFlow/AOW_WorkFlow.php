@@ -701,7 +701,11 @@ class AOW_WorkFlow extends Basic
 
         if (!$this->multiple_runs) {
             $processed = BeanFactory::getBean('AOW_Processed');
-            $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id, 'parent_id' => $bean->id));
+            // STIC-Custom 20240930 EPS - Uso del índice y prevención de errores si hay alguna ejecución no completada
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/411
+            // $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id, 'parent_id' => $bean->id));
+            $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id, 'parent_id' => $bean->id, 'status' => 'Complete'));
+            // END STIC-Custom
 
             if ($processed->status === 'Complete') {
                 //has already run so return false
@@ -1026,7 +1030,11 @@ class AOW_WorkFlow extends Basic
         require_once('modules/AOW_Processed/AOW_Processed.php');
         $processed = BeanFactory::newBean('AOW_Processed');
         if (!$this->multiple_runs) {
-            $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id,'parent_id' => $bean->id));
+            // STIC-Custom 20240930 EPS - Uso del índice y prevención de errores si hay alguna ejecución no completada
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/411
+            // $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id,'parent_id' => $bean->id));
+            $processed->retrieve_by_string_fields(array('aow_workflow_id' => $this->id,'parent_id' => $bean->id, 'status' => 'Complete'));
+            // END STIC-Custom
 
             if ($processed->status == 'Complete') {
                 //should not have gotten this far, so return
