@@ -76,8 +76,8 @@ class stic_IncorporaController extends SugarController
                 break;
 
             default:
-                $tableQuery = 'FROM ' . $moduleTable . ' JOIN ' . $moduleTable . '_cstm c ON id=c.id_c';
-                $incIdFieldSql = 'c.inc_id_c';
+                $tableQuery = 'FROM ' . $moduleTable . ' JOIN ' . $moduleTable . '_cstm ON id=' . $moduleTable . '_cstm.id_c';
+                $incIdFieldSql = $moduleTable . '_cstm.inc_id_c';
                 $incIdField = 'inc_id_c';
                 break;
         }
@@ -87,7 +87,7 @@ class stic_IncorporaController extends SugarController
         $where = '';
         if (isset($_REQUEST['select_entire_list']) && $_REQUEST['select_entire_list'] == '1' && isset($_REQUEST['current_query_by_page'])) {
             require_once 'include/export_utils.php';
-            $retArray = generateSearchWhere($moduleTable, $_REQUEST['current_query_by_page']);
+            $retArray = generateSearchWhere($bean->module_name, $_REQUEST['current_query_by_page']);
             $where = '';
             if (!empty($retArray['where'])) {
                 $where = " AND " . $retArray['where'];
