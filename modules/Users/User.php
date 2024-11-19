@@ -2422,16 +2422,54 @@ EOQ;
         $NUMBER = "0123456789";
         $UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         $SPECIAL = '~!@#$%^&*()_+=-{}|';
-        $condition = 0;
-        $charBKT .= $UPPERCASE . $LOWERCASE . $NUMBER;
-        $password = "";
-        $length = '6';
 
-        // Create random characters for the ones that doesnt have requirements
-        for ($i = 0; $i < $length - $condition; $i++) {  // loop and create password
-            $password = $password . substr($charBKT, mt_rand() % strlen($charBKT), 1);
+        // STIC - JBL - 20241002 - Generate password with security requirements
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/417
+        // $condition = 0;
+        // $charBKT .= $UPPERCASE . $LOWERCASE . $NUMBER;
+        // $password = "";
+        // $length = '6';
+
+        // // Create random characters for the ones that doesnt have requirements
+        // for ($i = 0; $i < $length - $condition; $i++) {  // loop and create password
+        //     $password = $password . substr($charBKT, mt_rand() % strlen($charBKT), 1);
+        // }
+
+        // Get password requirements
+        $length = 6;
+        if (isset($res['minpwdlength']) && is_numeric($res['minpwdlength']) && $res['minpwdlength'] > $length) {
+            $length = $res['minpwdlength'];
         }
 
+        $charBKT .= $UPPERCASE . $LOWERCASE . $NUMBER;
+        $requirements = [];
+        $password = "";
+
+        // Set one Upper, Lower, Number or Special if are required
+        if (isset($res['oneupper']) && $res['oneupper']) {
+            $requirements[] = $UPPERCASE[mt_rand(0, strlen($UPPERCASE) - 1)];
+        }
+        if (isset($res['onelower']) && $res['onelower']) {
+            $requirements[] = $LOWERCASE[mt_rand(0, strlen($LOWERCASE) - 1)];
+        }
+        if (isset($res['onenumber']) && $res['onenumber']) {
+            $requirements[] = $NUMBER[mt_rand(0, strlen($NUMBER) - 1)];
+        }
+        if (isset($res['onespecial']) && $res['onespecial']) {
+            $requirements[] = $SPECIAL[mt_rand(0, strlen($SPECIAL) - 1)];
+            $charBKT .= $SPECIAL;
+        }
+        $password .= implode('', $requirements);
+
+        // Create other random characters 
+        for ($i = 0; $i < $length - count($requirements); $i++) {  // loop and create password
+            $password .= $charBKT[mt_rand(0, strlen($charBKT) - 1)];
+        }
+
+        // Shuffle password characters
+        $password = str_shuffle($password);
+
+        // END STIC
         return $password;
     }
 
