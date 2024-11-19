@@ -43,6 +43,10 @@
 {literal}
 <script>
 addForm('popup_form');
+// STIC-Custom 20240916 MHP - Reference to the closing cross of the tab
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/464
+var closeButtonSelector = "a.sugar-tab-close[href='javascript:void(0);']";
+// END STIC-Custom
 </script>
 {/literal}
 
@@ -64,8 +68,13 @@ addForm('popup_form');
 	    &nbsp;
 	    <input type='button' class='button' name='fsavebtn' value='{$mod_strings.LBL_BTN_SAVE}' 
 			onclick='{literal}if(validate_type_selection() && check_form("popup_form")){ {/literal}{$preSave} {literal}ModuleBuilder.submitForm("popup_form_id"); }{/literal}'>
-	    <input type='button' name='cancelbtn' value='{$mod_strings.LBL_BTN_CANCEL}' 
-			onclick='ModuleBuilder.tabPanel.removeTab(ModuleBuilder.findTabById("east"));' class='button'>
+		{* STIC-Custom 20240916 MHP - Close tab when clicking cancel
+		   https://github.com/SinergiaTIC/SinergiaCRM/pull/464
+		<input type='button' name='cancelbtn' value='{$mod_strings.LBL_BTN_CANCEL}' 
+			onclick='ModuleBuilder.tabPanel.removeTab(ModuleBuilder.findTabById("east"));' class='button'> *}
+		<input type='button' name='cancelbtn' value='{$mod_strings.LBL_BTN_CANCEL}' 
+			onclick='document.querySelector(closeButtonSelector).click();' class='button'>
+		{* END STIC-Custom *}
 	    {if !empty($vardef.name)}
 	        {if $hideLevel < 3}
 	        {literal}
@@ -73,9 +82,13 @@ addForm('popup_form');
 	        {/literal}
 	        {/if}
 	        {if !$no_duplicate}
-	        {literal}
-	        &nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'>
+			{* STIC-Custom 20240916 MHP - Close the editor before sending the clone request
+			   https://github.com/SinergiaTIC/SinergiaCRM/pull/464 
+			&nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'> *}	        
+			{literal}
+			&nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='if (tinyMCE.get("htmlarea")) { tinymce.execCommand("mceRemoveControl", false, "htmlarea"); } document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'>
 	        {/literal}
+			{* END STIC-Custom *}			
 	    {/if}
 	    {/if}
 	
@@ -83,9 +96,13 @@ addForm('popup_form');
 	    {literal}
 	     <input type='button' class='button' name='lsavebtn' value='{/literal}{$mod_strings.LBL_BTN_SAVE}{literal}' onclick='if(check_form("popup_form")){this.form.action.value = "{/literal}{$action}{literal}";ModuleBuilder.submitForm("popup_form_id")};'>
 	    {/literal}
+		{* STIC-Custom 20240916 MHP - Close the editor before sending the clone request
+		   https://github.com/SinergiaTIC/SinergiaCRM/pull/464		 
+		&nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'> *}	        
 	    {literal}
-	        &nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'>
+	        &nbsp;<input type='button' class='button' name='fclonebtn' value='{/literal}{$mod_strings.LBL_BTN_CLONE}{literal}' onclick='if (tinyMCE.get("htmlarea")) { tinymce.execCommand("mceRemoveControl", false, "htmlarea"); } document.popup_form.action.value="CloneField";ModuleBuilder.submitForm("popup_form_id");'>
 	     {/literal}
+		{* END STIC-Custom *}			 
 		 {literal}
 	        &nbsp;<input type='button' class='button' name='cancel' value='{/literal}{$mod_strings.LBL_BTN_CANCEL}{literal}' onclick='ModuleBuilder.tabPanel.get("activeTab").close()'>
 	        {/literal}

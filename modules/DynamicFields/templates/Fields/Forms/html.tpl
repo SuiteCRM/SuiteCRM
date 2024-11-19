@@ -65,10 +65,6 @@
 <script type="text/javascript" language="Javascript">
 SUGAR.ajaxLoad = true;
 {if $hideLevel < 5}
-    // STIC-Custom 20240916 MHP - Close editor before reopening it under the same ID
-    // https://github.com/SinergiaTIC/SinergiaCRM/pull/388
-    tinymce.execCommand('mceRemoveControl', false, 'htmlarea');
-    // END STIC-Custom
     setTimeout("tinyMCE.execCommand('mceAddControl', false, 'htmlarea');", 500);  
 	ModuleBuilder.tabPanel.get("activeTab").closeEvent.subscribe(function(){ldelim}tinyMCE.execCommand('mceRemoveControl', false, 'htmlarea');{rdelim});
 	setTimeout("document.forms.popup_form.required.value = false;YAHOO.util.Dom.getAncestorByTagName(document.forms.popup_form.required, 'tr').style.display='none';", 500);
