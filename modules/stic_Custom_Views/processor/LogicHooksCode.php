@@ -155,6 +155,9 @@ class stic_Custom_Views_ProcessorLogicHooks
                 foreach ($conditionBeanArray as $conditionBean) {
                     $value_typeArray = explode("|", $conditionBean->value_type);
                     $value_type = $value_typeArray[0];
+                    if ($value_type != "enum" && $value_type != "multienum" && $value_type != "dynamicenum") {
+                        $value_typeArray[1] = "";
+                    }
                     $value_list = $value_typeArray[1];
                     $condition_type = $conditionBean->condition_type;
                     if($condition_type=="value") {

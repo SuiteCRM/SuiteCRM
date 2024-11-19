@@ -301,8 +301,12 @@ var sticCV_Record_Field_Content = class sticCV_Record_Field_Content extends stic
         conditionValue = conditionValue.replaceAll("^", "").split(",").sort().join(",");
       }
     }
-    if(this.type == "date") {
+    if (this.type == "date") {
       conditionValue = conditionValue.split(" ")[0];
+    }
+    if (this.type == "int" || this.type == "decimal" || this.type == "double") {
+      conditionValue = parseFloat(conditionValue);
+      currentValue = parseFloat(currentValue);
     }
     if (!this._isMultienumCancelledInline()) {
       conditionValue = sticCVUtils.normalizeToCompare(conditionValue);
