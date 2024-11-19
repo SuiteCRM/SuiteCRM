@@ -27,5 +27,6 @@ $dictionary['Case']['fields']['contact_created_by_id']['massupdate'] = 1;
 $dictionary['Case']['fields']['contact_created_by']['massupdate'] = 1;
 $dictionary['Case']['fields']['priority']['massupdate'] = 1;
 $dictionary['Case']['fields']['internal']['massupdate'] = 1;
+$dictionary['Case']['fields']['resolution']['editor'] = 'html';
 
 $dictionary['Case']['unified_search_default_enabled'] = false;
