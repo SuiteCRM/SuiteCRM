@@ -127,7 +127,7 @@ class stic_Work_Calendar extends Basic
     }
 
     /**
-     * Checks if the given user has a work calendar record between the previous 24 hours and now, in UTC.
+     * Checks if the given user has an uncancelled calendar record between the previous 24 hours and now, in UTC
      * @param userId User Identificator
      * @return void
      */
@@ -137,6 +137,7 @@ class stic_Work_Calendar extends Basic
         $query = "SELECT count(id) as count
                     FROM stic_work_calendar
                   WHERE deleted = 0 
+                    AND type != 'canceled'
                     AND start_date BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY)  AND UTC_TIMESTAMP()
                     AND assigned_user_id = '" . $userId . "';";
 

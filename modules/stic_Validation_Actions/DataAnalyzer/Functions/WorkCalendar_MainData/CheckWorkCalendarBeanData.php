@@ -44,6 +44,7 @@ class CheckWorkCalendarBeanData extends DataCheckFunction
                 FROM stic_work_calendar
                 WHERE DATE(CONVERT_TZ(start_date, '+00:00', '" . $tzone ."')) = DATE(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '" . $tzone ."'), INTERVAL 1 DAY))
                     AND type = 'working'
+                    AND type != 'canceled'
                     AND deleted = 0
                 ORDER BY assigned_user_id;";
 

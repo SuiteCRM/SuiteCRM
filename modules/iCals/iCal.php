@@ -297,6 +297,12 @@ class iCal extends vCal
         foreach ($acts_arr as $act) {
             $event = $act->sugar_bean;
             if (!$hide_calls || ($hide_calls && $event->object_name != "Call")) {
+                // STIC-Custom 20241004 MHP - Exclude canceled work calendar records from synchronization
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/425
+                if ($event->module_dir == "stic_Work_Calendar" && $event->type == 'canceled'){
+                    continue;
+                }
+                // END STIC-Custom
                 $ical_array[] = array("BEGIN", "VEVENT");
                 // STIC-Custom 20220315 AAM - Encoding the activity name to UTF8 in order to display special characters
                 // $ical_array[] = array("SUMMARY", $event->name);

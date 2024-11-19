@@ -61,6 +61,7 @@ class CheckHoursWorkedInPreviousWeek extends DataCheckFunction
             JOIN users_cstm as swcu ON swc.assigned_user_id = swcu.id_c            
             WHERE DATE(CONVERT_TZ(swc.start_date, '+00:00', '" . $tzone ."')) BETWEEN DATE(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '" . $tzone ."'), INTERVAL 7 DAY)) AND DATE(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '" . $tzone ."'), INTERVAL 1 DAY))
                 AND swc.type = 'working'
+                AND swc.type != 'canceled'         
                 AND swc.deleted = 0
             GROUP BY swc.assigned_user_id) AS wc 
         ON tt.assigned_user_id = wc.assigned_user_id
@@ -80,11 +81,13 @@ class CheckHoursWorkedInPreviousWeek extends DataCheckFunction
             FROM stic_work_calendar swc
             JOIN users_cstm as swcu ON swc.assigned_user_id = swcu.id_c            
             WHERE DATE(CONVERT_TZ(swc.start_date, '+00:00', '" . $tzone ."')) BETWEEN DATE(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '" . $tzone ."'), INTERVAL 7 DAY)) AND DATE(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '" . $tzone ."'), INTERVAL 1 DAY))
-                AND swc.type = 'working'  
+                AND swc.type = 'working'
+                AND swc.type != 'canceled'
                 AND swc.deleted = 0
             GROUP BY swc.assigned_user_id) AS wc 
         ON tt.assigned_user_id = wc.assigned_user_id;";
 
+        $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': SQL: ' . $sql);
         return $sql;
     }
 

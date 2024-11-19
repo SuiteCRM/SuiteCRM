@@ -35,61 +35,65 @@ class stic_Work_CalendarUtils
      */
     public static function existsRecordsWithIncompatibleType($id, $startDate, $endDate, $type, $assignedUserId)
     {
-        require_once 'modules/stic_Work_Calendar/stic_Work_Calendar.php';
+        if ($type != 'canceled') {
+            require_once 'modules/stic_Work_Calendar/stic_Work_Calendar.php';
 
-        // Check if there is already a non-work record that takes up the entire day, in that case, it is not posible to create the record
-        global $db, $current_user;
-        $tzone = $current_user->getPreference('timezone') ?? $sugar_config['default_timezone'] ?? date_default_timezone_get();        
+            // Check if there is already a non-work record that takes up the entire day, in that case, it is not posible to create the record
+            global $db, $current_user;
+            $tzone = $current_user->getPreference('timezone') ?? $sugar_config['default_timezone'] ?? date_default_timezone_get();        
 
-        $query = "SELECT * FROM stic_work_calendar
-                    WHERE deleted = 0 
-                        AND id != '". $id . "' 
-                        AND assigned_user_id = '" . $assignedUserId . "' 
-                        AND type IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')
-                        AND DATE(CONVERT_TZ(start_date, '+00:00', '" . $tzone ."')) = DATE(CONVERT_TZ('" . $startDate . "', '+00:00', '" . $tzone ."'))";
+            $query = "SELECT * FROM stic_work_calendar
+                        WHERE deleted = 0 
+                            AND type != 'canceled'
+                            AND id != '". $id . "' 
+                            AND assigned_user_id = '" . $assignedUserId . "' 
+                            AND type IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')
+                            AND DATE(CONVERT_TZ(start_date, '+00:00', '" . $tzone ."')) = DATE(CONVERT_TZ('" . $startDate . "', '+00:00', '" . $tzone ."'))";
 
-        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
-        $result = $db->query($query);
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
+            $result = $db->query($query);
 
-        if (!is_null($result) && $result->num_rows > 0) {
-            return false;
-        } else {
-            if (in_array($type, stic_Work_Calendar::ALL_DAY_TYPES)) {
-                // Checks if exist a record that does not occupy the entire day, in that case, since the record to be created is an all-day record, it is not possible to create the record.
-                $query = "SELECT * FROM stic_work_calendar
-                    WHERE deleted = 0 
-                        AND id != '". $id . "' 
-                        AND assigned_user_id = '" . $assignedUserId . "' 
-                        AND type NOT IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')
-                        AND DATE(CONVERT_TZ(start_date, '+00:00', '" . $tzone ."')) = DATE(CONVERT_TZ('" . $startDate . "', '+00:00', '" . $tzone ."'))";
-
-                $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
-                $result = $db->query($query);
-
-                if (!is_null($result) && $result->num_rows > 0) {
-                    return false;
-                } else {
-                    return true;
-                }
+            if (!is_null($result) && $result->num_rows > 0) {
+                return false;
             } else {
-                // Checks if exist a record that does not occupy the entire day, in that case, since the record to be created is an all-day record, it is not possible to create the record.
-                $query = "SELECT * FROM stic_work_calendar
-                    WHERE deleted = 0 
-                        AND id != '". $id . "' 
-                        AND assigned_user_id = '" . $assignedUserId . "' 
-                        AND type NOT IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')                        
-                        AND TIMESTAMPDIFF(SECOND, start_date,  '" . $endDate . "') > 0
-                        AND TIMESTAMPDIFF(SECOND, '" . $startDate . "',end_date) > 0";
-                $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
-                $result = $db->query($query);
+                if (in_array($type, stic_Work_Calendar::ALL_DAY_TYPES)) {
+                    // Checks if exist a record that does not occupy the entire day, in that case, since the record to be created is an all-day record, it is not possible to create the record.
+                    $query = "SELECT * FROM stic_work_calendar
+                        WHERE deleted = 0 
+                            AND id != '". $id . "' 
+                            AND assigned_user_id = '" . $assignedUserId . "' 
+                            AND type != 'canceled'
+                            AND type NOT IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')
+                            AND DATE(CONVERT_TZ(start_date, '+00:00', '" . $tzone ."')) = DATE(CONVERT_TZ('" . $startDate . "', '+00:00', '" . $tzone ."'))";
 
-                if (!is_null($result) && $result->num_rows > 0) {
-                    return false;
+                    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
+                    $result = $db->query($query);
+
+                    if (!is_null($result) && $result->num_rows > 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 } else {
-                    return true;
+                    // Checks if exist a record that does not occupy the entire day, in that case, since the record to be created is an all-day record, it is not possible to create the record.
+                    $query = "SELECT * FROM stic_work_calendar
+                        WHERE deleted = 0 
+                            AND id != '". $id . "' 
+                            AND assigned_user_id = '" . $assignedUserId . "' 
+                            AND type != 'canceled'
+                            AND type NOT IN ('" .  implode("', '", stic_Work_Calendar::ALL_DAY_TYPES) . "')                        
+                            AND TIMESTAMPDIFF(SECOND, start_date,  '" . $endDate . "') > 0
+                            AND TIMESTAMPDIFF(SECOND, '" . $startDate . "',end_date) > 0";
+                    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
+                    $result = $db->query($query);
+
+                    if (!is_null($result) && $result->num_rows > 0) {
+                        return false;
+                    }
                 }
             }
         }
+        return true;
     }
 
     /**

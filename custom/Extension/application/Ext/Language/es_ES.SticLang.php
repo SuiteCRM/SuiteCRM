@@ -3247,6 +3247,7 @@ $app_list_strings['stic_work_calendar_types_list']['personal'] = 'Asuntos propio
 $app_list_strings['stic_work_calendar_types_list']['sick'] = 'Baja';
 $app_list_strings['stic_work_calendar_types_list']['leave'] = 'Permiso/Excedencia';
 $app_list_strings['stic_work_calendar_types_list']['other'] = 'Otros';
+$app_list_strings['stic_work_calendar_types_list']['canceled'] = 'Anulado';
 
 // Diario: Tipo de diario
 $app_list_strings['stic_journal_types_list'][''] = '';

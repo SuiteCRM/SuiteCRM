@@ -3246,6 +3246,7 @@ $app_list_strings['stic_work_calendar_types_list']['personal'] = 'Personal day';
 $app_list_strings['stic_work_calendar_types_list']['sick'] = 'Sick';
 $app_list_strings['stic_work_calendar_types_list']['leave'] = 'Leave';
 $app_list_strings['stic_work_calendar_types_list']['other'] = 'Other';
+$app_list_strings['stic_work_calendar_types_list']['canceled'] = 'Canceled';
 
 // Journal: Type
 $app_list_strings['stic_journal_types_list'][''] = '';

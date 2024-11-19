@@ -177,17 +177,28 @@ function manageAllDayView()
 
   type.addEventListener("change", function() 
   {
-    if (!allDayTypes.includes(document.getElementById("type").value)) 
+    var typeValue = document.getElementById("type").value;
+    if (!allDayTypes.includes(typeValue)) 
     {
       if (allDayTypes.includes(previousType)) {      // Set the previous values if the previous type was not type: all day
+        
+        if (typeValue == 'canceled')
+        {
+          $("#start_date_hours").val('00');
+          $("#start_date_minutes").val('00');
+          $("#end_date_hours").val('00');
+          $("#end_date_minutes").val('00');
+        } else {
           $("#start_date_hours").val(previousStartDateHours);
           $("#start_date_minutes").val(previousStartDateMinutes);
           $("#end_date_hours").val(previousEndDateHours);
           $("#end_date_minutes").val(previousEndDateMinutes);
-          $("#start_date_hours").change();
-          $("#start_date_minutes").change();
-          $("#end_date_hours").change();
-          $("#end_date_minutes").change();
+        }
+
+        $("#start_date_hours").change();
+        $("#start_date_minutes").change();
+        $("#end_date_hours").change();
+        $("#end_date_minutes").change();
 
         // Show the start time and the end_date section
         $("#start_date_time_section").parent().show();

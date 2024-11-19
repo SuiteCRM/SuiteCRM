@@ -227,6 +227,12 @@ class CustomCalendarActivity extends CalendarActivity
                     $act = new CustomCalendarActivity($focusBean);
 
                     if (!empty($act)) {
+                        // STIC-Custom 20241004 MHP - Exclude cancelled work calendar records from displaying them in the Activity Calendar
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/425
+                        if ($act->sugar_bean->module_dir === 'stic_Work_Calendar' && $act->sugar_bean->type == 'canceled' ) {
+                            continue;
+                        }
+                        // END STIC-Custom                        
                         $act_list[] = $act;
                     }
                 }
