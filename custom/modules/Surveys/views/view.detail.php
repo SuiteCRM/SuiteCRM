@@ -1,7 +1,4 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  * This file is part of SinergiaCRM.
  * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
@@ -24,10 +21,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
-require_once 'modules/Users/views/view.edit.php';
 require_once 'SticInclude/Views.php';
+require_once 'include/MVC/View/views/view.detail.php';
 
-class CustomUsersViewEdit extends UsersViewEdit
+class CustomSurveysViewDetail extends ViewDetail
 {
     public function __construct()
     {
@@ -45,13 +42,10 @@ class CustomUsersViewEdit extends UsersViewEdit
 
     public function display()
     {
-        global $current_user;
-        echo '<script> isAdminCurrentUser = '. $current_user->is_admin .' </script>';    
         parent::display();
 
         SticViews::display($this);
-        
+
         // Write here the SinergiaCRM code that must be executed for this module and view
-        echo getVersionedScript("custom/modules/Users/SticUtils.js");
     }
 }

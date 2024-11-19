@@ -1,7 +1,4 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  * This file is part of SinergiaCRM.
  * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
@@ -23,35 +20,26 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
+$extensions["api_routes"] =  array(
+    "section" => "api_routes",
+    "extdir" => "Api/V8/Config",
+    "file" => 'routes.php',
+    "module" => "");
 
-require_once 'modules/Users/views/view.edit.php';
-require_once 'SticInclude/Views.php';
+$extensions["api_controllers"] =  array(
+    "section" => "api_controllers",
+    "extdir" => "Api/V8/ParentControllers",
+    "file" => '../controllers.php',
+    "module" => "");
 
-class CustomUsersViewEdit extends UsersViewEdit
-{
-    public function __construct()
-    {
-        parent::__construct();
-    }
+$extensions["api_services"] =  array(
+    "section" => "api_services",
+    "extdir" => "Api/V8/ParentServices",
+    "file" => '../services.php',
+    "module" => "");
 
-    public function preDisplay()
-    {
-        parent::preDisplay();
-
-        SticViews::preDisplay($this);
-
-        // Write here the SinergiaCRM code that must be executed for this module and view
-    }
-
-    public function display()
-    {
-        global $current_user;
-        echo '<script> isAdminCurrentUser = '. $current_user->is_admin .' </script>';    
-        parent::display();
-
-        SticViews::display($this);
-        
-        // Write here the SinergiaCRM code that must be executed for this module and view
-        echo getVersionedScript("custom/modules/Users/SticUtils.js");
-    }
-}
+$extensions["api_params"] =  array(
+    "section" => "api_params",
+    "extdir" => "Api/V8/ParentParams",
+    "file" => '../params.php',
+    "module" => "");

@@ -31,8 +31,7 @@ RedirectMatch 403 /+files\.md5$
     RewriteRule ^Api/(.*)$ - [env=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     RewriteRule ^Api/access_token$ Api/index.php [L]
     RewriteRule ^Api/V8/(.*?)$ Api/index.php [L]
-
-    </IfModule>
+</IfModule>
 <IfModule mod_headers.c>
     Header unset ETag
     FileETag None
@@ -47,7 +46,7 @@ RedirectMatch 403 /+files\.md5$
 
  # CSS
  ExpiresByType text/css "access plus 1 year"
- 
+
  # Data
  ExpiresByType application/atom+xml "access plus 1 hour"
  ExpiresByType application/rdf+xml "access plus 1 hour"
@@ -141,4 +140,5 @@ RewriteEngine On
 RewriteCond %{SERVER_PORT} 80 
 RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]
 
+RedirectMatch 404 /SticInstall/(.*)
 # END SINERGIACRM RESTRICTIONS

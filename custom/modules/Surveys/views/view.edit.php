@@ -1,7 +1,4 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  * This file is part of SinergiaCRM.
  * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
@@ -24,34 +21,32 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
-require_once 'modules/Users/views/view.edit.php';
+require_once 'include/MVC/View/views/view.edit.php';
 require_once 'SticInclude/Views.php';
 
-class CustomUsersViewEdit extends UsersViewEdit
-{
-    public function __construct()
-    {
+class CustomSurveysViewEdit extends ViewEdit {
+    public function __construct() {
         parent::__construct();
+        $this->useForSubpanel = true;
+
+        // Since the suite base modules name the bean in the singular, we configure in the view the name of the module in the plural. This property will be used by the SticViews class to load the language files
+        $this->moduleName = 'Surveys';
     }
 
-    public function preDisplay()
-    {
+    public function preDisplay() {
+
         parent::preDisplay();
 
         SticViews::preDisplay($this);
 
-        // Write here the SinergiaCRM code that must be executed for this module and view
+        // Write here you custom code
     }
 
-    public function display()
-    {
-        global $current_user;
-        echo '<script> isAdminCurrentUser = '. $current_user->is_admin .' </script>';    
+    public function display() {
+
         parent::display();
 
         SticViews::display($this);
-        
-        // Write here the SinergiaCRM code that must be executed for this module and view
-        echo getVersionedScript("custom/modules/Users/SticUtils.js");
+        // Write here you custom code
     }
 }
