@@ -463,6 +463,8 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     			|| $field_def['type'] == 'link' 
     			|| $field_def['type'] == 'currency_id' 
     			|| $field_def['type'] == 'image' 
+    			|| $field_def['type'] == 'iframe' 
+    			|| $field_def['type'] == 'wysiwyg' 
     			|| (isset($field_def['source']) && $field_def['source'] == 'non-db' && !$emailFields)
     		   ) 
     		{
