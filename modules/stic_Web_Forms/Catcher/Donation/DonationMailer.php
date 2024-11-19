@@ -251,6 +251,11 @@ class DonationMailer extends WebFormMailer
             return false;
         }
 
+        if (empty($templateId)) {
+            $GLOBALS['log']->warn('Line ' . __LINE__ . ': ' . __METHOD__ . ":  No template ID received.");
+            return false;
+        }
+
         // Add the recipient
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Adding recipient [{$objWeb->email1}] ...");
         $this->addMailsDest($objWeb->email1);

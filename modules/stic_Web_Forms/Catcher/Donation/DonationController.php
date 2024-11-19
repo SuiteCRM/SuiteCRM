@@ -141,7 +141,7 @@ class DonationController extends WebFormDataController
                     }
                 } // If it is an immediate operation the notification is automatically sent
                 else if (!$mailer->sendUserMail($defParams['decodedDefParams']['email_template_id'], $objWeb, $payment)) {
-                    $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Unable to send confirmation email to user.");
+                    $GLOBALS['log']->warn('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Unable to send confirmation email to user.");
                 }
             }
         }

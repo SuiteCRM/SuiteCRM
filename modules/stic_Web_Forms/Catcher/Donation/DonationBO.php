@@ -148,6 +148,7 @@ class DonationBO extends WebFormDataBO
         $requiredParams = $this->requiredFormFields;
 
         // Define those required based on the target module.
+        $this->formParams['stic_identification_number_c'] = trim($this->formParams['stic_identification_number_c']);
         switch ($this->defParams['web_module']) {
             case 'Contacts':
                 $moduleRequiredFields = array('last_name', 'stic_identification_number_c');

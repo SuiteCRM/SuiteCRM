@@ -272,6 +272,7 @@ class EventInscriptionBO extends WebFormDataBO
 
         if ($_REQUEST["validate_identification_number"] == '1') {
             // If identification type is not set or it is a NIF/NIE, validate it. In other case, don't validate
+            $this->formParams['Contacts___stic_identification_number_c'] = trim($this->formParams['Contacts___stic_identification_number_c']);
             if ($this->formParams['Contacts___stic_identification_number_c']
                 && (empty($this->formParams['Contacts___stic_identification_type_c'])
                     || $this->formParams['Contacts___stic_identification_type_c'] == 'nif'
@@ -283,6 +284,7 @@ class EventInscriptionBO extends WebFormDataBO
             }
 
             // If organization's id is available, validate it
+            $this->formParams['Accounts___stic_identification_number_c'] = trim($this->formParams['Accounts___stic_identification_number_c']);
             if (!empty($this->formParams['Accounts___stic_identification_number_c']) &&
                 !self::checkTaxIdentity($this->formParams['Accounts___stic_identification_number_c'])) {
                 $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ":  The organization ID [{$this->formParams['Accounts___stic_identification_number_c']}] is not valid.");

@@ -200,7 +200,7 @@ class EventInscriptionController extends WebFormDataController
         } else { // Otherwise, send the emails immediately
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Sending mail to the registered user...");
             if (!$mailer->sendUserMail($defParams['email_template_id'])) {
-                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Unable to send the email to the user.");
+                $GLOBALS['log']->warn('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Unable to send the email to the user.");
             }
         }
     }

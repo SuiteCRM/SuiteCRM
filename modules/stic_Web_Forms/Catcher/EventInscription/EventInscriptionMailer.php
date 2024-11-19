@@ -193,6 +193,10 @@ class EventInscriptionMailer extends WebFormMailer
             $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ":  The data received does not include user email, notification cannot be sent.");
             return false;
         }
+        if (empty($templateId)) {
+            $GLOBALS['log']->warn('Line ' . __LINE__ . ': ' . __METHOD__ . ":  No templateId present.");
+            return false;
+        }
 
         // Añade el destinatario
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Adding recipient [{$objContactWeb->email1}] ...");
