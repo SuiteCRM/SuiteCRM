@@ -81,6 +81,9 @@ $app_strings['LBL_STIC_WIKI_LINK'] = 'Wiki de SinergiaCRM';
 $app_strings['LBL_STIC_VIDEOS_LINK'] = 'Vídeos de SinergiaCRM';
 $app_strings['LBL_STIC_SINERGIADA'] = 'SinergiaDA';
 
+// Enviament massiu de correus
+$app_strings['LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'] = "L'enviament només s'aplicarà als registres de la pàgina actual. Per als enviaments massius es recomana fer servir el mòdul Campanyes.";
+
 // Mòduls propis de SinergiaCRM i mòduls de SuiteCRM reanomenats
 $app_list_strings['moduleList']['Accounts'] = 'Organitzacions';
 $app_list_strings['moduleList']['Contacts'] = 'Persones';

@@ -118,10 +118,16 @@
 
   $.fn.openComposeViewModal = function (source) {
     "use strict";
-
+    
     window.event.preventDefault();
     window.event.stopImmediatePropagation();
-
+    // STIC-Custom 20241003 EPS - Warning when entire list selected
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/418
+    if($("[name='select_entire_list']").val() == 1) {
+      alert(SUGAR.language.get('app_strings', 'LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'));
+    }
+    // END STIC-Custom
+    
     var self = this;
     self.emailComposeView = null;
     var opts = $.extend({}, $.fn.EmailsComposeViewModal.defaults);

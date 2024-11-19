@@ -82,6 +82,9 @@ $app_strings['LBL_STIC_WIKI_LINK'] = 'SinergiaCRM wiki';
 $app_strings['LBL_STIC_VIDEOS_LINK'] = 'SinergiaCRM videos';
 $app_strings['LBL_STIC_SINERGIADA'] = 'SinergiaDA';
 
+// Mass emailing
+$app_strings['LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'] = 'Email sending will only apply to records on the current page. For mass emailing it is recommended to use the Campaigns module.';
+
 // SinergiaCRM own modules and SuiteCRM renamed modules
 $app_list_strings['moduleList']['Accounts'] = 'Accounts';
 $app_list_strings['moduleList']['Contacts'] = 'Contacts';
