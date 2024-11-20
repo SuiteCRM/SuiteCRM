@@ -1,0 +1,50 @@
+{
+    "name": "react\/event-loop",
+    "description": "ReactPHP's core reactor event loop that libraries can use for evented I\/O.",
+    "keywords": [
+        "event-loop",
+        "asynchronous"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian L\u00fcck",
+            "homepage": "https:\/\/clue.engineering\/",
+            "email": "christian@clue.engineering"
+        },
+        {
+            "name": "Cees-Jan Kiewiet",
+            "homepage": "https:\/\/wyrihaximus.net\/",
+            "email": "reactphp@ceesjankiewiet.nl"
+        },
+        {
+            "name": "Jan Sorgalla",
+            "homepage": "https:\/\/sorgalla.com\/",
+            "email": "jsorgalla@gmail.com"
+        },
+        {
+            "name": "Chris Boden",
+            "homepage": "https:\/\/cboden.dev\/",
+            "email": "cboden@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "phpunit\/phpunit": "^9.6 || ^5.7 || ^4.8.36"
+    },
+    "suggest": {
+        "ext-pcntl": "For signal handling support when using the StreamSelectLoop"
+    },
+    "autoload": {
+        "psr-4": {
+            "RectorPrefix202411\\React\\EventLoop\\": "src\/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RectorPrefix202411\\React\\Tests\\EventLoop\\": "tests\/"
+        }
+    }
+}

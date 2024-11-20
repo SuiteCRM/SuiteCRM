@@ -1,0 +1,94 @@
+{
+    "name": "ondram\/ci-detector",
+    "description": "Detect continuous integration environment and provide unified access to properties of current build",
+    "license": "MIT",
+    "type": "library",
+    "keywords": [
+        "continuous integration",
+        "ci-info",
+        "adapter",
+        "interface",
+        "appveyor",
+        "aws",
+        "aws codebuild",
+        "azure",
+        "azure devops",
+        "azure pipelines",
+        "bamboo",
+        "bitbucket",
+        "buddy",
+        "circleci",
+        "codeship",
+        "codebuild",
+        "continuousphp",
+        "devops",
+        "drone",
+        "github",
+        "gitlab",
+        "jenkins",
+        "pipelines",
+        "sourcehut",
+        "teamcity",
+        "travis",
+        "wercker"
+    ],
+    "authors": [
+        {
+            "name": "Ond\u0159ej Machulda",
+            "email": "ondrej.machulda@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0"
+    },
+    "require-dev": {
+        "ergebnis\/composer-normalize": "^2.13.2",
+        "lmc\/coding-standard": "^3.0.0",
+        "php-parallel-lint\/php-parallel-lint": "^1.2",
+        "phpstan\/extension-installer": "^1.1.0",
+        "phpstan\/phpstan": "^1.2.0",
+        "phpstan\/phpstan-phpunit": "^1.0.0",
+        "phpunit\/phpunit": "^9.6.13"
+    },
+    "autoload": {
+        "psr-4": {
+            "RectorPrefix202411\\OndraM\\CiDetector\\": "src\/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RectorPrefix202411\\OndraM\\CiDetector\\Ci\\": "tests\/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect\/phpcodesniffer-composer-installer": true,
+            "ergebnis\/composer-normalize": true,
+            "phpstan\/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "all": [
+            "@lint",
+            "@analyze",
+            "@test"
+        ],
+        "analyze": [
+            "vendor\/bin\/ecs check .\/src\/ .\/tests\/ ecs.php --ansi",
+            "vendor\/bin\/phpstan analyze -c phpstan.neon --ansi"
+        ],
+        "fix": [
+            "@composer normalize",
+            "vendor\/bin\/ecs check .\/src\/ .\/tests\/ ecs.php --ansi --fix"
+        ],
+        "lint": [
+            "vendor\/bin\/parallel-lint -j 10 -e php .\/src .\/tests ecs.php dump-current.php",
+            "@composer validate",
+            "@composer normalize --dry-run"
+        ],
+        "test": [
+            "vendor\/bin\/phpunit --colors=always"
+        ]
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "name": "rector\/rector-symfony",
+    "type": "rector-extension",
+    "license": "MIT",
+    "description": "Rector upgrades rules for Symfony Framework",
+    "require": {
+        "php": ">=8.2",
+        "ext-xml": "*"
+    },
+    "require-dev": {
+        "phpstan\/extension-installer": "^1.4",
+        "phpstan\/phpstan": "^1.11",
+        "phpstan\/phpstan-webmozart-assert": "^1.2",
+        "phpunit\/phpunit": "^10.5",
+        "rector\/rector-src": "dev-main",
+        "rector\/type-perfect": "^0.1.8",
+        "symfony\/config": "^6.4",
+        "symfony\/dependency-injection": "^6.4",
+        "symfony\/http-kernel": "~6.3",
+        "symfony\/routing": "^6.4",
+        "symfony\/security-core": "^6.4",
+        "symfony\/security-http": "^6.4",
+        "symfony\/validator": "^6.4",
+        "symplify\/easy-coding-standard": "^12.3",
+        "symplify\/phpstan-extensions": "^11.4",
+        "symplify\/phpstan-rules": "^13.0",
+        "symplify\/vendor-patches": "^11.3",
+        "tomasvotruba\/class-leak": "^0.2",
+        "tomasvotruba\/unused-public": "^0.4",
+        "tracy\/tracy": "^2.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rector\\Symfony\\": [
+                "src",
+                "rules"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rector\\Symfony\\Tests\\": [
+                "tests",
+                "rules-tests"
+            ]
+        },
+        "classmap": [
+            "stubs"
+        ]
+    },
+    "scripts": {
+        "phpstan": "vendor\/bin\/phpstan analyse --ansi --error-format symplify",
+        "check-cs": "vendor\/bin\/ecs check --ansi",
+        "fix-cs": "vendor\/bin\/ecs check --fix --ansi"
+    },
+    "extra": {
+        "enable-patching": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "cweagans\/composer-patches": true,
+            "rector\/extension-installer": true,
+            "phpstan\/extension-installer": true
+        }
+    }
+}

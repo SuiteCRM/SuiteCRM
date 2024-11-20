@@ -386,7 +386,7 @@ if (true) {
             if(!array_key_exists($defaultModule, $app_list_strings['parent_type_display_notifications'])) {
                 $defaultModule = "";
             }
-            
+
             if ($defaultModule != "") {
                 // Add $defaultModule as first module in dropdown
                 if (isset($app_list_strings['moduleListSingular'][$defaultModule])) {

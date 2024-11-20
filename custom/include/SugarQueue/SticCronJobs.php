@@ -62,7 +62,7 @@ class SticCronJobs extends SugarCronJobs
             // STIC Custom - In core original function, all runnable schedulers are queued at this point
             // In this case, only the provided scheduler will be runned
             // Code inspired by checkPendingJobs function
-            
+
             $schedulerBean = BeanFactory::newBean('Schedulers');
             $job = BeanFactory::newBean('SchedulersJobs');
 
@@ -78,7 +78,7 @@ class SticCronJobs extends SugarCronJobs
             } else {
                 $GLOBALS['log']->error('----->No Schedulers found');
             }
-            
+
             // End STIC Custom
         }
 

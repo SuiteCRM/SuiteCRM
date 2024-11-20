@@ -51,7 +51,7 @@ class CustomAOS_PDF_TemplatesViewDetail extends AOS_PDF_TemplatesViewDetail
         parent::display();
 
         SticViews::display($this);
-        
+
         // Write here you custom code
     }
 }

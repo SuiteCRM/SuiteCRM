@@ -1,0 +1,56 @@
+{
+    "name": "rector\/extension-installer",
+    "type": "composer-plugin",
+    "description": "Composer plugin for automatic installation of Rector extensions",
+    "license": "MIT",
+    "require": {
+        "php": "^8.0",
+        "composer-plugin-api": "^1.1 || ^2.0"
+    },
+    "require-dev": {
+        "rector\/rector-src": "dev-main",
+        "composer\/composer": "^2.0",
+        "composer\/xdebug-handler": "^2.0",
+        "phpstan\/extension-installer": "^1.1",
+        "rector\/phpstan-rules": "^0.4",
+        "symplify\/easy-coding-standard": "^10.0",
+        "symplify\/phpstan-extensions": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rector\\RectorInstaller\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rector\\RectorInstaller\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "check-cs": "ecs check --verbose --ansi",
+        "fix-cs": "ecs check --fix --verbose --ansi",
+        "phpstan": "vendor\/bin\/phpstan analyse --ansi --error-format symplify"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "version": "dev-main",
+            "url": "."
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan\/extension-installer": true,
+            "cweagans\/composer-patches": true
+        }
+    },
+    "extra": {
+        "class": "Rector\\RectorInstaller\\Plugin",
+        "branch-alias": {
+            "dev-main": "0.11.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

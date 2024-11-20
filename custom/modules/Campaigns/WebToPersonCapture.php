@@ -214,7 +214,7 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
 
             // STIC-Custom 20210111 MHP - Manage attached files
             // STIC#528
-            
+
             // STIC Custom 20230511 - JBL - Reducing use of deprecated code and warnings
             // STIC#1066
             //  - PHP Warning:  count(): Parameter must be an array or an object that implements Countable

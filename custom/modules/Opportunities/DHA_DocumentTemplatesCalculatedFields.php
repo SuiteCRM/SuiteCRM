@@ -35,13 +35,13 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
    
    ///////////////////////////////////////////////////////////////////////////////////////////////////
    protected function UndefFieldsDefs() {
-      
+
       // Hide fields example ...
-      
+
       /*
       if (isset($this->bean->field_name_map['sales_stage']))
          unset($this->bean->field_name_map['sales_stage']);
-         
+
       if (isset($this->bean->field_name_map['next_step']))
          unset($this->bean->field_name_map['next_step']);
       */
@@ -116,9 +116,9 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
    ///////////////////////////////////////////////////////////////////////////////////////////////////
    function CalcFields() {
       parent::CalcFields();
-      
+
       global $db, $app_list_strings;
-      
+
       // Related Account fields ...  
       $phone_office = '';      
       $id = $this->bean->id;       
@@ -134,8 +134,8 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
          }
       }      
       $this->SetCalcValue('account-phone_office', $phone_office); 
-      
-      
+
+
       $last_meeting_name = '';
       $last_meeting_location = '';
       $last_meeting_status = '';
@@ -169,8 +169,8 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
       $this->SetCalcValue('last-meeting-date_end', $last_meeting_date_end); 
       $this->SetCalcValue('last-meeting-duration_hours', $last_meeting_duration_hours);
       $this->SetCalcValue('last-meeting-duration_minutes', $last_meeting_duration_minutes);
-      
-      
+
+
       // Format examples ...
       // $num_value = $this->Generate_Document_Instance->FormatearNumero($row['num_value'], false);  
       // $num_value = $this->Generate_Document_Instance->FormatearNumero($row['num_value'], true);  // integer
@@ -202,14 +202,14 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
    ///////////////////////////////////////////////////////////////////////////////////////////////////
    function OrderRows() {
       // Order rows example (note: OrderRows event is only for MainModule, not for submodules. To order submodules rows, use BeforeMergeBlock event) 
-   
+
       global $db;
-      
+
       /*
       if ($this->inMainModule() && !empty($this->Generate_Document_Instance->ids)) {
          $ids_condition = implode ("','", $this->Generate_Document_Instance->ids);
          $ids_condition = "'".$ids_condition."'";
-         
+
          $this->Generate_Document_Instance->ids = array();
          $sql = "select id from opportunities where id in ({$ids_condition}) order by date_entered desc";
          $dataset = $db->query($sql);
@@ -227,7 +227,7 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
       // Order rows example for submodule data. In this example we order opportunities related to account (in account report). 
       // Please note that this event for this example must be placed in Accounts calculated fields class, not here
       // To order rows in MainModule, use OrderRows event (easier to use)
-      
+
       /*
       if ($this->inMainModule() && !empty($this->Generate_Document_Instance->datos) && $this->Generate_Document_Instance->plantilla_id == '6a449730-a66a-056e-97dd-52303a505802') {
          foreach ($this->Generate_Document_Instance->datos as $main_key => $main_data) {
@@ -236,12 +236,12 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
                $data_array_ids = array();
                $data_array_keys = array();
                $data_array_ordered_keys = array();
-               
+
                foreach ($data_array as $key => $data) {
                   $data_array_ids[] = $data['id'];
                   $data_array_keys[$data['id']] = $key;
                }
-               
+
                $ids_condition = implode ("','", $data_array_ids);
                $ids_condition = "'".$ids_condition."'";
                $sql = "select id from opportunities where id in ({$ids_condition}) order by date_entered desc";
@@ -251,7 +251,7 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
                   $data_array_ordered_keys[$row['id']] = $i;
                   $i += 1;                  
                }
-               
+
                $this->Generate_Document_Instance->datos[$main_key]['opportunities'] = array();  // empty array
                foreach ($data_array_ordered_keys as $id => $data) {
                   $this->Generate_Document_Instance->datos[$main_key]['opportunities'][] = $data_array[$data_array_keys[$id]];
@@ -261,26 +261,26 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
          }
       }
       */
-      
-      
-      
-      
+
+
+
+
       // Filter rows example for submodule data. In this example we will filter Contacts from Denver related to Opportunities ('primary_address_city' field)
       // To filter rows in MainModule, use ShowRow event (easier to use)
-      
+
       /*
       if ($this->inMainModule() && !empty($this->Generate_Document_Instance->datos) && $this->Generate_Document_Instance->plantilla_id == '50bfbe8b-2eb8-bb03-b68d-5431d3858a7c') {
          foreach ($this->Generate_Document_Instance->datos as $main_key => $main_data) {
             if (isset($main_data['contacts']) && is_array($main_data['contacts']) && count($main_data['contacts']) > 1) {
                $data_array = $main_data['contacts'];
                $data_array_new = array();
-               
+
                foreach ($data_array as $key => $data) {
                   if ($data['primary_address_city'] == 'Denver') {
                      $data_array_new[] = $data;
                   }
                }
-               
+
                $this->Generate_Document_Instance->datos[$main_key]['contacts'] = $data_array_new;
                unset($data_array);
             }

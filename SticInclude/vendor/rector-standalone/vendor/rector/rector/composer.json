@@ -1,0 +1,29 @@
+{
+    "name": "rector/rector",
+    "description": "Instant Upgrade and Automated Refactoring of any PHP code",
+    "license": "MIT",
+    "keywords": ["dev", "refactoring", "automation", "migration"],
+    "bin": [
+        "bin/rector"
+    ],
+    "require": {
+        "php": "^7.2|^8.0",
+        "phpstan/phpstan": "^1.12.5"
+    },
+    "autoload": {
+        "files": [
+            "bootstrap.php"
+        ]
+    },
+    "conflict": {
+        "rector/rector-phpunit": "*",
+        "rector/rector-symfony": "*",
+        "rector/rector-doctrine": "*",
+        "rector/rector-downgrade-php": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "suggest": {
+        "ext-dom": "To manipulate phpunit.xml via the custom-rule command"
+    }
+}

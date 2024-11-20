@@ -25,10 +25,10 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('include/Dashlets/Dashlet.php');
 
 class SticNewsDashlet extends Dashlet { 
-    var $displayTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/display.tpl';
-    var $configureTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/configure.tpl';
-    var $defaultURL = 'https://sinergiacrm.org/develop/es/sinergiacrm-news/'; // En suiteCRM esto podría estar en sugar_config
-    var $url;
+    public $displayTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/display.tpl';
+    public $configureTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/configure.tpl';
+    public $defaultURL = 'https://sinergiacrm.org/develop/es/sinergiacrm-news/'; // En suiteCRM esto podría estar en sugar_config
+    public $url;
 
     function __construct($id, $options = null) {
         parent::__construct($id);
