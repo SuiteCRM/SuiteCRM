@@ -49,78 +49,78 @@ Estat: {QUOTE_STATUS}<br />
 Data de tancament esperada: {QUOTE_CLOSEDATE}<br /> 
 Descripció: {QUOTE_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest pressupost</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest pressupost</a>.</p>
 <!-- END: Quote -->
 
 <!-- BEGIN: Account_Subject -->
-<p>Compte SuiteCRM - {ACCOUNT_NAME}</p>
+<p>Compte de SuiteCRM - {ACCOUNT_NAME}</p>
 <!-- END: Account_Subject -->
 <!-- BEGIN: Account -->
-<p><b>{ASSIGNER}</b> ha assignat un pressupost a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un compte a <b>{ASSIGNED_USER}</b>.</p>
 <p>
 Nom: {ACCOUNT_NAME}<br />
 Tipus: {ACCOUNT_TYPE}<br />
 Descripció: {ACCOUNT_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest Compte</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest compte</a>.</p>
 <!-- END: Account -->
 
 <!-- BEGIN: Case_Subject -->
-<p>Cas SuiteCRM - {CASE_SUBJECT}</p>
+<p>Cas de SuiteCRM - {CASE_SUBJECT}</p>
 <!-- END: Case_Subject -->
 <!-- BEGIN: Case -->
-<p><b>{ASSIGNER}</b> ha assignat un Cas a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un cas a <b>{ASSIGNED_USER}</b>.</p>
 <p>
 Assumpte: {CASE_SUBJECT}<br />
 Prioritat: {CASE_PRIORITY}<br />
 Estat: {CASE_STATUS}<br />
 Descripció: {CASE_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest Cas</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest cas</a>.</p>
 <!-- END: Case -->
 
 <!-- BEGIN: Task_Subject -->
-<p>Tasca SuiteCRM - {TASK_SUBJECT}</p>
+<p>Tasca de SuiteCRM - {TASK_SUBJECT}</p>
 <!-- END: Task_Subject -->
 <!-- BEGIN: Task -->
 <p><b>{ASSIGNER}</b> ha assignat una tasca a <b>{ASSIGNED_USER}</b>.</p>
 <p>
 Assumpte: {TASK_SUBJECT}<br />
 Prioritat: {TASK_PRIORITY}<br />
-Data finalització: {TASK_DUEDATE}<br />
+Data de finalització: {TASK_DUEDATE}<br />
 Estat: {TASK_STATUS}<br />
 Descripció: {TASK_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquesta tasca</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta tasca</a>.</p>
 <!-- END: Task -->
 
 <!-- BEGIN: Meeting_Subject -->
-<p>Reunió SuiteCRM - {MEETING_SUBJECT}</p>
+<p>Reunió de SuiteCRM - {MEETING_SUBJECT}</p>
 <!-- END: Meeting_Subject -->
 <!-- BEGIN: Meeting -->
 <p>To: {MEETING_TO}</p>
-<p><b>{ASSIGNER}</b> t'ha convidat a una Visita</p>
+<p><b>{ASSIGNER}</b> us ha convidat a una reunió.</p>
 <p>
 Assumpte: {MEETING_SUBJECT}<br />
 Lloc: {MEETING_LOCATION}<br />
 Data d'inici: {MEETING_STARTDATE}<br />
-Data finalització: {MEETING_ENDDATE}
+Data de finalització: {MEETING_ENDDATE}
 </p>
 <p>
 <!-- BEGIN: Meeting_External_API -->
-URL Reunió: {MEETING_URL}
+URL de la reunió: {MEETING_URL}
 </p>
 <!-- END: Meeting_External_API -->
 <p>Descripció: {MEETING_DESCRIPTION}<br />
 </p>
 <p>---</p>
-<p><a href={ACCEPT_URL}&accept_status=accept>Acceptar aquesta visita</a>.</p>
-<p><a href={ACCEPT_URL}&accept_status=tentative>Possiblement accepteu aquesta reunió</a>.</p>
-<p><a href={ACCEPT_URL}&accept_status=decline>Rebutgeu aquesta reunió</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=accept>Hi assistiré</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=tentative>Potser hi assistiré</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=decline>No hi assistiré</a>.</p>
 <!-- END: Meeting -->
 
 <!-- BEGIN: MeetingSpecial_Subject -->
-<p>Reunió SuiteCRM - {MEETING_SUBJECT}</p>
+<p>Reunió de SuiteCRM - {MEETING_SUBJECT}</p>
 <!-- END: MeetingSpecial_Subject -->
 <!-- BEGIN: MeetingSpecial -->
 <p><b>{ASSIGNER}</b> ha assignat una reunió a <b>{ASSIGNED_USER}</b>.</p>
@@ -132,7 +132,7 @@ Data d'inici: {MEETING_STARTDATE}<br />
 Data de finalització: {MEETING_ENDDATE}<br />
 Descripció: {MEETING_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquesta reunió</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta reunió</a>.</p>
 <!-- END: MeetingSpecial -->
 
 <!-- BEGIN: MeetingReminder_Subject -->
@@ -143,65 +143,65 @@ Descripció: {MEETING_DESCRIPTION}
     Títol: {MEETING_SUBJECT}<br />
     Hora d'inici: {MEETING_STARTDATE}<br />
     Lloc: {MEETING_LOCATION}<br />
-    Creat per: {MEETING_CREATED_BY}
+    Creada per: {MEETING_CREATED_BY}
 </p>
 <!-- END: MeetingReminder -->
 
 <!-- BEGIN: Email_Subject -->
-<p>Correu electrònic SuiteCRM - {EMAIL_SUBJECT}</p>
+<p>Correu electrònic de SuiteCRM - {EMAIL_SUBJECT}</p>
 <!-- END: Email_Subject -->
 <!-- BEGIN: Email -->
-<p><b>{ASSIGNER}</b> ha assignat un Email a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un correu electrònic a <b>{ASSIGNED_USER}</b>.</p>
 <p>
 Assumpte: {EMAIL_SUBJECT}<br />
 Data d'enviament: {EMAIL_DATESENT}
 </p>
-<p>Pots <a href={URL}>revisar aquest Email</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest correu electrònic</a>.</p>
 <!-- END: Email -->
 
 <!-- BEGIN: Contact_Subject -->
-<p>Contacte SuiteCRM - {CONTACT_NAME}</p>
+<p>Contacte de SuiteCRM - {CONTACT_NAME}</p>
 <!-- END: Contact_Subject -->
 <!-- BEGIN: Contact -->
-<p><b>{ASSIGNER}</b> ha assignat un Contacte a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un contacte a <b>{ASSIGNED_USER}</b>.</p>
 <p>
-Nom contacte: {CONTACT_NAME}<br />
+Nom del contacte: {CONTACT_NAME}<br />
 Descripció: {CONTACT_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest Contacte</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest contacte</a>.</p>
 <!-- END: Contact -->
 
 <!-- BEGIN: Lead_Subject -->
-<p>Client potencial SuiteCRM - {LEAD_NAME}</p>
+<p>Client potencial de SuiteCRM - {LEAD_NAME}</p>
 <!-- END: Lead_Subject -->
 <!-- BEGIN: Lead -->
-<p><b>{ASSIGNER}</b> ha assignat un Client Potencial a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un client potencial a <b>{ASSIGNED_USER}</b>.</p>
 <p>
-Nom Client Potencial: {LEAD_NAME}<br />
-Origen Client Potencial: {LEAD_SOURCE}<br />
+Nom del client potencial: {LEAD_NAME}<br />
+Origen del client potencial: {LEAD_SOURCE}<br />
 Estat: {LEAD_STATUS}<br />
 Descripció: {LEAD_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest Client Potencial</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest client potencial</a>.</p>
 <!-- END: Lead -->
 
 <!-- BEGIN: Opportunity_Subject -->
 <p>Oportunitat de SuiteCRM - {OPPORTUNITY_NAME}</p>
 <!-- END: Opportunity_Subject -->
 <!-- BEGIN: Opportunity -->
-<p><b>{ASSIGNER}</b> ha assignat una Oportunitat a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat una oportunitat a <b>{ASSIGNED_USER}</b>.</p>
 <p>
-Nom Oportunitat: {OPPORTUNITY_NAME}<br />
+Nom de l'oportunitat: {OPPORTUNITY_NAME}<br />
 Import: {OPPORTUNITY_AMOUNT}<br />
-Data tancament esperada: {OPPORTUNITY_CLOSEDATE}<br />
+Data de tancament esperada: {OPPORTUNITY_CLOSEDATE}<br />
 Etapa de vendes: {OPPORTUNITY_STAGE}<br />
 Descripció: {OPPORTUNITY_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquesta Oportunitat</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta oportunitat</a>.</p>
 <!-- END: Opportunity -->
 
 <!-- BEGIN: Bug_Subject -->
-<p>SuiteCRM Bug - {BUG_SUBJECT}</p>
+<p>Incidència de SuiteCRM - {BUG_SUBJECT}</p>
 <!-- END: Bug_Subject -->
 <!-- BEGIN: Bug -->
 <p><b>{ASSIGNER}</b> ha assignat una incidència a <b>{ASSIGNED_USER}</b>.</p>
@@ -216,23 +216,23 @@ Versió: {BUG_RELEASE}<br />
 Descripció: {BUG_DESCRIPTION}<br />
 Registre de treball: {BUG_WORK_LOG}
 </p>
-<p>Pots <a href={URL}>revisar aquesta incidència</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta incidència</a>.</p>
 <!-- END: Bug -->
 
 <!-- BEGIN: Default_Subject -->
-<p>SuiteCRM - Assigned {OBJECT}</p>
+<p>Registre de SuiteCRM - Assigned {OBJECT}</p>
 <!-- END: Default_Subject -->
 <!-- BEGIN: Default -->
 <p><b>{ASSIGNER}</b> ha assignat un {OBJECT} a <b>{ASSIGNED_USER}</b>.</p>
-<p>Pots <a href={URL}>revisar aquest {OBJECT}</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest {OBJECT}</a>.</p>
 <!-- END: Default -->
 
 <!-- BEGIN: Call_Subject -->
-<p>SuiteCRM Trucada - {CALL_SUBJECT}</p>
+<p>Trucada de SuiteCRM - {CALL_SUBJECT}</p>
 <!-- END: Call_Subject -->
 <!-- BEGIN: Call -->
 <p>Per a: {CALL_TO}</p>
-<p><b>{ASSIGNER}</b> te ha convidat a una trucada</p>
+<p><b>{ASSIGNER}</b> us ha convidat a una trucada</p>
 <p>
 Assumpte: {CALL_SUBJECT}<br />
 Estat: {CALL_STATUS}<br />
@@ -241,13 +241,13 @@ Duració: {CALL_HOURS}h, {CALL_MINUTES}m<br />
 Descripció: {CALL_DESCRIPTION}<br />
 </p>
 <p>---</p>
-<p><a href={ACCEPT_URL}&accept_status=accept>Acceptar aquesta trucada</a>.</p>
-<p><a href={ACCEPT_URL}&accept_status=tentative>Possiblement accepteu aquesta trucada</a>.</p>
-<p><a href={ACCEPT_URL}&accept_status=decline>Rebutgeu aquesta trucada</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=accept>Hi participaré</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=tentative>Potser hi participaré</a>.</p>
+<p><a href={ACCEPT_URL}&accept_status=decline>No hi participaré</a>.</p>
 <!-- END: Call -->
 
 <!-- BEGIN: CallSpecial_Subject -->
-<p>SuiteCRM Trucada - {CALL_SUBJECT}</p>
+<p>Trucada de SuiteCRM - {CALL_SUBJECT}</p>
 <!-- END: CallSpecial_Subject -->
 <!-- BEGIN: CallSpecial -->
 <p><b>{ASSIGNER}</b> ha assignat una trucada a <b>{ASSIGNED_USER}</b>.</p>
@@ -258,7 +258,7 @@ Data d'inici: {CALL_STARTDATE}<br />
 Duració: {CALL_HOURS}h, {CALL_MINUTES}m<br />
 Descripció: {CALL_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquesta trucada</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta trucada</a>.</p>
 <!-- END: CallSpecial -->
 
 <!-- BEGIN: CallReminder_Subject -->
@@ -267,40 +267,28 @@ Descripció: {CALL_DESCRIPTION}
 <!-- BEGIN: CallReminder -->
 <p>
     Títol: {CALL_SUBJECT}<br />
-    Data inici: {CALL_STARTDATE}<br />
-    Creat per: {CALL_CREATED_BY}
+    Data d'inici: {CALL_STARTDATE}<br />
+    Creada per: {CALL_CREATED_BY}
 </p>
 <!-- END: CallReminder -->
 
 <!-- BEGIN: Campaign_Subject -->
-<p>Campanya SuiteCRM - {CAMPAIGN_NAME}</p>
+<p>Campanya de SuiteCRM - {CAMPAIGN_NAME}</p>
 <!-- END: Campaign_Subject -->
 <!-- BEGIN: Campaign -->
-<p><b>{ASSIGNER}</b> ha assignat una Campanya a <b>{ASSIGNED_USER}</b>.</p>
+<p><b>{ASSIGNER}</b> ha assignat una campanya a <b>{ASSIGNED_USER}</b>.</p>
 <p>
 Assumpte: {CAMPAIGN_NAME}<br />
 Import: {CAMPAIGN_AMOUNT}<br />
-Data final: {CAMPAIGN_CLOSEDATE}<br />
+Data de finalització: {CAMPAIGN_CLOSEDATE}<br />
 Estat: {CAMPAIGN_STATUS}<br />
 Descripció: {CAMPAIGN_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquesta campanya</a>.</p>
+<p>Podeu <a href={URL}>revisar aquesta campanya</a>.</p>
 <!-- END: Campaign -->
 
-<!-- BEGIN: Quota_Subject -->
-<p>SuiteCRM Pressupostos - El teu pressupost per {QUOTA_TIMEPERIOD}</p>
-<!-- END: Quota_Subject -->
-<!-- BEGIN: Quota -->
-<p><b>{ASSIGNER}</b> ha assignat un pressupost a <b>{ASSIGNED_USER}</b>.</p>
-<p>
-Import: {QUOTA_AMOUNT}<br />
-Període de temps: {QUOTA_TIMEPERIOD}
-</p>
-<p>Pots <a href={QUOTA_URL}>revisar aquesta quota d'assignació</a>.</p>
-<!-- END: Quota -->
-
 <!-- BEGIN: KBDocument_Subject -->
-<p>SuiteCRM Document - {KBDOCUMENT_NAME}</p>
+<p>Document de la base de coneixement de SuiteCRM Document - {KBDOCUMENT_NAME}</p>
 <!-- END: KBDocument_Subject -->
 <!-- BEGIN: KBDocument -->
 {NOTIFICATION_MESSAGE}
@@ -312,21 +300,21 @@ Creat per: {KBDOCUMENT_CREATED_BY}<br />
 Estat: {KBDOCUMENT_STATUS}<br />
 Descripció: {KBDOCUMENT_DESCRIPTION}
 </p>
-<p>Pots <a href={URL}>revisar aquest Document</a>.</p>
+<p>Podeu <a href={URL}>revisar aquest document de la base de coneixement</a>.</p>
 <!-- END: KBDocument -->
 
 <!-- BEGIN: Contract_Subject -->
 <p>Contracte de SuiteCRM - {CONTRACT_NAME}</p>
 <!-- END: Contract_Subject -->
 <!-- BEGIN: Contract-->
-<p><b>{ASSIGNER}</b> ha assignat un Contracte a <b>{ASSIGNED_USER}</b>.</p>
-<p>Pots <a href={URL}>revisar aquest Contracte</a>.</p>
+<p><b>{ASSIGNER}</b> ha assignat un contracte a <b>{ASSIGNED_USER}</b>.</p>
+<p>Podeu <a href={URL}>revisar aquest contracte</a>.</p>
 <!-- END:Contract-->
 
 <!-- BEGIN: ContractSpecial_Subject -->
 <p>Contracte de SuiteCRM - {CONTRACT_NAME}</p>
 <!-- END: ContractSpecial_Subject -->
 <!-- BEGIN: ContractSpecial -->
-<p>El teu contracte: {CONTRACT_NAME} finalitzarà el {CONTRACT_END_DATE}.</p>
-<p>Pots <a href={URL}>revisar aquest Contracte</a>.</p>
+<p>El contracte {CONTRACT_NAME} finalitzarà el {CONTRACT_END_DATE}.</p>
+<p>Podeu <a href={URL}>revisar aquest contracte</a>.</p>
 <!-- END:ContractSpecial-->
