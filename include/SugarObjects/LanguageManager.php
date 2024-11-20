@@ -243,9 +243,13 @@ class LanguageManager
 
         //great! now that we have loaded all of our vardefs.
         //let's go save them to the cache file.
-        if (!empty($loaded_mod_strings)) {
-            LanguageManager::saveCache($module, $lang, $loaded_mod_strings);
-        }
+        // STIC Custom 20240926 EPS - Unnecessary Language regeneration
+        // We save the cache contents although it is empty, otherwise language will be regenerated on every login if the module is active
+        // if (!empty($loaded_mod_strings)) {
+        //     LanguageManager::saveCache($module, $lang, $loaded_mod_strings);
+        // }
+        LanguageManager::saveCache($module, $lang, $loaded_mod_strings);
+        // END STIC Custom
     }
 
     public static function loadModuleLanguage($module, $lang, $refresh=false)

@@ -98,7 +98,7 @@ class WebFormDataBO
         }
 
         $this->app_strings = return_application_language($this->lang); // Load application tags
-        $this->mod_strings[$this->defaultModule] = return_module_language($this->lang, $this->defaultModule, true); // Load the module labels by default
+        $this->mod_strings[$this->defaultModule] = return_module_language($this->lang, $this->defaultModule, false); // Load the module labels by default
     }
 
     /**
