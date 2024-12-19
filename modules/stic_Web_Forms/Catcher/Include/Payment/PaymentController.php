@@ -485,7 +485,7 @@ class PaymentController extends WebFormDataController {
         ];
 
         foreach ($requiredConsts as $key) {
-            if (empty($settings[$key])) {
+            if (empty($settings[$key]) && $settings[$key] != 0 ) { 
                 $GLOBALS['log']->fatal('Line ' . __LINE__ . ': ' . __METHOD__ . ": The setting {$key} is missing or empty.");
                 $this->returnCode('UNEXPECTED_ERROR');
                 return $this->feedBackError($this);
