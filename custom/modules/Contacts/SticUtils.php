@@ -83,7 +83,7 @@ class ContactsUtils
     public static function generateCallFromReturnMailReason($contactBean)
     {
         $reasons = array('wrong_address', 'unknown', 'rejected');
-        if (in_array($contactBean->stic_postal_mail_return_reason_c, $reasons)) {
+        if (!empty($contactBean->stic_postal_mail_return_reason_c) && in_array($contactBean->stic_postal_mail_return_reason_c, $reasons)) {
             global $current_user, $timedate, $app_strings;
 
             // Create the new call

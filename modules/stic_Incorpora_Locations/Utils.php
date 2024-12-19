@@ -41,12 +41,22 @@ class stic_Incorpora_LocationsUtils {
         $inc_state = 'inc_state' .$sufix;
         $stic_incorpora_locations_id = 'stic_incorpora_locations_id' .$sufix;
 
-        $location_bean = BeanFactory::getBean('stic_Incorpora_Locations', $recordBean->$stic_incorpora_locations_id);
-        $recordBean->$inc_town_code = $location_bean->town_code;
-        $recordBean->$inc_town = $location_bean->town;
-        $recordBean->$inc_municipality_code = $location_bean->municipality_code;
-        $recordBean->$inc_municipality = $location_bean->municipality;
-        $recordBean->$inc_state_code = $location_bean->state_code;
-        $recordBean->$inc_state = $location_bean->state;
+        if(!empty($recordBean->$stic_incorpora_locations_id)) {
+            $location_bean = BeanFactory::getBean('stic_Incorpora_Locations', $recordBean->$stic_incorpora_locations_id);
+            $recordBean->$inc_town_code = $location_bean->town_code;
+            $recordBean->$inc_town = $location_bean->town;
+            $recordBean->$inc_municipality_code = $location_bean->municipality_code;
+            $recordBean->$inc_municipality = $location_bean->municipality;
+            $recordBean->$inc_state_code = $location_bean->state_code;
+            $recordBean->$inc_state = $location_bean->state;
+        }
+        else {
+            $recordBean->$inc_town_code = '';
+            $recordBean->$inc_town = '';
+            $recordBean->$inc_municipality_code = '';
+            $recordBean->$inc_municipality = '';
+            $recordBean->$inc_state_code = '';
+            $recordBean->$inc_state = '';
+        }
     }
 }
