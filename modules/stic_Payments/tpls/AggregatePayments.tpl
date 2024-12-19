@@ -77,8 +77,10 @@
                     {$ITEM.assigned_user}
                 </td>
                 <td style="border-bottom: 0.5px inset silver;">
-                    <input type="button" id="{$ITEM.attendance_id}" name="{$ITEM.assigned_user_id}" onclick="sendEmail(this)"
-                        value="{$MOD.LBL_AGGREGATED_NOTIFICATION_BUTTON_SEND}">
+                    {if !empty($ITEM.assigned_user_id) }
+                        <input type="button" id="{$ITEM.attendance_id}" name="{$ITEM.assigned_user_id}" onclick="sendEmail(this)"
+                            value="{$MOD.LBL_AGGREGATED_NOTIFICATION_BUTTON_SEND}">
+                    {/if}
                 </td>
             </tr>
         {/foreach}
