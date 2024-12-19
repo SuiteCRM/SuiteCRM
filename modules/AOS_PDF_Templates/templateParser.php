@@ -93,9 +93,16 @@ class templateParser
                     $repl_arr[$key . "_" . $fieldName] = (string)$focus->$fieldName;
                 } elseif ($field_def['type'] == 'bool') {
                     if ($focus->{$fieldName} == "1") {
-                        $repl_arr[$key . "_" . $fieldName] = "true";
+                        // STIC-Custom 20241125 ART - Translated checkbox values in PDF Templates
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/486
+                        // $repl_arr[$key . "_" . $fieldName] = "true";
+                        $repl_arr[$key . "_" . $fieldName] = translate('LBL_CHECKBOX_TRUE', 'AOS_PDF_Templates');
                     } else {
-                        $repl_arr[$key . "_" . $fieldName] = "false";
+                        // STIC-Custom 20241125 ART - Translated checkbox values in PDF Templates - 
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/486
+                        // $repl_arr[$key . "_" . $fieldName] = "false";
+                        $repl_arr[$key . "_" . $fieldName] = translate('LBL_CHECKBOX_FALSE', 'AOS_PDF_Templates');
+                        // END STIC-Custom
                     }
                 } elseif ($field_def['type'] == 'image') {
                     $secureLink = $sugar_config['site_url'] . '/' . "public/" . $focus->id . '_' . $fieldName;
