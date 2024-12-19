@@ -39,10 +39,10 @@ function identificationNumberValidation($module, $rowValue, $row)
             // since in $row we have the label and not the key
             global $app_list_strings;
             $identification_types_list = $app_list_strings['stic_contacts_identification_types_list'];
-            $existLabel = false;
+            // $existLabel = false;
             foreach ($identification_types_list as $key => $value) {
                 if (!empty($value) && in_array($value, $row)){
-                    $existLabel = true;   
+                    // $existLabel = true;   
                     // If the stic_identification_type_c field is mapped and its value is NIF or NIE
                     if ($value == $identification_types_list['nif'] || $value == $identification_types_list['nie']) {
                         return SticUtils::isValidNIForNIE($rowValue) ? $rowValue : 'LBL_ERROR_INVALID_IDENTIFICATION_NUMBER';
@@ -51,10 +51,14 @@ function identificationNumberValidation($module, $rowValue, $row)
                     } 
                 }
             }
+
+            // This validation is cancelled because the CRM has a LH that calculates the Identification Type in case this field is not informed and the Identification Number field is.
+            // More information at:
             // If there is no label, it means that the Identification type field has not been mapped
-            if (!$existLabel) {
-                return 'LBL_ERROR_INVALID_IDENTIFICATION_NUMBER_MISSING_TYPE_FIELD';
-            }
+            // if (!$existLabel) {
+            //     return 'LBL_ERROR_INVALID_IDENTIFICATION_NUMBER_MISSING_TYPE_FIELD';
+            // }
+            return true;
             break;
 
         default:
