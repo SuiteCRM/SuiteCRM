@@ -2052,23 +2052,24 @@ $app_strings = array(
     'LBL_DESCRIPTION' => 'Descripció',
 
     'LBL_YESTERDAY' => 'ahir',
+    'LBL_NOW' => 'ara',
     'LBL_TODAY' => 'avui',
     'LBL_TOMORROW' => 'demà',
     'LBL_NEXT_WEEK' => 'la setmana vinent',
     'LBL_NEXT_MONDAY' => 'el dilluns vinent',
     'LBL_NEXT_FRIDAY' => 'el divendres vinent',
-    'LBL_TWO_WEEKS' => 'dues setmanes',
+    'LBL_TWO_WEEKS' => "d'aquí a dues setmanes",
     'LBL_NEXT_MONTH' => 'el mes vinent',
     'LBL_FIRST_DAY_OF_NEXT_MONTH' => 'el primer dia del mes vinent',
-    'LBL_THREE_MONTHS' => 'tres mesos',
-    'LBL_SIXMONTHS' => 'sis mesos',
-    'LBL_NEXT_YEAR' => 'l\'any següent',
+    'LBL_THREE_MONTHS' => "d'aquí a tres mesos",
+    'LBL_SIXMONTHS' => "d'aquí a sis mesos",
+    'LBL_NEXT_YEAR' => "l'any vinent",
 
     //Datetimecombo fields
     'LBL_HOURS' => 'Hores',
     'LBL_MINUTES' => 'Minuts',
     'LBL_MERIDIEM' => 'Meridiem',
-    'LBL_DATE' => 'Fecha',
+    'LBL_DATE' => 'Data',
     'LBL_DASHLET_CONFIGURE_AUTOREFRESH' => 'Auto-Refrescar',
 
     'LBL_DURATION_DAY' => 'dia',
@@ -2079,9 +2080,9 @@ $app_strings = array(
     'LBL_DURATION_MINUTES' => 'Minuts de durada',
 
     //Calendar widget labels
-    'LBL_CHOOSE_MONTH' => 'Triï mes',
-    'LBL_ENTER_YEAR' => 'Triï any',
-    'LBL_ENTER_VALID_YEAR' => 'Si us plau, entri un any vàlid',
+    'LBL_CHOOSE_MONTH' => 'Trieu el mes',
+    'LBL_ENTER_YEAR' => "Trieu l'any",
+    'LBL_ENTER_VALID_YEAR' => 'Indiqueu un any vàlid',
 
     //File write error label
     'ERR_FILE_WRITE' => 'Error: No es pot escriure el fitxer {0}. Si us plau, comprovi els permisos del sistema i del servidor web.',

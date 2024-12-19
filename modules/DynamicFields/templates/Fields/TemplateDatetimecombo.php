@@ -48,26 +48,54 @@ class TemplateDatetimecombo extends TemplateRange
 {
     public $type = 'datetimecombo';
     public $len = '';
-    public $dateStrings = array(
-        '-none-' => '',
-        // STIC-Custom 20221229 AAM - Adding "now" option to default datetime values
-        // STIC#949
-        // 'today'=>'now',
-        'now' => 'now',
-        'today'=> 'today',
-        // END STIC-Custom
-        'yesterday'=> '-1 day',
-        'tomorrow'=>'+1 day',
-        'next week'=> '+1 week',
-        'next monday'=>'next monday',
-        'next friday'=>'next friday',
-        'two weeks'=> '+2 weeks',
-        'next month'=> '+1 month',
-        'first day of next month'=> 'first of next month', // must handle this non-GNU date string in SugarBean->populateDefaultValues; if we don't this will evaluate to 1969...
-        'three months'=> '+3 months',  //kbrill Bug #17023
-        'six months'=> '+6 months',
-        'next year'=> '+1 year',
-    );
+    // STIC-Custom 20241126 ART - Translated Default Datetime Values
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/488
+    // public $dateStrings = array(
+    //     '-none-' => '',
+    //     // STIC-Custom 20221229 AAM - Adding "now" option to default datetime values
+    //     // STIC#949
+    //     // 'today'=>'now',
+    //     'now' => 'now',
+    //     'today'=> 'today',
+    //     // END STIC-Custom
+    //     'yesterday'=> '-1 day',
+    //     'tomorrow'=>'+1 day',
+    //     'next week'=> '+1 week',
+    //     'next monday'=>'next monday',
+    //     'next friday'=>'next friday',
+    //     'two weeks'=> '+2 weeks',
+    //     'next month'=> '+1 month',
+    //     'first day of next month'=> 'first of next month', // must handle this non-GNU date string in SugarBean->populateDefaultValues; if we don't this will evaluate to 1969...
+    //     'three months'=> '+3 months',  //kbrill Bug #17023
+    //     'six months'=> '+6 months',
+    //     'next year'=> '+1 year',
+    // );
+    public $dateStrings;
+
+    public function __construct()
+    {
+        parent::__construct();
+        global $app_strings;
+        $this->dateStrings = array(
+            $app_strings['LBL_NONE']=>'',
+            $app_strings['LBL_NOW'] => 'now',
+            $app_strings['LBL_YESTERDAY']=> '-1 day',
+            $app_strings['LBL_TODAY']=>'today',
+            $app_strings['LBL_TOMORROW']=>'+1 day',
+            $app_strings['LBL_NEXT_WEEK']=> '+1 week',
+            $app_strings['LBL_NEXT_MONDAY']=>'next monday',
+            $app_strings['LBL_NEXT_FRIDAY']=>'next friday',
+            $app_strings['LBL_TWO_WEEKS']=> '+2 weeks',
+            $app_strings['LBL_NEXT_MONTH']=> '+1 month',
+            // Changed the value because “first of next moth” was generating an error
+            // https://github.com/SinergiaTIC/SinergiaCRM/issues/99
+            $app_strings['LBL_FIRST_DAY_OF_NEXT_MONTH']=> 'first day of next month', // must handle this non-GNU date string in SugarBean->populateDefaultValues; if we don't this will evaluate to 1969...
+            $app_strings['LBL_THREE_MONTHS']=> '+3 months',  //kbrill Bug #17023
+            $app_strings['LBL_SIXMONTHS']=> '+6 months',
+            $app_strings['LBL_NEXT_YEAR']=> '+1 year',
+        );
+    }
+    // END STIC-Custom
     
     public $hoursStrings = array(
         '' => '',
