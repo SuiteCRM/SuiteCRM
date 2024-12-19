@@ -78,7 +78,7 @@ if (is_resource($process)) {
     // Read error output
     $stderr = stream_get_contents($pipes[2]);
     $stderr = str_replace("\\n", "\n", $stderr);
-    $output->setErrorResults(htmlspecialchars($stderr));
+    $output->addErrorResults(htmlspecialchars($stderr));
     fclose($pipes[2]);
 
     // Close process
@@ -184,6 +184,10 @@ final class RectorCheckResultHelper {
                 $textArray[$i] == "=====================") {
                 continue;
             }
+            if (strpos($textArray[$i], " [ERROR] ") === 0) {
+                $this->addErrorResults($textArray[$i]);
+                continue;
+            }
             if ($textArray[$i] == "    ---------- begin diff ----------") {
                 $fileChanges[count($fileChanges)-1] = "<hr /> <strong>" . $fileChanges[count($fileChanges)-1] . "</strong>";
                 $fileChanges[] = $textArray[$i];
@@ -234,9 +238,9 @@ final class RectorCheckResultHelper {
         $this->isAllOk = (strpos($text, "[OK] Rector is done!") !== false);
     }
 
-    public function setErrorResults($text)
+    public function addErrorResults($text)
     {
-        $this->errorResults = explode("\n", $text);
+        $this->errorResults = array_merge($this->errorResults, explode("\n", $text));
     }
 
     private function getIsAllOk($resultCode) {
@@ -281,7 +285,7 @@ final class RectorCheckResultHelper {
             }
 
             // Error Results
-            if (count($this->results) > 0) {
+            if (count($this->errorResults) > 0) {
                 $content .= $this->getTitle("Rector Errors", true);
                 $content .= implode("<br />\n", $this->errorResults);
                 $content .= "<br />\n";
