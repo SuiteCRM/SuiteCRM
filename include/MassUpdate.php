@@ -219,7 +219,10 @@ eoq;
                     // STIC-Custom 20230519 PCS - Enabling massupdate for dynamicenum
                     // STIC#1109
                     // || ($this->sugarbean->field_defs[$post]['type'] == 'enum' && $value == '__SugarMassUpdateClearField__') // Set to '' if it's an explicit clear
-                    || (($this->sugarbean->field_defs[$post]['type'] == 'enum' || $this->sugarbean->field_defs[$post]['type'] == 'dynamicenum') && $value == '__SugarMassUpdateClearField__') // Set to '' if it's an explicit clear
+                    // Stic-Custom EPS 20241005 - Mass update on multienum was not cleaning the field
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/472
+                    // || (($this->sugarbean->field_defs[$post]['type'] == 'enum' || $this->sugarbean->field_defs[$post]['type'] == 'dynamicenum') && $value == '__SugarMassUpdateClearField__') // Set to '' if it's an explicit clear
+                    || ((in_array($this->sugarbean->field_defs[$post]['type'], array('enum', 'dynamicenum', 'multienum'))) && $value == '__SugarMassUpdateClearField__') // Set to '' if it's an explicit clear
                     //END STIC-Custom
                 ) {
                     $_POST[$post] = '';
@@ -237,6 +240,12 @@ eoq;
                     $_POST[$post] = $timedate->to_db($_POST[$post]);
                 }
             }
+            // Stic-Custom EPS 20241005 - Mass update on multienum was not cleaning the field
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/472
+            else if(is_array($value) && count($value) === 1 && $this->sugarbean->field_defs[$post]['type'] == 'multienum' && $value[0] == '__SugarMassUpdateClearField__') {
+                $_POST[$post] = '';
+            }
+            // END STic-Custom
         }
 
         //We need to disable_date_format so that date values for the beans remain in database format
