@@ -910,6 +910,28 @@ EOJS;
       unset($mass);
    }
    
+   // STIC-Custom EPS 20241210 Generate order by from current query
+   // https://github.com/SinergiaTIC/SinergiaCRM/pull/515
+   function generateOrderBy($queryBin64) {
+      $queryData = base64_decode($queryBin64);
+      $query = json_decode(html_entity_decode($queryData), true);
+
+      // The name of the request field that contains the order by field
+      $var_name = $this->sugarbean->module_dir.'2_'.strtoupper($this->sugarbean->object_name);
+      // $order_by_name = $this->sugarbean->module_dir.'2_'.strtoupper($this->sugarbean->object_name).'_ORDER_BY' ;
+      $order_by_name = $var_name.'_ORDER_BY' ;
+      if (empty($query[$order_by_name])) {
+         // If there is no order by field, then the default order must be applied. We retrieve it from user preferences
+         $userPreferenceOrder = $GLOBALS['current_user']->getPreference('listviewOrder', $var_name);
+         return $userPreferenceOrder['orderBy'].' '.$userPreferenceOrder['sortOrder'];
+      }
+
+      // the order of the field is contained on lvso field.
+      return $query[$order_by_name] . ' ' . $query['lvso'];
+   }
+   // END STIC-Custom
+
+
    ///////////////////////////////////////////////////////////////////////////////////////////////////      
    function handleMassGenerateDocument(){
       
@@ -922,6 +944,10 @@ EOJS;
       }
       elseif(isset($_REQUEST['mode']) && $_REQUEST['mode'] == 'entire') {
          $this->generateSearchWhere($_REQUEST['moduloplantilladocumento'], $_REQUEST['current_query_by_page']);
+         // STIC-Custom EPS 20241210 Generate order_by from current_query
+         // https://github.com/SinergiaTIC/SinergiaCRM/pull/515
+         $order_by = $this->generateOrderBy($_REQUEST['current_query_by_page']);
+         // END STIC-Custom
          
          if (version_compare($sugar_version, '6.4.5', '<')) {
             if(empty($order_by)) $order_by = '';
