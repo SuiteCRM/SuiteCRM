@@ -826,7 +826,10 @@ class Importer
      */
     public static function handleImportErrors($errno, $errstr, $errfile, $errline)
     {
-        $GLOBALS['log']->fatal("Caught error: $errstr");
+        // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+        // $GLOBALS['log']->fatal("Caught error: $errstr");
+        // END STIC-Custom
 
         if (!defined('E_DEPRECATED')) {
             define('E_DEPRECATED', '8192');
@@ -839,25 +842,45 @@ class Importer
         switch ($errno) {
             case E_USER_ERROR:
                 $message = "ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+                $GLOBALS['log']->fatal("Caught error: $errstr $errfile $errline");
+                // END STIC-Custom
                 $isFatal = true;
                 break;
             case E_USER_WARNING:
             case E_WARNING:
                 $message = "WARNING: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+                $GLOBALS['log']->warn("Caught error: $errstr $errfile $errline");
+                // END STIC-Custom
                 break;
             case E_USER_NOTICE:
             case E_NOTICE:
                 $message = "NOTICE: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+                $GLOBALS['log']->error("Caught error: $errstr $errfile $errline");
+                // END STIC-Custom
                 break;
             case E_STRICT:
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 // don't worry about these
                 // $message = "STRICT ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+                $GLOBALS['log']->warn("Caught error: $errstr $errfile $errline");
+                // END STIC-Custom
                 $message = "";
                 break;
             default:
                 $message = "Unknown error type: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                // STIC-Custom EPS 20241217 Instead of writing always fatal errors, we use the corresponding log
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/518
+                $GLOBALS['log']->fatal("Caught error: $errstr $errfile $errline");
+                // END STIC-Custom
                 break;
         }
 

@@ -55,6 +55,7 @@ class stic_AttendancesUtils
         }
 
         // Add session filter if needed
+        $sessionIdWhere = '';
         if (!empty($sessionId)) {
             $sessionIdWhere = " AND s.id='$sessionId' ";
         }

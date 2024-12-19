@@ -247,12 +247,13 @@ class stic_RegistrationsUtils {
         }
         $endDay = date('Y-m-d');
 
-        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  ' . $startDay . '|' . $today);
+        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  ' . $startDay . '|' . $endDay);
         $start = new DateTime($startDay);
         $end = new DateTime($endDay);
 
         $numDays = $start->diff($end)->days;
         $dayToCreate = $start->format('Y-m-d');
+        $a = 0;
         while ($a <= $numDays) {
             stic_AttendancesUtils::createAttendances($dayToCreate, $registrationBean->id, null);
             $dayToCreate = $start->add(new DateInterval('P1D'))->format('Y-m-d');

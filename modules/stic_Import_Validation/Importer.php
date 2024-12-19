@@ -978,8 +978,6 @@ class Importer
      */
     public static function handleImportErrors($errno, $errstr, $errfile, $errline)
     {
-        $GLOBALS['log']->fatal("Caught error: $errstr");
-
         if (!defined('E_DEPRECATED')) {
             define('E_DEPRECATED', '8192');
         }
@@ -991,25 +989,30 @@ class Importer
         switch ($errno) {
             case E_USER_ERROR:
                 $message = "ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $GLOBALS['log']->fatal("Caught error: $errstr $errfile $errline");
                 $isFatal = true;
                 break;
             case E_USER_WARNING:
             case E_WARNING:
                 $message = "WARNING: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $GLOBALS['log']->warn("Caught error: $errstr $errfile $errline");
                 break;
             case E_USER_NOTICE:
             case E_NOTICE:
                 $message = "NOTICE: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $GLOBALS['log']->error("Caught error: $errstr $errfile $errline");
                 break;
             case E_STRICT:
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 // don't worry about these
                 // $message = "STRICT ERROR: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $GLOBALS['log']->warn("Caught error: $errstr $errfile $errline");
                 $message = "";
                 break;
             default:
                 $message = "Unknown error type: [$errno] $errstr on line $errline in file $errfile<br />\n";
+                $GLOBALS['log']->fatal("Caught error: $errstr $errfile $errline");
                 break;
         }
 
