@@ -438,6 +438,17 @@ $dictionary['Meeting'] = array('table' => 'meetings',
                 'source' => 'non-db',
                 'vname' => 'LBL_NOTES',
             ),
+        // STIC-Custom 20241128 EPS - Add vardefs for existing relationship with projects
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/493
+        'projects' =>
+            array(
+                'name' => 'projects',
+                'type' => 'link',
+                'relationship' => 'projects_meetings',
+                'source' => 'non-db',
+                'vname' => 'LBL_PROJECTS',
+            ),
+        // ENS STIC-Custom
         'contact_id' => array(
             'name' => 'contact_id',
             'type' => 'id',
