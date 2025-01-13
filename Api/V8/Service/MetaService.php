@@ -78,6 +78,7 @@ class MetaService
         'precision',
         'comments',
         'required',
+        'options',
     ];
 
     /**
@@ -159,11 +160,17 @@ class MetaService
      */
     private function buildFieldList($module)
     {
+        global $app_list_strings;
+
         $this->checkIfUserHasModuleAccess($module);
         $bean = $this->beanManager->newBeanSafe($module);
         $fieldList = [];
         foreach ($bean->field_defs as $fieldName => $fieldDef) {
             $fieldList[$fieldName] = $this->pruneVardef($fieldDef);
+
+            if ($fieldList[$fieldName]['type'] === 'enum') {
+                $fieldList[$fieldName]['dom_key_values'] = $app_list_strings[$fieldDef['options']];
+            }
         }
 
         return $fieldList;
