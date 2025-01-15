@@ -146,6 +146,9 @@ class M2MRelationship extends SugarRelationship
         //due to the way the module works. Plus it would remove the relative ease of adding custom module support
 
         if (get_class($rhs) != 'User' && get_class($rhs) != 'ACLRole' && get_class($lhs) == 'SecurityGroup') {
+            if (!($this->loadLink($rhs, $rhsLinkName, REL_RHS))) {
+                return false;
+            }
             $rhs->$rhsLinkName->addBean($lhs);
             $this->callBeforeAdd($rhs, $lhs, $rhsLinkName);
 
@@ -154,6 +157,9 @@ class M2MRelationship extends SugarRelationship
             $rhs->$rhsLinkName->addBean($lhs);
             $this->callAfterAdd($lhs, $rhs, $lhsLinkName);
         } elseif (get_class($lhs) != 'User' && get_class($lhs) != 'ACLRole' && get_class($rhs) == 'SecurityGroup') {
+            if (!($this->loadLink($lhs, $lhsLinkName, REL_LHS))) {
+                return false;
+            }
             $lhs->$lhsLinkName->addBean($rhs);
             $this->callBeforeAdd($lhs, $rhs, $lhsLinkName);
 
@@ -164,17 +170,12 @@ class M2MRelationship extends SugarRelationship
         } else {
             /* END - SECURITY GROUPS */
 
-            if (empty($lhs->$lhsLinkName) && !$lhs->load_relationship($lhsLinkName)) {
-                $lhsClass = get_class($lhs);
-                $GLOBALS['log']->fatal("could not load LHS $lhsLinkName in $lhsClass");
+            if (!($this->loadLink($lhs, $lhsLinkName, REL_LHS))) {
                 return false;
             }
-            if (empty($rhs->$rhsLinkName) && !$rhs->load_relationship($rhsLinkName)) {
-                $rhsClass = get_class($rhs);
-                $GLOBALS['log']->fatal("could not load RHS $rhsLinkName in $rhsClass");
+            if (!($this->loadLink($rhs, $rhsLinkName, REL_RHS))) {
                 return false;
             }
-
             $lhs->$lhsLinkName->addBean($rhs);
             $rhs->$rhsLinkName->addBean($lhs);
 

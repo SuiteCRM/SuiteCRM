@@ -539,4 +539,25 @@ abstract class SugarRelationship
 
         return '';
     }
+
+    /**
+     * Ensure that the specified property on the given bean is set to an instance of Link2
+     * by attempting to load the relationship. Logs a fatal error if the relationship cannot be loaded.
+     *
+     * @param SugarBean $relationshipBean The bean containing the link property.
+     * @param string $linkName The name of the link property to check.
+     * @param string $relationshipSide The side of the relationship being checked.
+     *
+     * @return bool Returns true if the relationship is successfully loaded, false otherwise.
+     */
+    public function loadLink(SugarBean $relationshipBean, string $linkName, string $relationshipSide): bool
+    {
+        if (!$relationshipBean->load_relationship($linkName)) {
+            $GLOBALS['log']->fatal("could not load $relationshipSide $linkName in" . get_class($relationshipBean));
+
+            return false;
+        }
+
+        return true;
+    }
 }
