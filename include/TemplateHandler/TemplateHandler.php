@@ -105,8 +105,10 @@ class TemplateHandler
         $cacheDir = create_cache_directory('modules/' . $module . '/');
         $d = dir($cacheDir);
         while ($e = $d->read()) {
-            if (!empty($view) && $e !== $view) {
-                continue;
+            if (!empty($view) && $e !== $view . '.tpl') {
+                if (isset($_SESSION['groupLayout']) && $e !== $_SESSION['groupLayout']) {
+                    continue;
+                }
             }
 
             $end = strlen($e) - 4;
@@ -131,8 +133,10 @@ class TemplateHandler
             }
             $d = dir($tplDir);
             while ($e = $d->read()) {
-                if (!empty($view) && $e !== $view) {
-                    continue;
+                if ((!empty($view) && $e !== $view . '.tpl')) {
+                    if (isset($_SESSION['groupLayout']) && $e !== $_SESSION['groupLayout']) {
+                        continue;
+                    }
                 }
 
                 $end = strlen($e) - 4;
