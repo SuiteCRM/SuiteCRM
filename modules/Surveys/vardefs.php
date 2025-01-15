@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,10 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
 $dictionary['Surveys'] = array(
     'table'              => 'surveys',
@@ -111,7 +115,7 @@ $dictionary['Surveys'] = array(
             'vname'      => 'LBL_SUBMIT_TEXT',
             'type'       => 'varchar',
             'massupdate' => 0,
-            'default'    => 'Submit',
+            'default'    => 'LBL_SUBMIT',
         ),
         'satisfied_text'           => array(
             'required'   => false,
@@ -119,7 +123,7 @@ $dictionary['Surveys'] = array(
             'vname'      => 'LBL_SATISFIED_TEXT',
             'type'       => 'varchar',
             'massupdate' => 0,
-            'default'    => 'Satisfied',
+            'default'    => 'LBL_SATISFIED_RESPONSE',
         ),
         'neither_text'             => array(
             'required'   => false,
@@ -127,7 +131,7 @@ $dictionary['Surveys'] = array(
             'vname'      => 'LBL_NEITHER_TEXT',
             'type'       => 'varchar',
             'massupdate' => 0,
-            'default'    => 'Neither Satisfied nor Dissatisfied',
+            'default'    => 'LBL_NOT_SATISFIED_NOR_DISSATISFIED',
         ),
         'dissatisfied_text'        => array(
             'required'   => false,
@@ -135,7 +139,7 @@ $dictionary['Surveys'] = array(
             'vname'      => 'LBL_DISSATISFIED_TEXT',
             'type'       => 'varchar',
             'massupdate' => 0,
-            'default'    => 'Dissatisfied',
+            'default'    => 'LBL_DISSATISFIED',
         ),
         "surveys_surveyquestions"  => array(
             'name'         => 'surveys_surveyquestions',

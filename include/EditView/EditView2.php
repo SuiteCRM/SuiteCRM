@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -507,7 +507,7 @@ class EditView
      */
     public function process($checkFormName = false, $formName = '')
     {
-        global $app_list_strings;
+        global $app_list_strings, $mod_strings;;
 
         //the retrieve already did this work;
         //$this->focus->fill_in_relationship_fields();
@@ -681,9 +681,14 @@ class EditView
                 }
 
                 if (empty($this->fieldDefs[$name]['value'])) {
-                    $this->fieldDefs[$name]['value'] = $value;
-                }
-
+                    if ($this->fieldDefs[$name]['type'] === 'varchar'
+                        && !empty($this->fieldDefs[$name]['default'])
+                        && !empty($mod_strings[$this->fieldDefs[$name]['default']])) {
+                            $this->fieldDefs[$name]['value'] = $mod_strings[$this->fieldDefs[$name]['default']];
+                        }
+                    } else {
+                        $this->fieldDefs[$name]['value'] = $value;
+                    }
 
                 // This code is used for QuickCreates that go to Full Form view.  We want to overwrite the values
                 // from the bean with values from the request if they are set and either the bean is brand new
