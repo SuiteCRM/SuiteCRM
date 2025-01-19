@@ -49,6 +49,7 @@ use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
 use SuiteCRM\Search\SearchResults;
 use SuiteCRM\Search\SearchWrapper;
+use SuiteCRM\Search\SearchModules;
 
 /**
  * SearchEngine that use Elasticsearch index for performing almost real-time search.
@@ -182,6 +183,10 @@ class ElasticSearchEngine extends SearchEngine
 
         $searchResults = [];
 
+        $enabledModules = SearchModules::getEnabledModules();
+        foreach ($enabledModules as $enabledModule) {
+            $searchResults[$enabledModule] = [];
+        }
         foreach ($initialResults as $index => $hit) {
             $params = ['index' => $index];
             $meta = $this->client->indices()->getMapping($params);
