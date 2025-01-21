@@ -625,3 +625,4 @@ function convertReportDateTimeToDB(dateValue,timeValue){var date_match=dateValue
 if(time_match[1]<10){time_match[1]='0'+time_match[1];}
 return date_match[date_reg_positions['Y']]+"-"+date_match[date_reg_positions['m']]+"-"+date_match[date_reg_positions['d']]+' '+time_match[1]+':'+time_match[2]+':00';}
 return'';}
+$(document).ready(function(){$('button#searchbutton').on('click',function(){setTimeout(()=>{$(this).parent('li').find('input#query_string').focus();},200);});})

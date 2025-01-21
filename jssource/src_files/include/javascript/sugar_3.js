@@ -5101,3 +5101,14 @@ function convertReportDateTimeToDB(dateValue, timeValue) {
   }
   return '';
 }
+
+// STIC CUSTOM - 20241226 - JCH - Set focus in global search input
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/531
+$(document).ready(function(){
+  $('button#searchbutton').on('click', function() {
+      setTimeout(() => {
+          $(this).parent('li').find('input#query_string').focus();
+      }, 200);
+  });
+})
+// END STIC
