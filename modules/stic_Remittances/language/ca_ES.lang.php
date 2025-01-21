@@ -68,6 +68,7 @@ $mod_strings = array (
     'LBL_DEFAULT_PANEL' => 'Dades generals',
     'LBL_PANEL_RECORD_DETAILS' => 'Detalls del registre',
     'LBL_STATUS' => 'Estat',
+    'LBL_ISSUING_ORGANIZATION' => 'Organització emissora',
     'LBL_GENERATE_SEPA_DIRECT_DEBITS_SEPA' => 'Genera la remesa SEPA de rebuts',
     'LBL_GENERATE_SEPA_CREDIT_TRANSFERS' => 'Genera la remesa SEPA de transferències',
     'LBL_PROCESS_REDSYS_CARD_PAYMENTS' => 'Processa els pagaments amb targeta',

@@ -68,6 +68,7 @@ $mod_strings = array(
     'LBL_DEFAULT_PANEL' => 'Overview',
     'LBL_PANEL_RECORD_DETAILS' => 'Record details',
     'LBL_STATUS' => 'Status',
+    'LBL_ISSUING_ORGANIZATION' => 'Issuing organization',
     'LBL_GENERATE_SEPA_DIRECT_DEBITS_SEPA' => 'Generate SEPA Direct Debits remittance',
     'LBL_GENERATE_SEPA_CREDIT_TRANSFERS' => 'Generate SEPA Credit Transfers remittance',
     'LBL_PROCESS_REDSYS_CARD_PAYMENTS' => 'Process card payments',

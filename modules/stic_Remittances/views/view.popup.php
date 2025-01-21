@@ -39,6 +39,8 @@ class stic_RemittancesViewPopup extends ViewPopup
 
         SticViews::preDisplay($this);
 
+        include_once "modules/stic_Remittances/Utils.php";
+        stic_RemittancesUtils::fillDynamicListForIssuingOrganizations();
     }
     public function display()
     {

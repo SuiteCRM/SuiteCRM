@@ -73,16 +73,22 @@ function generateSEPADirectDebits($remittance)
     // Join SEPA & GENERAL Settings
     $directDebitsVars = array_merge($sepaSettingsTemp, $generalSettingsTemp);
 
+    // Get Issuing Organization Suffix
+    $orgKey = $remittance->bean->issuing_organization;
+    if (!empty($orgKey)) {
+        $orgKey = "_".$orgKey;
+    }
+
     // Check empty settings
     $needingSetting = array(
-        'GENERAL_ORGANIZATION_NAME',
-        'SEPA_DEBIT_CREDITOR_IDENTIFIER',
-        'SEPA_DEBIT_DEFAULT_REMITTANCE_INFO',
+        'GENERAL_ORGANIZATION_NAME'.$orgKey,
+        'SEPA_DEBIT_CREDITOR_IDENTIFIER'.$orgKey,
+        'SEPA_DEBIT_DEFAULT_REMITTANCE_INFO'.$orgKey,
     );
 
     // If so indicated in the CRM configuration, we include the SEPA_BIC_CODE
-    if ($directDebitsVars['SEPA_DEBIT_BIC_MODE'] == 1) {
-        array_push($needingSetting, "SEPA_BIC_CODE");
+    if ($directDebitsVars['SEPA_DEBIT_BIC_MODE'.$orgKey] == 1) {
+        array_push($needingSetting, "SEPA_BIC_CODE".$orgKey);
     }
 
     $missingSettings = array();
@@ -97,15 +103,15 @@ function generateSEPADirectDebits($remittance)
     }
 
    // Truncate GENERAL_ORGANIZATION_NAME to 70 characters as allowed
-   $directDebitsVars['GENERAL_ORGANIZATION_NAME'] = substr($directDebitsVars['GENERAL_ORGANIZATION_NAME'],0,70);
+   $directDebitsVars['GENERAL_ORGANIZATION_NAME'.$orgKey] = substr($directDebitsVars['GENERAL_ORGANIZATION_NAME'.$orgKey],0,70);
 
     $message = new SEPAMessage('urn:iso:std:iso:20022:tech:xsd:pain.008.001.02');
 
     // Header of the remittance
     $groupHeader = new SEPAGroupHeader(); // (1..1)
     $groupHeader->setMessageIdentification('SEPA' . time()); // Unique ID for this job
-    $groupHeader->setInitiatingPartyId($directDebitsVars['SEPA_DEBIT_CREDITOR_IDENTIFIER']); // ID of the party sending the job. Usually the creditor
-    $groupHeader->setInitiatingPartyName(mb_substr(trim(SticUtils::cleanText($directDebitsVars['GENERAL_ORGANIZATION_NAME'])), 0, 70, 'UTF-8')); // Name of the party sending the job. Usually the creditor
+    $groupHeader->setInitiatingPartyId($directDebitsVars['SEPA_DEBIT_CREDITOR_IDENTIFIER'.$orgKey]); // ID of the party sending the job. Usually the creditor
+    $groupHeader->setInitiatingPartyName(mb_substr(trim(SticUtils::cleanText($directDebitsVars['GENERAL_ORGANIZATION_NAME'.$orgKey])), 0, 70, 'UTF-8')); // Name of the party sending the job. Usually the creditor
     $message->setGroupHeader($groupHeader);
 
     $paymentInfo = new SEPAPaymentInfo(); // (1..n)
@@ -250,7 +256,7 @@ function generateSEPADirectDebits($remittance)
 
             // We establish the concept of the receipt
             if (empty($paymentResult['banking_concept'])) {
-                $finalConcept = $directDebitsVars['SEPA_DEBIT_DEFAULT_REMITTANCE_INFO'];
+                $finalConcept = $directDebitsVars['SEPA_DEBIT_DEFAULT_REMITTANCE_INFO'.$orgKey];
             } else {
                 $finalConcept = $paymentResult['banking_concept'];
             }
@@ -299,16 +305,16 @@ function generateSEPADirectDebits($remittance)
         $paymentInfo->setBatchBooking('false');
         $paymentInfo->setLocalInstrumentCode('CORE'); // Other options: COR1, B2B
         $paymentInfo->setSequenceType('RCUR');
-        $paymentInfo->setCreditorSchemeIdentification($directDebitsVars['SEPA_DEBIT_CREDITOR_IDENTIFIER']);
+        $paymentInfo->setCreditorSchemeIdentification($directDebitsVars['SEPA_DEBIT_CREDITOR_IDENTIFIER'.$orgKey]);
         $paymentInfo->setRequestedCollectionDate(date('Y-m-d', strtotime(str_replace('/', '-', $remittance->bean->charge_date)))); //Fecha de cargo del fichero
 
         // Creditor data (organization that issues receipts)
-        $paymentInfo->setCreditorName(mb_substr(trim($directDebitsVars['GENERAL_ORGANIZATION_NAME']), 0, 70, 'UTF-8'));
+        $paymentInfo->setCreditorName(mb_substr(trim($directDebitsVars['GENERAL_ORGANIZATION_NAME'.$orgKey]), 0, 70, 'UTF-8'));
         $paymentInfo->setCreditorAccountIBAN($remittance->bean->bank_account);
 
         // If so indicated in the CRM configuration, we include the BIC
-        if ($directDebitsVars['SEPA_DEBIT_BIC_MODE'] == 1) {
-            $paymentInfo->setCreditorAgentBIC($directDebitsVars['SEPA_BIC_CODE']);
+        if ($directDebitsVars['SEPA_DEBIT_BIC_MODE'.$orgKey] == 1) {
+            $paymentInfo->setCreditorAgentBIC($directDebitsVars['SEPA_BIC_CODE'.$orgKey]);
         }
 
         // We generate the downloadable file in XML format

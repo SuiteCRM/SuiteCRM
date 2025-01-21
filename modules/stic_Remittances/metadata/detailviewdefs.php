@@ -87,14 +87,21 @@ array(
                     ),
                 ),
                 3 => array(
+                    0 => array(),
+                    1 => array(
+                        'name' => 'issuing_organization',
+                        'studio' => 'visible',
+                        'label' => 'LBL_ISSUING_ORGANIZATION',
+                    ),
+                ),
+                4 => array(
                     0 => array(
                         'name' => 'description',
                         'comment' => 'Full text of the note',
                         'label' => 'LBL_DESCRIPTION',
                     ),
-
                 ),
-                4 => array(
+                5 => array(
                     0 => array(
                         'name' => 'log',
                         'studio' => 'visible',

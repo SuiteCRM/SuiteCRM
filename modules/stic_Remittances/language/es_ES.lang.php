@@ -63,6 +63,7 @@ $mod_strings = array(
     'LBL_BANK_ACCOUNT' => 'Cuenta bancaria',
     'LBL_LOG' => 'Errores y advertencias en el archivo generado',
     'LBL_TYPE' => 'Tipo',
+    'LBL_ISSUING_ORGANIZATION' => 'Organización emisora',
     'LBL_STIC_PAYMENTS_STIC_REMITTANCES_FROM_STIC_PAYMENTS_TITLE' => 'Pagos',
     'LBL_CHARGE_DATE' => 'Fecha de cargo',
     'LBL_DEFAULT_PANEL' => 'Datos generales',

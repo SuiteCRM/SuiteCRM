@@ -57,6 +57,13 @@ array(
         'width' => '10%',
         'default' => true,
     ),
+    'ISSUING_ORGANIZATION' => array(
+        'type' => 'enum',
+        'studio' => 'visible',
+        'label' => 'LBL_ISSUING_ORGANIZATION',
+        'width' => '10%',
+        'default' => false,
+    ),
     'ASSIGNED_USER_NAME' => array(
         'width' => '9%',
         'label' => 'LBL_ASSIGNED_TO_NAME',
