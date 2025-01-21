@@ -101,7 +101,7 @@ class stic_Work_Calendar extends Basic
             $this->end_date = $timedate->asDb($endDate, $current_user);                         
         }
 
-        if ($_REQUEST["action"] != "Save") // MassUpdate, API, Import..
+        if ($_REQUEST["action"] != "Save" && $_REQUEST["action"] != "runMassUpdateDates") // MassUpdate, API, Import..
         {
             // Reactivate disable date_format to work with the rest of the date type fields
             $GLOBALS['disable_date_format'] = true;
