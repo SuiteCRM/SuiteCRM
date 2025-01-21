@@ -702,7 +702,7 @@ class PaymentBO extends WebFormDataBO
                     if ($paymentStatus == 'Completed') {
                         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$paymentBean->name} successfully processed. PayPal data: [message: {$txnType}] [status: {$paymentStatus}] [subscr_id (only for recurring payments): {$ipnMessage['subscr_id']}]");
                         $paymentBean->status = 'paid';
-                        $paymentBean->amount = intval($ipnMessage['mc_gross']);
+                        $paymentBean->amount = floatval($ipnMessage['mc_gross']);
                     } else {
                         $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$paymentBean->name} unsuccessfully processed. PayPal data: [message: {$txnType}] [status: {$paymentStatus}] [subscr_id (only for recurring payments): {$ipnMessage['subscr_id']}]");
                         $paymentBean->status = 'rejected_gateway';
