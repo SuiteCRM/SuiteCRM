@@ -1389,3 +1389,13 @@ a#nonprofitized_by {
   position: relative ;
   z-index: 99;
 }
+
+// Font por advanced Menu
+#stic-menu li a{
+  font-family: Lato, Arial, sans-serif;
+}
+
+// Prevents the overlap of the general search box
+.desktop-toolbar{
+  z-index: 0; 
+}

@@ -35,7 +35,7 @@ class ViewSticManageSdaIntegration extends SugarView
 
         return array(
            "<a href='index.php?module=Administration&action=index'>".$mod_strings['LBL_MODULE_NAME']."</a>",
-           $mod_strings['LBL_MANAGE_LANGUAGES']
+           $mod_strings['LBL_STIC_SINERGIADA_LINK_TITLE']
            );
     }
 

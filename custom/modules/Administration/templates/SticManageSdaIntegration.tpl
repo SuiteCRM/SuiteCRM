@@ -20,7 +20,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  *}
 <div class="moduleTitle">
-	<h2 class="module-title-text">{$MOD.LBL_STIC_MANAGE_SDA_ACTIONS_LINK_TITLE}</h2>
+	<h2 class="module-title-text">{$MOD.LBL_STIC_SINERGIADA_LINK_TITLE}</h2>
 	<div class="clear"></div>
 	<div class="row">
 		<div class="col-md-4 text-center">

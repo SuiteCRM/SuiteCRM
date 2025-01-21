@@ -667,6 +667,29 @@ class SugarView
                 $groupTabs[$app_strings['LBL_TABGROUP_ALL']]['modules'] = $fullModuleList;
             }
 
+            // STIC CUSTOM 20240709 JCH - Show Advanced tab config (multilevel) if exists
+            // STIC https://github.com/SinergiaTIC/SinergiaCRM/pull/208
+
+            if($sugar_config['stic_advanced_menu_enabled']){
+                
+                // Skip loading the menu during AJAX calls that manage the menu
+                // This prevents redundant loading and associated issues
+                if (!isset($_POST['manageMode'])) {
+                    include_once 'custom/include/SticAdvancedTabConfig.php';
+                }
+                if (isset($GLOBALS["SticTabStructure"])) {
+                    require_once 'SticInclude/SticAdvancedMenu.php';
+                    $menu = $GLOBALS["SticTabStructure"];
+                    addMenuProperties($menu);
+                    $ss->assign('renderedMenu', generateMenu($menu));
+                    $ss->assign('STIC_MENU', true);
+                } else {
+                    $ss->assign('STIC_MENU', false);
+                    
+                }
+            }
+            // END STIC
+
             $topTabList = array();
 
             // Now time to go through each of the tab sets and fix them up.

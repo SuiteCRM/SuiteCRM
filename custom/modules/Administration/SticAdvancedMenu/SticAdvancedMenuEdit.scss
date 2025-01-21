@@ -1,0 +1,141 @@
+/**
+ * This file is part of SinergiaCRM.
+ * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
+ * Copyright (C) 2013 - 2023 SinergiaTIC Association
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
+ */
+
+// Variables
+$main-color: #b5bc31;
+$border-color: silver;
+$background-color: #e3e3e3;
+
+// Mixins
+@mixin panel-padding {
+    > ul {
+        padding: 1em;
+    }
+}
+
+// General styles
+.jstree-anchor {
+    border: 1px solid $border-color;
+    background-color: $background-color;
+    margin: 1px;
+}
+
+.jstree-default {
+    .jstree-wholerow {
+        &-hovered {
+            background: rgba($main-color, 0.3);
+        }
+        &-clicked {
+            background: lighten($main-color, 20);
+        }
+    }
+    .jstree-node,
+    .jstree-icon {
+        background-image: none;
+    }
+}
+
+// Specific styles
+#stic-menu-manager {
+    @include panel-padding;
+    .jstree-anchor {
+        background-color: $main-color;
+        padding: 0 5px;
+        cursor: move;
+    }
+
+    > ul.jstree-container-ul a {
+        font-weight: 600 !important;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 13px;
+        font-family: "PT Sans Narrow", "Arial Narrow", Arial, Helvetica, sans-serif;
+    }
+}
+
+.jstree-contextmenu > li > a > i:last-child {
+    margin-left: -3em;
+    margin-right: 0.5em;
+}
+
+#hidden-modules {
+    @include panel-padding;
+}
+
+#saved-notice {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}
+
+#menu-options {
+    margin: 1em 0;
+}
+
+#enabled-modules {
+    .panel-heading {
+        background-color: $main-color;
+        color: #000;
+    }
+}
+
+#menu-config-info {
+    font-size: 13px;
+    font-style: italic;
+    line-height: normal;
+    text-indent: 0;
+    color: rgb(119, 119, 119);
+    padding-bottom: 40px;
+}
+
+#enabled-modules,
+#not-included-modules {
+    margin-top: 2em;
+}
+
+#stic-menu-manager li a[id^="LBL_"] {
+    position: relative;
+}
+
+#stic-menu-manager li a[id^="LBL_"],
+#stic-menu-manager li#SinergiaDA a {
+    padding-right: 10px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background-color: rgba(0, 0, 0, 0.3);
+        clip-path: polygon(0 100%, 100% 0, 100% 100%);
+    }
+}
+#stic-menu-manager li a[data-url]::before {
+    content: "\e144";
+    font-family: "Glyphicons Halflings";
+    display: inline-block;
+    margin-right: 4px;
+    margin-left: -2px;
+    color: rgba(0, 0, 0, 0.3);
+}

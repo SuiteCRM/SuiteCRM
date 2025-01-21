@@ -68,6 +68,10 @@ $app_strings['LBL_GROUPTAB_LABOURINSERTION'] = 'Inserción laboral';
 $app_strings['LBL_GROUPTAB_BOOKINGS'] = 'Reservas';
 $app_strings['LBL_GROUPTAB_SALES'] = 'Ventas';
 $app_strings['LBL_GROUPTAB_OTHER'] = 'Otros';
+$app_strings['LBL_GROUPTAB_EXPLOITATION'] = 'Explotación';
+$app_strings['LBL_GROUPTAB_DC_PERSONALINFO'] = 'Información personal';
+$app_strings['LBL_GROUPTAB_DC_WORKPLAN'] = 'Plan de trabajo';
+$app_strings['LBL_GROUPTAB_DC_MEDICATION'] = 'Medicación';
 
 // Subtema propio de SinergiaCRM
 $app_strings['LBL_SUBTHEME_OPTIONS_STIC'] = 'Stic';

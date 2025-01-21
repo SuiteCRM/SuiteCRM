@@ -23,7 +23,7 @@
 
 $mod_strings['LBL_DASHLET_STIC_NEWS'] = 'Noticias SinergiaCRM';
 
-// about page
+// Acerca de
 $mod_strings['LBL_ABOUT_SINERGIACRM_TITLE'] = 'SinergiaCRM - CRM de código abierto para organizaciones no lucrativas';
 $mod_strings['LBL_ABOUT_SINERGIACRM'] = 'Acerca de SinergiaCRM';
 $mod_strings['LBL_ABOUT_SINERGIACRM_1'] = 'SinergiaCRM es un desarrollo de la Asociación SinergiaTIC basado en SuiteCRM y publicado bajo la licencia de código abierto AGPLv3.';
@@ -33,3 +33,6 @@ $mod_strings['LBL_ABOUT_SINERGIACRM_CONTRIBUTORS'] = 'SinergiaCRM incluye';
 $mod_strings['LBL_ABOUT_SINERGIACRM_KREPORTER'] = 'Kreporter de Christian Knoll';
 $mod_strings['LBL_ABOUT_SINERGIACRM_MAIL_MERGE'] = 'Mail Merge Reports de Izertis';
 $mod_strings['LBL_ABOUT_SINERGIACRM_OTHER'] = 'Otras liberías de código abierto que se encuentran en las carpetas <i>/vendor</i> y <i>/SticInclude/vendor</i>. La información de licencia de estas librerías puede encontrarse en sus propios ficheros.';
+
+// SinergiaDA
+$mod_strings['LBL_STIC_SINERGIADA_NOT_ALLOWED'] = 'No tiene habilitado el acceso a SinergiaDA. Contacte con el administrador.'; 

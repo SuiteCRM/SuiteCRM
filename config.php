@@ -557,7 +557,7 @@ $sugar_config = array(
     // STIC#708
     'stic_datetime_combo_minute_interval' => 15,
     // END STIC
-    
+
     // STIC-Custom 20231122 AAM - Deactivate to allow installation through SticInstall.php
     // STIC#1298
     'stic_install_locked' => true,
@@ -595,4 +595,11 @@ $sugar_config = array(
     // https://github.com/SinergiaTIC/SinergiaCRM/pull/394
     'show_tasks_as_events' => true,
     // END STIC    
+
+    // STIC-Custom 20240709 JCH - Advanced Tab config (multilevel) 
+    // STIC https://github.com/SinergiaTIC/SinergiaCRM/pull/208
+    'stic_advanced_menu_enabled' => true,
+    'stic_advanced_menu_icons' => '1',
+    'stic_advanced_menu_all' => '1',
+    // END STIC
 );

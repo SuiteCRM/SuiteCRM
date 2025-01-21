@@ -151,4 +151,11 @@ class CustomAdministrationController extends AdministrationController
 
     }
 
+
+    public function action_configureMainMenu(){
+        // Add specific logic for manage main menu
+        require_once('custom/modules/Administration/SticAdvancedMenu/SticAdvancedMenuEdit.php');
+
+    } 
+
 }

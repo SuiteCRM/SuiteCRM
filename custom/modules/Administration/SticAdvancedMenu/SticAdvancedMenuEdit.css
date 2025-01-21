@@ -1,0 +1,121 @@
+@charset "UTF-8";
+/**
+ * This file is part of SinergiaCRM.
+ * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
+ * Copyright (C) 2013 - 2023 SinergiaTIC Association
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
+ */
+.jstree-anchor {
+  border: 1px solid silver;
+  background-color: #e3e3e3;
+  margin: 1px;
+}
+
+.jstree-default .jstree-wholerow-hovered {
+  background: rgba(181, 188, 49, 0.3);
+}
+.jstree-default .jstree-wholerow-clicked {
+  background: #d7dc77;
+}
+.jstree-default .jstree-node,
+.jstree-default .jstree-icon {
+  background-image: none;
+}
+
+#stic-menu-manager > ul {
+  padding: 1em;
+}
+#stic-menu-manager .jstree-anchor {
+  background-color: #b5bc31;
+  padding: 0 5px;
+  cursor: move;
+}
+#stic-menu-manager > ul.jstree-container-ul a {
+  font-weight: 600 !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-family: "PT Sans Narrow", "Arial Narrow", Arial, Helvetica, sans-serif;
+}
+
+.jstree-contextmenu > li > a > i:last-child {
+  margin-left: -3em;
+  margin-right: 0.5em;
+}
+
+#hidden-modules > ul {
+  padding: 1em;
+}
+
+#saved-notice {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+}
+
+#menu-options {
+  margin: 1em 0;
+}
+
+#enabled-modules .panel-heading {
+  background-color: #b5bc31;
+  color: #000;
+}
+
+#menu-config-info {
+  font-size: 13px;
+  font-style: italic;
+  line-height: normal;
+  text-indent: 0;
+  color: #777777;
+  padding-bottom: 40px;
+}
+
+#enabled-modules,
+#not-included-modules {
+  margin-top: 2em;
+}
+
+#stic-menu-manager li a[id^=LBL_] {
+  position: relative;
+}
+
+#stic-menu-manager li a[id^=LBL_],
+#stic-menu-manager li#SinergiaDA a {
+  padding-right: 10px;
+}
+#stic-menu-manager li a[id^=LBL_]::after,
+#stic-menu-manager li#SinergiaDA a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+}
+
+#stic-menu-manager li a[data-url]::before {
+  content: "";
+  font-family: "Glyphicons Halflings";
+  display: inline-block;
+  margin-right: 4px;
+  margin-left: -2px;
+  color: rgba(0, 0, 0, 0.3);
+}

@@ -93,3 +93,10 @@ $js_groupings[] = $newGrouping = array(
 
     'modules/stic_Custom_Views/processor/js/sticCustomizeView.js' => 'include/javascript/sugar_grp1.js',
 );
+
+
+// Add Advanced multilevel menu  functionality
+$js_groupings[] = $newGrouping = array(
+    'SticInclude/vendor/smartmenus/dist/jquery.smartmenus.min.js' => 'include/javascript/sugar_grp1.js',
+    'SticInclude/js/SticSmartmenus.js' => 'include/javascript/sugar_grp1.js',
+);

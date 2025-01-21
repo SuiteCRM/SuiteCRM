@@ -29,8 +29,8 @@ $sdaEnabled = $sugar_config['stic_sinergiada']['enabled'] ?? false;
 if (!empty($sdaEnabled) && $sdaEnabled) {
     $admin_option_defs['Administration']['manage-sda-integration-link'] = array(
         'manage-sda-integration-link',
-        'LBL_STIC_MANAGE_SDA_ACTIONS_LINK_TITLE',
-        'LBL_STIC_MANAGE_SDA_ACTIONS_DESCRIPTION',
+        'LBL_STIC_SINERGIADA_LINK_TITLE',
+        'LBL_STIC_SINERGIADA_DESCRIPTION',
         './index.php?module=Administration&action=sticmanagesdaintegration',
         'activity-streams',
     );
