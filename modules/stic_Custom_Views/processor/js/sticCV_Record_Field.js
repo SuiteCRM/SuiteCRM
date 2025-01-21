@@ -34,6 +34,11 @@ var sticCV_Record_Field = class sticCV_Record_Field extends sticCV_Record_Contai
     this.container = new sticCV_Record_Field_Container(this, $fieldElement);
     this.header = new sticCV_Record_Field_Header(this.customView, $fieldElement);
     this.content = new sticCV_Record_Field_Content(this, $fieldElement, fieldName);
+
+    this.validateName = this.name;
+    if (this.content.type == "multienum") {
+      this.validateName += "[]";
+    }
   }
   readonly(readonly = true) {
     return this.applyAction({ action: "readonly", value: readonly });

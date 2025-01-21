@@ -480,7 +480,7 @@ var sticCVUtils = class sticCVUtils {
     sticCVUtils.show(field.header.$element.find("span.required"), customView, false);
     if (required) {
       sticCVUtils.addClass(field.header.$element, customView, "conditional-required");
-      removeFromValidate(customView.formName, field.name);
+      removeFromValidate(customView.formName, field.validateName);
       var fieldName = field.header.text();
       if (fieldName === null || fieldName === undefined || fieldName.trim() === "") {
         fieldName = SUGAR.language.get("app_strings", "ERR_MISSING_REQUIRED_FIELDS");
@@ -492,24 +492,24 @@ var sticCVUtils = class sticCVUtils {
       }
       addToValidate(
         customView.formName,
-        field.name,
+        field.validateName,
         field.content.type,
         true,
         fieldName
       );
       if (!oldRequired) {
         customView.addUndoFunction(function() {
-          removeFromValidate(customView.formName, field.name);
+          removeFromValidate(customView.formName, field.validateName);
         });
       }
     } else {
-      removeFromValidate(customView.formName, field.name);
+      removeFromValidate(customView.formName, field.validateName);
       sticCVUtils.removeClass(field.header.$element, customView, "conditional-required");
       if (oldRequired) {
         customView.addUndoFunction(function() {
           addToValidate(
             customView.formName,
-            field.name,
+            field.validateName,
             field.content.type,
             true,
             SUGAR.language.get("app_strings", "ERR_MISSING_REQUIRED_FIELDS")
@@ -530,7 +530,7 @@ var sticCVUtils = class sticCVUtils {
       var validateFields = validate[field.customView.formName];
       for (var i = 0; i < validateFields.length; i++) {
         // Array(name, type, required, msg);
-        if (validateFields[i][0] == field.name) {
+        if (validateFields[i][0] == field.validateName) {
           return validateFields[i][2];
         }
       }
