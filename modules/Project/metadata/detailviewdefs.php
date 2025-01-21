@@ -215,17 +215,6 @@ $viewdefs['Project']['DetailView'] = array (
         'field' => '30',
       ),
     ),
-    'includes' => 
-    array (
-      0 => 
-      array (
-        'file' => 'modules/Project/Project.js',
-      ),
-      1 => 
-      array (
-        'file' => 'modules/Project/js/custom_project.js',
-      ),
-    ),
     'form' => 
     array (
       'buttons' => 

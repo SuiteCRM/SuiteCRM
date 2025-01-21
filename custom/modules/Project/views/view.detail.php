@@ -56,6 +56,8 @@ class CustomProjectViewDetail extends ProjectViewDetail
         SticViews::display($this);
 
         echo getVersionedScript("custom/modules/Project/SticUtils.js");
+        echo getVersionedScript('modules/Project/Project.js');
+        echo getVersionedScript('modules/Project/js/custom_project.js');
 
         // Write here you custom code
     }
