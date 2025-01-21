@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `parent_id` char(36) DEFAULT NULL,
   `sic_code` varchar(10) DEFAULT NULL,
   `campaign_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `accounts_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `accounts_bugs` (
   `bug_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `accounts_cases` (
   `case_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `accounts_contacts` (
   `account_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS `accounts_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -151,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `accounts_opportunities` (
   `account_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `acl_actions` (
   `acltype` varchar(100) DEFAULT NULL,
   `aclaccess` int(3) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `acl_actions`
@@ -644,7 +644,7 @@ CREATE TABLE IF NOT EXISTS `acl_roles` (
   `name` varchar(150) DEFAULT NULL,
   `description` text,
   `deleted` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -660,7 +660,7 @@ CREATE TABLE IF NOT EXISTS `acl_roles_actions` (
   `access_override` int(3) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -675,7 +675,7 @@ CREATE TABLE IF NOT EXISTS `acl_roles_users` (
   `user_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -688,7 +688,7 @@ CREATE TABLE IF NOT EXISTS `address_book` (
   `assigned_user_id` char(36) NOT NULL,
   `bean` varchar(50) DEFAULT NULL,
   `bean_id` char(36) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -712,7 +712,7 @@ CREATE TABLE IF NOT EXISTS `alerts` (
   `type` varchar(255) DEFAULT NULL,
   `url_redirect` varchar(255) DEFAULT NULL,
   `reminder_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -734,7 +734,7 @@ CREATE TABLE IF NOT EXISTS `am_projecttemplates` (
   `status` varchar(100) DEFAULT 'Draft',
   `priority` varchar(100) DEFAULT 'High',
   `override_business_hours` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -754,7 +754,7 @@ CREATE TABLE IF NOT EXISTS `am_projecttemplates_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -769,7 +769,7 @@ CREATE TABLE IF NOT EXISTS `am_projecttemplates_contacts_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `am_projecttemplates_ida` varchar(36) DEFAULT NULL,
   `contacts_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -784,7 +784,7 @@ CREATE TABLE IF NOT EXISTS `am_projecttemplates_project_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `am_projecttemplates_project_1am_projecttemplates_ida` varchar(36) DEFAULT NULL,
   `am_projecttemplates_project_1project_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -799,7 +799,7 @@ CREATE TABLE IF NOT EXISTS `am_projecttemplates_users_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `am_projecttemplates_ida` varchar(36) DEFAULT NULL,
   `users_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -829,7 +829,7 @@ CREATE TABLE IF NOT EXISTS `am_tasktemplates` (
   `estimated_effort` int(255) DEFAULT NULL,
   `utilization` varchar(100) DEFAULT '0',
   `duration` int(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -844,7 +844,7 @@ CREATE TABLE IF NOT EXISTS `am_tasktemplates_am_projecttemplates_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `am_tasktemplates_am_projecttemplatesam_projecttemplates_ida` varchar(36) DEFAULT NULL,
   `am_tasktemplates_am_projecttemplatesam_tasktemplates_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -864,7 +864,7 @@ CREATE TABLE IF NOT EXISTS `am_tasktemplates_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -886,7 +886,7 @@ CREATE TABLE IF NOT EXISTS `aobh_businesshours` (
   `closing_hours` varchar(100) DEFAULT '1',
   `open_status` tinyint(1) DEFAULT NULL,
   `day` varchar(100) DEFAULT 'monday'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -907,7 +907,7 @@ CREATE TABLE IF NOT EXISTS `aod_index` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `last_optimised` datetime DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `aod_index`
@@ -937,7 +937,7 @@ CREATE TABLE IF NOT EXISTS `aod_indexevent` (
   `success` tinyint(1) DEFAULT '0',
   `record_id` char(36) DEFAULT NULL,
   `record_module` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -957,7 +957,7 @@ CREATE TABLE IF NOT EXISTS `aod_indexevent_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -977,7 +977,7 @@ CREATE TABLE IF NOT EXISTS `aod_index_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1001,7 +1001,7 @@ CREATE TABLE IF NOT EXISTS `aok_knowledgebase` (
   `additional_info` text,
   `user_id_c` char(36) DEFAULT NULL,
   `user_id1_c` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1021,7 +1021,7 @@ CREATE TABLE IF NOT EXISTS `aok_knowledgebase_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1036,7 +1036,7 @@ CREATE TABLE IF NOT EXISTS `aok_knowledgebase_categories` (
   `deleted` tinyint(1) DEFAULT '0',
   `aok_knowledgebase_id` varchar(36) DEFAULT NULL,
   `aok_knowledge_base_categories_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1055,7 +1055,7 @@ CREATE TABLE IF NOT EXISTS `aok_knowledge_base_categories` (
   `description` text,
   `deleted` tinyint(1) DEFAULT '0',
   `assigned_user_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1075,7 +1075,7 @@ CREATE TABLE IF NOT EXISTS `aok_knowledge_base_categories_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1095,7 +1095,7 @@ CREATE TABLE IF NOT EXISTS `aop_case_events` (
   `deleted` tinyint(1) DEFAULT '0',
   `assigned_user_id` char(36) DEFAULT NULL,
   `case_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1115,7 +1115,7 @@ CREATE TABLE IF NOT EXISTS `aop_case_events_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1137,7 +1137,7 @@ CREATE TABLE IF NOT EXISTS `aop_case_updates` (
   `case_id` char(36) DEFAULT NULL,
   `contact_id` char(36) DEFAULT NULL,
   `internal` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1157,7 +1157,7 @@ CREATE TABLE IF NOT EXISTS `aop_case_updates_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1179,7 +1179,7 @@ CREATE TABLE IF NOT EXISTS `aor_charts` (
   `type` varchar(100) DEFAULT NULL,
   `x_field` int(11) DEFAULT NULL,
   `y_field` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1207,7 +1207,7 @@ CREATE TABLE IF NOT EXISTS `aor_conditions` (
   `value_type` varchar(100) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL,
   `parameter` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1240,7 +1240,7 @@ CREATE TABLE IF NOT EXISTS `aor_fields` (
   `group_by` tinyint(1) DEFAULT NULL,
   `group_order` varchar(100) DEFAULT NULL,
   `group_display` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1261,7 +1261,7 @@ CREATE TABLE IF NOT EXISTS `aor_reports` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `report_module` varchar(100) DEFAULT NULL,
   `graphs_per_row` int(11) DEFAULT '2'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1281,7 +1281,7 @@ CREATE TABLE IF NOT EXISTS `aor_reports_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1304,7 +1304,7 @@ CREATE TABLE IF NOT EXISTS `aor_scheduled_reports` (
   `status` varchar(100) DEFAULT NULL,
   `email_recipients` longtext,
   `aor_report_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1353,7 +1353,7 @@ CREATE TABLE IF NOT EXISTS `aos_contracts` (
   `shipping_tax_amt_usdollar` decimal(26,6) DEFAULT NULL,
   `total_amount` decimal(26,6) DEFAULT NULL,
   `total_amount_usdollar` decimal(26,6) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1373,7 +1373,7 @@ CREATE TABLE IF NOT EXISTS `aos_contracts_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1389,7 +1389,7 @@ CREATE TABLE IF NOT EXISTS `aos_contracts_documents` (
   `aos_contracts_id` varchar(36) DEFAULT NULL,
   `documents_id` varchar(36) DEFAULT NULL,
   `document_revision_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1445,7 +1445,7 @@ CREATE TABLE IF NOT EXISTS `aos_invoices` (
   `template_ddown_c` text,
   `subtotal_tax_amount` decimal(26,6) DEFAULT NULL,
   `subtotal_tax_amount_usdollar` decimal(26,6) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1465,7 +1465,7 @@ CREATE TABLE IF NOT EXISTS `aos_invoices_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1500,7 +1500,7 @@ CREATE TABLE IF NOT EXISTS `aos_line_item_groups` (
   `parent_id` char(36) DEFAULT NULL,
   `number` int(11) DEFAULT NULL,
   `currency_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1520,7 +1520,7 @@ CREATE TABLE IF NOT EXISTS `aos_line_item_groups_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1551,7 +1551,7 @@ CREATE TABLE IF NOT EXISTS `aos_pdf_templates` (
   `margin_footer` int(255) DEFAULT '9',
   `page_size` varchar(100) DEFAULT NULL,
   `orientation` varchar(100) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1571,7 +1571,7 @@ CREATE TABLE IF NOT EXISTS `aos_pdf_templates_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1603,7 +1603,7 @@ CREATE TABLE IF NOT EXISTS `aos_products` (
   `contact_id` char(36) DEFAULT NULL,
   `product_image` varchar(255) DEFAULT NULL,
   `aos_product_category_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1623,7 +1623,7 @@ CREATE TABLE IF NOT EXISTS `aos_products_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1667,7 +1667,7 @@ CREATE TABLE IF NOT EXISTS `aos_products_quotes` (
   `parent_id` char(36) DEFAULT NULL,
   `product_id` char(36) DEFAULT NULL,
   `group_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1687,7 +1687,7 @@ CREATE TABLE IF NOT EXISTS `aos_products_quotes_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1708,7 +1708,7 @@ CREATE TABLE IF NOT EXISTS `aos_product_categories` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `is_parent` tinyint(1) DEFAULT '0',
   `parent_category_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1728,7 +1728,7 @@ CREATE TABLE IF NOT EXISTS `aos_product_categories_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1787,7 +1787,7 @@ CREATE TABLE IF NOT EXISTS `aos_quotes` (
   `invoice_status` varchar(100) DEFAULT 'Not Invoiced',
   `subtotal_tax_amount` decimal(26,6) DEFAULT NULL,
   `subtotal_tax_amount_usdollar` decimal(26,6) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1802,7 +1802,7 @@ CREATE TABLE IF NOT EXISTS `aos_quotes_aos_invoices_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `aos_quotes77d9_quotes_ida` varchar(36) DEFAULT NULL,
   `aos_quotes6b83nvoices_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1822,7 +1822,7 @@ CREATE TABLE IF NOT EXISTS `aos_quotes_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1837,7 +1837,7 @@ CREATE TABLE IF NOT EXISTS `aos_quotes_os_contracts_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `aos_quotese81e_quotes_ida` varchar(36) DEFAULT NULL,
   `aos_quotes4dc0ntracts_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1852,7 +1852,7 @@ CREATE TABLE IF NOT EXISTS `aos_quotes_project_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `aos_quotes1112_quotes_ida` varchar(36) DEFAULT NULL,
   `aos_quotes7207project_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1874,7 +1874,7 @@ CREATE TABLE IF NOT EXISTS `aow_actions` (
   `action_order` int(255) DEFAULT NULL,
   `action` varchar(100) DEFAULT NULL,
   `parameters` longtext
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1899,7 +1899,7 @@ CREATE TABLE IF NOT EXISTS `aow_conditions` (
   `operator` varchar(100) DEFAULT NULL,
   `value_type` varchar(255) DEFAULT NULL,
   `value` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1921,7 +1921,7 @@ CREATE TABLE IF NOT EXISTS `aow_processed` (
   `parent_id` char(36) DEFAULT NULL,
   `parent_type` varchar(100) DEFAULT NULL,
   `status` varchar(100) DEFAULT 'Pending'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1937,7 +1937,7 @@ CREATE TABLE IF NOT EXISTS `aow_processed_aow_actions` (
   `status` varchar(36) DEFAULT 'Pending',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1962,7 +1962,7 @@ CREATE TABLE IF NOT EXISTS `aow_workflow` (
   `run_when` varchar(100) DEFAULT 'Always',
   `multiple_runs` tinyint(1) DEFAULT '0',
   `run_on_import` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1982,7 +1982,7 @@ CREATE TABLE IF NOT EXISTS `aow_workflow_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2011,7 +2011,7 @@ CREATE TABLE IF NOT EXISTS `bugs` (
   `fixed_in_release` varchar(255) DEFAULT NULL,
   `source` varchar(255) DEFAULT NULL,
   `product_category` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2031,7 +2031,7 @@ CREATE TABLE IF NOT EXISTS `bugs_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2069,7 +2069,7 @@ CREATE TABLE IF NOT EXISTS `calls` (
   `repeat_count` int(7) DEFAULT NULL,
   `repeat_parent_id` char(36) DEFAULT NULL,
   `recurring_source` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2086,7 +2086,7 @@ CREATE TABLE IF NOT EXISTS `calls_contacts` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2103,7 +2103,7 @@ CREATE TABLE IF NOT EXISTS `calls_leads` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2124,7 +2124,7 @@ CREATE TABLE IF NOT EXISTS `calls_reschedule` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `reason` varchar(100) DEFAULT NULL,
   `call_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2144,7 +2144,7 @@ CREATE TABLE IF NOT EXISTS `calls_reschedule_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2161,7 +2161,7 @@ CREATE TABLE IF NOT EXISTS `calls_users` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2197,7 +2197,7 @@ CREATE TABLE IF NOT EXISTS `campaigns` (
   `content` text,
   `frequency` varchar(100) DEFAULT NULL,
   `survey_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2217,7 +2217,7 @@ CREATE TABLE IF NOT EXISTS `campaigns_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2243,7 +2243,7 @@ CREATE TABLE IF NOT EXISTS `campaign_log` (
   `date_modified` datetime DEFAULT NULL,
   `more_information` varchar(100) DEFAULT NULL,
   `marketing_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2264,7 +2264,7 @@ CREATE TABLE IF NOT EXISTS `campaign_trkrs` (
   `created_by` char(36) DEFAULT NULL,
   `is_optout` tinyint(1) DEFAULT '0',
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2292,7 +2292,7 @@ CREATE TABLE IF NOT EXISTS `cases` (
   `account_id` char(36) DEFAULT NULL,
   `state` varchar(100) DEFAULT 'Open',
   `contact_created_by_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2312,7 +2312,7 @@ CREATE TABLE IF NOT EXISTS `cases_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2327,7 +2327,7 @@ CREATE TABLE IF NOT EXISTS `cases_bugs` (
   `bug_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2342,7 +2342,7 @@ CREATE TABLE IF NOT EXISTS `cases_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2355,7 +2355,7 @@ CREATE TABLE IF NOT EXISTS `config` (
   `category` varchar(32) DEFAULT NULL,
   `name` varchar(32) DEFAULT NULL,
   `value` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `config`
@@ -2433,7 +2433,7 @@ CREATE TABLE IF NOT EXISTS `contacts` (
   `joomla_account_id` varchar(255) DEFAULT NULL,
   `portal_account_disabled` tinyint(1) DEFAULT NULL,
   `portal_user_type` varchar(100) DEFAULT 'Single'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2453,7 +2453,7 @@ CREATE TABLE IF NOT EXISTS `contacts_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2469,7 +2469,7 @@ CREATE TABLE IF NOT EXISTS `contacts_bugs` (
   `contact_role` varchar(50) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2485,7 +2485,7 @@ CREATE TABLE IF NOT EXISTS `contacts_cases` (
   `contact_role` varchar(50) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2500,7 +2500,7 @@ CREATE TABLE IF NOT EXISTS `contacts_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2515,7 +2515,7 @@ CREATE TABLE IF NOT EXISTS `contacts_users` (
   `user_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2529,7 +2529,7 @@ CREATE TABLE IF NOT EXISTS `cron_remove_documents` (
   `bean_id` varchar(36) DEFAULT NULL,
   `module` varchar(25) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2549,7 +2549,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
   `date_entered` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `created_by` char(36) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2572,7 +2572,7 @@ CREATE TABLE IF NOT EXISTS `custom_fields` (
   `field8` varchar(255) DEFAULT NULL,
   `field9` varchar(255) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2604,7 +2604,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
   `related_doc_rev_id` char(36) DEFAULT NULL,
   `is_template` tinyint(1) DEFAULT '0',
   `template_type` varchar(100) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2619,7 +2619,7 @@ CREATE TABLE IF NOT EXISTS `documents_accounts` (
   `deleted` tinyint(1) DEFAULT '0',
   `document_id` varchar(36) DEFAULT NULL,
   `account_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2634,7 +2634,7 @@ CREATE TABLE IF NOT EXISTS `documents_bugs` (
   `deleted` tinyint(1) DEFAULT '0',
   `document_id` varchar(36) DEFAULT NULL,
   `bug_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2649,7 +2649,7 @@ CREATE TABLE IF NOT EXISTS `documents_cases` (
   `deleted` tinyint(1) DEFAULT '0',
   `document_id` varchar(36) DEFAULT NULL,
   `case_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2664,7 +2664,7 @@ CREATE TABLE IF NOT EXISTS `documents_contacts` (
   `deleted` tinyint(1) DEFAULT '0',
   `document_id` varchar(36) DEFAULT NULL,
   `contact_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2679,7 +2679,7 @@ CREATE TABLE IF NOT EXISTS `documents_opportunities` (
   `deleted` tinyint(1) DEFAULT '0',
   `document_id` varchar(36) DEFAULT NULL,
   `opportunity_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2703,7 +2703,7 @@ CREATE TABLE IF NOT EXISTS `document_revisions` (
   `revision` varchar(100) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
   `date_modified` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2731,7 +2731,7 @@ CREATE TABLE IF NOT EXISTS `eapm` (
   `oauth_token` varchar(255) DEFAULT NULL,
   `oauth_secret` varchar(255) DEFAULT NULL,
   `validated` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2757,7 +2757,7 @@ CREATE TABLE IF NOT EXISTS `emailman` (
   `related_id` char(36) DEFAULT NULL,
   `related_type` varchar(100) DEFAULT NULL,
   `related_confirm_opt_in` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2789,7 +2789,7 @@ CREATE TABLE IF NOT EXISTS `emails` (
   `parent_id` char(36) DEFAULT NULL,
   `uid` varchar(255) DEFAULT NULL,
   `category_id` varchar(100) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2806,7 +2806,7 @@ CREATE TABLE IF NOT EXISTS `emails_beans` (
   `campaign_data` text,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2821,7 +2821,7 @@ CREATE TABLE IF NOT EXISTS `emails_email_addr_rel` (
   `address_type` varchar(4) DEFAULT NULL,
   `email_address_id` char(36) NOT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2841,7 +2841,7 @@ CREATE TABLE IF NOT EXISTS `emails_text` (
   `description_html` longtext,
   `raw_source` longtext,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2864,7 +2864,7 @@ CREATE TABLE IF NOT EXISTS `email_addresses` (
   `date_created` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `email_addresses`
@@ -2891,7 +2891,7 @@ CREATE TABLE IF NOT EXISTS `email_addresses_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2910,7 +2910,7 @@ CREATE TABLE IF NOT EXISTS `email_addr_bean_rel` (
   `date_created` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `email_addr_bean_rel`
@@ -2943,7 +2943,7 @@ CREATE TABLE IF NOT EXISTS `email_cache` (
   `deleted` tinyint(4) DEFAULT NULL,
   `seen` tinyint(4) DEFAULT NULL,
   `draft` tinyint(4) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2971,7 +2971,7 @@ CREATE TABLE IF NOT EXISTS `email_marketing` (
   `campaign_id` char(36) DEFAULT NULL,
   `outbound_email_id` char(36) DEFAULT NULL,
   `all_prospect_lists` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -2986,7 +2986,7 @@ CREATE TABLE IF NOT EXISTS `email_marketing_prospect_lists` (
   `email_marketing_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3011,7 +3011,7 @@ CREATE TABLE IF NOT EXISTS `email_templates` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `text_only` tinyint(1) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `email_templates`
@@ -3048,7 +3048,7 @@ CREATE TABLE IF NOT EXISTS `favorites` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `parent_id` char(36) DEFAULT NULL,
   `parent_type` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3079,7 +3079,7 @@ CREATE TABLE IF NOT EXISTS `fields_meta_data` (
   `ext2` varchar(255) DEFAULT NULL,
   `ext3` varchar(255) DEFAULT NULL,
   `ext4` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `fields_meta_data`
@@ -3139,7 +3139,7 @@ CREATE TABLE IF NOT EXISTS `folders` (
   `created_by` char(36) NOT NULL,
   `modified_by` char(36) NOT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3154,7 +3154,7 @@ CREATE TABLE IF NOT EXISTS `folders_rel` (
   `polymorphic_module` varchar(25) DEFAULT NULL,
   `polymorphic_id` char(36) NOT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3167,7 +3167,7 @@ CREATE TABLE IF NOT EXISTS `folders_subscriptions` (
   `id` char(36) NOT NULL,
   `folder_id` char(36) NOT NULL,
   `assigned_user_id` char(36) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3196,7 +3196,7 @@ CREATE TABLE IF NOT EXISTS `fp_events` (
   `accept_redirect` varchar(255) DEFAULT NULL,
   `decline_redirect` varchar(255) DEFAULT NULL,
   `activity_status_type` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3216,7 +3216,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3234,7 +3234,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_contacts_c` (
   `invite_status` varchar(25) DEFAULT 'Not Invited',
   `accept_status` varchar(25) DEFAULT 'No Response',
   `email_responded` int(2) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3249,7 +3249,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_fp_event_delegates_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `fp_events_fp_event_delegates_1fp_events_ida` varchar(36) DEFAULT NULL,
   `fp_events_fp_event_delegates_1fp_event_delegates_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3264,7 +3264,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_fp_event_locations_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `fp_events_fp_event_locations_1fp_events_ida` varchar(36) DEFAULT NULL,
   `fp_events_fp_event_locations_1fp_event_locations_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3282,7 +3282,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_leads_1_c` (
   `invite_status` varchar(25) DEFAULT 'Not Invited',
   `accept_status` varchar(25) DEFAULT 'No Response',
   `email_responded` int(2) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3300,7 +3300,7 @@ CREATE TABLE IF NOT EXISTS `fp_events_prospects_1_c` (
   `invite_status` varchar(25) DEFAULT 'Not Invited',
   `accept_status` varchar(25) DEFAULT 'No Response',
   `email_responded` int(2) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3325,7 +3325,7 @@ CREATE TABLE IF NOT EXISTS `fp_event_locations` (
   `address_postalcode` varchar(20) DEFAULT NULL,
   `address_state` varchar(100) DEFAULT NULL,
   `capacity` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3345,7 +3345,7 @@ CREATE TABLE IF NOT EXISTS `fp_event_locations_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3360,7 +3360,7 @@ CREATE TABLE IF NOT EXISTS `fp_event_locations_fp_events_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `fp_event_locations_fp_events_1fp_event_locations_ida` varchar(36) DEFAULT NULL,
   `fp_event_locations_fp_events_1fp_events_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3384,7 +3384,7 @@ CREATE TABLE IF NOT EXISTS `import_maps` (
   `date_modified` datetime DEFAULT NULL,
   `assigned_user_id` char(36) DEFAULT NULL,
   `is_published` varchar(3) DEFAULT 'no'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3415,7 +3415,7 @@ CREATE TABLE IF NOT EXISTS `inbound_email` (
   `group_id` char(36) DEFAULT NULL,
   `is_personal` tinyint(1) DEFAULT '0',
   `groupfolder_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3431,7 +3431,7 @@ CREATE TABLE IF NOT EXISTS `inbound_email_autoreply` (
   `date_modified` datetime DEFAULT NULL,
   `autoreplied_to` varchar(100) DEFAULT NULL,
   `ie_id` char(36) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3443,7 +3443,7 @@ DROP TABLE IF EXISTS `inbound_email_cache_ts`;
 CREATE TABLE IF NOT EXISTS `inbound_email_cache_ts` (
   `id` varchar(255) NOT NULL,
   `ie_timestamp` int(10) unsigned DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3464,7 +3464,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_address_cache` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `lat` float(10,8) DEFAULT NULL,
   `lng` float(11,8) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3484,7 +3484,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_address_cache_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3507,7 +3507,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_areas` (
   `state` varchar(255) DEFAULT NULL,
   `country` varchar(255) DEFAULT NULL,
   `coordinates` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3527,7 +3527,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_areas_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3551,7 +3551,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_maps` (
   `module_type` varchar(100) DEFAULT 'Accounts',
   `parent_type` varchar(255) DEFAULT NULL,
   `parent_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3571,7 +3571,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_maps_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3586,7 +3586,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_maps_jjwg_areas_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `jjwg_maps_5304wg_maps_ida` varchar(36) DEFAULT NULL,
   `jjwg_maps_41f2g_areas_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3601,7 +3601,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_maps_jjwg_markers_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `jjwg_maps_b229wg_maps_ida` varchar(36) DEFAULT NULL,
   `jjwg_maps_2e31markers_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3626,7 +3626,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_markers` (
   `jjwg_maps_lat` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_lng` float(11,8) DEFAULT '0.00000000',
   `marker_image` varchar(100) DEFAULT 'company'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3646,7 +3646,7 @@ CREATE TABLE IF NOT EXISTS `jjwg_markers_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3675,7 +3675,7 @@ CREATE TABLE IF NOT EXISTS `job_queue` (
   `job_delay` int(11) DEFAULT NULL,
   `client` varchar(255) DEFAULT NULL,
   `percent_complete` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3739,7 +3739,7 @@ CREATE TABLE IF NOT EXISTS `leads` (
   `portal_name` varchar(255) DEFAULT NULL,
   `portal_app` varchar(255) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3759,7 +3759,7 @@ CREATE TABLE IF NOT EXISTS `leads_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3774,7 +3774,7 @@ CREATE TABLE IF NOT EXISTS `leads_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3791,7 +3791,7 @@ CREATE TABLE IF NOT EXISTS `linked_documents` (
   `document_revision_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3839,7 +3839,7 @@ CREATE TABLE IF NOT EXISTS `meetings` (
   `recurring_source` varchar(36) DEFAULT NULL,
   `gsync_id` varchar(1024) DEFAULT NULL,
   `gsync_lastsync` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3856,7 +3856,7 @@ CREATE TABLE IF NOT EXISTS `meetings_contacts` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3871,7 +3871,7 @@ CREATE TABLE IF NOT EXISTS `meetings_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3888,7 +3888,7 @@ CREATE TABLE IF NOT EXISTS `meetings_leads` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3905,7 +3905,7 @@ CREATE TABLE IF NOT EXISTS `meetings_users` (
   `accept_status` varchar(25) DEFAULT 'none',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3931,7 +3931,7 @@ CREATE TABLE IF NOT EXISTS `notes` (
   `embed_flag` tinyint(1) DEFAULT '0',
   `description` text,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3957,7 +3957,7 @@ CREATE TABLE IF NOT EXISTS `oauth2clients` (
   `duration_amount` int(11) DEFAULT NULL,
   `duration_unit` varchar(255) DEFAULT 'Duration Unit',
   `assigned_user_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -3985,7 +3985,7 @@ CREATE TABLE IF NOT EXISTS `oauth2tokens` (
   `state` varchar(1024) DEFAULT NULL,
   `client` char(36) DEFAULT NULL,
   `assigned_user_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4006,7 +4006,7 @@ CREATE TABLE IF NOT EXISTS `oauth_consumer` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `c_key` varchar(255) DEFAULT NULL,
   `c_secret` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4019,7 +4019,7 @@ CREATE TABLE IF NOT EXISTS `oauth_nonce` (
   `conskey` varchar(32) NOT NULL,
   `nonce` varchar(32) NOT NULL,
   `nonce_ts` bigint(20) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4038,7 +4038,7 @@ CREATE TABLE IF NOT EXISTS `oauth_tokens` (
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   `callback_url` varchar(255) DEFAULT NULL,
   `assigned_user_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4067,7 +4067,7 @@ CREATE TABLE IF NOT EXISTS `opportunities` (
   `next_step` varchar(100) DEFAULT NULL,
   `sales_stage` varchar(255) DEFAULT NULL,
   `probability` double DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4087,7 +4087,7 @@ CREATE TABLE IF NOT EXISTS `opportunities_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4103,7 +4103,7 @@ CREATE TABLE IF NOT EXISTS `opportunities_contacts` (
   `contact_role` varchar(50) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4118,7 +4118,7 @@ CREATE TABLE IF NOT EXISTS `opportunities_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4148,7 +4148,7 @@ CREATE TABLE IF NOT EXISTS `outbound_email` (
   `created_by` char(36) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
   `assigned_user_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `outbound_email`
@@ -4175,7 +4175,7 @@ CREATE TABLE IF NOT EXISTS `outbound_email_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4199,7 +4199,7 @@ CREATE TABLE IF NOT EXISTS `project` (
   `status` varchar(255) DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
   `override_business_hours` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4214,7 +4214,7 @@ CREATE TABLE IF NOT EXISTS `projects_accounts` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4229,7 +4229,7 @@ CREATE TABLE IF NOT EXISTS `projects_bugs` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4244,7 +4244,7 @@ CREATE TABLE IF NOT EXISTS `projects_cases` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4259,7 +4259,7 @@ CREATE TABLE IF NOT EXISTS `projects_contacts` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4274,7 +4274,7 @@ CREATE TABLE IF NOT EXISTS `projects_opportunities` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4289,7 +4289,7 @@ CREATE TABLE IF NOT EXISTS `projects_products` (
   `project_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4304,7 +4304,7 @@ CREATE TABLE IF NOT EXISTS `project_contacts_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `project_contacts_1project_ida` varchar(36) DEFAULT NULL,
   `project_contacts_1contacts_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4319,7 +4319,7 @@ CREATE TABLE IF NOT EXISTS `project_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4361,7 +4361,7 @@ CREATE TABLE IF NOT EXISTS `project_task` (
   `actual_effort` int(11) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0',
   `utilization` int(11) DEFAULT '100'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4381,7 +4381,7 @@ CREATE TABLE IF NOT EXISTS `project_task_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4396,7 +4396,7 @@ CREATE TABLE IF NOT EXISTS `project_users_1_c` (
   `deleted` tinyint(1) DEFAULT '0',
   `project_users_1project_ida` varchar(36) DEFAULT NULL,
   `project_users_1users_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4446,7 +4446,7 @@ CREATE TABLE IF NOT EXISTS `prospects` (
   `lead_id` char(36) DEFAULT NULL,
   `account_name` varchar(150) DEFAULT NULL,
   `campaign_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4461,7 +4461,7 @@ CREATE TABLE IF NOT EXISTS `prospects_cstm` (
   `jjwg_maps_lat_c` float(10,8) DEFAULT '0.00000000',
   `jjwg_maps_geocode_status_c` varchar(255) DEFAULT NULL,
   `jjwg_maps_address_c` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4482,7 +4482,7 @@ CREATE TABLE IF NOT EXISTS `prospect_lists` (
   `deleted` tinyint(1) DEFAULT NULL,
   `description` text,
   `domain_name` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4498,7 +4498,7 @@ CREATE TABLE IF NOT EXISTS `prospect_lists_prospects` (
   `related_type` varchar(25) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4513,7 +4513,7 @@ CREATE TABLE IF NOT EXISTS `prospect_list_campaigns` (
   `campaign_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4539,7 +4539,7 @@ CREATE TABLE IF NOT EXISTS `relationships` (
   `relationship_role_column_value` varchar(50) DEFAULT NULL,
   `reverse` tinyint(1) DEFAULT '0',
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `relationships`
@@ -5025,7 +5025,7 @@ CREATE TABLE IF NOT EXISTS `releases` (
   `name` varchar(50) DEFAULT NULL,
   `list_order` int(4) DEFAULT NULL,
   `status` varchar(100) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5053,7 +5053,7 @@ CREATE TABLE IF NOT EXISTS `reminders` (
   `related_event_module_id` char(36) NOT NULL,
   `date_willexecute` int(60) DEFAULT '-1',
   `popup_viewed` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5075,7 +5075,7 @@ CREATE TABLE IF NOT EXISTS `reminders_invitees` (
   `reminder_id` char(36) NOT NULL,
   `related_invitee_module` varchar(32) DEFAULT NULL,
   `related_invitee_module_id` char(36) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5094,7 +5094,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `description` text,
   `modules` text,
   `deleted` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5110,7 +5110,7 @@ CREATE TABLE IF NOT EXISTS `roles_modules` (
   `allow` tinyint(1) DEFAULT '0',
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5125,7 +5125,7 @@ CREATE TABLE IF NOT EXISTS `roles_users` (
   `user_id` varchar(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5144,7 +5144,7 @@ CREATE TABLE IF NOT EXISTS `saved_search` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `contents` text,
   `description` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5170,7 +5170,7 @@ CREATE TABLE IF NOT EXISTS `schedulers` (
   `last_run` datetime DEFAULT NULL,
   `status` varchar(100) DEFAULT NULL,
   `catch_up` tinyint(1) DEFAULT '1'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `schedulers`
@@ -5210,7 +5210,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups` (
   `deleted` tinyint(1) DEFAULT '0',
   `assigned_user_id` char(36) DEFAULT NULL,
   `noninheritable` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5225,7 +5225,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups_acl_roles` (
   `role_id` char(36) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5245,7 +5245,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5260,7 +5260,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups_default` (
   `module` varchar(50) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5278,7 +5278,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups_records` (
   `modified_user_id` char(36) DEFAULT NULL,
   `created_by` char(36) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5295,7 +5295,7 @@ CREATE TABLE IF NOT EXISTS `securitygroups_users` (
   `user_id` varchar(36) DEFAULT NULL,
   `primary_group` tinyint(1) DEFAULT NULL,
   `noninheritable` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5316,7 +5316,7 @@ CREATE TABLE IF NOT EXISTS `spots` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `config` longtext,
   `type` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5339,7 +5339,7 @@ CREATE TABLE IF NOT EXISTS `sugarfeed` (
   `related_id` char(36) DEFAULT NULL,
   `link_url` varchar(255) DEFAULT NULL,
   `link_type` varchar(30) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5360,7 +5360,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestionoptions` (
   `assigned_user_id` char(36) DEFAULT NULL,
   `sort_order` int(255) DEFAULT NULL,
   `survey_question_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5380,7 +5380,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestionoptions_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5395,7 +5395,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestionoptions_surveyquestionresponses` (
   `deleted` tinyint(1) DEFAULT '0',
   `surveyq72c7options_ida` varchar(36) DEFAULT NULL,
   `surveyq10d4sponses_idb` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5419,7 +5419,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestionresponses` (
   `answer_datetime` datetime DEFAULT NULL,
   `surveyquestion_id` char(36) DEFAULT NULL,
   `surveyresponse_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5439,7 +5439,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestionresponses_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5462,7 +5462,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestions` (
   `type` varchar(100) DEFAULT NULL,
   `happiness_question` tinyint(1) DEFAULT NULL,
   `survey_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5482,7 +5482,7 @@ CREATE TABLE IF NOT EXISTS `surveyquestions_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5507,7 +5507,7 @@ CREATE TABLE IF NOT EXISTS `surveyresponses` (
   `campaign_id` char(36) DEFAULT NULL,
   `contact_id` char(36) DEFAULT NULL,
   `survey_id` char(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5527,7 +5527,7 @@ CREATE TABLE IF NOT EXISTS `surveyresponses_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5551,7 +5551,7 @@ CREATE TABLE IF NOT EXISTS `surveys` (
   `satisfied_text` varchar(255) DEFAULT 'Satisfied',
   `neither_text` varchar(255) DEFAULT 'Neither Satisfied nor Dissatisfied',
   `dissatisfied_text` varchar(255) DEFAULT 'Dissatisfied'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5571,7 +5571,7 @@ CREATE TABLE IF NOT EXISTS `surveys_audit` (
   `after_value_string` varchar(255) DEFAULT NULL,
   `before_value_text` text,
   `after_value_text` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5599,7 +5599,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `parent_id` char(36) DEFAULT NULL,
   `contact_id` char(36) DEFAULT NULL,
   `priority` varchar(100) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5620,7 +5620,7 @@ CREATE TABLE IF NOT EXISTS `templatesectionline` (
   `thumbnail` varchar(255) DEFAULT NULL,
   `grp` varchar(255) DEFAULT NULL,
   `ord` int(11) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5641,7 +5641,7 @@ CREATE TABLE IF NOT EXISTS `tracker` (
   `session_id` varchar(36) DEFAULT NULL,
   `visible` tinyint(1) DEFAULT '0',
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5663,7 +5663,7 @@ CREATE TABLE IF NOT EXISTS `upgrade_history` (
   `manifest` longtext,
   `date_entered` datetime DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT '1'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5714,7 +5714,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `is_group` tinyint(1) DEFAULT NULL,
   `factor_auth` tinyint(1) DEFAULT NULL,
   `factor_auth_interface` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
@@ -5736,7 +5736,7 @@ CREATE TABLE IF NOT EXISTS `users_feeds` (
   `rank` int(11) DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT '0'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5752,7 +5752,7 @@ CREATE TABLE IF NOT EXISTS `users_last_import` (
   `bean_type` varchar(36) DEFAULT NULL,
   `bean_id` char(36) DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5767,7 +5767,7 @@ CREATE TABLE IF NOT EXISTS `users_password_link` (
   `date_generated` datetime DEFAULT NULL,
   `deleted` tinyint(1) DEFAULT NULL,
   `user_id` varchar(36) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5785,7 +5785,7 @@ CREATE TABLE IF NOT EXISTS `users_signatures` (
   `name` varchar(255) DEFAULT NULL,
   `signature` text,
   `signature_html` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -5802,7 +5802,7 @@ CREATE TABLE IF NOT EXISTS `user_preferences` (
   `date_modified` datetime DEFAULT NULL,
   `assigned_user_id` char(36) DEFAULT NULL,
   `contents` longtext
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `user_preferences`
@@ -5834,7 +5834,7 @@ CREATE TABLE IF NOT EXISTS `vcals` (
   `type` varchar(100) DEFAULT NULL,
   `source` varchar(100) DEFAULT NULL,
   `content` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Indexes for dumped tables
