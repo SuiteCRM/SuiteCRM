@@ -47,7 +47,11 @@ class SticCronJobs extends SugarCronJobs
         
         // throttle
         if (!$this->throttle()) {
-            $GLOBALS['log']->fatal("Job runs too frequently, throttled to protect the system.");
+            // STIC CUSTOM - Log message with more info
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/534
+            // $GLOBALS['log']->fatal("Job runs too frequently, throttled to protect the system.");
+            $GLOBALS['log']->fatal('Line '.__LINE__.': '.__METHOD__.': '."Job runs too frequently, throttled to protect the system.");
+            // End STIC CUSTOM
             return;
         }
         
