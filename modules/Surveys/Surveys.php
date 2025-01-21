@@ -160,41 +160,50 @@ class Surveys extends Basic
             return $res;
         }
 
-        foreach ($_REQUEST['survey_questions_names'] as $key => $val) {
-            if (!empty($_REQUEST['survey_questions_ids'][$key])) {
-                $question = BeanFactory::getBean('SurveyQuestions', $_REQUEST['survey_questions_ids'][$key]);
-                // STIC-Custom 20211110 AAM - With deleted questions, call mark_deleted and skip the loop
-                // STIC#457
-                if ($_REQUEST['survey_questions_deleted'][$key]) {
-                    $question->mark_deleted($question->id);
-                    continue;
+        // STIC-Custom 20241121 ART - Duplication of questions by having a workflow
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/483
+        // Prevent redundant execution of this method if it has already been executed
+        if (!isset($this->already_saved)) {
+            foreach ($_REQUEST['survey_questions_names'] as $key => $val) {
+                if (!empty($_REQUEST['survey_questions_ids'][$key])) {
+                    $question = BeanFactory::getBean('SurveyQuestions', $_REQUEST['survey_questions_ids'][$key]);
+                    // STIC-Custom 20211110 AAM - With deleted questions, call mark_deleted and skip the loop
+                    // STIC#457
+                    if ($_REQUEST['survey_questions_deleted'][$key]) {
+                        $question->mark_deleted($question->id);
+                        continue;
+                    }
+                    // END STIC
+                } else {
+                    $question = BeanFactory::newBean('SurveyQuestions');
                 }
-                // END STIC
-            } else {
-                $question = BeanFactory::newBean('SurveyQuestions');
-            }
-            $question->name = $val;
-            $question->type = $_REQUEST['survey_questions_types'][$key];
-            $question->sort_order = $_REQUEST['survey_questions_sortorder'][$key];
-            $question->survey_id = $this->id;
-            $question->deleted = $_REQUEST['survey_questions_deleted'][$key];
-            $question->save();
-            // STIC-Custom 20211110 AAM - Removing the "s" from the word question(s)
-            // STIC#457
-            // if (!empty($_REQUEST['survey_questions_options'][$key])) {
-            //     $this->saveOptions(
-            //         $_REQUEST['survey_questions_options'][$key],
-            //         $_REQUEST['survey_questions_options_id'][$key],
-            //         $_REQUEST['survey_questions_options_deleted'][$key],
-            if (!empty($_REQUEST['survey_question_options'][$key])) {
-                $this->saveOptions(
-                    $_REQUEST['survey_question_options'][$key],
-                    $_REQUEST['survey_question_options_id'][$key],
-                    $_REQUEST['survey_question_options_deleted'][$key],
-                    $question->id
-                );
+                $question->name = $val;
+                $question->type = $_REQUEST['survey_questions_types'][$key];
+                $question->sort_order = $_REQUEST['survey_questions_sortorder'][$key];
+                $question->survey_id = $this->id;
+                $question->deleted = $_REQUEST['survey_questions_deleted'][$key];
+                $question->save();
+                // STIC-Custom 20211110 AAM - Removing the "s" from the word question(s)
+                // STIC#457
+                // if (!empty($_REQUEST['survey_questions_options'][$key])) {
+                //     $this->saveOptions(
+                //         $_REQUEST['survey_questions_options'][$key],
+                //         $_REQUEST['survey_questions_options_id'][$key],
+                //         $_REQUEST['survey_questions_options_deleted'][$key],
+                if (!empty($_REQUEST['survey_question_options'][$key])) {
+                    $this->saveOptions(
+                        $_REQUEST['survey_question_options'][$key],
+                        $_REQUEST['survey_question_options_id'][$key],
+                        $_REQUEST['survey_question_options_deleted'][$key],
+                        $question->id
+                    );
+                }
             }
         }
+
+        // Set a control variable to indicate that the save method has already been executed
+        $this->already_saved = true;
+        // END STIC-Custom
 
         return $res;
     }
