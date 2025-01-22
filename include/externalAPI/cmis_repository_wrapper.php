@@ -37,25 +37,32 @@ define("HTTP_UNSUPPORTED_MEDIA_TYPE", 415);
 define("HTTP_UNPROCESSABLE_ENTITY", 422);
 define("HTTP_INTERNAL_SERVER_ERROR", 500); // runtime, storage
 
+#[\AllowDynamicProperties]
 class CmisInvalidArgumentException extends Exception
 {
 }
+#[\AllowDynamicProperties]
 class CmisObjectNotFoundException extends Exception
 {
 }
+#[\AllowDynamicProperties]
 class CmisPermissionDeniedException extends Exception
 {
 }
+#[\AllowDynamicProperties]
 class CmisNotSupportedException extends Exception
 {
 }
+#[\AllowDynamicProperties]
 class CmisConstraintException extends Exception
 {
 }
+#[\AllowDynamicProperties]
 class CmisRuntimeException extends Exception
 {
 }
 
+#[\AllowDynamicProperties]
 class CMISRepositoryWrapper
 {
     // Handles --
@@ -100,7 +107,7 @@ class CMISRepositoryWrapper
     public static function getOpUrl($url, $options = null)
     {
         if (is_array($options) && (count($options) > 0)) {
-            $needs_question = strstr($url, "?") === false;
+            $needs_question = strstr((string) $url, "?") === false;
             return $url . ($needs_question ? "?" : "&") . http_build_query($options);
         } else {
             return $url;
@@ -279,11 +286,11 @@ class CMISRepositoryWrapper
         $retval = $template;
         if (is_array($values)) {
             foreach ($values as $name => $value) {
-                $retval = str_replace("{" . $name . "}", $value, $retval);
+                $retval = str_replace("{" . $name . "}", $value, (string) $retval);
             }
         }
         // Fill in any unpoupated variables with ""
-        return preg_replace("/{[a-zA-Z0-9_]+}/", "", $retval);
+        return preg_replace("/{[a-zA-Z0-9_]+}/", "", (string) $retval);
     }
 
     public static function doXQuery($xmldata, $xquery)
@@ -345,7 +352,7 @@ class CMISRepositoryWrapper
         if ($allowableActions->length > 0) {
             foreach ($allowableActions->item(0)->childNodes as $action) {
                 if (isset($action->localName)) {
-                    $result[$action->localName] = (preg_match("/^true$/i", $action->nodeValue) > 0);
+                    $result[$action->localName] = (preg_match("/^true$/i", (string) $action->nodeValue) > 0);
                 }
             }
         }
@@ -388,6 +395,7 @@ class CMISRepositoryWrapper
         $retval->id = $retval->properties["cmis:objectId"];
         //TODO: RRM FIX THIS
         $children_node = $xmlnode->getElementsByTagName("children");
+        $children_feed_c = null;
         if (is_object($children_node)) {
             $children_feed_c = $children_node->item(0);
         }
@@ -429,7 +437,7 @@ class CMISRepositoryWrapper
         $retval->attributes = array();
         $result = CMISRepositoryWrapper :: doXQueryFromNode($xmlnode, "//cmisra:type/*");
         foreach ($result as $node) {
-            if ((substr($node->nodeName, 0, 13) == "cmis:property") && (substr($node->nodeName, -10) == "Definition")) {
+            if ((substr((string) $node->nodeName, 0, 13) == "cmis:property") && (substr((string) $node->nodeName, -10) == "Definition")) {
                 $id = $node->getElementsByTagName("id")->item(0)->nodeValue;
                 $cardinality = $node->getElementsByTagName("cardinality")->item(0)->nodeValue;
                 $propertyType = $node->getElementsByTagName("propertyType")->item(0)->nodeValue;
@@ -446,9 +454,11 @@ class CMISRepositoryWrapper
         }
         //TODO: RRM FIX THIS
         $children_node = $xmlnode->getElementsByTagName("children");
+        $children_feed_c = null;
         if (is_object($children_node)) {
             $children_feed_c = $children_node->item(0);
         }
+        $children_feed_l = null;
         if (is_object($children_feed_c)) {
             $children_feed_l = $children_feed_c->getElementsByTagName("feed");
         }
@@ -621,6 +631,7 @@ define("MIME_CMIS_QUERY", 'application/cmisquery+xml');
 
 // Many Links have a pattern to them based upon objectId -- but can that be depended upon?
 
+#[\AllowDynamicProperties]
 class CMISService extends CMISRepositoryWrapper
 {
     public $_link_cache;
@@ -731,10 +742,10 @@ class CMISService extends CMISRepositoryWrapper
             $myURL = $this->getTypeLink($typeId, "down-tree");
             $myURL = CMISRepositoryWrapper :: getOpUrl($myURL, $hash_values);
         } else {
-            $myURL = $this->processTemplate($this->workspace->collections['http://docs.oasis-open.org/ns/cmis/link/200908/typedescendants'], $varmap);
+            $myURL = static::processTemplate($this->workspace->collections['http://docs.oasis-open.org/ns/cmis/link/200908/typedescendants'], $varmap);
         }
         $ret = $this->doGet($myURL);
-        $typs = $this->extractTypeFeed($ret->body);
+        $typs = static::extractTypeFeed($ret->body);
         $this->cacheTypeFeedInfo($typs);
         return $typs;
     }
@@ -748,10 +759,10 @@ class CMISService extends CMISRepositoryWrapper
         //TODO: Need GenURLQueryString Utility
         } else {
             //TODO: Need right URL
-            $myURL = $this->processTemplate($this->workspace->collections['types'], $varmap);
+            $myURL = static::processTemplate($this->workspace->collections['types'], $varmap);
         }
         $ret = $this->doGet($myURL);
-        $typs = $this->extractTypeFeed($ret->body);
+        $typs = static::extractTypeFeed($ret->body);
         $this->cacheTypeFeedInfo($typs);
         return $typs;
     }
@@ -760,9 +771,9 @@ class CMISService extends CMISRepositoryWrapper
     { // Nice to have
         $varmap = $options;
         $varmap["id"] = $typeId;
-        $myURL = $this->processTemplate($this->workspace->uritemplates['typebyid'], $varmap);
+        $myURL = static::processTemplate($this->workspace->uritemplates['typebyid'], $varmap);
         $ret = $this->doGet($myURL);
-        $obj = $this->extractTypeDef($ret->body);
+        $obj = static::extractTypeDef($ret->body);
         $this->cacheTypeInfo($obj);
         return $obj;
     }
@@ -771,7 +782,7 @@ class CMISService extends CMISRepositoryWrapper
     { // Nice to have
         $myURL = $this->getLink($objectId, "describedby");
         $ret = $this->doGet($myURL);
-        $obj = $this->extractTypeDef($ret->body);
+        $obj = static::extractTypeDef($ret->body);
         $this->cacheTypeInfo($obj);
         return $obj;
     }
@@ -783,7 +794,7 @@ class CMISService extends CMISRepositoryWrapper
         $myURL = $this->getLink($folderId, "http://docs.oasis-open.org/ns/cmis/link/200908/foldertree");
         $myURL = CMISRepositoryWrapper :: getOpUrl($myURL, $hash_values);
         $ret = $this->doGet($myURL);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -795,7 +806,7 @@ class CMISService extends CMISRepositoryWrapper
         $myURL = $this->getLink($folderId, "down-tree");
         $myURL = CMISRepositoryWrapper :: getOpUrl($myURL, $hash_values);
         $ret = $this->doGet($myURL);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -805,7 +816,7 @@ class CMISService extends CMISRepositoryWrapper
         $myURL = $this->getLink($folderId, "down");
         //TODO: Need GenURLQueryString Utility
         $ret = $this->doGet($myURL);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -825,7 +836,7 @@ class CMISService extends CMISRepositoryWrapper
         $myURL = $this->getLink($objectId, "up");
         //TODO: Need GenURLQueryString Utility
         $ret = $this->doGet($myURL);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -834,7 +845,7 @@ class CMISService extends CMISRepositoryWrapper
     {
         $obj_url = $this->workspace->collections['checkedout'];
         $ret = $this->doGet($obj_url);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -872,7 +883,7 @@ xmlns:cmisra="http://docs.oasisopen.org/ns/cmis/restatom/200908/">
         $hash_values['q'] = $statement;
         $post_value = CMISRepositoryWrapper :: processTemplate($query_template, $hash_values);
         $ret = $this->doPost($this->workspace->collections['query'], $post_value, MIME_CMIS_QUERY);
-        $objs = $this->extractObjectFeed($ret->body);
+        $objs = static::extractObjectFeed($ret->body);
         $this->cacheFeedInfo($objs);
         return $objs;
     }
@@ -1008,9 +1019,9 @@ xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
     {
         $varmap = $options;
         $varmap["id"] = $objectId;
-        $obj_url = $this->processTemplate($this->workspace->uritemplates['objectbyid'], $varmap);
+        $obj_url = static::processTemplate($this->workspace->uritemplates['objectbyid'], $varmap);
         $ret = $this->doGet($obj_url);
-        $obj = $this->extractObject($ret->body);
+        $obj = static::extractObject($ret->body);
         $this->cacheObjectInfo($obj);
         return $obj;
     }
@@ -1019,9 +1030,9 @@ xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
     {
         $varmap = $options;
         $varmap["path"] = $this->handleSpaces($path);
-        $obj_url = $this->processTemplate($this->workspace->uritemplates['objectbypath'], $varmap);
+        $obj_url = static::processTemplate($this->workspace->uritemplates['objectbypath'], $varmap);
         $ret = $this->doGet($obj_url);
-        $obj = $this->extractObject($ret->body);
+        $obj = static::extractObject($ret->body);
         $this->cacheObjectInfo($obj);
         return $obj;
     }
@@ -1036,7 +1047,7 @@ xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
     {
         $myURL = $this->getLink($objectId, LINK_ALLOWABLE_ACTIONS);
         $ret = $this->doGet($myURL);
-        $result = $this->extractAllowableActions($ret->body);
+        $result = static::extractAllowableActions($ret->body);
         return $result;
     }
 
@@ -1094,7 +1105,7 @@ xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
         $ret = $this->doPost($myURL, $post_value, MIME_ATOM_XML_ENTRY);
         // print "DO_POST\n";
         // print_r($ret);
-        $obj = $this->extractObject($ret->body);
+        $obj = static::extractObject($ret->body);
         $this->cacheObjectInfo($obj);
         return $obj;
     }
@@ -1158,7 +1169,7 @@ xmlns:cmisra="http://docs.oasis-open.org/ns/cmis/restatom/200908/">
         $put_value = CMISRepositoryWrapper :: processTemplate($entry_template, $hash_values);
         // print $put_value; // RRM DEBUG
         $ret = $this->doPut($obj_url, $put_value, MIME_ATOM_XML_ENTRY);
-        $obj = $this->extractObject($ret->body);
+        $obj = static::extractObject($ret->body);
         $this->cacheObjectInfo($obj);
         return $obj;
     }

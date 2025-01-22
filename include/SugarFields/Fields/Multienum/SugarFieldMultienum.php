@@ -47,6 +47,10 @@ class SugarFieldMultienum extends SugarFieldEnum
         if (!isset($vardef['options_list']) && isset($vardef['options']) && !is_array($vardef['options'])) {
             $vardef['options_list'] = $GLOBALS['app_list_strings'][$vardef['options']];
         }
+
+        if ($_REQUEST['module'] === 'AOW_WorkFlow') {
+            $displayParams['isWorkFlowCall'] = true;
+        }
         return parent::setup($parentFieldArray, $vardef, $displayParams, $tabindex, $twopass);
     }
 

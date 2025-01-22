@@ -59,14 +59,14 @@ function retrieveErrorReportAttachment(Email $email)
 
     $email->getNotes($email->id);
     foreach ($email->attachments as $note) {
-        if (stripos($note->file_mime_type, 'rfc822') !== false) {
+        if (stripos((string) $note->file_mime_type, 'rfc822') !== false) {
             $note_content = $note->getAttachmentContent();
             if ($note_content !== false) {
                 // XXX: we don't know the encoding of the attached email, but
                 // assume it's quoted-printable.
                 $contents .= quoted_printable_decode($note_content);
             }
-        } elseif (stripos($note->file_mime_type, 'delivery-status') !== false) {
+        } elseif (stripos((string) $note->file_mime_type, 'delivery-status') !== false) {
             $note_content = $note->getAttachmentContent();
             if ($note_content !== false) {
                 $contents .= $note_content;
@@ -213,12 +213,12 @@ function checkBouncedEmailForIdentifier($email_description)
     $identifiers = array();
     $found = false;
     //Check if the identifier is present in the header.
-    if (preg_match('/X-CampTrackID: [a-z0-9\-]*/i', $email_description, $matches)) {
+    if (preg_match('/X-CampTrackID: [a-z0-9\-]*/i', (string) $email_description, $matches)) {
         $identifiers = preg_split('/X-CampTrackID: /i', $matches[0], -1, PREG_SPLIT_NO_EMPTY);
         $found = true;
         $GLOBALS['log']->debug("Found campaign identifier in header of email");
     } else {
-        if (preg_match('/index.php\?entryPoint=removeme&identifier=[a-z0-9\-]*/', $email_description, $matches)) {
+        if (preg_match('/index.php\?entryPoint=removeme&identifier=[a-z0-9\-]*/', (string) $email_description, $matches)) {
             $identifiers = preg_split('/index.php\?entryPoint=removeme&identifier=/', $matches[0], -1, PREG_SPLIT_NO_EMPTY);
             $found = true;
             $GLOBALS['log']->debug("Found campaign identifier in body of email");
@@ -236,7 +236,7 @@ function campaign_process_bounced_emails(&$email, &$email_header)
 
     $email_description .= retrieveErrorReportAttachment($email);
 
-    if (preg_match('/MAILER-DAEMON|POSTMASTER/i', $emailFromAddress)) {
+    if (preg_match('/MAILER-DAEMON|POSTMASTER/i', (string) $emailFromAddress)) {
         $matches=array();
 
         //do we have the identifier tag in the email?

@@ -186,7 +186,8 @@ function changeReportPage(record, offset, group_value, table_id) {
         fieldInput = $("#aor_conditions_value\\["+ln+"\\]\\[0\\]").val();
         fieldInput = updateTimeDateFields(fieldInput, ln);
     } else {
-      fieldInput = $('#aor_conditions_value\\[' + ln + '\\]').val();
+        fieldInput = $('#aor_conditions_value\\[' + ln + '\\]').val();
+        fieldInput = updateTimeDateFields(fieldInput, ln);
     }
     query += "&parameter_value[]=" + fieldInput;
   });

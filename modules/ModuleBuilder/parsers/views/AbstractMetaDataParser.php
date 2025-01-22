@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 abstract class AbstractMetaDataParser
 {
 
@@ -160,7 +161,7 @@ abstract class AbstractMetaDataParser
                 ) // db and custom fields that aren't ID fields
                 ||
                 // exclude fields named *_name regardless of their type...just convention
-                (isset($def ['name']) && substr($def ['name'], -5) === '_name'));
+                (isset($def ['name']) && substr((string) $def ['name'], -5) === '_name'));
     }
 
     /**

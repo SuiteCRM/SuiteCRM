@@ -43,5 +43,5 @@
     id="{{sugarvar key='name'}}"
     name="{{sugarvar key='name'}}"
     srcdoc="{{sugarvar key='value'}}"
-    style="width:100%;height:500px"
+    style="width:100%;height:230px"
 ></iframe>

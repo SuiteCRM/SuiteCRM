@@ -54,6 +54,7 @@ require_once('include/JSON.php');
  * subsequent tree data calls will be served by the node class.
  * tree view by default make ajax based calls for all requests.
  */
+#[\AllowDynamicProperties]
 class Tree
 {
     public $tree_style = 'include/ytree/TreeView/css/folders/tree.css';
@@ -74,22 +75,6 @@ class Tree
     {
         $this->_name = $name;
         $this->json = new JSON();
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8,
-     * please update your code, use __construct instead
-     */
-    public function Tree($name)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8,'.
-            ' please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($name);
     }
 
     /**

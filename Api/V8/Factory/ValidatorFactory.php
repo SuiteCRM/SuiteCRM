@@ -3,6 +3,7 @@ namespace Api\V8\Factory;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+#[\AllowDynamicProperties]
 class ValidatorFactory
 {
     /**

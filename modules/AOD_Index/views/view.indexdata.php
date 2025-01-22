@@ -28,14 +28,21 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/MVC/View/SugarView.php');
 
+/**
+ * @deprecated since v7.12.0
+ * Class AOD_IndexViewIndexData
+ */
+#[\AllowDynamicProperties]
 class AOD_IndexViewIndexData extends SugarView
 {
 
     /**
      * display the form
+     * @deprecated since v7.12.0
      */
     public function display()
     {
+
         global $timedate, $current_language;
         $db = DBManagerFactory::getInstance();
 
@@ -43,6 +50,7 @@ class AOD_IndexViewIndexData extends SugarView
 
         $index = BeanFactory::getBean("AOD_Index");
         $index = $index->getIndex();
+        $listViewDefs = [];
 
 
         $beanList = $index->getIndexableModules();
@@ -63,7 +71,7 @@ class AOD_IndexViewIndexData extends SugarView
         $indexedCount = $db->getOne("SELECT COUNT(*) FROM aod_indexevent WHERE deleted = 0 AND success = 1");
         $failedCount = $db->getOne("SELECT COUNT(*) FROM aod_indexevent WHERE deleted = 0 AND success = 0");
 
-        $indexFiles = count(glob($index->location."/*.cfs"));
+        $indexFiles = is_countable(glob($index->location."/*.cfs")) ? count(glob($index->location."/*.cfs")) : 0;
 
         $this->ss->assign("revisionCount", $revisionCount);
         $this->ss->assign("indexedCount", $indexedCount);

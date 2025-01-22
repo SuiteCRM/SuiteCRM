@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function checkFormPre(formId){validateCronInterval(formId);var noError=check_form(formId);if(noError){return true;}else{toggleAdv('true');return false;}}
+ */function checkFormPre(formId){validateCronInterval(formId);var noError=check_form(formId);if(noError){return true;}else{toggleAdv('true');return false;}}
 function validateCronInterval(formId){var fieldIsValid=function(value,min,max){var inRange=function(value,min,max){return(value>=min&&value<=max);}
 if(value=="*"){return true;}
 var result=/^\*\/(\d+)$/.exec(value);if(result&&result[0]&&inRange(result[1],min,max)){return true;}
@@ -49,7 +48,6 @@ return valid;}
 function toggleAdv(onlyAdv){var thisForm=document.getElementById("EditView");var crontab=document.getElementById("crontab");var simple=document.getElementById("simple");var adv=document.getElementById("advTable");var use=document.getElementById("use_adv");if(crontab.style.display=="none"||onlyAdv=='true'){crontab.style.display="";adv.style.display="";simple.style.display="none";use.value="true";}else{crontab.style.display="none";adv.style.display="none";simple.style.display="";use.value="false";}
 for(i=0;i<thisForm.elements.length;i++){if(thisForm.elements[i].disabled){thisForm.elements[i].disabled=false;}}}
 function allDays(){var toggle=document.getElementById("all");var m=document.getElementById("mon");var t=document.getElementById("tue");var w=document.getElementById("wed");var h=document.getElementById("thu");var f=document.getElementById("fri");var s=document.getElementById("sat");var u=document.getElementById("sun");if(toggle.checked){m.checked=true;t.checked=true;w.checked=true;h.checked=true;f.checked=true;s.checked=true;u.checked=true;}else{m.checked=false;t.checked=false;w.checked=false;h.checked=false;f.checked=false;s.checked=false;u.checked=false;}}
-function updateVisibility()
-{if($('#adv_interval').is(':checked')){$('#job_interval_advanced').parent().parent().show();$('#job_interval_basic').parent().parent().hide();$('#LBL_ADV_OPTIONS').show();}else{$('#job_interval_advanced').parent().parent().hide();$('#job_interval_basic').parent().parent().show();$('#LBL_ADV_OPTIONS').hide();}}
+function updateVisibility(){if($('#adv_interval').is(':checked')){$('#job_interval_advanced').parent().parent().show();$('#job_interval_basic').parent().parent().hide();$('#LBL_ADV_OPTIONS').show();}else{$('#job_interval_advanced').parent().parent().hide();$('#job_interval_basic').parent().parent().show();$('#LBL_ADV_OPTIONS').hide();}}
 function initScheduler(){if(typeof(adv_interval)!="undefined"&&adv_interval){$('#adv_interval').prop("checked",true);}}
 $('#EditView_tabs').ready(function(){initScheduler();updateVisibility();});$('#adv_interval').ready(function(){$('#adv_interval').click(updateVisibility);});

@@ -47,6 +47,7 @@ require_once('include/EditView/SugarVCR.php');
  * Data set for ListView
  * @api
  */
+#[\AllowDynamicProperties]
 class ListViewData
 {
     public $additionalDetails = true;
@@ -73,19 +74,7 @@ class ListViewData
         $this->db = DBManagerFactory::getInstance('listviews');
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ListViewData()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     /**
@@ -464,7 +453,7 @@ class ListViewData
                 if ($additionalDetailsAllow) {
                     if ($this->additionalDetailsAjax) {
                         LoggerManager::getLogger()->warn('Undefined data index ID for list view data.');
-                        $ar = $this->getAdditionalDetailsAjax(isset($data[$dataIndex]['ID']) ? $data[$dataIndex]['ID'] : null);
+                        $ar = $this->getAdditionalDetailsAjax($data[$dataIndex]['ID'] ?? null);
                     } else {
                         $additionalDetailsFile = 'modules/' . $this->seed->module_dir . '/metadata/additionalDetails.php';
                         if (file_exists('custom/modules/' . $this->seed->module_dir . '/metadata/additionalDetails.php')) {
@@ -477,6 +466,9 @@ class ListViewData
                             $additionalDetailsEdit
                         );
                     }
+                    $ar['string'] = $ar['string'] ?? '';
+                    $ar['fieldToAddTo'] = $ar['fieldToAddTo'] ?? '';
+
                     $pageData['additionalDetails'][$dataIndex] = $ar['string'];
                     $pageData['additionalDetails']['fieldToAddTo'] = $ar['fieldToAddTo'];
                 }
@@ -524,7 +516,7 @@ class ListViewData
         $queryString = '';
 
         if (isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "advanced_search" ||
-            isset($_REQUEST["type_basic"]) && (count($_REQUEST["type_basic"] > 1) || $_REQUEST["type_basic"][0] != "") ||
+            isset($_REQUEST["type_basic"]) && (count($_REQUEST["type_basic"]) > 1 || $_REQUEST["type_basic"][0] != "") ||
             isset($_REQUEST["module"]) && $_REQUEST["module"] == "MergeRecords") {
             $queryString = "-advanced_search";
         } else {

@@ -51,34 +51,20 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Form layout manager
  * @api
  */
+#[\AllowDynamicProperties]
 class LayoutManager
 {
     public $defs = array();
     public $widget_prefix = 'SugarWidget';
     public $default_widget_name = 'Field';
-    public $DBHelper;
+    public $DBManager;
 
     public function __construct()
     {
         // set a sane default for context
         $this->defs['context'] = 'Detail';
-        $this->DBHelper = DBManagerFactory::getInstance();
+        $this->DBManager = DBManagerFactory::getInstance();
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function LayoutManager()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
-
 
     public function setAttribute($key, $value)
     {
@@ -271,7 +257,7 @@ class LayoutManager
                     if (isset($widget_def['type'])) {
                         $widget_def['widget_class'] = 'Field' . $widget_def['type'];
                     } else {
-                        $widget_def['widget_class'] = 'Field' . $this->DBHelper->getFieldType($widget_def);
+                        $widget_def['widget_class'] = 'Field' . $this->DBManager->getFieldType($widget_def);
                     }
             }
         }

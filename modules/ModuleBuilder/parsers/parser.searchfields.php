@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php') ;
 require_once('modules/ModuleBuilder/MB/MBPackage.php');
 
+#[\AllowDynamicProperties]
 class ParserSearchFields extends ModuleBuilderParser
 {
     public $searchFields;
@@ -59,20 +60,6 @@ class ParserSearchFields extends ModuleBuilderParser
         }
 
         $this->searchFields = $this->getSearchFields();
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ParserSearchFields($moduleName, $packageName='')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($moduleName, $packageName);
     }
 
     public function addSearchField($name, $searchField)

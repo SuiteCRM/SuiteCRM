@@ -58,11 +58,11 @@ $viewdefs['Users']['EditView'] = array(
             ),
             array(array(
                       'name' => 'status',
-                      'customCode' => '{if $IS_ADMIN}@@FIELD@@{else}{$STATUS_READONLY}{/if}',
+                      'customCode' => '{if !empty($IS_ADMIN)}@@FIELD@@{else}{if isset($STATUS_READONLY)}{$STATUS_READONLY}{/if}{/if}',
                   ),
                   array(
                       'name'=>'UserType',
-                      'customCode'=>'{if $IS_ADMIN}{$USER_TYPE_DROPDOWN}{else}{$USER_TYPE_READONLY}{/if}',
+                      'customCode'=>'{if !empty($IS_ADMIN)}{$USER_TYPE_DROPDOWN}{else}{if isset($USER_TYPE_READONLY)}{$USER_TYPE_READONLY}{/if}{/if}',
                   ),
             ),
         ),

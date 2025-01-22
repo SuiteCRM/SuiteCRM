@@ -44,6 +44,7 @@
 
     require_once('modules/Calendar/Calendar.php');
 
+    #[\AllowDynamicProperties]
     class vCal extends SugarBean
     {
 
@@ -68,32 +69,16 @@
         // This is used to retrieve related fields from form posts.
         public $additional_column_fields = array();
 
-        const UTC_FORMAT = 'Ymd\THi00\Z';
-        const EOL = "\r\n";
-        const TAB = "\t";
-        const CHARSPERLINE = 75;
+        public const UTC_FORMAT = 'Ymd\THi00\Z';
+        public const EOL = "\r\n";
+        public const TAB = "\t";
+        public const CHARSPERLINE = 75;
 
         public function __construct()
         {
             parent::__construct();
             $this->disable_row_level_security = true;
         }
-
-        /**
-         * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8,
-         *     please update your code, use __construct instead
-         */
-        public function vCal()
-        {
-            $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-            if (isset($GLOBALS['log'])) {
-                $GLOBALS['log']->deprecated($deprecatedMessage);
-            } else {
-                trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-            }
-            self::__construct();
-        }
-
 
         public function get_summary_text()
         {
@@ -139,7 +124,7 @@
         public function create_sugar_freebusy($user_bean, $start_date_time, $end_date_time)
         {
             $ical_array = array();
-            global $DO_USER_TIME_OFFSET, $timedate, $current_user;
+            global $DO_USER_TIME_OFFSET, $timedate;
 
             $DO_USER_TIME_OFFSET = true;
             if (empty($GLOBALS['current_user']) || empty($GLOBALS['current_user']->id)) {
@@ -154,11 +139,11 @@
             // loop thru each activity, get start/end time in UTC, and return FREEBUSY strings
             foreach ($acts_arr as $act) {
                 if (empty($act->start_time)) {
-                    $startTime = $timedate->fromUser($act->sugar_bean->date_start, $user_bean);
+                    $act->start_time = $timedate->fromUser($act->sugar_bean->date_start, $user_bean);
                 }
 
                 if (empty($act->end_time)) {
-                    $endTime = $timedate->fromUser($act->sugar_bean->date_finish, $user_bean);
+                    $act->end_time = $timedate->fromUser($act->sugar_bean->date_finish, $user_bean);
                 }
 
                 $ID = $act->sugar_bean->id;
@@ -295,7 +280,7 @@
          */
         public static function create_ical_array_from_string($ical_string)
         {
-            $ical_string = preg_replace("/\r\n\s+/", "", $ical_string);
+            $ical_string = preg_replace("/\r\n\s+/", "", (string) $ical_string);
             $lines = preg_split("/\r?\n/", $ical_string);
             $ical_array = array();
 

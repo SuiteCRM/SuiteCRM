@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,15 +38,14 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
+require_once __DIR__ . '/../../include/entryPoint.php';
+require_once __DIR__ . '/../../modules/Users/language/en_us.lang.php';
 
-    require_once('include/entryPoint.php');
-
-    require_once('modules/Users/language/en_us.lang.php');
-    global $app_strings;
-    global $sugar_config;
-    global $new_pwd;
-    global $current_user;
+global $app_strings, $sugar_config, $new_pwd, $current_user;
 
     $mod_strings=return_module_language('', 'Users');
     $res=$GLOBALS['sugar_config']['passwordsetting'];
@@ -119,7 +115,7 @@ if (isset($_POST['Users0emailAddress0'])) {
 ///////////////////////////////////////////////////
 ///////  Check email address
 
-    if (!preg_match($regexmail, $usr->emailAddress->getPrimaryAddress($usr))) {
+    if (!preg_match($regexmail, (string) $usr->emailAddress->getPrimaryAddress($usr))) {
         echo $mod_strings['ERR_EMAIL_INCORRECT'];
         return;
     }
@@ -130,22 +126,29 @@ if (isset($_POST['Users0emailAddress0'])) {
     // if i need to generate a password (not a link)
     $password = $isLink ? '' : User::generatePassword();
 
-///////////////////////////////////////////////////
-///////  Create URL
+$isPasswordGenerationActive = $res['SystemGeneratedPasswordON'] ?? false;
+if(!$isLink && empty($isPasswordGenerationActive)) {
+    echo 'Access Denied';
+    return;
+}
 
-// if i need to generate a link
+// Create URL
 if ($isLink) {
     global $timedate;
-    $guid=create_guid();
-    $url=$GLOBALS['sugar_config']['site_url']."/index.php?entryPoint=Changenewpassword&guid=$guid";
-    $time_now=TimeDate::getInstance()->nowDb();
-    //$q2="UPDATE `users_password_link` SET `deleted` = '1' WHERE `username` = '".$username."'";
-    //$usr->db->query($q2);
-    $q = "INSERT INTO users_password_link (id, username, date_generated) VALUES('".$guid."','".$username."','".$time_now."') ";
+    $guid = create_guid();
+    $key = create_guid();
+    $hashedKey = User::getPasswordHash($key);
+    $url = $GLOBALS['sugar_config']['site_url'] . "/index.php?entryPoint=Changenewpassword&guid=$guid&key=$key";
+    $time_now = TimeDate::getInstance()->nowDb();
+    $userID = $usr->retrieve_user_id($username);
+    $q = "INSERT INTO users_password_link (id, keyhash, username, date_generated, user_id) VALUES('" .
+        $guid . "','" .
+        $hashedKey . "','" .
+        $username . "','" .
+        $time_now . "','" .
+        $userID . "') ";
     $usr->db->query($q);
 }
-///////
-///////////////////////////////////////////////////
 
 ///////  Email creation
     if ($isLink) {

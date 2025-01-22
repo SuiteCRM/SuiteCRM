@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,7 +44,11 @@
  * PLACE ANY CUSTOMIZATIONS IN AOD_Index
  */
 
-
+/**
+ * @deprecated since v7.12.0
+ * Class AOD_Index_sugar
+ */
+#[\AllowDynamicProperties]
 class AOD_Index_sugar extends Basic
 {
     public $new_schema = true;
@@ -71,26 +75,21 @@ class AOD_Index_sugar extends Basic
     public $assigned_user_link;
     public $last_optimised;
     public $location;
+
+    /**
+     * @deprecated since v7.12.0
+     * AOD_Index_sugar constructor.
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
+     * @deprecated since v7.12.0
+     * @param $interface
+     * @return bool
      */
-    public function AOD_Index_sugar()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
-
-
     public function bean_implements($interface)
     {
         switch ($interface) {

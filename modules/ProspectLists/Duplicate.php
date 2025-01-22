@@ -55,11 +55,11 @@ $focus->retrieve($_POST['record']);
 if (isset($_POST['isDuplicate']) && $_POST['isDuplicate'] == true) {
     $focus->id='';
     $focus->name=$mod_strings['LBL_COPY_PREFIX'].' '.$focus->name;
-    
+
     $focus->save();
     $return_id=$focus->id;
     //duplicate the linked items.
-    $query  = "select * from prospect_lists_prospects where prospect_list_id = '".$_POST['record']."'";
+    $query  = "select * from prospect_lists_prospects where prospect_list_id = '". $focus->db->quote($_POST['record']) ."'";
     $result = $focus->db->query($query);
     if ($result != null) {
         while (($row = $focus->db->fetchByAssoc($result)) != null) {

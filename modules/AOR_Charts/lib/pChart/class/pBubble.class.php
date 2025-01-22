@@ -17,20 +17,21 @@
  define("BUBBLE_SHAPE_SQUARE"		, 700002);
 
  /* pBubble class definition */
+ #[\AllowDynamicProperties]
  class pBubble
   {
-   var $pChartObject;
-   var $pDataObject;
+   public $pChartObject;
+   public $pDataObject;
 
-   /* Class creator */
-   function pBubble($pChartObject,$pDataObject)
-    {
-     $this->pChartObject = $pChartObject;
-     $this->pDataObject  = $pDataObject;
-    }
+     /* Class creator */
+     public function __construct($pChartObject, $pDataObject)
+     {
+         $this->pChartObject = $pChartObject;
+         $this->pDataObject = $pDataObject;
+     }
 
    /* Prepare the scale */
-   function bubbleScale($DataSeries,$WeightSeries)
+   public function bubbleScale($DataSeries,$WeightSeries)
     {
      if ( !is_array($DataSeries) )	{ $DataSeries = array($DataSeries); }
      if ( !is_array($WeightSeries) )	{ $WeightSeries = array($WeightSeries); }
@@ -43,7 +44,7 @@
 
        $this->pDataObject->setSerieDrawable($SerieWeightName,FALSE);
 
-       if ( count($this->pDataObject->Data["Series"][$SerieName]["Data"]) > $MaxValues ) { $MaxValues = count($this->pDataObject->Data["Series"][$SerieName]["Data"]); }
+       if ( (is_countable($this->pDataObject->Data["Series"][$SerieName]["Data"]) ? count($this->pDataObject->Data["Series"][$SerieName]["Data"]) : 0) > $MaxValues ) { $MaxValues = is_countable($this->pDataObject->Data["Series"][$SerieName]["Data"]) ? count($this->pDataObject->Data["Series"][$SerieName]["Data"]) : 0; }
 
        foreach($this->pDataObject->Data["Series"][$SerieName]["Data"] as $Key => $Value)
         {
@@ -89,7 +90,7 @@
       }
     }
 
-   function resetSeriesColors()
+   public function resetSeriesColors()
     {
      $Data    = $this->pDataObject->getData();
      $Palette = $this->pDataObject->getPalette();
@@ -109,7 +110,7 @@
     }
 
    /* Prepare the scale */
-   function drawBubbleChart($DataSeries,$WeightSeries,$Format="")
+   public function drawBubbleChart($DataSeries,$WeightSeries,$Format="")
     {
      $ForceAlpha	= isset($Format["ForceAlpha"]) ? $Format["ForceAlpha"] : VOID;
      $DrawBorder	= isset($Format["DrawBorder"]) ? $Format["DrawBorder"] : TRUE;
@@ -251,12 +252,12 @@
       }
     }
 
-   function writeBubbleLabel($SerieName,$SerieWeightName,$Points,$Format="")
+   public function writeBubbleLabel($SerieName,$SerieWeightName,$Points,$Format="")
     {
      $OverrideTitle	= isset($Format["OverrideTitle"]) ? $Format["OverrideTitle"] : NULL;
      $DrawPoint		= isset($Format["DrawPoint"]) ? $Format["DrawPoint"] : LABEL_POINT_BOX;
 
-     if ( !is_array($Points) ) { $Point = $Points; $Points = ""; $Points[] = $Point; }
+     if ( !is_array($Points) ) { $Point = $Points; $Points = []; $Points[] = $Point; }
 
      $Data    = $this->pDataObject->getData();
      $Palette = $this->pDataObject->getPalette();
@@ -296,7 +297,7 @@
        else
         $Description = "No description";
 
-       $Series = "";
+       $Series = [];
        $Series[] = array("Format"=>$Color,"Caption"=>$Caption);
 
        if ( $Data["Orientation"] == SCALE_POS_LEFTRIGHT )

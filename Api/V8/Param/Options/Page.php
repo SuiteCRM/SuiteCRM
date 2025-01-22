@@ -6,9 +6,10 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class Page extends BaseOption
 {
-    const REGEX_PAGE_PATTERN = '/[^\d]/';
+    public const REGEX_PAGE_PATTERN = '/[^\d]/';
 
     /**
      * @inheritdoc

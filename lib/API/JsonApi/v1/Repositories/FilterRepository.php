@@ -50,6 +50,7 @@ use SuiteCRM\API\v8\Exception\BadRequestException;
  * Class FilterRepository
  * @package SuiteCRM\API\JsonApi\v1\Repositories
  */
+#[\AllowDynamicProperties]
 class FilterRepository
 {
     /**

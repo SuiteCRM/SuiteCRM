@@ -1,4 +1,8 @@
 <!--- Provide a general summary of your changes in the Title above -->
+<!--- Please be aware that as of the 31st January 2022 we no longer support 7.10.x.
+New PRs to hotfix-7.10.x will be invalid. If your fix is still applicable to 7.12.x, 
+please create the pull request to the hotfix branch accordingly. -->
+
 
 ## Description
 <!--- Describe your changes in detail -->

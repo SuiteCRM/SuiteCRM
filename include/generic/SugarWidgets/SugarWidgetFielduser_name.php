@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFielduser_name extends SugarWidgetFieldname
 {
     public function displayInput($layout_def)

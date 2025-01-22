@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Outbuound email management
  * @api
  */
+#[\AllowDynamicProperties]
 class OutboundEmail
 {
     /**
@@ -97,19 +98,7 @@ class OutboundEmail
         $this->db = DBManagerFactory::getInstance();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function OutboundEmail()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     /**
@@ -196,7 +185,7 @@ class OutboundEmail
 
         //Now add the system default or user override default to the response.
         if (!empty($system->id)) {
-            if ($system->mail_sendtype == 'SMTP') {
+            if (isSmtp($system->mail_sendtype ?? '')) {
                 $systemErrors = "";
                 $userSystemOverride = $this->getUsersMailerForSystemOverride($user->id);
 
@@ -244,7 +233,7 @@ class OutboundEmail
 
         while ($a = $this->db->fetchByAssoc($r)) {
             $oe = array();
-            if ($a['mail_sendtype'] != 'SMTP') {
+            if (isSmtp($a['mail_sendtype'] ?? '')) {
                 continue;
             }
             $oe['id'] = $a['id'];
@@ -512,6 +501,8 @@ class OutboundEmail
      */
     public function save()
     {
+        $this->checkSavePermissions();
+
         require_once('include/utils/encryption_utils.php');
         if (empty($this->id)) {
             $this->id = create_guid();
@@ -668,5 +659,45 @@ class OutboundEmail
         }
 
         return $this->retrieve($a['id']);
+    }
+
+    /**
+     * @return void
+     */
+    protected function checkSavePermissions(): void
+    {
+        global $log;
+
+
+        $original = null;
+
+        if (!empty($this->id)) {
+            $original = new OutboundEmail();
+            $original->retrieve($this->id);
+        }
+
+        if (empty($original)) {
+            $original = $this;
+        }
+
+        $type = $this->type ?? '';
+
+        $authenticatedUser = get_authenticated_user();
+        if ($authenticatedUser === null) {
+            $log->security("OutboundEmail::checkSavePermissions - not logged in - skipping check");
+            return;
+        }
+
+        if ($type === 'system' && !is_admin($authenticatedUser)) {
+            $log->security("OutboundEmail::checkSavePermissions - trying to save a system outbound email with non-admin user");
+            throw new RuntimeException('Access denied');
+        }
+
+        $oeUserId = $original->user_id ?? '';
+
+        if (!empty($oeUserId) && $oeUserId !== $authenticatedUser->id && !is_admin($authenticatedUser)) {
+            $log->security("OutboundEmail::checkSavePermissions - trying to save a outbound email for another user");
+            throw new RuntimeException('Access denied');
+        }
     }
 }

@@ -109,7 +109,11 @@ function convertQuestionResponseForDisplay($responseArr, $type)
             }
             // no break
         case "Rating":
-            return str_repeat('<img width=20 src="modules/Surveys/imgs/star.png"/>', $responseArr[0]->answer);
+            $answer = $responseArr[0]->answer ?? '';
+            if (is_int($answer)) {
+                return str_repeat('<img width=20 src="modules/Surveys/imgs/star.png"/>', $answer);
+            }
+            return '';
         case "Scale":
             return $responseArr[0]->answer . '/10';
         case "Textbox":

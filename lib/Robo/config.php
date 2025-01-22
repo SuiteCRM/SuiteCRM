@@ -37,7 +37,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
-$root = dirname(dirname(__DIR__));
+$root = dirname(__DIR__, 2);
 $sugar_config = array();
 // get config
 if (!defined('sugarEntry') || !sugarEntry) {

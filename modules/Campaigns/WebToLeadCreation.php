@@ -88,7 +88,7 @@ $beanList = filterFieldsFromBeans($subclasses);
 $xtpl->assign("BEAN_LIST", json_encode($beanList));
 
 $personTypeList = "<select id='personTypeSelect'>";
-if (count($beanList) > 0) {
+if ((is_countable($beanList) ? count($beanList) : 0) > 0) {
     $count=0;
     foreach ($beanList as $b) {
         $personTypeList.="<option value='".$count."'>".$b->name."</option>";

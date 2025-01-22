@@ -7,6 +7,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 require_once 'modules/AOR_Reports/aor_utils.php';
 
+#[\AllowDynamicProperties]
 class AORReportsDashlet extends Dashlet
 {
     public $def;
@@ -40,24 +41,12 @@ class AORReportsDashlet extends Dashlet
         }
         if (!empty($def['aor_report_id'])) {
             $this->report = BeanFactory::getBean('AOR_Reports', $def['aor_report_id']);
-            $this->report->user_parameters = $this->params;
+            if($this->report !== false) {
+                $this->report->user_parameters = $this->params;
+            }
         }
         $this->onlyCharts = !empty($def['onlyCharts']);
         $this->charts = !empty($def['charts']) ? $def['charts'] : array();
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AORReportsDashlet($id, $def = array())
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id, $def);
     }
 
     public function display()
@@ -151,9 +140,11 @@ class AORReportsDashlet extends Dashlet
             'parameter_type',
             'parameter_operator'
         ));
+        // Fix for issue #1700 - save value as db type
+        $itemsCount = is_countable($req['parameter_value']) ? count($req['parameter_value']) : 0;
 
         // Fix for issue #1700 - save value as db type
-        for ($i = 0; $i < count($req['parameter_value']); $i++) {
+        for ($i = 0; $i < $itemsCount; $i++) {
             if (isset($req['parameter_value'][$i]) && $req['parameter_value'][$i] != '') {
                 global $current_user, $timedate;
                 $user_date_format = $timedate->get_date_format($current_user);

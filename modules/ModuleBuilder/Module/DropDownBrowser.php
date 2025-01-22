@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class DropDownBrowser
 {
     // Restrict the full dropdown list to remove some options that shouldn't be edited by the end users

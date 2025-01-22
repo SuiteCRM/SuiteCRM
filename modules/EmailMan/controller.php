@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class EmailManController extends SugarController
 {
     public function action_Save()
@@ -80,9 +81,6 @@ class EmailManController extends SugarController
         // cn: handle mail_smtpauth_req checkbox on/off (removing double reference in the form itself
         if (!isset($_POST['mail_smtpauth_req'])) {
             $_POST['mail_smtpauth_req'] = 0;
-            if (empty($_POST['campaignConfig'])) {
-                $_POST['notify_allow_default_outbound'] = 0; // If smtp auth is disabled ensure outbound is disabled.
-            }
         }
 
         if (!empty($_POST['notify_allow_default_outbound'])) {
@@ -94,66 +92,69 @@ class EmailManController extends SugarController
 
         $focus->saveConfig();
 
-        // save User defaults for emails
-        $configurator->config['email_default_delete_attachments'] = (isset($_REQUEST['email_default_delete_attachments'])) ? true : false;
-        $configurator->config['email_warning_notifications'] = (isset($_REQUEST['email_warning_notifications'])) ? true : false;
-        $configurator->config['email_enable_confirm_opt_in'] = isset($_REQUEST['email_enable_confirm_opt_in']) ? $_REQUEST['email_enable_confirm_opt_in'] : SugarEmailAddress::COI_STAT_DISABLED;
-        $configurator->config['email_enable_auto_send_opt_in'] = (isset($_REQUEST['email_enable_auto_send_opt_in'])) ? true : false;
-        $configurator->config['email_confirm_opt_in_email_template_id'] = isset($_REQUEST['email_template_id_opt_in']) ? $_REQUEST['email_template_id_opt_in'] : $configurator->config['aop']['confirm_opt_in_template_id'];
-        $configurator->config['email_allow_send_as_user']  = (isset($_REQUEST['mail_allowusersend']) && $_REQUEST['mail_allowusersend'] == '1') ? true : false;
-        ///////////////////////////////////////////////////////////////////////////////
-        ////	SECURITY
-        $security = array();
-        if (isset($_REQUEST['applet'])) {
-            $security['applet'] = 'applet';
-        }
-        if (isset($_REQUEST['base'])) {
-            $security['base'] = 'base';
-        }
-        if (isset($_REQUEST['embed'])) {
-            $security['embed'] = 'embed';
-        }
-        if (isset($_REQUEST['form'])) {
-            $security['form'] = 'form';
-        }
-        if (isset($_REQUEST['frame'])) {
-            $security['frame'] = 'frame';
-        }
-        if (isset($_REQUEST['frameset'])) {
-            $security['frameset'] = 'frameset';
-        }
-        if (isset($_REQUEST['iframe'])) {
-            $security['iframe'] = 'iframe';
-        }
-        if (isset($_REQUEST['import'])) {
-            $security['import'] = '\?import';
-        }
-        if (isset($_REQUEST['layer'])) {
-            $security['layer'] = 'layer';
-        }
-        if (isset($_REQUEST['link'])) {
-            $security['link'] = 'link';
-        }
-        if (isset($_REQUEST['object'])) {
-            $security['object'] = 'object';
-        }
-        if (isset($_REQUEST['style'])) {
-            $security['style'] = 'style';
-        }
-        if (isset($_REQUEST['xmp'])) {
-            $security['xmp'] = 'xmp';
-        }
-        $security['script'] = 'script';
+        if (empty($_POST['campaignConfig'])) {
+            // save User defaults for emails
+            $configurator->config['email_default_delete_attachments'] = (isset($_REQUEST['email_default_delete_attachments'])) ? true : false;
+            $configurator->config['email_warning_notifications'] = (isset($_REQUEST['email_warning_notifications'])) ? true : false;
+            $configurator->config['email_enable_confirm_opt_in'] = isset($_REQUEST['email_enable_confirm_opt_in']) ? $_REQUEST['email_enable_confirm_opt_in'] : SugarEmailAddress::COI_STAT_DISABLED;
+            $configurator->config['email_enable_auto_send_opt_in'] = (isset($_REQUEST['email_enable_auto_send_opt_in'])) ? true : false;
+            $configurator->config['email_confirm_opt_in_email_template_id'] = isset($_REQUEST['email_template_id_opt_in']) ? $_REQUEST['email_template_id_opt_in'] : $configurator->config['aop']['confirm_opt_in_template_id'];
+            $configurator->config['email_allow_send_as_user']  = (isset($_REQUEST['mail_allowusersend']) && $_REQUEST['mail_allowusersend'] == '1') ? true : false;
+            $configurator->config['legacy_email_behaviour']  = isTrue($_REQUEST['legacy_email_behaviour'] ?? false);
+            ///////////////////////////////////////////////////////////////////////////////
+            ////	SECURITY
+            $security = array();
+            if (isset($_REQUEST['applet'])) {
+                $security['applet'] = 'applet';
+            }
+            if (isset($_REQUEST['base'])) {
+                $security['base'] = 'base';
+            }
+            if (isset($_REQUEST['embed'])) {
+                $security['embed'] = 'embed';
+            }
+            if (isset($_REQUEST['form'])) {
+                $security['form'] = 'form';
+            }
+            if (isset($_REQUEST['frame'])) {
+                $security['frame'] = 'frame';
+            }
+            if (isset($_REQUEST['frameset'])) {
+                $security['frameset'] = 'frameset';
+            }
+            if (isset($_REQUEST['iframe'])) {
+                $security['iframe'] = 'iframe';
+            }
+            if (isset($_REQUEST['import'])) {
+                $security['import'] = '\?import';
+            }
+            if (isset($_REQUEST['layer'])) {
+                $security['layer'] = 'layer';
+            }
+            if (isset($_REQUEST['link'])) {
+                $security['link'] = 'link';
+            }
+            if (isset($_REQUEST['object'])) {
+                $security['object'] = 'object';
+            }
+            if (isset($_REQUEST['style'])) {
+                $security['style'] = 'style';
+            }
+            if (isset($_REQUEST['xmp'])) {
+                $security['xmp'] = 'xmp';
+            }
+            $security['script'] = 'script';
 
-        $configurator->config['email_xss'] = base64_encode(serialize($security));
+            $configurator->config['email_xss'] = base64_encode(serialize($security));
 
-        ////	SECURITY
-        ///////////////////////////////////////////////////////////////////////////////
+            ////	SECURITY
+            ///////////////////////////////////////////////////////////////////////////////
 
-        ksort($sugar_config);
+            ksort($sugar_config);
 
-        $configurator->handleOverride();
-        
+            $configurator->handleOverride();
+        }
+
         SugarThemeRegistry::clearAllCaches();
     }
 }

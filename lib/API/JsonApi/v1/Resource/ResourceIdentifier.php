@@ -50,6 +50,7 @@ use Psr\Log\LoggerInterface;
  * @package SuiteCRM\API\JsonApi\v1\Resource
  * @see http://jsonapi.org/format/1.0/#document-resource-identifier-objects
  */
+#[\AllowDynamicProperties]
 class ResourceIdentifier implements LoggerAwareInterface, JsonApiResponseInterface, JsonApiResourceIdentifier
 {
     /**

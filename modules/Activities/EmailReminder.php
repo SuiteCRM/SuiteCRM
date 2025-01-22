@@ -53,6 +53,7 @@ require_once("include/utils.php");
  * Class for sending email reminders of meetings and call to invitees
  *
  */
+#[\AllowDynamicProperties]
 class EmailReminder
 {
     
@@ -168,7 +169,7 @@ class EmailReminder
         $tempBody = from_html(trim($xtpl->text($template_name)));
         $mail->msgHTML($tempBody);
 
-        $tempBody = preg_replace('/<a href=([\"\']?)(.*?)\1>(.*?)<\/a>/', "\\3 [\\2]", $tempBody);
+        $tempBody = preg_replace('/<a href=([\"\']?)(.*?)\1>(.*?)<\/a>/', "\\3 [\\2]", (string) $tempBody);
 
         $mail->AltBody = strip_tags($tempBody);
         $mail->Subject = strip_tags(from_html($xtpl->text($template_name . "_Subject")));
@@ -301,7 +302,7 @@ class EmailReminder
         while ($row = $db->fetchByAssoc($re)) {
             $user = BeanFactory::newBean('Users');
             $user->retrieve($row['user_id']);
-            if (!empty($user->email1)) {
+            if (!empty($user->email1) && $user->isEnabled() ) {
                 $arr = array(
                     'type' => 'Users',
                     'name' => $user->full_name,

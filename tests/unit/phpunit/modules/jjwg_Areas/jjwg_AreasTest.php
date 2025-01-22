@@ -4,49 +4,49 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class jjwg_AreasTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testjjwg_Areas()
+    public function testjjwg_Areas(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
-        $this->assertInstanceOf('jjwg_Areas', $jjwgAreas);
-        $this->assertInstanceOf('Basic', $jjwgAreas);
-        $this->assertInstanceOf('SugarBean', $jjwgAreas);
+        self::assertInstanceOf('jjwg_Areas', $jjwgAreas);
+        self::assertInstanceOf('Basic', $jjwgAreas);
+        self::assertInstanceOf('SugarBean', $jjwgAreas);
 
-        $this->assertAttributeEquals('jjwg_Areas', 'module_dir', $jjwgAreas);
-        $this->assertAttributeEquals('jjwg_Areas', 'object_name', $jjwgAreas);
-        $this->assertAttributeEquals('jjwg_areas', 'table_name', $jjwgAreas);
+        self::assertEquals('jjwg_Areas', $jjwgAreas->module_dir);
+        self::assertEquals('jjwg_Areas', $jjwgAreas->object_name);
+        self::assertEquals('jjwg_areas', $jjwgAreas->table_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $jjwgAreas);
-        $this->assertAttributeEquals(true, 'importable', $jjwgAreas);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $jjwgAreas);
+        self::assertEquals(true, $jjwgAreas->new_schema);
+        self::assertEquals(true, $jjwgAreas->importable);
+        self::assertEquals(true, $jjwgAreas->disable_row_level_security);
 
-        $this->assertAttributeEquals(null, 'polygon', $jjwgAreas);
-        $this->assertAttributeEquals(true, 'point_on_vertex', $jjwgAreas);
-        $this->assertAttributeEquals(0, 'area', $jjwgAreas);
-        $this->assertAttributeEquals(null, 'centroid', $jjwgAreas);
+        self::assertEquals(null, $jjwgAreas->polygon);
+        self::assertEquals(true, $jjwgAreas->point_on_vertex);
+        self::assertEquals(0, $jjwgAreas->area);
+        self::assertEquals(null, $jjwgAreas->centroid);
     }
 
-    public function testconfiguration()
+    public function testconfiguration(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
         $jjwgAreas->configuration();
 
-        $this->assertInstanceOf('jjwg_Maps', $jjwgAreas->jjwg_Maps);
-        $this->assertTrue(is_array($jjwgAreas->settings));
-        $this->assertGreaterThan(0, count($jjwgAreas->settings));
+        self::assertInstanceOf('jjwg_Maps', $jjwgAreas->jjwg_Maps);
+        self::assertIsArray($jjwgAreas->settings);
+        self::assertGreaterThan(0, count($jjwgAreas->settings));
     }
 
-    public function testretrieve()
+    public function testretrieve(): void
     {
-        $this->markTestSkipped('Skipped pending feedback on the area behaviour.');
+        self::markTestSkipped('Skipped pending feedback on the area behaviour.');
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without pre settting attributes
         $jjwgAreas->retrieve();
-        $this->assertEquals(false, $jjwgAreas->polygon);
-        $this->assertEquals(0, $jjwgAreas->area);
-        $this->assertEquals(null, $jjwgAreas->centroid);
+        self::assertEquals(false, $jjwgAreas->polygon);
+        self::assertEquals(0, $jjwgAreas->area);
+        self::assertEquals(null, $jjwgAreas->centroid);
 
         //test with required attributes preset
         $jjwgAreas->coordinates = "100,80,10\r\n101,81,11\r\n102,82,12";
@@ -60,18 +60,18 @@ class jjwg_AreasTest extends SuitePHPUnitFrameworkTestCase
 
         $jjwgAreas->retrieve();
 
-        $this->assertSame($expected_polygon, $jjwgAreas->polygon);
-        $this->assertEquals(20, $jjwgAreas->area);
-        $this->assertSame($expected_centroid, $jjwgAreas->centroid);
+        self::assertSame($expected_polygon, $jjwgAreas->polygon);
+        self::assertEquals(20, $jjwgAreas->area);
+        self::assertSame($expected_centroid, $jjwgAreas->centroid);
     }
 
-    public function testdefine_polygon()
+    public function testdefine_polygon(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without pre settting attributes
         $actual = $jjwgAreas->define_polygon();
-        $this->assertEquals(false, $actual);
+        self::assertEquals(false, $actual);
 
         //test with required attributes preset
         $jjwgAreas->coordinates = "100,80,10\r\n101,81,11\r\n102,82,12";
@@ -81,18 +81,18 @@ class jjwg_AreasTest extends SuitePHPUnitFrameworkTestCase
                       array('lng' => '102', 'lat' => '82', 'elv' => '12'),
                 );
         $actual = $jjwgAreas->define_polygon();
-        $this->assertSame($actual, $expected);
+        self::assertSame($actual, $expected);
     }
 
-    public function testdefine_area_loc()
+    public function testdefine_area_loc(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without pre settting attributes
         $result = $jjwgAreas->define_area_loc();
-        $this->assertEquals('N/A', $result['name']);
-        $this->assertTrue(is_numeric($result['lat']));
-        $this->assertTrue(is_numeric($result['lng']));
+        self::assertEquals('N/A', $result['name']);
+        self::assertIsNumeric($result['lat']);
+        self::assertIsNumeric($result['lng']);
 
         //test with required attributes preset
         $jjwgAreas->name = 'test';
@@ -100,140 +100,140 @@ class jjwg_AreasTest extends SuitePHPUnitFrameworkTestCase
 
         $expected = array('name' => 'test', 'lat' => 50, 'lng' => 100);
         $result = $jjwgAreas->define_area_loc();
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
-    public function testdefine_centroid()
+    public function testdefine_centroid(): void
     {
-        $this->markTestSkipped('Skipped pending feedback on the area behaviour.');
+        self::markTestSkipped('Skipped pending feedback on the area behaviour.');
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without setting up coordinates
         $result = $jjwgAreas->define_centroid();
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
 
         //test with coordinates setup
         $jjwgAreas->coordinates = "100,80,10\r\n101,81,11\r\n102,82,12";
         $expected = array('lng' => 67.3333333333333285963817615993320941925048828125, 'lat' => 54.0, 'elv' => 0);
 
         $result = $jjwgAreas->define_centroid();
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
-    public function testdefine_area()
+    public function testdefine_area(): void
     {
-        $this->markTestSkipped('Skipped pending feedback on the area behaviour.');
+        self::markTestSkipped('Skipped pending feedback on the area behaviour.');
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without setting up coordinates
         $result = $jjwgAreas->define_area();
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
 
         //test with coordinates setup
         $jjwgAreas->coordinates = "100,80,10\r\n101,81,11\r\n102,82,12";
 
         $result = $jjwgAreas->define_area();
-        $this->assertEquals(20, $result);
+        self::assertEquals(20, $result);
     }
 
-    public function testdefine_loc()
+    public function testdefine_loc(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without pre settting attributes
         $result = $jjwgAreas->define_loc(array());
-        $this->assertEquals('N/A', $result['name']);
-        $this->assertTrue(is_numeric($result['lat']));
-        $this->assertTrue(is_numeric($result['lng']));
+        self::assertEquals('N/A', $result['name']);
+        self::assertIsNumeric($result['lat']);
+        self::assertIsNumeric($result['lng']);
 
         //test with required attributes preset
         $marker = array('name' => 'test', 'lat' => 50, 'lng' => 100);
         $result = $jjwgAreas->define_loc($marker);
-        $this->assertSame($marker, $result);
+        self::assertSame($marker, $result);
     }
 
-    public function testis_valid_lng()
+    public function testis_valid_lng(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test with invalid values
-        $this->assertEquals(false, $jjwgAreas->is_valid_lng(''));
-        $this->assertEquals(false, $jjwgAreas->is_valid_lng(181));
-        $this->assertEquals(false, $jjwgAreas->is_valid_lng(-181));
+        self::assertEquals(false, $jjwgAreas->is_valid_lng(''));
+        self::assertEquals(false, $jjwgAreas->is_valid_lng(181));
+        self::assertEquals(false, $jjwgAreas->is_valid_lng(-181));
 
         //test with valid values
-        $this->assertEquals(true, $jjwgAreas->is_valid_lng(180));
-        $this->assertEquals(true, $jjwgAreas->is_valid_lng(-180));
+        self::assertEquals(true, $jjwgAreas->is_valid_lng(180));
+        self::assertEquals(true, $jjwgAreas->is_valid_lng(-180));
     }
 
-    public function testis_valid_lat()
+    public function testis_valid_lat(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test with invalid values
-        $this->assertEquals(false, $jjwgAreas->is_valid_lat(''));
-        $this->assertEquals(false, $jjwgAreas->is_valid_lat(91));
-        $this->assertEquals(false, $jjwgAreas->is_valid_lat(-91));
+        self::assertEquals(false, $jjwgAreas->is_valid_lat(''));
+        self::assertEquals(false, $jjwgAreas->is_valid_lat(91));
+        self::assertEquals(false, $jjwgAreas->is_valid_lat(-91));
 
         //test with valid values
-        $this->assertEquals(true, $jjwgAreas->is_valid_lat(90));
-        $this->assertEquals(true, $jjwgAreas->is_valid_lat(-90));
+        self::assertEquals(true, $jjwgAreas->is_valid_lat(90));
+        self::assertEquals(true, $jjwgAreas->is_valid_lat(-90));
     }
 
-    public function testis_marker_in_area()
+    public function testis_marker_in_area(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         $marker = array('name' => 'test', 'lat' => 100, 'lng' => 40);
 
         //test without setting up coordinates
-        $this->assertEquals(false, $jjwgAreas->is_marker_in_area($marker));
+        self::assertEquals(false, $jjwgAreas->is_marker_in_area($marker));
 
         //test with coordinates set
         $jjwgAreas->coordinates = '100,40,0.0 101,81,0.0 102,32,0.0';
-        $this->assertEquals(false, $jjwgAreas->is_marker_in_area($marker));
+        self::assertEquals(false, $jjwgAreas->is_marker_in_area($marker));
     }
 
-    public function testis_point_in_area()
+    public function testis_point_in_area(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without setting up coordinates
-        $this->assertEquals(false, $jjwgAreas->is_point_in_area(100, 40));
+        self::assertEquals(false, $jjwgAreas->is_point_in_area(100, 40));
 
         //test with coordinates set
         $jjwgAreas->coordinates = '100,40,10 101,81,11 102,82,12';
-        $this->assertEquals(false, $jjwgAreas->is_point_in_area(101, 40));
-        $this->assertEquals(true, $jjwgAreas->is_point_in_area(100, 40));
+        self::assertEquals(false, $jjwgAreas->is_point_in_area(101, 40));
+        self::assertEquals(true, $jjwgAreas->is_point_in_area(100, 40));
     }
 
-    public function testpoint_in_polygon()
+    public function testpoint_in_polygon(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         //test without setting up coordinates
-        $this->assertEquals(false, $jjwgAreas->point_in_polygon('100,40,0.0'));
+        self::assertEquals(false, $jjwgAreas->point_in_polygon('100,40,0.0'));
 
         //test with coordinates set
         $jjwgAreas->coordinates = '100,40,10 101,81,11 102,82,12';
-        $this->assertEquals(true, $jjwgAreas->point_in_polygon('100,40,0.0'));
+        self::assertEquals(true, $jjwgAreas->point_in_polygon('100,40,0.0'));
     }
 
-    public function testpoint_on_vertex()
+    public function testpoint_on_vertex(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         $vertices = array('100,40,10', '101,81,11', '102,82,12');
-        $this->assertEquals(false, $jjwgAreas->point_on_vertex('100,40,0.0', $vertices));
-        $this->assertEquals(true, $jjwgAreas->point_on_vertex('100,40,10', $vertices));
+        self::assertEquals(false, $jjwgAreas->point_on_vertex('100,40,0.0', $vertices));
+        self::assertEquals(true, $jjwgAreas->point_on_vertex('100,40,10', $vertices));
     }
 
-    public function testpoint_string_to_coordinates()
+    public function testpoint_string_to_coordinates(): void
     {
         $jjwgAreas = BeanFactory::newBean('jjwg_Areas');
 
         $expected = array('x' => 100, 'y' => 40);
         $actual = $jjwgAreas->point_string_to_coordinates('100,40,10');
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 }

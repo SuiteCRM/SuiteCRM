@@ -6,9 +6,10 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class Sort extends BaseOption
 {
-    const REGEX_SORT_PATTERN = '/[^\w\-]/';
+    public const REGEX_SORT_PATTERN = '/[^\w\-]/';
 
     /**
      * @inheritdoc
@@ -26,7 +27,11 @@ class Sort extends BaseOption
                 ]),
             ], true))
             ->setNormalizer('sort', function (Options $options, $value) {
-                $bean = $this->beanManager->newBeanSafe($options->offsetGet('moduleName'));
+                if ($options->offsetExists('linkFieldName')) {
+                    $bean = $this->beanManager->getLinkedFieldBean($options->offsetGet('sourceBean'), $options->offsetGet('linkFieldName'));
+                } else {
+                    $bean = $this->beanManager->newBeanSafe($options->offsetGet('moduleName'));
+                }
                 $sort = new SortRepository();
 
                 return $sort->parseOrderBy($bean, $value);

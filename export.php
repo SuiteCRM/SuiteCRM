@@ -49,14 +49,27 @@ require_once('include/export_utils.php');
 global $sugar_config;
 global $current_user;
 global $app_list_strings;
+global $beanList;
+global $log;
 
 $the_module = clean_string($_REQUEST['module']);
+
+if (empty($current_user) || empty($current_user->id)) {
+    die($GLOBALS['app_strings']['ERR_EXPORT_DISABLED']);
+}
 
 if ($sugar_config['disable_export'] 	|| (!empty($sugar_config['admin_export_only']) && !(is_admin($current_user) || (ACLController::moduleSupportsACL($the_module)  && ACLAction::getUserAccessLevel($current_user->id, $the_module, 'access') == ACL_ALLOW_ENABLED &&
     (ACLAction::getUserAccessLevel($current_user->id, $the_module, 'admin') == ACL_ALLOW_ADMIN ||
      ACLAction::getUserAccessLevel($current_user->id, $the_module, 'admin') == ACL_ALLOW_ADMIN_DEV))))) {
     die($GLOBALS['app_strings']['ERR_EXPORT_DISABLED']);
 }
+
+if (empty($beanList[$_REQUEST['module']])) {
+    $log->security("export: trying to access an invalid module '" . $_REQUEST['module'] . "'");
+    throw new RuntimeException('Unexpected error. See logs.');
+}
+
+$bean = $beanList[$_REQUEST['module']];
 
 //check to see if this is a request for a sample or for a regular export
 if (!empty($_REQUEST['sample'])) {

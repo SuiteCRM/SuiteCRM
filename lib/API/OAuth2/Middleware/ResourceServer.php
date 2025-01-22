@@ -48,6 +48,7 @@ use SuiteCRM\API\v8\Exception\NotAllowedException;
 use SuiteCRM\Enumerator\ExceptionCode;
 use SuiteCRM\Utility\SuiteLogger as Logger;
 
+#[\AllowDynamicProperties]
 class ResourceServer
 {
     /**

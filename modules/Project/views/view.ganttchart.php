@@ -23,16 +23,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ProjectViewGanttChart extends ViewDetail
 {
-
-    //Constructor
-    public function __construct()
-    {
-        parent::SugarView();
-    }
-
-
     public function display()
     {
         global $mod_strings, $app_list_strings;
@@ -90,7 +83,7 @@ class ProjectViewGanttChart extends ViewDetail
                     <fieldset>
 						<table width="100%">
 							<tr><td>
-						
+
 							<input type="hidden" name="project_id" id="project_id" value="<?php echo $project->id; ?>">
 							<input type="hidden" name="consider_business_hours" id="consider_business_hours" value="<?php echo $project->override_business_hours; ?>">
 							<input type="hidden" name="task_id" style="display: none; visibility: collapse;" id="task_id" value="">
@@ -138,7 +131,7 @@ class ProjectViewGanttChart extends ViewDetail
 									startWeekday: 0
 								});
 							</script>
-					
+
 						</td><td> 
 
 							<label for="Duration"><?php echo $mod_strings['LBL_DURATION_TITLE']; ?></label>
@@ -228,7 +221,7 @@ class ProjectViewGanttChart extends ViewDetail
 					</div>
 				</div>
 				<br>
-	
+
 				?>
 			</div -->
 

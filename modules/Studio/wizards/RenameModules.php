@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Studio/DropDowns/DropDownHelper.php');
 require_once 'modules/ModuleBuilder/parsers/parser.label.php' ;
 
+#[\AllowDynamicProperties]
 class RenameModules
 {
     /**
@@ -434,7 +435,7 @@ class RenameModules
                     //At this point we don't know if we should replace the string with the plural or singular version of the new
                     //strings so we'll try both but with the plural version first since it should be longer than the singular.
                     // The saved old strings are html decoded, so we need to decode the new string first before str_replace.
-                    $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_plural'], ENT_QUOTES), $renameFields['plural'], $oldStringValue);
+                    $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_plural'], ENT_QUOTES), $renameFields['plural'], (string) $oldStringValue);
                     if ($replacedString == $oldStringValue) {
                         // continue to replace singular only if nothing been replaced yet
                         $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_singular'], ENT_QUOTES), $renameFields['singular'], $replacedString);
@@ -550,12 +551,12 @@ class RenameModules
             $oldStringValue = translate($replaceKey, $moduleName);
             $renameFields = $this->changedModules[$linkEntry['module']];
 
-            if (strlen($renameFields['prev_plural']) > strlen($renameFields['prev_singular']) && strpos($oldStringValue, $renameFields['prev_plural']) !== false) {
+            if (strlen((string) $renameFields['prev_plural']) > strlen((string) $renameFields['prev_singular']) && strpos((string) $oldStringValue, (string) $renameFields['prev_plural']) !== false) {
                 $key = 'plural';
             } else {
                 $key = 'singular';
             }
-            $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_' . $key], ENT_QUOTES), $renameFields[$key], $oldStringValue);
+            $replacedString = str_replace(html_entity_decode_utf8($renameFields['prev_' . $key], ENT_QUOTES), $renameFields[$key], (string) $oldStringValue);
             $replacementStrings[$replaceKey] = $replacedString;
         }
 
@@ -618,9 +619,9 @@ class RenameModules
                 require($dashletData['meta']);
                 $dashletTitle = $dashletMeta[$dashletName]['title'];
                 $currentModuleStrings = return_module_language($this->selectedLanguage, $moduleName);
-                $modStringKey = array_search($dashletTitle, $currentModuleStrings);
+                $modStringKey = array_search($dashletTitle, $currentModuleStrings, true);
                 if ($modStringKey !== false) {
-                    $replacedString = str_replace(html_entity_decode_utf8($replacementLabels['prev_plural'], ENT_QUOTES), $replacementLabels['plural'], $dashletTitle);
+                    $replacedString = str_replace(html_entity_decode_utf8($replacementLabels['prev_plural'], ENT_QUOTES), $replacementLabels['plural'], (string) $dashletTitle);
                     if ($replacedString == $dashletTitle) {
                         $replacedString = str_replace(html_entity_decode_utf8($replacementLabels['prev_singular'], ENT_QUOTES), $replacementLabels['singular'], $replacedString);
                     }
@@ -740,7 +741,7 @@ class RenameModules
             if (isset($currentModuleStrings[$formattedLanguageKey])) {
                 $oldStringValue = $currentModuleStrings[$formattedLanguageKey];
                 $replacedLabels[$formattedLanguageKey] = $this->replaceSingleLabel($oldStringValue, $replacementLabels, $entry);
-                if (isset($entry['case']) && $entry['case'] == 'both') {
+                if (isset($entry['case']) && $entry['case'] === 'both') {
                     $replacedLabels[$formattedLanguageKey] = $this->replaceSingleLabel($replacedLabels[$formattedLanguageKey], $replacementLabels, $entry, 'strtolower');
                 }
             }
@@ -781,7 +782,7 @@ class RenameModules
             $search = call_user_func($modifier, $search);
             $replace = call_user_func($modifier, $replace);
         }
-        
+
         // Bug 47957
         // If nothing was replaced - try to replace original string
         $result = '';
@@ -805,25 +806,25 @@ class RenameModules
     {
         $GLOBALS['log']->debug('Begining to save app string entries');
         //Save changes to the moduleList app string entry
-        DropDownHelper::saveDropDown($_REQUEST);
+        (new DropDownHelper())->saveDropDown($_REQUEST);
 
         //Save changes to the moduleListSingular app string entry
         $newParams = array();
         $newParams['dropdown_name'] = 'moduleListSingular';
         $newParams['dropdown_lang'] = isset($_REQUEST['dropdown_lang']) ? $_REQUEST['dropdown_lang'] : '';
         $newParams['use_push'] = true;
-        DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, $this->changedModules));
+        (new DropDownHelper())->saveDropDown($this->createModuleListSingularPackage($newParams, $this->changedModules));
 
         //Save changes to the "*type_display*" app_list_strings entry.
         global $app_list_strings;
-        
+
         $typeDisplayList = getTypeDisplayList();
-        
+
         foreach (array_keys($this->changedModules)as $moduleName) {
             foreach ($typeDisplayList as $typeDisplay) {
                 if (isset($app_list_strings[$typeDisplay]) && isset($app_list_strings[$typeDisplay][$moduleName])) {
                     $newParams['dropdown_name'] = $typeDisplay;
-                    DropDownHelper::saveDropDown($this->createModuleListSingularPackage($newParams, array($moduleName => $this->changedModules[$moduleName])));
+                    (new DropDownHelper())->saveDropDown($this->createModuleListSingularPackage($newParams, array($moduleName => $this->changedModules[$moduleName])));
                 }
             }
         }

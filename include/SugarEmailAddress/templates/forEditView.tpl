@@ -39,15 +39,6 @@
  */
 
 *}
-{php}
-global $emailInstances;
-if (empty($emailInstances))
-	$emailInstances = array();
-if (!isset($emailInstances[$this->_tpl_vars['module']]))
-	$emailInstances[$this->_tpl_vars['module']] = 0;
-$this->_tpl_vars['index'] = $emailInstances[$this->_tpl_vars['module']];
-$emailInstances['module']++;
-{/php}
 <script type="text/javascript" language="javascript">
 var emailAddressWidgetLoaded = false;
 </script>

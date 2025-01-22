@@ -89,20 +89,6 @@ if (!defined('sugarEntry') || !sugarEntry) {
      }
 
      /**
-      * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-      */
-     public function ListViewFacade($focus, $module, $type = 0)
-     {
-         $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-         if (isset($GLOBALS['log'])) {
-             $GLOBALS['log']->deprecated($deprecatedMessage);
-         } else {
-             trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-         }
-         self::__construct($focus, $module, $type);
-     }
-
-     /**
       * Retrieves display columns on list view of specified module
       *
       * @param string $module

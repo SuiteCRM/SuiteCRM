@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubPanelTopButton
 {
     public function getWidgetId($buttonSuffix = true)
@@ -99,7 +100,7 @@ class SugarWidgetSubPanelTopCreateCampaignLogEntryButton extends SugarWidgetSubP
         if (isset($widget_data['initial_filter_fields'])) {
             if (is_array($widget_data['initial_filter_fields'])) {
                 foreach ($widget_data['initial_filter_fields'] as $value=>$alias) {
-                    if (isset($focus->$value) and !empty($focus->$value)) {
+                    if (isset($focus->$value) && !empty($focus->$value)) {
                         $initial_filter.="&".$alias . '='.urlencode($focus->$value);
                     }
                 }

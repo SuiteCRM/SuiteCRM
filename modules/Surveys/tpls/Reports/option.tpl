@@ -10,7 +10,7 @@
         </tr>
     {/foreach}
 </table>
-<canvas width="600" height="300" id='{$question.id}Chart' class=''></canvas>
+<canvas width="750" height="400" id='{$question.id}Chart' class=''></canvas>
 <script>
     {literal}
     $(document).ready(function () {
@@ -23,8 +23,14 @@
         options: {
           title: '{/literal}{$question.name}{literal}',
           textSize: 10,
-          titleSize: 10,
+          textAngle: 40,
+          titleSize: 16,
+          titleFont: 'Lato',
+          titleY: 10,
           colors: ['#f08377', '#534d64', '#778591', '#bfcad3', '#d8f5ee'],
+          gutterBottom: 110,
+          gutterTop: 60,
+          gutterLeft: 50,
           tooltips: function (ind) {
             return chartLabels[ind] + " - " + chartData[ind];
           },

@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-use SuiteCRM\Search\SearchTestAbstract;
+use SuiteCRM\Tests\Unit\lib\SuiteCRM\Search\SearchTestAbstract;
 
 require_once 'include/utils/LogicHook.php';
 require_once 'modules/Schedulers/Scheduler.php';
@@ -47,13 +47,12 @@ class ElasticSearchInstallTest extends SearchTestAbstract
     /**
      * Asserts if the after_save and after_delete logic hooks for ElasticSearchIndexer are correctly loaded.
      */
-    public function testHooksPresent()
+    public function testHooksPresent(): void
     {
-        $LogicHook = new LogicHook();
-        $default_hooks = $LogicHook->loadHooks('');
+        $default_hooks = (new LogicHook())->loadHooks('');
 
-        $afterSave = $default_hooks['after_save'];
-        $afterDelete = $default_hooks['after_delete'];
+        $afterSave = $default_hooks['after_save'] ?? [];
+        $afterDelete = $default_hooks['after_delete'] ?? [];
 
         $found = 0;
 
@@ -85,23 +84,9 @@ class ElasticSearchInstallTest extends SearchTestAbstract
     }
 
     /**
-     * Asserts if the ElasticSearchIndexer scheduler is correctly loaded
-     */
-    public function testSchedulerPresent()
-    {
-//        self::markTestIncomplete('environment dependency');
-//
-//        $scheduler = new Scheduler();
-//
-//        $jobs = $scheduler->getJobsList();
-//
-//        self::assertArrayHasKey('function::runElasticSearchIndexerScheduler', $jobs);
-    }
-
-    /**
      * Asserts that the configuration for the ElasticSearch are present in the global config array.
      */
-    public function testConfigPresent()
+    public function testConfigPresent(): void
     {
         global $sugar_config;
 

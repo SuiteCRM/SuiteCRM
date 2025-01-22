@@ -53,5 +53,5 @@ if (!defined('sugarEntry') || !sugarEntry) {
 include_once __DIR__ . '/GoogleApiKeySaverEntryPoint.php';
 
 global $current_user, $sugar_config;
-$client = new Google_Client();
+$client = new \Google\Client();
 new GoogleApiKeySaverEntryPoint($current_user, $sugar_config, $client, $_REQUEST);

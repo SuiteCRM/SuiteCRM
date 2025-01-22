@@ -97,6 +97,9 @@
         composeBox.on('hide.bs.modal', function () {
           composeBox.remove();
         });
+        $( "#emails_email_templates_name" ).change(function() {
+          $.fn.EmailsComposeView.onTemplateChange()
+        });
       }).fail(function (data) {
         composeBox.controls.modal.content.html(SUGAR.language.translate('', 'LBL_EMAIL_ERROR_GENERAL_TITLE'));
       });
@@ -251,6 +254,9 @@
           mb.remove();
         });
         mb.show();
+      });
+      $( "#emails_email_templates_name" ).change(function() {
+        $.fn.EmailsComposeView.onTemplateChange()
       });
     }).fail(function (data) {
       composeBox.controls.modal.content.html(SUGAR.language.translate('', 'LBL_EMAIL_ERROR_GENERAL_TITLE'));

@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class SugarBeanMock extends SugarBean
 {
     /**
@@ -8,7 +9,6 @@ class SugarBeanMock extends SugarBean
      */
     public $foo;
 
-    /** @noinspection SenselessMethodDuplicationInspection */
     /** @noinspection PhpMissingParentConstructorInspection */
     /** @noinspection MagicMethodsValidityInspection */
 
@@ -40,14 +40,12 @@ class SugarBeanMock extends SugarBean
             }
 
             //setup custom fields
-            /** @noinspection UnSafeIsSetOverArrayInspection */
             if (!isset($this->custom_fields) &&
                 empty($this->disable_custom_fields)
             ) {
                 $this->setupCustomFields($this->module_dir);
             }
 
-            /** @noinspection NotOptimalIfConditionsInspection */
             if (isset($GLOBALS['dictionary'][$this->object_name]) && !$this->disable_vardefs) {
                 $this->field_name_map = $dictionary[$this->object_name]['fields'];
                 $this->field_defs = $dictionary[$this->object_name]['fields'];
@@ -69,7 +67,6 @@ class SugarBeanMock extends SugarBean
             $this->field_defs =& $loaded_definitions[$this->object_name]['field_defs'];
             $this->added_custom_field_defs = true;
 
-            /** @noinspection UnSafeIsSetOverArrayInspection */
             if (!isset($this->custom_fields) &&
                 empty($this->disable_custom_fields)
             ) {
@@ -93,7 +90,7 @@ class SugarBeanMock extends SugarBean
      * @return string
      * @throws \Exception
      */
-    public function publicParseDateDefault($value, $time = false)
+    public function publicParseDateDefault($value, $time = false): string
     {
         return $this->parseDateDefault($value, $time);
     }/** @noinspection MoreThanThreeArgumentsInspection */
@@ -105,7 +102,7 @@ class SugarBeanMock extends SugarBean
      * @param string $order_by
      * @return array
      */
-    public static function publicBuildSubQueriesForUnion($subpanel_list, $subpanel_def, $parentbean, $order_by)
+    public static function publicBuildSubQueriesForUnion($subpanel_list, $subpanel_def, $parentbean, $order_by): array
     {
         return self::build_sub_queries_for_union($subpanel_list, $subpanel_def, $parentbean, $order_by);
     }
@@ -113,12 +110,12 @@ class SugarBeanMock extends SugarBean
     /**
      * @param mixed $testValue
      */
-    public function setLoadedRelationships($testValue)
+    public function setLoadedRelationships($testValue): void
     {
         $this->loaded_relationships = $testValue;
     }
 
-    public function getEncryptKeyPublic()
+    public function getEncryptKeyPublic(): string
     {
         return parent::getEncryptKey();
     }

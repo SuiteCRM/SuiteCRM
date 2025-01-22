@@ -4,81 +4,81 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class jjwg_Address_CacheTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testjjwg_Address_Cache()
+    public function testjjwg_Address_Cache(): void
     {
         // execute the constructor and check for the Object type and attributes
         $jjwgAddressCache = BeanFactory::newBean('jjwg_Address_Cache');
-        $this->assertInstanceOf('jjwg_Address_Cache', $jjwgAddressCache);
-        $this->assertInstanceOf('Basic', $jjwgAddressCache);
-        $this->assertInstanceOf('SugarBean', $jjwgAddressCache);
+        self::assertInstanceOf('jjwg_Address_Cache', $jjwgAddressCache);
+        self::assertInstanceOf('Basic', $jjwgAddressCache);
+        self::assertInstanceOf('SugarBean', $jjwgAddressCache);
 
-        $this->assertAttributeEquals('jjwg_Address_Cache', 'module_dir', $jjwgAddressCache);
-        $this->assertAttributeEquals('jjwg_Address_Cache', 'object_name', $jjwgAddressCache);
-        $this->assertAttributeEquals('jjwg_address_cache', 'table_name', $jjwgAddressCache);
+        self::assertEquals('jjwg_Address_Cache', $jjwgAddressCache->module_dir);
+        self::assertEquals('jjwg_Address_Cache', $jjwgAddressCache->object_name);
+        self::assertEquals('jjwg_address_cache', $jjwgAddressCache->table_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $jjwgAddressCache);
-        $this->assertAttributeEquals(true, 'importable', $jjwgAddressCache);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $jjwgAddressCache);
+        self::assertEquals(true, $jjwgAddressCache->new_schema);
+        self::assertEquals(true, $jjwgAddressCache->importable);
+        self::assertEquals(true, $jjwgAddressCache->disable_row_level_security);
     }
 
-    public function testconfiguration()
+    public function testconfiguration(): void
     {
         $jjwgAddressCache = BeanFactory::newBean('jjwg_Address_Cache');
         $jjwgAddressCache->configuration();
 
-        $this->assertInstanceOf('jjwg_Maps', $jjwgAddressCache->jjwg_Maps);
-        $this->assertTrue(is_array($jjwgAddressCache->settings));
-        $this->assertGreaterThan(0, count($jjwgAddressCache->settings));
+        self::assertInstanceOf('jjwg_Maps', $jjwgAddressCache->jjwg_Maps);
+        self::assertIsArray($jjwgAddressCache->settings);
+        self::assertGreaterThan(0, count($jjwgAddressCache->settings));
     }
 
-    public function testSaveAndGetAddressCacheInfoAndDeleteAllAddressCache()
+    public function testSaveAndGetAddressCacheInfoAndDeleteAllAddressCache(): void
     {
         $jjwgAddressCache = BeanFactory::newBean('jjwg_Address_Cache');
 
         //test saveAddressCacheInfo() with empty info array
         $ainfo = array();
         $result = $jjwgAddressCache->saveAddressCacheInfo($ainfo);
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
 
         //test saveAddressCacheInfo() with a valid info array
         $jjwgAddressCache->settings['address_cache_save_enabled'] = 1;
         $ainfo = array('address' => 'test', 'lat' => '24.861462', 'lng' => '67.009939', 'description' => 'test description');
         $result = $jjwgAddressCache->saveAddressCacheInfo($ainfo);
-        $this->assertEquals(true, $result);
+        self::assertEquals(true, $result);
 
         //test getAddressCacheInfo() with empty info array
         $result = $jjwgAddressCache->getAddressCacheInfo(array());
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
 
         //test getAddressCacheInfo() with a valid info array
         $jjwgAddressCache->settings['address_cache_get_enabled'] = 1;
         $ainfo = array('address' => 'test', 'lat' => '24.861462', 'lng' => '67.009939', 'description' => 'test description');
         $result = $jjwgAddressCache->getAddressCacheInfo($ainfo);
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
 
         //test deleteAllAddressCache
         $jjwgAddressCache->deleteAllAddressCache();
 
         //verify that record cannot be retrieved anynore
         $result = $jjwgAddressCache->getAddressCacheInfo($ainfo);
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
     }
 
-    public function testis_valid_lng()
+    public function testis_valid_lng(): void
     {
         $jjwgAddressCache = BeanFactory::newBean('jjwg_Address_Cache');
 
         //test with invalid values
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lng(''));
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lng(181));
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lng(-181));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lng(''));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lng(181));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lng(-181));
 
         //test with valid values
-        $this->assertEquals(true, $jjwgAddressCache->is_valid_lng(180));
-        $this->assertEquals(true, $jjwgAddressCache->is_valid_lng(-180));
+        self::assertEquals(true, $jjwgAddressCache->is_valid_lng(180));
+        self::assertEquals(true, $jjwgAddressCache->is_valid_lng(-180));
     }
 
-    public function testis_valid_lat()
+    public function testis_valid_lat(): void
     {
         self::markTestIncomplete('Incorrect state hash (in PHPUnitTest): Hash doesn\'t match at key "database::email_addresses".');
 
@@ -86,12 +86,12 @@ class jjwg_Address_CacheTest extends SuitePHPUnitFrameworkTestCase
         $jjwgAddressCache = BeanFactory::newBean('jjwg_Address_Cache');
 
         //test with invalid values
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lat(''));
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lat(91));
-        $this->assertEquals(false, $jjwgAddressCache->is_valid_lat(-91));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lat(''));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lat(91));
+        self::assertEquals(false, $jjwgAddressCache->is_valid_lat(-91));
 
         //test with valid values
-        $this->assertEquals(true, $jjwgAddressCache->is_valid_lat(90));
-        $this->assertEquals(true, $jjwgAddressCache->is_valid_lat(-90));
+        self::assertEquals(true, $jjwgAddressCache->is_valid_lat(90));
+        self::assertEquals(true, $jjwgAddressCache->is_valid_lat(-90));
     }
 }

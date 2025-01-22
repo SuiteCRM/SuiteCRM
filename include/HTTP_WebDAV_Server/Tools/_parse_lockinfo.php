@@ -27,6 +27,7 @@
  * @author Hartmut Holzgraefe <hholzgra@php.net>
  * @version 0.99.1dev
  */
+#[\AllowDynamicProperties]
 class _parse_lockinfo
 {
     /**
@@ -149,7 +150,7 @@ class _parse_lockinfo
     public function _startElement($parser, $name, $attrs)
     {
         // namespace handling
-        if (strstr($name, " ")) {
+        if (strstr((string) $name, " ")) {
             list($ns, $tag) = explode(" ", $name);
         } else {
             $ns = "";
@@ -213,7 +214,7 @@ class _parse_lockinfo
     public function _endElement($parser, $name)
     {
         // namespace handling
-        if (strstr($name, " ")) {
+        if (strstr((string) $name, " ")) {
             list($ns, $tag) = explode(" ", $name);
         } else {
             $ns = "";

@@ -48,6 +48,8 @@ require_once 'modules/ModuleBuilder/parsers/constants.php' ;
 
 class SearchViewMetaDataParser extends ListLayoutMetaDataParser
 {
+    public $_searchLayout;
+    public $_saved;
     /**
      * @var array $variableMap
      */

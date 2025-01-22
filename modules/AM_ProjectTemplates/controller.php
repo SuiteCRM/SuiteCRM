@@ -23,6 +23,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class AM_ProjectTemplatesController extends SugarController
 {
 
@@ -38,12 +39,15 @@ class AM_ProjectTemplatesController extends SugarController
         global $current_user, $db, $mod_strings;
 
         $project_name = $_POST['p_name'];
-        $template_id = $_POST['template_id'];
+        $template_id = $db->quote($_POST['template_id']);
         $project_start = $_POST['start_date'];
         $copy_all = isset($_POST['copy_all_tasks']) ? 1 : 0;
-        $copy_tasks = isset($_POST['tasks']) ? $_POST['tasks'] : array() ;
 
+        $copy_tasks = array();
 
+        if (isset($_POST['tasks']) && is_array($_POST['tasks'])) {
+            $copy_tasks = $_POST['tasks'];
+        }
 
         //Get project start date
         if ($project_start!='') {
@@ -153,6 +157,7 @@ class AM_ProjectTemplatesController extends SugarController
                         ORDER BY am_tasktemplates.order_number ASC";
         $tasks = $db->query($get_tasks);
         //Create new project tasks from the template tasks
+        $enddate_array = [];
         $count=1;
         while ($row = $db->fetchByAssoc($tasks)) {
             $project_task = BeanFactory::newBean('ProjectTask');
@@ -167,7 +172,7 @@ class AM_ProjectTemplatesController extends SugarController
             $project_task->order_number = $row['order_number'];
             $project_task->estimated_effort = $row['estimated_effort'];
             $project_task->utilization = $row['utilization'];
-            
+
             if ($copy_all == 0 && !in_array($row['id'], $copy_tasks)) {
                 $project_task->assigned_user_id = null;
             } else {
@@ -237,7 +242,7 @@ class AM_ProjectTemplatesController extends SugarController
         }
 
         //set project end date to the same as end date of the last task
-        $project->estimated_end_date = $end;
+        $project->estimated_end_date = $end ?? '';
         $project->save();
 
 
@@ -260,9 +265,9 @@ class AM_ProjectTemplatesController extends SugarController
         include_once('modules/AM_ProjectTemplates/project_table.php');
 
         $project_template = BeanFactory::newBean('AM_ProjectTemplates');
-        $pid = $_POST["pid"];
+        $pid = $db->quote($_POST["pid"]);
         $project_template->retrieve($pid);
-        
+
         //Get project tasks
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
         $tasks = $project_template->get_linked_beans('am_tasktemplates_am_projecttemplates', 'AM_TaskTemplates');
@@ -272,7 +277,7 @@ class AM_ProjectTemplatesController extends SugarController
         $start_date =  Date('Y-m-d');
 
         $query = "select max(duration) +1 from am_tasktemplates inner join am_tasktemplates_am_projecttemplates_c on am_tasktemplates_am_projecttemplatesam_tasktemplates_idb = am_tasktemplates.id and am_tasktemplates_am_projecttemplatesam_projecttemplates_ida = '{$pid}'";
-        
+
         $duration = $db->getOne($query);
 
         if ($duration < 31) {
@@ -314,17 +319,20 @@ class AM_ProjectTemplatesController extends SugarController
     //Create new project task
     public function action_update_GanttChart()
     {
+
         global $current_user, $db;
 
         $task_name = $_POST['task_name'];
         $project_id = $_POST['project_id'];
         $override_business_hours = (int)$_POST['override_business_hours'];
-        $task_id = $_POST['task_id'];
+        $task_id = $_POST['task_id'] ?? '';
         $predecessor = $_POST['predecessor'];
         $rel_type = $_POST['rel_type'];
         $resource = $_POST['resource'];
         $percent = $_POST['percent'];
         $note = $_POST['note'];
+        $milestone_flag = '';
+
         //$actual_duration = $_POST['actual_duration'];
 
         if ($_POST['milestone'] == 'Milestone') {
@@ -374,7 +382,7 @@ class AM_ProjectTemplatesController extends SugarController
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
         $tasks = $project_template->get_linked_beans('am_tasktemplates_am_projecttemplates', 'AM_TaskTemplates');
 
-        $tid = count($tasks) + 1 ;
+        $tid = (is_countable($tasks) ? count($tasks) : 0) + 1 ;
 
         if ($this->IsNullOrEmptyString($task_id)) {
             $this->create_task($task_name, $start, $enddate, $project_id, $milestone_flag, $status, $tid, $predecessor, $rel_type, $duration, $duration_unit, $resource, $percent, $note, $actual_duration, $tid);
@@ -422,10 +430,10 @@ class AM_ProjectTemplatesController extends SugarController
     {
 
        //convert quotes in json string back to normal
-        $jArray = htmlspecialchars_decode($_POST['orderArray']);
+        $jArray = htmlspecialchars_decode((string) $_POST['orderArray']);
 
         //create object/array from json data
-        $orderArray = json_decode($jArray, true);
+        $orderArray = json_decode($jArray);
 
         foreach ($orderArray as $id => $order_number) {
             $task = BeanFactory::newBean('AM_TaskTemplates');

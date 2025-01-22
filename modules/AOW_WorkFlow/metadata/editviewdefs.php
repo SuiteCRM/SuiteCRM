@@ -108,6 +108,11 @@ $viewdefs ['AOW_WorkFlow'] =
                             'name' => 'multiple_runs',
                             'label' => 'LBL_MULTIPLE_RUNS',
                         ),
+                        1 =>
+                        array(
+                            'name' => 'run_on_import',
+                            'label' => 'LBL_RUN_ON_IMPORT',
+                        ),
                     ),
                     4 =>
                     array(

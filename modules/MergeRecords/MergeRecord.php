@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class MergeRecord
  */
+#[\AllowDynamicProperties]
 class MergeRecord extends SugarBean
 {
     public $object_name = 'MergeRecord';
@@ -82,22 +83,6 @@ class MergeRecord extends SugarBean
         if ($merge_module != '') {
             $this->load_merge_bean($merge_module, $merge_id);
         }
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     * @param string $merge_module
-     * @param string $merge_id
-     */
-    public function MergeRecord($merge_module = '', $merge_id = '')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($merge_module, $merge_id);
     }
 
     /**
@@ -399,9 +384,9 @@ class MergeRecord extends SugarBean
             }
         }
         // Add ACL Check
-        if ($this->merge_bean->bean_implements('ACL') && ACLController::requireOwner($this->merge_bean->module_dir, 'delete')) {
-            global $current_user;
-            $where_clauses[] = $this->merge_bean->getOwnerWhere($current_user->id);
+        $accessWhere = $this->merge_bean->buildAccessWhere('delete');
+        if (!empty($accessWhere)) {
+            $where_clauses[] = $accessWhere;
         }
         array_push($where_clauses, $this->merge_bean->table_name.".id !='".DBManagerFactory::getInstance()->quote($this->merge_bean->id)."'");
 

@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class MailMerge
 {
     public $mm_data_dir;
@@ -63,26 +64,11 @@ class MailMerge
         $this->fieldList = $fieldList;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function MailMerge($list = null, $fieldList = null, $data_dir = 'data')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($list, $fieldList, $data_dir);
-    }
-
-
     public function Execute()
     {
         $this->Initialize();
-        if (count($this->list) > 0) {
-            if (isset($this->template)) {
+        if ((is_countable($this->list) ? count($this->list) : 0) > 0) {
+            if ($this->template !== null) {
                 $this->CreateHeaderFile();
                 $this->CreateDataSource();
                 $file = $this->CreateDocument($this->template);
@@ -158,9 +144,9 @@ class MailMerge
 
     public function Initialize()
     {
-        $this->rowcnt = count($this->list);
-        $this->fieldcnt = count($this->fieldList);
-        $this->obj = new COM("word.application") or die("Unable to instanciate Word");
+        $this->rowcnt = is_countable($this->list) ? count($this->list) : 0;
+        $this->fieldcnt = is_countable($this->fieldList) ? count($this->fieldList) : 0;
+        ($this->obj = new COM("word.application")) || die("Unable to instanciate Word");
         $this->obj->Visible = $this->visible;
 
         //try to make the temp dir

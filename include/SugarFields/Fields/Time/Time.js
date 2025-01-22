@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function Time(timeval,field,timeformat,tabindex){this.timeval=timeval;if(typeof this.timeval=="undefined"){this.datetime="";}
+ */function Time(timeval,field,timeformat,tabindex){this.timeval=timeval;if(typeof this.timeval=="undefined"){this.datetime="";}
 this.fieldname=field;this.hrs=parseInt(timeval.substring(0,2),10);this.mins=parseInt(timeval.substring(3,5),10);if(this.mins>0&&this.mins<15){this.mins=15;}else if(this.mins>15&&this.mins<30){this.mins=30;}else if(this.mins>30&&this.mins<45){this.mins=45;}else if(this.mins>45){this.hrs+=1;this.mins=0;}
 this.timeformat=timeformat;this.tabindex=tabindex==null||isNaN(tabindex)?1:tabindex;this.timeseparator=this.timeformat.substring(2,3);this.has12Hours=/^11/.test(this.timeformat);this.hasMeridiem=/am|pm/i.test(this.timeformat);if(this.hasMeridiem){this.pm=/pm/.test(this.timeformat);}
 this.meridiem=this.hasMeridiem?trim(this.timeval.substring(5)):'';}

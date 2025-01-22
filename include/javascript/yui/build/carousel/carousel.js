@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 /**
  * The Carousel module provides a widget for browsing among a set of like
@@ -4472,5 +4472,5 @@ version: 2.9.0
 ;;  indent-tabs-mode: nil **
 ;;  End: **
 */
-YAHOO.register("carousel", YAHOO.widget.Carousel, {version: "2.9.0", build: "2800"});
-YAHOO.register("carousel", YAHOO.widget.Carousel, {version: "2.9.0", build: "2800"});
+YAHOO.register("carousel", YAHOO.widget.Carousel, {version: "2.9.1", build: "2800"});
+YAHOO.register("carousel", YAHOO.widget.Carousel, {version: "2.9.1", build: "2800"});

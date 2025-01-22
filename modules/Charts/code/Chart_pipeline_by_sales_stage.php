@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/charts/Charts.php');
 
+#[\AllowDynamicProperties]
 class Chart_pipeline_by_sales_stage
 {
     public $modules = array('Opportunities');
@@ -52,19 +53,7 @@ class Chart_pipeline_by_sales_stage
     {
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Chart_pipeline_by_sales_stage()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function draw($extra_tools)
@@ -140,11 +129,11 @@ class Chart_pipeline_by_sales_stage
         $datax_selected= array();
         $user_tempx = $current_user->getPreference('pbss_sales_stages');
         //get list of sales stage keys to display
-        if (!empty($user_tempx) && count($user_tempx) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
+        if (!empty($user_tempx) && (is_countable($user_tempx) ? count($user_tempx) : 0) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
             $tempx = $user_tempx ;
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_sales_stages'] is:");
             $GLOBALS['log']->debug($user_tempx);
-        } elseif (isset($_REQUEST['pbss_sales_stages']) && count($_REQUEST['pbss_sales_stages']) > 0) {
+        } elseif (isset($_REQUEST['pbss_sales_stages']) && (is_countable($_REQUEST['pbss_sales_stages']) ? count($_REQUEST['pbss_sales_stages']) : 0) > 0) {
             $tempx = $_REQUEST['pbss_sales_stages'];
             $current_user->setPreference('pbss_sales_stages', $_REQUEST['pbss_sales_stages']);
             $GLOBALS['log']->debug("_REQUEST['pbss_sales_stages'] is:");
@@ -154,7 +143,7 @@ class Chart_pipeline_by_sales_stage
         }
 
         //set $datax using selected sales stage keys
-        if (count($tempx) > 0) {
+        if ((is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 array_push($datax_selected, $key);
@@ -170,12 +159,12 @@ class Chart_pipeline_by_sales_stage
         $new_ids = array();
         $user_ids = $current_user->getPreference('pbss_ids');
         //get list of user ids for which to display data
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['pbss_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['pbss_ids'])) {
             $ids = $user_ids;
 
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['pbss_ids']) && count($_REQUEST['pbss_ids']) > 0) {
+        } elseif (isset($_REQUEST['pbss_ids']) && (is_countable($_REQUEST['pbss_ids']) ? count($_REQUEST['pbss_ids']) : 0) > 0) {
             $ids = $_REQUEST['pbss_ids'];
             $current_user->setPreference('pbss_ids', $_REQUEST['pbss_ids']);
             $GLOBALS['log']->debug("_REQUEST['pbss_ids'] is:");
@@ -302,7 +291,8 @@ echo get_validate_chart_js();
         $chart_size = 'hBarF',
         $current_module_strings = null
     ) {
-        global $app_strings, $charset, $lang, $barChartColors, $current_user, $current_language;
+
+        global $app_strings, $charset, $lang, $barChartColors, $current_user, $current_language, $timedate;
 
         // set $current_module_strings to 'Charts' module strings by default
         if (empty($current_module_strings)) {
@@ -310,8 +300,7 @@ echo get_validate_chart_js();
         }
 
         $kDelim = $current_user->getPreference('num_grp_sep');
-
-        global $timedate;
+        $new_ids = [];
 
         if (!file_exists($cache_file_name) || $refresh == true) {
             $GLOBALS['log']->debug("starting pipeline chart");
@@ -323,7 +312,7 @@ echo get_validate_chart_js();
             $opp = new Opportunity;
             $where="";
             //build the where clause for the query that matches $user
-            $count = count($user_id);
+            $count = is_countable($user_id) ? count($user_id) : 0;
             $id = array();
             $user_list = get_user_array(false);
             foreach ($user_id as $key) {
@@ -337,7 +326,7 @@ echo get_validate_chart_js();
                 $where .= "opportunities.assigned_user_id IN ($ids) ";
             }
             //build the where clause for the query that matches $datax
-            $count = count($datax);
+            $count = is_countable($datax) ? count($datax) : 0;
             $dataxArr = array();
             if ($count>0) {
                 foreach ($datax as $key=>$value) {
@@ -517,11 +506,11 @@ echo get_validate_chart_js();
         $datax_selected= array();
         $user_tempx = $current_user->getPreference('pbss_sales_stages');
         //get list of sales stage keys to display
-        if (!empty($user_tempx) && count($user_tempx) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
+        if (!empty($user_tempx) && (is_countable($user_tempx) ? count($user_tempx) : 0) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
             $tempx = $user_tempx ;
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_sales_stages'] is:");
             $GLOBALS['log']->debug($user_tempx);
-        } elseif (isset($_REQUEST['pbss_sales_stages']) && count($_REQUEST['pbss_sales_stages']) > 0) {
+        } elseif (isset($_REQUEST['pbss_sales_stages']) && (is_countable($_REQUEST['pbss_sales_stages']) ? count($_REQUEST['pbss_sales_stages']) : 0) > 0) {
             $tempx = $_REQUEST['pbss_sales_stages'];
             $current_user->setPreference('pbss_sales_stages', $_REQUEST['pbss_sales_stages']);
             $GLOBALS['log']->debug("_REQUEST['pbss_sales_stages'] is:");
@@ -531,7 +520,7 @@ echo get_validate_chart_js();
         }
 
         //set $datax using selected sales stage keys
-        if (count($tempx) > 0) {
+        if ((is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 array_push($datax_selected, $key);
@@ -549,12 +538,12 @@ echo get_validate_chart_js();
         $new_ids = array();
         $user_ids = $current_user->getPreference('pbss_ids');
         //get list of user ids for which to display data
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['pbss_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['pbss_ids'])) {
             $ids = $user_ids;
 
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['pbss_ids']) && count($_REQUEST['pbss_ids']) > 0) {
+        } elseif (isset($_REQUEST['pbss_ids']) && (is_countable($_REQUEST['pbss_ids']) ? count($_REQUEST['pbss_ids']) : 0) > 0) {
             $ids = $_REQUEST['pbss_ids'];
             $current_user->setPreference('pbss_ids', $_REQUEST['pbss_ids']);
             $GLOBALS['log']->debug("_REQUEST['pbss_ids'] is:");
@@ -570,7 +559,7 @@ echo get_validate_chart_js();
         $opp = new Opportunity;
         $where="";
         //build the where clause for the query that matches $user
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         $user_list = get_user_array(false);
         foreach ($user_id as $key) {
@@ -584,7 +573,7 @@ echo get_validate_chart_js();
             $where .= "opportunities.assigned_user_id IN ($ids) ";
         }
         //build the where clause for the query that matches $datax
-        $count = count($datax);
+        $count = is_countable($datax) ? count($datax) : 0;
         $dataxArr = array();
         if ($count>0) {
             foreach ($datax as $key=>$value) {

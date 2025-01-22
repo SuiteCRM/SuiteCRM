@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelEditRoleButton extends SugarWidgetField
 {
     public function displayHeaderCell($layout_def)
@@ -53,7 +54,7 @@ class SugarWidgetSubPanelEditRoleButton extends SugarWidgetField
         return '&nbsp;';
     }
 
-    public function displayList($layout_def)
+    public function displayList(&$layout_def)
     {
         global $app_strings;
         global $subpanel_item_count;

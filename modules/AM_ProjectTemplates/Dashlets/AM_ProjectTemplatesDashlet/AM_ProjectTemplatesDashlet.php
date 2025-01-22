@@ -52,11 +52,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/AM_ProjectTemplates/AM_ProjectTemplates.php');
 
+#[\AllowDynamicProperties]
 class AM_ProjectTemplatesDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/AM_ProjectTemplates/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);
@@ -69,19 +73,5 @@ class AM_ProjectTemplatesDashlet extends DashletGeneric
         $this->columns = $dashletData['AM_ProjectTemplatesDashlet']['columns'];
 
         $this->seedBean = BeanFactory::newBean('AM_ProjectTemplates');
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AM_ProjectTemplatesDashlet($id, $def = null)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id, $def);
     }
 }

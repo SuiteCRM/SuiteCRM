@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class SearchEngineNotFoundException has to be thrown when a search engine could not be found.
  */
+#[\AllowDynamicProperties]
 class SearchEngineNotFoundException extends SearchException
 {
 }

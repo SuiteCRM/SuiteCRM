@@ -29,24 +29,25 @@
  define("PIE_VALUE_OUTSIDE"     , 140031);
 
  /* pPie class definition */
+ #[\AllowDynamicProperties]
  class pPie
   {
-   var $pChartObject;
-   var $pDataObject;
-   var $LabelPos = "" ;
+   public $pChartObject;
+   public $pDataObject;
+   public $LabelPos = [] ;
 
-   /* Class creator */
-   function pPie($Object,$pDataObject)
-    {
-     /* Cache the pChart object reference */
-     $this->pChartObject = $Object;
+     /* Class creator */
+     public function __construct($Object, $pDataObject)
+     {
+         /* Cache the pChart object reference */
+         $this->pChartObject = $Object;
 
-     /* Cache the pData object reference */
-     $this->pDataObject  = $pDataObject;
-    }
+         /* Cache the pData object reference */
+         $this->pDataObject = $pDataObject;
+     }
 
    /* Draw a pie chart */
-   function draw2DPie($X,$Y,$Format="")
+   public function draw2DPie($X,$Y,$Format="")
     {
      $Radius		= isset($Format["Radius"]) ? $Format["Radius"] : 60;
      $Precision		= isset($Format["Precision"]) ? $Format["Precision"] : 0;
@@ -100,12 +101,12 @@
      if ( $SerieSum == 0 ) { return(PIE_SUMISNULL); }
 
      /* Dump the real number of data to draw */
-     $Values = "";
+     $Values = [];
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
       { if ($Value != 0) { $Values[] = $Value; } }
 
      /* Compute the wasted angular space between series */
-     if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = count($Values) * $DataGapAngle; }
+     if ((is_countable($Values) ? count($Values) : 0)==1) { $WastedAngular = 0; } else { $WastedAngular = (is_countable($Values) ? count($Values) : 0) * $DataGapAngle; }
 
      /* Compute the scale */
      $ScaleFactor = (360 - $WastedAngular) / $SerieSum;
@@ -140,7 +141,7 @@
           { $Settings["BorderR"] = $BorderR; $Settings["BorderG"] = $BorderG; $Settings["BorderB"] = $BorderB; }
         }
 
-       $Plots = "";
+       $Plots = [];
        $EndAngle = $Offset+($Value*$ScaleFactor); if ( $EndAngle > 360 ) { $EndAngle = 360; }
 
        $Angle = ($EndAngle - $Offset)/2 + $Offset;
@@ -228,7 +229,7 @@
            $Yc = sin(($i-90)*PI/180) * $Radius + $Y;
 
            if ( $FirstPoint ) { $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings); } { $FirstPoint = FALSE; }
-  
+
            $this->pChartObject->drawAntialiasPixel($Xc,$Yc,$Settings);
           }
          $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings);
@@ -251,7 +252,7 @@
            else
             $this->writePieLabel($Xc,$Yc,$Label,$Angle,$Settings,FALSE);
           }
-  
+
          $Offset = $i + $DataGapAngle; $ID++;
         }
       }
@@ -259,7 +260,7 @@
      if ( $WriteValues != NULL && !$Shadow )
       {
        $Step = 360 / (2 * PI * $Radius);
-       $Offset = 0; $ID = count($Values)-1;
+       $Offset = 0; $ID = (is_countable($Values) ? count($Values) : 0)-1;
        $Settings = array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE,"R"=>$ValueR,"G"=>$ValueG,"B"=>$ValueB,"Alpha"=>$ValueAlpha);
        foreach($Values as $Key => $Value)
         {
@@ -296,7 +297,7 @@
     }
 
    /* Draw a 3D pie chart */
-   function draw3DPie($X,$Y,$Format="")
+   public function draw3DPie($X,$Y,$Format="")
     {
      /* Rendering layout */
      $Radius		= isset($Format["Radius"]) ? $Format["Radius"] : 80;
@@ -353,12 +354,12 @@
      if ( $SerieSum == 0 ) { return(PIE_SUMISNULL); }
 
      /* Dump the real number of data to draw */
-     $Values = "";
+     $Values = [];
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
       { if ($Value != 0) { $Values[] = $Value; } }
 
      /* Compute the wasted angular space between series */
-     if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = count($Values) * $DataGapAngle; }
+     if ((is_countable($Values) ? count($Values) : 0)==1) { $WastedAngular = 0; } else { $WastedAngular = (is_countable($Values) ? count($Values) : 0) * $DataGapAngle; }
 
      /* Compute the scale */
      $ScaleFactor = (360 - $WastedAngular) / $SerieSum;
@@ -368,7 +369,7 @@
 
      /* Draw the polygon pie elements */
      $Step   = 360 / (2 * PI * $Radius);
-     $Offset = 360; $ID = count($Values)-1;
+     $Offset = 360; $ID = (is_countable($Values) ? count($Values) : 0)-1;
      $Values = array_reverse($Values);
      $Slice  = 0; $Slices = ""; $SliceColors = ""; $Visible = ""; $SliceAngle = "";
      foreach($Values as $Key => $Value)
@@ -415,8 +416,9 @@
       {
        foreach($Slices as $SliceID => $Plots)
         {
-         $ShadowPie = "";
-         for($i=0;$i<count($Plots);$i=$i+2)
+         $ShadowPie = [];
+         $PlotsCount = count($Plots) ?? [];
+         for($i=0;$i<$PlotsCount;$i=$i+2)
           { $ShadowPie[] = $Plots[$i]+$this->pChartObject->ShadowX; $ShadowPie[] = $Plots[$i+1]+$this->pChartObject->ShadowY; }
 
          $Settings = array("R"=>$this->pChartObject->ShadowR,"G"=>$this->pChartObject->ShadowG,"B"=>$this->pChartObject->ShadowB,"Alpha"=>$this->pChartObject->Shadowa,"NoBorder"=>TRUE);
@@ -452,7 +454,7 @@
          $Settings = $SliceColors[$SliceID];
          if ( $Border )
           { $Settings["R"]+= 30; $Settings["G"]+= 30; $Settings["B"]+= 30;; }
-  
+
          if ( isset($SliceAngle[$SliceID][1]) ) /* Empty error handling */
           {
            $Angle = $SliceAngle[$SliceID][1];
@@ -460,7 +462,7 @@
            $Yc = sin(($Angle-90)*PI/180) * $Radius*$SkewFactor + $Y;
            $this->pChartObject->drawLine($Plots[0],$Plots[1],$Xc,$Yc,$Settings);
 
-           $Angle = $SliceAngle[$SliceID][count($SliceAngle[$SliceID])-1];
+           $Angle = $SliceAngle[$SliceID][(is_countable($SliceAngle[$SliceID]) ? count($SliceAngle[$SliceID]) : 0)-1];
            $Xc = cos(($Angle-90)*PI/180) * $Radius + $X;
            $Yc = sin(($Angle-90)*PI/180) * $Radius*$SkewFactor + $Y;
            $this->pChartObject->drawLine($Plots[0],$Plots[1],$Xc,$Yc,$Settings);
@@ -479,9 +481,9 @@
        if ( $Visible[$SliceID]["Start"] && isset($Plots[2])) /* Empty error handling */
         {
          $this->pChartObject->drawLine($Plots[2],$Plots[3],$Plots[2],$Plots[3]- $SliceHeight,array("R"=>$Settings["R"],"G"=>$Settings["G"],"B"=>$Settings["B"]));
-         $Border = "";
+         $Border = [];
          $Border[] = $Plots[0]; $Border[] = $Plots[1]; $Border[] = $Plots[0]; $Border[] = $Plots[1] - $SliceHeight;
-         $Border[] = $Plots[2]; $Border[] = $Plots[3] - $SliceHeight; $Border[] = $Plots[2]; $Border[] = $Plots[3]; 
+         $Border[] = $Plots[2]; $Border[] = $Plots[3] - $SliceHeight; $Border[] = $Plots[2]; $Border[] = $Plots[3];
          $this->pChartObject->drawPolygon($Border,$Settings);
         }
       }
@@ -494,11 +496,11 @@
        $Settings["R"]+= 10; $Settings["G"]+= 10; $Settings["B"]+= 10; $Settings["NoBorder"] = TRUE;
        if ( $Visible[$SliceID]["End"] )
         {
-         $this->pChartObject->drawLine($Plots[count($Plots)-2],$Plots[count($Plots)-1],$Plots[count($Plots)-2],$Plots[count($Plots)-1]- $SliceHeight,array("R"=>$Settings["R"],"G"=>$Settings["G"],"B"=>$Settings["B"]));
+         $this->pChartObject->drawLine($Plots[(is_countable($Plots) ? count($Plots) : 0)-2],$Plots[(is_countable($Plots) ? count($Plots) : 0)-1],$Plots[(is_countable($Plots) ? count($Plots) : 0)-2],$Plots[(is_countable($Plots) ? count($Plots) : 0)-1]- $SliceHeight,array("R"=>$Settings["R"],"G"=>$Settings["G"],"B"=>$Settings["B"]));
 
-         $Border = "";
+         $Border = [];
          $Border[] = $Plots[0]; $Border[] = $Plots[1]; $Border[] = $Plots[0]; $Border[] = $Plots[1] - $SliceHeight;
-         $Border[] = $Plots[count($Plots)-2]; $Border[] = $Plots[count($Plots)-1] - $SliceHeight; $Border[] = $Plots[count($Plots)-2]; $Border[] = $Plots[count($Plots)-1]; 
+         $Border[] = $Plots[(is_countable($Plots) ? count($Plots) : 0)-2]; $Border[] = $Plots[(is_countable($Plots) ? count($Plots) : 0)-1] - $SliceHeight; $Border[] = $Plots[(is_countable($Plots) ? count($Plots) : 0)-2]; $Border[] = $Plots[(is_countable($Plots) ? count($Plots) : 0)-1];
          $this->pChartObject->drawPolygon($Border,$Settings);
         }
       }
@@ -508,13 +510,14 @@
       {
        $Settings = $SliceColors[$SliceID];
        $Settings["R"]+= 10; $Settings["G"]+= 10; $Settings["B"]+= 10; $Settings["NoBorder"] = TRUE;
+       $PlotsCount = is_countable($Plots) ? count($Plots) : 0;
 
-       for ($j=2;$j<count($Plots)-2;$j=$j+2)
+       for ($j=2;$j<$PlotsCount-2;$j=$j+2)
         {
          $Angle = $SliceAngle[$SliceID][$j/2];
          if ( $Angle < 270 && $Angle > 90 )
           {
-           $Border = "";
+           $Border = [];
            $Border[] = $Plots[$j];   $Border[] = $Plots[$j+1];
            $Border[] = $Plots[$j+2]; $Border[] = $Plots[$j+3];
            $Border[] = $Plots[$j+2]; $Border[] = $Plots[$j+3] - $SliceHeight;
@@ -528,7 +531,7 @@
          $Settings = $SliceColors[$SliceID];
          if ( $Border )
           { $Settings["R"]+= 30; $Settings["G"]+= 30; $Settings["B"]+= 30; }
-  
+
          if ( isset($SliceAngle[$SliceID][1]) ) /* Empty error handling */
           {
            $Angle = $SliceAngle[$SliceID][1];
@@ -540,7 +543,9 @@
             }
           }
 
-         $Angle = $SliceAngle[$SliceID][count($SliceAngle[$SliceID])-1];
+          $sliceCount = is_countable($SliceAngle[$SliceID]) ? count($SliceAngle[$SliceID]) : 0;
+
+         $Angle = $SliceAngle[$SliceID][$sliceCount-1];
          if ( $Angle < 270 && $Angle > 90 )
           {
            $Xc = cos(($Angle-90)*PI/180) * $Radius + $X;
@@ -548,14 +553,14 @@
            $this->pChartObject->drawLine($Xc,$Yc,$Xc,$Yc-$SliceHeight,$Settings);
           }
 
-         if ( isset($SliceAngle[$SliceID][1]) && $SliceAngle[$SliceID][1] > 270 && $SliceAngle[$SliceID][count($SliceAngle[$SliceID])-1] < 270 )
+         if ( isset($SliceAngle[$SliceID][1]) && $SliceAngle[$SliceID][1] > 270 && $SliceAngle[$SliceID][$sliceCount-1] < 270 )
           {
            $Xc = cos((270-90)*PI/180) * $Radius + $X;
            $Yc = sin((270-90)*PI/180) * $Radius*$SkewFactor + $Y;
            $this->pChartObject->drawLine($Xc,$Yc,$Xc,$Yc-$SliceHeight,$Settings);
           }
 
-         if ( isset($SliceAngle[$SliceID][1]) && $SliceAngle[$SliceID][1] > 90 && $SliceAngle[$SliceID][count($SliceAngle[$SliceID])-1] < 90 )
+         if ( isset($SliceAngle[$SliceID][1]) && $SliceAngle[$SliceID][1] > 90 && $SliceAngle[$SliceID][$sliceCount-1] < 90 )
           {
            $Xc = cos((0)*PI/180) * $Radius + $X;
            $Yc = sin((0)*PI/180) * $Radius*$SkewFactor + $Y;
@@ -571,8 +576,9 @@
        $Settings = $SliceColors[$SliceID];
        $Settings["R"]+= 20; $Settings["G"]+= 20; $Settings["B"]+= 20;
 
-       $Top = "";
-       for($j=0;$j<count($Plots);$j=$j+2) { $Top[] = $Plots[$j]; $Top[] = $Plots[$j+1]- $SliceHeight; }
+       $Top = [];
+       $PlotsCount = count($Plots);
+       for($j=0;$j<$PlotsCount;$j=$j+2) { $Top[] = $Plots[$j]; $Top[] = $Plots[$j+1]- $SliceHeight; }
        $this->pChartObject->drawPolygon($Top,$Settings);
 
        if ( $RecordImageMap && !$Shadow ) { $this->pChartObject->addToImageMap("POLY",$this->arraySerialize($Top),$this->pChartObject->toHTMLColor($Settings["R"],$Settings["G"],$Settings["B"]),$Data["Series"][$Data["Abscissa"]]["Data"][count($Slices)-$SliceID-1],$Values[$SliceID]); }
@@ -615,7 +621,7 @@
            $Yc = sin(($i-90)*PI/180) * $Radius*$SkewFactor + $Y - $SliceHeight;
 
            if ( $FirstPoint ) { $this->pChartObject->drawLine($Xc,$Yc,$X0,$Y0,$Settings); } { $FirstPoint = FALSE; }
-  
+
            $this->pChartObject->drawAntialiasPixel($Xc,$Yc,$Settings);
            if ($i < 270 && $i > 90 ) { $this->pChartObject->drawAntialiasPixel($Xc,$Yc+$SliceHeight,$Settings); }
           }
@@ -697,7 +703,7 @@
     }
 
    /* Draw the legend of pie chart */
-   function drawPieLegend($X,$Y,$Format="")
+   public function drawPieLegend($X,$Y,$Format="")
     {
      $FontName		= isset($Format["FontName"]) ? $Format["FontName"] : $this->pChartObject->FontName;
      $FontSize		= isset($Format["FontSize"]) ? $Format["FontSize"] : $this->pChartObject->FontSize;
@@ -782,7 +788,7 @@
     }
 
    /* Set the color of the specified slice */
-   function setSliceColor($SliceID,$Format="")
+   public function setSliceColor($SliceID,$Format="")
     {
      $R		= isset($Format["R"]) ? $Format["R"] : 0;
      $G		= isset($Format["G"]) ? $Format["G"] : 0;
@@ -796,7 +802,7 @@
     }
 
    /* Internally used compute the label positions */
-   function writePieLabel($X,$Y,$Label,$Angle,$Settings,$Stacked,$Xc=0,$Yc=0,$Radius=0,$Reversed=FALSE)
+   public function writePieLabel($X,$Y,$Label,$Angle,$Settings,$Stacked,$Xc=0,$Yc=0,$Radius=0,$Reversed=FALSE)
     {
      $LabelOffset	= 30;
      $FontName		= $this->pChartObject->FontName;
@@ -847,7 +853,7 @@
     }
 
    /* Internally used to shift label positions */
-   function shift($StartAngle,$EndAngle,$Offset,$Reversed)
+   public function shift($StartAngle,$EndAngle,$Offset,$Reversed)
     {
      if ( $Reversed ) { $Offset = -$Offset; }
      foreach($this->LabelPos as $Key => $Settings)
@@ -857,7 +863,7 @@
     }
 
    /* Internally used to write the re-computed labels */
-   function writeShiftedLabels()
+   public function writeShiftedLabels()
     {
      if ( $this->LabelPos == "" ) { return(0); }
      foreach($this->LabelPos as $Key => $Settings)
@@ -883,7 +889,7 @@
     }
 
    /* Draw a ring chart */
-   function draw2DRing($X,$Y,$Format="")
+   public function draw2DRing($X,$Y,$Format="")
     {
      $OuterRadius	= isset($Format["Radius"]) ? $Format["Radius"] : 60;
      $Precision		= isset($Format["Precision"]) ? $Format["Precision"] : 0;
@@ -936,12 +942,12 @@
      if ( $SerieSum == 0 ) { return(PIE_SUMISNULL); }
 
      /* Dump the real number of data to draw */
-     $Values = "";
+     $Values = [];
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
       { if ($Value != 0) { $Values[] = $Value; } }
 
      /* Compute the wasted angular space between series */
-     if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = 0; } // count($Values)
+     if ((is_countable($Values) ? count($Values) : 0)==1) { $WastedAngular = 0; } else { $WastedAngular = 0; } // count($Values)
 
      /* Compute the scale */
      $ScaleFactor = (360 - $WastedAngular) / $SerieSum;
@@ -976,7 +982,7 @@
           $BorderColor = $Settings;
         }
 
-       $Plots = ""; $Boundaries = ""; $AAPixels = "";
+       $Plots = []; $Boundaries = ""; $AAPixels = [];
        $EndAngle = $Offset+($Value*$ScaleFactor); if ( $EndAngle > 360 ) { $EndAngle = 360; }
        for($i=$Offset;$i<=$EndAngle;$i=$i+$Step)
         {
@@ -1091,7 +1097,7 @@
     }
 
    /* Draw a 3D ring chart */
-   function draw3DRing($X,$Y,$Format="")
+   public function draw3DRing($X,$Y,$Format="")
     {
      $OuterRadius	= isset($Format["OuterRadius"]) ? $Format["OuterRadius"] : 100;
      $Precision		= isset($Format["Precision"]) ? $Format["Precision"] : 0;
@@ -1148,12 +1154,12 @@
      if ( $SerieSum == 0 ) { return(PIE_SUMISNULL); }
 
      /* Dump the real number of data to draw */
-     $Values = "";
+     $Values = [];
      foreach ($Data["Series"][$DataSerie]["Data"] as $Key => $Value)
       { if ($Value != 0) { $Values[] = $Value; } }
 
      /* Compute the wasted angular space between series */
-     if (count($Values)==1) { $WastedAngular = 0; } else { $WastedAngular = count($Values) * $DataGapAngle; }
+     if ((is_countable($Values) ? count($Values) : 0)==1) { $WastedAngular = 0; } else { $WastedAngular = (is_countable($Values) ? count($Values) : 0) * $DataGapAngle; }
 
      /* Compute the scale */
      $ScaleFactor = (360 - $WastedAngular) / $SerieSum;
@@ -1162,7 +1168,7 @@
      if ( $this->pChartObject->Shadow ) { $this->pChartObject->Shadow = FALSE; }
 
      /* Draw the polygon ring elements */
-     $Offset = 360; $ID = count($Values)-1;
+     $Offset = 360; $ID = (is_countable($Values) ? count($Values) : 0)-1;
      $Values = array_reverse($Values);
      $Slice  = 0; $Slices = ""; $SliceColors = ""; $Visible = ""; $SliceAngle = "";
      foreach($Values as $Key => $Value)
@@ -1284,7 +1290,7 @@
        $Settings["R"] = $Settings["R"]+$Cf; $Settings["G"] = $Settings["G"]+$Cf; $Settings["B"] = $Settings["B"]+$Cf;
 
        $Outer = TRUE; $Inner = FALSE;
-       $InnerPlotsA = ""; $InnerPlotsB = "";
+       $InnerPlotsA = []; $InnerPlotsB = [];
        foreach($Plots["Angle"] as $ID => $Angle)
         {
          if ( $Angle == VOID )
@@ -1317,7 +1323,7 @@
 
        if ( $StartAngle < 180 )
         {
-         $Points = "";
+         $Points = [];
          $Points[] = $Plots["InX2"];
          $Points[] = $Plots["InY2"];
          $Points[] = $Plots["InX2"];
@@ -1332,7 +1338,7 @@
 
        if ( $EndAngle > 180 )
         {
-         $Points = "";
+         $Points = [];
          $Points[] = $Plots["InX1"];
          $Points[] = $Plots["InY1"];
          $Points[] = $Plots["InX1"];
@@ -1370,7 +1376,7 @@
        $Settings["R"] = $Settings["R"]+$Cf; $Settings["G"] = $Settings["G"]+$Cf; $Settings["B"] = $Settings["B"]+$Cf;
 
        $Outer = TRUE; $Inner = FALSE;
-       $OuterPlotsA = ""; $OuterPlotsB = ""; $InnerPlotsA = ""; $InnerPlotsB = "";
+       $OuterPlotsA = []; $OuterPlotsB = []; $InnerPlotsA = []; $InnerPlotsB = [];
        foreach($Plots["Angle"] as $ID => $Angle)
         {
          if ( $Angle == VOID )
@@ -1400,7 +1406,7 @@
       {
        $Settings = $SliceColors[$SliceID];  $Settings["NoBorder"] = TRUE;
        $Settings["R"] = $Settings["R"]+$Cf*2; $Settings["G"] = $Settings["G"]+$Cf*2; $Settings["B"] = $Settings["B"]+$Cf*2;
- 
+
        $this->pChartObject->drawPolygon($Plots["TopPoly"],$Settings);
 
        if ( $RecordImageMap ) { $this->pChartObject->addToImageMap("POLY",$this->arraySerialize($Plots["TopPoly"]),$this->pChartObject->toHTMLColor($Settings["R"],$Settings["G"],$Settings["B"]),$Data["Series"][$Data["Abscissa"]]["Data"][$SliceID],$Data["Series"][$DataSerie]["Data"][count($Slices)-$SliceID-1]); }
@@ -1452,7 +1458,7 @@
     }
 
   /* Serialize an array */
-  function arraySerialize($Data)
+  public function arraySerialize($Data)
    {
     $Result = "";
     foreach($Data as $Key => $Value)
@@ -1462,20 +1468,20 @@
    }
 
   /* Reverse an array */
-  function arrayReverse($Plots)
+  public function arrayReverse($Plots)
    {
-    $Result = "";
+    $Result = [];
 
-    for($i=count($Plots)-1;$i>=0;$i=$i-2)
+    for($i=(is_countable($Plots) ? count($Plots) : 0)-1;$i>=0;$i=$i-2)
      { $Result[] = $Plots[$i-1]; $Result[] = $Plots[$i]; }
 
     return($Result);
    }
 
   /* Remove unused series & values */
-  function clean0Values($Data,$Palette,$DataSerie,$AbscissaSerie)
+  public function clean0Values($Data,$Palette,$DataSerie,$AbscissaSerie)
    {
-    $NewPalette = ""; $NewData = ""; $NewAbscissa = "";
+    $NewPalette = []; $NewData = []; $NewAbscissa = [];
 
     /* Remove unused series */
     foreach($Data["Series"] as $SerieName => $SerieSettings)

@@ -5,6 +5,7 @@ use Api\V8\JsonApi\Response\MetaResponse;
 use Api\V8\JsonApi\Response\PaginationResponse;
 use Slim\Http\Request;
 
+#[\AllowDynamicProperties]
 class PaginationObjectHelper
 {
     /**

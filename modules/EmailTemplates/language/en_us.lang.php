@@ -71,6 +71,7 @@ $mod_strings = array(
     'LBL_SHOW_ALT_TEXT' => 'Show Plain Text',
     'LBL_SUBJECT' => 'Subject:',
     'LBL_SUITE_DOCUMENT' => 'Document',
+    'LBL_UPLOAD_FILE' => 'Upload File',
     'LBL_TEXT_BODY' => 'Text Body',
     'LBL_USERS' => 'Users',
 

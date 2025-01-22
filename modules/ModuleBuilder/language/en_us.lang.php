@@ -175,7 +175,7 @@ $mod_strings = array(
             'backBtn' => 'Return to the previous step.',
             'studioHelp' => 'Use <b>Studio</b> to determine what and how information is displayed in the modules.',
             'moduleBtn' => 'Click to edit this module.',
-            'moduleHelp' => 'The components that you can customize for the module appear here.<br><br>Click an icon to select the component to edit.',
+            'moduleHelp' => 'The components that you can customize for the module appear here.<br><br>Click an icon to select the component to edit.<br><br>Click <b>Reset Module</b> to remove customizations and restore to original status.',
             'fieldsBtn' => 'Create and customize <b>Fields</b> to store information in the module.',
             'labelsBtn' => 'Edit the <b>Labels</b> that display for the fields and other titles in the module.',
             'relationshipsBtn' => 'Add new or view existing <b>Relationships</b> for the module.',
@@ -615,6 +615,10 @@ $mod_strings = array(
 
 //POPUP HELP
     'LBL_POPHELP_FIELD_DATA_TYPE' => 'Select the appropriate data type based on the type of data that will be entered into the field.',
+    'LBL_POPHELP_IMPORTABLE' => '<b>Yes</b>: The field will be included in an import operation.<br><b>No</b>: The field will not be included in an import.<br><b>Required</b>: A value for the field must be provided in any import.',
+    'LBL_POPHELP_IMAGE_WIDTH' => 'Enter a number for Width, as measured in pixels.<br> The uploaded image will be scaled to this Width.',
+    'LBL_POPHELP_IMAGE_HEIGHT' => 'Enter a number for the Height, as measured in pixels.<br> The uploaded image will be scaled to this Height.',
+    'LBL_POPHELP_DUPLICATE_MERGE' => '<b>Enabled</b>: The field will appear in the Merge Duplicates feature, but will not be available to use for the filter conditions in the Find Duplicates feature.<br><b>Disabled</b>: The field will not appear in the Merge Duplicates feature, and will not be available to use for the filter conditions in the Find Duplicates feature.<br><b>Filter</b>: The field will appear in the Merge Duplicates feature, and will be available to use for the filter conditions in the Find Duplicates feature.<br><b>Default selected filter</b>: The field will appear in the Merge Duplicates feature, and will be used by default for the filter conditions in the Find Duplicates feature.<br><b>Only filter</b>: The field will not appear in the Merge Duplicates feature, but will be available to use for the filter conditions in the Find Duplicates feature.',
 
 //Revert Module labels
     'LBL_RESET' => 'Reset',

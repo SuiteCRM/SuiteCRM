@@ -19,6 +19,7 @@
  * @author Andrew Mclaughlan <andrew@mclaughlan.info>
  */
 
+#[\AllowDynamicProperties]
 class ProjectTable
 {
     private $tasks;

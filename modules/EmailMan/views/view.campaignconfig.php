@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/MVC/View/SugarView.php');
 require_once('modules/EmailMan/Forms.php');
 
+#[\AllowDynamicProperties]
 class ViewCampaignconfig extends SugarView
 {
     /**
@@ -106,7 +107,7 @@ class ViewCampaignconfig extends SugarView
             $this->ss->assign("EMAILS_PER_RUN", 500);
         }
         
-        if (!isset($focus->settings['massemailer_tracking_entities_location_type']) or empty($focus->settings['massemailer_tracking_entities_location_type']) or $focus->settings['massemailer_tracking_entities_location_type']=='1') {
+        if (!isset($focus->settings['massemailer_tracking_entities_location_type']) || empty($focus->settings['massemailer_tracking_entities_location_type']) || $focus->settings['massemailer_tracking_entities_location_type']=='1') {
             $this->ss->assign("default_checked", "checked");
             $this->ss->assign("TRACKING_ENTRIES_LOCATION_STATE", "disabled");
             $this->ss->assign("TRACKING_ENTRIES_LOCATION", $mod_strings['TRACKING_ENTRIES_LOCATION_DEFAULT_VALUE']);
@@ -118,7 +119,7 @@ class ViewCampaignconfig extends SugarView
         
         
         // Change the default campaign to not store a copy of each message.
-        if (!empty($focus->settings['massemailer_email_copy']) and $focus->settings['massemailer_email_copy']=='1') {
+        if (!empty($focus->settings['massemailer_email_copy']) && $focus->settings['massemailer_email_copy']=='1') {
             $this->ss->assign("yes_checked", "checked='checked'");
         } else {
             $this->ss->assign("no_checked", "checked='checked'");

@@ -46,6 +46,8 @@ if (empty($_REQUEST['record'])) {
     sugar_die($mod_strings['LBL_DELETE_ERROR']);
 } else {
     $focus = BeanFactory::newBean('InboundEmail');
+    $folder = new SugarFolder();
+    $folder->clearSubscriptionsForFolder($_REQUEST['record']);
 
     // retrieve the focus in order to populate it with ID. otherwise this
     // instance will be marked as deleted and than replaced by another instance,

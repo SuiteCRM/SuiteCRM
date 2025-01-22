@@ -4,20 +4,20 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOD_IndexEventTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testAOD_IndexEvent()
+    public function testAOD_IndexEvent(): void
     {
         // Execute the constructor and check for the Object type and type attribute
         $aod_indexEvent = BeanFactory::newBean('AOD_IndexEvent');
-        $this->assertInstanceOf('AOD_IndexEvent', $aod_indexEvent);
-        $this->assertInstanceOf('Basic', $aod_indexEvent);
-        $this->assertInstanceOf('SugarBean', $aod_indexEvent);
+        self::assertInstanceOf('AOD_IndexEvent', $aod_indexEvent);
+        self::assertInstanceOf('Basic', $aod_indexEvent);
+        self::assertInstanceOf('SugarBean', $aod_indexEvent);
 
-        $this->assertAttributeEquals('AOD_IndexEvent', 'module_dir', $aod_indexEvent);
-        $this->assertAttributeEquals('AOD_IndexEvent', 'object_name', $aod_indexEvent);
-        $this->assertAttributeEquals('aod_indexevent', 'table_name', $aod_indexEvent);
-        $this->assertAttributeEquals(true, 'new_schema', $aod_indexEvent);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aod_indexEvent);
-        $this->assertAttributeEquals(false, 'importable', $aod_indexEvent);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $aod_indexEvent);
+        self::assertEquals('AOD_IndexEvent', $aod_indexEvent->module_dir);
+        self::assertEquals('AOD_IndexEvent', $aod_indexEvent->object_name);
+        self::assertEquals('aod_indexevent', $aod_indexEvent->table_name);
+        self::assertEquals(true, $aod_indexEvent->new_schema);
+        self::assertEquals(true, $aod_indexEvent->disable_row_level_security);
+        self::assertEquals(false, $aod_indexEvent->importable);
+        self::assertEquals(false, $aod_indexEvent->tracker_visibility);
     }
 }

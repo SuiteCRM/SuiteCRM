@@ -30,6 +30,7 @@
  /* ImageMap string delimiter */
  define("IMAGE_MAP_DELIMITER", chr(1));
 
+ #[\AllowDynamicProperties]
  class pImage extends pDraw
  {
      /* Image settings, size, quality, .. */
@@ -81,9 +82,9 @@
      public $LastChartLayout	= CHART_LAST_LAYOUT_REGULAR;	// Last layout : regular or stacked
 
      /* Class constructor */
-     public function pImage($XSize, $YSize, $DataSet=null, $TransparentBackground=false)
+     public function __construct($XSize, $YSize, $DataSet = null, $TransparentBackground = false)
      {
-         $this->TransparentBackground = $TransparentBackground;
+     $this->TransparentBackground = $TransparentBackground;
 
          if ($DataSet != null) {
              $this->DataSet = $DataSet;
@@ -215,6 +216,7 @@
          $Width   = $this->getLength($Size[0], $Size[1], $Size[2], $Size[3])+1;
          $Height  = $this->getLength($Size[2], $Size[3], $Size[4], $Size[5])+1;
 
+         $RealPos = [];
          $RealPos[0]["X"] = $X;
          $RealPos[0]["Y"] = $Y;
          $RealPos[1]["X"] = cos((360-$Angle)*PI/180)*$Width + $RealPos[0]["X"];
@@ -294,7 +296,7 @@
          if ($FontName != null) {
              $this->FontName = $FontName;
          }
- 
+
          if ($FontSize != null) {
              $this->FontSize = $FontSize;
          }
@@ -303,7 +305,7 @@
      /* Returns the 1st decimal values (used to correct AA bugs) */
      public function getFirstDecimal($Value)
      {
-         $Values = preg_split("/\./", $Value);
+         $Values = preg_split("/\./", (string) $Value);
          if (isset($Values[1])) {
              return(substr($Values[1], 0, 1));
          }
@@ -351,10 +353,10 @@
          }
 
          /* Encode the characters in the imagemap in HTML standards */
-         $Title   = str_replace("&#8364;", "\u20AC", $Title);
+         $Title   = str_replace("&#8364;", "\u20AC", (string) $Title);
          $Title   = htmlentities($Title, ENT_QUOTES, "ISO-8859-15");
          if ($HTMLEncode) {
-             $Message = htmlentities($Message, ENT_QUOTES, "ISO-8859-15");
+             $Message = htmlentities((string) $Message, ENT_QUOTES, "ISO-8859-15");
              $Message = str_replace("&lt;", "<", $Message);
              $Message = str_replace("&gt;", ">", $Message);
          }
@@ -378,7 +380,7 @@
              return(-1);
          }
 
-         $Result = "";
+         $Result = [];
          foreach ($this->DataSet->Data["Series"][$SerieName]["Data"] as $Key => $Value) {
              if ($Value != VOID && isset($Values[$Key])) {
                  $Result[] = $Values[$Key];
@@ -397,7 +399,7 @@
          if (is_array($NewTitle)) {
              $NewTitle = $this->removeVOIDFromArray($OldTitle, $NewTitle);
          }
- 
+
          if ($this->ImageMapStorageMode == IMAGE_MAP_STORAGE_SESSION) {
              if (!isset($_SESSION)) {
                  return(-1);
@@ -418,7 +420,7 @@
                  }
              }
          } elseif ($this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE) {
-             $TempArray = "";
+             $TempArray = [];
              $Handle    = @fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", 'rb');
              if ($Handle) {
                  while (($Buffer = fgets($Handle, 4096)) !== false) {
@@ -474,7 +476,7 @@
                  }
              }
          } elseif ($this->ImageMapStorageMode == IMAGE_MAP_STORAGE_FILE) {
-             $TempArray = "";
+             $TempArray = [];
              $Handle    = @fopen($this->ImageMapStorageFolder."/".$this->ImageMapFileName.".map", 'rb');
              if ($Handle) {
                  while (($Buffer = fgets($Handle, 4096)) !== false) {
@@ -554,8 +556,8 @@
      /* Reverse an array of points */
      public function reversePlots($Plots)
      {
-         $Result = "";
-         for ($i=count($Plots)-2;$i>=0;$i=$i-2) {
+         $Result = [];
+         for ($i=(is_countable($Plots) ? count($Plots) : 0)-2;$i>=0;$i=$i-2) {
              $Result[] = $Plots[$i];
              $Result[] = $Plots[$i+1];
          }
@@ -572,7 +574,7 @@
 
          $Picture = imagecreatetruecolor($this->XSize, $this->YSize);
          imagecopy($Picture, $this->Picture, 0, 0, 0, 0, $this->XSize, $this->YSize);
-     
+
          for ($i=1;$i<=$Height;$i++) {
              if ($Y+($i-1) < $this->YSize && $Y-$i > 0) {
                  imagecopymerge($Picture, $this->Picture, $X, $Y+($i-1), $X, $Y-$i, $Width, 1, $StartAlpha-$AlphaStep*$i);

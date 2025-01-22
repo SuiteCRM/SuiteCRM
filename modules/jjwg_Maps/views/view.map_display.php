@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MapsViewMap_Display extends SugarView
 {
     public function __construct()
@@ -11,19 +12,7 @@ class Jjwg_MapsViewMap_Display extends SugarView
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Jjwg_MapsViewMap_Display()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function display()
@@ -33,7 +22,7 @@ class Jjwg_MapsViewMap_Display extends SugarView
         $url = $GLOBALS['sugar_config']['site_url'] . '/index.php?module=' . $GLOBALS['currentModule'] . '&action=map_markers';
         foreach (array_keys($_REQUEST) as $key) {
             if (in_array($key, $valid_names) && !in_array($key, array('action', 'module', 'entryPoint'))) {
-                $url .= '&'.$key.'='.urlencode($_REQUEST[$key]);
+                $url .= '&'.$key.'='.urlencode((string)$_REQUEST[$key]);
             }
         } ?>
 <script type="text/javascript" src="modules/jjwg_Maps/javascript/jquery.iframe-auto-height.plugin.1.9.3.min.js"></script>

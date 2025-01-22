@@ -56,7 +56,7 @@ if (!defined('JSMIN_AS_LIB')) {
 }
 
 require_once("include/SugarTheme/cssmin.php");
-require_once("jssource/jsmin.php");
+require_once("jssource/SugarMin.php");
 require_once('include/utils/sugar_file_utils.php');
 
 /**

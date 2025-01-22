@@ -44,8 +44,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/DynamicFields/templates/Fields/TemplateText.php');
 class TemplateImage extends TemplateText
 {
+    public $border;
+    public $width;
+    public $height;
     public $type = 'image';
-        
+
     public function get_field_def()
     {
         $def = parent::get_field_def();
@@ -53,7 +56,7 @@ class TemplateImage extends TemplateText
         $def['type'] = 'image';
         $def['dbType'] = 'varchar';
         $def['len']= 255;
-        
+
         if (isset($this->ext1)) {
             $def[ 'border' ] 	= $this->ext1 ;
         }
@@ -72,17 +75,17 @@ class TemplateImage extends TemplateText
         if (isset($this->height)) {
             $def[ 'height' ] 	= $this->height ;
         }
-        
+
         return $def;
     }
-    
+
     public function __construct()
     {
         $this->vardef_map['border'] = 'ext1';
         $this->vardef_map['width'] = 'ext2';
         $this->vardef_map['height'] = 'ext3';
     }
-    
+
     public function set($values)
     {
         parent::set($values);

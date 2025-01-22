@@ -40,7 +40,7 @@
 namespace SuiteCRM\Robo\Plugin\Commands;
 
 use BeanFactory;
-use Robo\Task\Base\loadTasks;
+use Robo\Tasks;
 use SuiteCRM\Robo\Traits\CliRunnerTrait;
 use SuiteCRM\Robo\Traits\RoboTrait;
 use SuiteCRM\Search\ElasticSearch\ElasticSearchIndexer;
@@ -56,9 +56,9 @@ use SuiteCRM\Utility\BeanJsonSerializer;
  *
  * @package SuiteCRM\Robo\Plugin\Commands
  */
-class ElasticSearchCommands extends \Robo\Tasks
+#[\AllowDynamicProperties]
+class ElasticSearchCommands extends Tasks
 {
-    use loadTasks;
     use RoboTrait;
     use CliRunnerTrait;
 

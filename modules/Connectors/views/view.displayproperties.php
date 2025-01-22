@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/connectors/sources/SourceFactory.php');
 
+#[\AllowDynamicProperties]
 class ViewDisplayProperties extends ViewList
 {
     /**

@@ -38,7 +38,9 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-require_once('modules/AOS_PDF_Templates/PDF_Lib/mpdf.php');
+use SuiteCRM\PDF\Exceptions\PDFException;
+use SuiteCRM\PDF\PDFWrapper;
+
 require_once('modules/AOS_PDF_Templates/templateParser.php');
 require_once('modules/AOS_PDF_Templates/AOS_PDF_Templates.php');
 
@@ -62,7 +64,7 @@ if (isset($_REQUEST['current_post']) && $_REQUEST['current_post'] != '') {
     $result = DBManagerFactory::getInstance()->query($query, true);
     $uids = array();
     while ($val = DBManagerFactory::getInstance()->fetchByAssoc($result, false)) {
-        array_push($recordIds, $val['id']);
+        $recordIds[] = $val['id'];
     }
 } else {
     $recordIds = explode(',', $_REQUEST['uid']);
@@ -75,15 +77,37 @@ if (!$template) {
     sugar_die("Invalid Template");
 }
 
-$file_name = str_replace(" ", "_", $template->name) . ".pdf";
+$file_name = str_replace(" ", "_", (string) $template->name) . ".pdf";
 
-$format = $template->page_size . ($template->orientation === 'Landscape' ? '-L' : '');
+$pdfConfig = [
+    'mode' => 'en',
+    'page_size' => $template->page_size,
+    'font' => 'DejaVuSansCondensed',
+    'margin_left' => $template->margin_left,
+    'margin_right' => $template->margin_right,
+    'margin_top' => $template->margin_top,
+    'margin_bottom' => $template->margin_bottom,
+    'margin_header' => $template->margin_header,
+    'margin_footer' => $template->margin_footer,
+    'orientation' => $template->orientation
+];
 
-$pdf = new mPDF('en', $format, '', 'DejaVuSansCondensed', $template->margin_left, $template->margin_right, $template->margin_top, $template->margin_bottom, $template->margin_header, $template->margin_footer);
-
+try {
+    $pdf = PDFWrapper::getPDFEngine();
+    $pdf->configurePDF($pdfConfig);
+} catch (PDFException $e) {
+    LoggerManager::getLogger()->warn('PDFException: ' . $e->getMessage());
+}
+$count = 0;
 foreach ($recordIds as $recordId) {
     $bean->retrieve($recordId);
-    $pdf_history = new mPDF('en', $format, '', 'DejaVuSansCondensed', $template->margin_left, $template->margin_right, $template->margin_top, $template->margin_bottom, $template->margin_header, $template->margin_footer);
+
+    try {
+        $pdfHistory = PDFWrapper::getPDFEngine();
+        $pdfHistory->configurePDF($pdfConfig);
+    } catch (PDFException $e) {
+        LoggerManager::getLogger()->warn('PDFException: ' . $e->getMessage());
+    }
 
     $object_arr = array();
     $object_arr[$bean->module_dir] = $bean->id;
@@ -92,7 +116,8 @@ foreach ($recordIds as $recordId) {
         $object_arr['Accounts'] = $bean->account_id;
     }
 
-    $search = array('@<script[^>]*?>.*?</script>@si',        // Strip out javascript
+    $search = array(
+        '@<script[^>]*?>.*?</script>@si',        // Strip out javascript
         '@<[\/\!]*?[^<>]*?>@si',        // Strip out HTML tags
         '@([\r\n])[\s]+@',            // Strip out white space
         '@&(quot|#34);@i',            // Replace HTML entities
@@ -104,7 +129,8 @@ foreach ($recordIds as $recordId) {
         '@<address[^>]*?>@si'
     );
 
-    $replace = array('',
+    $replace = array(
+        '',
         '',
         '\1',
         '"',
@@ -116,24 +142,23 @@ foreach ($recordIds as $recordId) {
         '<br>'
     );
 
-    $text = preg_replace($search, $replace, $template->description);
+    $text = preg_replace($search, $replace, (string) $template->description);
     $text = preg_replace_callback(
-        '/\{DATE\s+(.*?)\}/',
+        '/{DATE\s+(.*?)}/',
         function ($matches) {
             return date($matches[1]);
         },
         $text
     );
-    $header = preg_replace($search, $replace, $template->pdfheader);
-    $footer = preg_replace($search, $replace, $template->pdffooter);
+    $header = preg_replace($search, $replace, (string) $template->pdfheader);
+    $footer = preg_replace($search, $replace, (string) $template->pdffooter);
 
     $converted = templateParser::parse_template($text, $object_arr);
     $header = templateParser::parse_template($header, $object_arr);
     $footer = templateParser::parse_template($footer, $object_arr);
 
-    $printable = str_replace("\n", "<br />", $converted);
+    $printable = str_replace("\n", "<br />", (string) $converted);
 
-    ob_clean();
     try {
         $note = BeanFactory::newBean('Notes');
         $note->modified_user_id = $current_user->id;
@@ -153,22 +178,23 @@ foreach ($recordIds as $recordId) {
         $fp = fopen($sugar_config['upload_dir'] . 'nfile.pdf', 'wb');
         fclose($fp);
 
-        $pdf_history->SetAutoFont();
-        $pdf_history->SetHTMLHeader($header);
-        $pdf_history->SetHTMLFooter($footer);
-        $pdf_history->WriteHTML($printable);
-        $pdf_history->Output($sugar_config['upload_dir'] . 'nfile.pdf', 'F');
+        $pdfHistory->writeHeader($header);
+        $pdfHistory->writeFooter($footer);
+        $pdfHistory->writeHTML($printable);
+        $pdfHistory->outputPDF($sugar_config['upload_dir'] . 'nfile.pdf', 'F', $note->name);
 
-        $pdf->SetHTMLHeader($header);
-        $pdf->AddPage();
-        $pdf->setAutoFont();
-        $pdf->SetHTMLFooter($footer);
+        if ($count > 0) {
+            $pdf->writeBlankPage();
+        }
+        $pdf->writeHeader($header);
+        $pdf->writeFooter($footer);
         $pdf->writeHTML($printable);
 
         rename($sugar_config['upload_dir'] . 'nfile.pdf', $sugar_config['upload_dir'] . $note->id);
-    } catch (mPDF_exception $e) {
-        echo $e;
+    } catch (PDFException $e) {
+        LoggerManager::getLogger()->warn('PDFException: ' . $e->getMessage());
     }
+    ++$count;
 }
 
-$pdf->Output($file_name, "D");
+$pdf->outputPDF($file_name, 'D');

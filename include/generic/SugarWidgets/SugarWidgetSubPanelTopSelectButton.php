@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 {
     //button_properties is a collection of properties associated with the widget_class definition. layoutmanager
@@ -53,21 +54,6 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
     {
         $this->button_properties=$button_properties;
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarWidgetSubPanelTopSelectButton($button_properties=array())
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($button_properties);
-    }
-
 
     public function getWidgetId($buttonSuffix = true)
     {
@@ -134,7 +120,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
         if (isset($widget_data['initial_filter_fields'])) {
             if (is_array($widget_data['initial_filter_fields'])) {
                 foreach ($widget_data['initial_filter_fields'] as $value=>$alias) {
-                    if (isset($focus->$value) and !empty($focus->$value)) {
+                    if (isset($focus->$value) && !empty($focus->$value)) {
                         $initial_filter.="&".$alias . '='.urlencode($focus->$value);
                     }
                 }

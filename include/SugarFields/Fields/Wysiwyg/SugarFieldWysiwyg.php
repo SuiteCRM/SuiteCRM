@@ -54,40 +54,25 @@ class SugarFieldWysiwyg extends SugarFieldBase {
     {
         $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 
-        require_once('include/SugarTinyMCE.php');
-
-        global $json;
-
-        if (empty($json)) {
-            $json = getJSONobj();
-        }
-
-        $form_name = '';
+        $form_name = $displayParams['formName'] ?? '';
 
         if (!empty($this->ss->_tpl_vars['displayParams']['formName'])) {
             $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
         }
 
-        $tiny = new SugarTinyMCE();
+        $config = [];
+        $config['height'] = 250;
+        $config['menubar'] = false;
+        $config['plugins']  = 'code, table, link, image, wordcount';
+        if ($form_name !== '') {
+            $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
+        } else {
+            $config['selector'] = "#" . $vardef['name'];
+        }
+        $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';
 
-        $tiny->defaultConfig['apply_source_formatting'] = false;
-        $tiny->defaultConfig['cleanup_on_startup'] = true;
-        $tiny->defaultConfig['relative_urls'] = false;
-        $tiny->defaultConfig['convert_urls'] = false;
-        $tiny->defaultConfig['strict_loading_mode'] = true;
-        $tiny->defaultConfig['width'] = '100%';
-
-        $config = $tiny->defaultConfig;
-
-        $config['plugins']  = 'print code preview fullpage searchreplace autolink directionality visualblocks visualchars fullscreen image link media codesample table charmap hr pagebreak nonbreaking anchor insertdatetime advlist lists textcolor wordcount imagetools contextmenu colorpicker textpattern ';
-        $config['elements'] = "#{$form_name} "."#".$vardef['name'];
-        $config['selector'] = "#{$form_name} "."#".$vardef['name'];
-        $config['content_css'] = 'vendor/tinymce/tinymce/skins/lightgray/content.min.css';
-        $config['toolbar1'] = 'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent  | removeformat';
-        $config['theme'] = 'modern';
-
-        $jsConfig = $json->encode($config);
-        $initiate = '<script type="text/javascript" language="Javascript"> tinyMCE.init('.$jsConfig.');</script>';
+        $jsConfig = json_encode($config);
+        $initiate = '<script type="text/javascript"> tinyMCE.init('.$jsConfig.')</script>';
         $this->ss->assign("tiny", $initiate);
 
         return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);

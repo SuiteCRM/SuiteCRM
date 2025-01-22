@@ -7,7 +7,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,21 +44,22 @@ use Mockery as m;
 use SuiteCRM\Search\Index\AbstractIndexer;
 use SuiteCRM\Search\Index\Documentify\JsonSerializerDocumentifier;
 use SuiteCRM\Search\Index\Documentify\SearchDefsDocumentifier;
+use SuiteCRM\Tests\Unit\lib\SuiteCRM\Search\SearchTestAbstract;
 
 /**
  * Class AbstractIndexerTest
  *
  * @see AbstractIndexer
  */
-class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
+class AbstractIndexerTest extends SearchTestAbstract
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $indexer = $this->getIndexerMock();
         self::assertInstanceOf(AbstractIndexer::class, $indexer);
     }
 
-    public function testGettersAndSetters()
+    public function testGettersAndSetters(): void
     {
         $differential = true;
         $doc = new SearchDefsDocumentifier();
@@ -90,7 +91,7 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
 
         try {
             $indexer->setModulesToIndex(null);
-            $this->fail('Null should not be accepted');
+            self::fail('Null should not be accepted');
         } catch (Exception $throwable) {
             // All good!
         } catch (Throwable $throwable) {
@@ -98,7 +99,7 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
         }
     }
 
-    public function testAddModulesToIndex()
+    public function testAddModulesToIndex(): void
     {
         $indexer = $this->getIndexerMock();
         $indexer->addModulesToIndex('Foo');
@@ -120,7 +121,7 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
         }
     }
 
-    public function testGetDocumentifierName()
+    public function testGetDocumentifierName(): void
     {
         $indexer = $this->getIndexerMock();
         $doc1 = new JsonSerializerDocumentifier();
@@ -135,7 +136,7 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
         self::assertEquals($doc2Exp, $indexer->getDocumentifierName());
     }
 
-    public function testGetIndexerName()
+    public function testGetIndexerName(): void
     {
         $indexer = $this->getIndexerMock();
 
@@ -145,7 +146,7 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
         self::assertEquals($expected, $actual, "Indexer name does not match");
     }
 
-    public function testLogger()
+    public function testLogger(): void
     {
         $indexer = $this->getIndexerMock();
 
@@ -159,7 +160,6 @@ class AbstractIndexerTest extends \SuiteCRM\Search\SearchTestAbstract
      */
     private function getIndexerMock()
     {
-        $indexer = m::mock(AbstractIndexer::class)->makePartial();
-        return $indexer;
+        return m::mock(AbstractIndexer::class)->makePartial();
     }
 }

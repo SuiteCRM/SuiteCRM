@@ -45,6 +45,7 @@ function cmp($a, $b)
     return strcasecmp($a, $b);
 }
 
+#[\AllowDynamicProperties]
 class StudioBrowser
 {
     public $modules = array();

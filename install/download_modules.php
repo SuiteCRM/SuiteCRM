@@ -57,11 +57,28 @@ if (empty($sugar_config['upload_maxsize'])) {
     $sugar_config['upload_maxsize'] = 8192000;
 }
 if (empty($sugar_config['upload_badext'])) {
-    $sugar_config['upload_badext'] = array('php', 'php3', 'php4', 'php5', 'pl', 'cgi', 'py', 'asp', 'cfm', 'js', 'vbs', 'html', 'htm');
+    $sugar_config['upload_badext'] = [
+        'php',
+        'php3',
+        'php4',
+        'php5',
+        'pl',
+        'cgi',
+        'py',
+        'asp',
+        'cfm',
+        'js',
+        'vbs',
+        'html',
+        'htm',
+        'phtml',
+        'phar',
+    ];
+
 }
 ////    END PREFILL $sugar_config VARS
 ///////////////////////////////////////////////////////////////////////////////
-require_once('include/utils/zip_utils.php');
+require_once('include/utils/php_zip_utils.php');
 
 require_once('include/upload_file.php');
 
@@ -95,7 +112,7 @@ if (isset($_REQUEST['languagePackAction']) && !empty($_REQUEST['languagePackActi
             $file = new UploadFile('language_pack');
             if ($file->confirm_upload()) {
                 $perform = true;
-                if (strpos($file->mime_type, 'zip') !== false) { // only .zip files
+                if (strpos((string) $file->mime_type, 'zip') !== false) { // only .zip files
                     $tempFile = $file->get_stored_filename();
                     if ($file->final_move($tempFile)) {
                         $perform = true;
@@ -156,7 +173,7 @@ $availablePatches = getLangPacks(true);
 $installedLanguagePacks = getInstalledLangPacks();
 $errs = '';
 if (isset($validation_errors)) {
-    if (count($validation_errors) > 0) {
+    if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
         $errs  = '<div id="errorMsgs">';
         $errs .= "<p>{$mod_strings['LBL_SYSOPTS_ERRS_TITLE']}</p>";
         $errs .= '<ul>';

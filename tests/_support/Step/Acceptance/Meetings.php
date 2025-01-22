@@ -2,6 +2,7 @@
 
 namespace Step\Acceptance;
 
+#[\AllowDynamicProperties]
 class Meetings extends \AcceptanceTester
 {
     /**
@@ -26,7 +27,8 @@ class Meetings extends \AcceptanceTester
 
         $I->waitForElementVisible('#date_start_hours');
 
-        $I->selectOption('#duration', '15 minutes');
+        $I->waitForElementVisible('#reminder_view');
+        $I->selectOption('#reminder_view select[class=timer_sel_popup]', '15 minutes prior');
         $I->selectOption('#status', 'Held');
         $I->selectOption('#parent_type', 'Account');
 

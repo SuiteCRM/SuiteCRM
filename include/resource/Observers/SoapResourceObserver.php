@@ -51,22 +51,6 @@ class SoapResourceObserver extends ResourceObserver
     }
 
     /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SoapResourceObserver($module)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($module);
-    }
-
-
-
-    /**
      * set_soap_server
      * This method accepts an instance of the nusoap soap server so that a proper
      * response can be returned when the notify method is triggered.

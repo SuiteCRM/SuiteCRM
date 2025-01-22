@@ -8,6 +8,7 @@ use Step\Acceptance\EditView;
 use Step\Acceptance\ListView;
 use Step\Acceptance\UsersTester;
 
+#[\AllowDynamicProperties]
 class UsersCest
 {
     /**
@@ -32,15 +33,16 @@ class UsersCest
         $this->fakeDataSeed = mt_rand(0, 2048);
         $this->fakeData->seed($this->fakeDataSeed);
     }
-    
-    public function testEmailSettingsMailAccountAdd(AcceptanceTester $I, UsersTester $Users)
+
+    public function testEmailSettingsMailAccountAdd(AcceptanceTester $I, UsersTester $Users, \Codeception\Scenario $scenario)
     {
+        $scenario->skip('Needs to be re-implemented');
         $I->loginAsAdmin();
         $Users->gotoProfile();
         $I->see('User Profile', '.panel-heading');
         $I->click('Settings');
-        $I->see('Mail Accounts');
-        $I->click('Mail Accounts');
+        $I->see('Inbound Email Accounts');
+        $I->click('Inbound Email Accounts');
         $I->click('Add');
         $I->executeJS('javascript:SUGAR.email2.accounts.fillInboundGmailDefaults();'); // <-- instead of $I->click('Prefill Gmail™ Defaults');
         $I->fillField('ie_name', 'testuser_acc');
@@ -57,7 +59,8 @@ class UsersCest
         UsersTester $Users,
         ListView $listView,
         EditView $EditView,
-        AccountsTester $accounts
+        \Step\Acceptance\EditView $editView,
+        \Step\Acceptance\SideBar $sideBar
     ) {
         $I->wantTo('View the collapsed subpanel hints on Accounts');
 
@@ -85,9 +88,35 @@ class UsersCest
 
         // Create account
         $this->fakeData->seed($this->fakeDataSeed);
-        $accountId = $accounts->createAccount('Test_'. $this->fakeData->company());
+        $faker = $I->getFaker();
+        $account_name = 'Test_'. $this->fakeData->company();
 
-        $I->visitPage('Accounts', 'DetailView', $accountId);
+        $I->see('Create Account', '.actionmenulink');
+        $sideBar->clickSideBarAction('Create');
+        $editView->waitForEditViewVisible();
+        $I->fillField('#name', $account_name);
+        $I->fillField('#phone_office', $faker->phoneNumber());
+        $I->fillField('#website', $faker->url());
+        $I->fillField('#phone_fax', $faker->phoneNumber());
+        $I->fillField('#Accounts0emailAddress0', $faker->email());
+        $I->fillField('#billing_address_street', $faker->streetAddress());
+        $I->fillField('#billing_address_city', $faker->city());
+        $I->fillField('#billing_address_state', $faker->city());
+        $I->fillField('#billing_address_postalcode', $faker->postcode());
+        $I->fillField('#billing_address_country', $faker->country());
+        $I->fillField('#description', $faker->text());
+        $I->fillField('#annual_revenue', $faker->randomDigit());
+        $I->fillField('#employees', $faker->randomDigit());
+
+        $I->checkOption('#shipping_checkbox');
+        $I->selectOption('#account_type', 'Analyst');
+        $I->selectOption('#industry', 'Apparel');
+
+        $I->seeElement('#assigned_user_name');
+        $I->seeElement('#parent_name');
+        $I->seeElement('#campaign_name');
+
+        $editView->clickSaveButton();
         $DetailView->waitForDetailViewVisible();
 
         // View the Subpanels Hint

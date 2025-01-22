@@ -44,6 +44,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\Traits\ClientTrait;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 
+#[\AllowDynamicProperties]
 class ClientEntity implements ClientEntityInterface
 {
     use EntityTrait, ClientTrait;
@@ -62,5 +63,10 @@ class ClientEntity implements ClientEntityInterface
     public function setRedirectUri($uri)
     {
         $this->redirectUri = $uri;
+    }
+
+    public function setIsConfidential($confidential)
+    {
+        $this->isConfidential = $confidential;
     }
 }

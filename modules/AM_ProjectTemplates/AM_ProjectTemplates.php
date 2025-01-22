@@ -79,6 +79,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AM_ProjectTemplates/AM_ProjectTemplates_sugar.php');
+#[\AllowDynamicProperties]
 class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
 {
     public function __construct()
@@ -86,19 +87,7 @@ class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AM_ProjectTemplates()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
     public function save($check_notify = false)
     {
         $focus = $this;
@@ -136,7 +125,7 @@ class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
 
                 ////	REMOVE RESOURCE RELATIONSHIPS
                 // Calculate which users to flag as deleted and which to add
-                
+
                 // Get all users for the project template
                 $focus->load_relationship('users');
                 $users = $focus->get_linked_beans('am_projecttemplates_users_1', 'User');
@@ -182,15 +171,15 @@ class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
                     $focus->db->query($sql);
                     echo $sql;
                 }
-        
+
                 ////	END REMOVE
             }
-            
+
             $return_id = parent::save($check_notify);
             $focus->retrieve($return_id);
 
             ////	REBUILD INVITEE RELATIONSHIPS
-            
+
             // Process users
             $focus->load_relationship('users');
             $focus->get_linked_beans('am_projecttemplates_users_1', 'User');

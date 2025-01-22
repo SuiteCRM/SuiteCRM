@@ -41,6 +41,7 @@
 require('service/core/SugarSoapService.php');
 require('include/nusoap/nusoap.php');
 
+#[\AllowDynamicProperties]
 abstract class PHP5Soap extends SugarSoapService{
 	private $nusoap_server = null;
 	public function __construct($url){
@@ -62,21 +63,21 @@ abstract class PHP5Soap extends SugarSoapService{
 	 * @return
 	 */
 	public function serve(){
-		ob_clean();
+        ob_clean();
 		global $HTTP_RAW_POST_DATA;
 		$GLOBALS['log']->debug("I am here1 ". $HTTP_RAW_POST_DATA);
 		$qs = '';
 		if (isset($_SERVER['QUERY_STRING'])) {
 			$qs = $_SERVER['QUERY_STRING'];
-		} elseif (isset($HTTP_SERVER_VARS['QUERY_STRING'])) {
-			$qs = $HTTP_SERVER_VARS['QUERY_STRING'];
+		} elseif (isset($_SERVER['QUERY_STRING'])) {
+			$qs = $_SERVER['QUERY_STRING'];
 		} else {
 			$qs = '';
 		}
 
-		if (stristr($qs, 'wsdl') || $HTTP_RAW_POST_DATA == ''){
+		if (stristr((string) $qs, 'wsdl') || $HTTP_RAW_POST_DATA == ''){
 			$wsdlCacheFile = $this->getWSDLPath(false);
-			if (stristr($qs, 'wsdl')) {
+			if (stristr((string) $qs, 'wsdl')) {
 			    $contents = @sugar_file_get_contents($wsdlCacheFile);
 			    if($contents !== false) {
 					header("Content-Type: text/xml; charset=ISO-8859-1\r\n");
@@ -152,7 +153,7 @@ abstract class PHP5Soap extends SugarSoapService{
 		parent::setObservers();
 	}
 
-	function registerClass($registryClass){
+	public function registerClass($registryClass){
 		$this->registryClass = $registryClass;
 	}
 
@@ -160,7 +161,7 @@ abstract class PHP5Soap extends SugarSoapService{
 		$this->nusoap_server->wsdl->addComplexType($name, $typeClass, $phpType, $compositor, $restrictionBase, $elements, $attrs, $arrayType);
   	}
 
-	function registerFunction($function, $input, $output){
+	public function registerFunction($function, $input, $output){
 		if(in_array($function, $this->excludeFunctions))return;
 		if ($this->nusoap_server == null) {
 			$this->generateNuSoap();

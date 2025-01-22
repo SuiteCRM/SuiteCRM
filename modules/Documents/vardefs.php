@@ -419,6 +419,13 @@ $dictionary['Document'] = array('table' => 'documents',
                 'reportable' => false,
                 'source' => 'non-db'
             ),
+        'filecontents' =>
+            array(
+                'name' => 'filecontents',
+                'vname' => 'LBL_FILE_CONTENTS',
+                'type' => 'varchar',
+                'source' => 'non-db',
+            ),
 //END fields used for contract documents subpanel.
         'aos_contracts' => array(
             'name' => 'aos_contracts',

@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 
 
+#[\AllowDynamicProperties]
 class MyOpportunitiesDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
@@ -67,19 +68,7 @@ class MyOpportunitiesDashlet extends DashletGeneric
         $this->seedBean = BeanFactory::newBean('Opportunities');
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function MyOpportunitiesDashlet($id, $def = null)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id, $def);
-    }
+
 
 
     //4.5.0g fix for upgrade issue where user_preferences table still refer to column as 'amount'

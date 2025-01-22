@@ -91,7 +91,7 @@ foreach ($modules as $the_module => $fields) {
                 $type.=',' . $row['data_scale'];
             }
             $type.=')';
-        } elseif (!empty($row['data_length']) && (strtolower($row['type'])=='varchar' or strtolower($row['type'])=='varchar2')) {
+        } elseif (!empty($row['data_length']) && (strtolower($row['type'])=='varchar' || strtolower($row['type'])=='varchar2')) {
             $type.='(' . $row['data_length'] . ')';
         }
         if (!isset($fields[$col]) && $col != 'id_c') {
@@ -102,7 +102,7 @@ foreach ($modules as $the_module => $fields) {
             echo "Dropping Column $col from $mod->table_name"."_cstm for module $the_module<br>";
         } else {
             if ($col != 'id_c') {
-                $db_data_type = strtolower(str_replace(' ', '', $the_field->get_db_type()));
+                $db_data_type = strtolower(str_replace(' ', '', (string) $the_field->get_db_type()));
 
                 $type = strtolower(str_replace(' ', '', $type));
                 if (strcmp($db_data_type, $type) != 0) {

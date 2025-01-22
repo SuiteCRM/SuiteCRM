@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,22 +38,35 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
-
-
-
+/**
+ * @deprecated since v7.12.0
+ * Class UnifiedSearchAdvanced
+ */
+#[\AllowDynamicProperties]
 class UnifiedSearchAdvanced
 {
     public $query_string = '';
-    
+
     /* path to search form */
     public $searchFormPath = 'include/SearchForm/SearchForm2.php';
 
     /*search form class name*/
     public $searchFormClass = 'SearchForm';
 
+    /**
+     * @deprecated since v7.12.0
+     * UnifiedSearchAdvanced constructor.
+     */
     public function __construct()
     {
+        LoggerManager::getLogger()->deprecated(
+            'UnifiedSearchAdvanced is deprecated since v7.12.0, please use Search.php instead'
+        );
+
         if (!empty($_REQUEST['query_string'])) {
             $query_string = trim($_REQUEST['query_string']);
             if (!empty($query_string)) {
@@ -67,6 +77,11 @@ class UnifiedSearchAdvanced
         $this->cache_display = sugar_cached('modules/unified_search_modules_display.php');
     }
 
+    /**
+     * @deprecated since v7.12.0
+     * @param string $tpl
+     * @return string
+     */
     public function getDropDownDiv($tpl = 'modules/Home/UnifiedSearchAdvanced.tpl')
     {
         global $app_list_strings, $app_strings;
@@ -153,6 +168,7 @@ class UnifiedSearchAdvanced
 
 
     /**
+     * @deprecated since v7.12.0
      * search
      *
      * Search function run when user goes to Show All and runs a search again.  This outputs the search results
@@ -261,7 +277,7 @@ class UnifiedSearchAdvanced
                             continue;
                         }
                         $innerJoins[$field] = $def;
-                        $def['innerjoin'] = str_replace('INNER', 'LEFT', $def['innerjoin']);
+                        $def['innerjoin'] = str_replace('INNER', 'LEFT', (string) $def['innerjoin']);
                     }
 
                     if (isset($seed->field_defs[$field]['type'])) {
@@ -281,7 +297,7 @@ class UnifiedSearchAdvanced
                  */
                 require_once $beanFiles[$beanName] ;
                 $seed = new $beanName();
-                
+
                 require_once $this->searchFormPath;
                 $searchForm = new $this->searchFormClass($seed, $moduleName) ;
 
@@ -300,7 +316,7 @@ class UnifiedSearchAdvanced
                     }
                 }
 
-                if (count($where_clauses) > 0) {
+                if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
                     $where = '(('. implode(' ) OR ( ', $where_clauses) . '))';
                 } else {
                     /* Clear $where from prev. module
@@ -315,7 +331,7 @@ class UnifiedSearchAdvanced
                     }
                 }
 
-                if (count($displayColumns) > 0) {
+                if ((is_countable($displayColumns) ? count($displayColumns) : 0) > 0) {
                     $lv->displayColumns = $displayColumns;
                 } else {
                     $lv->displayColumns = $listViewDefs[$seed->module_dir];
@@ -359,6 +375,9 @@ class UnifiedSearchAdvanced
         }
     }
 
+    /**
+     * @deprecated since v7.12.0
+     */
     public function buildCache()
     {
         global $beanList, $beanFiles, $dictionary;
@@ -400,7 +419,7 @@ class UnifiedSearchAdvanced
                 continue;
             }
 
-            $isCustomModule = preg_match('/^([a-z0-9]{1,5})_([a-z0-9_]+)$/i', $moduleName);
+            $isCustomModule = preg_match('/^([a-z0-9]{1,5})_([a-z0-9_]+)$/i', (string) $moduleName);
 
             //If the bean supports unified search or if it's a custom module bean and unified search is not defined
             if (!empty($dictionary[$beanName]['unified_search']) || $isCustomModule) {
@@ -410,12 +429,12 @@ class UnifiedSearchAdvanced
                     // the searchFields entry for 'email' doesn't correspond to any vardef entry. Instead it contains SQL to directly perform the search.
                     // So as a proxy we allow any field in the vardefs that has a name starting with 'email...' to be tagged with the 'unified_search' parameter
 
-                    if (strpos($field, 'email') !== false) {
+                    if (strpos((string) $field, 'email') !== false) {
                         $field = 'email' ;
                     }
 
                     //bug: 38139 - allow phone to be searched through Global Search
-                    if (strpos($field, 'phone') !== false) {
+                    if (strpos((string) $field, 'phone') !== false) {
                         $field = 'phone' ;
                     }
 
@@ -426,8 +445,7 @@ class UnifiedSearchAdvanced
 
                 foreach ($searchFields[$moduleName] as $field => $def) {
                     if (
-                        isset($def['force_unifiedsearch'])
-                        and $def['force_unifiedsearch']
+                        isset($def['force_unifiedsearch']) && $def['force_unifiedsearch']
                     ) {
                         $fields[$field] = $def;
                     }
@@ -449,6 +467,7 @@ class UnifiedSearchAdvanced
     }
 
     /**
+     * @deprecated since v7.12.0
      * Retrieve the enabled and disabled modules used for global search.
      *
      * @return array
@@ -494,6 +513,7 @@ class UnifiedSearchAdvanced
 
 
     /**
+     * @deprecated since v7.12.0
      * saveGlobalSearchSettings
      * This method handles the administrator's request to save the searchable modules selected and stores
      * the results in the unified_search_modules_display.php file
@@ -520,7 +540,9 @@ class UnifiedSearchAdvanced
         }
     }
 
-
+    /**
+     * @deprecated since v7.12.0
+     */
     public static function unlinkUnifiedSearchModulesFile()
     {
         //clear the unified_search_module.php file
@@ -530,9 +552,10 @@ class UnifiedSearchAdvanced
             unlink($cache_search);
         }
     }
-    
+
 
     /**
+     * @deprecated since v7.12.0
      * getUnifiedSearchModules
      *
      * Returns the value of the $unified_search_modules variable based on the module's vardefs.php file
@@ -542,6 +565,7 @@ class UnifiedSearchAdvanced
      */
     public function getUnifiedSearchModules()
     {
+        $unified_search_modules = [];
         //Make directory if it doesn't exist
         $cachedir = sugar_cached('modules');
         if (!file_exists($cachedir)) {
@@ -560,6 +584,7 @@ class UnifiedSearchAdvanced
 
 
     /**
+     * @deprecated since v7.12.0
      * getUnifiedSearchModulesDisplay
      *
      * Returns the value of the $unified_search_modules_display variable which is based on the $unified_search_modules
@@ -569,6 +594,7 @@ class UnifiedSearchAdvanced
      */
     public function getUnifiedSearchModulesDisplay()
     {
+        $unified_search_modules_display = [];
         if (!file_exists('custom/modules/unified_search_modules_display.php')) {
             $unified_search_modules = $this->getUnifiedSearchModules();
 
@@ -587,7 +613,8 @@ class UnifiedSearchAdvanced
         return $unified_search_modules_display;
     }
 
-    /*
+    /**
+     * @deprecated since v7.12.0
      * writeUnifiedSearchModulesDisplayFile
      * Private method to handle writing the unified_search_modules_display value to file
      *
@@ -613,10 +640,15 @@ class UnifiedSearchAdvanced
     }
 }
 
-
+/**
+ * @deprecated since v7.12.0
+ * @param $a
+ * @param $b
+ * @return int
+ */
 function unified_search_modules_cmp($a, $b)
 {
-    if (!isset($a['translated']) || !isset($b['translated'])) {
+    if (!isset($a['translated'], $b['translated'])) {
         return 0;
     }
 

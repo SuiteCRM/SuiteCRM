@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 include_once get_custom_file_if_exists('modules/Users/authentication/SugarAuthenticate/FactorAuthInterface.php');
 include_once __DIR__ . '/../../../../include/SugarPHPMailer.php';
 
+#[\AllowDynamicProperties]
 class FactorAuthEmailCode implements FactorAuthInterface
 {
 
@@ -90,12 +91,12 @@ class FactorAuthEmailCode implements FactorAuthInterface
      */
     public function sendToken($token)
     {
-        global $current_user, $sugar_config;
-        
+        global $current_user, $sugar_config, $mod_strings;
+
         if (!$this->validateTokenMessage()) {
             $msg = 'Factor Authentication mail is invalid';
             $GLOBALS['log']->warn($msg);
-            SugarApplication::appendErrorMessage($msg_strings['ERR_FACTOR_VALIDATION']);
+            SugarApplication::appendErrorMessage($mod_strings['ERR_FACTOR_VALIDATION']);
         }
 
         $ret = true;
@@ -153,7 +154,7 @@ class FactorAuthEmailCode implements FactorAuthInterface
             $GLOBALS['log']->warn($msg);
             SugarApplication::appendErrorMessage($mod_strings['ERR_NO_2FACTOR_EMAIL_TMPL']);
             return false;
-        } elseif ($emailTpl && !preg_match('/\$code\b/', $emailTpl->body_html)) {
+        } elseif ($emailTpl && !preg_match('/\$code\b/', (string) $emailTpl->body_html)) {
             $msg .= 'Two factor email template should contains a $code at least.';
             $GLOBALS['log']->warn($msg);
             SugarApplication::appendErrorMessage($mod_strings['ERR_NO_2FACTOR_EMAIL_TMPL_CODE']);

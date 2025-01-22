@@ -46,6 +46,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class FieldOperator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Operators
  */
+#[\AllowDynamicProperties]
 class FieldOperator extends Operator
 {
     /**

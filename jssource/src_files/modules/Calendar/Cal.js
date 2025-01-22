@@ -288,6 +288,8 @@ CAL.repeat_type_selected = function () {
 }
 CAL.load_form = function (module_name, record, edit_all_recurrences, cal_event) {
   CAL.disable_creating = true;
+  CAL.reset_edit_dialog();
+  CAL.disable_buttons();
   var e;
   var to_open = true;
 
@@ -618,6 +620,9 @@ CAL.dialog_create = function (date, end_date, user_id) {
 }
 
 CAL.dialog_save = function () {
+  if (!check_form('CalendarEditView')) {
+    return;
+  }
   CAL.disable_buttons();
   ajaxStatus.showStatus(SUGAR.language.get('app_strings', 'LBL_SAVING'));
   if (CAL.get("send_invites").value == "1") {

@@ -48,6 +48,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class NotInOperator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Operators\Comparators
  */
+#[\AllowDynamicProperties]
 class NotInOperator extends Operator implements OperatorInterface
 {
     /**

@@ -3,7 +3,7 @@ if (!defined('sugarEntry')) {
     define('sugarEntry', true);
 }
 
-//assumes jsmin.php is in same directory
+//assumes SugarMin.php is in same directory
     if (isset($_REQUEST['root_directory'])) {
         require_once('jssource/minify_utils.php');
     } else {

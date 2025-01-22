@@ -52,6 +52,7 @@ require_once __DIR__ . '/../../modules/Meetings/Meeting.php';
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSyncHelper
 {
     /**
@@ -60,12 +61,12 @@ class GoogleSyncHelper
      * When given a single calendar object, determine its type and return an action.
      * At least one of the params is required.
      *
-     * @param Meeting $meeting (optional) Meeting Bean
-     * @param \Google_Service_Calendar_Event $event (optional) Google_Service_Calendar_Event Object
+     * @param Meeting|null $meeting (optional) Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event (optional) Google\Service\Calendar\Event Object
      *
      * @return string push, pull, skip, or false on error
      */
-    public function singleEventAction(Meeting $meeting = null, Google_Service_Calendar_Event $event = null)
+    public function singleEventAction(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
     {
         if (empty($meeting) && empty($event)) {
             return false;
@@ -84,11 +85,11 @@ class GoogleSyncHelper
      * Takes two calendar events, and extracts their last modified and sync times.
      *
      * @param Meeting $meeting Meeting Bean
-     * @param \Google_Service_Calendar_Event $event Google_Service_Calendar_Event Object
+     * @param \Google\Service\Calendar\Event $event Google\Service\Calendar\Event Object
      *
      * @return array key/value array with [sModified, $gModified, lastsync] keys
      */
-    public function getTimeStrings(Meeting $meeting, Google_Service_Calendar_Event $event)
+    public function getTimeStrings(Meeting $meeting, Google\Service\Calendar\Event $event)
     {
         $timeArray = array();
 
@@ -96,7 +97,8 @@ class GoogleSyncHelper
         $timeArray['gModified'] = strtotime($event->getUpdated());
 
         // Get last modified of SuiteCRM event
-        $timeArray['sModified'] = strtotime($meeting->fetched_row['date_modified'] . ' UTC'); // SuiteCRM stores the timedate as UTC in the DB
+        $date = !empty($meeting->fetched_row['date_modified']) ? $meeting->fetched_row['date_modified']. ' UTC' : 'now';
+        $timeArray['sModified'] = strtotime($date); // SuiteCRM stores the timedate as UTC in the DB
 
         // Get the last sync time of SuiteCRM event
         $timeArray['lastSync'] = 0;
@@ -113,12 +115,12 @@ class GoogleSyncHelper
      * Takes two calendar events and the timeArray from getTimeStrings, and returns a push/pull[_delete] string.
      *
      * @param Meeting $meeting Meeting Bean
-     * @param \Google_Service_Calendar_Event $event Google_Service_Calendar_Event Object
+     * @param \Google\Service\Calendar\Event $event Google\Service\Calendar\Event Object
      * @param array timeArray from getTimeStrings
      *
      * @return string 'push(_delete)', 'pull(_delete)'
      */
-    public function getNewestMeetingResponse(Meeting $meeting, Google_Service_Calendar_Event $event, array $timeArray)
+    public function getNewestMeetingResponse(Meeting $meeting, Google\Service\Calendar\Event $event, array $timeArray)
     {
         if ($timeArray['gModified'] > $timeArray['sModified']) {
             if ($event->status == 'cancelled') {
@@ -139,13 +141,13 @@ class GoogleSyncHelper
     * Takes two calendar events and the timeArray from getTimeStrings, and returns bool (should we skip this record).
     *
     * @param Meeting $meeting Meeting Bean
-    * @param \Google_Service_Calendar_Event $event Google_Service_Calendar_Event Object
+    * @param \Google\Service\Calendar\Event $event Google\Service\Calendar\Event Object
     * @param array $timeArray from getTimeStrings
     * @param array $syncedList from GoogleSyncBase Class
     *
     * @return bool should we skip this record
     */
-    public function isSkippable(Meeting $meeting, Google_Service_Calendar_Event $event, array $timeArray, array $syncedList)
+    public function isSkippable(Meeting $meeting, Google\Service\Calendar\Event $event, array $timeArray, array $syncedList)
     {
         $ret = false;
 
@@ -172,7 +174,7 @@ class GoogleSyncHelper
      *
      * Creates reminders for event from google event reminders
      *
-     * @param array $overrides Google Calendar Event Reminders (See Class Google_Service_Calendar_EventReminders)
+     * @param array $overrides Google Calendar Event Reminders (See Class Google\Service\Calendar\EventReminders)
      * @param string $meeting Meeting Bean
      *
      * @return array|bool Nested array of unsaved reminders and reminder_invitees, false on Failure

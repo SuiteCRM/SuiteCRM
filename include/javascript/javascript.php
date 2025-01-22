@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
  * Description:  Creates the runtime database connection.
  */
+#[\AllowDynamicProperties]
 class javascript
 {
     public $formname = 'form';
@@ -65,19 +66,7 @@ class javascript
         $this->sugarbean->module_dir = '';
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function javascript()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function setSugarBean($sugar)
@@ -195,11 +184,11 @@ class javascript
 
     public function stripEndColon($modString)
     {
-        if (substr($modString, -1, 1) == ":") {
-            $modString = substr($modString, 0, (strlen($modString) - 1));
+        if (substr((string) $modString, -1, 1) == ":") {
+            $modString = substr((string) $modString, 0, (strlen((string) $modString) - 1));
         }
-        if (substr($modString, -2, 2) == ": ") {
-            $modString = substr($modString, 0, (strlen($modString) - 2));
+        if (substr((string) $modString, -2, 2) == ": ") {
+            $modString = substr((string) $modString, 0, (strlen((string) $modString) - 2));
         }
         return $modString;
     }
@@ -223,7 +212,7 @@ class javascript
         .');'."\n";
     }
 
-    public function addFieldRange($field, $type, $displayName, $required, $prefix='', $min, $max)
+    public function addFieldRange($field, $type, $displayName, $required, $prefix, $min, $max)
     {
         $this->script .= "addToValidateRange("
             . "'" . $this->formname . "', "
@@ -250,25 +239,25 @@ class javascript
         $this->script .= "addToValidateIsValidTime('{$this->formname}', '{$name}', '{$type}', {$req}, '{$msg}');\n";
     }
 
-    public function addFieldDateBefore($field, $type, $displayName, $required, $prefix='', $compareTo)
+    public function addFieldDateBefore($field, $type, $displayName, $required, $prefix, $compareTo)
     {
         $this->script .= "addToValidateDateBefore('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
                        . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)) . "', '$compareTo' );\n";
     }
 
-    public function addFieldDateBeforeAllowBlank($field, $type, $displayName, $required, $prefix='', $compareTo, $allowBlank='true')
+    public function addFieldDateBeforeAllowBlank($field, $type, $displayName, $required, $prefix, $compareTo, $allowBlank='true')
     {
         $this->script .= "addToValidateDateBeforeAllowBlank('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
                        . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)) . "', '$compareTo', '$allowBlank' );\n";
     }
 
-    public function addToValidateBinaryDependency($field, $type, $displayName, $required, $prefix='', $compareTo)
+    public function addToValidateBinaryDependency($field, $type, $displayName, $required, $prefix, $compareTo)
     {
         $this->script .= "addToValidateBinaryDependency('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
                        . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)) . "', '$compareTo' );\n";
     }
 
-    public function addToValidateComparison($field, $type, $displayName, $required, $prefix='', $compareTo)
+    public function addToValidateComparison($field, $type, $displayName, $required, $prefix, $compareTo)
     {
         $this->script .= "addToValidateComparison('".$this->formname."', '".$prefix.$field."', '".$type . "', {$this->getRequiredString($required)},'"
                        . $this->stripEndColon(translate($displayName, $this->sugarbean->module_dir)) . "', '$compareTo' );\n";

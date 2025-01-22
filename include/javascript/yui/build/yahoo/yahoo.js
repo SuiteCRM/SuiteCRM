@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 /**
  * The YAHOO object is the single global object used by YUI Library.  It
@@ -255,7 +255,7 @@ YAHOO.env.getVersion = function(name) {
  * parses a user agent string (or looks for one in navigator to parse if
  * not supplied).
  * @method parseUA
- * @since 2.9.0
+ * @since 2.9.1
  * @static
  */
 YAHOO.env.parseUA = function(agent) {
@@ -739,7 +739,7 @@ return (o && (typeof o === 'object' || L.isFunction(o))) || false;
      * @param {String} html String to escape.
      * @return {String} Escaped string.
      * @static
-     * @since 2.9.0
+     * @since 2.9.1
      */
     escapeHTML: function (html) {
         return html.replace(/[&<>"'\/`]/g, function (match) {
@@ -1226,4 +1226,4 @@ YAHOO.augment = L.augmentProto;
 YAHOO.extend = L.extend;
 
 })();
-YAHOO.register("yahoo", YAHOO, {version: "2.9.0", build: "2800"});
+YAHOO.register("yahoo", YAHOO, {version: "2.9.1", build: "2800"});

@@ -46,6 +46,7 @@ require_once('include/EditView/QuickCreate.php');
 
 
 
+#[\AllowDynamicProperties]
 class TasksQuickCreate extends QuickCreate
 {
     public $javascript;
@@ -62,20 +63,20 @@ class TasksQuickCreate extends QuickCreate
         $this->ss->assign("TIME_FORMAT", '('. $timedate->get_user_time_format().')');
         
         $focus = BeanFactory::newBean('Tasks');
-        $time_start_hour = (int)substr($focus->time_start, 0, 2);
-        $time_start_minutes = substr($focus->time_start, 3, 5);
+        $time_start_hour = (int)substr((string) $focus->time_start, 0, 2);
+        $time_start_minutes = substr((string) $focus->time_start, 3, 5);
         if ($time_start_minutes > 45) {
             $time_start_hour += 1;
         }
 
         $time_pref = $timedate->get_time_format();
-        if (strpos($time_pref, 'a')) {
+        if (strpos((string) $time_pref, 'a')) {
             if (!isset($focus->meridiem_am_values)) {
                 $focus->meridiem_am_values = array('am'=>'am', 'pm'=>'pm');
             }
             $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($focus->meridiem_am_values, $time_start_hour < 12 ? 'am' : 'pm'));
         } else {
-            if (strpos($time_pref, 'A')) {
+            if (strpos((string) $time_pref, 'A')) {
                 if (!isset($focus->meridiem_AM_values)) {
                     $focus->meridiem_AM_values = array('AM'=>'AM', 'PM'=>'PM');
                 }

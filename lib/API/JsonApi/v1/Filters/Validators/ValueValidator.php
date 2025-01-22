@@ -47,6 +47,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class ValueValidator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Validators
  */
+#[\AllowDynamicProperties]
 class ValueValidator implements ValidatorInterface
 {
 
@@ -103,7 +104,7 @@ class ValueValidator implements ValidatorInterface
 
         // $fieldKey should not contain reserved words
         foreach (self::$BANNED_RESERVED_CHARACTERS as $reservedCharacter) {
-            if (strpos($value, $reservedCharacter) !== false) {
+            if (strpos($value, (string) $reservedCharacter) !== false) {
                 return false;
             }
         }

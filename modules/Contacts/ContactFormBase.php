@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/SugarObjects/forms/PersonFormBase.php');
 
+#[\AllowDynamicProperties]
 class ContactFormBase extends PersonFormBase
 {
     public $moduleName = 'Contacts';
@@ -73,15 +74,21 @@ class ContactFormBase extends PersonFormBase
         // Bug #46427 : Records from other Teams shown on Potential Duplicate Contacts screen during Lead Conversion
         // add team security
 
+        $dbManager = DBManagerFactory::getInstance();
+
         $query .= ' where contacts.deleted = 0 AND ';
-        if (isset($_POST[$prefix.'first_name']) && strlen($_POST[$prefix.'first_name']) != 0 && isset($_POST[$prefix.'last_name']) && strlen($_POST[$prefix.'last_name']) != 0) {
-            $query .= " contacts.first_name LIKE '". $_POST[$prefix.'first_name'] . "%' AND contacts.last_name = '". $_POST[$prefix.'last_name'] ."'";
+        if (isset($_POST[$prefix.'first_name']) && strlen((string) $_POST[$prefix.'first_name']) != 0 && isset($_POST[$prefix.'last_name']) && strlen((string) $_POST[$prefix.'last_name']) != 0) {
+            $firstName = $dbManager->quote($_POST[$prefix.'first_name' ?? '']);
+            $lastName = $dbManager->quote($_POST[$prefix.'last_name' ?? '']);
+            $query .= " contacts.first_name LIKE '". $firstName . "%' AND contacts.last_name = '". $lastName ."'";
         } else {
-            $query .= " contacts.last_name = '". $_POST[$prefix.'last_name'] ."'";
+            $lastName = $dbManager->quote($_POST[$prefix.'last_name' ?? '']);
+            $query .= " contacts.last_name = '". $lastName ."'";
         }
 
         if (!empty($_POST[$prefix.'record'])) {
-            $query .= " AND  contacts.id != '". $_POST[$prefix.'record'] ."'";
+            $record = $dbManager->quote($_POST[$prefix.'record' ?? '']);
+            $query .= " AND  contacts.id != '". $record ."'";
         }
         return $query;
     }
@@ -147,8 +154,8 @@ class ContactFormBase extends PersonFormBase
             $lead_source_label = "<td scope='row'>&nbsp;</td>";
             $lead_source_field = "<td >&nbsp;</td>";
         } else {
-            $lead_source_label = "<td scope='row' nowrap>${mod_strings['LBL_LEAD_SOURCE']}</td>";
-            $lead_source_field = "<td ><select name='${prefix}lead_source'>$lead_source_options</select></td>";
+            $lead_source_label = "<td scope='row' nowrap>{$mod_strings['LBL_LEAD_SOURCE']}</td>";
+            $lead_source_field = "<td ><select name='{$prefix}lead_source'>$lead_source_options</select></td>";
         }
 
 
@@ -164,72 +171,72 @@ class ContactFormBase extends PersonFormBase
         $lbl_required_symbol = $app_strings['LBL_REQUIRED_SYMBOL'];
 
         $form .= <<<EOQ
-		<input type="hidden" name="${prefix}record" value="">
-		<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
+		<input type="hidden" name="{$prefix}record" value="">
+		<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
 		<table border='0' celpadding="0" cellspacing="0" width='100%'>
 		<tr>
 		<td nowrap scope='row'>$lbl_first_name</td>
 		<td scope='row'>$lbl_last_name&nbsp;<span class="required">$lbl_required_symbol</span></td>
-		<td scope='row' nowrap>${mod_strings['LBL_TITLE']}</td>
-		<td scope='row' nowrap>${mod_strings['LBL_DEPARTMENT']}</td>
+		<td scope='row' nowrap>{$mod_strings['LBL_TITLE']}</td>
+		<td scope='row' nowrap>{$mod_strings['LBL_DEPARTMENT']}</td>
 		</tr>
 		<tr>
-		<td ><select name='${prefix}salutation'>$salutation_options</select>&nbsp;<input name="${prefix}first_name" type="text" value="{$contact->first_name}"></td>
-		<td ><input name='${prefix}last_name' type="text" value="{$contact->last_name}"></td>
-		<td  nowrap><input name='${prefix}title' type="text" value="{$contact->title}"></td>
-		<td  nowrap><input name='${prefix}department' type="text" value="{$contact->department}"></td>
+		<td ><select name='{$prefix}salutation'>$salutation_options</select>&nbsp;<input name="{$prefix}first_name" type="text" value="{$contact->first_name}"></td>
+		<td ><input name='{$prefix}last_name' type="text" value="{$contact->last_name}"></td>
+		<td  nowrap><input name='{$prefix}title' type="text" value="{$contact->title}"></td>
+		<td  nowrap><input name='{$prefix}department' type="text" value="{$contact->department}"></td>
 		</tr>
 		<tr>
 		<td nowrap colspan='4' scope='row'>$lbl_address</td>
 		</tr>
 
 		<tr>
-		<td nowrap colspan='4' ><textarea cols='80' rows='2' name='${prefix}primary_address_street'>{$contact->primary_address_street}</textarea></td>
+		<td nowrap colspan='4' ><textarea cols='80' rows='2' name='{$prefix}primary_address_street'>{$contact->primary_address_street}</textarea></td>
 		</tr>
 
 		<tr>
-		<td scope='row'>${mod_strings['LBL_CITY']}</td>
-		<td scope='row'>${mod_strings['LBL_STATE']}</td>
-		<td scope='row'>${mod_strings['LBL_POSTAL_CODE']}</td>
-		<td scope='row'>${mod_strings['LBL_COUNTRY']}</td>
+		<td scope='row'>{$mod_strings['LBL_CITY']}</td>
+		<td scope='row'>{$mod_strings['LBL_STATE']}</td>
+		<td scope='row'>{$mod_strings['LBL_POSTAL_CODE']}</td>
+		<td scope='row'>{$mod_strings['LBL_COUNTRY']}</td>
 		</tr>
 
 		<tr>
-		<td ><input name='${prefix}primary_address_city'  maxlength='100' value='{$contact->primary_address_city}'></td>
-		<td ><input name='${prefix}primary_address_state'  maxlength='100' value='{$contact->primary_address_state}'></td>
-		<td ><input name='${prefix}primary_address_postalcode'  maxlength='100' value='{$contact->primary_address_postalcode}'></td>
-		<td ><input name='${prefix}primary_address_country'  maxlength='100' value='{$contact->primary_address_country}'></td>
+		<td ><input name='{$prefix}primary_address_city'  maxlength='100' value='{$contact->primary_address_city}'></td>
+		<td ><input name='{$prefix}primary_address_state'  maxlength='100' value='{$contact->primary_address_state}'></td>
+		<td ><input name='{$prefix}primary_address_postalcode'  maxlength='100' value='{$contact->primary_address_postalcode}'></td>
+		<td ><input name='{$prefix}primary_address_country'  maxlength='100' value='{$contact->primary_address_country}'></td>
 		</tr>
 
 
 		<tr>
 		<td nowrap scope='row'>$lbl_phone</td>
-		<td nowrap scope='row'>${mod_strings['LBL_MOBILE_PHONE']}</td>
-		<td nowrap scope='row'>${mod_strings['LBL_FAX_PHONE']}</td>
-		<td nowrap scope='row'>${mod_strings['LBL_HOME_PHONE']}</td>
+		<td nowrap scope='row'>{$mod_strings['LBL_MOBILE_PHONE']}</td>
+		<td nowrap scope='row'>{$mod_strings['LBL_FAX_PHONE']}</td>
+		<td nowrap scope='row'>{$mod_strings['LBL_HOME_PHONE']}</td>
 		</tr>
 
 		<tr>
-		<td nowrap ><input name='${prefix}phone_work' type="text" value="{$contact->phone_work}"></td>
-		<td nowrap ><input name='${prefix}phone_mobile' type="text" value="{$contact->phone_mobile}"></td>
-		<td nowrap ><input name='${prefix}phone_fax' type="text" value="{$contact->phone_fax}"></td>
-		<td nowrap ><input name='${prefix}phone_home' type="text" value="{$contact->phone_home}"></td>
+		<td nowrap ><input name='{$prefix}phone_work' type="text" value="{$contact->phone_work}"></td>
+		<td nowrap ><input name='{$prefix}phone_mobile' type="text" value="{$contact->phone_mobile}"></td>
+		<td nowrap ><input name='{$prefix}phone_fax' type="text" value="{$contact->phone_fax}"></td>
+		<td nowrap ><input name='{$prefix}phone_home' type="text" value="{$contact->phone_home}"></td>
 		</tr>
 
 		<tr>
-		<td scope='row' nowrap>${mod_strings['LBL_OTHER_PHONE']}</td>
+		<td scope='row' nowrap>{$mod_strings['LBL_OTHER_PHONE']}</td>
 		$lead_source_label
 
-		<td scope="row">${mod_strings['LBL_BIRTHDATE']}&nbsp;</td>
+		<td scope="row">{$mod_strings['LBL_BIRTHDATE']}&nbsp;</td>
 		</tr>
 
 
 		<tr>
-		<td  nowrap><input name='${prefix}phone_other' type="text" value="{$contact->phone_other}"></td>
+		<td  nowrap><input name='{$prefix}phone_other' type="text" value="{$contact->phone_other}"></td>
 		$lead_source_field
 
 		<td  nowrap>
-			<input name='{$prefix}birthdate' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='${prefix}jscal_field' type="text" value="{$birthdate}">&nbsp;
+			<input name='{$prefix}birthdate' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='{$prefix}jscal_field' type="text" value="{$birthdate}">&nbsp;
 			<!--not_in_theme!--><span class="suitepicon suitepicon-module-calendar"></span>
 		</td>
 		</tr>
@@ -244,7 +251,7 @@ EOQ;
 
         $form .= <<<EOQ
 		<tr>
-		<td nowrap colspan='4' scope='row'>${mod_strings['LBL_DESCRIPTION']}</td>
+		<td nowrap colspan='4' scope='row'>{$mod_strings['LBL_DESCRIPTION']}</td>
 		</tr>
 		<tr>
 		<td nowrap colspan='4' >{$description_text}</td>
@@ -264,37 +271,37 @@ EOQ;
         $form .= <<<EOQ
 		</table>
 
-		<input type='hidden' name='${prefix}alt_address_street'  value='{$contact->alt_address_street}'>
-		<input type='hidden' name='${prefix}alt_address_city' value='{$contact->alt_address_city}'><input type='hidden' name='${prefix}alt_address_state'   value='{$contact->alt_address_state}'><input type='hidden' name='${prefix}alt_address_postalcode'   value='{$contact->alt_address_postalcode}'><input type='hidden' name='${prefix}alt_address_country'  value='{$contact->alt_address_country}'>
-		<input type='hidden' name='${prefix}do_not_call'  value='{$contact->do_not_call}'>
-		<input type='hidden' name='${prefix}email_opt_out'  value='{$contact->email_opt_out}'>
+		<input type='hidden' name='{$prefix}alt_address_street'  value='{$contact->alt_address_street}'>
+		<input type='hidden' name='{$prefix}alt_address_city' value='{$contact->alt_address_city}'><input type='hidden' name='{$prefix}alt_address_state'   value='{$contact->alt_address_state}'><input type='hidden' name='{$prefix}alt_address_postalcode'   value='{$contact->alt_address_postalcode}'><input type='hidden' name='{$prefix}alt_address_country'  value='{$contact->alt_address_country}'>
+		<input type='hidden' name='{$prefix}do_not_call'  value='{$contact->do_not_call}'>
+		<input type='hidden' name='{$prefix}email_opt_out'  value='{$contact->email_opt_out}'>
 EOQ;
 
         if ($portal == true) {
             if (isset($contact->portal_name)) {
-                $form.="<input type='hidden' name='${prefix}portal_name'  value='{$contact->portal_name}'>";
+                $form.="<input type='hidden' name='{$prefix}portal_name'  value='{$contact->portal_name}'>";
             } else {
-                $form.="<input type='hidden' name='${prefix}portal_name'  value=''>";
+                $form.="<input type='hidden' name='{$prefix}portal_name'  value=''>";
             }
             if (isset($contact->portal_app)) {
-                $form.="<input type='hidden' name='${prefix}portal_app'  value='{$contact->portal_app}'>";
+                $form.="<input type='hidden' name='{$prefix}portal_app'  value='{$contact->portal_app}'>";
             } else {
-                $form.="<input type='hidden' name='${prefix}portal_app'  value=''>";
+                $form.="<input type='hidden' name='{$prefix}portal_app'  value=''>";
             }
 
 
             if (!empty($contact->portal_name) && !empty($contact->portal_app)) {
-                $form .= "<input name='${prefix}portal_active' type='hidden' size='25'  value='1' >";
+                $form .= "<input name='{$prefix}portal_active' type='hidden' size='25'  value='1' >";
             }
 
             if (isset($contact->portal_password)) {
-                $form.="<input type='password' name='${prefix}portal_password1'  value='{$contact->portal_password}'>";
-                $form.="<input type='password' name='${prefix}portal_password'  value='{$contact->portal_password}'>";
-                $form .= "<input name='${prefix}old_portal_password' type='hidden' size='25'  value='{$contact->portal_password}' >";
+                $form.="<input type='password' name='{$prefix}portal_password1'  value='{$contact->portal_password}'>";
+                $form.="<input type='password' name='{$prefix}portal_password'  value='{$contact->portal_password}'>";
+                $form .= "<input name='{$prefix}old_portal_password' type='hidden' size='25'  value='{$contact->portal_password}' >";
             } else {
-                $form.="<input type='password' name='${prefix}portal_password1'  value=''>";
-                $form.="<input type='password' name='${prefix}portal_password'  value=''>";
-                $form .= "<input name='${prefix}old_portal_password' type='hidden' size='25'  value='' >";
+                $form.="<input type='password' name='{$prefix}portal_password1'  value=''>";
+                $form.="<input type='password' name='{$prefix}portal_password'  value=''>";
+                $form .= "<input name='{$prefix}old_portal_password' type='hidden' size='25'  value='' >";
             }
         }
 
@@ -343,31 +350,31 @@ EOQ;
         $lbl_email_address = $mod_strings['LBL_EMAIL_ADDRESS'];
         if ($formname == 'EmailEditView') {
             $form = <<<EOQ
-		<input type="hidden" name="${prefix}record" value="">
-		<input type="hidden" name="${prefix}email2" value="">
-		<input type="hidden" name="${prefix}phone_work" value="">
-		<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
+		<input type="hidden" name="{$prefix}record" value="">
+		<input type="hidden" name="{$prefix}email2" value="">
+		<input type="hidden" name="{$prefix}phone_work" value="">
+		<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
 		$lbl_first_name<br>
-		<input name="${prefix}first_name" type="text" value="" size=10><br>
+		<input name="{$prefix}first_name" type="text" value="" size=10><br>
 		$lbl_last_name&nbsp;<span class="required">$lbl_required_symbol</span><br>
-		<input name='${prefix}last_name' type="text" value="" size=10><br>
+		<input name='{$prefix}last_name' type="text" value="" size=10><br>
 		$lbl_email_address&nbsp;<span class="required">$lbl_required_symbol</span><br>
-		<input name='${prefix}email1' type="text" value=""><br><br>
+		<input name='{$prefix}email1' type="text" value=""><br><br>
 
 EOQ;
         } else {
             $form = <<<EOQ
-		<input type="hidden" name="${prefix}record" value="">
-		<input type="hidden" name="${prefix}email2" value="">
-		<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
+		<input type="hidden" name="{$prefix}record" value="">
+		<input type="hidden" name="{$prefix}email2" value="">
+		<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
 		$lbl_first_name<br>
-		<input name="${prefix}first_name" type="text" value=""><br>
+		<input name="{$prefix}first_name" type="text" value=""><br>
 		$lbl_last_name&nbsp;<span class="required">$lbl_required_symbol</span><br>
-		<input name='${prefix}last_name' type="text" value=""><br>
+		<input name='{$prefix}last_name' type="text" value=""><br>
 		$lbl_phone<br>
-		<input name='${prefix}phone_work' type="text" value=""><br>
+		<input name='{$prefix}phone_work' type="text" value=""><br>
 		$lbl_email_address<br>
-		<input name='${prefix}email1' type="text" value=""><br><br>
+		<input name='{$prefix}email1' type="text" value=""><br><br>
 
 EOQ;
         }
@@ -404,13 +411,13 @@ EOQ;
         $the_form = get_left_form_header($mod_strings['LBL_NEW_FORM_TITLE']);
         $the_form .= <<<EOQ
 
-		<form name="${prefix}ContactSave" onSubmit="return check_form('${prefix}ContactSave')" method="POST" action="index.php">
-			<input type="hidden" name="${prefix}module" value="Contacts">
-			<input type="hidden" name="${prefix}action" value="Save">
+		<form name="{$prefix}ContactSave" onSubmit="return check_form('{$prefix}ContactSave')" method="POST" action="index.php">
+			<input type="hidden" name="{$prefix}module" value="Contacts">
+			<input type="hidden" name="{$prefix}action" value="Save">
 EOQ;
-        $the_form .= $this->getFormBody($prefix, 'Contacts', "${prefix}ContactSave");
+        $the_form .= $this->getFormBody($prefix, 'Contacts', "{$prefix}ContactSave");
         $the_form .= <<<EOQ
-		<input title="$lbl_save_button_title" accessKey="$lbl_save_button_key" class="button" type="submit" name="${prefix}button" value="  $lbl_save_button_label  " >
+		<input title="$lbl_save_button_title" accessKey="$lbl_save_button_key" class="button" type="submit" name="{$prefix}button" value="  $lbl_save_button_label  " >
 		</form>
 
 EOQ;
@@ -509,7 +516,8 @@ EOQ;
                 if ($focus->hasCustomFields()) {
                     foreach ($focus->field_defs as $name=>$field) {
                         if (!empty($field['source']) && $field['source'] == 'custom_fields') {
-                            $get .= "&Contacts$name=".urlencode($focus->$name);
+                            $fieldName = $focus->$name ?? '';
+                            $get .= "&Contacts$name=".urlencode($fieldName);
                         }
                     }
                 }

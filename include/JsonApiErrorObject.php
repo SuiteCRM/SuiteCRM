@@ -55,23 +55,24 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @todo incomplete...
  */
+#[\AllowDynamicProperties]
 class JsonApiErrorObject
 {
 
     /**
      * integer
      */
-    const DEFAULT_ID = 1;
+    public const DEFAULT_ID = 1;
 
     /**
      * integer
      */
-    const DEFAULT_CODE = 1;
+    public const DEFAULT_CODE = 1;
 
     /**
      * integer
      */
-    const DEFAULT_STATUS = 200;
+    public const DEFAULT_STATUS = 200;
 
     /**
      *
@@ -123,8 +124,8 @@ class JsonApiErrorObject
 
     /**
      *
-     * @param LangText $title
-     * @param LangText $detail
+     * @param \SuiteCRM\LangText|null $title
+     * @param \SuiteCRM\LangText|null $detail
      * @param string $id
      * @param string $code
      * @param string $status

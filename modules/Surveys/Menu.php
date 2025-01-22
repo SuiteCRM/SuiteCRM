@@ -61,3 +61,12 @@ if (ACLController::checkAccess('Surveys', 'list', true)) {
             'Surveys'
         );
 }
+if (ACLController::checkAccess('SurveyResponses', 'list', true)) {
+    $module_menu[] =
+        array(
+            "index.php?module=SurveyResponses&action=index&return_module=Surveys&return_action=index",
+            translate('LNK_LIST', 'SurveyResponses'),
+            "List",
+            'SurveyResponses'
+        );
+} 

@@ -123,7 +123,7 @@ $mod_strings = array(
     'LBL_CREATED_USER' => 'Created User',
     'LBL_MODIFIED_USER' => 'Modified User',
     'NOTICE_DURATION_TIME' => 'Duration time must be greater than 0',
-    'LBL_MEETING_INFORMATION' => 'OVERVIEW',
+    'LBL_MEETING_INFORMATION' => 'OVERVIEW', //No need to be translated in all caps. Translation used just in menu action items when using the SuiteP template
     'LBL_LIST_JOIN_MEETING' => 'Join Meeting',
     'LBL_ACCEPT_STATUS' => 'Accept Status',
     'LBL_ACCEPT_LINK' => 'Accept Link',
@@ -136,12 +136,12 @@ $mod_strings = array(
 
     // create invitee functionallity
     'LBL_CREATE_INVITEE' => 'Create an invitee',
-    'LBL_CREATE_CONTACT' => 'As Contact',
-    'LBL_CREATE_LEAD' => 'As Lead',
-    'LBL_CREATE_AND_ADD' => 'Create & Add',
+    'LBL_CREATE_CONTACT' => 'As Contact',  // Create invitee functionallity
+    'LBL_CREATE_LEAD' => 'As Lead',  // Create invitee functionallity
+    'LBL_CREATE_AND_ADD' => 'Create & Add',  // Create invitee functionallity
     'LBL_CANCEL_CREATE_INVITEE' => 'Cancel',
     'LBL_EMPTY_SEARCH_RESULT' => 'Sorry, no results were found. Please create an invitee below.',
-    'LBL_NO_ACCESS' => 'You have no access to create $module',
+    'LBL_NO_ACCESS' => 'You have no access to create $module',  // Create invitee functionallity
 
     'LBL_REPEAT_TYPE' => 'Repeat Type',
     'LBL_REPEAT_INTERVAL' => 'Repeat Interval',

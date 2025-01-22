@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/DynamicFields/templates/Fields/TemplateEnum.php');
 
+#[\AllowDynamicProperties]
 class TemplateDynamicenum extends TemplateEnum
 {
     public $type = 'dynamicenum';
@@ -54,19 +55,7 @@ class TemplateDynamicenum extends TemplateEnum
         $this->vardef_map['parentenum'] = 'ext2';
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function TemplateDynamicenum()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function get_field_def()
@@ -79,8 +68,12 @@ class TemplateDynamicenum extends TemplateEnum
 
     public function get_xtpl_edit()
     {
+        global $app_list_strings;
+
+        $returnXTPL = [];
         $name = $this->name;
         $value = '';
+
         if (isset($this->bean->$name)) {
             $value = $this->bean->$name;
         } else {
@@ -92,8 +85,6 @@ class TemplateDynamicenum extends TemplateEnum
             $returnXTPL[strtoupper($this->name . '_help')] = translate($this->help, $this->bean->module_dir);
         }
 
-        global $app_list_strings;
-        $returnXTPL = array();
         $returnXTPL[strtoupper($this->name)] = $value;
         if (empty($this->ext1)) {
             $this->ext1 = $this->options;

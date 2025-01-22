@@ -46,7 +46,7 @@
 <div class="dashletNonTable" style='white-space:nowrap;'>
   <table border=0 cellspacing=0 cellpadding=2>
     <tr>
-      <td nowrap="nowrap"><span id='more_img_{$id}'>{$more_img}</span><span id='less_img_{$id}' style="display:none;">{$less_img}</span> <b>{$user_name}</b>&nbsp;</td>
+      <td nowrap="nowrap">{if !empty($link_types)}<span id='more_img_{$id}'>{$more_img}</span><span id='less_img_{$id}' style="display:none;">{$less_img}</span>{/if} <b>{$user_name}</b>&nbsp;</td>
       <td style="padding-right: 5px;"><input id="text" name="text" type="text" size='25' maxlength='100' value="" title="{sugar_translate label='LBL_POST_TITLE' module='SugarFeed'} {$user_name} "/></td>
       <td nowrap="nowrap">
       <input type="submit" value="{$LBL_POST}" class="button" style="vertical-align:top" onclick="SugarFeed.pushUserFeed('{$id}'); return false;"></td>
@@ -55,11 +55,13 @@
 </table>
 <div id='more_{$id}' style='display:none;padding-top:5px'>
 <table>
+{if !empty($link_types)}
 <tr>
     <td>{html_options name='link_type' options=$link_types}</td>
     <td><input type='text' name='link_url' title="{sugar_translate label='LBL_URL_LINK_TITLE' module='SugarFeed'}"  size='30'/></td>
 
 </tr>
+{/if}
 </table>
 </div>
 </div>

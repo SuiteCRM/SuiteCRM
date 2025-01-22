@@ -43,6 +43,7 @@ namespace SuiteCRM\API\OAuth2\Entities;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 
+#[\AllowDynamicProperties]
 class ScopeEntity implements ScopeEntityInterface
 {
     use EntityTrait;

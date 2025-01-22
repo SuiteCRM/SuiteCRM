@@ -62,7 +62,7 @@ if (!isset($beanList[$_REQUEST['module']])) {
     die("'".$_REQUEST['module']."' is not defined in \$beanList");
 }
 
-$subpanel = $_REQUEST['subpanel'];
+$subpanel = $_REQUEST['subpanel'] ?? '';
 $record = $_REQUEST['record'];
 $module = $_REQUEST['module'];
 
@@ -97,7 +97,8 @@ if (!empty($mkt_id)) {
 }
 echo (empty($_REQUEST['inline']))?$subpanel_object->get_buttons():'' ;
 
-$subpanel_object->display();
+$countOnly = isset($_REQUEST['countOnly']) && $_REQUEST['countOnly'];
+$subpanel_object->display($countOnly);
 
 if (empty($_REQUEST['inline'])) {
     insert_popup_footer($theme);

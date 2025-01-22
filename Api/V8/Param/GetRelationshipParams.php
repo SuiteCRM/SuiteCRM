@@ -5,6 +5,7 @@ use Api\V8\Param\Options as ParamOption;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[\AllowDynamicProperties]
 class GetRelationshipParams extends BaseParam
 {
     /**
@@ -40,6 +41,32 @@ class GetRelationshipParams extends BaseParam
     }
 
     /**
+     * @return PageParams
+     */
+    public function getPage()
+    {
+        return isset($this->parameters['page'])
+            ? $this->parameters['page']
+            : new PageParams($this->validatorFactory, $this->beanManager);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSort()
+    {
+        return isset($this->parameters['sort']) ? $this->parameters['sort'] : '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilter()
+    {
+        return isset($this->parameters['filter']) ? $this->parameters['filter'] : '';
+    }
+
+    /**
      * @inheritdoc
      */
     protected function configureParameters(OptionsResolver $resolver)
@@ -64,5 +91,14 @@ class GetRelationshipParams extends BaseParam
 
         // dependency on sourceBean field
         $this->setOptions($resolver, [ParamOption\LinkFieldName::class]);
+        $this->setOptions(
+            $resolver,
+            [
+                ParamOption\LinkFieldName::class,
+                ParamOption\Page::class,
+                ParamOption\Sort::class,
+                ParamOption\Filter::class
+            ]
+        );
     }
 }

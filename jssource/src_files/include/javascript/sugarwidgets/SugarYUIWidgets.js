@@ -296,13 +296,25 @@ sw.DragDropTable.groups = {
 YAHOO.extend(sw.DragDropTable, YAHOO.widget.ScrollingDataTable, {
 	_addTrEl : function (oRecord) {
 		var elTr = sw.DragDropTable.superclass._addTrEl.call(this, oRecord);
-		if (!this.disableEmptyRows || (
-		  oRecord.getData()[this.getColumnSet().keys[0].key] != false
-		  && oRecord.getData()[this.getColumnSet().keys[0].key] != "")
-		) {
+    var data = oRecord.getData() || {};
+    var isDisabled = data.disabled || false
+		if (!isDisabled &&
+      (
+        !this.disableEmptyRows ||
+        (
+		      oRecord.getData()[this.getColumnSet().keys[0].key] != false &&
+          oRecord.getData()[this.getColumnSet().keys[0].key] != ""
+        )
+		  )
+    ) {
 		    var _rowDD = new sw.RowDD(this, oRecord, elTr);
 		}
-	    return elTr;
+
+    if (isDisabled && elTr.classList) {
+      elTr.classList.add('disabled');
+    }
+
+    return elTr;
 	},
 	getGroup : function () {
 		return sw.DragDropTable.groups[this.DDGroup];

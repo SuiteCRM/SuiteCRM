@@ -4,89 +4,98 @@
   "homepage": "https://suitecrm.com",
   "type": "project",
   "license": "GPL-3.0",
-  "authors": [],
-  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "SalesAgility Ltd"
+    }
+  ],
   "support": {
     "issues": "https://github.com/salesagility/SuiteCRM/issues",
     "wiki": "https://docs.suitecrm.com",
-    "forum": "https://suitecrm.com/suitecrm/forum",
+    "forum": "https://community.suitecrm.com",
     "chat": "https://gitter.im/suitecrm/Lobby",
     "source": "https://github.com/salesagility/SuiteCRM"
   },
   "config": {
     "vendor-dir": "vendor",
     "platform": {
-      "php": "5.6.0"
+      "php": "7.4.0"
     },
     "optimize-autoloader": true,
     "sort-packages": true,
-    "preferred-install": {
-      "elasticsearch/elasticsearch": "dist"
+    "allow-plugins": {
+      "wikimedia/composer-merge-plugin": true
     }
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "suggest": {
+    "ext-imap": "Needed for emails module"
+  },
   "require": {
-    "php": ">=5.6.0",
+    "php": ">=7.4.0",
     "ext-curl": "*",
     "ext-gd": "*",
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-zip": "*",
-    "consolidation/robo": "^1.4",
-    "elasticsearch/elasticsearch": "^5.3",
+    "consolidation/robo": "^3.0",
+    "elasticsearch/elasticsearch": "^7.13",
     "ezyang/htmlpurifier": "^4.10",
-    "google/apiclient": "^2.0",
+    "google/apiclient": "^2.7",
     "google/recaptcha": "^1.1",
-    "gymadarasz/imagesloaded": "^4.1",
     "gymadarasz/ace": "^1.2",
+    "gymadarasz/imagesloaded": "^4.1",
+    "javanile/php-imap2": "^0.1.10",
     "justinrainbow/json-schema": "^5.2",
-    "league/oauth2-server": "^5.1",
-    "league/uri": "^4.2.3",
+    "league/oauth2-client": "^2.6",
+    "league/oauth2-server": "^8.4",
     "monolog/monolog": "^1.23",
-    "nesbot/carbon": "^1.31",
-    "onelogin/php-saml": "^3.0.0",
-    "phpmailer/phpmailer": "^6.0",
+    "nesbot/carbon": "^2.0.0",
+    "onelogin/php-saml": "3.4.1",
     "paragonie/random_compat": "^2.0",
+    "phpmailer/phpmailer": "^6.0",
     "psr/container": "^1.0",
     "psr/log": "^1.0",
     "slim/slim": "^3.8",
-    "smarty/smarty": "^2.6",
+    "smarty/smarty": "^4",
     "soundasleep/html2text": "~0.5",
     "symfony/options-resolver": "^3.4",
     "symfony/validator": "^3.4",
-    "symfony/yaml": "^3.4",
-    "tinymce/tinymce": "^4.9.11",
-    "tuupola/slim-jwt-auth": "^2.0",
+    "symfony/yaml": "^5.2",
+    "tecnickcom/tcpdf": "^6.4",
+    "tedivm/jshrink": "^1.3",
+    "tinymce/tinymce": "^5.10",
     "vlucas/phpdotenv": "^3.5",
-    "wikimedia/composer-merge-plugin": "^1.4",
-    "zbateson/mail-mime-parser": "^1.1",
+    "voku/anti-xss": "^4.0",
+    "wikimedia/composer-merge-plugin": "^2.0",
+    "zbateson/mail-mime-parser": "^2.2",
     "zf1/zend-gdata": "^1.12",
     "zf1/zend-loader": "^1.12",
     "zf1/zend-oauth": "^1.12",
     "zf1/zend-registry": "^1.12",
-    "zf1/zend-search-lucene": "^1.12",
-    "ext-imap": "*"
+    "zf1/zend-search-lucene": "^1.12"
   },
   "require-dev": {
     "browserstack/browserstack-local": "^1.1",
-    "codeception/codeception": "^3.0",
+    "codeception/codeception": "^4.1",
+    "codeception/module-asserts": "^1.3",
+    "codeception/module-filesystem": "^1.0",
+    "codeception/module-phpbrowser": "^1.0",
+    "codeception/module-rest": "^1.3",
+    "codeception/module-webdriver": "^1.2",
+    "fakerphp/faker": "^1.14",
     "filp/whoops": "^2.3",
     "flow/jsonpath": "^0.4",
     "friendsofphp/php-cs-fixer": "^2.15",
-    "fzaninotto/faker": "^1.6",
-    "jeroendesloovere/vcard": "v1.5",
-    "leafo/scssphp": "^0.7.7",
+    "jeroendesloovere/vcard": "^1.7",
     "mikey179/vfsstream": "1.6.*",
-    "mockery/mockery": "^1.1.0"
+    "mockery/mockery": "^1.1.0",
+    "phpstan/phpstan": "^1.10",
+    "phpunit/phpunit": "^9.5",
+    "rector/rector": "^0.16.0",
+    "scssphp/scssphp": "^1.5"
   },
-  "scripts": {
-    "post-install-cmd": [
-      "rm -Rf vendor/elasticsearch/elasticsearch/tests/Elasticsearch/Tests",
-      "mv vendor/google/apiclient-services/src/Google/Service/Calendar* vendor/google/apiclient-services/src/Google/",
-      "rm -Rf vendor/google/apiclient-services/src/Google/Service/*",
-      "mv vendor/google/apiclient-services/src/Google/Calendar* vendor/google/apiclient-services/src/Google/Service/"
-    ]
-  },
-  "prefer-stable": true,
   "autoload": {
     "files": [
       "deprecated.php"
@@ -94,9 +103,7 @@
     "psr-4": {
       "SuiteCRM\\": [
         "lib/",
-        "include/",
-        "tests/SuiteCRM/",
-        "tests/unit/phpunit/lib/SuiteCRM/"
+        "include/"
       ],
       "SuiteCRM\\Custom\\": [
         "custom/lib"
@@ -109,7 +116,26 @@
       "Api/"
     ]
   },
+  "autoload-dev": {
+    "psr-4": {
+      "SuiteCRM\\": [
+        "tests/SuiteCRM/",
+        "tests/unit/phpunit/lib/SuiteCRM/"
+      ],
+      "SuiteCRM\\Tests\\Unit\\": [
+        "tests/unit/phpunit/"
+      ]
+    }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "Google\\Task\\Composer::cleanup"
+    ]
+  },
   "extra": {
+    "google/apiclient-services": [
+      "Calendar"
+    ],
     "merge-plugin": {
       "include": [
         "composer.ext.json",

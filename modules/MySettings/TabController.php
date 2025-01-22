@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class TabController
 {
     public $required_modules = array('Home');
@@ -85,14 +86,14 @@ class TabController
                             unset($tabs[$id]);
                         }
                     }
-                    ACLController :: filterModuleList($tabs);
-                    $tabs = $this->get_key_array($tabs);
+                    ACLController::filterModuleList($tabs);
+                    $tabs = self::get_key_array($tabs);
                     $system_tabs_result = $tabs;
                 } else {
-                    $system_tabs_result = $this->get_key_array($moduleList);
+                    $system_tabs_result = self::get_key_array($moduleList);
                 }
             } else {
-                $system_tabs_result = $this->get_key_array($moduleList);
+                $system_tabs_result = self::get_key_array($moduleList);
             }
             self::$isCacheValid = true;
         }
@@ -104,7 +105,7 @@ class TabController
     {
         global $moduleList;
         $tabs = $this->get_system_tabs();
-        $unsetTabs = $this->get_key_array($moduleList);
+        $unsetTabs = self::get_key_array($moduleList);
         foreach ($tabs as $tab) {
             unset($unsetTabs[$tab]);
         }
@@ -160,7 +161,7 @@ class TabController
     }
 
 
-    public function get_key_array($arr)
+    public static function get_key_array($arr)
     {
         $new = array();
         if (!empty($arr)) {
@@ -186,7 +187,7 @@ class TabController
         $system_tabs = $this->get_system_tabs();
         $tabs = $user->getPreference($type .'_tabs');
         if (!empty($tabs)) {
-            $tabs = $this->get_key_array($tabs);
+            $tabs = self::get_key_array($tabs);
             if ($type == 'display') {
                 $tabs['Home'] =  'Home';
             }
@@ -204,7 +205,7 @@ class TabController
     {
         global $moduleList;
         $tabs = $this->get_user_tabs($user);
-        $unsetTabs = $this->get_key_array($moduleList);
+        $unsetTabs = self::get_key_array($moduleList);
         foreach ($tabs as $tab) {
             unset($unsetTabs[$tab]);
         }
@@ -218,7 +219,7 @@ class TabController
         $tabs = $user->getPreference('tabs');
     
         if (!empty($tabs)) {
-            $tabs = $this->get_key_array($tabs);
+            $tabs = self::get_key_array($tabs);
             $tabs['Home'] =  'Home';
             foreach ($tabs as $tab) {
                 if (!isset($system_tabs[$tab])) {

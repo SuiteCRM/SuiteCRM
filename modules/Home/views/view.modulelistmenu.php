@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class HomeViewModulelistmenu extends ViewModulelistmenu
 {
     public function display()

@@ -85,8 +85,8 @@ use Tracker;
  */
 class ModuleController extends ApiController
 {
-    const MISSING_ID = '[ModuleController] ["id" does not exist]';
-    const SOURCE_TYPE = '/data/attributes/type';
+    public const MISSING_ID = '[ModuleController] ["id" does not exist]';
+    public const SOURCE_TYPE = '/data/attributes/type';
 
     /**
      * GET /api/v8/modules/meta/list
@@ -151,7 +151,7 @@ class ModuleController extends ApiController
                 $self = $config['site_url'] . '/api/v'. self::VERSION_MAJOR . '/modules/' . $moduleName . '/';
                 $actions = array();
                 foreach ($menu as $item) {
-                    $url = parse_url($item[0]);
+                    $url = parse_url((string) $item[0]);
                     parse_str($url['query'], $orig);
                     $actions[] = array(
                         'href' => $self . $item[2],
@@ -505,6 +505,7 @@ class ModuleController extends ApiController
      */
     public function getModuleRecord(Request $req, Response $res, array $args)
     {
+        $query = [];
         try {
             if (isset($query['include'])) {
                 throw new BadRequestException(
@@ -725,6 +726,7 @@ class ModuleController extends ApiController
      */
     public function getModuleMetaLanguage(Request $req, Response $res, array $args)
     {
+        $payload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');
@@ -755,6 +757,7 @@ class ModuleController extends ApiController
      */
     public function getApplicationMetaLanguages(Request $req, Response $res, array $args)
     {
+        $payload = [];
         try {
             $this->negotiatedJsonApiContent($req, $res);
 
@@ -782,6 +785,7 @@ class ModuleController extends ApiController
      */
     public function getModuleMetaAttributes(Request $req, Response $res, array $args)
     {
+        $payload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');
@@ -815,7 +819,7 @@ class ModuleController extends ApiController
     {
         return $this->getModuleMetaAttributes($req, $res, $args);
     }
-   
+
     /**
      * GET /api/v8/modules/{id}/meta/menu
      *
@@ -827,6 +831,7 @@ class ModuleController extends ApiController
      */
     public function getModuleMetaMenu(Request $req, Response $res, array $args)
     {
+        $payload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');
@@ -841,7 +846,7 @@ class ModuleController extends ApiController
             $self = $config['site_url'] . '/api/v'. self::VERSION_MAJOR . '/modules/' . $args['module'] . '/';
             $results = array();
             foreach ($menu as $item) {
-                $url = parse_url($item[0]);
+                $url = parse_url((string) $item[0]);
                 parse_str($url['query'], $orig);
                 $results[] = array(
                     'href' => $self . $item[2],
@@ -958,6 +963,7 @@ class ModuleController extends ApiController
      */
     public function getModuleMetaLayout(Request $req, Response $res, array $args)
     {
+        $payload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');
@@ -1165,6 +1171,9 @@ class ModuleController extends ApiController
      */
     public function createModuleRelationship(Request $req, Response $res, array $args)
     {
+        $additional_fields = [];
+        $link = [];
+        $responsePayload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');
@@ -1353,6 +1362,7 @@ class ModuleController extends ApiController
      */
     public function updateModuleRelationship(Request $req, Response $res, array $args)
     {
+        $responsePayload = [];
         try {
             if (!isset($args['module'])) {
                 throw new \InvalidArgumentException('Arguments array should contains a "module" index to describe module name.');

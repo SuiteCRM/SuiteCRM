@@ -47,14 +47,15 @@
  * All type of web services should provide proper implementation of all the abstract methods
  * @api
  */
+#[\AllowDynamicProperties]
 abstract class SugarWebService{
 	protected $server = null;
 	protected $excludeFunctions = array();
-	abstract function register($excludeFunctions = array());
-	abstract function registerImplClass($class);
-	abstract function getRegisteredImplClass();
-	abstract function registerClass($class);
-	abstract function getRegisteredClass();
-	abstract function serve();
-	abstract function error($errorObject);
+	abstract public function register($excludeFunctions = array());
+	abstract public function registerImplClass($class);
+	abstract public function getRegisteredImplClass();
+	abstract public function registerClass($class);
+	abstract public function getRegisteredClass();
+	abstract public function serve();
+	abstract public function error($errorObject);
 }

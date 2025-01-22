@@ -29,6 +29,7 @@
  */
 require_once('modules/AOS_Contracts/AOS_Contracts_sugar.php');
 
+#[\AllowDynamicProperties]
 class AOS_Contracts extends AOS_Contracts_sugar
 {
     public function __construct()
@@ -58,19 +59,7 @@ class AOS_Contracts extends AOS_Contracts_sugar
     }
 
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AOS_Contracts()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     public function save($check_notify = false)
     {
@@ -110,6 +99,7 @@ class AOS_Contracts extends AOS_Contracts_sugar
 
     public function createReminder()
     {
+        global $mod_strings;
         require_once('modules/Calls/Call.php');
         $call = new call();
 
@@ -123,7 +113,7 @@ class AOS_Contracts extends AOS_Contracts_sugar
             $call->parent_id = $this->id;
             $call->parent_type = 'AOS_Contracts';
             $call->date_start = $this->renewal_reminder_date;
-            $call->name = $this->name . ' Contract Renewal Reminder';
+            $call->name = $this->name . $mod_strings['LBL_RENEWAL_REMINDER'];
             $call->assigned_user_id = $this->assigned_user_id;
             $call->status = 'Planned';
             $call->direction = 'Outbound';

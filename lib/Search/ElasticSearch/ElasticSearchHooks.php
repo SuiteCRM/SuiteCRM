@@ -53,6 +53,7 @@ use Throwable;
 /**
  * Class ElasticSearchHooks handles logic hooks to keep the elasticsearch index synchronised.
  */
+#[\AllowDynamicProperties]
 class ElasticSearchHooks
 {
     /** @var SugarBean */

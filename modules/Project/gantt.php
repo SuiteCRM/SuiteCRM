@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Gantt
 {
     private $start_date;
@@ -286,7 +287,7 @@ class Gantt
     public function substr_unicode($str, $s, $l = null)
     {
         return implode("", array_slice(
-            preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY),
+            preg_split("//u", (string) $str, -1, PREG_SPLIT_NO_EMPTY),
             $s,
             $l
         ));

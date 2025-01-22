@@ -49,53 +49,53 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
  */
 class CustomLoaderTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testArrayMerge()
+    public function testArrayMerge(): void
     {
         $result = CustomLoader::arrayMerge([
             ['first' => ['one.1', 'one.2', 'one.3'], 'second' => 'two', 'third' => 'three'],
             ['first' => ['one.4', 'one.5'], 'foo' => ['bar', 'bazz']]
         ]);
-        $this->assertEquals([
+        self::assertEquals([
             'first' => ['one.1', 'one.2', 'one.3', 'one.4', 'one.5'],
             'second' => 'two',
             'third' => 'three',
             'foo' => ['bar', 'bazz'],
         ], $result);
     }
-    
-    public function testMergeCustomArray()
+
+    public function testMergeCustomArray(): void
     {
         $result = CustomLoader::mergeCustomArray(['one', 'two', 'three'], 'testCustom.php');
-        $this->assertEquals(CustomLoader::ERR_FILE_NOT_FOUND, CustomLoader::getLastError());
-        $this->assertEquals(['one', 'two', 'three'], $result);
-        
+        self::assertEquals(CustomLoader::ERR_FILE_NOT_FOUND, CustomLoader::getLastError());
+        self::assertEquals(['one', 'two', 'three'], $result);
+
         CustomLoader::setCustomPath(__DIR__ . DIRECTORY_SEPARATOR);
         $result = CustomLoader::mergeCustomArray(['foo', 'bar'], 'testArray.php');
-        $this->assertEquals(CustomLoader::ERR_NO_ERROR, CustomLoader::getLastError());
-        $this->assertEquals(['foo', 'bar', 'bazz', 1, 2, 3], $result);
-        
+        self::assertEquals(CustomLoader::ERR_NO_ERROR, CustomLoader::getLastError());
+        self::assertEquals(['foo', 'bar', 'bazz', 1, 2, 3], $result);
+
         try {
             $result = CustomLoader::mergeCustomArray(['foo', 'bar'], 'testArrayWrong.php');
-            $this->assertTrue(false, 'It should throws an exception because the customization is not an array.');
+            self::assertTrue(false, 'It should throws an exception because the customization is not an array.');
         } catch (Exception $e) {
-            $this->assertEquals(CustomLoader::ERR_WRONG_CUSTOM_FORMAT, $e->getCode());
+            self::assertEquals(CustomLoader::ERR_WRONG_CUSTOM_FORMAT, $e->getCode());
         }
-        
+
         // restore custom route
         CustomLoader::setCustomPath();
     }
-    
-    public function testLoadCustomRoutes()
+
+    public function testLoadCustomRoutes(): void
     {
         $app = new App();
-        
+
         CustomLoader::loadCustomRoutes($app, 'testRoutes.php');
-        $this->assertEquals(CustomLoader::ERR_ROUTE_FILE_NOT_FOUND, CustomLoader::getLastError());
-        
+        self::assertEquals(CustomLoader::ERR_ROUTE_FILE_NOT_FOUND, CustomLoader::getLastError());
+
         CustomLoader::setCustomPath(__DIR__ . DIRECTORY_SEPARATOR);
         CustomLoader::loadCustomRoutes($app, 'testRoutes.php');
-        $this->assertEquals(CustomLoader::ERR_NO_ERROR, CustomLoader::getLastError());
-                
+        self::assertEquals(CustomLoader::ERR_NO_ERROR, CustomLoader::getLastError());
+
         // restore custom route
         CustomLoader::setCustomPath();
     }

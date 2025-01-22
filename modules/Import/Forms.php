@@ -65,10 +65,10 @@ function getControl(
     $value = ''
     ) {
     global $current_language, $app_strings, $dictionary, $app_list_strings, $current_user;
-    
+
     // use the mod_strings for this module
     $mod_strings = return_module_language($current_language, $module);
-    
+
     // set the filename for this control
     $file = create_cache_directory('modules/Import/') . $module . $fieldname . '.tpl';
 
@@ -79,44 +79,41 @@ function getControl(
             $focus = loadBean($module);
             $vardef = $focus->getFieldDefinition($fieldname);
         }
-        
+
         // if this is the id relation field, then don't have a pop-up selector.
-        if ($vardef['type'] == 'relate' && $vardef['id_name'] == $vardef['name']) {
+        $idName = $vardef['id_name'] ?? '';
+        if ($vardef['type'] == 'relate' && $idName == $vardef['name']) {
             $vardef['type'] = 'varchar';
         }
-        
+
         // create the dropdowns for the parent type fields
         if ($vardef['type'] == 'parent_type') {
             $vardef['type'] = 'enum';
         }
-        
+
         // remove the special text entry field function 'getEmailAddressWidget'
-        if (isset($vardef['function'])
-                && ($vardef['function'] == 'getEmailAddressWidget'
-                    || $vardef['function']['name'] == 'getEmailAddressWidget')) {
+        if (isset($vardef['function']) && $vardef['function'] == 'getEmailAddressWidget') {
             unset($vardef['function']);
         }
-        
+
         // load SugarFieldHandler to render the field tpl file
         static $sfh;
-        
+
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');
             $sfh = new SugarFieldHandler();
         }
-        
+
         $displayParams = array();
         $displayParams['formName'] = 'importstep3';
 
         $contents = $sfh->displaySmarty('fields', $vardef, 'ImportView', $displayParams);
-        
+
         // Remove all the copyright comments
-        $contents = preg_replace('/\{\*[^\}]*?\*\}/', '', $contents);
-        
+        $contents = preg_replace('/\{\*[^\}]*?\*\}/', '', (string) $contents);
+
         // hack to disable one of the js calls in this control
-        if (isset($vardef['function'])
-                && ($vardef['function'] == 'getCurrencyDropDown'
-                    || $vardef['function']['name'] == 'getCurrencyDropDown')) {
+        if (isset($vardef['function']) && $vardef['function'] == 'getCurrencyDropDown') {
             $contents .= "{literal}<script>function CurrencyConvertAll() { return; }</script>{/literal}";
         }
 
@@ -126,10 +123,10 @@ function getControl(
             fclose($fh);
         }
     }
-    
+
     // Now render the template we received
     $ss = new Sugar_Smarty();
-    
+
     // Create Smarty variables for the Calendar picker widget
     global $timedate;
     $time_format = $timedate->get_user_time_format();
@@ -138,10 +135,10 @@ function getControl(
     $ss->assign('TIME_FORMAT', $time_format);
     $time_separator = ":";
     $match = array();
-    if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+    if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
         $time_separator = $match[1];
     }
-    $t23 = strpos($time_format, '23') !== false ? '%H' : '%I';
+    $t23 = strpos((string) $time_format, '23') !== false ? '%H' : '%I';
     if (!isset($match[2]) || $match[2] == '') {
         $ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . "%M");
     } else {
@@ -150,14 +147,17 @@ function getControl(
     }
 
     $ss->assign('CALENDAR_FDOW', $current_user->get_first_day_of_week());
- 
+
     // populate the fieldlist from the vardefs
     $fieldlist = array();
     if (!isset($focus) || !($focus instanceof SugarBean)) {
         $focus = loadBean($module);
     }
     // create the dropdowns for the parent type fields
-    if ($vardef['type'] == 'parent_type') {
+
+    $type = $vardef['type'] ?? '';
+
+    if ($type === 'parent_type') {
         $focus->field_defs[$vardef['name']]['options'] = $focus->field_defs[$vardef['group']]['options'];
     }
     $vardefFields = $focus->getFieldDefinitions();
@@ -173,6 +173,9 @@ function getControl(
         }
         // Bug 22730: make sure all enums have the ability to select blank as the default value.
         if (!isset($fieldlist[$name]['options'][''])) {
+            if ($name === 'report_module'){
+                continue;
+            }
             $fieldlist[$name]['options'][''] = '';
         }
     }
@@ -186,8 +189,8 @@ function getControl(
             }
             $value = $function($focus, $fieldname, $value, 'EditView');
             // Bug 22730 - add a hack for the currency type dropdown, since it's built by a function.
-            if (preg_match('/getCurrency.*DropDown/s', $function)) {
-                $value = str_ireplace('</select>', '<option value="">'.$app_strings['LBL_NONE'].'</option></select>', $value);
+            if (preg_match('/getCurrency.*DropDown/s', (string) $function)) {
+                $value = str_ireplace('</select>', '<option value="">'.$app_strings['LBL_NONE'].'</option></select>', (string) $value);
             }
         } elseif ($fieldname == 'assigned_user_name' && empty($value)) {
             $fieldlist['assigned_user_id']['value'] = $GLOBALS['current_user']->id;
@@ -200,7 +203,7 @@ function getControl(
     $ss->assign("fields", $fieldlist);
     $ss->assign("form_name", 'importstep3');
     $ss->assign("bean", $focus);
-    
+
     // add in any additional strings
     $ss->assign("MOD", $mod_strings);
     $ss->assign("APP", $app_strings);

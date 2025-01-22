@@ -906,7 +906,7 @@
       form = document.getElementById('ieAccount');
 
       if (SE.accounts.checkIeCreds()) {
-        ie_test_open_popup_with_submit("InboundEmail", "Popup", "Popup", 400, 300, trim(form.server_url.value), form.protocol.value, trim(form.port.value), trim(form.email_user.value), Rot13.write(form.email_password.value), trim(form.mailbox.value), form.ssl.checked, true, "ieAccount", form.ie_id.value);
+        ie_test_open_popup_with_submit("InboundEmail", "Popup", "Popup", 400, 300, trim(form.server_url.value), form.protocol.value, trim(form.port.value), trim(form.email_user.value), Rot13.write(form.email_password.value), trim(form.mailbox.value), form.ssl.checked, true, "ieAccount", form.ie_id.value, form.ie_id.auth_type, '', '');
       }
     },
 
@@ -2193,14 +2193,14 @@
 
       if (a_active_accnts == "")
         a_active_accnts = "&ieIdShow[]=";
-      
+
       getRequestedParameter = function (name) {
         if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
           return decodeURIComponent(name[1]);
       }
 
       var currentUserRecord = getRequestedParameter('record');
-      
+
       if(typeof currentUserRecord === 'undefined') {
         currentUserRecord = $('input[name="record"]').val();
       }
@@ -3439,15 +3439,6 @@
           id: "generalSettings",
           active: true
         }));
-        tabContent.parentNode.removeChild(tabContent);
-        tabContent = Dom.get("tab_accounts");
-        var accountTab = new YAHOO.widget.Tab({
-          label: app_strings.LBL_EMAIL_SETTINGS_ACCOUNTS,
-          scroll: true,
-          content: tabContent.innerHTML,
-          id: "accountSettings"
-        });
-        tp.addTab(accountTab);
         tabContent.parentNode.removeChild(tabContent);
 
         tp.appendTo(dlg.body);

@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -225,7 +225,7 @@ $dictionary['AOS_Products'] = array(
                 'required' => false,
                 'name' => 'url',
                 'vname' => 'LBL_URL',
-                'type' => 'varchar',
+                'type' => 'url',
                 'massupdate' => 0,
                 'comments' => '',
                 'help' => '',
@@ -281,6 +281,7 @@ $dictionary['AOS_Products'] = array(
                 'type' => 'varchar',
                 'len' => '255',
                 'reportable' => true,
+                'inline_edit' => false,
                 'comment' => 'File name associated with the note (attachment)'
             ),
         'file_url' =>

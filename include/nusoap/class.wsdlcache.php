@@ -82,19 +82,18 @@ class nusoap_wsdlcache
      */
     public $debug_str = '';
 
-    /**
-    * constructor
-    *
-    * @param string $cache_dir directory for cache-files
-    * @param integer $cache_lifetime lifetime for caching-files in seconds or 0 for unlimited
-    * @access public
-    */
-    public function nusoap_wsdlcache($cache_dir='.', $cache_lifetime=0)
-    {
-        $this->fplock = array();
-        $this->cache_dir = $cache_dir != '' ? $cache_dir : '.';
-        $this->cache_lifetime = $cache_lifetime;
-    }
+	/**
+	* constructor
+	*
+	* @param string $cache_dir directory for cache-files
+	* @param integer $cache_lifetime lifetime for caching-files in seconds or 0 for unlimited
+	* @access public
+	*/
+	function __construct($cache_dir='.', $cache_lifetime=0) {
+		$this->fplock = array();
+		$this->cache_dir = $cache_dir != '' ? $cache_dir : '.';
+		$this->cache_lifetime = $cache_lifetime;
+	}
 
     /**
     * creates the filename used to cache a wsdl instance
@@ -158,7 +157,7 @@ class nusoap_wsdlcache
             return (!is_null($s)) ? unserialize($s) : null;
         }
         $this->debug("Unable to obtain mutex for $filename in get");
-        
+
         return null;
     }
 
@@ -208,7 +207,7 @@ class nusoap_wsdlcache
             return true;
         }
         $this->debug("Unable to obtain mutex for $filename in put");
-        
+
         return false;
     }
 

@@ -44,6 +44,7 @@
  * Extends regular PHP DateTime with useful services
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarDateTime extends DateTime
 {
     // Recognized properties and their formats
@@ -108,6 +109,7 @@ class SugarDateTime extends DateTime
      * @return SugarDateTime
      * @see DateTime::createFromFormat
      */
+    #[ReturnTypeWillChange]
     public static function createFromFormat($format, $time, $timezone = null)
     {
         if (empty($time) || empty($format)) {
@@ -139,7 +141,7 @@ class SugarDateTime extends DateTime
      * @deprecated No longer necessary since PHP 5.2 is no longer supported.
      * @param string $format Format like in date()
      * @param string $time Time string to parse
-     * @param DateTimeZone $timezone TZ
+     * @param \DateTimeZone|null $timezone TZ
      * @return SugarDateTime
      * @see DateTime::createFromFormat
      */

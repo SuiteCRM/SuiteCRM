@@ -207,20 +207,6 @@ class aSubPanel
     }
 
     /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function aSubPanel($name, $instance_properties, $parent_bean, $reload = false, $original_only = false, $search_query = '', $collections = array())
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($name, $instance_properties, $parent_bean, $reload, $original_only, $search_query, $collections);
-    }
-
-    /**
      * is the sub panel default hidden?
      *
      * @return bool
@@ -431,7 +417,8 @@ class aSubPanel
 
     public function isDatasourceFunction()
     {
-        if (strpos($this->get_inst_prop_value('get_subpanel_data'), 'function') === false) {
+        $subpanelData = $this->get_inst_prop_value('get_subpanel_data') ?? '';
+        if (strpos($subpanelData, 'function') === false) {
             return false ;
         }
         return true ;
@@ -799,7 +786,8 @@ class SubPanelDefinitions
 
         //use tab controller function to get module list with named keys
         require_once("modules/MySettings/TabController.php");
-        $modules_to_check = TabController::get_key_array($moduleList);
+        $tabController = new TabController();
+        $modules_to_check = $tabController->get_key_array($moduleList);
 
         //change case to match subpanel processing later on
         $modules_to_check = array_change_key_case($modules_to_check);

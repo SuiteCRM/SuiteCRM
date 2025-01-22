@@ -120,10 +120,7 @@ $searchFields['Accounts'] = array(
     'phone' =>
         array(
             'query_type' => 'default',
-            'db_field' =>
-                array(
-                    0 => 'phone_office',
-                ),
+            'db_field' => array('phone_alternate', 'phone_fax', 'phone_office'),
             'vname' => 'LBL_ANY_PHONE',
         ),
     'email' =>

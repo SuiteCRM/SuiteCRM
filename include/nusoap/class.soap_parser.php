@@ -100,22 +100,21 @@ class nusoap_parser extends nusoap_base
     // toggle for auto-decoding element content
     public $decode_utf8 = true;
 
-    /**
-    * constructor that actually does the parsing
-    *
-    * @param    string $xml SOAP message
-    * @param    string $encoding character encoding scheme of message
-    * @param    string $method method for which XML is parsed (unused?)
-    * @param    string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
-    * @access   public
-    */
-    public function nusoap_parser($xml, $encoding='UTF-8', $method='', $decode_utf8=true)
-    {
-        parent::nusoap_base();
-        $this->xml = $xml;
-        $this->xml_encoding = $encoding;
-        $this->method = $method;
-        $this->decode_utf8 = $decode_utf8;
+	/**
+	* constructor that actually does the parsing
+	*
+	* @param    string $xml SOAP message
+	* @param    string $encoding character encoding scheme of message
+	* @param    string $method method for which XML is parsed (unused?)
+	* @param    string $decode_utf8 whether to decode UTF-8 to ISO-8859-1
+	* @access   public
+	*/
+	function __construct($xml,$encoding='UTF-8',$method='',$decode_utf8=true){
+		parent::__construct();
+		$this->xml = $xml;
+		$this->xml_encoding = $encoding;
+		$this->method = $method;
+		$this->decode_utf8 = $decode_utf8;
 
         // Check whether content has been read.
         if (!empty($xml)) {
@@ -374,7 +373,7 @@ class nusoap_parser extends nusoap_base
             // get unqualified name
             $name = substr(strstr($name, ':'), 1);
         }
-        
+
         // build to native type
         if (isset($this->body_position) && $pos > $this->body_position) {
             // deal w/ multirefs
@@ -436,7 +435,7 @@ class nusoap_parser extends nusoap_base
                 */
             }
         }
-        
+
         // for doclit
         if ($this->status == 'header') {
             if ($this->root_header != $pos) {

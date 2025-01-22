@@ -50,17 +50,20 @@ require_once('service/core/REST/SugarRest.php');
  */
 class SugarRestJSON extends SugarRest{
 
-	/**
+	public $faultObject;
+    public $implementation;
+    public $faultServer;
+    /**
 	 * It will json encode the input object and echo's it
 	 *
 	 * @param array $input - assoc array of input values: key = param name, value = param type
 	 * @return String - echos json encoded string of $input
 	 */
-	function generateResponse($input){
+	public function generateResponse($input){
 		$json = getJSONObj();
 		ob_clean();
 		header('Content-Type: application/json; charset=UTF-8');
-		if (isset($this->faultObject)) {
+		if (property_exists($this, 'faultObject') && $this->faultObject !== null) {
 			$this->generateFaultResponse($this->faultObject);
 		} else {
 			// JSONP support
@@ -79,7 +82,7 @@ class SugarRestJSON extends SugarRest{
 	 *
 	 * @return unknown
 	 */
-	function serve(){
+	public function serve(){
 		$GLOBALS['log']->info('Begin: SugarRestJSON->serve');
 		$json_data = !empty($_REQUEST['rest_data'])? $GLOBALS['RAW_REQUEST']['rest_data']: '';
 		if(empty($_REQUEST['method']) || !method_exists($this->implementation, $_REQUEST['method'])){
@@ -91,6 +94,9 @@ class SugarRestJSON extends SugarRest{
 			$json = getJSONObj();
 			$data = $json->decode($json_data);
 			if(!is_array($data))$data = array($data);
+            if (!isset($data['application_name']) && isset($data['application'])){
+                $data['application_name'] = $data['application'];
+            }
 			$res = call_user_func_array(array( $this->implementation, $method),$data);
 			$GLOBALS['log']->info('End: SugarRestJSON->serve');
 			return $res;
@@ -103,11 +109,11 @@ class SugarRestJSON extends SugarRest{
 	 * @param SoapError $errorObject - This is an object of type SoapError
 	 * @access public
 	 */
-	function fault($errorObject){
+	public function fault($errorObject){
 		$this->faultServer->faultObject = $errorObject;
 	} // fn
 
-	function generateFaultResponse($errorObject){
+	public function generateFaultResponse($errorObject){
 		$error = $errorObject->number . ': ' . $errorObject->name . '<br>' . $errorObject->description;
 		$GLOBALS['log']->error($error);
 		$json = getJSONObj();

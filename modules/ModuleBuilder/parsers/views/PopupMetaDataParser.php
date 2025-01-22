@@ -266,8 +266,8 @@ class PopupMetaDataParser extends ListLayoutMetaDataParser
     public function addNewSearchDef($searchDefs, &$popupMeta)
     {
         if (!empty($searchDefs)) {
-            $this->__diffAndUpdate($searchDefs, $popupMeta['whereClauses'], true);
-            $this->__diffAndUpdate($searchDefs, $popupMeta['searchInputs']);
+            $this->_diffAndUpdate($searchDefs, $popupMeta['whereClauses'], true);
+            $this->_diffAndUpdate($searchDefs, $popupMeta['searchInputs']);
         }
     }
 
@@ -276,14 +276,14 @@ class PopupMetaDataParser extends ListLayoutMetaDataParser
      * @param array $targetDefs
      * @param bool $forWhere
      */
-    private function __diffAndUpdate($newDefs, &$targetDefs, $forWhere = false)
+    private function _diffAndUpdate($newDefs, &$targetDefs, $forWhere = false)
     {
         if (!is_array($targetDefs)) {
             $targetDefs = array();
         }
         foreach ($newDefs as $key => $def) {
             if (!isset($targetDefs[$key]) && $forWhere) {
-                $targetDefs[$key] = $this->__getTargetModuleName($def) . '.' . $key;
+                $targetDefs[$key] = $this->_getTargetModuleName($def) . '.' . $key;
             } else {
                 if (!in_array($key, $targetDefs) && !$forWhere) {
                     array_push($targetDefs, $key);
@@ -308,7 +308,7 @@ class PopupMetaDataParser extends ListLayoutMetaDataParser
      * @param array $def
      * @return string
      */
-    private function __getTargetModuleName($def)
+    private function _getTargetModuleName($def)
     {
         $dir = strtolower($this->implementation->getModuleDir());
         if (isset($this->_fielddefs[$def['name']]) && isset($this->_fielddefs[$def['name']]['source']) && $this->_fielddefs[$def['name']]['source'] == 'custom_fields') {

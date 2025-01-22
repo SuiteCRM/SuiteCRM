@@ -60,6 +60,11 @@ $subpanel_layout = array(
              'width'	=> '10%',
              'sortable'	=> true,
         ),
+        'resolution'    => array(
+            'vname'	=> 'LBL_RESOLUTION',
+            'width'	=> '10%',
+            'sortable'	=> true,
+        ),
         'execute_time'	=> array(
              'vname'	=> 'LBL_EXECUTE_TIME',
              'width'	=> '10%',

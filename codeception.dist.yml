@@ -39,7 +39,6 @@ coverage:
     - include/nusoap/*
     - include/HTTP_WebDAV_Server/*
     - include/HTMLPurifier/*
-    - include/SugarXHprof/*
     - include/ytree/*
     - include/php-sql-parser.php
     - include/parsecsv.lib.php
@@ -51,3 +50,4 @@ coverage:
     - modules/AOR_Charts/lib/*
 params:
   - env
+  - .env.test

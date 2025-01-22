@@ -59,7 +59,7 @@ class SearchMerge extends ListViewMerge
     protected $varName = 'searchdefs';
     protected $viewDefs = 'Search';
     protected $panelName = 'layout';
-    
+
     /**
      * Loads the meta data of the original, new, and custom file into the variables originalData, newData, and customData respectively it then transforms them into a structure that EditView Merge would understand
      *
@@ -81,14 +81,14 @@ class SearchMerge extends ListViewMerge
      * @param ARRAY $panels - this is the 'panel' section of the meta-data for list views all the meta data is one panel since it is just a list of fields
      * @return ARRAY $fields - an associate array of fields and their meta-data as well as their location
      */
-    
+
     protected function getFields(&$panels, $multiple = true)
     {
         $fields = array();
         if (!$multiple) {
             $panels = array($panels);
         }
-        
+
         foreach ($panels as $panel_id=>$panel) {
             foreach ($panel as $col_id=>$col) {
                 if (is_array($col)) {
@@ -99,10 +99,10 @@ class SearchMerge extends ListViewMerge
                 $fields[$field_name . $panel_id] = array('data'=>$col, 'loc'=>array('row'=>$col_id, 'panel'=>$panel_id));
             }
         }
-            
+
         return $fields;
     }
-    
+
     /**
      * This builds the array of fields from the merged fields in the right order
      * when building the panels for a list view the most important thing is order
@@ -114,7 +114,7 @@ class SearchMerge extends ListViewMerge
     protected function buildPanels()
     {
         $panels  = array();
-        
+
         //first only deal with ones that have their location coming from the custom source
         foreach ($this->mergedFields as $id =>$field) {
             if ($field['loc']['source'] == 'custom') {
@@ -125,7 +125,7 @@ class SearchMerge extends ListViewMerge
 
         return $panels;
     }
-    
+
     /**
      * Sets the panel section for the meta-data after it has been merged
      *
@@ -139,7 +139,7 @@ class SearchMerge extends ListViewMerge
     {
         return write_array_to_file("$this->varName['$this->module']", $this->newData[$this->module], $to);
     }
-    
+
     /**
      * public function that will merge meta data from an original sugar file that shipped with the product, a customized file, and a new file shipped with an upgrade
      *
@@ -156,7 +156,7 @@ class SearchMerge extends ListViewMerge
         if ($module == 'Connectors') {
             return false;
         }
-        
+
         $this->clear();
         $this->log("\n\n". 'Starting a merge in ' . get_class($this));
         $this->log('merging the following files');
@@ -167,11 +167,11 @@ class SearchMerge extends ListViewMerge
             return true;
         } else {
             $this->loadData($module, $original_file, $new_file, $custom_file);
-                        
+
             if (!isset($this->originalData[$module])) {
                 return false;
             }
-            
+
             $this->mergeMetaData();
             if ($save && !empty($this->newData) && !empty($custom_file)) {
                 //backup the file
@@ -184,13 +184,13 @@ class SearchMerge extends ListViewMerge
         }
         return false;
     }
-    
+
     protected function mergeTemplateMeta()
     {
         if (isset($this->customData[$this->module][$this->viewDefs][$this->templateMetaName])) {
             $this->newData[$this->module][$this->viewDefs][$this->templateMetaName] = $this->customData[$this->module][$this->viewDefs][$this->templateMetaName];
         }
-        
+
         if (!isset($this->newData[$this->module][$this->viewDefs][$this->templateMetaName]['maxColumnsBasic']) && isset($this->newData[$this->module][$this->viewDefs][$this->templateMetaName]['maxColumns'])) {
             $this->newData[$this->module][$this->viewDefs][$this->templateMetaName]['maxColumnsBasic'] = $this->newData[$this->module][$this->viewDefs][$this->templateMetaName]['maxColumns'];
         }

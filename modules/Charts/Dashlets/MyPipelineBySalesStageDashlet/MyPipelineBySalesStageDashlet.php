@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/Dashlets/DashletGenericChart.php');
 
+#[\AllowDynamicProperties]
 class MyPipelineBySalesStageDashlet extends DashletGenericChart
 {
     public $mypbss_date_start;
@@ -85,7 +86,7 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
         global $app_list_strings;
 
         $selected_datax = array();
-        if (count($this->mypbss_sales_stages) > 0) {
+        if (isset($this->mypbss_sales_stages) && count($this->mypbss_sales_stages) > 0) {
             foreach ($this->mypbss_sales_stages as $key) {
                 $selected_datax[] = $key;
             }
@@ -247,7 +248,7 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
             id: '$canvasId',
             x: 10,
             y: 30,
-            text: 'Pipeline total is ${currency_symbol}$total$thousands_symbol',
+            text: 'Pipeline total is {$currency_symbol}$total$thousands_symbol',
             options: {
                 font: 'Arial',
                 bold: true,
@@ -316,7 +317,7 @@ EOD;
         $tempx = $user_sales_stage;
 
         //set $datax using selected sales stage keys
-        if (count($tempx) > 0) {
+        if (isset($tempx) && (is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 array_push($selected_datax, $key);
@@ -379,7 +380,7 @@ EOD;
             " AND opportunities.date_closed >= ". DBManagerFactory::getInstance()->convert("'".$this->mypbss_date_start."'", 'date').
             " AND opportunities.date_closed <= ". DBManagerFactory::getInstance()->convert("'".$this->mypbss_date_end."'", 'date') .
             " AND opportunities.assigned_user_id = users.id  AND opportunities.deleted=0 ";
-        if (count($this->mypbss_sales_stages) > 0) {
+        if (isset($this->mypbss_sales_stages) && count($this->mypbss_sales_stages) > 0) {
             $query .= " AND opportunities.sales_stage IN ('" . implode("','", $this->mypbss_sales_stages) . "') ";
         }
         $query .= " GROUP BY opportunities.sales_stage ,users.user_name,opportunities.assigned_user_id";
@@ -400,6 +401,7 @@ EOD;
 
     protected function prepareChartData($dataset, $currency_symbol, $thousands_symbol)
     {
+        $chart = [];
         //Use the  lead_source to categorise the data for the charts
         $chart['labels'] = array();
         $chart['data'] = array();

@@ -37,7 +37,7 @@
  * display the words  "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-error_reporting(E_ALL);
+chdir(__DIR__.'/../');
 
 /* bootstrap composer's autoloader */
 require_once __DIR__ . '/../vendor/autoload.php';

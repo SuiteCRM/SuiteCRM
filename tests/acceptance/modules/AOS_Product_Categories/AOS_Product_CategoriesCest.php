@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class AOS_Product_CategoriesCest
 {
     /**

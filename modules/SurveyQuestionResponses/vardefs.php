@@ -51,12 +51,12 @@ $dictionary['SurveyQuestionResponses'] = array(
         ),
         'answer_bool'                                   => array(
             'name'  => 'answer_bool',
-            'vname' => 'LBL_ANSWER',
+            'vname' => 'LBL_ANSWER_BOOL',
             'type'  => 'bool',
         ),
         'answer_datetime'                               => array(
             'name'  => 'answer_datetime',
-            'vname' => 'LBL_ANSWER',
+            'vname' => 'LBL_ANSWER_DATETIME',
             'type'  => 'datetime',
         ),
         "surveyquestionoptions_surveyquestionresponses" => array(

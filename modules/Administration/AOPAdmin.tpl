@@ -181,7 +181,7 @@
             <th align="left" scope="row" colspan="4"><h4>{$MOD.LBL_AOP_CASE_STATUS_SETTINGS}</h4></th>
         </tr>
         {$currentStatuses}
-        <tr><td><button type='button' id="addStatusButton">{$MOD.LBL_AOP_ADD_STATUS}</button></td></tr>
+        <tr><td><button class="button" type='button' id="addStatusButton">{$MOD.LBL_AOP_ADD_STATUS}</button></td></tr>
     </table>
     <table id='email_settings' width="100%" border="0" cellspacing="1" cellpadding="0" class="edit view">
         <tr><th align="left" scope="row" colspan="4"><h4>{$MOD.LBL_AOP_EMAIL_SETTINGS}</h4></th>
@@ -189,13 +189,22 @@
         <tr>
             <td  scope="row" width="200">{$MOD.LBL_SUPPORT_FROM_ADDRESS}: </td>
             <td  >
-                <input type="text" name="support_from_address" id="support_from_address" value="{$config.support_from_address}">
-            </td>
+                <input type="text" name="support_from_address" id="support_from_address" value="{$config.support_from_address}">            </td>
         </tr>
         <tr>
             <td  scope="row" width="200">{$MOD.LBL_SUPPORT_FROM_NAME}: </td>
             <td  >
                 <input type="text" name="support_from_name" id="support_from_name" value="{$config.support_from_name}">
+            </td>
+        </tr>
+        <tr>
+            <td  scope="row" width="200">{$MOD.LBL_CASE_MACRO}: </td>
+            <td  >
+                <input type="text" name="inbound_email_case_macro" id="inbound_email_case_macro" value="{$inbound_email_case_macro}">
+                <span>
+                    {$MOD.LBL_CASE_MACRO_DESC}
+                    <i>{$MOD.LBL_CASE_MACRO_DESC2}</i>
+                </span>
             </td>
         </tr>
         <tr id="user_email_template_row">

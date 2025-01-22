@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class ContactsController extends SugarController
 {
     public function action_Popup()

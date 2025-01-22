@@ -47,7 +47,7 @@
  */
 require_once('service/core/NusoapSoap.php');
 class SugarSoapService2 extends NusoapSoap{
-		
+
 	/**
 	 * This method registers all the functions which you want to be available for SOAP.
 	 *
@@ -61,5 +61,5 @@ class SugarSoapService2 extends NusoapSoap{
 		$this->excludeFunctions = array();
 		$GLOBALS['log']->info('End: SugarSoapService2->register');
 	} // fn
-			
+
 } // clazz

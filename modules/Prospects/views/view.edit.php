@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class ProspectsViewEdit extends ViewEdit
 {
     public function __construct()

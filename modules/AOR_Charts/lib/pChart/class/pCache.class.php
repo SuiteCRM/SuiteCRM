@@ -14,6 +14,7 @@
  */
 
  /* pData class definition */
+ #[\AllowDynamicProperties]
  class pCache
  {
      public $CacheFolder;
@@ -21,11 +22,11 @@
      public $CacheDB;
 
      /* Class creator */
-     public function pCache($Settings="")
+     public function __construct($Settings = "")
      {
-         $CacheFolder	= isset($Settings["CacheFolder"]) ? $Settings["CacheFolder"] : "cache";
-         $CacheIndex	= isset($Settings["CacheIndex"]) ? $Settings["CacheIndex"] : "index.db";
-         $CacheDB		= isset($Settings["CacheDB"]) ? $Settings["CacheDB"] : "cache.db";
+     $CacheFolder	= isset($Settings["CacheFolder"]) ? $Settings["CacheFolder"] : "cache";
+     $CacheIndex	= isset($Settings["CacheIndex"]) ? $Settings["CacheIndex"] : "index.db";
+     $CacheDB		= isset($Settings["CacheDB"]) ? $Settings["CacheDB"] : "cache.db";
 
          $this->CacheFolder	= $CacheFolder;
          $this->CacheIndex	= $CacheIndex;

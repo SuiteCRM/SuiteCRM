@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,6 +43,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+use SuiteCRM\Search\AOD\LuceneSearchEngine;
+use SuiteCRM\Search\BasicSearch\BasicSearchEngine;
+use SuiteCRM\Search\ElasticSearch\ElasticSearchEngine;
 use SuiteCRM\Search\Exceptions\SearchEngineNotFoundException;
 
 /**
@@ -50,13 +53,28 @@ use SuiteCRM\Search\Exceptions\SearchEngineNotFoundException;
  *
  * @author Vittorio Iocolano
  */
+#[\AllowDynamicProperties]
 class SearchWrapper
 {
     /**
      * @var array stores an associative array matching the search engine class name with the file it is stored in.
      */
     private static $engines = [
-        'ElasticSearchEngine' => 'lib/Search/ElasticSearch/ElasticSearchEngine.php',
+        'ElasticSearchEngine' => [
+            'name' => 'ElasticSearchEngine',
+            'FQN' => ElasticSearchEngine::class,
+            'filepath' => 'lib/Search/ElasticSearch/ElasticSearchEngine.php'
+        ],
+        'BasicSearchEngine' => [
+            'name' => 'BasicSearchEngine',
+            'FQN' => BasicSearchEngine::class,
+            'filepath' => 'lib/Search/BasicSearch/BasicSearchEngine.php'
+        ],
+        'LuceneSearchEngine' => [
+            'name' => 'LuceneSearchEngine',
+            'FQN' => LuceneSearchEngine::class,
+            'filepath' => 'lib/Search/AOD/LuceneSearchEngine.php'
+        ],
     ];
 
     /** @var string Path to the folder where to load custom engines from */
@@ -69,9 +87,9 @@ class SearchWrapper
      *
      * @param SearchQuery $query
      */
-    public static function searchAndDisplay(SearchQuery $query)
+    public static function searchAndDisplay(SearchQuery $query): void
     {
-        $engine = $query->getEngine() ?: self::getDefaultEngine();
+        $engine = !empty($query->getEngine()) ? $query->getEngine() : self::getDefaultEngine();
 
         $engine = self::fetchEngine($engine);
         $engine->searchAndDisplay($query);
@@ -83,26 +101,31 @@ class SearchWrapper
      * Results are grouped by module.
      *
      * @param string|SearchEngine $engine
-     * @param SearchQuery         $query
+     * @param SearchQuery $query
      *
      * @return SearchResults
      */
-    public static function search($engine, SearchQuery $query)
+    public static function search($engine, SearchQuery $query): SearchResults
     {
         $engine = self::fetchEngine($engine);
-        $results = $engine->search($query);
-        return $results;
+
+        return $engine->search($query);
     }
 
     /**
      * Binds a class name / engine name to a file.
      *
-     * @param string $className
+     * @param string $engineName
      * @param string $file
+     * @param $fqn
      */
-    public static function addEngine($className, $file)
+    public static function addEngine(string $engineName, string $file, $fqn): void
     {
-        self::$engines[$className] = $file;
+        self::$engines[$engineName] = [
+            'name' => $engineName,
+            'FQN' => $fqn,
+            'filepath' => $file,
+        ];
     }
 
     /**
@@ -110,14 +133,15 @@ class SearchWrapper
      *
      * @return string[]
      */
-    public static function getEngines()
+    public static function getEngines(): array
     {
         $default = array_keys(self::$engines);
         $custom = [];
-        foreach (glob(self::$customEnginePath . '*.php') as $file) {
-            $file = pathinfo($file);
+        foreach (glob(self::$customEnginePath . '*.php', GLOB_NOSORT) as $file) {
+            $file = pathinfo((string) $file);
             $custom[] = $file['filename'];
         }
+
         return array_merge($default, $custom);
     }
 
@@ -128,13 +152,11 @@ class SearchWrapper
      *
      * @return string
      */
-    public static function getDefaultEngine()
+    public static function getDefaultEngine(): string
     {
         $config = self::getSearchConfig('defaultEngine');
 
-        return $config === null
-            ? key(self::$engines) // first engine in the array
-            : $config;
+        return $config ?? key(self::$engines);
     }
 
     /**
@@ -144,7 +166,7 @@ class SearchWrapper
      *
      * @return string|null
      */
-    public static function getController()
+    public static function getController(): ?string
     {
         return self::getSearchConfig('controller');
     }
@@ -154,7 +176,7 @@ class SearchWrapper
      *
      * @return array|null
      */
-    public static function getModules()
+    public static function getModules(): ?array
     {
         return SearchModules::getEnabledModules();
     }
@@ -167,42 +189,41 @@ class SearchWrapper
      *
      * @param string|SearchEngine $engineName
      *
-     * @throws SearchEngineNotFoundException
      * @return SearchEngine
+     * @throws SearchEngineNotFoundException
      */
-    private static function fetchEngine($engineName)
+    private static function fetchEngine($engineName): SearchEngine
     {
         if (is_subclass_of($engineName, SearchEngine::class, false)) {
             return $engineName;
         }
 
-        if (!is_string($engineName)) {
-            throw new SearchEngineNotFoundException('$engineName should either be a string or a SearchEngine');
+        $customEnginePath = self::$customEnginePath . $engineName . '.php';
+
+        if (isset(self::$engines[$engineName])) {
+            $engine = self::$engines[$engineName];
+        } elseif (isset($customEnginePath)) {
+            self::addEngine($engineName, $customEnginePath, $engineName);
+            $engine = self::$engines[$engineName];
+        } else {
+            throw new SearchEngineNotFoundException("Search engine not found for engine '$engineName''.");
         }
 
-        if (!preg_match("/^[a-zA-Z0-9_]*$/", $engineName)) {
-            throw new SearchEngineNotFoundException("'$engineName' is not a valid class name. Only letters, digits and underscores are allowed.");
-        }
+        $filename = $engine['filepath'];
 
-        $filename = isset(self::$engines[$engineName])
-            ? self::$engines[$engineName]
-            : self::$customEnginePath . $engineName . '.php';
-
-        if (!file_exists($filename)) {
+        if (!is_file($filename)) {
             throw new SearchEngineNotFoundException("Unable to find search file '$filename'' for engine '$engineName''.");
         }
 
         /** @noinspection PhpIncludeInspection */
         require_once $filename;
 
-        if (!is_subclass_of($engineName, SearchEngine::class)) {
+        if (!is_subclass_of($engine['FQN'], SearchEngine::class)) {
             throw new SearchEngineNotFoundException("The provided class '$engineName' is not a subclass of SearchEngine");
         }
 
-        /** @var SearchEngine $engineName */
-        $engineName = new $engineName();
-
-        return $engineName;
+        /** @var SearchEngine */
+        return new $engine['FQN']();
     }
 
     /**
@@ -219,10 +240,6 @@ class SearchWrapper
         /** @noinspection PhpVariableNamingConventionInspection */
         global $sugar_config;
 
-        if (!isset($sugar_config['search'][$key])) {
-            return null;
-        }
-
-        return $sugar_config['search'][$key];
+        return $sugar_config['search'][$key] ?? null;
     }
 }

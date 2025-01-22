@@ -59,10 +59,10 @@
 
         {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
             {*<!-- DIV column - colspan != 3 -->*}
-            <div class="col-xs-12 col-sm-6 detail-view-row-item">
+            <div class="col-xs-12 col-sm-6 detail-view-row-item" data-field="{{$colData.field.name}}">
         {{else}}
             {*<!-- DIV column - colspan = 3 -->*}
-            <div class="col-xs-12 col-sm-12 detail-view-row-item">
+            <div class="col-xs-12 col-sm-12 detail-view-row-item" data-field="{{$colData.field.name}}">
         {{/if}}
 
 

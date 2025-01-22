@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 require_once('modules/Studio/DropDowns/DropDownHelper.php');
+#[\AllowDynamicProperties]
 class EditDropDownWizard extends StudioWizard
 {
     public $wizard = 'EditDropDownWizard';
@@ -66,7 +67,7 @@ class EditDropDownWizard extends StudioWizard
     {
         //		return array('EditDropdown'=>$GLOBALS['mod_strings']['LBL_SW_EDIT_DROPDOWNS'], 'CreateDropdown'=>$GLOBALS['mod_strings']['LBL_ED_CREATE_DROPDOWN'] );
     }
-    
+
     public function process($option)
     {
         switch ($option) {
@@ -75,14 +76,14 @@ class EditDropDownWizard extends StudioWizard
                 require_once('modules/Studio/DropDowns/EditView.php');
                 break;
             case 'SaveDropDown':
-                DropDownHelper::saveDropDown($_REQUEST);
+                (new DropDownHelper())->saveDropDown($_REQUEST);
                 require_once('modules/Studio/DropDowns/EditView.php');
                 break;
             default:
                  parent::process($option);
         }
     }
-    
+
     public function display()
     {
         // override the parent display - don't display any wizard stuff

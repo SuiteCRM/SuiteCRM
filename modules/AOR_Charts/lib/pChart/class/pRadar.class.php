@@ -22,17 +22,22 @@
  define("RADAR_LABELS_HORIZONTAL"	, 690022);
 
  /* pRadar class definition */
+ #[\AllowDynamicProperties]
  class pRadar
   {
-   var $pChartObject;
+   public $pChartObject;
 
-   /* Class creator */
-   function pRadar()
-    { }
+     /* Class creator */
+     public function __construct()
+     {
+     }
 
    /* Draw a radar chart */
-   function drawRadar($Object,$Values,$Format="")
+   public function drawRadar($Object,$Values,$Format="")
     {
+
+
+     $Axisoffset = 0;
      $this->pChartObject = $Object;
 
      $FixedMax		= isset($Format["FixedMax"]) ? $Format["FixedMax"] : VOID;
@@ -104,12 +109,12 @@
      /* Catch the number of required axis */
      $LabelSerie = $Data["Abscissa"];
      if ( $LabelSerie != "" )
-      { $Points = count($Data["Series"][$LabelSerie]["Data"]); }
+      { $Points = is_countable($Data["Series"][$LabelSerie]["Data"]) ? count($Data["Series"][$LabelSerie]["Data"]) : 0; }
      else
       {
        $Points = 0;
        foreach($Data["Series"] as $SerieName => $DataArray)
-        { if ( count($DataArray["Data"]) > $Points ) { $Points = count($DataArray["Data"]); } }
+        { if ( (is_countable($DataArray["Data"]) ? count($DataArray["Data"]) : 0) > $Points ) { $Points = is_countable($DataArray["Data"]) ? count($DataArray["Data"]) : 0; } }
       }
 
      /* Draw the axis */
@@ -161,7 +166,7 @@
          if ( $Layout == RADAR_LAYOUT_STAR )
           {
            $Color      = array("R"=>$BackgroundR,"G"=>$BackgroundG,"B"=>$BackgroundB,"Alpha"=>$BackgroundAlpha);
-           $PointArray = "";
+           $PointArray = [];
            for($i=0;$i<=360;$i=$i+(360/$Points))
             {
              $PointArray[] = cos(deg2rad($i+$AxisRotation)) * $EdgeHeight + $CenterX;
@@ -187,7 +192,7 @@
            for($j=$Segments;$j>=1;$j--)
             {
              $Color      = array("R"=>$BackgroundGradient["StartR"]+$GradientROffset*$j,"G"=>$BackgroundGradient["StartG"]+$GradientGOffset*$j,"B"=>$BackgroundGradient["StartB"]+$GradientBOffset*$j,"Alpha"=>$BackgroundGradient["StartAlpha"]+$GradientAlphaOffset*$j);
-             $PointArray = "";
+             $PointArray = [];
 
              for($i=0;$i<=360;$i=$i+(360/$Points))
               {
@@ -208,6 +213,9 @@
         }
        $Object->Shadow = $RestoreShadow;
       }
+
+     $EdgeX1 = 0;
+     $EdgeY1 = 0;
 
      /* Axis to axis lines */
      $Color = array("R"=>$AxisR,"G"=>$AxisG,"B"=>$AxisB,"Alpha"=>$AxisAlpha);
@@ -301,14 +309,14 @@
             $Object->drawText($LabelX,$LabelY,$Label,array("Angle"=>(360-($i+$AxisRotation+$Axisoffset))-90,"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
            else
             {
-             if ( (floor($LabelX) == floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE)); }
+             if ( (floor($LabelX) === floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE)); }
              if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMLEFT)); }
-             if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) == floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLELEFT)); }
+             if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) === floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLELEFT)); }
              if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPLEFT)); }
              if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMRIGHT)); }
-             if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) == floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLERIGHT)); }
+             if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) === floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLERIGHT)); }
              if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPRIGHT)); }
-             if ( (floor($LabelX) == floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPMIDDLE)); }
+             if ( (floor($LabelX) === floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPMIDDLE)); }
             }
           }
         }
@@ -349,8 +357,9 @@
          if ($PolyAlpha != NULL)
           $Color = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$PolyAlpha,"Surrounding"=>$PointSurrounding);
 
-         $PointsArray = "";
-         for($i=0; $i<count($Points);$i++) 
+         $PointsArray = [];
+         $PointsCount = is_countable($Points) ? count($Points) : 0;
+         for($i=0; $i<$PointsCount;$i++)
           { $PointsArray[] = $Points[$i][0]; $PointsArray[] = $Points[$i][1]; }
          $Object->drawPolygon($PointsArray,$Color);
         }
@@ -367,12 +376,12 @@
 
        /* Loop to the starting points if asked */
        if ( $LineLoopStart && $DrawLines )
-        $Object->drawLine($Points[count($Points)-1][0],$Points[count($Points)-1][1],$Points[0][0],$Points[0][1],$Color);
+        $Object->drawLine($Points[$PointsCount-1][0],$Points[$PointsCount-1][1],$Points[0][0],$Points[0][1],$Color);
 
        /* Draw the lines & points */
-       for($i=0; $i<count($Points);$i++) 
+       for($i=0; $i<$PointsCount;$i++)
         {
-         if ( $DrawLines && $i < count($Points)-1)
+         if ( $DrawLines && $i < $PointsCount-1)
           $Object->drawLine($Points[$i][0],$Points[$i][1],$Points[$i+1][0],$Points[$i+1][1],$Color);
 
          if ( $DrawPoints )
@@ -396,7 +405,7 @@
 
 
    /* Draw a radar chart */
-   function drawPolar($Object,$Values,$Format="")
+   public function drawPolar($Object,$Values,$Format="")
     {
      $this->pChartObject = $Object;
 
@@ -469,12 +478,12 @@
      /* Catch the number of required axis */
      $LabelSerie = $Data["Abscissa"];
      if ( $LabelSerie != "" )
-      { $Points = count($Data["Series"][$LabelSerie]["Data"]); }
+      { $Points = is_countable($Data["Series"][$LabelSerie]["Data"]) ? count($Data["Series"][$LabelSerie]["Data"]) : 0; }
      else
       {
        $Points = 0;
        foreach($Data["Series"] as $SerieName => $DataArray)
-        { if ( count($DataArray["Data"]) > $Points ) { $Points = count($DataArray["Data"]); } }
+        { if ( (is_countable($DataArray["Data"]) ? count($DataArray["Data"]) : 0) > $Points ) { $Points = is_countable($DataArray["Data"]) ? count($DataArray["Data"]) : 0; } }
       }
 
      /* Draw the axis */
@@ -580,20 +589,20 @@
         {
          $LabelX = cos(deg2rad($i+$AxisRotation)) * ($EdgeHeight+$LabelPadding+$TicksLength) + $CenterX;
          $LabelY = sin(deg2rad($i+$AxisRotation)) * ($EdgeHeight+$LabelPadding+$TicksLength) + $CenterY;
-         $Label = $i."°";
+         $Label = $i."Â°";
 
          if ( $LabelPos == RADAR_LABELS_ROTATED )
           $Object->drawText($LabelX,$LabelY,$Label,array("Angle"=>(360-$i),"Align"=>TEXT_ALIGN_BOTTOMMIDDLE));
          else
           {
-           if ( (floor($LabelX) == floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE)); }
+           if ( (floor($LabelX) === floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMMIDDLE)); }
            if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMLEFT)); }
-           if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) == floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLELEFT)); }
+           if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) === floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLELEFT)); }
            if ( (floor($LabelX) >  floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPLEFT)); }
            if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) <  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_BOTTOMRIGHT)); }
-           if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) == floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLERIGHT)); }
+           if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) === floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_MIDDLERIGHT)); }
            if ( (floor($LabelX) <  floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPRIGHT)); }
-           if ( (floor($LabelX) == floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPMIDDLE)); }
+           if ( (floor($LabelX) === floor($CenterX)) && (floor($LabelY) >  floor($CenterY)) )	{ $Object->drawText($LabelX,$LabelY,$Label,array("Align"=>TEXT_ALIGN_TOPMIDDLE)); }
           }
         }
        $ID++;
@@ -633,8 +642,9 @@
          if ($PolyAlpha != NULL)
           $Color = array("R"=>$Palette[$ID]["R"],"G"=>$Palette[$ID]["G"],"B"=>$Palette[$ID]["B"],"Alpha"=>$PolyAlpha,"Surrounding"=>$PointSurrounding);
 
-         $PointsArray = "";
-         for($i=0; $i<count($Points);$i++) 
+         $PointsArray = [];
+         $PointsCount = is_countable($Points) ? count($Points): 0;
+         for($i=0; $i<$PointsCount;$i++)
           { $PointsArray[] = $Points[$i][0]; $PointsArray[] = $Points[$i][1]; }
 
          $Object->drawPolygon($PointsArray,$Color);
@@ -652,12 +662,13 @@
 
        /* Loop to the starting points if asked */
        if ( $LineLoopStart && $DrawLines )
-        $Object->drawLine($Points[count($Points)-1][0],$Points[count($Points)-1][1],$Points[0][0],$Points[0][1],$Color);
-       
+        $Object->drawLine($Points[$PointsCount-1][0],$Points[$PointsCount-1][1],$Points[0][0],$Points[0][1],$Color);
        /* Draw the lines & points */
-       for($i=0; $i<count($Points);$i++) 
+
+       /* Draw the lines & points */
+       for($i=0; $i<$PointsCount;$i++)
         {
-         if ( $DrawLines && $i < count($Points)-1)
+         if ( $DrawLines && $i < $PointsCount-1)
           $Object->drawLine($Points[$i][0],$Points[$i][1],$Points[$i+1][0],$Points[$i+1][1],$Color);
 
          if ( $DrawPoints )

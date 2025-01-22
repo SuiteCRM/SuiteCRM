@@ -39,6 +39,7 @@
  */
 
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
+#[\AllowDynamicProperties]
 class ViewHome extends SugarView
 {
     /**

@@ -59,22 +59,6 @@ class Basic extends SugarBean
     }
 
     /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be removed in 8.0,
-     *     please update your code, use __construct instead
-     */
-    public function Basic()
-    {
-        $deprecatedMessage =
-            'PHP4 Style Constructors are deprecated and will be remove in 8.0, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
-
-    /**
      * @see SugarBean::get_summary_text()
      */
     public function get_summary_text()
@@ -91,7 +75,6 @@ class Basic extends SugarBean
     public function getEmailAddressFromEmailField($emailField)
     {
         $this->validateSugarEmailAddressField($emailField);
-        $configurator = new Configurator();
 
         /** @var EmailAddress $emailAddressBean */
         $emailAddressBean = BeanFactory::getBean('EmailAddresses');
@@ -100,11 +83,6 @@ class Basic extends SugarBean
         $emailAddressId = $this->getEmailAddressId($emailField);
         $emailAddressBean->retrieve($emailAddressId);
         
-        if (!empty($emailAddressBean->id) && $configurator->getConfirmOptInEnumValue() === SugarEmailAddress::COI_STAT_DISABLED) {
-            $log = LoggerManager::getLogger();
-            $log->warn('Confirm Opt In is not enabled.');
-            $emailAddressBean->setConfirmedOptInState(SugarEmailAddress::COI_STAT_CONFIRMED_OPT_IN);
-        }
         return $emailAddressBean;
     }
 

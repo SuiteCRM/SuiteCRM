@@ -206,6 +206,7 @@ function multiFiles( list_target){
   		    var currCount =this.id++;
 			element.name = 'email_attachment' + currCount;
 		   	element.id   = 'email_attachment' + currCount;
+		    element.style.display = 'none';
 
 			// Add reference to this object
 			element.multi_selector = this;
@@ -284,20 +285,20 @@ function multiFiles( list_target){
         new_row_attach_file.disabled ='true';
 
         var imgElement = document.createElement("img");
-        imgElement.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Accounts.gif");
+        imgElement.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Notes.svg");
         imgElement.setAttribute("align","absmiddle");
         imgElement.setAttribute("alt",lbl_email_attachments_file);
         imgElement.setAttribute("border","0");
-        imgElement.setAttribute("height","16");
-        imgElement.setAttribute("width","16");
+        imgElement.setAttribute("height","24");
+        imgElement.setAttribute("width","24");
 
         var new_row_button_embed = document.createElement("img");
-        new_row_button_embed.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment.gif");
+        new_row_button_embed.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment-indicator.svg");
         new_row_button_embed.setAttribute("align","absmiddle");
         new_row_button_embed.setAttribute("alt",lbl_email_attachments_embeded);
         new_row_button_embed.setAttribute("border","0");
-        new_row_button_embed.setAttribute("height","16");
-        new_row_button_embed.setAttribute("width","16");
+        new_row_button_embed.setAttribute("height","24");
+        new_row_button_embed.setAttribute("width","24");
 
 		// References
 		new_row.element = element;
@@ -358,23 +359,15 @@ function multiFiles( list_target){
             if (SUGAR.util.validateFileExt(fileName, allowedTypes)) {
                 cid = 'cid:' + fileName;
                 embedImage = '<img src="' + imglocation + encodeURI(fileName) + '">';
-                insert_variable(embedImage);
+                insert_variable(embedImage, "email_template_editor");
 
-                this.parentNode.childNodes[2].checked = 'true';
+                this.parentNode.childNodes[4].checked = 'true';
             } else {
                 alert(select_image);
             }
         };
 
 		// Set row value
-	/*
-		var oas = new ActiveXObject("Scripting.FileSystemObject");
-        var d = document.a.b.value;
-        var e = oas.getFile(d);
-        var f = e.size;
-        alert(f + " bytes");
-		alert(element);
-		*/
         //new_row_file_name.value =element.value;
         new_row_file_name_tab = element.value.split("\\");
         //alert(new_row_file_name_tab);
@@ -384,12 +377,12 @@ function multiFiles( list_target){
 		//new_row.innerHTML = element.value;
         //add all the elements
         //new_row.appendChild(new_row_attach_file);
-        new_row.appendChild(imgElement);
-        new_row.appendChild(new_row_button_embed);
-        new_row.appendChild(new_row_chk_box);
+		new_row.appendChild(imgElement);
 		new_row.appendChild( new_row_file_name);
 		// Add button
 		new_row.appendChild( new_row_button_remove);
+		new_row.appendChild(new_row_button_embed);
+		new_row.appendChild(new_row_chk_box);
 		// Add it to the list
 		this.list_target.appendChild( new_row );
 		//document.getElementById(list_target).appendChild(new_row);
@@ -409,7 +402,7 @@ function docUpload() {
 	   }
     }
 
-	var url ='index.php?module=EmailTemplates&action=AttachDocuments';
+	var url ='index.php?module=EmailTemplates&action=AttachFiles';
 	YAHOO.util.Connect.asyncRequest('POST', url, callback,null);
     //AJAX call ends
 
@@ -477,7 +470,7 @@ function docUpload() {
     //eai.setAttribute('onclick', 'deleteFile('+uploadIndex+');');
     eai.setAttribute('value', lbl_remove);
     eai.onclick=function(){
-    	var filename = this.parentNode.childNodes[4].value;
+    	var filename = this.parentNode.childNodes[2].value;
 	    	if(filename){
 					$(tinyMCE.editors).each(function(i, tiny){
 						//var tiny = tinyMCE.getInstanceById('body_text');
@@ -495,21 +488,21 @@ function docUpload() {
 
 
     var new_row_button_embed = document.createElement("img");
-	new_row_button_embed.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment.gif");
+	new_row_button_embed.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=attachment-indicator.svg");
 	new_row_button_embed.setAttribute("align","absmiddle");
 	new_row_button_embed.setAttribute("alt",lbl_email_attachments_embeded);
 	new_row_button_embed.setAttribute("border","0");
-	new_row_button_embed.setAttribute("height","16");
-	new_row_button_embed.setAttribute("width","16");
+	new_row_button_embed.setAttribute("height","24");
+	new_row_button_embed.setAttribute("width","24");
 	new_row_button_embed.onclick= function(){
         //retrieve the documentid
-        this.parentNode.childNodes[2].checked='true';
-        var documentRevisionId = this.parentNode.childNodes[4].value;
-        var mime_type = this.parentNode.childNodes[5].value;
+        this.parentNode.childNodes[7].checked='true';
+        var documentRevisionId = this.parentNode.childNodes[2].value;
+        var mime_type = this.parentNode.childNodes[3].value;
 		if(mime_type == "image/gif" || mime_type == "image/bmp" || mime_type == "image/png" || mime_type == "image/x-png" || mime_type == "image/jpg" || mime_type == "image/jpeg")
         {
             embedImage='<img src="index.php?entryPoint=download&type=Documents&id='+documentRevisionId+'">';
-            insert_variable(embedImage);
+            insert_variable(embedImage, "email_template_editor");
         }
         else{
             new_row_chk_box.checked =false;
@@ -518,23 +511,24 @@ function docUpload() {
 	};
 
    var SugarDoc = document.createElement("img");
-   SugarDoc.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=sugar_document.png");
+   SugarDoc.setAttribute("src", "index.php?entryPoint=getImage&themeName="+SUGAR.themes.theme_name+"&imageName=Documents.svg");
    SugarDoc.setAttribute("align","absmiddle");
    SugarDoc.setAttribute("alt",lbl_email_attachments_document);
    SugarDoc.setAttribute("border","0");
-   SugarDoc.setAttribute("height","16");
-   SugarDoc.setAttribute("width","16");
+   SugarDoc.setAttribute("height","24");
+   SugarDoc.setAttribute("width","24");
 
 
     //elm.appendChild(eah);
-    elm.appendChild(SugarDoc);
-    elm.appendChild(new_row_button_embed);
-    elm.appendChild(new_row_chk_box);
+
+	elm.appendChild(SugarDoc);
     elm.appendChild(eah);
     elm.appendChild(attId);
     elm.appendChild(attType);
     elm.appendChild(ea);
     elm.appendChild(eai);
+	elm.appendChild(new_row_button_embed);
+	elm.appendChild(new_row_chk_box);
     elm.style.display = 'block';
 
      var rN= document.getElementById('attachments_div');

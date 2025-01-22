@@ -46,6 +46,7 @@ require_once __DIR__ . '/../../include/upload_file.php';
 require_once __DIR__ . '/../../include/SugarObjects/templates/file/File.php';
 
 // Note is used to store customer information.
+#[\AllowDynamicProperties]
 class Note extends File
 {
     public $field_name_map;
@@ -98,19 +99,7 @@ class Note extends File
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Note()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function safeAttachmentName()
@@ -118,17 +107,17 @@ class Note extends File
         global $sugar_config;
 
         //get position of last "." in file name
-        $file_ext_beg = strrpos($this->filename, ".");
+        $file_ext_beg = strrpos((string) $this->filename, ".");
         $file_ext = "";
 
         //get file extension
         if ($file_ext_beg !== false) {
-            $file_ext = substr($this->filename, $file_ext_beg + 1);
+            $file_ext = substr((string) $this->filename, $file_ext_beg + 1);
         }
 
         //check to see if this is a file with extension located in "badext"
         foreach ($sugar_config['upload_badext'] as $badExt) {
-            if (strtolower($file_ext) == strtolower($badExt)) {
+            if (strtolower($file_ext) === strtolower($badExt)) {
                 //if found, then append with .txt and break out of lookup
                 $this->name = $this->name . ".txt";
                 $this->file_mime_type = 'text/';
@@ -166,7 +155,7 @@ class Note extends File
     public function deleteAttachment($isduplicate = "false")
     {
         $removeFile = null;
-        
+
         if ($this->ACLAccess('edit')) {
             if ($isduplicate == "true") {
                 return true;

@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  ********************************************************************************/
 
 require_once('modules/Trackers/store/Store.php');
+#[\AllowDynamicProperties]
 class TrackerSessionsDatabaseStore implements Store
 {
     public function flush($monitor)
@@ -56,8 +57,8 @@ class TrackerSessionsDatabaseStore implements Store
         $db = DBManagerFactory::getInstance();
         $metrics = $monitor->getMetrics();
 
-        if (isset($monitor->client_ip) && strlen($monitor->client_ip) > 45) {
-            $monitor->client_ip = substr($monitor->client_ip, 0, 45);
+        if (isset($monitor->client_ip) && strlen((string) $monitor->client_ip) > 45) {
+            $monitor->client_ip = substr((string) $monitor->client_ip, 0, 45);
         }
 
         $columns = array();

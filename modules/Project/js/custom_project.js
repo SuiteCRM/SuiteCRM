@@ -21,11 +21,11 @@
 function project_delete(){
     var msg = SUGAR.language.get('Project', 'LBL_PROJECT_DELETE_MSG');
     var form = document.getElementById('formDetailView');
-    form.return_module.value='Project';
-    form.return_action.value='ListView';
-    form.action.value='Delete';
 
     if(confirm(msg)){
+        form.return_module.value='Project';
+        form.return_action.value='ListView';
+        form.action.value='Delete';
         form.submit();
     }
 }

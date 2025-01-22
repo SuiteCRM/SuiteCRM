@@ -49,21 +49,6 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
         parent::__construct($layout_manager);
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarWidgetFieldEnum($layout_manager)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($layout_manager);
-    }
-
-
     public function queryFilterEmpty($layout_def)
     {
         $column = $this->_get_column_select($layout_def);
@@ -117,6 +102,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
 
     public function & displayList(&$layout_def)
     {
+        $field_def = [];
         if (!empty($layout_def['column_key'])) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -153,6 +139,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
     }
     public function & displayListPlain($layout_def)
     {
+        $field_def = [];
         if (!empty($layout_def['column_key'])) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -161,6 +148,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
             }
         }
 
+        $value = '';
         if (!empty($layout_def['table_key']) &&(empty($field_def['fields']) || empty($field_def['fields'][0]) || empty($field_def['fields'][1]))) {
             $value = $this->_get_list_value($layout_def);
         } else {

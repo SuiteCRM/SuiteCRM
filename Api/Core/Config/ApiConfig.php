@@ -1,6 +1,7 @@
 <?php
 namespace Api\Core\Config;
 
+#[\AllowDynamicProperties]
 class ApiConfig
 {
     // we still support 5.5.9
@@ -16,8 +17,8 @@ class ApiConfig
         'Api/V8/Config/routes.php',
     ];
 
-    const OAUTH2_PRIVATE_KEY = 'Api/V8/OAuth2/private.key';
-    const OAUTH2_PUBLIC_KEY = 'Api/V8/OAuth2/public.key';
+    public const OAUTH2_PRIVATE_KEY = 'Api/V8/OAuth2/private.key';
+    public const OAUTH2_PUBLIC_KEY = 'Api/V8/OAuth2/public.key';
     
     /**
      *

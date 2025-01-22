@@ -75,7 +75,8 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
         if ($bean_name == 'aCase') {
             $bean_name = 'Case';
         }
-        if (!file_exists('modules/' . $module . '/' . $bean_name . '.php')) {
+        global $beanFiles;
+        if (!file_exists($beanFiles[$bean_name])){
             die($app_strings['ERROR_TYPE_NOT_VALID']);
         }
 
@@ -148,7 +149,7 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
         $local_location = "include/images/default-profile.png";
     }
 
-    if (!file_exists($local_location) || strpos($local_location, "..")) {
+    if (!file_exists($local_location) || strpos((string) $local_location, "..")) {
         if (isset($image_field)) {
             header("Content-Type: image/png");
             header("Content-Disposition: attachment; filename=\"No-Image.png\"");
@@ -206,7 +207,7 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
                 $mime_type = 'application/octet-stream';
             break;
         }
-        
+
         if ($doQuery && isset($query)) {
             $rs = DBManagerFactory::getInstance()->query($query);
             $row = DBManagerFactory::getInstance()->fetchByAssoc($rs);
@@ -222,7 +223,7 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
             }
             // expose original mime type only for images, otherwise the content of arbitrary type
             // may be interpreted/executed by browser
-            if (isset($row['file_mime_type']) && strpos($row['file_mime_type'], 'image/') === 0) {
+            if (isset($row['file_mime_type']) && strpos((string) $row['file_mime_type'], 'image/') === 0) {
                 $mime_type = $row['file_mime_type'];
             }
             if (isset($_REQUEST['field'])) {
@@ -244,7 +245,7 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
             }
         }
 
-        if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match("/MSIE/", $_SERVER['HTTP_USER_AGENT'])) {
+        if (isset($_SERVER['HTTP_USER_AGENT']) && preg_match("/MSIE/", (string) $_SERVER['HTTP_USER_AGENT'])) {
             $name = urlencode($name);
             $name = str_replace("+", "_", $name);
         }
@@ -261,11 +262,27 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
             }
         } else {
             header('Content-type: ' . $mime_type);
-            if (isset($_REQUEST['preview']) && $_REQUEST['preview'] === 'yes' && $mime_type !== 'text/html') {
+
+            $showPreview = false;
+
+            global $sugar_config;
+
+            $allowedPreview = $sugar_config['allowed_preview'] ?? [];
+
+            if (empty($row['file_ext'])) {
+                $row['file_ext'] = pathinfo((string) $name, PATHINFO_EXTENSION);
+            }
+
+            if (!empty($row['file_ext']) && in_array($row['file_ext'], $allowedPreview, true)) {
+                $showPreview = isset($_REQUEST['preview']) && $_REQUEST['preview'] === 'yes' && $mime_type !== 'text/html';
+            }
+
+            if ($showPreview === true) {
                 header('Content-Disposition: inline; filename="' . $name . '";');
             } else {
                 header('Content-Disposition: attachment; filename="' . $name . '";');
             }
+
         }
         // disable content type sniffing in MSIE
         header("X-Content-Type-Options: nosniff");
@@ -281,8 +298,8 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
 
         ob_start();
         echo clean_file_output(file_get_contents($download_location), $mime_type);
-        
+
         $output = ob_get_contents();
         ob_end_clean();
-        
+
         echo $output;

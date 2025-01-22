@@ -5,6 +5,7 @@ use Api\Core\Config\ApiConfig;
 use Api\Core\Resolver\ConfigResolver;
 use Slim\App;
 
+#[\AllowDynamicProperties]
 class RouteLoader
 {
     /**

@@ -1,0 +1,113 @@
+name: Report a Bug
+description: Provide a general summary of the issue found in the Title field below and then complete the remainder of the form.
+labels: ["Type: Bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you open an issue:
+        - check if a similar issue already exists or has been closed previously.
+        - if you have discovered a security risk, a security risk, please refer to our [Security Policy](https://docs.suitecrm.com/community/security-policy)
+        
+        Please note, only issues found which are valid in supported versions of SuiteCRM 7, will be investigated.
+        Issues found in SuiteCRM 8 and above should be raised [here](https://github.com/salesagility/SuiteCRM-Core/issues/new/choose)
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue
+      description: Provide a detailed description for the issue, why you consider it to be a bug and what you expect should happen
+      placeholder: Ensure that all code ``` is surrounded ``` by triple back quotes. This can also be done over multiple lines.
+    validations:
+      required: true
+  - type: textarea
+    id: possible-fix
+    attributes:
+      label: Possible Fix
+      description: Not obligatory, but suggest a fix or reason for the bug
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce the Issue
+      description: Provide a link to a live example or the steps taken to produce this bug including code to reproduce, if relevant
+      value: |
+        1.
+        2.
+        3.
+        ...
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: We appreciate it if you could give us more context - how has this bug affected you? What were you trying to accomplish?
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value:
+        "## "
+  - type: markdown
+    attributes:
+      value:
+        "## Your Environment:"
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: What version of SuiteCRM are you running?
+      placeholder: ex. 7.14.3
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browser are you currently using?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
+        - Other
+      default: 0
+    validations:
+      required: true
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser Version
+      description: We would like you to be a little bit more specific.
+      placeholder: ex. Chrome Version 122.0.6261.57/58 (64-bit)
+    validations:
+      required: false
+  - type: input
+    id: environment
+    attributes:
+      label: Environment Information
+      placeholder: ex. MySQL, PHP 8.2
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating System and Version
+      placeholder: ex. Ubuntu 23.10
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        > **Remember to support your issue by voting!** 
+        Get more information [here](https://docs.suitecrm.com/community/raising-issues/issues-voting/)
+  - type: markdown
+    attributes:
+      value:
+        "## "
+  - type: markdown
+    attributes:
+      value:
+        "## Thank you for bringing this issue to our attention!"

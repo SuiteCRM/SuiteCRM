@@ -48,6 +48,7 @@ require_once("data/Relationships/SugarRelationship.php");
  * Represents a many to many relationship that is table based.
  * @api
  */
+#[\AllowDynamicProperties]
 class M2MRelationship extends SugarRelationship
 {
     public $type = "many-to-many";
@@ -96,7 +97,7 @@ class M2MRelationship extends SugarRelationship
         //Multiple links with same relationship name
         else {
             if (is_array($results)) {
-                $GLOBALS['log']->error("Warning: Multiple links found for relationship {$this->name} within module {$module}");
+                $GLOBALS['log']->warn("Multiple links found for relationship {$this->name} within module {$module}");
                 return $this->getMostAppropriateLinkedDefinition($results);
             } else {
                 return false;
@@ -130,16 +131,16 @@ class M2MRelationship extends SugarRelationship
         return $links[0];
     }
     /**
-     * @param  $lhs SugarBean left side bean to add to the relationship.
-     * @param  $rhs SugarBean right side bean to add to the relationship.
-     * @param  $additionalFields key=>value pairs of fields to save on the relationship
+     * @param SugarBean $lhs left side bean to add to the relationship.
+     * @param SugarBean $rhs right side bean to add to the relationship.
+     * @param mixed $additionalFields key=>value pairs of fields to save on the relationship
      * @return boolean true if successful
      */
     public function add($lhs, $rhs, $additionalFields = array())
     {
         $lhsLinkName = $this->lhsLink;
         $rhsLinkName = $this->rhsLink;
-        
+
         /* BEGIN - SECURITY GROUPS */
         //Need to hijack this as security groups will not contain a link on the module side
         //due to the way the module works. Plus it would remove the relative ease of adding custom module support
@@ -263,11 +264,11 @@ class M2MRelationship extends SugarRelationship
             $GLOBALS['log']->fatal("RHS is not a SugarBean object");
             return false;
         }
-        
+
         /* BEGIN - SECURITY GROUPS */
         //Need to hijack this as security groups will not contain a link on the module side
         //due to the way the module works. Plus it would remove the relative ease of adding custom module support
-        
+
         if (get_class($lhs) == 'SecurityGroup' || get_class($rhs) == 'SecurityGroup') {
             $dataToRemove = array(
                 $this->def['join_key_lhs'] => $lhs->id,
@@ -292,7 +293,7 @@ class M2MRelationship extends SugarRelationship
             }
 
             $this->removeRow($dataToRemove);
-            
+
             if (empty($_SESSION['disable_workflow']) || $_SESSION['disable_workflow'] != "Yes") {
                 if (get_class($lhs) != 'SecurityGroup' && $lhs->$lhsLinkName instanceof Link2) {
                     $lhs->$lhsLinkName->load();
@@ -375,7 +376,7 @@ class M2MRelationship extends SugarRelationship
     }
 
     /**
-     * @param  $link Link2 loads the relationship for this link.
+     * @param Link2 $link loads the relationship for this link.
      * @return void
      */
     public function load($link, $params = array())
@@ -402,6 +403,7 @@ class M2MRelationship extends SugarRelationship
 
     public function getQuery($link, $params = array())
     {
+        $whereTable = '';
         if ($this->linkIsLHS($link)) {
             $knownKey = $this->def['join_key_lhs'];
             $targetKey = $this->def['join_key_rhs'];
@@ -556,7 +558,7 @@ class M2MRelationship extends SugarRelationship
     /**
      * Similar to getQuery or Get join, except this time we are starting from the related table and
      * searching for items with id's matching the $link->focus->id
-     * @param  $link
+     * @param mixed $link
      * @param array $params
      * @param bool $return_array
      * @return String|Array
@@ -625,8 +627,8 @@ class M2MRelationship extends SugarRelationship
     }
 
     /**
-     * @param  $lhs
-     * @param  $rhs
+     * @param $lhs
+     * @param $rhs
      * @return bool
      */
     public function relationship_exists($lhs, $rhs)

@@ -40,13 +40,14 @@
 
 namespace SuiteCRM\Robo\Plugin\Commands;
 
+use Robo\Tasks;
+use RuntimeException;
 use SuiteCRM\Utility\OperatingSystem;
 use SuiteCRM\Robo\Traits\RoboTrait;
-use Robo\Task\Base\loadTasks;
 
-class BuildCommands extends \Robo\Tasks
+#[\AllowDynamicProperties]
+class BuildCommands extends Tasks
 {
-    use loadTasks;
     use RoboTrait;
 
     // define public methods as commands
@@ -57,7 +58,7 @@ class BuildCommands extends \Robo\Tasks
      * @param array $opts optional command line arguments
      * theme - The name of the theme you want to compile css
      * color-scheme - set which color scheme you wish to build
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function buildTheme(array $opts = ['theme' => '', 'color-scheme' => ''])
     {
@@ -97,7 +98,7 @@ class BuildCommands extends \Robo\Tasks
      * Build SuiteP theme
      * @param array $opts optional command line arguments
      * color-scheme - set which color scheme you wish to build
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function buildSuiteP(array $opts = ['color-scheme' => ''])
     {
@@ -107,14 +108,14 @@ class BuildCommands extends \Robo\Tasks
     /**
      * @param string $colorScheme eg Dawn
      * @param string $location eg Directory to work from
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     private function buildColorScheme($colorScheme, $location)
     {
         $os = new OperatingSystem();
         $command =
             $os->toOsPath('./vendor/bin/pscss')
-            . ' -f compressed '
+            . ' -s compressed '
             . $os->toOsPath("{$location}{$colorScheme}/style.scss")
             . ' > '
             . $os->toOsPath("{$location}{$colorScheme}/style.css");

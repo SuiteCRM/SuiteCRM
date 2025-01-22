@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function generatepwd(id){callback={success:function(o){if(o.charAt(0)!='1'){$('#title-generic').html(SUGAR.language.get("Users","LBL_CANNOT_SEND_PASSWORD"));$('.modal-generic .modal-body .container-fluid').html(o);}
+ */function generatepwd(id){callback={success:function(o){if(o.charAt(0)!='1'){$('#title-generic').html(SUGAR.language.get("Users","LBL_CANNOT_SEND_PASSWORD"));$('.modal-generic .modal-body .container-fluid').html(o);}
 else{$('title-generic').html(SUGAR.language.get("Users","LBL_PASSWORD_SENT"));$('.modal-generic .modal-body .container-fluid').html(SUGAR.language.get("Users","LBL_NEW_USER_PASSWORD_2"));}
 $('#btn-generic').html(SUGAR.language.get("Users","LBL_OK"));$('#btn-generic').unbind().click(function(){$('.modal-generic').modal('hide');});$('.modal-generic').modal('show');},failure:function(o){$('#title-generic').html(SUGAR.language.get("Users","LBL_CANNOT_SEND_PASSWORD"));$('.modal-generic .modal-body .container-fluid').html(SUGAR.language.get("app_strings","LBL_AJAX_FAILURE"));$('#btn-generic').html(SUGAR.language.get("Users","LBL_OK"));$('#btn-generic').unbind().click(function(){$('.modal-generic').modal('hide');});$('.modal-generic').modal('show');}}
 $.post('index.php?to_pdf=1&module=Users&action=GeneratePassword&userId='+id,{userId:id}).done(callback.success).fail(callback.failure);}

@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class ModuleBuilderParser
 {
     public $_defMap; // private - mapping from view to variable name inside the viewdef file
@@ -53,19 +54,7 @@ class ModuleBuilderParser
         $this->_defMap = array('listview'=>'listViewDefs','searchview'=>'searchdefs','editview'=>'viewdefs','detailview'=>'viewdefs','quickcreate'=>'viewdefs');
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ModuleBuilderParser()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     /*
      * Initialize this parser
@@ -97,14 +86,14 @@ class ModuleBuilderParser
         // We must do this in ParserModifyLayout (rather than just in ParserBuildLayout) because we might be editing the layout of a MB created module in Studio after it has been deployed
         $moduleVariables = array('module_name','_module_name', 'OBJECT_NAME', '_object_name');
         foreach ($moduleVariables as $name) {
-            if (isset($$name)) {
-                $variables[$name] = $$name;
+            if (isset(${$name})) {
+                $variables[$name] = ${$name};
             }
         }
         $viewVariable = $this->_defMap[strtolower($view)];
         // Now tidy up the module name in the viewdef array
         // MB created definitions store the defs under packagename_modulename and later methods that expect to find them under modulename will fail
-        $defs = $$viewVariable;
+        $defs = ${$viewVariable};
 
         if (isset($variables['module_name'])) {
             $mbName = $variables['module_name'];
@@ -132,9 +121,9 @@ class ModuleBuilderParser
             unlink($file);
         }
 
-        mkdir_recursive(dirname($file)) ;
+        mkdir_recursive(dirname((string) $file)) ;
         $GLOBALS['log']->debug("ModuleBuilderParser->_writeFile(): file=".$file);
-        $useVariables = (count($variables)>0);
+        $useVariables = ((is_countable($variables) ? count($variables) : 0)>0);
         if ($fh = @sugar_fopen($file, 'w')) {
             $out = "<?php\n";
             if ($useVariables) {
@@ -166,7 +155,7 @@ class ModuleBuilderParser
 
 //           $GLOBALS['log']->debug("parser.modifylayout.php->_writeFile(): out=".print_r($out,true));
             fwrite($fh, $out);
-            fclose($fh);
+            sugar_fclose($fh);
         } else {
             $GLOBALS['log']->fatal("ModuleBuilderParser->_writeFile() Could not write new viewdef file ".$file);
         }

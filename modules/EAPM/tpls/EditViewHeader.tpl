@@ -67,7 +67,7 @@
 {{if empty($form.button_location) || $form.button_location == 'top'}}
 {{if !empty($form) && !empty($form.buttons)}}
    {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" view="$view" appendTo="action_button"}}
+      {{sugar_button module="$module" id=$button view="$view" appendTo="action_button"}}
    {{/foreach}}
 {{else}}
 {{sugar_button module="$module" id="SAVE" view="$view" appendTo="action_button"}}

@@ -60,8 +60,8 @@ function getJSLanguage()
     $lang = clean_path($_REQUEST['lang']);
     $languages = get_languages();
 
-    if (!preg_match("/^\w\w_\w\w$/", $lang) || !isset($languages[$lang])) {
-        if (!preg_match("/^\w\w_\w\w$/", $lang)) {
+    if (!preg_match("/^\w\w_\w\w$/", (string) $lang) || !isset($languages[$lang])) {
+        if (!preg_match("/^\w\w_\w\w$/", (string) $lang)) {
             echo 'did not match regex<br/>';
         } else {
             echo  "$lang was not in list . <pre>".print_r($languages, true).'</pre>';

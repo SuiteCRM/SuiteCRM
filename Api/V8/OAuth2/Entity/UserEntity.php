@@ -3,6 +3,7 @@ namespace Api\V8\OAuth2\Entity;
 
 use League\OAuth2\Server\Entities\UserEntityInterface;
 
+#[\AllowDynamicProperties]
 class UserEntity implements UserEntityInterface
 {
     /**

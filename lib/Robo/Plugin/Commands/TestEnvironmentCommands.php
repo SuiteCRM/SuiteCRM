@@ -42,6 +42,7 @@ namespace SuiteCRM\Robo\Plugin\Commands;
 use SuiteCRM\Utility\OperatingSystem;
 use SuiteCRM\Utility\Paths;
 
+#[\AllowDynamicProperties]
 class TestEnvironmentCommands extends \Robo\Tasks
 {
     use \SuiteCRM\Robo\Traits\RoboTrait;

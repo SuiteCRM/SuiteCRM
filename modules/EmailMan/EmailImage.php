@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
-if (empty($_REQUEST['id']) || !preg_match("/^[\w\d\-]+$/", $_REQUEST['id'])) {
+if (empty($_REQUEST['id']) || !preg_match("/^[\w\d\-]+$/", (string) $_REQUEST['id'])) {
     die("Not a Valid Entry Point");
 }
 

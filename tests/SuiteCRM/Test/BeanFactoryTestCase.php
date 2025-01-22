@@ -1,10 +1,51 @@
 <?php
+/**
+ * SugarCRM Community Edition is a customer relationship management program developed by
+ * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
+ *
+ * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUGARCRM, SUGARCRM DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SugarCRM, Inc. headquarters at 10050 North Wolfe Road,
+ * SW2-130, Cupertino, CA 95014, USA. or at email address contact@sugarcrm.com.
+ *
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
+ * reasonably feasible for technical reasons, the Appropriate Legal Notices must
+ * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
+ */
 
 namespace SuiteCRM\Test;
 
-use \SugarBean;
+use SugarBean;
 use SuiteCRM\Exception\Exception;
 
+/**
+ * Class BeanFactoryTestCase
+ * @package SuiteCRM\Tests\SuiteCRM\Test
+ */
 class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
 {
     /**
@@ -21,7 +62,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
      * @return void
      * @throws Exception in TestCaseAbstract::setup
      */
-    public function setup()
+    public function setup(): void
     {
         $this->removeCoreModuleAllExtension();
 
@@ -31,7 +72,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
     /**
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->removeCoreModuleAllExtension();
 
@@ -39,10 +80,11 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
 
         parent::tearDown();
     }
+
     /**
      * @return array
      */
-    public function moduleConfigProvider()
+    public function moduleConfigProvider(): array
     {
         $this->refreshModuleGlobals();
 
@@ -92,7 +134,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
     /**
      * @return array
      */
-    protected function getModuleList()
+    protected function getModuleList(): array
     {
         global $beanList;
 
@@ -107,7 +149,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
      * @param $moduleClass
      * @return bool
      */
-    protected function shouldSkipModule($moduleClass)
+    protected function shouldSkipModule($moduleClass): bool
     {
         global $beanFiles;
 
@@ -126,7 +168,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
     /**
      * @return void
      */
-    public function compileIncludeExtFiles()
+    public function compileIncludeExtFiles(): void
     {
         $extensionContents = '<?php' . PHP_EOL;
         $compiledIncludePath = 'custom/application/Ext/Include';
@@ -154,16 +196,14 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
             mkdir_recursive($compiledIncludePath, true);
         }
 
-        $this->assertTrue(is_writable($compiledIncludePath), 'Not writable: ' . $compiledIncludePath);
+        self::assertTrue(is_writable($compiledIncludePath), 'Not writable: ' . $compiledIncludePath);
 
-        if (is_writable($compiledIncludePath) && !$noExtensions) {
+        if (!$noExtensions && is_writable($compiledIncludePath)) {
             file_put_contents("$compiledIncludePath/modules.ext.php", $extensionContents);
         }
 
-        if ($noExtensions) {
-            if (file_exists("$compiledIncludePath/modules.ext.php")) {
-                unlink("$compiledIncludePath/modules.ext.php");
-            }
+        if ($noExtensions && file_exists("$compiledIncludePath/modules.ext.php")) {
+            unlink("$compiledIncludePath/modules.ext.php");
         }
     }
 
@@ -172,9 +212,9 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
      * @param $path
      * @return bool
      */
-    protected function shouldSkipFileEntry($file, $path)
+    protected function shouldSkipFileEntry($file, $path): bool
     {
-        if ($file === '.' || $file === '..' || strtolower(substr($file, -4)) !== '.php') {
+        if ($file === '.' || $file === '..' || strtolower(substr((string) $file, -4)) !== '.php') {
             return true;
         }
 
@@ -190,7 +230,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
      * @param string $className
      * @return void
      */
-    public function addCoreModuleExtension($moduleName, $className)
+    public function addCoreModuleExtension(string $moduleName, string $className): void
     {
         $extIncludePath = 'custom/Extension/application/Ext/Include';
         $customClassPath = "custom/modules/$moduleName";
@@ -214,7 +254,7 @@ EOT;
             mkdir_recursive($extIncludePath, true);
         }
 
-        $this->assertTrue(is_writable($extIncludePath), 'Directory not writable: ' . $extIncludePath);
+        self::assertTrue(is_writable($extIncludePath), 'Directory not writable: ' . $extIncludePath);
 
         if (is_writable($extIncludePath)) {
             file_put_contents("$extIncludePath/ZzzTestCustom$moduleName.php", $extIncludeContents);
@@ -224,7 +264,7 @@ EOT;
             mkdir_recursive($customClassPath, true);
         }
 
-        $this->assertTrue(is_writable($customClassPath), 'Directory not writable: ' . $customClassPath);
+        self::assertTrue(is_writable($customClassPath), 'Directory not writable: ' . $customClassPath);
 
         if (is_writable($customClassPath)) {
             file_put_contents("$customClassPath/TestCustom$className.php", $classContents);
@@ -238,7 +278,7 @@ EOT;
      * @param string $className
      * @return void
      */
-    public function removeCoreModuleExtension($moduleName, $className)
+    public function removeCoreModuleExtension(string $moduleName, string $className): void
     {
         if (file_exists("custom/Extension/application/Ext/Include/ZzzTestCustom$moduleName.php")) {
             unlink("custom/Extension/application/Ext/Include/ZzzTestCustom$moduleName.php");
@@ -254,11 +294,9 @@ EOT;
     /**
      * @return void
      */
-    public function removeCoreModuleAllExtension()
+    public function removeCoreModuleAllExtension(): void
     {
-        $modulesConfig = $this->moduleConfigProvider();
-
-        foreach ($modulesConfig as $moduleName => $moduleConfig) {
+        foreach ($this->moduleConfigProvider() as $moduleName => $moduleConfig) {
             if (file_exists("custom/Extension/application/Ext/Include/ZzzTestCustom$moduleName.php")) {
                 unlink("custom/Extension/application/Ext/Include/ZzzTestCustom$moduleName.php");
             }
@@ -274,7 +312,7 @@ EOT;
     /**
      * @return void
      */
-    public function refreshModuleGlobals()
+    public function refreshModuleGlobals(): void
     {
         $beanList = $customBeanList = $objectList = $customObjectList = $beanFiles = $customBeanFiles = [];
 

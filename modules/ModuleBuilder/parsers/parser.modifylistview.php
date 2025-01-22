@@ -48,6 +48,7 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
 /**
  * Class ParserModifyListView
  */
+#[\AllowDynamicProperties]
 class ParserModifyListView extends ModuleBuilderParser
 {
     /**
@@ -250,7 +251,7 @@ class ParserModifyListView extends ModuleBuilderParser
         }
 
         //Dont ever show the "deleted" fields or "_name" fields
-        if (strcmp($key, 'deleted') == 0 || (isset($def ['name']) && strpos($def ['name'], "_name") !== false)) {
+        if (strcmp($key, 'deleted') == 0 || (isset($def ['name']) && strpos((string) $def ['name'], "_name") !== false)) {
             return false;
         }
 
@@ -320,7 +321,7 @@ class ParserModifyListView extends ModuleBuilderParser
                     //check if we have the case wrong for custom fields
                     if (!isset($this->module->field_defs [$fieldname])) {
                         foreach ($this->module->field_defs as $key => $value) {
-                            if (strtoupper($key) == $fieldname) {
+                            if (strtoupper($key) === $fieldname) {
                                 $fields [$fieldname] = array(
                                     'width' => 10,
                                     'label' => $this->module->field_defs [$key] ['vname']
@@ -349,7 +350,7 @@ class ParserModifyListView extends ModuleBuilderParser
                     }
                 }
                 if (isset($_REQUEST [strtolower($fieldname) . 'width'])) {
-                    $width = substr($_REQUEST [strtolower($fieldname) . 'width'], 6, 3);
+                    $width = substr((string) $_REQUEST [strtolower($fieldname) . 'width'], 6, 3);
                     if (strpos($width, "%") !== false) {
                         $width = substr($width, 0, 2);
                     }

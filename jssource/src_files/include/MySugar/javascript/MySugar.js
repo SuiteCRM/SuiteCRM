@@ -265,6 +265,9 @@ initMySugar = function () {
 
           ajaxStatus.hideStatus();
         });
+
+        $('#dashlet_header_' + SUGAR.mySugar.configureDashletId).load(url + ' #dashlet_header_' + SUGAR.mySugar.configureDashletId);
+
         return false;
       },
 

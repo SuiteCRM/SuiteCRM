@@ -211,10 +211,12 @@ class SugarCronJobs
             $GLOBALS['log']->fatal("Job runs too frequently, throttled to protect the system.");
             return;
         }
-        // clean old stale jobs
+        // clean stale jobs
         if (!$this->queue->cleanup()) {
             $this->jobFailed();
         }
+        // delete expired jobs
+        $this->queue->clearHistoricJobs();
         // run schedulers
         if (!$this->disable_schedulers) {
             $this->queue->runSchedulers();

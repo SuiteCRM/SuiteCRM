@@ -541,7 +541,6 @@ function EmailTrackerController(action, campaignId) {
 			$('#url_text').val(text);
 			$('#tracker_url_add').val($('select[name="tracker_url"] option:selected').attr('data-url'));
 			$('#tracker_name').val('');
-			$('#template_subject').val('');
 			$('#templateManagerActionOK').val(SUGAR.language.translate('Campaigns', 'LBL_EDIT_TRACKER_BTN'));
 			createTemplateManagerDialog($('#LBL_CREATE_TRACKER_BTN'));
 			$('#templateManagerDialog').children('div').addClass('hidden');

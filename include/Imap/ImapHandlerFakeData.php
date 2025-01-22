@@ -50,14 +50,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @author gyula
  * @todo using common Call faker as base class
  */
+#[\AllowDynamicProperties]
 class ImapHandlerFakeData
 {
-    const ERR_NO_MATCH_ARGS = 1;
-    const ERR_CALL_NOT_FOUND = 2;
-    const ERR_CALL_ALREDY_EXISTS = 3;
-    const ERR_CALL_NOT_EXISTS = 4;
-    const ERR_CALL_REMOVE = 5;
-    const ERR_WRONG_TESTSET = 6;
+    public const ERR_NO_MATCH_ARGS = 1;
+    public const ERR_CALL_NOT_FOUND = 2;
+    public const ERR_CALL_ALREDY_EXISTS = 3;
+    public const ERR_CALL_NOT_EXISTS = 4;
+    public const ERR_CALL_REMOVE = 5;
+    public const ERR_WRONG_TESTSET = 6;
     
     /**
      *
@@ -146,7 +147,7 @@ class ImapHandlerFakeData
     {
         $argsEncoded = $this->encodeArgs($args);
         if (isset($this->calls[$name][$argsEncoded])) {
-            LoggerManager::getLogger()->warn('Fake call already exists with given arguments: ' . $name . ', hint: remove first, use ' . __CLASS__ . '::remove(...)');
+            LoggerManager::getLogger()->warn('Fake call already exists with given arguments: ' . $name . ', hint: remove first, use ' . self::class . '::remove(...)');
             $this->remove($name, $args);
         }
         $this->calls[$name][$argsEncoded] = $ret;

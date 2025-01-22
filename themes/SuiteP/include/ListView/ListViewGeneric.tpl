@@ -70,7 +70,7 @@
     {sugar_include type="smarty" file=$form.headerTpl}
 {/if}
 
-{if count($data) == 0}
+{if !isset($data) || (count($data) == 0)}
 	{assign var="hideTable" value=true}
 	<div class="list view listViewEmpty">
         {if $showFilterIcon}
@@ -190,7 +190,18 @@
                                 {if isset($params.hide_header_label) && $params.hide_header_label == true}
                                 {else}
                                     {sugar_translate label=$params.label module=$pageData.bean.moduleDir}
-									&nbsp;&nbsp;  {/if}
+									{if $params.orderBy|default:$colHeader|lower == $pageData.ordering.orderBy && $params.force_show_sort_direction}
+										{if $pageData.ordering.sortOrder == 'ASC'}
+											{capture assign="imageName"}arrow_down.{$arrowExt}{/capture}
+											{capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_DESC'}{/capture}
+											<span class="suitepicon suitepicon-action-sorting-ascending" title="{$alt_sort}"></span>
+										{else}
+											{capture assign="imageName"}arrow_up.{$arrowExt}{/capture}
+											{capture assign="alt_sort"}{sugar_translate label='LBL_ALT_SORT_ASC'}{/capture}
+											<span class="suitepicon suitepicon-action-sorting-descending" title="{$alt_sort}"></span>
+										{/if}
+									{/if}
+							&nbsp;&nbsp;  {/if}
 							{/if}
 						{/if}
 						</div>

@@ -26,6 +26,7 @@
 
 require_once('include/MVC/Controller/SugarController.php');
 
+#[\AllowDynamicProperties]
 class AOS_ContractsController extends SugarController
 {
     public function action_editview()
@@ -59,8 +60,10 @@ class AOS_ContractsController extends SugarController
             $query = "SELECT id,name FROM accounts WHERE id = '?'";
             $result = $this->bean->db->pquery($query, [$_REQUEST['account_id']]);
             $row = $this->bean->db->fetchByAssoc($result);
-            $this->bean->contract_account = $row['name'];
-            $this->bean->contract_account_id = $row['id'];
+            if ($row){
+                $this->bean->contract_account = $row['name'];
+                $this->bean->contract_account_id = $row['id'];
+            }
         }
 
         if (isset($_REQUEST['contact_id'])) {

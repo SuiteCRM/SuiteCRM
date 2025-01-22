@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class EmployeeTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,75 +13,75 @@ class EmployeeTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testEmployee()
+    public function testEmployee(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $employee = BeanFactory::newBean('Employees');
-        $this->assertInstanceOf('Employee', $employee);
-        $this->assertInstanceOf('Person', $employee);
-        $this->assertInstanceOf('SugarBean', $employee);
+        self::assertInstanceOf('Employee', $employee);
+        self::assertInstanceOf('Person', $employee);
+        self::assertInstanceOf('SugarBean', $employee);
 
-        $this->assertAttributeEquals('Employees', 'module_dir', $employee);
-        $this->assertAttributeEquals('Employee', 'object_name', $employee);
-        $this->assertAttributeEquals('users', 'table_name', $employee);
-        $this->assertAttributeEquals(true, 'new_schema', $employee);
+        self::assertEquals('Employees', $employee->module_dir);
+        self::assertEquals('Employee', $employee->object_name);
+        self::assertEquals('users', $employee->table_name);
+        self::assertEquals(true, $employee->new_schema);
     }
 
-    public function testget_summary_text()
+    public function testget_summary_text(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
         //test without setting name
-        $this->assertEquals(' ', $employee->get_summary_text());
+        self::assertEquals(' ', $employee->get_summary_text());
 
         //test with name set
         $employee->retrieve(1);
-        $this->assertEquals('Administrator', $employee->get_summary_text());
+        self::assertEquals('Administrator', $employee->get_summary_text());
     }
 
-    public function testfill_in_additional_list_fields()
+    public function testfill_in_additional_list_fields(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $employee->fill_in_additional_list_fields();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testfill_in_additional_detail_fields()
+    public function testfill_in_additional_detail_fields(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
         //test with a empty employee bean
         $employee->fill_in_additional_detail_fields();
-        $this->assertEquals("", $employee->reports_to_name);
+        self::assertEquals("", $employee->reports_to_name);
 
 
         //test with a valid employee bean
         $employee->retrieve(1);
         $employee->fill_in_additional_detail_fields();
-        $this->assertEquals("", $employee->reports_to_name);
+        self::assertEquals("", $employee->reports_to_name);
     }
 
-    public function testretrieve_employee_id()
+    public function testretrieve_employee_id(): void
     {
         $employee = BeanFactory::newBean('Employees');
         //$this->assertEquals('1' ,$employee->retrieve_employee_id('admin'));
 
-        $this->markTestSkipped('Bug in query: employee_name parameter is wrongly used as user_name');
+        self::markTestSkipped('Bug in query: employee_name parameter is wrongly used as user_name');
     }
 
-    public function testverify_data()
+    public function testverify_data(): void
     {
         $employee = BeanFactory::newBean('Employees');
-        $this->assertEquals(true, $employee->verify_data());
+        self::assertEquals(true, $employee->verify_data());
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
@@ -107,10 +107,10 @@ class EmployeeTest extends SuitePHPUnitFrameworkTestCase
         );
 
         $actual = $employee->get_list_view_data();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testlist_view_parse_additional_sections()
+    public function testlist_view_parse_additional_sections(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
@@ -118,44 +118,51 @@ class EmployeeTest extends SuitePHPUnitFrameworkTestCase
         try {
             $ss = new Sugar_Smarty();
             $employee->list_view_parse_additional_sections($ss, null);
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testcreate_export_query()
+    public function testcreate_export_query(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
+        global $current_user;
+        $current_user->is_admin = '1';
         //test with empty string params
         $expected = "SELECT id, user_name, first_name, last_name, description, date_entered, date_modified, modified_user_id, created_by, title, department, is_admin, phone_home, phone_mobile, phone_work, phone_other, phone_fax, address_street, address_city, address_state, address_postalcode, address_country, reports_to_id, portal_only, status, receive_notifications, employee_status, messenger_id, messenger_type, is_group FROM users  WHERE  users.deleted = 0 ORDER BY users.user_name";
         $actual = $employee->create_export_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = "SELECT id, user_name, first_name, last_name, description, date_entered, date_modified, modified_user_id, created_by, title, department, is_admin, phone_home, phone_mobile, phone_work, phone_other, phone_fax, address_street, address_city, address_state, address_postalcode, address_country, reports_to_id, portal_only, status, receive_notifications, employee_status, messenger_id, messenger_type, is_group FROM users  WHERE users.user_name=\"\" AND  users.deleted = 0 ORDER BY users.id";
         $actual = $employee->create_export_query('users.id', 'users.user_name=""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
+
+        $current_user->is_admin = '0';
+        $this->expectException(RuntimeException::class);
+        $employee->create_export_query('', '');
+
     }
 
-    public function testpreprocess_fields_on_save()
+    public function testpreprocess_fields_on_save(): void
     {
         $employee = BeanFactory::newBean('Employees');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $employee->preprocess_fields_on_save();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
     /**
      * @todo: NEEDS FIXING!
      */
-    public function testcreate_new_list_query()
+    public function testcreate_new_list_query(): void
     {
         /*
     	$employee = BeanFactory::newBean('Employees');
@@ -174,40 +181,40 @@ class EmployeeTest extends SuitePHPUnitFrameworkTestCase
         self::markTestIncomplete();
     }
 
-    public function testhasCustomFields()
+    public function testhasCustomFields(): void
     {
-        $employee = BeanFactory::newBean('Employees');
-        $result = $employee->hasCustomFields();
-        $this->assertEquals(false, $result);
+        $result = BeanFactory::newBean('Employees')->hasCustomFields();
+        self::assertEquals(false, $result);
     }
-    
-    public function testError()
+
+    public function testError(): void
     {
         global $app_strings;
-        
+
         // setup
-        $this->assertTrue(!isset($app_strings['TEST_ERROR_MESSAGE']));
-        
+        self::assertNotTrue(isset($app_strings['TEST_ERROR_MESSAGE']));
+
         // test if there is no error
-        
+
         ob_start();
         include __DIR__ . '/../../../../../modules/Employees/Error.php';
         $contents = ob_get_contents();
         ob_end_clean();
         $expected = '<span class=\'error\'><br><br>' . "\n" . $app_strings['NTC_CLICK_BACK'] . '</span>';
-        $this->assertContains($expected, $contents);
-        
+        self::assertStringContainsStringIgnoringCase($expected, $contents);
+
         // test if there is an error
-        
+
         $app_strings['TEST_ERROR_MESSAGE'] = 'Hello error';
+        $request = [];
         $request['error_string'] = 'TEST_ERROR_MESSAGE';
-        $this->assertEquals($request['error_string'], 'TEST_ERROR_MESSAGE');
+        self::assertEquals('TEST_ERROR_MESSAGE', $request['error_string']);
         ob_start();
         include __DIR__ . '/../../../../../modules/Employees/Error.php';
         $contents = ob_get_contents();
         ob_end_clean();
         $expected = '<span class=\'error\'>Hello error<br><br>' . "\n" . $app_strings['NTC_CLICK_BACK'] . '</span>';
-        $this->assertContains($expected, $contents);
+        self::assertStringContainsStringIgnoringCase($expected, $contents);
 
         unset($app_strings['TEST_ERROR_MESSAGE']);
     }

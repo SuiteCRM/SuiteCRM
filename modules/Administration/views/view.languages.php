@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class ViewLanguages extends SugarView
 {
     /**
@@ -79,9 +80,13 @@ class ViewLanguages extends SugarView
         global $app_list_strings;
         global $app_strings;
         global $sugar_config;
-        
+
         $disabled = array();
         $disabled_list = array();
+        $enabled = [];
+
+        $systemLanguage = $sugar_config['default_language'];
+
         if (isset($sugar_config['disabled_languages'])) {
             if (!is_array($sugar_config['disabled_languages'])) {
                 $disabled_list = array_flip(explode(',', $sugar_config['disabled_languages']));
@@ -93,7 +98,15 @@ class ViewLanguages extends SugarView
             if (isset($disabled_list[$key])) {
                 $disabled[] = array("module" => $key, 'label' => $value);
             } else {
-                $enabled[] = array("module" => $key, 'label' => $value);
+                $enabledLang = array("module" => $key, 'label' => $value);
+
+                if ($key === $systemLanguage) {
+                    $enabledLang['disabled'] = true;
+                    array_unshift($enabled, $enabledLang);
+                    continue;
+                }
+
+                $enabled[] = $enabledLang;
             }
         }
 

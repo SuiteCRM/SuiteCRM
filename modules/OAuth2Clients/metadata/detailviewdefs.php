@@ -56,23 +56,23 @@ $viewdefs[$module_name]['DetailView'] = [
             [
                 0 =>
                     [
-                        'name' => 'name',
+                        0 => 'name',
                     ],
                 1 =>
                     [
-                        'name' => 'redirect_url',
+                        0 => 'redirect_url',
                     ],
                 2 =>
                     [
-                        'name' => 'is_confidential',
+                        0 => 'is_confidential',
                     ],
                 3 =>
                     [
-                        'name' => 'id',
+                        0 => 'id',
                     ],
                 4 =>
                     [
-                        'name' => 'allowed_grant_type',
+                        0 => 'allowed_grant_type',
                     ],
                 5 =>
                     [

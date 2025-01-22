@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/MVC/View/SugarView.php');
         
+#[\AllowDynamicProperties]
 class ImportViewError extends SugarView
 {
     /**
@@ -98,14 +99,25 @@ class ImportViewError extends SugarView
      */
     public function display()
     {
-        $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
+        $module = $_REQUEST['import_module'] ?? '';
+        if (!empty($module) && !isAllowedModuleName($module)) {
+            throw new InvalidArgumentException('Invalid target_module');
+        }
+
+        $source = $_REQUEST['source'] ?? '';
+        $result = preg_match("/^[\w\-\_\.\:]+$/", $source);
+        if (!empty($source) && empty($result)) {
+            throw new InvalidArgumentException('Invalid source');
+        }
+
+        $this->ss->assign("IMPORT_MODULE", $module);
         $this->ss->assign("ACTION", 'Step1');
-        $this->ss->assign("MESSAGE", $_REQUEST['message']);
+        $this->ss->assign("MESSAGE", $_REQUEST['message'] ?? '');
         $this->ss->assign("SOURCE", "");
         if (isset($_REQUEST['source'])) {
-            $this->ss->assign("SOURCE", $_REQUEST['source']);
+            $this->ss->assign("SOURCE", $source);
         }
-        
+
         $this->ss->display('modules/Import/tpls/error.tpl');
     }
 }

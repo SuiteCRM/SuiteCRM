@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 (function () {
 
@@ -1795,7 +1795,7 @@ version: 2.9.0
         * Removes the Module element from the DOM, sets all child elements to null, and purges the bounding element of event listeners.
         * @method destroy
         * @param {boolean} shallowPurge If true, only the parent element's DOM event listeners are purged. If false, or not provided, all children are also purged of DOM event listeners. 
-        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.0.
+        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.1.
         */
         destroy: function (shallowPurge) {
 
@@ -1888,10 +1888,10 @@ version: 2.9.0
         /**
          * If true, ContainerEffects (and Anim instances) are cached when "effect" is set, and reused. 
          * If false, new instances are created each time the container is hidden or shown, as was the 
-         * behavior prior to 2.9.0. 
+         * behavior prior to 2.9.1. 
          *
          * @property cacheEffects
-         * @since 2.9.0
+         * @since 2.9.1
          * @default true
          * @type boolean
          */
@@ -2826,7 +2826,7 @@ version: 2.9.0
                     if (visible) { // Animate in if not showing
 
                          // Fading out is a bit of a hack, but didn't want to risk doing 
-                         // something broader (e.g a generic this._animatingOut) for 2.9.0
+                         // something broader (e.g a generic this._animatingOut) for 2.9.1
 
                         if (currentVis != "visible" || currentVis === "" || this._fadingOut) {
                             if (this.beforeShowEvent.fire()) {
@@ -4116,7 +4116,7 @@ version: 2.9.0
         * elements to null.
         * @method destroy
         * @param {boolean} shallowPurge If true, only the parent element's DOM event listeners are purged. If false, or not provided, all children are also purged of DOM event listeners. 
-        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.0.
+        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.1.
         */
         destroy: function (shallowPurge) {
 
@@ -7178,7 +7178,7 @@ version: 2.9.0
         * to null.
         * @method destroy
         * @param {boolean} shallowPurge If true, only the parent element's DOM event listeners are purged. If false, or not provided, all children are also purged of DOM event listeners. 
-        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.0.
+        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.1.
         */
         destroy: function (shallowPurge) {
             Overlay.windowResizeEvent.unsubscribe(this.sizeMask, this);
@@ -8469,7 +8469,7 @@ version: 2.9.0
         * to null.
         * @method destroy
         * @param {boolean} shallowPurge If true, only the parent element's DOM event listeners are purged. If false, or not provided, all children are also purged of DOM event listeners. 
-        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.0.
+        * NOTE: The flag is a "shallowPurge" flag, as opposed to what may be a more intuitive "purgeChildren" flag to maintain backwards compatibility with behavior prior to 2.9.1.
         */
         destroy: function (shallowPurge) {
             removeButtonEventHandlers.call(this);
@@ -9275,4 +9275,4 @@ version: 2.9.0
     YAHOO.lang.augmentProto(ContainerEffect, YAHOO.util.EventProvider);
 
 })();
-YAHOO.register("container", YAHOO.widget.Module, {version: "2.9.0", build: "2800"});
+YAHOO.register("container", YAHOO.widget.Module, {version: "2.9.1", build: "2800"});

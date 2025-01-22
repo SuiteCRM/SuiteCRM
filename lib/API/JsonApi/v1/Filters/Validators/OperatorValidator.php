@@ -47,6 +47,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class OperatorValidator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Validators
  */
+#[\AllowDynamicProperties]
 class OperatorValidator implements ValidatorInterface
 {
 

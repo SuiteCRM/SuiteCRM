@@ -60,6 +60,7 @@ require_once('modules/ModuleBuilder/parsers/views/History.php');
  * SugarMerge wraps around all the merge functionality of Sugar given a module name and the path to an unzipped patch
  *
  */
+#[\AllowDynamicProperties]
 class SugarMerge
 {
     private $mergeMapping = array();
@@ -71,9 +72,9 @@ class SugarMerge
 
     public function __construct($new_path='', $original_path='', $custom_path='custom')
     {
-        $this->new_path = empty($new_path) || preg_match('/[\/]$/', $new_path) ? $new_path : $new_path . '/';
-        $this->original_path = empty($original_path) || preg_match('/[\/]$/', $original_path) ? $original_path : $original_path . '/';
-        $this->custom_path = empty($custom_path) || preg_match('/[\/]$/', $custom_path) ? $custom_path : $custom_path . '/';
+        $this->new_path = empty($new_path) || preg_match('/[\/]$/', (string) $new_path) ? $new_path : $new_path . '/';
+        $this->original_path = empty($original_path) || preg_match('/[\/]$/', (string) $original_path) ? $original_path : $original_path . '/';
+        $this->custom_path = empty($custom_path) || preg_match('/[\/]$/', (string) $custom_path) ? $custom_path : $custom_path . '/';
 
         $this->mergeMapping = array(
             'editviewdefs.php'=> new EditViewMerge(),
@@ -82,20 +83,6 @@ class SugarMerge
             'searchdefs.php'=>new SearchMerge(),
             'quickcreatedefs.php'=>new QuickCreateMerge(),
         );
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarMerge($new_path='', $original_path='', $custom_path='custom')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($new_path, $original_path, $custom_path);
     }
 
 
@@ -120,8 +107,8 @@ class SugarMerge
     {
         $this->merged = array();
         $searchDirectory = $this->custom_path;
-        if (!preg_match('/[\/]modules$/si', $searchDirectory)) {
-            $searchDirectory .= preg_match('/[\/]$/', $this->custom_path) ? 'modules' : '/modules';
+        if (!preg_match('/[\/]modules$/si', (string) $searchDirectory)) {
+            $searchDirectory .= preg_match('/[\/]$/', (string) $this->custom_path) ? 'modules' : '/modules';
         }
 
         if (file_exists($searchDirectory)) {

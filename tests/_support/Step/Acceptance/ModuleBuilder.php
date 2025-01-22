@@ -11,7 +11,7 @@ class ModuleBuilder extends Administration
      * @param string $moduleType
      * @see SugarObjectType
      */
-    public function createModule($packageName, $moduleName, $moduleType)
+    public function createModule($packageName, $moduleName, $moduleType): void
     {
         $I = $this;
 
@@ -33,8 +33,8 @@ class ModuleBuilder extends Administration
             $I->fillField(['name' => 'description'], 'test module');
             $I->click('Save');
 
-            // Close confirmation window
-            $I->closePopupSuccess();
+            // Wait until confirmation window has disappeared
+            $this->waitUntilPopupSuccessDisappeared();
 
             // Create new module
             $I->click('New Module');
@@ -68,9 +68,6 @@ class ModuleBuilder extends Administration
             $I->wait(1);
             $I->click('Save'); // Will this be an issue with languages?
 
-            // Close popup
-            $I->closePopupSuccess();
-
             // Deploy module
 
             $I->waitForElementVisible('[name="name"]');
@@ -86,7 +83,7 @@ class ModuleBuilder extends Administration
     /**
      * @param string $packageName
      */
-    public function selectPackage($packageName)
+    public function selectPackage($packageName): void
     {
         $I = $this;
 
@@ -103,7 +100,7 @@ class ModuleBuilder extends Administration
      * @param string $packageName
      * @param string $moduleName
      */
-    public function selectModule($packageName, $moduleName)
+    public function selectModule($packageName, $moduleName): void
     {
         $I = $this;
 
@@ -118,13 +115,14 @@ class ModuleBuilder extends Administration
         $I->waitForElementVisible(['name' => 'savebtn']);
     }
 
-    public function closePopupSuccess()
+    /**
+     * Wait until confirmation window has disappeared
+     */
+    public function waitUntilPopupSuccessDisappeared()
     {
         $I = $this;
-        $I->wait(1);
-        $I->executeJS('return typeof document.getElementById("sugarMsgWindow") !== "undefined";');
-        $I->waitForText('This operation is completed successfully', null, '#sugarMsgWindow_c');
-        $I->click('.container-close');
+        $I->waitForElementNotVisible('#sugarMsgWindow_c');
+        $I->waitForElementNotVisible('#sugarMsgWindow_mask');
     }
 
     /**
@@ -132,7 +130,7 @@ class ModuleBuilder extends Administration
      * @param boolean $packageExists
      *
      */
-    public function deployPackage($packageName, $packageExists = false)
+    public function deployPackage($packageName, $packageExists = false): void
     {
         $I = $this;
 
@@ -140,19 +138,16 @@ class ModuleBuilder extends Administration
 
         // Go To Module Builder
         $I->click('#moduleBuilder');
-        $I->waitForElementVisible('.bodywrapper');
+        $I->waitForElementVisible('.bodywrapper', 30);
         $I->click($packageName, '.bodywrapper');
-        $I->waitForElementVisible('[name="name"]');
+        $I->waitForElementVisible('[name="name"]', 30);
         $I->click('Deploy');
 
         if ($packageExists) {
             $I->acceptPopup();
         }
 
-        // Close popup
-        $I->closePopupSuccess();
-
         // Wait for page to refresh and look for new package link
-        $I->waitForElement('#newPackageLink');
+        $I->waitForElement('#newPackageLink', 30);
     }
 }

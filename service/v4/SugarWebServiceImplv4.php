@@ -70,9 +70,13 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1
      *                                         - user_default_team_id, user_is_admin, user_default_dateformat, user_default_timeformat
      * @exception 'SoapFault' -- The SOAP error, if any
      */
-    public function login($user_auth, $application = null, $name_value_list = array())
+    public function login($user_auth, $application = null, $name_value_list = array(), ...$args)
     {
-        $GLOBALS['log']->info("Begin: SugarWebServiceImpl->login({$user_auth['user_name']}, $application, ". print_r($name_value_list, true) .")");
+        $application_name = $args['application_name'] ?? '';
+        if ($application_name === '' && $application === null){
+            $GLOBALS['log']->info("Application name not set. Please set using 'application_name' or 'application'. ");
+        }
+        $GLOBALS['log']->info("Begin: SugarWebServiceImpl->login({$user_auth['user_name']}, $application_name, ". print_r($name_value_list, true) .")");
         global $sugar_config, $system_config;
         $error = new SoapError();
         $user = BeanFactory::newBean('Users');
@@ -437,6 +441,7 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1
             $sugar_config['list_max_entries_per_page'] = $max_results;
         }
 
+        $unified_search_modules = [];
         require_once('modules/Home/UnifiedSearchAdvanced.php');
         require_once 'include/utils.php';
         $usa = new UnifiedSearchAdvanced();
@@ -505,7 +510,7 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1
                     $emailQuery = false;
 
                     $where = '';
-                    if (count($where_clauses) > 0) {
+                    if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
                         $where = '('. implode(' ) OR ( ', $where_clauses) . ')';
                     }
 
@@ -553,7 +558,7 @@ class SugarWebServiceImplv4 extends SugarWebServiceImplv3_1
                     $list_params = array();
 
                     $ret_array = $seed->create_new_list_query('', $where, $filterFields, $list_params, 0, '', true, $seed, true);
-                    if (empty($params) or !is_array($params)) {
+                    if (empty($params) || !is_array($params)) {
                         $params = array();
                     }
                     if (!isset($params['custom_select'])) {

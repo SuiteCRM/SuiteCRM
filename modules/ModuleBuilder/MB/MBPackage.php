@@ -43,6 +43,7 @@ require_once 'modules/ModuleBuilder/MB/MBModule.php';
 /**
  * Class MBPackage
  */
+#[\AllowDynamicProperties]
 class MBPackage
 {
     public $name;
@@ -159,8 +160,9 @@ class MBPackage
         $time = time();
         $this->description = to_html($this->description);
         $isUninstallable = ($this->is_uninstallable ? true : false);
+        
         if ($GLOBALS['sugar_flavor'] === 'CE') {
-            $flavors = array('CE', 'PRO', 'ENT');
+            $flavors = array('CE');
         } else {
             $flavors = array($GLOBALS['sugar_flavor']);
         }
@@ -303,16 +305,14 @@ class MBPackage
     public function build($export = true, $clean = false)
     {
         $this->loadModules();
-        require_once 'include/utils/zip_utils.php';
+        require_once 'include/utils/php_zip_utils.php';
         $path = $this->getBuildDir() . '/SugarModules';
         if ($clean && file_exists($path)) {
             rmdir_recursive($path);
         }
         if (mkdir_recursive($path)) {
             $manifest = $this->getManifest() . $this->buildInstall($path);
-            $fp = sugar_fopen($this->getBuildDir() . '/manifest.php', 'w');
-            fwrite($fp, $manifest);
-            fclose($fp);
+            sugar_file_put_contents($this->getBuildDir() . '/manifest.php', $manifest);
         }
         if (file_exists('modules/ModuleBuilder/MB/LICENSE.txt')) {
             copy('modules/ModuleBuilder/MB/LICENSE.txt', $this->getBuildDir() . '/LICENSE.txt');
@@ -479,7 +479,7 @@ class MBPackage
             $relationshipsMetaFiles = $this->getCustomRelationshipsMetaFilesByModuleName($value, true, true, $modules);
             if ($relationshipsMetaFiles) {
                 foreach ($relationshipsMetaFiles as $file) {
-                    $installdefs['relationships'][] = array('meta_data' => str_replace('custom', '<basepath>', $file));
+                    $installdefs['relationships'][] = array('meta_data' => str_replace('custom', '<basepath>', (string) $file));
                 }
             }
         }//foreach
@@ -505,8 +505,8 @@ class MBPackage
             DIRECTORY_SEPARATOR .
             'language';
         foreach (scandir($lang_path) as $langFile) {
-            if (substr($langFile, 0, 1) !== '.' && is_file($lang_path . DIRECTORY_SEPARATOR . $langFile)) {
-                $lang = substr($langFile, 0, strpos($langFile, '.'));
+            if (substr((string) $langFile, 0, 1) !== '.' && is_file($lang_path . DIRECTORY_SEPARATOR . $langFile)) {
+                $lang = substr((string) $langFile, 0, strpos((string) $langFile, '.'));
                 $installdefs['language'][] = array(
                     'from' => '<basepath>/SugarModules/modules/' . $module . '/language/' . $langFile,
                     'to_module' => $module,
@@ -563,18 +563,18 @@ class MBPackage
     private function getCustomMetadataManifestForModule($module, &$installdefs)
     {
         $meta_path = 'custom/modules/' . $module . '/metadata';
+        $working_array = [
+            'editviewdefs.php',
+            'detailviewdefs.php',
+            'quickcreatedefs.php'
+        ];
         foreach (scandir($meta_path) as $meta_file) {
-            if (substr($meta_file, 0, 1) !== '.' && is_file($meta_path . '/' . $meta_file)) {
-                if ($meta_file === 'listviewdefs.php') {
-                    $installdefs['copy'][] = array(
-                        'from' => '<basepath>/SugarModules/modules/' . $module . '/metadata/' . $meta_file,
-                        'to' => 'custom/modules/' . $module . '/metadata/' . $meta_file,
-                    );
-                } else {
-                    $installdefs['copy'][] = array(
-                        'from' => '<basepath>/SugarModules/modules/' . $module . '/metadata/' . $meta_file,
-                        'to' => 'custom/modules/' . $module . '/metadata/' . $meta_file,
-                    );
+            if (substr((string) $meta_file, 0, 1) !== '.' && is_file($meta_path . '/' . $meta_file)) {
+                $installdefs['copy'][] = array(
+                    'from' => '<basepath>/SugarModules/modules/' . $module . '/metadata/' . $meta_file,
+                    'to' => 'custom/modules/' . $module . '/metadata/' . $meta_file,
+                );
+                if (in_array($meta_file, $working_array, true)) {
                     $installdefs['copy'][] = array(
                         'from' => '<basepath>/SugarModules/modules/' . $module . '/metadata/' . $meta_file,
                         'to' => 'custom/working/modules/' . $module . '/metadata/' . $meta_file,
@@ -608,7 +608,7 @@ class MBPackage
 
         /* @var $fInfo SplFileInfo */
         foreach (new RegexIterator($recursiveIterator, "/\.php$/i") as $fInfo) {
-            $newPath = substr($fInfo->getPathname(), strrpos($fInfo->getPathname(), $generalPath));
+            $newPath = substr((string) $fInfo->getPathname(), strrpos((string) $fInfo->getPathname(), $generalPath));
 
             $installdefs['copy'][] = array(
                 'from' => '<basepath>' . $newPath,
@@ -688,7 +688,7 @@ class MBPackage
                 copy('LICENSE.txt', $path . '/LICENSE.txt');
             }
         }
-        require_once 'include/utils/zip_utils.php';
+        require_once 'include/utils/php_zip_utils.php';
         $date = date('Y_m_d_His');
         $zipDir = $this->getZipDir();
         if (!file_exists($zipDir)) {
@@ -716,7 +716,7 @@ class MBPackage
         if (is_dir($langDir)) {
             foreach (scandir($langDir) as $langFile) {
                 $mod_strings = array();
-                if (strcasecmp(substr($langFile, -4), '.php') !== 0) {
+                if (strcasecmp(substr((string) $langFile, -4), '.php') !== 0) {
                     continue;
                 }
                 include("$langDir/$langFile");
@@ -743,12 +743,12 @@ class MBPackage
                 mkdir_recursive("$path/SugarModules/include/language/");
                 foreach (scandir('custom/include/language') as $langFile) {
                     $app_list_strings = array();
-                    if (strcasecmp(substr($langFile, -4), '.php') !== 0) {
+                    if (strcasecmp(substr((string) $langFile, -4), '.php') !== 0) {
                         continue;
                     }
                     include "custom/include/language/$langFile";
                     $out = "<?php \n";
-                    $lang = substr($langFile, 0, -9);
+                    $lang = substr((string) $langFile, 0, -9);
                     $options = $this->getCustomDropDownStringsForModules($modules, $app_list_strings);
                     foreach ($options as $name => $arr) {
                         $out .= override_value_to_string('app_list_strings', $name, $arr);
@@ -1039,9 +1039,7 @@ class MBPackage
             if (mkdir_recursive($tmppath)) {
                 copy_recursive($this->getPackageDir(), $tmppath . '/' . $this->name);
                 $manifest = $this->getManifest(true, $export) . $this->exportProjectInstall($package, $export);
-                $fp = sugar_fopen($tmppath . '/manifest.php', 'w');
-                fwrite($fp, $manifest);
-                fclose($fp);
+                sugar_file_put_contents($tmppath . '/manifest.php', $manifest);
                 if (file_exists('modules/ModuleBuilder/MB/LICENSE.txt')) {
                     copy('modules/ModuleBuilder/MB/LICENSE.txt', $tmppath . '/LICENSE.txt');
                 } else {
@@ -1050,12 +1048,10 @@ class MBPackage
                     }
                 }
                 $readme_contents = $this->readme;
-                $readmefp = sugar_fopen($tmppath . '/README.txt', 'w');
-                fwrite($readmefp, $readme_contents);
-                fclose($readmefp);
+                sugar_file_put_contents($tmppath . '/README.txt', $readme_contents);
             }
         }
-        require_once 'include/utils/zip_utils.php';
+        require_once 'include/utils/php_zip_utils.php';
         $date = date('Y_m_d_His');
         $zipDir = 'custom/modulebuilder/packages/ExportProjectZips';
         if (!file_exists($zipDir)) {
@@ -1155,7 +1151,7 @@ class MBPackage
         foreach ($recursiveIterator as $fileInfo) {
             if ($fileInfo->isFile() && !in_array($fileInfo->getPathname(), $result)) {
                 foreach ($relationships as $k => $v) {
-                    if (strpos($fileInfo->getFilename(), $k) !== false) {   //filter by modules being exported
+                    if (strpos((string) $fileInfo->getFilename(), (string) $k) !== false) {   //filter by modules being exported
                         if ($this->filterExportedRelationshipFile(
                             $fileInfo->getFilename(),
                             $moduleName,

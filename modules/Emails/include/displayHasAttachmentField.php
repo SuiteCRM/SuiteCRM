@@ -75,7 +75,7 @@ function displayHasAttachmentField($focus, $field, $value, $view)
         $bean->load_relationship('notes');
         $attachmentIds = $bean->notes->get();
 
-        $bean->has_attachment = (count($attachmentIds) > 0);
+        $bean->has_attachment = ((is_countable($attachmentIds) ? count($attachmentIds) : 0) > 0);
         if (is_object($bean)) {
             $bean = get_object_vars($bean);
         }

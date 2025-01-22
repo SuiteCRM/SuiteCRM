@@ -70,6 +70,15 @@ if (ACLController::checkAccess('Project', 'list', true)) {
     );
 }
 
+// Import Projects
+if (ACLController::checkAccess('Project', 'import', true)) {
+    $module_menu[] = array(
+        'index.php?module=Import&action=Step1&import_module=Project&return_module=Project&return_action=index',
+        isset($mod_strings['LBL_IMPORT_PROJECTS']) ? $mod_strings['LBL_IMPORT_PROJECTS'] : '',
+        'Import'
+    );
+}
+
 // Project List
 if (ACLController::checkAccess('Project', 'list', true)) {
     $module_menu[] = array(

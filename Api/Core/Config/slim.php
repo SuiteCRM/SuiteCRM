@@ -8,5 +8,6 @@ return CustomLoader::mergeCustomArray([
         'displayErrorDetails' => true,
         /** Routes are accessible in middleware. */
         'determineRouteBeforeAppMiddleware' => true,
+        'addContentLengthHeader' => false,
     ]
 ], basename(__FILE__));

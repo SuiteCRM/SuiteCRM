@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class ActivitiesViewModulelistmenu extends ViewModulelistmenu
 {
     public function display()

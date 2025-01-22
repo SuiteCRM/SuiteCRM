@@ -39,7 +39,7 @@
  */
 
 require_once('include/SugarFields/Fields/Base/SugarFieldBase.php');
-
+#[\AllowDynamicProperties]
 class SugarFieldId extends SugarFieldBase
 {
     /**
@@ -54,7 +54,7 @@ class SugarFieldId extends SugarFieldBase
         if (strlen($value) > 36) {
             return false;
         }
-        
+
         return $value;
     }
 }

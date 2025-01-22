@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Administration/QuickRepairAndRebuild.php');
 
+#[\AllowDynamicProperties]
 class ViewRepair extends SugarView
 {
     /**

@@ -51,6 +51,7 @@ require_once 'include/OutboundEmail/OutboundEmail.php';
  * Sugar mailer
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarPHPMailer extends PHPMailer
 {
     /*
@@ -69,7 +70,7 @@ class SugarPHPMailer extends PHPMailer
      * @var string
      */
     public $Body_html;
-    
+
     private static $FromNameOrigin = null;
 
     /**
@@ -110,21 +111,7 @@ class SugarPHPMailer extends PHPMailer
         $this->SMTPAutoTLS = false;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8,
-     *     please update your code, use __construct instead
-     */
-    public function SugarPHPMailer()
-    {
-        $deprecatedMessage =
-            'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     /**
      * Prefills outbound details
@@ -140,7 +127,7 @@ class SugarPHPMailer extends PHPMailer
         // ssl or tcp - keeping outside isSMTP b/c a default may inadvertently set ssl://
         $this->protocol = $oe->mail_smtpssl ? 'ssl://' : 'tcp://';
 
-        if ($oe->mail_sendtype === 'SMTP') {
+        if (isSmtp($oe->mail_sendtype ?? '')) {
             //Set mail send type information
             $this->Mailer = 'smtp';
             $this->Host = $oe->mail_smtpserver;
@@ -174,7 +161,7 @@ class SugarPHPMailer extends PHPMailer
         // ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
         $this->protocol = $oe->mail_smtpssl ? 'ssl://' : 'tcp://';
 
-        if ($oe->mail_sendtype === 'SMTP') {
+        if (isSmtp($oe->mail_sendtype ?? '')) {
             //Set mail send type information
             $this->Mailer = 'smtp';
             $this->Host = $oe->mail_smtpserver;
@@ -221,7 +208,7 @@ class SugarPHPMailer extends PHPMailer
             $this->Subject = $locale->translateCharset($subjectUTF8, 'UTF-8', $OBCharset);
 
             // HTML email RFC compliance
-            if ($this->ContentType === 'text/html' && strpos($this->Body, '<html') === false) {
+            if ($this->ContentType === 'text/html' && strpos((string) $this->Body, '<html') === false) {
                 $langHeader = get_language_header();
 
                 $head = <<<eoq
@@ -235,9 +222,9 @@ class SugarPHPMailer extends PHPMailer
 eoq;
                 $this->Body = $head . $this->Body . '</body></html>';
             }
-            
+
             $fromName = $this->FromName;
-            
+
             // checking if username already set for phpmailer and
             // using that as username instead fromname
             if ($this->FromName == self::$FromNameOrigin && !empty($this->Username)) {
@@ -268,7 +255,7 @@ eoq;
                 continue;
             }
             if ($object) {
-                if (preg_match('#&(?:amp;)?type=([\w]+)#i', $matches[0][$i], $typematch)) {
+                if (preg_match('#&(?:amp;)?type=([\w]+)#i', (string) $matches[0][$i], $typematch)) {
                     switch (strtolower($typematch[1])) {
                         case 'documents':
                             $beanname = 'DocumentRevisions';
@@ -313,7 +300,7 @@ eoq;
         $this->clearAttachments();
 
         //replace references to cache/images with cid tag
-        $this->Body = preg_replace(';=\s*"' . preg_quote(sugar_cached('images/'), ';') . ';', '="cid:', $this->Body);
+        $this->Body = preg_replace(';=\s*"' . preg_quote((string) sugar_cached('images/'), ';') . ';', '="cid:', $this->Body);
 
         $this->replaceImageByRegex("(?:{$sugar_config['site_url']})?/?cache/images/", sugar_cached('images/'));
 
@@ -350,7 +337,7 @@ eoq;
             }
 
             $filename =
-                substr($filename, 36, strlen($filename)); // strip GUID	for PHPMailer class to name outbound file
+                substr((string) $filename, 36, strlen((string) $filename)); // strip GUID	for PHPMailer class to name outbound file
             if (!$note->embed_flag) {
                 $this->addAttachment($file_location, $filename, 'base64', $mime_type);
             } // else
@@ -455,10 +442,10 @@ eoq;
         //$this->Sender   = 'me@here.com';
         //$this->Password = 'wrong';
         //$GLOBALS['log']->debug("PHPMailer Send Function: { FromName: $this->FromName From: $this->From Host: $this->Host UserName: $this->Username }");
-       
-        
+
+
         $ret = null;
-        
+
         $this->fullSmtpLog='';
         $phpMailerExceptionMsg='';
 

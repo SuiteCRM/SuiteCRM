@@ -43,6 +43,7 @@
  /**
   * @api
   */
+ #[\AllowDynamicProperties]
  class SugarVCR
  {
 
@@ -98,7 +99,7 @@
          $stored_vcr_query = SugarVCR::retrieve($module);
 
          // bug 15893 - only show VCR if called as an element in a set of records
-         if (!empty($_REQUEST['record']) and !empty($stored_vcr_query) and isset($_REQUEST['offset']) and (empty($_REQUEST['isDuplicate']) or $_REQUEST['isDuplicate'] == 'false')) {
+         if (!empty($_REQUEST['record']) && !empty($stored_vcr_query) && isset($_REQUEST['offset']) && (empty($_REQUEST['isDuplicate']) || $_REQUEST['isDuplicate'] == 'false')) {
              //syncing with display offset;
              $offset ++;
              $action = (!empty($_REQUEST['action']) ? $_REQUEST['action'] : 'EditView');

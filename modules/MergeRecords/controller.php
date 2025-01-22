@@ -41,6 +41,7 @@
 
 require_once('include/MVC/Controller/SugarController.php');
   
+#[\AllowDynamicProperties]
 class MergeRecordsController extends SugarController
 {
     /**

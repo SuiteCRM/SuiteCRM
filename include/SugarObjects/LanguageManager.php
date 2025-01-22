@@ -202,6 +202,9 @@ class LanguageManager
             'custom/modules/' . $module . '/Ext/Language/' . $lang . '.lang.ext.php',
         );
 
+        require_once 'ModuleInstall/ExtensionManager.php';
+        SuiteCRM\ModuleInstall\ExtensionManager::compileExtensionFiles('Language', '.lang.ext.php', $lang);
+
         #27023, if this module template language file was not attached , get the template from this module vardef cache file if exsits and load the template language files.
         static $createdModules;
         if (empty($createdModules[$module]) && isset($GLOBALS['beanList'][$module])) {

@@ -50,28 +50,29 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class LangText
 {
 
     /**
      * string
      */
-    const LOG_LEVEL = 'fatal';
+    public const LOG_LEVEL = 'fatal';
 
     /**
      * integer
      */
-    const USING_MOD_STRINGS = 1;
+    public const USING_MOD_STRINGS = 1;
 
     /**
      * integer
      */
-    const USING_APP_STRINGS = 2;
+    public const USING_APP_STRINGS = 2;
 
     /**
      * integer
      */
-    const USING_ALL_STRINGS = 3;
+    public const USING_ALL_STRINGS = 3;
 
     /**
      *
@@ -102,13 +103,13 @@ class LangText
      * @var boolean
      */
     protected $throw;
-    
+
     /**
      *
      * @var string
      */
     protected $module;
-    
+
     /**
      *
      * @var string
@@ -192,9 +193,10 @@ class LangText
      */
     protected function resolveTextByGlobals()
     {
+        $text = '';
         // TODO: app_strings and mod_strings could be in separated methods
         global $app_strings, $mod_strings, $app_list_strings;
-        
+
         switch ($this->use) {
             case self::USING_MOD_STRINGS:
                 $text = $this->resolveTextByGlobal($mod_strings, $this->key);

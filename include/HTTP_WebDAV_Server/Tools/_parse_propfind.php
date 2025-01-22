@@ -27,6 +27,7 @@
  * @author Hartmut Holzgraefe <hholzgra@php.net>
  * @version 0.99.1dev
  */
+#[\AllowDynamicProperties]
 class _parse_propfind
 {
     /**
@@ -136,7 +137,7 @@ class _parse_propfind
     public function _startElement($parser, $name, $attrs)
     {
         // name space handling
-        if (strstr($name, " ")) {
+        if (strstr((string) $name, " ")) {
             list($ns, $tag) = explode(" ", $name);
             if ($ns == "") {
                 $this->success = false;

@@ -96,21 +96,6 @@ class RelationshipHandler extends Relationship
         //end function RelationshipHandler
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function RelationshipHandler(& $db, $base_module="")
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($db, $base_module);
-    }
-
-
     public function set_rel_vardef_fields($base_vardef_field, $rel1_vardef_field="")
     {
         $this->base_vardef_field = $base_vardef_field;

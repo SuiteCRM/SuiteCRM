@@ -45,25 +45,6 @@
 {assign var="alt_prev" value=$navStrings.previous}
 {assign var="alt_end" value=$navStrings.end}
 
-{if !isset($hideColumnFilter)}
-    {assign var="currentModule" value = $pageData.bean.moduleDir}
-    {assign var="hideColumnFilter" value = false}
-
-    {php}
-      $currentModule = $this->get_template_vars('currentModule');
-      $APP_CONFIG = $this->get_template_vars("APP_CONFIG");
-
-      if (
-          isset($APP_CONFIG['hideColumnFilter'][$currentModule])
-           && $APP_CONFIG['hideColumnFilter'][$currentModule] == true
-        ) {
-    {/php}
-          {assign var="hideColumnFilter" value = true}
-    {php}
-        }
-    {/php}
-{/if}
-
 	<tr id='pagination' class="pagination-unique pagination-bottom" role='presentation'>
 		<td colspan='{if $prerow}{$colCount+1}{else}{$colCount}{/if}'>
 			<table border='0' cellpadding='0' cellspacing='0' width='100%' class='paginationTable'>
@@ -116,7 +97,7 @@
 								<span class='suitepicon suitepicon-action-right'></span>
 							</button>
 						{else}
-							<button type='button' id='listViewNextButton_{$action_menu_location}' name='listViewNextButton' class='ist-view-pagination-button' title='{$navStrings.next}' disabled='disabled'>
+							<button type='button' id='listViewNextButton_{$action_menu_location}' name='listViewNextButton' class='list-view-pagination-button' title='{$navStrings.next}' disabled='disabled'>
 								<span class='suitepicon suitepicon-action-right'></span>
 							</button>
 						{/if}

@@ -70,6 +70,10 @@ require_once 'modules/ModuleBuilder/parsers/relationships/AbstractRelationship.p
 class OneToOneRelationship extends AbstractRelationship
 {
 
+    public $lhs_module;
+    public $rhs_module;
+    public $relationship_name;
+    public $relationship_only;
     /*
      * Constructor
      * @param array $definition Parameters passed in as array with keys defined in parent::keys
@@ -143,11 +147,11 @@ class OneToOneRelationship extends AbstractRelationship
         }
  
         if ($this->lhs_module == $this->rhs_module) { // don't add in two fields on recursive relationships
-            return array( $this->lhs_module => $this->getValidDBName($this->relationship_name . "_name") );
+            return array( $this->lhs_module => static::getValidDBName($this->relationship_name . "_name") );
         } else {
             return array(
-                $this->lhs_module => $this->getValidDBName($this->relationship_name . "_name") ,
-                $this->rhs_module => $this->getValidDBName($this->relationship_name . "_name")
+                $this->lhs_module => static::getValidDBName($this->relationship_name . "_name") ,
+                $this->rhs_module => static::getValidDBName($this->relationship_name . "_name")
             ) ;
         }
     }

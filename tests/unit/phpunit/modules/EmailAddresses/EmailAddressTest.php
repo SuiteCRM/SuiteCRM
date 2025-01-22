@@ -4,23 +4,22 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class EmailAddressTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testEmailAddress()
+    public function testEmailAddress(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $email = BeanFactory::newBean('EmailAddresses');
-        $this->assertInstanceOf('EmailAddress', $email);
-        $this->assertInstanceOf('SugarEmailAddress', $email);
-        $this->assertInstanceOf('SugarBean', $email);
+        self::assertInstanceOf('EmailAddress', $email);
+        self::assertInstanceOf('SugarEmailAddress', $email);
+        self::assertInstanceOf('SugarBean', $email);
 
-        $this->assertAttributeEquals('EmailAddresses', 'module_dir', $email);
-        $this->assertAttributeEquals('EmailAddresses', 'module_name', $email);
-        $this->assertAttributeEquals('EmailAddress', 'object_name', $email);
-        $this->assertAttributeEquals('email_addresses', 'table_name', $email);
-
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $email);
+        self::assertEquals('EmailAddresses', $email->module_dir);
+        self::assertEquals('EmailAddresses', $email->module_name);
+        self::assertEquals('EmailAddress', $email->object_name);
+        self::assertEquals('email_addresses', $email->table_name);
+        self::assertEquals(true, $email->disable_row_level_security);
     }
 
-    public function testsave()
+    public function testsave(): void
     {
         $email = BeanFactory::newBean('EmailAddresses');
 
@@ -30,12 +29,12 @@ class EmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $email->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($email->id));
-        $this->assertEquals(36, strlen($email->id));
+        self::assertTrue(isset($email->id));
+        self::assertEquals(36, strlen((string) $email->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $email->mark_deleted($email->id);
         $result = $email->retrieve($email->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 }

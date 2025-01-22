@@ -38,8 +38,9 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+require_once 'include/utils/sugar_file_utils.php';
 
-
+#[\AllowDynamicProperties]
 class UpgradeMetaHelper
 {
     public $upgrade_dir;
@@ -65,7 +66,7 @@ class UpgradeMetaHelper
         $this->debug_mode = $debugMode;
         $this->upgrade_modules = $this->getModifiedModules();
 
-        if (count($this->upgrade_modules) > 0) {
+        if ((is_countable($this->upgrade_modules) ? count($this->upgrade_modules) : 0) > 0) {
             $_SESSION['Upgraded_Modules'] = $this->upgrade_modules;
             $this->create_upgrade_directory();
             $this->path_to_master_copy = $masterCopyDirecotry;
@@ -73,23 +74,9 @@ class UpgradeMetaHelper
         }
 
         $this->customized_modules = $this->getAllCustomizedModulesBeyondStudio();
-        if (count($this->customized_modules) > 0) {
+        if ((is_countable($this->customized_modules) ? count($this->customized_modules) : 0) > 0) {
             $_SESSION['Customized_Modules'] = $this->customized_modules;
         }
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function UpgradeMetaHelper($dir='upgrade', $masterCopyDirecotry='modules_50', $debugMode = false)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($dir, $masterCopyDirecotry, $debugMode);
     }
 
     /**
@@ -139,6 +126,7 @@ class UpgradeMetaHelper
 
     public function saveMatchingFilesQueries($currStep, $value)
     {
+        $file_queries = [];
         $upgrade_progress_dir = sugar_cached('upgrades/temp');
         if (!is_dir($upgrade_progress_dir) && !mkdir($upgrade_progress_dir) && !is_dir($upgrade_progress_dir)) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $upgrade_progress_dir));
@@ -247,7 +235,7 @@ class UpgradeMetaHelper
             $modFiles = findAllFiles(clean_path(getcwd())."/modules/$mod", array());
             foreach ($modFiles as $file) {
                 $fileContents = file_get_contents($file);
-                $file = str_replace(clean_path(getcwd()), '', $file);
+                $file = str_replace(clean_path(getcwd()), '', (string) $file);
                 if ($md5_string['./' . $file]) {
                     if (md5($fileContents) != $md5_string['./' . $file]) {
                         //A file has been customized in the module. Put the module into the
@@ -325,7 +313,7 @@ class UpgradeMetaHelper
     {
         global $beanList, $dictionary;
         foreach ($files as $file) {
-            if (preg_match('/(EditView|DetailView|SearchForm|QuickCreate)(\.html|\.tpl)$/s', $file, $matches)) {
+            if (preg_match('/(EditView|DetailView|SearchForm|QuickCreate)(\.html|\.tpl)$/s', (string) $file, $matches)) {
                 $view = $matches[1];
 
                 switch ($view) {
@@ -339,17 +327,15 @@ class UpgradeMetaHelper
                 include('modules/'.$module_name.'/vardefs.php');
                 $bean_name = $beanList[$module_name];
                 $newFile = $this->upgrade_dir.'/modules/'.$module_name.'/metadata/'.$lowerCaseView.'defs.php';
-                $evfp = fopen($newFile, 'wb');
 
                 $bean_name = $bean_name == 'aCase' ? 'Case' : $bean_name;
-                fwrite($evfp, $parser->parse(
+                sugar_file_put_contents($newFile, $parser->parse(
                     $file,
                     $dictionary[$bean_name]['fields'],
                     $module_name,
                     true,
                     $this->path_to_master_copy.'/modules/'.$module_name.'/metadata/'.$lowerCaseView.'defs.php'
                 ));
-                fclose($evfp);
             } //if
         } //foreach
     }

@@ -36,6 +36,7 @@ use Codeception\Lib\Friend;
  *
  * @SuppressWarnings(PHPMD)
  */
+#[\AllowDynamicProperties]
 class AcceptanceTester extends Actor
 {
     use _generated\AcceptanceTesterActions;

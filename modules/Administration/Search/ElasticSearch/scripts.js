@@ -72,8 +72,13 @@ $("#es-test-connection").click(function () {
 $("#es-full-index").click(function () {
     var url = "index.php?module=Administration&action=ElasticSearchSettings&do=FullIndex";
 
-    $.ajax(url).done(function () {
-        alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_FULL_SUCCESS"));
+    $.ajax(url).done(function (data) {
+        if (data.status === "success") {
+            alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_FULL_SUCCESS"));
+        }
+        else {
+            alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_FULL_FAIL_NO_SUCCESS"));
+        }
     }).error(function () {
         alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_FULL_FAIL"));
     });
@@ -82,8 +87,13 @@ $("#es-full-index").click(function () {
 $("#es-partial-index").click(function () {
     var url = "index.php?module=Administration&action=ElasticSearchSettings&do=PartialIndex";
 
-    $.ajax(url).done(function () {
-        alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_PART_SUCCESS"));
+    $.ajax(url).done(function (data) {
+        if (data.status === "success") {
+            alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_PART_SUCCESS"));
+        }
+        else {
+            alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_PART_FAIL_NO_SUCCESS"));
+        }
     }).error(function () {
         alert(SUGAR.language.get("Administration", "LBL_ELASTIC_SEARCH_INDEX_SCHEDULE_PART_FAIL"));
     });

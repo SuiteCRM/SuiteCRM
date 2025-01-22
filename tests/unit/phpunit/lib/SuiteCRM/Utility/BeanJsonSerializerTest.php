@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,30 +38,30 @@
  */
 
 use SuiteCRM\Utility\BeanJsonSerializer;
-use SuiteCRM\Utility\BeanJsonSerializerTestData\BeanMock;
+use SuiteCRM\Tests\Unit\lib\SuiteCRM\Utility\BeanJsonSerializerTestData\BeanMock;
 use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class BeanJsonSerializerTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testToArrayContact()
+    public function testToArrayContact(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.json');
-        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.expected.json'), true);
+        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.expected.json'), true, 512, JSON_THROW_ON_ERROR);
         $actual = BeanJsonSerializer::make()->toArray($mockBean, false);
 
         self::assertEquals($expected, $actual);
     }
 
-    public function testToArrayAccount()
+    public function testToArrayAccount(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.json');
-        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.expected.json'), true);
+        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.expected.json'), true, 512, JSON_THROW_ON_ERROR);
         $actual = BeanJsonSerializer::make()->toArray($mockBean, false);
 
         self::assertEquals($expected, $actual);
     }
 
-    public function testSerializeContact()
+    public function testSerializeContact(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.json');
         $actual = BeanJsonSerializer::make()->serialize($mockBean, false, true);
@@ -72,7 +72,7 @@ class BeanJsonSerializerTest extends SuitePHPUnitFrameworkTestCase
         );
     }
 
-    public function testSerializeAccount()
+    public function testSerializeAccount(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.json');
         $actual = BeanJsonSerializer::make()->serialize($mockBean, false, true);

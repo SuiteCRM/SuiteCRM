@@ -7,6 +7,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('data/SugarBean.php');
 
 // Contact is used to store customer information.
+#[\AllowDynamicProperties]
 class SecurityGroupUserRelationship extends SugarBean
 {
     // Stored fields
@@ -51,19 +52,7 @@ class SecurityGroupUserRelationship extends SugarBean
         $this->disable_row_level_security =true;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SecurityGroupUserRelationship()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function fill_in_additional_detail_fields()

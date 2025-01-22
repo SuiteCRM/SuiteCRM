@@ -3,6 +3,7 @@ namespace Api\V8\Service;
 
 use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\JsonApi\Helper\AttributeObjectHelper;
+use Api\V8\JsonApi\Helper\PaginationObjectHelper;
 use Api\V8\JsonApi\Response\DataResponse;
 use Api\V8\JsonApi\Response\DocumentResponse;
 use Api\V8\JsonApi\Response\LinksResponse;
@@ -12,9 +13,11 @@ use Api\V8\Param\CreateRelationshipByLinkParams;
 use Api\V8\Param\DeleteRelationshipParams;
 use Api\V8\Param\GetRelationshipParams;
 
+use Slim\Http\Request;
 use \SugarBean;
 use \DomainException;
 
+#[\AllowDynamicProperties]
 class RelationshipService
 {
     /**
@@ -28,26 +31,45 @@ class RelationshipService
     protected $attributeHelper;
 
     /**
+     * @var PaginationObjectHelper
+     */
+    protected $paginationHelper;
+
+    /**
      * @param BeanManager $beanManager
      * @param AttributeObjectHelper $attributeHelper
+     * @param PaginationObjectHelper $paginationHelper
      */
-    public function __construct(BeanManager $beanManager, AttributeObjectHelper $attributeHelper)
+    public function __construct(BeanManager $beanManager, AttributeObjectHelper $attributeHelper, PaginationObjectHelper $paginationHelper)
     {
         $this->beanManager = $beanManager;
         $this->attributeHelper = $attributeHelper;
+        $this->paginationHelper = $paginationHelper;
     }
 
     /**
      * @param GetRelationshipParams $params
-     *
+     * @param Request $request
      * @return DocumentResponse
      */
-    public function getRelationship(GetRelationshipParams $params)
+    public function getRelationship(GetRelationshipParams $params, Request $request)
     {
-        $sourceBean = $params->getSourceBean();
-        $linkFieldName = $params->getLinkedFieldName();
-        $relatedBeans = $sourceBean->get_linked_beans($linkFieldName);
         $response = new DocumentResponse();
+        $sourceBean = $params->getSourceBean();
+
+        $linkFieldName = $params->getLinkedFieldName();
+
+        $size = $params->getPage()->getSize();
+        $number = $params->getPage()->getNumber();
+
+        $linkParams = [
+            'order_by' => $params->getSort(),
+            'where' => $params->getFilter(),
+            'limit' => $size,
+            'offset' => $number !== 0 ? ($number - 1) * $size : $number
+        ];
+
+        $relatedBeans = $sourceBean->$linkFieldName->getBeans($linkParams);
 
         if (!$relatedBeans) {
             $response->setMeta(new MetaResponse(
@@ -67,9 +89,24 @@ class RelationshipService
                 $linkResponse->setSelf(sprintf('V8/module/%s/%s', $relatedBean->getObjectName(), $relatedBean->id));
 
                 $dataResponse = new DataResponse($relatedBean->getObjectName(), $relatedBean->id);
+                $dataResponse->setAttributes($this->attributeHelper->getAttributes($relatedBean));
                 $dataResponse->setLinks($linkResponse);
                 $data[] = $dataResponse;
             }
+
+            if ($size > 0) {
+                unset($linkParams['limit'], $linkParams['offset']);
+                $realRowCount = $sourceBean->_get_num_rows_in_query($sourceBean->$linkFieldName->getQuery($linkParams));
+                $totalPages = ceil($realRowCount / $size);
+                $paginationLinks = $this->paginationHelper->getPaginationLinks($request, $totalPages, $number);
+                $response->setLinks($paginationLinks);
+            } else {
+                $totalPages = 1;
+                $realRowCount = count($data);
+            }
+
+            $paginationMeta = new MetaResponse(['total-records' => $realRowCount, 'total-pages' => $totalPages, 'records-on-this-page' => count($data)]);
+            $response->setMeta($paginationMeta);
 
             $response->setData($data);
         }

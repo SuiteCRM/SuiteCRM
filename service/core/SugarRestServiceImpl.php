@@ -46,9 +46,10 @@ if (!defined('sugarEntry')) {
  * This class is an implementation class for all the rest services
  */
 require_once('service/core/SugarWebServiceImpl.php');
+#[\AllowDynamicProperties]
 class SugarRestServiceImpl extends SugarWebServiceImpl {
 	
-	function md5($string){
+	public function md5($string){
 		return md5($string);
 	}
 }

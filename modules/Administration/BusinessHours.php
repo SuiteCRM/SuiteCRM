@@ -26,11 +26,11 @@ echo getClassicModuleTitle(
 
 $sugar_smarty	= new Sugar_Smarty();
 $errors			= array();
-$days = array($mod_strings['LBL_MONDAY'],$mod_strings['LBL_TUESDAY'],$mod_strings['LBL_WEDNESDAY'],$mod_strings['LBL_THURSDAY'],$mod_strings['LBL_FRIDAY'],$mod_strings['LBL_SATURDAY'],$mod_strings['LBL_SUNDAY']);
+$days = array('Monday' => $mod_strings['LBL_MONDAY'],'Tuesday' => $mod_strings['LBL_TUESDAY'],'Wednesday' => $mod_strings['LBL_WEDNESDAY'],'Thursday' => $mod_strings['LBL_THURSDAY'],'Friday' => $mod_strings['LBL_FRIDAY'],'Saturday' => $mod_strings['LBL_SATURDAY'],'Sunday' => $mod_strings['LBL_SUNDAY']);
 $businessHours = BeanFactory::getBean("AOBH_BusinessHours");
 
 if (isset($_REQUEST['do']) && $_REQUEST['do'] == 'save') {
-    foreach ($days as $day) {
+    foreach ($days as $day => $label) {
         $bh = $businessHours->getOrCreate($day);
         $bh->day = $day;
         $bh->open_status = array_key_exists("open_status_".$day, $_REQUEST) ? $_REQUEST["open_status_".$day] : false;
@@ -42,7 +42,7 @@ if (isset($_REQUEST['do']) && $_REQUEST['do'] == 'save') {
 }
 
 $dayDropdowns = array();
-foreach ($days as $day) {
+foreach ($days as $day => $label) {
     $drops = array();
     $bh = $businessHours->getBusinessHoursForDay($day);
     if ($bh) {
@@ -56,6 +56,8 @@ foreach ($days as $day) {
     $hours = get_select_options_with_id($app_list_strings['business_hours_list'], ($bh ? $bh->closing_hours : 17));
     $drops['closing'] = $hours;
 
+    $drops['label'] = $label;
+    
     $dayDropdowns[$day] = $drops;
 }
 $sugar_smarty->assign('DAY_DROPDOWNS', $dayDropdowns);

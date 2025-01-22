@@ -42,7 +42,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 $mod_strings   = return_module_language($current_language, $_REQUEST['target_module']);
-$target_module = $_REQUEST['target_module']; // target class
+$target_module = $_REQUEST['target_module'] ?? ''; // target class
+
+if (empty($target_module) || !isAllowedModuleName($target_module)) {
+    throw new InvalidArgumentException('Invalid target_module');
+}
 
 if (file_exists('modules/'. $_REQUEST['target_module'] . '/EditView.php')) {
     $tpl = $_REQUEST['tpl'];

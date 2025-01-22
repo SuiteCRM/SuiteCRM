@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,20 +13,18 @@ class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testgetUserDateTimePreferences()
+    public function testgetUserDateTimePreferences(): void
     {
         $user = BeanFactory::newBean('Users');
         $user->retrieve('1');
 
-        $userPreference = new UserPreference($user);
-
-        $result = $userPreference->getUserDateTimePreferences();
-        $this->assertTrue(is_array($result));
+        $result = (new UserPreference($user))->getUserDateTimePreferences();
+        self::assertIsArray($result);
     }
 
-    public function testSetAndGetPreference()
+    public function testSetAndGetPreference(): void
     {
-        $this->markTestIncomplete('state is incorrect');
+        self::markTestIncomplete('state is incorrect');
 
         global $sugar_config;
 
@@ -46,60 +44,60 @@ class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
             $result = $_SESSION[$user->user_name.'_PREFERENCES']['test_category']['test'];
         }
 
-        $this->assertEquals('test val', $result);
+        self::assertEquals('test val', $result);
 
         //test getPreference method
         $result = $userPreference->getPreference('test', 'test_category');
-        $this->assertEquals('test val', $result);
+        self::assertEquals('test val', $result);
 
         $result = $userPreference->getPreference('chartEngine');
-        $this->assertEquals($sugar_config['chartEngine'], $result);
+        self::assertEquals($sugar_config['chartEngine'], $result);
     }
-    
-    public function testgetDefaultPreference()
+
+    public function testgetDefaultPreference(): void
     {
         global $sugar_config;
         $userPreference = BeanFactory::newBean('UserPreferences');
 
         //test with non global category
         $result = $userPreference->getDefaultPreference('chartEngine', 'Home');
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
 
         //test with default global category
 
         $result = $userPreference->getDefaultPreference('chartEngine');
-        $this->assertEquals($sugar_config['chartEngine'], $result);
+        self::assertEquals($sugar_config['chartEngine'], $result);
 
         $date_format = $sugar_config['datef'] != '' ? $sugar_config['datef'] : $sugar_config['default_date_format'];
         $result = $userPreference->getDefaultPreference('datef');
-        $this->assertEquals($date_format, $result);
+        self::assertEquals($date_format, $result);
 
         $time_format = $sugar_config['timef'] != '' ? $sugar_config['timef'] : $sugar_config['default_time_format'];
         $result = $userPreference->getDefaultPreference('timef');
-        $this->assertEquals($time_format, $result);
+        self::assertEquals($time_format, $result);
 
         $email_link_type = (isset($sugar_config['email_link_type']) ? $sugar_config['email_link_type'] : null) != '' ? (isset($sugar_config['email_link_type']) ? $sugar_config['email_link_type'] : null) : $sugar_config['email_default_client'];
         $result = $userPreference->getDefaultPreference('email_link_type');
-        $this->assertEquals($email_link_type, $result);
+        self::assertEquals($email_link_type, $result);
     }
 
-    public function test__construct()
+    public function test__construct(): void
     {
         // execute the constructor and check for the Object type and  attributes
         $userPreference = BeanFactory::newBean('UserPreferences');
 
-        $this->assertInstanceOf('UserPreference', $userPreference);
-        $this->assertInstanceOf('SugarBean', $userPreference);
+        self::assertInstanceOf('UserPreference', $userPreference);
+        self::assertInstanceOf('SugarBean', $userPreference);
 
-        $this->assertAttributeEquals('user_preferences', 'table_name', $userPreference);
-        $this->assertAttributeEquals('UserPreferences', 'module_dir', $userPreference);
-        $this->assertAttributeEquals('UserPreference', 'object_name', $userPreference);
+        self::assertEquals('user_preferences', $userPreference->table_name);
+        self::assertEquals('UserPreferences', $userPreference->module_dir);
+        self::assertEquals('UserPreference', $userPreference->object_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $userPreference);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $userPreference);
+        self::assertEquals(true, $userPreference->new_schema);
+        self::assertEquals(true, $userPreference->disable_row_level_security);
     }
-    
-    public function testSavePreferencesToDBAndResetPreferences()
+
+    public function testSavePreferencesToDBAndResetPreferences(): void
     {
         self::markTestIncomplete('environment dependency');
 
@@ -117,7 +115,7 @@ class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
                 'assigned_user_id' => $user->id,
                 'category' => 'test_category',
         ));
-        
+
         //$this->assertFalse(isset($result->id));
 
         //reset the preferences and verify that it is deleted
@@ -126,10 +124,10 @@ class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
                 'assigned_user_id' => $user->id,
                 'category' => 'test_category',
         ));
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testupdateAllUserPrefs()
+    public function testupdateAllUserPrefs(): void
     {
         global $current_user;
 
@@ -138,6 +136,6 @@ class UserPreferenceTest extends SuitePHPUnitFrameworkTestCase
 
         //UserPreference::updateAllUserPrefs("test","test val");
 
-        $this->markTestIncomplete('Multiple errors in method: Unknown column user_preferences in field list');
+        self::markTestIncomplete('Multiple errors in method: Unknown column user_preferences in field list');
     }
 }

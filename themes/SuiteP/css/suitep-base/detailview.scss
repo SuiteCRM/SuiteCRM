@@ -349,7 +349,7 @@ p.msg {
   .tab-inline-pagination {
     @include hideWhenPrinting()
   }
-  
+
 
   .tab-content > .active.tab-pane-NOBOOTSTRAPTOGGLER {
     display: block !important;
@@ -443,4 +443,28 @@ p.msg {
 
 .email-opt-in .suitepicon {
   line-height: inherit;
+}
+
+
+table.subpanel-table .pagination .action_buttons a:hover,
+table.subpanel-table .pagination .SugarActionMenu li.single a:hover,
+table.subpanel-table .pagination .action_buttons .button:hover {
+  background-color: $list-view-action-menu-bg;
+  color: $list-view-toolbar-bg;
+}
+
+
+table.subpanel-table .pagination li.sugar_action_button {
+  border: 1px solid;
+  border-color: $list-view-action-menu-bg;
+  border-radius: 3px;
+  line-height: initial;
+  height: initial;
+}
+table.subpanel-table .pagination li.sugar_action_button > form > a {
+  font-size: 13px;
+  padding: 2px 13px;
+  line-height: initial;
+  height: initial;
+  min-height: auto;
 }

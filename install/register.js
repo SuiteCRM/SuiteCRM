@@ -35,14 +35,8 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function submitbutton()
-{var form=document.mosForm;var r=new RegExp("[^0-9A-Za-z]","i");if(form.email1.value!="")
-{var myString=form.email1.value;var pattern=/(\W)|(_)/g;var adate=new Date();var ms=adate.getMilliseconds();var sec=adate.getSeconds();var mins=adate.getMinutes();ms=ms.toString();sec=sec.toString();mins=mins.toString();newdate=ms+sec+mins;var newString=myString.replace(pattern,"");newString=newString+newdate;}
-if(form.name.value=="")
-{form.name.focus();alert("Please provide your name");return false;}
-else if(form.email1.value=="")
-{form.email1.focus();alert("Please provide your email address");return false;}
-else
-{form.submit();}
+ */function submitbutton(){var form=document.mosForm;var r=new RegExp("[^0-9A-Za-z]","i");if(form.email1.value!=""){var myString=form.email1.value;var pattern=/(\W)|(_)/g;var adate=new Date();var ms=adate.getMilliseconds();var sec=adate.getSeconds();var mins=adate.getMinutes();ms=ms.toString();sec=sec.toString();mins=mins.toString();newdate=ms+sec+mins;var newString=myString.replace(pattern,"");newString=newString+newdate;}
+if(form.name.value==""){form.name.focus();alert("Please provide your name");return false;}
+else if(form.email1.value==""){form.email1.focus();alert("Please provide your email address");return false;}
+else{form.submit();}
 document.appform.submit();window.focus();}

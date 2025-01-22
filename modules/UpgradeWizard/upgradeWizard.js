@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-var req;var uw_check_msg="";var find_done=false;function loadXMLDoc(url){req=false;if(window.XMLHttpRequest){try{req=new XMLHttpRequest();}catch(e){req=false;}}else if(window.ActiveXObject){try{req=new ActiveXObject("Msxml2.XMLHTTP");}catch(e){try{req=new ActiveXObject("Microsoft.XMLHTTP");}catch(e){req=false;}}}
+ */var req;var uw_check_msg="";var find_done=false;function loadXMLDoc(url){req=false;if(window.XMLHttpRequest){try{req=new XMLHttpRequest();}catch(e){req=false;}}else if(window.ActiveXObject){try{req=new ActiveXObject("Msxml2.XMLHTTP");}catch(e){try{req=new ActiveXObject("Microsoft.XMLHTTP");}catch(e){req=false;}}}
 if(req){req.onreadystatechange=processReqChange;req.open("GET",url,true);req.send("");}}
 function preflightToggleAll(cb){var checkAll=false;var form=document.getElementById('diffs');if(cb.checked==true){checkAll=true;}
 for(i=0;i<form.elements.length;i++){if(form.elements[i].type=='checkbox'){form.elements[i].checked=checkAll;}}

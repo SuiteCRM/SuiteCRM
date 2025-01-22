@@ -3,6 +3,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class SecurityGroupMessage extends Basic
 {
     public $new_schema = true;
@@ -44,19 +45,7 @@ class SecurityGroupMessage extends Basic
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SecurityGroupMessage()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
 
@@ -95,7 +84,7 @@ class SecurityGroupMessage extends Basic
         }
 
         $data['NAME'] = $data['DESCRIPTION'];
-        $data['NAME'] =  '<div class="list view" style="padding:5px;border:none;">' . html_entity_decode($data['NAME']);
+        $data['NAME'] =  '<div class="list view" style="padding:5px;border:none;">' . html_entity_decode((string) $data['NAME']);
         $data['NAME'] .= '<div class="byLineBox" style="padding-top: 2px"><span class="byLineLeft">'.$username.' ['.$securitygroup_name.']';
         $data['NAME'] .= '&nbsp;</span><span style="cursor: pointer;" class="byLineRight"> '.  $this->getTimeLapse($data['DATE_ENTERED']) . ' &nbsp;' .$delete. '</span></div>';
         return  $data ;
@@ -129,7 +118,7 @@ class SecurityGroupMessage extends Basic
     {
         $startDate = $GLOBALS['timedate']->to_db($startDate);
         $start = array();
-        preg_match('/(\d+)\-(\d+)\-(\d+) (\d+)\:(\d+)\:(\d+)/', $startDate, $start);
+        preg_match('/(\d+)\-(\d+)\-(\d+) (\d+)\:(\d+)\:(\d+)/', (string) $startDate, $start);
         $end = gmdate('Y-m-d H:i:s');
         $start_time = gmmktime($start[4], $start[5], $start[6], $start[2], $start[3], $start[1]);
         $seconds = time()- $start_time;

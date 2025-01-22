@@ -118,12 +118,32 @@ switch ($run) {
             $manifest_file = extractManifest($tempFile);
 
             if (is_file($manifest_file)) {
-                require_once($manifest_file);
+
+                //SCAN THE MANIFEST FILE TO MAKE SURE NO COPIES OR ANYTHING ARE HAPPENING IN IT
+                require_once __DIR__ . '/../../ModuleInstall/ModuleScanner.php';
+
+                $ms = new ModuleScanner();
+                $ms->lockConfig();
+                $fileIssues = $ms->scanFile($manifest_file);
+                if (!empty($fileIssues)) {
+                    $out .= '<h2>' . translate('ML_MANIFEST_ISSUE', 'Administration') . '</h2><br>';
+                    $out .= $ms->getIssuesLog();
+                    break;
+                }
+
+                list($manifest, $installdefs) = MSLoadManifest($manifest_file);
+                if ($ms->checkConfig($manifest_file)) {
+                    $out .= '<h2>' . translate('ML_MANIFEST_ISSUE', 'Administration') . '</h2><br>';
+                    $out .= $ms->getIssuesLog();
+                    break;
+                }
+
                 $error = validate_manifest($manifest);
                 if (!empty($error)) {
                     $out = "<b><span class='error'>{$error}</span></b><br />";
                     break;
                 }
+
                 $upgrade_zip_type = $manifest['type'];
 
                 // exclude the bad permutations
@@ -141,8 +161,8 @@ switch ($run) {
                 if (isset($manifest['icon']) && $manifest['icon'] != "") {
                     logThis('extracting icons.');
                     $icon_location = extractFile($tempFile, $manifest['icon']);
-                    $path_parts = pathinfo($icon_location);
-                    copy($icon_location, remove_file_extension($target_path) . "-icon." . pathinfo($icon_location, PATHINFO_EXTENSION));
+                    $path_parts = pathinfo((string) $icon_location);
+                    copy($icon_location, remove_file_extension($target_path) . "-icon." . pathinfo((string) $icon_location, PATHINFO_EXTENSION));
                 }
 
                 if (rename($tempFile, $target_path)) {
@@ -160,7 +180,7 @@ switch ($run) {
                 $out = "<b><span class='error'>{$mod_strings['ERR_UW_NO_MANIFEST']}</span></b><br />";
                 break;
             }
-            $_SESSION['install_file'] = basename($tempFile);
+            $_SESSION['install_file'] = basename((string) $tempFile);
             logThis('zip file moved to ['.$_SESSION['install_file'].']');
             //rrs serialize manifest for saving in the db
             $serial_manifest = array();

@@ -16,6 +16,8 @@ custom/modules/unified_search_modules_display.php
 # Ignore AOD indexes
 modules/AOD_Index/Index/*
 install/status.json
+# Ignore PDF Fonts
+modules/AOS_PDF_Templates/PDF_Lib/ttfontdata/
 # Configuration files should be ignored.
 /config.php
 /config_override.php

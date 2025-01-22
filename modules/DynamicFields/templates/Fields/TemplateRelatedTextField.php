@@ -41,17 +41,18 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
- 
+
 require_once('modules/DynamicFields/templates/Fields/TemplateField.php');
 require_once 'modules/ModuleBuilder/parsers/parser.label.php';
 require_once 'modules/ModuleBuilder/MB/ModuleBuilder.php';
 
 class TemplateRelatedTextField extends TemplateText
 {
+    public $id_name;
     public $type = 'relate';
     //ext1 is the name field
     //ext2 is the related module
-    
+
     public function get_html_edit()
     {
         $this->prepare();
@@ -68,10 +69,10 @@ class TemplateRelatedTextField extends TemplateText
         $value_name = strtoupper('{'.$name.'}');
         $id = $this->name ;
         $value_id = strtoupper('{'.$id .'}');
-        
+
         return "<a href='index.php?module=$this->ext2&action=DetailView&record={$value_id}'>{$value_name}</a>" ;
     }
-    
+
     public function get_html_list()
     {
         if (isset($this->bean)) {
@@ -104,7 +105,7 @@ class TemplateRelatedTextField extends TemplateText
             $team_list = '';
             foreach (get_team_array() as $id=>$team) {
                 $selected = '';
-                
+
                 if (!empty($_REQUEST[$name]) && is_array($_REQUEST[$name]) && in_array($id, $_REQUEST[$name])) {
                     $selected = 'selected';
                 }
@@ -123,7 +124,7 @@ class TemplateRelatedTextField extends TemplateText
                                         $this->ext1 => $name,
                                     ),
             );
-        
+
             $json = getJSONobj();
             $encoded_popup_request_data = $json->encode($popup_request_data);
             $returnXTPL['ENCODED_'.strtoupper($id).'_POPUP_REQUEST_DATA'] = $encoded_popup_request_data;
@@ -143,7 +144,7 @@ class TemplateRelatedTextField extends TemplateText
     public function get_xtpl_edit()
     {
         global $beanList;
-        
+
         $name = $this->name .'_name';
         $id = $this->name;
         $module = $this->ext2;
@@ -156,9 +157,9 @@ class TemplateRelatedTextField extends TemplateText
             $this->ext1 => $name,
         ),
         );
-        
+
         //$GLOBALS['log']->fatal($this->bean);
-      
+
         $json = getJSONobj();
         $encoded_contact_popup_request_data = $json->encode($popup_request_data);
         $returnXTPL['ENCODED_'.strtoupper($id).'_POPUP_REQUEST_DATA'] = $encoded_contact_popup_request_data;
@@ -168,9 +169,9 @@ class TemplateRelatedTextField extends TemplateText
             if (!isset($this->bean->$name)) {
                 $mod_field = $this->ext1;
                 global $beanFiles;
-                
+
                 $class = $beanList[$module];
-            
+
                 require_once($beanFiles[$class]);
                 $mod = new $class();
                 $mod->retrieve($this->bean->$id);
@@ -178,8 +179,8 @@ class TemplateRelatedTextField extends TemplateText
                     $this->bean->$name = $mod->$mod_field;
                 }
             }
-            
-            
+
+
             $returnXTPL[strtoupper($id)] = $this->bean->$id;
         }
         if (isset($this->bean->$name)) {
@@ -188,20 +189,20 @@ class TemplateRelatedTextField extends TemplateText
         if (isset($this->bean->$id)) {
             $returnXTPL[strtoupper($id)] = $this->bean->$id;
         }
-        
-        
+
+
         return $returnXTPL;
     }
-    
+
     public function get_xtpl_detail()
     {
         return $this->get_xtpl_edit();
     }
-    
+
     public function get_related_info()
     {
     }
-    
+
     public function get_field_def()
     {
         $def = parent::get_field_def();
@@ -217,9 +218,10 @@ class TemplateRelatedTextField extends TemplateText
         $def['quicksearch'] = 'enabled';
         $def['studio'] = 'visible';
         $def['source'] = 'non-db';
+        $def['resetFieldInStudio'] = 'true';
         return $def;
     }
-    
+
     /**
      * Delete field
      *
@@ -239,7 +241,7 @@ class TemplateRelatedTextField extends TemplateText
         $fieldId->delete($df);
         parent::delete($df);
     }
-        
+
     /**
      * Delete label of id field
      * @param TemplateField $fieldId
@@ -281,19 +283,19 @@ class TemplateRelatedTextField extends TemplateText
             $count = 0;
             $basename = strtolower(get_singular_bean_name($this->ext2)).'_id' ;
             $idName = $basename.'_c' ;
-            
+
             while ($df->fieldExists($idName, 'id')) {
                 $idName = $basename.++$count.'_c' ;
             }
             $id->name = $idName ;
             $id->reportable = false;
             $id->save($df);
-            
+
             // record the id field's name, and save
             $this->ext3 = $id->name;
             $this->id_name = $id->name;
         }
-        
+
         parent::save($df);
     }
 
@@ -333,17 +335,17 @@ class TemplateRelatedTextField extends TemplateText
             }
         }
     }
-    
+
     public function get_db_add_alter_table($table)
     {
         return "";
     }
-    
+
     public function get_db_delete_alter_table($table)
     {
         return "";
     }
-    
+
     public function get_db_modify_alter_table($table)
     {
         return "";

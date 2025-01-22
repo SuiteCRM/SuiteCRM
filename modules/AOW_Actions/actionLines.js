@@ -45,6 +45,8 @@ document.getElementById('flow_module').addEventListener("change", showActions, f
 
 function showActions(){
 
+    clearActionLines();
+
     var flow_module = document.getElementById('flow_module').value;
 
     if(flow_module != ''){
@@ -161,4 +163,16 @@ function getView(ln, id){
     var module = document.getElementById('flow_module').value;
 
     YAHOO.util.Connect.asyncRequest ("GET", "index.php?module=AOW_WorkFlow&action=getAction&id="+id+"&aow_action="+action+"&line="+ln+"&aow_module="+module,callback);
+}
+
+function clearActionLines(){
+
+    if(document.getElementById('actionLines') != null){
+        var actionLines_rows = document.getElementById('actionLines').getElementsByTagName('tr');
+        for (var i = 0; i < actionLines_rows.length; i++) {
+            if(document.getElementById('aow_actions_delete_line' + i) != null){
+                document.getElementById('aow_actions_delete_line' + i).click();
+            }
+        }
+    }
 }

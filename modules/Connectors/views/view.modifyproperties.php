@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/MVC/View/SugarView.php');
 
+#[\AllowDynamicProperties]
 class ViewModifyProperties extends SugarView
 {
     /**

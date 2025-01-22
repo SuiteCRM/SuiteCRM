@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/DynamicFields/templates/Fields/TemplateCurrencyId.php');
 require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
 
+#[\AllowDynamicProperties]
 class TemplateCurrency extends TemplateRange
 {
     public $max_size = 25;

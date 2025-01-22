@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -47,15 +47,16 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class EmailMock extends Email
 {
     /**
-     *
-     * @param int $err
+     * @param $err
+     * @throws EmailException
      */
-    public function setLastSaveAndStoreInSentErrorPublic($err)
+    public function setLastSaveAndStoreInSentErrorPublic($err): void
     {
-        return parent::setLastSaveAndStoreInSentError($err);
+        $this->setLastSaveAndStoreInSentError($err);
     }
 
     /**
@@ -63,11 +64,11 @@ class EmailMock extends Email
      * @param object $mail SugarPHPMailer object
      * @param string $mailer_id
      * @param string $ieId
-     * @global $current_user
      * @return object mail SugarPHPMailer object
+     * @global $current_user
      */
-    public function setMailer($mail, $mailer_id = '', $ieId = '')
+    public function setMailer($mail, $mailer_id = '', $ieId = ''): object
     {
-        return $mail; // skipp oe settings
+        return $mail;
     }
 }

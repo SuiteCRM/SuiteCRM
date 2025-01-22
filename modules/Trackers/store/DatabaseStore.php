@@ -56,6 +56,7 @@ require_once('modules/Trackers/store/Store.php');
  * the configured database instance as defined in DBManagerFactory::getInstance() method
  *
  */
+#[\AllowDynamicProperties]
 class DatabaseStore implements Store
 {
     public function flush($monitor)

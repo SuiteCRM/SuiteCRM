@@ -47,6 +47,7 @@ require_once('modules/Trackers/Trackable.php');
 
 define('MAX_SESSION_LENGTH', 36);
 
+#[\AllowDynamicProperties]
 class Monitor implements Trackable
 {
     public $metricsFile;
@@ -71,6 +72,8 @@ class Monitor implements Trackable
      */
     public function __construct($name='', $monitorId='', $metadata='', $store='')
     {
+        global $dictionary;
+        $dictionary = $dictionary ?? [];
         if (empty($metadata) || !file_exists($metadata)) {
             $GLOBALS['log']->error($GLOBALS['app_strings']['ERR_MONITOR_FILE_MISSING'] . "($metadata)");
             throw new Exception($GLOBALS['app_strings']['ERR_MONITOR_FILE_MISSING'] . "($metadata)");
@@ -105,20 +108,6 @@ class Monitor implements Trackable
             //2) ensure it follows some filter rules.
             $this->setValue('session_id', $this->getSessionId());
         }
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Monitor($name='', $monitorId='', $metadata='', $store='')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($name, $monitorId, $metadata, $store);
     }
 
     /**

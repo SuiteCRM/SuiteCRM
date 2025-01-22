@@ -3,6 +3,7 @@ require_once('include/ListView/ListViewSmarty.php');
 require_once('modules/AOS_PDF_Templates/formLetter.php');
 
 
+#[\AllowDynamicProperties]
 class AccountsListViewSmarty extends ListViewSmarty
 {
     public function __construct()
@@ -10,22 +11,6 @@ class AccountsListViewSmarty extends ListViewSmarty
         parent::__construct();
         $this->targetList = true;
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AccountsListViewSmarty()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
-
-
 
     protected function buildAddAccountContactsToTargetList()
     {
@@ -149,7 +134,7 @@ EOF;
 
         return $ret;
     }
-    
+
     public function buildExportLink($id = 'export_link')
     {
         global $app_strings;

@@ -13,5 +13,7 @@
  */
 function smarty_function_diff_for_humans(array $params)
 {
-    return \Carbon\Carbon::createFromTimeString($params['datetime'])->diffForHumans();
+    global $timedate;
+
+    return \Carbon\Carbon::createFromTimeString($timedate->to_db($params['datetime']))->diffForHumans();
 }

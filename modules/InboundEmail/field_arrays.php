@@ -60,6 +60,7 @@ $fields_array['InboundEmail'] = array(
         'delete_seen',
         'mailbox_type',
         'template_id',
+        'is_personal',
     ),
     'list_fields' => array(
         'id',

@@ -73,7 +73,7 @@ function clearCacheSU($thedir, $extension)
             if ($children !== '.' && $children !== '..') {
                 if (is_dir($thedir . '/' . $children)) {
                     clearCacheSU($thedir . '/' . $children, $extension);
-                } elseif (is_file($thedir . '/' . $children) && substr_count($children, $extension)) {
+                } elseif (is_file($thedir . '/' . $children) && substr_count($children, (string) $extension)) {
                     unlink($thedir . '/' . $children);
                 }
             }
@@ -342,9 +342,9 @@ function verifyArguments($argv, $usage_regular)
             echo "FAILURE\n";
             exit(1);
         }
-        if (count($argv) < 5) {
+        if ((is_countable($argv) ? count($argv) : 0) < 5) {
             echo "*******************************************************************************\n";
-            echo '*** ERROR: Missing required parameters.  Received ' . count($argv) . " argument(s), require 5.\n";
+            echo '*** ERROR: Missing required parameters.  Received ' . (is_countable($argv) ? count($argv) : 0) . " argument(s), require 5.\n";
             echo $usage_regular;
             echo "FAILURE\n";
             exit(1);
@@ -451,9 +451,9 @@ $errors = [];
 
 if ($upgradeType !== constant('DCE_INSTANCE')) {
     ini_set('error_reporting', 1);
-    require_once 'include/entryPoint.php';
-    require_once 'include/SugarLogger/SugarLogger.php';
-    require_once 'include/utils/zip_utils.php';
+    require_once('include/entryPoint.php');
+    require_once('include/SugarLogger/SugarLogger.php');
+    require_once('include/utils/php_zip_utils.php');
 
 
     if (!function_exists('sugar_cached')) {
@@ -579,7 +579,7 @@ if ($upgradeType !== constant('DCE_INSTANCE')) {
     $destFiles = [];
 
     foreach ($uwFiles as $uwFile) {
-        $destFile = str_replace($zipBasePath . "/", '', $uwFile);
+        $destFile = str_replace($zipBasePath . "/", '', (string) $uwFile);
         copy($uwFile, $destFile);
     }
     require_once 'modules/UpgradeWizard/uw_utils.php'; // must upgrade UW first
@@ -996,14 +996,10 @@ function repairTableDictionaryExtFile()
 
 
                     if ($altered) {
-                        if (function_exists('sugar_fopen')) {
-                            $fp = @sugar_fopen($entry, 'w');
+                        if (function_exists('sugar_file_put_contents')) {
+                            @sugar_file_put_contents($entry, $contents);
                         } else {
-                            $fp = fopen($entry, 'wb');
-                        }
-
-                        if ($fp && fwrite($fp, $contents)) {
-                            fclose($fp);
+                            file_put_contents($entry, $contents);
                         }
                     }
                 }

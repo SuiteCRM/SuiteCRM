@@ -82,7 +82,7 @@ if (!empty($sugar_demodata['quotes_seed_data']['quotes'])) {
         $result = DBManagerFactory::getInstance()->limitQuery($sql, 0, 10, true, "Error retrieving Accounts");
         while ($row = DBManagerFactory::getInstance()->fetchByAssoc($result)) {
             $focus->billing_account_id = $row['id'];
-            $focus->name = str_replace('[account name]', $row['name'], $focus->name);
+            $focus->name = str_replace('[account name]', $row['name'], (string) $focus->name);
             $focus->billing_address_street = $row['billing_address_street'];
             $focus->billing_address_city = $row['billing_address_city'];
             $focus->billing_address_state = $row['billing_address_state'];
@@ -105,7 +105,7 @@ if (!empty($sugar_demodata['quotes_seed_data']['quotes'])) {
             $pb->name = $bundle['bundle_name'];
 
             $product_bundle_id = $pb->save();
-            
+
             //Save the products
             foreach ($bundle['products'] as $product_key=>$products) {
                 $sql = 'SELECT * FROM product_templates WHERE name = \'' . $products['name'] . '\'';
@@ -148,7 +148,7 @@ if (!empty($sugar_demodata['quotes_seed_data']['quotes'])) {
             $pb->tax = 0;
             $pb->shipping = 0;
             $pb->save();
-            
+
             //Save any product bundle comment
             if (isset($bundle['comment'])) {
                 $product_bundle_note = new ProductBundleNote();

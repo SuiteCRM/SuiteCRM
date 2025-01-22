@@ -51,6 +51,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class CampaignTracker extends SugarBean
 {
     /* Foreach instance of the bean you will need to access the fields in the table.
@@ -110,19 +111,7 @@ class CampaignTracker extends SugarBean
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function CampaignTracker()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function save($check_notify = false)
@@ -169,7 +158,7 @@ class CampaignTracker extends SugarBean
         }
         $admin=BeanFactory::newBean('Administration');
         $admin->retrieveSettings('massemailer'); //retrieve all admin settings.
-        if (isset($admin->settings['massemailer_tracking_entities_location_type']) and $admin->settings['massemailer_tracking_entities_location_type']=='2'  and isset($admin->settings['massemailer_tracking_entities_location'])) {
+        if (isset($admin->settings['massemailer_tracking_entities_location_type']) && $admin->settings['massemailer_tracking_entities_location_type']=='2' && isset($admin->settings['massemailer_tracking_entities_location'])) {
             $this->message_url=$admin->settings['massemailer_tracking_entities_location'];
         } else {
             $this->message_url=$sugar_config['site_url'];

@@ -42,7 +42,7 @@ require_once('modules/Calls_Reschedule/Calls_Reschedule.php');
 
 function reschedule_history($focus, $field, $value, $view)
 {
-    global $app_list_strings;
+    global $app_list_strings,$mod_strings;
 
     if ($view == 'DetailView') {
         $html = '';
@@ -57,7 +57,7 @@ function reschedule_history($focus, $field, $value, $view)
         while ($row = $focus->db->fetchByAssoc($result)) {
             $reschedule->retrieve($row['id']);
                        
-            $html .= '<li>'.$app_list_strings["call_reschedule_dom"][$reschedule->reason].' - '.$reschedule->date_entered.' by '.$reschedule->created_by_name.'</li>';
+            $html .= '<li>'.$app_list_strings["call_reschedule_dom"][$reschedule->reason].' - '.$reschedule->date_entered.' '.$mod_strings['LBL_RESCHEDULED_BY'].' '.$reschedule->created_by_name.'</li>';
         }
 
         $html .= '</ul>';

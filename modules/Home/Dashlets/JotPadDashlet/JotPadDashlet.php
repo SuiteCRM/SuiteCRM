@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 
 
+#[\AllowDynamicProperties]
 class JotPadDashlet extends Dashlet
 {
     public $savedText; // users's saved text
@@ -83,21 +84,6 @@ class JotPadDashlet extends Dashlet
             $this->title = $def['title'];
         }
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function JotPadDashlet($id, $def)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id, $def);
-    }
-
 
     /**
      * Displays the dashlet
@@ -185,10 +171,11 @@ class JotPadDashlet extends Dashlet
      */
     public function saveText()
     {
+        $optionsArray = [];
         $json = getJSONobj();
         if (isset($_REQUEST['savedText'])) {
             $optionsArray = $this->loadOptions();
-            $optionsArray['savedText']=$json->decode(html_entity_decode($_REQUEST['savedText']));
+            $optionsArray['savedText']=$json->decode(html_entity_decode((string) $_REQUEST['savedText']));
             $optionsArray['savedText']=SugarCleaner::cleanHtml(nl2br($optionsArray['savedText']));
             $this->storeOptions($optionsArray);
         } else {

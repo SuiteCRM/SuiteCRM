@@ -26,6 +26,7 @@
 
 require_once('include/MVC/Controller/SugarController.php');
 
+#[\AllowDynamicProperties]
 class AOS_InvoicesController extends SugarController
 {
     public function action_editview()
@@ -55,26 +56,30 @@ class AOS_InvoicesController extends SugarController
             $query = "SELECT * FROM accounts WHERE id = '?'";
             $result = $this->bean->db->pquery($query, [$_REQUEST['account_id']]);
             $row = $this->bean->db->fetchByAssoc($result);
-            $this->bean->billing_account_id = $row['id'];
-            $this->bean->billing_account = $row['name'];
-            $this->bean->billing_address_street = $row['billing_address_street'];
-            $this->bean->billing_address_city = $row['billing_address_city'];
-            $this->bean->billing_address_state = $row['billing_address_state'];
-            $this->bean->billing_address_postalcode = $row['billing_address_postalcode'];
-            $this->bean->billing_address_country = $row['billing_address_country'];
-            $this->bean->shipping_address_street = $row['shipping_address_street'];
-            $this->bean->shipping_address_city = $row['shipping_address_city'];
-            $this->bean->shipping_address_state = $row['shipping_address_state'];
-            $this->bean->shipping_address_postalcode = $row['shipping_address_postalcode'];
-            $this->bean->shipping_address_country = $row['shipping_address_country'];
+            if ($row){
+                $this->bean->billing_account_id = $row['id'];
+                $this->bean->billing_account = $row['name'];
+                $this->bean->billing_address_street = $row['billing_address_street'];
+                $this->bean->billing_address_city = $row['billing_address_city'];
+                $this->bean->billing_address_state = $row['billing_address_state'];
+                $this->bean->billing_address_postalcode = $row['billing_address_postalcode'];
+                $this->bean->billing_address_country = $row['billing_address_country'];
+                $this->bean->shipping_address_street = $row['shipping_address_street'];
+                $this->bean->shipping_address_city = $row['shipping_address_city'];
+                $this->bean->shipping_address_state = $row['shipping_address_state'];
+                $this->bean->shipping_address_postalcode = $row['shipping_address_postalcode'];
+                $this->bean->shipping_address_country = $row['shipping_address_country'];
+            }
         }
 
         if (isset($_REQUEST['contact_id'])) {
             $query = "SELECT id,first_name,last_name FROM contacts WHERE id = '?'";
             $result = $this->bean->db->pquery($query, [$_REQUEST['contact_id']]);
             $row = $this->bean->db->fetchByAssoc($result);
-            $this->bean->billing_contact_id = $row['id'];
-            $this->bean->billing_contact = $row['first_name'].' '.$row['last_name'];
+            if ($row) {
+                $this->bean->billing_contact_id = $row['id'];
+                $this->bean->billing_contact = $row['first_name'].' '.$row['last_name'];
+            }
         }
     }
 }

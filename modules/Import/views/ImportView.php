@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/MVC/View/SugarView.php');
 
 
+#[\AllowDynamicProperties]
 class ImportView extends SugarView
 {
     protected $currentStep;
@@ -56,7 +57,7 @@ class ImportView extends SugarView
 
         parent::__construct($bean, $view_object_map);
 
-        if (isset($_REQUEST['button']) && trim($_REQUEST['button']) == htmlentities($mod_strings['LBL_BACK'])) {
+        if (isset($_REQUEST['button']) && trim($_REQUEST['button']) === htmlentities((string) $mod_strings['LBL_BACK'])) {
             // if the request comes from the "Back" button, decrease the step count
             $this->currentStep = isset($_REQUEST['current_step']) ? ($_REQUEST['current_step'] - 1) : 1;
         } else {
@@ -159,7 +160,7 @@ class ImportView extends SugarView
         global $mod_strings;
 
         $ins = '';
-        
+
         if ($this->instruction) {
             $ins_string = $mod_strings[$this->instruction];
             $ins = '<div class="import_instruction">' . $ins_string . '</div>';

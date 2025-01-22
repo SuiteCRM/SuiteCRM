@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function closePopup(){var closePopup=window.opener.get_close_popup();if(closePopup){window.close();}}
+ */function closePopup(){var closePopup=window.opener.get_close_popup();if(closePopup){window.close();}}
 function confirmDialog(arrayContents,formName){var newData='';var labels='';var oldData='';SUGAR.util.globalEval("var data = {"+arrayContents.join(",")+"}");var opener=window.opener.document;for(var key in data){var displayValue=replaceHTMLChars(data[key]);if(opener.forms[formName]&&opener.getElementById(key+'_label')!=null&&!key.match(/account/)){var dataLabel=opener.getElementById(key+'_label').innerHTML.replace(/\n/gi,'').replace(/<\/?[^>]+(>|$)/g,"");labels+=dataLabel+' \n';newData+=dataLabel+' '+displayValue+'\n';if(window.opener.document.forms[formName].elements[key]){oldData+=dataLabel+' '+opener.forms[formName].elements[key].value+'\n';}}}
 var popupConfirm=0;if(data['account_id']&&(newData.split("\n").length-1)>2){if(newData!=oldData&&oldData!=labels){if(confirm(SUGAR.language.get('app_strings','NTC_OVERWRITE_ADDRESS_PHONE_CONFIRM')+'\n\n'+newData)){popupConfirm=1;}else{popupConfirm=-1;}}}
 return popupConfirm;}

@@ -938,6 +938,7 @@ span.yui-carousel-first-button-disabled {
   overflow: visible;
   text-decoration: none;
   text-indent: 0em;
+  color: $text-label-color;
 }
 
 .mask {
@@ -1012,11 +1013,10 @@ span.yui-carousel-first-button-disabled {
 
 .container-close {
   position: absolute;
-  top: 3px;
+  top: 0px;
   right:0;
   width: 40px;
   height: 15px;
-  background: transparent url('../../../../index.php?entryPoint=getImage&imageName=dashletclose.png') no-repeat;
   cursor: pointer;
 }
 

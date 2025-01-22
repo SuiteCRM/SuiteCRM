@@ -51,7 +51,7 @@
 <script type='text/javascript'>
     if (SUGAR.ajaxUI && !SUGAR.ajaxUI.hist_loaded) {
         YAHOO.util.History.register('ajaxUILoc', "", SUGAR.ajaxUI.go);
-        {/literal}{if $smarty.request.module != "ModuleBuilder"}{* Module builder will init YUI history on its own *}
+        {/literal}{if isset($smarty.request.module) && $smarty.request.module != "ModuleBuilder"}{* Module builder will init YUI history on its own *}
         YAHOO.util.History.initialize("ajaxUI-history-field", "ajaxUI-history-iframe");
         {/if}{literal}
     }
@@ -60,7 +60,7 @@
 <!-- Start of page content -->
 {if $AUTHENTICATED}
 <div id="bootstrap-container"
-     class="{if $THEME_CONFIG.display_sidebar && $smarty.cookies.sidebartoggle|default:'' != 'collapsed'}col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2{/if} main bootstrap-container">
+     class="{if $THEME_CONFIG.display_sidebar && (!isset($smarty.cookies.sidebartoggle) || $smarty.cookies.sidebartoggle != 'collapsed')}col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2{/if} main bootstrap-container">
     <div id="content" class="content">
-        <div id="pagecontent" class=".pagecontent">
+        <div id="pagecontent" class=".pagecontent" data-module="{$MODULE_NAME}">
 {/if}

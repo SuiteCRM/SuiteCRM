@@ -71,7 +71,8 @@ function create_cache_directory($file)
     if (!file_exists($dir)) {
         sugar_mkdir($dir, 0775);
     }
-    for ($i = 0; $i < count($paths) - 1; $i++) {
+    $pathsCount = count($paths);
+    for ($i = 0; $i < $pathsCount - 1; $i++) {
         $dir .= '/' . $paths[$i];
         if (!file_exists($dir)) {
             sugar_mkdir($dir, 0775);
@@ -111,12 +112,12 @@ function mk_temp_dir($base_dir, $prefix="")
 
 function remove_file_extension($filename)
 {
-    return(substr($filename, 0, strrpos($filename, ".")));
+    return(substr((string) $filename, 0, strrpos((string) $filename, ".")));
 }
 
 function write_array_to_file($the_name, $the_array, $the_file, $mode="w", $header='')
 {
-    if (!empty($header) && ($mode != 'a' || !file_exists($the_file))) {
+    if (!empty($header) && ($mode !== 'a' || $mode !== 'ab' || !file_exists($the_file))) {
         $the_string = $header;
     } else {
         $the_string =   "<?php\n" .
@@ -125,6 +126,22 @@ function write_array_to_file($the_name, $the_array, $the_file, $mode="w", $heade
     $the_string .=  "\$$the_name = " .
                     var_export_helper($the_array) .
                     ";";
+
+    return sugar_file_put_contents($the_file, $the_string, LOCK_EX) !== false;
+}
+
+function write_override_label_to_file($the_name, $the_array, $the_file, $mode = 'w', $header = '')
+{
+    if (!empty($header) && ($mode !== 'a' || $mode !== 'ab' || !file_exists($the_file))) {
+        $the_string = $header;
+    } else {
+        $the_string = "<?php\n" .
+            '// created: ' . date('Y-m-d H:i:s') . "\n";
+    }
+
+    foreach ($the_array as $labelName => $labelValue) {
+        $the_string .= '$' . "{$the_name}['" . addslashes($labelName) . "'] = '" . addslashes($labelValue) ."';\n";
+    }
 
     return sugar_file_put_contents($the_file, $the_string, LOCK_EX) !== false;
 }
@@ -141,7 +158,7 @@ function write_encoded_file($soap_result, $write_to_dir, $write_to_file="")
     }
 
     $file = $soap_result['data'];
-    $write_to_file = str_replace("\\", "/", $write_to_file);
+    $write_to_file = str_replace("\\", "/", (string) $write_to_file);
 
     $dir_to_make = dirname($write_to_file);
     if (!is_dir($dir_to_make)) {
@@ -164,7 +181,8 @@ function create_custom_directory($file)
     if (!file_exists($dir)) {
         sugar_mkdir($dir, 0755);
     }
-    for ($i = 0; $i < count($paths) - 1; $i++) {
+    $pathsCount = count($paths);
+    for ($i = 0; $i < $pathsCount - 1; $i++) {
         $dir .= '/' . $paths[$i];
         if (!file_exists($dir)) {
             sugar_mkdir($dir, 0755);
@@ -349,7 +367,7 @@ function get_file_extension($filename, $string_to_lower=true)
 {
     $ret = '';
 
-    if (strpos($filename, '.') !== false) {
+    if (strpos((string) $filename, '.') !== false) {
         if ($string_to_lower) {
             $exp = explode('.', $filename);
             $pop = array_pop($exp);
@@ -376,7 +394,7 @@ function get_file_extension($filename, $string_to_lower=true)
  */
 function get_mime_content_type_from_filename($filename)
 {
-    if (strpos($filename, '.') !== false) {
+    if (strpos((string) $filename, '.') !== false) {
         $mime_types = array(
             'txt' => 'text/plain',
             'htm' => 'text/html',
@@ -467,7 +485,7 @@ CIA;
 */
 function cleanFileName($name)
 {
-    return preg_replace('/[^\w\-._]+/i', '', $name);
+    return preg_replace('/[^\w\-._]+/i', '', (string) $name);
 }
 
 /**
@@ -478,4 +496,26 @@ function cleanFileName($name)
 function cleanDirName($name)
 {
     return str_replace(array("\\", "/", "."), "", $name);
+}
+
+/**
+ * Check if has valid file name
+ * @param string $fieldName
+ * @param string $value
+ * @return bool
+ */
+function hasValidFileName($fieldName, $value) {
+
+    if (empty($value)){
+        LoggerManager::getLogger()->error("Invalid filename for $fieldName : '$value'.");
+        return false;
+    }
+
+    $isValid = preg_match('/^[\w\-.]+(\.\w+)?$/', $value);
+    if ($isValid === false || $isValid < 1) {
+        LoggerManager::getLogger()->error("Invalid filename for $fieldName : '$value'.");
+        return false;
+    }
+
+    return true;
 }

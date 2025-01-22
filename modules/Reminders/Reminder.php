@@ -42,9 +42,10 @@
  * Reminder class
  *
  */
+#[\AllowDynamicProperties]
 class Reminder extends Basic
 {
-    const UPGRADE_VERSION = '7.4.3';
+    public const UPGRADE_VERSION = '7.4.3';
 
     public $name;
 
@@ -308,7 +309,7 @@ class Reminder extends Basic
         $dateTimeMax = $timedate->getNow(true)->modify("+{$app_list_strings['reminder_max_time']} seconds")->asDb(false);
 
         $dateTimeNow = $timedate->getNow(true)->asDb(false);
-        
+
 
         // Original jsAlert used to a meeting integration.
 
@@ -458,7 +459,7 @@ class Reminder extends Basic
     private static function unQuoteTime($timestr)
     {
         $ret = '';
-        for ($i = 0; $i < strlen($timestr); $i++) {
+        for ($i = 0; $i < strlen((string) $timestr); $i++) {
             if ($timestr[$i] != "'") {
                 $ret .= $timestr[$i];
             }
@@ -478,7 +479,7 @@ class Reminder extends Basic
         if ($acceptStats = self::getEventPersonAcceptStatus($event, $person)) {
             $acceptStatusLower = strtolower($acceptStatus);
             foreach ((array)$acceptStats as $acceptStat) {
-                if (strtolower($acceptStat) == $acceptStatusLower) {
+                if (strtolower($acceptStat) === $acceptStatusLower) {
                     return true;
                 }
             }
@@ -520,7 +521,7 @@ class Reminder extends Basic
 
     private static function getEventPersonQuery(SugarBean $event, SugarBean $person)
     {
-        $eventIdField = array_search($event->table_name, $event->relationship_fields);
+        $eventIdField = array_search($event->table_name, $event->relationship_fields, true);
         if (!$eventIdField) {
             $eventIdField = strtolower($event->object_name . '_id');
         }
@@ -553,16 +554,21 @@ class Reminder extends Basic
 
     /**
      * Default values for Reminders from User Preferences
+     * @param User $user
      * @return array default values
      */
-    public static function loadRemindersDefaultValuesData()
+    public static function loadRemindersDefaultValuesData($user = null)
     {
         global $current_user;
 
-        $preferencePopupReminderTime = $current_user->getPreference('reminder_time');
-        $preferenceEmailReminderTime = $current_user->getPreference('email_reminder_time');
-        $preferencePopupReminderChecked = $current_user->getPreference('reminder_checked');
-        $preferenceEmailReminderChecked = $current_user->getPreference('email_reminder_checked');
+        if(!$user){
+            $user = $current_user;
+        }
+
+        $preferencePopupReminderTime = $user->getPreference('reminder_time');
+        $preferenceEmailReminderTime = $user->getPreference('email_reminder_time');
+        $preferencePopupReminderChecked = $user->getPreference('reminder_checked');
+        $preferenceEmailReminderChecked = $user->getPreference('email_reminder_checked');
 
         return array(
             'popup' => $preferencePopupReminderChecked,

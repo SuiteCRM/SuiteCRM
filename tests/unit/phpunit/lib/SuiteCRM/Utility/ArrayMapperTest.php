@@ -42,7 +42,7 @@ use SuiteCRM\Utility\ArrayMapper;
 
 class ArrayMapperTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function test()
+    public function test(): void
     {
         $array = [
             'object' => (object)[

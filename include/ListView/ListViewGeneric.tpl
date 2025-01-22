@@ -66,7 +66,7 @@
 {assign var="moduleName" value = $moduleList.$currentModule}
 {assign var="hideTable" value=false}
 
-{if count($data) == 0}
+{if !isset($data) || $data|count == 0}
     {assign var="hideTable" value=true}
     <div class="list view listViewEmpty">
         {if $displayEmptyDataMesssages}

@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,11 +38,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-
-
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
 require_once('include/utils/progress_bar_utils.php');
-require_once('include/utils/zip_utils.php');
+require_once('include/utils/php_zip_utils.php');
 
 global $current_user;
 
@@ -193,7 +191,7 @@ function getFullTableDump($tableName)
     $returnString .= array_as_table("{$db->dbName} $tableName Keys:", $indexes);
     $returnString .= "<BR><BR>";
 
-    $def_count = count($cols);
+    $def_count = is_countable($cols) ? count($cols) : 0;
 
     $td_result = $db->query("select * from ".$tableName);
     if (!$td_result) {
@@ -249,7 +247,7 @@ function getFullTableDump($tableName)
 // Deletes the directory recursively
 function deleteDir($dir)
 {
-    if (substr($dir, strlen($dir)-1, 1) != '/') {
+    if (substr((string) $dir, strlen((string) $dir)-1, 1) != '/') {
         $dir .= '/';
     }
 
@@ -646,14 +644,15 @@ function executevardefs()
 
     ob_start();
     foreach ($beanList as $beanz) {
-        // echo "Module: ".$beanz."<br>";
 
-        $path_parts = pathinfo($beanFiles[ $beanz ]);
-        $vardefFileName = $path_parts[ 'dirname' ]."/vardefs.php";
-        if (file_exists($vardefFileName)) {
-            // echo "<br>".$vardefFileName."<br>";
+        if(!empty($beanFiles[ $beanz ])) {
+            $path_parts = pathinfo((string) $beanFiles[$beanz]);
+            $vardefFileName = $path_parts['dirname'] . "/vardefs.php";
+            if (file_exists($vardefFileName)) {
+                include_once($vardefFileName);
+            }
         }
-        include_once($vardefFileName);
+
     }
 
     echo "<html lang='en'>";
@@ -667,8 +666,8 @@ function executevardefs()
     $tables = array();
     foreach ($dictionary as $vardef) {
         $tables[] = $vardef['table'];
-        $fields[$vardef['table']] = $vardef['fields'];
-        $comments[$vardef['table']] = $vardef['comment'];
+        $fields[$vardef['table']] = !empty($vardef['fields']) ? $vardef['fields'] : [];
+        $comments[$vardef['table']] = !empty($vardef['comment']) ? $vardef['comment'] : '';
     }
 
     asort($tables);
@@ -697,12 +696,12 @@ function executevardefs()
             if (isset($v[ 'source' ])) {
                 continue;
             }
-            $columnname = $v[ 'name' ];
-            $columntype = $v[ 'type' ];
-            $columndbtype = $v[ 'dbType' ];
-            $columnlen = $v[ 'len' ];
-            $columncomment = $v[ 'comment' ];
-            $columnrequired = $v[ 'required' ];
+            $columnname = !empty($v['name']) ? $v['name'] : '';
+            $columntype = !empty($v['type']) ? $v['type'] : '';
+            $columndbtype = !empty($v['dbType']) ? $v['dbType'] : '';
+            $columnlen = !empty($v['len']) ? $v['len'] : '';
+            $columncomment = !empty($v['comment']) ? $v['comment'] : '';
+            $columnrequired = !empty($v['required']) ? $v['required'] : '';
 
             if (empty($columnlen)) {
                 $columnlen = '<i>n/a</i>';

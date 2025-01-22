@@ -16,20 +16,21 @@
  define("STOCK_MISSING_SERIE"	, 180001);
 
  /* pStock class definition */
+ #[\AllowDynamicProperties]
  class pStock
   {
-   var $pChartObject;
-   var $pDataObject;
+   public $pChartObject;
+   public $pDataObject;
 
-   /* Class creator */
-   function pStock($pChartObject,$pDataObject)
-    {
-     $this->pChartObject = $pChartObject;
-     $this->pDataObject  = $pDataObject;
-    }
+     /* Class creator */
+     public function __construct($pChartObject, $pDataObject)
+     {
+         $this->pChartObject = $pChartObject;
+         $this->pDataObject = $pDataObject;
+     }
 
    /* Draw a stock chart */
-   function drawStockChart($Format="")
+   public function drawStockChart($Format="")
     {
      $SerieOpen		= isset($Format["SerieOpen"]) ? $Format["SerieOpen"] : "Open";
      $SerieClose	= isset($Format["SerieClose"]) ? $Format["SerieClose"] : "Close";
@@ -91,10 +92,10 @@
      if ( !isset($Data["Series"][$SerieOpen]) || !isset($Data["Series"][$SerieClose]) || !isset($Data["Series"][$SerieMin]) || !isset($Data["Series"][$SerieMax]) )
       return(STOCK_MISSING_SERIE);
 
-     $Plots = "";
+     $Plots = [];
      foreach($Data["Series"][$SerieOpen]["Data"] as $Key => $Value)
       {
-       $Point = "";
+       $Point = [];
        if ( isset($Data["Series"][$SerieClose]["Data"][$Key]) || isset($Data["Series"][$SerieMin]["Data"][$Key]) || isset($Data["Series"][$SerieMax]["Data"][$Key]) )
         $Point = array($Value,$Data["Series"][$SerieClose]["Data"][$Key],$Data["Series"][$SerieMin]["Data"][$Key],$Data["Series"][$SerieMax]["Data"][$Key]);
        if ( $SerieMedian != NULL && isset($Data["Series"][$SerieMedian]["Data"][$Key]) )

@@ -73,7 +73,7 @@ trait IndexingLockFileTrait
         }
 
         $data = file_get_contents($filename);
-        $data = intval($data);
+        $data = (int) $data;
 
         if (empty($data)) {
             $this->logger->warn('Failed to read lock file. Returning \'false\'.');

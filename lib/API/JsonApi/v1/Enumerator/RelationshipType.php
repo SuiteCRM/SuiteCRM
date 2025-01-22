@@ -43,8 +43,9 @@ namespace SuiteCRM\API\JsonApi\v1\Enumerator;
  * Class RelationshipType
  * @package SuiteCRM\API\JsonApi\v1
  */
+#[\AllowDynamicProperties]
 class RelationshipType
 {
-    const TO_ONE = 'TO_ONE';
-    const TO_MANY = 'TO_MANY';
+    public const TO_ONE = 'TO_ONE';
+    public const TO_MANY = 'TO_MANY';
 }

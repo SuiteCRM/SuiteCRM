@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Vardef Handler Object
  * @api
  */
+#[\AllowDynamicProperties]
 class VarDefHandler
 {
     public $meta_array_name;
@@ -69,20 +70,6 @@ class VarDefHandler
         }
 
         //end function setup
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function VarDefHandler($module, $meta_array_name=null)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($module, $meta_array_name);
     }
 
     public function get_vardef_array($use_singular=false, $remove_dups = false, $use_field_name = false, $use_field_label = false)

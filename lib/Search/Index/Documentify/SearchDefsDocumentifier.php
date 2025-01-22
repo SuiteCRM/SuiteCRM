@@ -142,7 +142,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
                 continue;
             }
 
-            if (strpos($key, 'range_date') !== false) {
+            if (strpos((string) $key, 'range_date') !== false) {
                 continue;
             }
 
@@ -168,7 +168,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
      * @see getFieldsToIndex
      *
      * @param \SugarBean         $bean
-     * @param ParserSearchFields $parser
+     * @param ParserSearchFields|null $parser
      *
      * @return array
      */

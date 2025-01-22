@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class DashletCacheBuilder
 {
     

@@ -1,14 +1,20 @@
 <?php
 
+use Step\Acceptance\Dashboard;
+use Step\Acceptance\NavigationBarTester;
+use Step\Acceptance\SideBar;
+use Step\Acceptance\Workflow;
+
 /**
  * Class LoginCest
  *
  * Test login page
  */
+#[\AllowDynamicProperties]
 class AOW_WorkflowCest
 {
     /**
-     * @var Generator $fakeData
+     * @var \Faker\Generator $fakeData
      */
     protected $fakeData;
 
@@ -20,7 +26,7 @@ class AOW_WorkflowCest
     /**
      * @param AcceptanceTester $I
      */
-    public function _before(AcceptanceTester $I)
+    public function _before(AcceptanceTester $I): void
     {
         if (!$this->fakeData) {
             $this->fakeData = Faker\Factory::create();
@@ -39,16 +45,21 @@ class AOW_WorkflowCest
     {
     }
 
-    // tests
+    /**
+     * @param AcceptanceTester $I
+     * @param SideBar $sideBar
+     * @param \Step\Acceptance\DetailView $detailView
+     * @param \Step\Acceptance\EditView $editView
+     * @param Dashboard $dashboard
+     * @param Workflow $workflow
+     */
     public function testScenarioCreateWorkflow(
         AcceptanceTester $I,
-        \Step\Acceptance\NavigationBarTester $navigationBar,
-        \Step\Acceptance\ListView $listView,
-        \Step\Acceptance\SideBar $sideBar,
+        SideBar $sideBar,
         \Step\Acceptance\DetailView $detailView,
         \Step\Acceptance\EditView $editView,
-        \Step\Acceptance\Dashboard $dashboard,
-        \Step\Acceptance\Workflow $workflow
+        Dashboard $dashboard,
+        Workflow $workflow
     ) {
         $I->wantTo('Create a workflow for accounts');
 
@@ -56,7 +67,7 @@ class AOW_WorkflowCest
         $I->loginAsAdmin();
 
         $dashboard->waitForDashboardVisible();
-        $workflow->navigateToWorkflow($navigationBar, $listView);
+        $workflow->navigateToWorkflow();
         $sideBar->clickSideBarAction('Create WorkFlow');
         $editView->waitForEditViewVisible();
         $this->fakeData->seed($this->fakeDataSeed);

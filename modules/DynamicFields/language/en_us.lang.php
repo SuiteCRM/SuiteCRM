@@ -101,4 +101,5 @@ $mod_strings = array(
     'LBL_HELP' => 'Help' /*for 508 compliance fix*/,
     'COLUMN_TITLE_INLINE_EDIT_TEXT' => 'Inline Edit',
     'COLUMN_TITLE_PARENT_ENUM' => 'Parent DropDown',
+    'LBL_INSERT_FIELD' => 'Insert Field',
 );

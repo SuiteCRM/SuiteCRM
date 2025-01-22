@@ -52,6 +52,7 @@ $mod_strings = array(
     'LBL_CREATED'                                                                          => 'Created By',
     'LBL_CREATED_ID'                                                                       => 'Created By Id',
     'LBL_DESCRIPTION'                                                                      => 'Description',
+    'LBL_SORT_ORDER'                                                                       => 'Order',
     'LBL_DELETED'                                                                          => 'Deleted',
     'LBL_NAME'                                                                             => 'Name',
     'LBL_CREATED_USER'                                                                     => 'Created by User',

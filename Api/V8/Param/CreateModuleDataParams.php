@@ -5,6 +5,7 @@ use Api\V8\Param\Options as ParamOption;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class CreateModuleDataParams extends BaseParam
 {
     /**

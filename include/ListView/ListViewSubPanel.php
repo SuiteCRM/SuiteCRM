@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
      * ListView for the subpanel- list of many objects
      * @api
      */
+    #[\AllowDynamicProperties]
     class ListViewSubPanel extends ListView
     {
         protected $smartyTemplate;
@@ -140,7 +141,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
             $html_var = $this->subpanel_module . "_CELL";
 
             $list_data = $this->processUnionBeans($sugarbean, $subpanel_def, $html_var, $countOnly);
-            
+
             if ($countOnly) {
                 return $list_data;
             }

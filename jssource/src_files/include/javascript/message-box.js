@@ -169,6 +169,22 @@
     /**
      *
      */
+    self.hideCancel = function() {
+      "use strict";
+      return self.controls.modal.container.find('.btn-cancel').hide();
+    };
+
+    /**
+     *
+     */
+    self.hideOk = function() {
+      "use strict";
+      return self.controls.modal.container.find('.btn-ok').hide();
+    };
+
+    /**
+     *
+     */
     self.hideFooter = function() {
       "use strict";
       return self.controls.modal.container.find('.modal-footer').hide();

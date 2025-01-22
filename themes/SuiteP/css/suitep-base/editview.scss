@@ -309,7 +309,7 @@ a#powered_by:hover {
 
 .footer_right a {
   font-size: 12px;
-  color: #4D4D4D;
+  color: $text-color;
   padding-right: 20px;
   letter-spacing: 1px;
   vertical-align: middle;
@@ -586,6 +586,7 @@ table.view {
   text-align: left;
   vertical-align: baseline;
   white-space: pre-wrap;
+  line-height: 10px;
 }
 
 #lineItems {
@@ -732,9 +733,26 @@ slot {
   color: $main-font-color;
 }
 
+//.col-sm-6 .edit-view-field input[type="text"] {
+//  border-color: $main-font-color;
+//}
+//
+//.edit textarea {
+//  border-color: $main-font-color;
+//}
+//
+//.col-sm-12 .col-sm-8.edit-view-field textarea {
+//  border-color: $main-font-color;
+//}
+//
+//.col-sm-12 .col-sm-8.edit-view-field input.sqsEnabled {
+//  border-color: $main-font-color;
+//}
+
 select {
   font-weight: normal;
   color: $main-font-color;
+  max-width: 90%;
 }
 
 option[selected] {
@@ -1211,6 +1229,12 @@ p.error {
   margin: 0;
 }
 
+.error {
+  border: none;
+  color: $alert-danger-text-color;
+  background: $error-background-color;
+}
+
 .error:empty {
   padding: 0;
 }
@@ -1222,13 +1246,13 @@ div.content p.error {
 
 .required a:link {
   font-weight: 600;
-  color: $link-color;
+  color: $alert-danger-text-color;
   text-decoration: underline;
 }
 
 .error a {
   font-weight: 600;
-  color: white;
+  color: $alert-danger-text-color;
   text-decoration: underline;
 }
 
@@ -1242,7 +1266,7 @@ div.content p.error {
 }
 
 .error a:hover {
-  color: black;
+  color: $link-color-hover;
 }
 
 .success {
@@ -1291,7 +1315,7 @@ input.sqsEnabled {
   position: static;
   font-weight: bold;
   color: $default-btn-color;
-  padding: 0 8px 0 0;
+  padding: 0 8px 0 8px;
   margin: 0 0 0 0;
 }
 
@@ -2063,6 +2087,10 @@ ul.clickMenu li a {
   margin: 0 4px 0 0;
 }
 
+.subpanel-table .clickMenu  > .sugar_action_button:hover > .suitepicon {
+  color: $subpanel-text-hover;
+}
+
 ul.clickMenu li a.clearSearchIcon {
   margin: 3px 0px 0px 8px;
 }
@@ -2471,13 +2499,13 @@ input[type=text].cstm_code {
 }
 
 .headerlinks a:link {
-  color: $default-btn-color;
+  color: $navbar-link-color;
   padding: 14px 5px 14px 0;
   width: 100%;
 }
 
 .headerlinks a:visited {
-  color: $default-btn-color;
+  color: $navbar-link-color;
   padding: 14px 5px 14px 0;
   width: 100%;
 }
@@ -2632,10 +2660,6 @@ input#btn_ActionLine.button[type="button"] {
 
 .col-sm-6 .edit-view-field input[type="text"].datetimecombo_date {
   width: 84px;
-}
-
-.col-sm-6 .edit-view-field input[type="text"].date_input {
-    width: auto;
 }
 
 .col-sm-6 .edit-view-field .datetimecombo_time_section {
@@ -3307,7 +3331,7 @@ ul::-webkit-scrollbar-thumb { /* 5 */
 }
 
 .headerlinks a:hover {
-  color: $default-btn-color;
+  color: $navbar-link-color-hover;
 }
 
 table {
@@ -3540,10 +3564,6 @@ select#sales_stage_advanced {
     width: 100%;
   }
 
-  .col-sm-6 .edit-view-field input[type="text"].date_input {
-      width: auto;
-  }
-
   [type="date"] img {
     margin-left: 8px;
   }
@@ -3557,7 +3577,7 @@ select#sales_stage_advanced {
   }
 
   .col-sm-6 .edit-view-field[type="date"] input[type="text"].date_input {
-      width: auto;
+    width: auto;
   }
 }
 
@@ -3611,7 +3631,7 @@ select#sales_stage_advanced {
   }
 
   .col-sm-12 .col-sm-8.edit-view-field textarea {
-    width: 45%;
+    width: 120%;
   }
 
   [field=bool].col-sm-8.edit-view-field {
@@ -3649,10 +3669,6 @@ select#sales_stage_advanced {
 
   .col-sm-6 .edit-view-field input[type="text"] {
     width: 100%;
-  }
-
-  .col-sm-6 .edit-view-field input[type="text"].date_input {
-      width: auto;
   }
 
   .email-address-options-container {
@@ -3718,7 +3734,7 @@ select#sales_stage_advanced {
   }
 
   .col-sm-12 .col-sm-8.edit-view-field textarea {
-    width: 45%;
+    width: 120%;
   }
 
   [field=bool].col-sm-8.edit-view-field {
@@ -3742,6 +3758,9 @@ select#sales_stage_advanced {
     width: 45%;
   }
 
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
+  }
 
   .col-sm-12 [type=varchar].col-sm-8.edit-view-field input[type="text"] {
     width: 45%;
@@ -3756,10 +3775,6 @@ select#sales_stage_advanced {
 
   .col-sm-6 .edit-view-field input[type="text"] {
     width: 90%;
-  }
-
-  .col-sm-6 .edit-view-field input[type="text"].date_input {
-      width: auto;
   }
 
   .email-address-options-container {
@@ -3805,6 +3820,10 @@ select#sales_stage_advanced {
     width: 45.0%;
   }
 
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
+  }
+
   .col-sm-12 .edit-view-field input[type="text"] {
     width: 90%;
   }
@@ -3813,9 +3832,6 @@ select#sales_stage_advanced {
     width: 90%;
   }
 
-  .col-sm-6 .edit-view-field input[type="text"].date_input {
-      width: auto;
-  }
 
   #BILLING_address_fieldset input[type=text] {
     width: 90%;
@@ -3872,13 +3888,14 @@ select#sales_stage_advanced {
     width: 45.0%;
   }
 
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
+  }
+
   .col-sm-6 .edit-view-field input[type="text"] {
     width: 90%;
   }
 
-  .col-sm-6 .edit-view-field input[type="text"].date_input {
-      width: auto;
-  }
 
   #BILLING_address_fieldset input[type=text] {
     width: 90%;
@@ -4214,7 +4231,7 @@ hr {
 }
 
 #copyright_data a {
-  color: #000000;
+  color: $text-color;
   margin: 0 5px 0 5px;
 }
 
@@ -5455,7 +5472,6 @@ body.yui-skin-sam.masked .yui-panel-container.yui-dialog.yui-simple-dialog.shado
   top: 100px;
   padding: 20px;
   width: 100%;
-  position: fixed;
 }
 
 body.yui-skin-sam.masked .yui-panel-container.yui-dialog.yui-simple-dialog.shadow[id="container_pbss_date_start_trigger_c"] {
@@ -5710,3 +5726,52 @@ div.content div.pagecontent form#EditView div.edit.view table tbody tr td input[
   }
 }
 
+select, input, textarea, button, select[size], input[type=text], input:not([type]), input[type=password] {
+  border-color: $input-border;
+}
+
+table.subpanel-table .pagination .action_buttons a,
+table.subpanel-table .pagination .SugarActionMenu li.single a,
+table.subpanel-table .pagination .action_buttons .button {
+  border: 1px solid;
+  border-color: $list-view-action-menu-bg;
+  background-color: $list-view-toolbar-bg;
+  border-radius: 3px;
+  font-size: 13px;
+  padding: 2px 13px;
+  line-height: initial;
+  height: initial;
+  min-height: auto;
+}
+
+table.subpanel-table .pagination .action_buttons a:hover,
+table.subpanel-table .pagination .SugarActionMenu li.single a:hover,
+table.subpanel-table .pagination .action_buttons .button:hover {
+  background-color: $list-view-action-menu-bg;
+  color: $list-view-toolbar-bg;
+}
+
+
+table.subpanel-table .pagination li.sugar_action_button {
+  border: 1px solid;
+  border-color: $list-view-action-menu-bg;
+  border-radius: 3px;
+  line-height: initial;
+  height: initial;
+}
+table.subpanel-table .pagination li.sugar_action_button > form > a {
+  font-size: 13px;
+  padding: 2px 13px;
+  line-height: initial;
+  height: initial;
+  min-height: auto;
+}
+
+body.popupBody {
+	input {
+      border-radius: 4px;
+    }
+  .button {
+      border-radius: 4px;
+    }
+}

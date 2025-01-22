@@ -1,7 +1,9 @@
 <!--- Provide a general summary of the issue in the **Title** above -->
 <!--- Before you open an issue, please check if a similar issue already exists or has been closed before. --->
 <!--- If you have discovered a security risk please report it by emailing security@suitecrm.com. This will be delivered to the product team who handle security issues. Please don't disclose security bugs publicly until they have been handled by the security team. --->
-
+<!--- Please be aware that as of the 31st January 2022 we no longer support 7.10.x.
+New issues referring to 7.10.x will only be valid if applicable to 7.12.x and above.
+If your issue is still applicable in 7.12.x, please create the issue following the template below -->
 #### Issue
 <!--- Provide a more detailed introduction to the issue itself, and why you consider it to be a bug -->
 <!--- Ensure that all code ``` is surrounded ``` by triple back quotes. This can also be done over multiple lines -->

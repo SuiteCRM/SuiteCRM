@@ -88,7 +88,7 @@ $mod_strings = array(
     'LBL_PARENT_ID' => 'Parent ID:',
     'LBL_CONTACT_PHONE' => 'Contact Phone:',
     'LBL_PARENT_TYPE' => 'Parent Type:',
-    'LBL_TASK_INFORMATION' => 'TASK OVERVIEW',
+    'LBL_TASK_INFORMATION' => 'TASK OVERVIEW', //No need to be translated in all caps. Translation used just in menu action items when using the SuiteP template
     'LBL_EDITLAYOUT' => 'Edit Layout' /*for 508 compliance fix*/,
     'LBL_HISTORY_SUBPANEL_TITLE' => 'Notes',
     //For export labels

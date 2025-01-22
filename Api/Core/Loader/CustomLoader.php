@@ -49,12 +49,13 @@ use Slim\App;
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class CustomLoader
 {
-    const ERR_NO_ERROR = 0;
-    const ERR_FILE_NOT_FOUND = 1;
-    const ERR_ROUTE_FILE_NOT_FOUND = 2;
-    const ERR_WRONG_CUSTOM_FORMAT = 3;
+    public const ERR_NO_ERROR = 0;
+    public const ERR_FILE_NOT_FOUND = 1;
+    public const ERR_ROUTE_FILE_NOT_FOUND = 2;
+    public const ERR_WRONG_CUSTOM_FORMAT = 3;
     
     /**
      *

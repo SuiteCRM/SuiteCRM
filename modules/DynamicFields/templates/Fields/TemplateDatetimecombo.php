@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
 
+#[\AllowDynamicProperties]
 class TemplateDatetimecombo extends TemplateRange
 {
     public $type = 'datetimecombo';
@@ -145,9 +146,9 @@ class TemplateDatetimecombo extends TemplateRange
             $_REQUEST['default'] = $_REQUEST['defaultDate'].'&'.$_REQUEST['defaultTime'];
 
             $defaultTime = $_REQUEST['defaultTime'];
-            $hours = substr($defaultTime, 0, 2);
-            $minutes = substr($defaultTime, 3, 2);
-            $meridiem = substr($defaultTime, 5, 2);
+            $hours = substr((string) $defaultTime, 0, 2);
+            $minutes = substr((string) $defaultTime, 3, 2);
+            $meridiem = substr((string) $defaultTime, 5, 2);
             if (empty($meridiem)) {
                 if ($hours == '00') {
                     $hours = 12;

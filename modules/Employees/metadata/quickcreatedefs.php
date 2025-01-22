@@ -54,11 +54,11 @@ $viewdefs['Employees']['QuickCreate'] = array(
             array(
                 array(
                       'name'=>'employee_status',
-                      'customCode'=>'{if $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$EMPLOYEE_STATUS_READONLY}{/if}',
+                      'customCode'=>'{if $EDIT_REPORTS_TO || !empty($IS_ADMIN)}@@FIELD@@{else}{if isset($EMPLOYEE_STATUS_READONLY)}{$EMPLOYEE_STATUS_READONLY}{/if}{/if}',
                 ),
                 array(
                       'name'=>'title',
-                      'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$TITLE_READONLY}{/if}',
+                      'customCode'=>'{if  $EDIT_REPORTS_TO || !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($TITLE_READONLY)}{$TITLE_READONLY}{/if} {/if}',
                 ),
             ),
             array(
@@ -71,14 +71,14 @@ $viewdefs['Employees']['QuickCreate'] = array(
             array(
                 array(
                     'name'=>'department',
-                    'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$DEPT_READONLY}{/if}',
+                    'customCode'=>'{if  $EDIT_REPORTS_TO || !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($DEPT_READONLY)}{$DEPT_READONLY}{/if} {/if}',
                 ),
                 'phone_work'
             ),
             array(
                 array(
                     'name'=>'reports_to_name',
-                    'customCode'=>'{if  $EDIT_REPORTS_TO || $IS_ADMIN}@@FIELD@@{else}{$REPORTS_TO_READONLY}{/if}',
+                    'customCode'=>'{if  $EDIT_REPORTS_TO || !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($REPORTS_TO_READONLY)}{$REPORTS_TO_READONLY}{/if} {/if}',
                 ),
                 array(
                     'name'=>'email1',

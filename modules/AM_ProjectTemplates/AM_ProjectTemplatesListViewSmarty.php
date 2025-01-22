@@ -42,6 +42,7 @@ require_once('include/ListView/ListViewSmarty.php');
 require_once('AM_ProjectTemplatesListViewData.php');
 
 
+#[\AllowDynamicProperties]
 class AM_ProjectTemplatesListViewSmarty extends ListViewSmarty
 {
 
@@ -53,20 +54,5 @@ class AM_ProjectTemplatesListViewSmarty extends ListViewSmarty
     {
         parent::__construct();
         $this->lvd = new AM_ProjectTemplatesListViewData();
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 8.0,
-     * please update your code, use __construct instead
-     */
-    public function AM_ProjectTemplatesListViewSmarty()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 8.0, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
     }
 }

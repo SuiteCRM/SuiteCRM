@@ -61,7 +61,7 @@ global $sugar_config;
 global $version;
 global $container;
 
-preg_match("/\/api\/(.*?)\//", $_SERVER['REQUEST_URI'], $matches);
+preg_match("/\/api\/(.*?)\//", (string) $_SERVER['REQUEST_URI'], $matches);
 
 $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
 

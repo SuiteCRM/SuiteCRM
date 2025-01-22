@@ -51,12 +51,12 @@ var ERR_REENTER_PASSWORDS = '{/literal}{$MOD.ERR_REENTER_PASSWORDS}{literal}';
 <script type='text/javascript' src='{/literal}{sugar_getjspath file="modules/Users/PasswordRequirementBox.js"}{literal}'></script>
 <style type="text/css">
 <!--
-.body 
-{ 
+.body
+{
     font-size: 12px;
 }
-    
-.buttonLogin 
+
+.buttonLogin
 {
     border: 1px solid #444444;
     font-size: 11px;
@@ -64,34 +64,34 @@ var ERR_REENTER_PASSWORDS = '{/literal}{$MOD.ERR_REENTER_PASSWORDS}{literal}';
     background-color: #666666;
     font-weight: bold;
 }
-    
-table.tabForm td 
+
+table.tabForm td
 {
     border: none;
 }
 
-p 
+p
 {
     MARGIN-TOP: 0px;
     MARGIN-BOTTOM: 10px;
 }
-    
-form 
+
+form
 {
     margin: 0px;
 }
-    
-#recaptcha_image 
+
+#recaptcha_image
 {
     height: 47.5px !important;
     width: 250px !important;
 }
 
-#recaptcha_image img 
+#recaptcha_image img
 {
     height: 47.5px;
     width: 250px;
-} 	
+}
 -->
 </style>
 {/literal}
@@ -119,6 +119,7 @@ form
 			<input type='hidden' name='action' value="{$ACTION}" />
 			<input type='hidden' name='module' value="{$MODULE}" />
 			<input type="hidden" name="guid" value="{$GUID}" />
+			<input type="hidden" name="key" value="{$KEY}" />
 			<input type="hidden" name="return_module" value="Home" />
 			<input type="hidden" name="login" value="1" />
 			<input type="hidden" name="is_admin" value="{$IS_ADMIN}" />
@@ -135,7 +136,7 @@ form
 		<tr>
 			<td  colspan='2'><span id='post_error' class="error">{$EXPIRATION_TYPE}&nbsp;</span></td>
 		</tr>
-		
+
 		<tr>
 		{if $OLD_PASSWORD_FIELD == '' &&  $USERNAME_FIELD == '' }
 		<td  width="30%"></td><td></td>
@@ -160,7 +161,7 @@ form
 			<td>&nbsp;</td>
 			<td>
 			{$SUBMIT_BUTTON}
-			</td>		
+			</td>
 		</tr>
 		</table>
 	</td>

@@ -157,6 +157,8 @@ $mod_strings = array(
     'LBL_VIEW_DETAIL' => 'View Details',
     'LBL_OVERRIDE_BUSINESS_HOURS' => 'Consider Working days',
 
+    'LBL_IMPORT_PROJECTS' => 'Import Projects',
+    
     'LBL_PROJECTS_SEARCH' => 'Search Projects',
     'LBL_USERS_SEARCH' => 'Search Users',
     'LBL_CONTACTS_SEARCH' => 'Select  Contacts',
@@ -174,4 +176,6 @@ $mod_strings = array(
     'LBL_AM_PROJECTTEMPLATES_PROJECT_1_FROM_PROJECT_TITLE' => 'Project Templates: Project from Project Title',
     'LBL_AOS_QUOTES_PROJECT' => 'Quotes: Project',
 
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
 );

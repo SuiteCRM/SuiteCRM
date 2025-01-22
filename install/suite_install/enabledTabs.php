@@ -33,7 +33,6 @@ $enabled_tabs[] = 'jjwg_Markers';
 $enabled_tabs[] = 'jjwg_Areas';
 $enabled_tabs[] = 'jjwg_Address_Cache';
 $enabled_tabs[] = 'AOR_Reports';
-$enabled_tabs[] = 'AOW_WorkFlow';
 $enabled_tabs[] = 'AOK_KnowledgeBase';
 $enabled_tabs[] = 'AOK_Knowledge_Base_Categories';
 $enabled_tabs[] = 'EmailTemplates';

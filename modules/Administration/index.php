@@ -94,7 +94,7 @@ foreach ($admin_group_header as $key=>$values) {
             $colnum=0;
             $i=0;
             $fix = array_keys($values[3]);
-            if (count($values[3])>1) {
+            if ((is_countable($values[3]) ? count($values[3]) : 0)>1) {
 
                 //////////////////
                 $tmp_array = $values[3];
@@ -114,6 +114,7 @@ foreach ($admin_group_header as $key=>$values) {
 
             foreach ($mod as $link_idx =>$admin_option) {
                 if (!empty($GLOBALS['admin_access_control_links']) && in_array($link_idx, $GLOBALS['admin_access_control_links'])) {
+                    unset($values_3_tab[$j][$link_idx]);
                     continue;
                 }
                 $colnum+=1;

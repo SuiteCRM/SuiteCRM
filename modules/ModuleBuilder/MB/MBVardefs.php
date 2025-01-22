@@ -38,6 +38,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class MBVardefs
 {
     public $templates = array();
@@ -55,21 +56,6 @@ class MBVardefs
         $this->key_name = $key_name;
         $this->load();
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function MBVardefs($name, $path, $key_name)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($name, $path, $key_name);
-    }
-
 
     public function loadTemplate($by_group, $template, $file)
     {
@@ -149,7 +135,7 @@ class MBVardefs
 
     public function addFieldVardef($vardef)
     {
-        if (!isset($vardef['default']) || strlen($vardef['default']) == 0) {
+        if (!isset($vardef['default']) || strlen((string) $vardef['default']) == 0) {
             unset($vardef['default']);
         }
         $this->vardef['fields'][$vardef['name']] = $vardef;

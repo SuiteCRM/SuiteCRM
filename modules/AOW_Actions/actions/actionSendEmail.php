@@ -47,21 +47,6 @@ class actionSendEmail extends actionBase
         $this->clearLastEmailsStatus();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function actionSendEmail($id = '')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id);
-    }
-
-
     public function loadJS()
     {
         return array('modules/AOW_Actions/actions/actionSendEmail.js');
@@ -165,7 +150,7 @@ class actionSendEmail extends actionBase
         return $html;
     }
 
-    private function getEmailsFromParams(SugarBean $bean, $params)
+    protected function getEmailsFromParams(SugarBean $bean, $params)
     {
         $emails = array();
         //backward compatible
@@ -341,13 +326,17 @@ class actionSendEmail extends actionBase
         $attachments = $this->getAttachments($emailTemp);
 
         $ret = true;
+
+        $emailCC = $emails['cc'] ?? '';
+        $emailBCC = $emails['bcc'] ?? '';
+
         if (isset($params['individual_email']) && $params['individual_email']) {
             foreach ($emails['to'] as $email_to) {
                 $emailTemp = BeanFactory::newBean('EmailTemplates');
                 $emailTemp->retrieve($params['email_template']);
-                $template_override = isset($emails['template_override'][$email_to]) ? $emails['template_override'][$email_to] : array();
+                $template_override = $emails['template_override'][$email_to] ?? array();
                 $this->parse_template($bean, $emailTemp, $template_override);
-                if (!$this->sendEmail(array($email_to), $emailTemp->subject, $emailTemp->body_html, $emailTemp->body, $bean, $emails['cc'], $emails['bcc'], $attachments)) {
+                if (!$this->sendEmail(array($email_to), $emailTemp->subject, $emailTemp->body_html, $emailTemp->body, $bean, $emailCC, $emailBCC, $attachments)) {
                     $ret = false;
                     $this->lastEmailsFailed++;
                 } else {
@@ -357,12 +346,14 @@ class actionSendEmail extends actionBase
         } else {
             $this->parse_template($bean, $emailTemp);
             if ($emailTemp->text_only == '1') {
-                $email_body_html = $emailTemp->body;
+                $email_body = $emailTemp->body;
+                $email_body_alt = null;
             } else {
-                $email_body_html = $emailTemp->body_html;
+                $email_body = $emailTemp->body_html;
+                $email_body_alt = $emailTemp->body;
             }
 
-            if (!$this->sendEmail($emails['to'], $emailTemp->subject, $email_body_html, $emailTemp->body, $bean, $emails['cc'], $emails['bcc'], $attachments)) {
+            if (!$this->sendEmail($emails['to'], $emailTemp->subject, $email_body, $email_body_alt, $bean, $emailCC, $emailBCC, $attachments)) {
                 $ret = false;
                 $this->lastEmailsFailed++;
             } else {
@@ -401,17 +392,19 @@ class actionSendEmail extends actionBase
 
     public function parse_template(SugarBean $bean, &$template, $object_override = array())
     {
+
         global $sugar_config;
 
         require_once __DIR__ . '/templateParser.php';
 
+        $object_arr = [];
         $object_arr[$bean->module_dir] = $bean->id;
 
         foreach ($bean->field_defs as $bean_arr) {
             if ($bean_arr['type'] == 'relate') {
                 if (isset($bean_arr['module']) &&  $bean_arr['module'] != '' && isset($bean_arr['id_name']) &&  $bean_arr['id_name'] != '' && $bean_arr['module'] != 'EmailAddress') {
                     $idName = $bean_arr['id_name'];
-                    if (isset($bean->field_defs[$idName]) && $bean->field_defs[$idName]['source'] != 'non-db') {
+                    if (isset($bean->field_defs[$idName]) && ($bean->field_defs[$idName]['source'] ?? '') != 'non-db') {
                         if (!isset($object_arr[$bean_arr['module']])) {
                             $object_arr[$bean_arr['module']] = $bean->$idName;
                         }
@@ -439,7 +432,7 @@ class actionSendEmail extends actionBase
 
         $object_arr = array_merge($object_arr, $object_override);
 
-        $parsedSiteUrl = parse_url($sugar_config['site_url']);
+        $parsedSiteUrl = parse_url((string) $sugar_config['site_url']);
         $host = $parsedSiteUrl['host'];
         if (!isset($parsedSiteUrl['port'])) {
             $parsedSiteUrl['port'] = 80;
@@ -451,15 +444,15 @@ class actionSendEmail extends actionBase
 
         $url =  $cleanUrl."/index.php?module={$bean->module_dir}&action=DetailView&record={$bean->id}";
 
-        $template->subject = str_replace("\$contact_user", "\$user", $template->subject);
-        $template->body_html = str_replace("\$contact_user", "\$user", $template->body_html);
-        $template->body = str_replace("\$contact_user", "\$user", $template->body);
+        $template->subject = str_replace("\$contact_user", "\$user", (string) $template->subject);
+        $template->body_html = str_replace("\$contact_user", "\$user", (string) $template->body_html);
+        $template->body = str_replace("\$contact_user", "\$user", (string) $template->body);
         $template->subject = aowTemplateParser::parse_template($template->subject, $object_arr);
         $template->body_html = aowTemplateParser::parse_template($template->body_html, $object_arr);
-        $template->body_html = str_replace("\$url", $url, $template->body_html);
+        $template->body_html = str_replace("\$url", $url, (string) $template->body_html);
         $template->body_html = str_replace('$sugarurl', $sugar_config['site_url'], $template->body_html);
         $template->body = aowTemplateParser::parse_template($template->body, $object_arr);
-        $template->body = str_replace("\$url", $url, $template->body);
+        $template->body = str_replace("\$url", $url, (string) $template->body);
         $template->body = str_replace('$sugarurl', $sugar_config['site_url'], $template->body);
     }
 
@@ -495,11 +488,13 @@ class actionSendEmail extends actionBase
         $mail->ClearReplyTos();
         $mail->Subject=from_html($emailSubject);
         $mail->Body=$emailBody;
-        $mail->AltBody = $altemailBody;
+        if($altemailBody){
+            $mail->AltBody = $altemailBody;
+        }
         $mail->handleAttachments($attachments);
         $mail->prepForOutbound();
 
-        if (empty($emailTo)) {
+        if ((empty($emailTo)) || (!is_array($emailTo))) {
             return false;
         }
         foreach ($emailTo as $to) {
@@ -514,6 +509,13 @@ class actionSendEmail extends actionBase
             foreach ($emailBcc as $email) {
                 $mail->AddBCC($email);
             }
+        }
+        if (!is_array($emailCc)) {
+            $emailCc = [];
+        }
+
+        if (!is_array($emailBcc)) {
+            $emailBcc = [];
         }
 
         //now create email

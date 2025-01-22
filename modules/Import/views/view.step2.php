@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Import/views/ImportView.php');
 
 
+#[\AllowDynamicProperties]
 class ImportViewStep2 extends ImportView
 {
     protected $pageTitleKey = 'LBL_STEP_2_TITLE';
@@ -72,10 +73,10 @@ class ImportViewStep2 extends ImportView
         $this->ss->assign("TYPE", (!empty($_REQUEST['type']) ? $_REQUEST['type'] : "import"));
         $this->ss->assign("CUSTOM_DELIMITER", (!empty($_REQUEST['custom_delimiter']) ? $_REQUEST['custom_delimiter'] : ","));
         $this->ss->assign("CUSTOM_ENCLOSURE", htmlentities(
-            (!empty($_REQUEST['custom_enclosure']) && $_REQUEST['custom_enclosure'] != 'other'
+            ((string) (!empty($_REQUEST['custom_enclosure']) && $_REQUEST['custom_enclosure'] != 'other'
                 ? $_REQUEST['custom_enclosure'] :
                 (!empty($_REQUEST['custom_enclosure_other'])
-                    ? $_REQUEST['custom_enclosure_other'] : ""))
+                    ? $_REQUEST['custom_enclosure_other'] : "")))
         ));
 
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
@@ -100,7 +101,7 @@ class ImportViewStep2 extends ImportView
         $import_map_seed = BeanFactory::newBean('Import_1');
         $custom_imports_arr = $import_map_seed->retrieve_all_by_string_fields(array('assigned_user_id' => $current_user->id, 'is_published' => 'no','module' => $_REQUEST['import_module']));
 
-        if (count($custom_imports_arr)) {
+        if (is_countable($custom_imports_arr) ? count($custom_imports_arr) : 0) {
             $custom = array();
             foreach ($custom_imports_arr as $import) {
                 $custom[] = array( "IMPORT_NAME" => $import->name,"IMPORT_ID"   => $import->id);
@@ -110,7 +111,7 @@ class ImportViewStep2 extends ImportView
 
         // get globally defined import maps
         $published_imports_arr = $import_map_seed->retrieve_all_by_string_fields(array('is_published' => 'yes', 'module' => $_REQUEST['import_module'],));
-        if (count($published_imports_arr)) {
+        if (is_countable($published_imports_arr) ? count($published_imports_arr) : 0) {
             $published = array();
             foreach ($published_imports_arr as $import) {
                 $published[] = array("IMPORT_NAME" => $import->name, "IMPORT_ID"   => $import->id);

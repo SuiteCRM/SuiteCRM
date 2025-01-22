@@ -273,13 +273,13 @@ class Sugarpdf extends TCPDF
     * @access public
     * @see include/tcpdf/TCPDF#SetFont()
     */
-    public function SetFont($family, $style='', $size=0, $fontfile='')
+    public function SetFont($family, $style = '', $size = null, $fontfile = '', $subset = 'default', $out = true)
     {
         if (empty($fontfile) && defined('K_PATH_CUSTOM_FONTS')) {
             // This will force addFont to search the custom directory for font before the OOB directory
-            $fontfile = K_PATH_CUSTOM_FONTS."phantomFile.phantom";
+            $fontfile = K_PATH_CUSTOM_FONTS . "phantomFile.phantom";
         }
-        parent::SetFont($family, $style, $size, $fontfile);
+        parent::SetFont($family, $style, $size, $fontfile, $subset, $out);
     }
 
     public function Info()
@@ -304,9 +304,9 @@ class Sugarpdf extends TCPDF
      * The cell method is used by all the methods which print text (Write, MultiCell).
      * @see include/tcpdf/TCPDF#Cell()
      */
-    public function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=0, $link='', $stretch=0, $ignore_min_height=false)
+    public function Cell($w, $h = 0, $txt = '', $border = 0, $ln = 0, $align = '', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M')
     {
-        parent::Cell($w, $h, prepare_string($txt), $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height);
+        parent::Cell($w, $h, prepare_string($txt), $border, $ln, $align, $fill, $link, $stretch, $ignore_min_height, $calign, $valign);
     }
 
     /**
@@ -640,7 +640,7 @@ class Sugarpdf extends TCPDF
     * @since 4.5.011
     * @OVERRIDE
     */
-    public function getNumLines($txt, $w=0)
+    public function getNumLines($txt, $w = 0, $reseth = false, $autopadding = true, $cellpadding = '', $border = 0)
     {
         $lines = 0;
         if (empty($w) or ($w <= 0)) {

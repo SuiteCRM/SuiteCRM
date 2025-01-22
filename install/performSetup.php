@@ -46,14 +46,14 @@ function installStatus($msg, $cmd = null, $overwrite = false, $before = '[ok]<br
 {
     $fname = 'install/status.json';
     if (!$overwrite && file_exists($fname)) {
-        $stat = json_decode(file_get_contents($fname));
+        $stat = json_decode(file_get_contents($fname), null, 512, JSON_THROW_ON_ERROR);
         //$msg = json_encode($stat);
         $msg = $stat->message . $before . $msg;
     }
     file_put_contents($fname, json_encode(array(
         'message' => $msg,
         'command' => $cmd,
-    )));
+    ), JSON_THROW_ON_ERROR));
 }
 installStatus($mod_strings['LBL_START'], null, true, '');
 
@@ -100,7 +100,7 @@ $setup_site_admin_user_name         = $_SESSION['setup_site_admin_user_name'];
 $setup_site_admin_password          = $_SESSION['setup_site_admin_password'];
 $setup_site_guid                    = (isset($_SESSION['setup_site_specify_guid']) && $_SESSION['setup_site_specify_guid'] != '') ? $_SESSION['setup_site_guid'] : '';
 $setup_site_url                     = $_SESSION['setup_site_url'];
-$parsed_url                         = parse_url($setup_site_url);
+$parsed_url                         = parse_url((string) $setup_site_url);
 $setup_site_host_name               = $parsed_url['host'];
 $setup_site_log_dir                 = isset($_SESSION['setup_site_custom_log_dir']) ? $_SESSION['setup_site_log_dir'] : '.';
 $setup_site_log_file                = 'suitecrm.log';  // may be an option later
@@ -158,7 +158,7 @@ $bottle = handleSugarConfig();
 //handleLog4Php();
 
 $server_software = $_SERVER["SERVER_SOFTWARE"];
-if (strpos($server_software, 'Microsoft-IIS') !== false) {
+if (strpos((string) $server_software, 'Microsoft-IIS') !== false) {
     installLog("calling handleWebConfig()");
     handleWebConfig();
 } else {
@@ -465,12 +465,7 @@ FP;
     $enabled_tabs[] = 'AOS_Products';
     $enabled_tabs[] = 'AOS_Product_Categories';
     $enabled_tabs[] = 'AOS_PDF_Templates';
-    $enabled_tabs[] = 'jjwg_Maps';
-    $enabled_tabs[] = 'jjwg_Markers';
-    $enabled_tabs[] = 'jjwg_Areas';
-    $enabled_tabs[] = 'jjwg_Address_Cache';
     $enabled_tabs[] = 'AOR_Reports';
-    $enabled_tabs[] = 'AOW_WorkFlow';
     $enabled_tabs[] = 'AOK_KnowledgeBase';
     $enabled_tabs[] = 'AOK_Knowledge_Base_Categories';
     $enabled_tabs[] = 'EmailTemplates';
@@ -505,7 +500,7 @@ if (isset($_SESSION['installation_scenarios'])) {
         //If the item is not in $_SESSION['scenarios'], then unset them as they are not required
         if (!in_array($scenario['key'], $_SESSION['scenarios'])) {
             foreach ($scenario['modules'] as $module) {
-                if (($removeKey = array_search($module, $enabled_tabs)) !== false) {
+                if (($removeKey = array_search($module, $enabled_tabs, true)) !== false) {
                     unset($enabled_tabs[$removeKey]);
                 }
             }
@@ -535,16 +530,12 @@ if (!is_null($_SESSION['scenarios'])) {
 
 
 //Write the tabstructure to custom so that the grouping are not shown for the un-selected scenarios
-$fp = sugar_fopen('custom/include/tabConfig.php', 'w');
 $fileContents = "<?php \n" .'$GLOBALS["tabStructure"] ='.var_export($GLOBALS['tabStructure'], true).';';
-fwrite($fp, $fileContents);
-fclose($fp);
+sugar_file_put_contents('custom/include/tabConfig.php', $fileContents);
 
 //Write the dashlets to custom so that the dashlets are not shown for the un-selected scenarios
-$fp = sugar_fopen('custom/modules/Home/dashlets.php', 'w');
 $fileContents = "<?php \n" .'$defaultDashlets ='.var_export($defaultDashlets, true).';';
-fwrite($fp, $fileContents);
-fclose($fp);
+sugar_file_put_contents('custom/modules/Home/dashlets.php', $fileContents);
 
 
 // End of the scenario implementations
@@ -721,7 +712,9 @@ $_POST['user_theme'] = (string) SugarThemeRegistry::getDefault();
 $_REQUEST['do_not_redirect'] = true;
 
 // restore superglobals and vars
-$GLOBALS = $varStack['GLOBALS'];
+foreach ($varStack['GLOBALS'] ?? [] as $index => $item) {
+    $GLOBALS[$index] = $item;
+}
 foreach ($varStack['defined_vars'] as $__key => $__value) {
     $$__key = $__value;
 }
@@ -732,12 +725,12 @@ $endTime = microtime(true);
 $deltaTime = $endTime - $startTime;
 
 if (!is_array($bottle) || !is_object($bottle)) {
-    $bottle = (array)$bottle;
+    $bottle = $bottle;
     LoggerManager::getLogger()->warn('Bottle needs to be an array to perform setup');
 }
 
 
-if (count($bottle) > 0) {
+if (is_countable($bottle) && count($bottle) > 0) {
     foreach ($bottle as $bottle_message) {
         $bottleMsg .= "{$bottle_message}\n";
     }

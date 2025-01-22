@@ -5,6 +5,7 @@ use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\Factory\ValidatorFactory;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[\AllowDynamicProperties]
 abstract class BaseOption
 {
     /**

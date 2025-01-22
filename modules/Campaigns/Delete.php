@@ -50,7 +50,7 @@ if (!isset($_REQUEST['record'])) {
 $focus = BeanFactory::newBean('Campaigns');
 $focus->retrieve($_REQUEST['record']);
 
-if (isset($_REQUEST['mode']) and $_REQUEST['mode']=='Test') {
+if (isset($_REQUEST['mode']) && $_REQUEST['mode']=='Test') {
     //deletes all data associated with the test run.
     require_once('modules/Campaigns/DeleteTestCampaigns.php');
     $deleteTest = new DeleteTestCampaigns();

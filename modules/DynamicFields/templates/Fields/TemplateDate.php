@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
 
+#[\AllowDynamicProperties]
 class TemplateDate extends TemplateRange
 {
     public $type = 'date';

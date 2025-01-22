@@ -106,9 +106,15 @@ if (isset($_REQUEST['run']) && ($_REQUEST['run'] != "")) {
             $perform = true;
             $base_filename = urldecode($tempFile);
         } elseif (!empty($_REQUEST['load_module_from_dir'])) {
-            $moduleDir = $_REQUEST['load_module_from_dir'];
-            if (strpos($moduleDir, 'phar://') !== false) {
-                die();
+            $moduleDir = $_REQUEST['load_module_from_dir'] ?? '';
+            if (stripos((string) $moduleDir, 'phar://') !== false) {
+                LoggerManager::getLogger()->fatal("UpgradeWizard - invalid load_module_from_dir: " . $moduleDir);
+                throw new RuntimeException('Invalid request');
+            }
+
+            if (strtolower(pathinfo(urldecode($_REQUEST['upgrade_zip_escaped'] ?? ''), PATHINFO_EXTENSION)) !== 'zip'){
+                LoggerManager::getLogger()->fatal("UpgradeWizard - invalid upgrade_zip_escaped: " . $_REQUEST['upgrade_zip_escaped'] ?? '');
+                throw new RuntimeException("Invalid request");
             }
             //copy file to proper location then call performSetup
             copy($moduleDir . '/' . $_REQUEST['upgrade_zip_escaped'], "upload://" . $_REQUEST['upgrade_zip_escaped']);
@@ -121,7 +127,7 @@ if (isset($_REQUEST['run']) && ($_REQUEST['run'] != "")) {
             } else {
                 $upload = new UploadFile('upgrade_zip');
                 if (!$upload->confirm_upload() ||
-                    strtolower(pathinfo($upload->get_stored_file_name(), PATHINFO_EXTENSION)) != 'zip' ||
+                    strtolower(pathinfo((string) $upload->get_stored_file_name(), PATHINFO_EXTENSION)) != 'zip' ||
                     !$upload->final_move($upload->get_stored_file_name())
                     ) {
                     unlinkTempFiles();
@@ -168,7 +174,7 @@ if (isset($_REQUEST['run']) && ($_REQUEST['run'] != "")) {
                     }
                 }
 
-                $base_filename = pathinfo($tempFile, PATHINFO_BASENAME);
+                $base_filename = pathinfo((string) $tempFile, PATHINFO_BASENAME);
 
                 mkdir_recursive("$base_upgrade_dir/$upgrade_zip_type");
                 $target_path = "$base_upgrade_dir/$upgrade_zip_type/$base_filename";
@@ -176,7 +182,7 @@ if (isset($_REQUEST['run']) && ($_REQUEST['run'] != "")) {
 
                 if (isset($manifest['icon']) && $manifest['icon'] != "") {
                     $icon_location = extractFile($tempFile, $manifest['icon']);
-                    copy($icon_location, remove_file_extension($target_path)."-icon.".pathinfo($icon_location, PATHINFO_EXTENSION));
+                    copy($icon_location, remove_file_extension($target_path)."-icon.".pathinfo((string) $icon_location, PATHINFO_EXTENSION));
                 }
 
                 if (rename($tempFile, $target_path)) {
@@ -200,7 +206,7 @@ if (isset($_REQUEST['run']) && ($_REQUEST['run'] != "")) {
 
             $checkFile = strtolower($delete_me);
 
-            if (substr($delete_me, -4) != ".zip" || substr($delete_me, 0, 9) != "upload://" ||
+            if (substr((string) $delete_me, -4) != ".zip" || substr((string) $delete_me, 0, 9) != "upload://" ||
         strpos($checkFile, "..") !== false || !file_exists($checkFile)) {
                 die("<span class='error'>File is not a zipped archive.</span>");
             }

@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/generic/SugarWidgets/SugarWidgetField.php');
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelEditSecurityGroupUserButton extends SugarWidgetField
 {
     public function displayHeaderCell($layout_def)

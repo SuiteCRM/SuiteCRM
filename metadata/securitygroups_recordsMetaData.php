@@ -5,7 +5,7 @@ $dictionary['securitygroups_records'] = array(
         array('name' =>'id', 'type' =>'char', 'len'=>'36', 'required'=>true, 'default'=>'')
       , array('name' =>'securitygroup_id', 'type' =>'char', 'len'=>'36')
       , array('name' =>'record_id', 'type' =>'char', 'len'=>'36')
-      , array('name' =>'module', 'type' =>'char', 'len'=>'36')
+      , array('name' =>'module', 'type' =>'varchar', 'len'=>'100')
       , array('name' =>'date_modified','type' => 'datetime')
       , array('name' =>'modified_user_id', 'type' =>'char', 'len'=>'36')
       , array('name' =>'created_by', 'type' =>'char', 'len'=>'36')

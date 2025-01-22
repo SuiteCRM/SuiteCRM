@@ -49,6 +49,7 @@ require_once 'modules/ModuleBuilder/parsers/views/HistoryInterface.php';
 /**
  * Class History
  */
+#[\AllowDynamicProperties]
 class History implements HistoryInterface
 {
 
@@ -171,6 +172,7 @@ class History implements HistoryInterface
      */
     public function append($path)
     {
+        $time = '';
         // make sure we don't have a duplicate filename - highly unusual as two people should not be using Studio/MB concurrently, but when testing quite possible to do two appends within one second...
         // because so unlikely in normal use we handle this the naive way by waiting a second so our naming scheme doesn't get overelaborated
         $retries = 0;

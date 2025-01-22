@@ -19,7 +19,7 @@ class PathsTest extends SuitePHPUnitFrameworkTestCase
      */
     private static $projectPath;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         if (self::$paths === null) {
@@ -27,28 +27,28 @@ class PathsTest extends SuitePHPUnitFrameworkTestCase
         }
 
         if (self::$projectPath === null) {
-            self::$projectPath = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+            self::$projectPath = dirname(__DIR__, 6);
         }
     }
 
-    public function testGetProjectPath()
+    public function testGetProjectPath(): void
     {
         $expected =  self::$projectPath;
         $actual = self::$paths->getProjectPath();
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
-    public function testGetLibraryPath()
+    public function testGetLibraryPath(): void
     {
         $expected =  self::$projectPath.'/lib';
         $actual = self::$paths->getLibraryPath();
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
-    public function testGetContainersPath()
+    public function testGetContainersPath(): void
     {
         $expected =  self::$projectPath.'/lib/API/core/containers.php';
         $actual = self::$paths->getContainersFilePath();
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 }

@@ -69,9 +69,8 @@
 }
 
 #panels {
-  position: absolute;
+  position: inherit;
   padding: 5px;
-  margin-left: 200px;
   border: 1px solid $panel-default-border;
   border-radius: $border-radius-base;
   float: right;
@@ -263,4 +262,18 @@ body > .le_panel .le_edit, #toolbox .le_panel .le_edit {
 
 #factory-module table.wizardButtonDown {
   border: 1px solid $color-46;
+}
+
+#layoutEditor {
+    position: relative;
+}
+
+#layoutEditor #panels {
+    position: absolute;
+    right: 0;
+}
+
+#layoutEditor #toolbox {
+    position: absolute;
+    left: 0;
 }

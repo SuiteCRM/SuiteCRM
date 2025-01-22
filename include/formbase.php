@@ -78,12 +78,12 @@ function populateFromPost($prefix, &$focus, $skipRetrieve = false, $checkACL = f
 {
     global $current_user;
 
-    /* BEGIN - SECURITY GROUPS */ 
+    /* BEGIN - SECURITY GROUPS */
     if(!empty($_REQUEST['dup_checked']) && !empty($_REQUEST[$prefix.'id']))
     {
         $focus->new_with_id = true;
     }
-    /* END - SECURITY GROUPS */ 
+    /* END - SECURITY GROUPS */
 
     if (!empty($_REQUEST[$prefix.'record']) && !$skipRetrieve) {
         $focus->retrieve($_REQUEST[$prefix.'record']);
@@ -99,7 +99,7 @@ function populateFromPost($prefix, &$focus, $skipRetrieve = false, $checkACL = f
     }
     require_once('include/SugarFields/SugarFieldHandler.php');
     $sfh = new SugarFieldHandler();
-   
+
     $isOwner = $focus->isOwner($current_user->id);
     $relatedFields = array();
     foreach ($focus->field_defs as $field => $def) {
@@ -256,19 +256,20 @@ function handleRedirect($return_id='', $return_module='', $additionalFlags = fal
 //eggsurplus: abstract to simplify unit testing
 function buildRedirectURL($return_id='', $return_module='')
 {
+    $status = '';
     if (isset($_REQUEST['return_module']) && $_REQUEST['return_module'] != "") {
         $return_module = $_REQUEST['return_module'];
     } else {
         $return_module = $return_module;
     }
     if (isset($_REQUEST['return_action']) && $_REQUEST['return_action'] != "") {
-        
+
        //if we are doing a "Close and Create New"
         if (isCloseAndCreateNewPressed()) {
             $return_action = "EditView";
             $isDuplicate = "true";
             $status = "";
-            
+
             // Meeting Integration
             if (isset($_REQUEST['meetingIntegrationFlag']) && $_REQUEST['meetingIntegrationFlag'] == 1) {
                 $additionalFlags = array('meetingIntegrationShowForm' => '1');
@@ -297,7 +298,7 @@ function buildRedirectURL($return_id='', $return_module='')
     } else {
         $return_action = "DetailView";
     }
-    
+
     if (isset($_REQUEST['return_id']) && $_REQUEST['return_id'] != "") {
         $return_id = $_REQUEST['return_id'];
     }
@@ -308,7 +309,7 @@ function buildRedirectURL($return_id='', $return_module='')
             $add .= "&{$k}={$v}";
         }
     }
-    
+
     if (!isset($isDuplicate) || !$isDuplicate) {
         $url="index.php?action=$return_action&module=$return_module&record=$return_id&return_module=$return_module&return_action=$return_action{$add}";
         if (isset($_REQUEST['offset']) && empty($_REQUEST['duplicateSave'])) {

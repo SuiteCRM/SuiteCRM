@@ -40,6 +40,7 @@
 
 namespace SuiteCRM\Utility;
 
+#[\AllowDynamicProperties]
 class CurrentLanguage
 {
     public function getCurrentLanguage()

@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelDelegatesSelectButton extends SugarWidgetSubPanelTopButton
 {
     public function display($defines, $additionalFormFields = null, $nonbutton = false)

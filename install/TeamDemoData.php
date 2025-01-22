@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class TeamDemoData
 {
     public $_team;
@@ -75,21 +76,6 @@ class TeamDemoData
         $this->_team = $seed_team;
         $this->_large_scale_test = $large_scale_test;
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function TeamDemoData($seed_team, $large_scale_test = false)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($seed_team, $large_scale_test);
-    }
-
 
     /**
      *
@@ -134,7 +120,7 @@ class TeamDemoData
     public function get_random_team()
     {
         $team_list = $this->_seed_data_get_team_list();
-        $team_list_size = count($team_list);
+        $team_list_size = is_countable($team_list) ? count($team_list) : 0;
         $random_index = mt_rand(0, $team_list_size-1);
 
         return $team_list[$random_index];
@@ -146,7 +132,7 @@ class TeamDemoData
     public function get_random_teamset()
     {
         $team_list = $this->_seed_data_get_teamset_list();
-        $team_list_size = count($team_list);
+        $team_list_size = is_countable($team_list) ? count($team_list) : 0;
         $random_index = mt_rand(0, $team_list_size-1);
 
         return $team_list[$random_index];

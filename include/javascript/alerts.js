@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-var AlertObj=function(){this.title='Alert';this.options={};this.options.body=' ';this.options.url_redirect='';this.options.target_module='';this.options.type='info';};var Alerts=function(){};Alerts.prototype.replaceMessages=[];Alerts.prototype.enable=function(){var alert=new AlertObj();if(!("Notification"in window)){alert.title=SUGAR.language.translate('app_strings','MSG_BROWSER_NOTIFICATIONS_UNSUPPORTED');Alerts.prototype.show(alert);return;}
+ */var AlertObj=function(){this.title='Alert';this.options={};this.options.body=' ';this.options.url_redirect='';this.options.target_module='';this.options.type='info';};var Alerts=function(){};Alerts.prototype.replaceMessages=[];Alerts.prototype.enable=function(){var alert=new AlertObj();if(!("Notification"in window)){alert.title=SUGAR.language.translate('app_strings','MSG_BROWSER_NOTIFICATIONS_UNSUPPORTED');Alerts.prototype.show(alert);return;}
 Notification.requestPermission(function(permission){if(permission==="granted"){alert.title=SUGAR.language.translate('app_strings','MSG_BROWSER_NOTIFICATIONS_ENABLED');}
 else{alert.title=SUGAR.language.translate('app_strings','MSG_BROWSER_NOTIFICATIONS_DISABLED');}
 Alerts.prototype.show(alert);});};Alerts.prototype.requestPermission=function(){if(!("Notification"in window)){return;}

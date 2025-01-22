@@ -4,6 +4,7 @@ namespace Api\V8\JsonApi\Helper;
 use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\JsonApi\Response\AttributeResponse;
 
+#[\AllowDynamicProperties]
 class AttributeObjectHelper
 {
     /**
@@ -29,6 +30,24 @@ class AttributeObjectHelper
     {
         $bean->fixUpFormatting();
 
+        $allowedField = [];
+
+        $fieldsToParse = $fields;
+        if (empty($fields)) {
+            $fieldsToParse =  array_keys($bean->field_defs);
+        }
+
+        foreach ($fieldsToParse ?? [] as $index => $field) {
+            $isSensitive = isTrue($bean->field_defs[$field]['sensitive'] ?? false);
+            $notApiVisible = isFalse($bean->field_defs[$field]['api-visible'] ?? true);
+
+            if ($isSensitive || $notApiVisible){
+                continue;
+            }
+
+            $allowedField[$index] = $field;
+        }
+
         // using the ISO 8601 format for dates
         $attributes = array_map(function ($value) {
             return is_string($value)
@@ -38,8 +57,8 @@ class AttributeObjectHelper
                 : $value;
         }, $bean->toArray());
 
-        if ($fields !== null) {
-            $attributes = array_intersect_key($attributes, array_flip($fields));
+        if ($allowedField !== null) {
+            $attributes = array_intersect_key($attributes, array_flip($allowedField));
         }
 
         unset($attributes['id']);

@@ -58,6 +58,7 @@ $mod_strings = array(
     'LBL_OOTB_CLEANUP_QUEUE' => 'Clean Jobs Queue',
     'LBL_OOTB_REMOVE_DOCUMENTS_FROM_FS' => 'Removal of documents from filesystem',
     'LBL_OOTB_GOOGLE_CAL_SYNC' => 'Google Calendar Sync',
+    'LBL_OOTB_ELASTIC_INDEX' => 'Perform Elasticsearch Index',
 
 // List Labels
     'LBL_LIST_JOB_INTERVAL' => 'Interval:',
@@ -147,6 +148,7 @@ $mod_strings = array(
     'LBL_POLLMONITOREDINBOXESFORBOUNCEDCAMPAIGNEMAILS' => 'Run Nightly Process Bounced Campaign Emails',
     'LBL_PRUNEDATABASE' => 'Prune Database on 1st of Month',
     'LBL_TRIMTRACKER' => 'Prune Tracker Tables',
+    'LBL_TRIMSUGARFEEDS' => 'Prune SuiteCRM Feed Tables',
     'LBL_SENDEMAILREMINDERS' => 'Run Email Reminders Sending',
     'LBL_CLEANJOBQUEUE' => 'Cleanup Job Queue',
     'LBL_REMOVEDOCUMENTSFROMFS' => 'Removal of documents from filesystem',

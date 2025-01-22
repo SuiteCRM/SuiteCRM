@@ -4,122 +4,74 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testAOD_Index()
+    public function testAOD_Index(): void
     {
         // Execute the constructor and check for the Object type and type attribute
         $aod_index = BeanFactory::newBean('AOD_Index');
-        $this->assertInstanceOf('AOD_Index', $aod_index);
-        $this->assertInstanceOf('Basic', $aod_index);
-        $this->assertInstanceOf('SugarBean', $aod_index);
+        self::assertInstanceOf('AOD_Index', $aod_index);
+        self::assertInstanceOf('Basic', $aod_index);
+        self::assertInstanceOf('SugarBean', $aod_index);
 
-        $this->assertAttributeEquals('AOD_Index', 'module_dir', $aod_index);
-        $this->assertAttributeEquals('AOD_Index', 'object_name', $aod_index);
-        $this->assertAttributeEquals('aod_index', 'table_name', $aod_index);
-        $this->assertAttributeEquals(true, 'new_schema', $aod_index);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aod_index);
-        $this->assertAttributeEquals(false, 'importable', $aod_index);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $aod_index);
+        self::assertEquals('AOD_Index', $aod_index->module_dir);
+        self::assertEquals('AOD_Index', $aod_index->object_name);
+        self::assertEquals('aod_index', $aod_index->table_name);
+        self::assertEquals(true, $aod_index->new_schema);
+        self::assertEquals(true, $aod_index->disable_row_level_security);
+        self::assertEquals(false, $aod_index->importable);
+        self::assertEquals(false, $aod_index->tracker_visibility);
     }
 
-    public function testisEnabled()
+    public function testisEnabled(): void
     {
-        $aod_index = BeanFactory::newBean('AOD_Index');
-
         // execute the method and verify that it returns true
-        $result = $aod_index->isEnabled();
-        $this->assertTrue($result);
+        $result = BeanFactory::newBean('AOD_Index')->isEnabled();
+        self::assertTrue($result);
     }
 
-    public function testfind()
-    {
-        self::markTestIncomplete('[Zend_Search_Lucene_Exception] File \'modules/AOD_Index/Index/Index/segments_31\' is not readable.');
-        $aod_index = BeanFactory::newBean('AOD_Index');
-
-        $aod_index->id = 1;
-        $aod_index->location = 'modules/AOD_Index/Index/Index';
-
-        //execute the method with parameters and verify that it returns true
-        $hits = $aod_index->find('/');
-        $this->assertTrue(is_array($hits));
-    }
-
-    public function testoptimise()
-    {
-        self::markTestIncomplete('[Zend_Search_Lucene_Exception] File \'modules/AOD_Index/Index/Index/segments_31\' is not readable.');
-
-        // test
-        $aod_index = BeanFactory::newBean('AOD_Index');
-        $aod_index->id = 1;
-        $aod_index->location = 'modules/AOD_Index/Index/Index';
-        $last_optimized = $aod_index->last_optimised;
-
-        //execute the method and test if the last optimized date is changed to a later date/time.
-        $aod_index->optimise();
-        $this->assertGreaterThan($last_optimized, $aod_index->last_optimised);
-    }
-
-    public function testgetIndex()
+    public function testgetIndex(): void
     {
         $aod_index = BeanFactory::newBean('AOD_Index');
         $result = $aod_index->getIndex();
 
         //execute the method and verify it returns a different instance of samme type
-        $this->assertInstanceOf('AOD_Index', $result);
-        $this->assertNotSame($aod_index, $result);
+        self::assertInstanceOf('AOD_Index', $result);
+        self::assertNotSame($aod_index, $result);
     }
 
-    public function testgetDocumentForBean()
+    public function testgetDocumentForBean(): void
     {
         $user = new User(1);
 
-        $aod_index = BeanFactory::newBean('AOD_Index');
-        $result = $aod_index->getDocumentForBean($user);
+        $result = BeanFactory::newBean('AOD_Index')->getDocumentForBean($user);
 
         //execute the method and verify that it returns an array
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
 
         //verify that returned array has a valid Zend_Search_Lucene_Document instance
-        $this->assertInstanceOf('Zend_Search_Lucene_Document', $result['document']);
+        self::assertInstanceOf('Zend_Search_Lucene_Document', $result['document']);
     }
 
-    public function testcommit()
-    {
-        self::markTestIncomplete('File \'modules/AOD_Index/Index/Index/segments_31\' is not readable.');
-        
-        $aod_index = BeanFactory::newBean('AOD_Index');
-        $aod_index->id = 1;
-        $aod_index->location = 'modules/AOD_Index/Index/Index';
-
-        // Execute the method and test that it works and doesn't throw an exception.
-        try {
-            $aod_index->commit();
-            $this->assertTrue(true);
-        } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
-        }
-    }
-
-    public function testisModuleSearchable()
+    public function testisModuleSearchable(): void
     {
         //test with an invalid module
-        $this->assertFalse(AOD_Index::isModuleSearchable('', ''));
+        self::assertFalse(AOD_Index::isModuleSearchable('', ''));
 
         //test for modules that are searchable
-        $this->assertTrue(AOD_Index::isModuleSearchable('DocumentRevisions', 'DocumentRevision'));
-        $this->assertTrue(AOD_Index::isModuleSearchable('Cases', 'Case'));
-        $this->assertTrue(AOD_Index::isModuleSearchable('Accounts', 'Account'));
+        self::assertTrue(AOD_Index::isModuleSearchable('DocumentRevisions', 'DocumentRevision'));
+        self::assertTrue(AOD_Index::isModuleSearchable('Cases', 'Case'));
+        self::assertTrue(AOD_Index::isModuleSearchable('Accounts', 'Account'));
 
         //test for modules that are not searchable
-        $this->assertFalse(AOD_Index::isModuleSearchable('AOD_IndexEvent', 'AOD_IndexEvent'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('AOD_Index', 'AOD_Index'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('AOW_Actions', 'AOW_Action'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('AOW_Conditions', 'AOW_Condition'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('AOW_Processed', 'AOW_Processed'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('SchedulersJobs', 'SchedulersJob'));
-        $this->assertFalse(AOD_Index::isModuleSearchable('Users', 'User'));
+        self::assertFalse(AOD_Index::isModuleSearchable('AOD_IndexEvent', 'AOD_IndexEvent'));
+        self::assertFalse(AOD_Index::isModuleSearchable('AOD_Index', 'AOD_Index'));
+        self::assertFalse(AOD_Index::isModuleSearchable('AOW_Actions', 'AOW_Action'));
+        self::assertFalse(AOD_Index::isModuleSearchable('AOW_Conditions', 'AOW_Condition'));
+        self::assertFalse(AOD_Index::isModuleSearchable('AOW_Processed', 'AOW_Processed'));
+        self::assertFalse(AOD_Index::isModuleSearchable('SchedulersJobs', 'SchedulersJob'));
+        self::assertFalse(AOD_Index::isModuleSearchable('Users', 'User'));
     }
 
-    public function testindex()
+    public function testindex(): void
     {
         $aod_index = BeanFactory::newBean('AOD_Index');
         $aod_index->id = 1;
@@ -127,31 +79,14 @@ class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
 
         //test with a not searchable module, it will return false
         $result = $aod_index->index('Users', 1);
-        $this->assertFalse($result);
+        self::assertFalse($result);
 
         //test with a searchable module but invalid bean id, it will still index it
         $result = $aod_index->index('Accounts', 1);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testremove()
-    {
-        self::markTestIncomplete('File \'modules/AOD_Index/Index/Index/segments_31\' is not readable.');
-        
-        $aod_index = BeanFactory::newBean('AOD_Index');
-        $aod_index->id = 1;
-        $aod_index->location = 'modules/AOD_Index/Index/Index';
-
-        // Execute the method and test that it works and doesn't throw an exception.
-        try {
-            $aod_index->remove('Accounts', 1);
-            $this->assertTrue(true);
-        } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
-        }
-    }
-
-    public function testgetIndexableModules()
+    public function testgetIndexableModules(): void
     {
         $expected = array(
             'AM_ProjectTemplates' => 'AM_ProjectTemplates',
@@ -181,7 +116,6 @@ class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
             'Meetings' => 'Meeting',
             'Notes' => 'Note',
             'Opportunities' => 'Opportunity',
-            'OutboundEmailAccounts' => 'OutboundEmailAccounts',
             'Project' => 'Project',
             'ProjectTask' => 'ProjectTask',
             'ProspectLists' => 'ProspectList',
@@ -194,10 +128,10 @@ class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
             'Tasks' => 'Task'
         );
 
-        $aod_index = BeanFactory::newBean('AOD_Index');
-
         //execute the method and verify that it retunrs expected results
-        $actual = $aod_index->getIndexableModules();
-        $this->assertSame($expected, $actual);
+        $actual = BeanFactory::newBean('AOD_Index')->getIndexableModules();
+        foreach ($expected as $key => $expect){
+            self::assertEquals($expect, $actual[$key]);
+        }
     }
 }

@@ -6,6 +6,7 @@ use Api\Core\Resolver\ConfigResolver;
 use Psr\Container\ContainerInterface;
 use Slim\Container;
 
+#[\AllowDynamicProperties]
 class ContainerLoader
 {
     /**

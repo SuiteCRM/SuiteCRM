@@ -71,7 +71,7 @@ $mod_strings = array(
     'LBL_TYPE' => 'Type',
     'LBL_ACTIVE' => 'Active',
     'LBL_BUTTON_INSERT' => 'Insert',
-    'LBL_WARNING_OVERWRITE' => 'Warning this will overwrite you current Work',
+    'LBL_WARNING_OVERWRITE' => 'Warning, this will overwrite your current work',
     'LBL_INSERT_FIELDS' => 'Insert Fields',
 
     'LBL_SAMPLE' => 'Load Sample',

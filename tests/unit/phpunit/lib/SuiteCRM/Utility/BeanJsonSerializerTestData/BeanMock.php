@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,8 +37,13 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-namespace SuiteCRM\Utility\BeanJsonSerializerTestData;
+namespace SuiteCRM\Tests\Unit\lib\SuiteCRM\Utility\BeanJsonSerializerTestData;
 
+/**
+ * Class BeanMock
+ * @package SuiteCRM\Tests\Unit\lib\SuiteCRM\Utility\BeanJsonSerializerTestData
+ */
+#[\AllowDynamicProperties]
 class BeanMock extends \SugarBean
 {
     public $fetched_rel_row = [];
@@ -50,13 +55,14 @@ class BeanMock extends \SugarBean
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct($file)
     {
-        $array = json_decode(file_get_contents($file), true);
-
-        foreach ($array as $key => $item) {
+        foreach (json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR) as $key => $item) {
             $this->$key = $item;
         }
     }
 
+    /**
+     * @noinspection ReturnTypeCanBeDeclaredInspection
+     */
     public function load_relationships()
     {
         echo "load_relationships() has been called on the mocked class!";

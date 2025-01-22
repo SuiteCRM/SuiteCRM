@@ -48,9 +48,10 @@ use SuiteCRM\API\JsonApi\v1\Interfaces\JsonApiResponseInterface;
  * @package SuiteCRM\API\JsonApi\v1
  * @see http://jsonapi.org/format/1.0/#document-jsonapi-object
  */
+#[\AllowDynamicProperties]
 class JsonApi implements LoggerAwareInterface, JsonApiResponseInterface
 {
-    const VERSION = '1.0';
+    public const VERSION = '1.0';
     /**
      * @var LoggerInterface Logger
      */

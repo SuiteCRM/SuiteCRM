@@ -72,6 +72,7 @@ function clearAll() {
 <input type="hidden" name="module" value="{$module}" />
 <input type="hidden" name="action" value="Popup" />
 <input type="hidden" name="query" value="true" />
+<input type="hidden" name="metadata" value="{$metadata}" />
 <input type="hidden" name="func_name" value="" />
 <input type="hidden" name="request_data" value="{$request_data}" />
 <input type="hidden" name="populate_parent" value="false" />

@@ -51,7 +51,7 @@ if (!is_admin($GLOBALS['current_user'])) {
 }
     $requestedMethod = $_REQUEST['method'];
     $pmc = new PackageController();
-  
+
     if (method_exists($pmc, $requestedMethod)) {
         echo $pmc->$requestedMethod();
     } else {

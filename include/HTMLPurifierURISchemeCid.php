@@ -45,6 +45,7 @@ namespace SuiteCRM;
  * @package SuiteCRM
  * content-id: scheme implementation
  */
+#[\AllowDynamicProperties]
 class HTMLPurifierURISchemeCid extends \HTMLPurifier_URIScheme
 {
     /** @var bool $browsable */

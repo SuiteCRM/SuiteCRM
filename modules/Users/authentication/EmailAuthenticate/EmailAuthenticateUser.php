@@ -61,7 +61,7 @@ class EmailAuthenticateUser extends SugarAuthenticateUser
      * @param STRING $password
      * @return boolean
      */
-    public function loadUserOnLogin($name, $password)
+    public function loadUserOnLogin($name, $password, $fallback = \false, $PARAMS = array())
     {
         global $login_error;
 

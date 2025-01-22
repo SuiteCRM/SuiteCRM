@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,7 +13,7 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testsave()
+    public function testsave(): void
     {
         $aosProductsQuotes = BeanFactory::newBean('AOS_Products_Quotes');
 
@@ -24,16 +24,16 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
         $aosProductsQuotes->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($aosProductsQuotes->id));
-        $this->assertEquals(36, strlen($aosProductsQuotes->id));
+        self::assertTrue(isset($aosProductsQuotes->id));
+        self::assertEquals(36, strlen((string) $aosProductsQuotes->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosProductsQuotes->mark_deleted($aosProductsQuotes->id);
         $result = $aosProductsQuotes->retrieve($aosProductsQuotes->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testsave_lines()
+    public function testsave_lines(): void
     {
         DBManagerFactory::getInstance()->query('DELETE FROM aos_products_quotes');
 
@@ -54,26 +54,26 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
 
         //get the linked beans and verify if records created
         $product_quote_lines = $aosQuote->get_linked_beans('aos_products_quotes', $aosQuote->object_name);
-        $this->assertEquals(count($post_data['name']), count($product_quote_lines));
+        self::assertCount(count($post_data['name']), $product_quote_lines);
     }
 
-    public function testAOS_Products_Quotes()
+    public function testAOS_Products_Quotes(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $aosProductsQuotes = BeanFactory::newBean('AOS_Products_Quotes');
-        $this->assertInstanceOf('AOS_Products_Quotes', $aosProductsQuotes);
-        $this->assertInstanceOf('Basic', $aosProductsQuotes);
-        $this->assertInstanceOf('SugarBean', $aosProductsQuotes);
+        self::assertInstanceOf('AOS_Products_Quotes', $aosProductsQuotes);
+        self::assertInstanceOf('Basic', $aosProductsQuotes);
+        self::assertInstanceOf('SugarBean', $aosProductsQuotes);
 
-        $this->assertAttributeEquals('AOS_Products_Quotes', 'module_dir', $aosProductsQuotes);
-        $this->assertAttributeEquals('AOS_Products_Quotes', 'object_name', $aosProductsQuotes);
-        $this->assertAttributeEquals('aos_products_quotes', 'table_name', $aosProductsQuotes);
-        $this->assertAttributeEquals(true, 'new_schema', $aosProductsQuotes);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aosProductsQuotes);
-        $this->assertAttributeEquals(true, 'importable', $aosProductsQuotes);
+        self::assertEquals('AOS_Products_Quotes', $aosProductsQuotes->module_dir);
+        self::assertEquals('AOS_Products_Quotes', $aosProductsQuotes->object_name);
+        self::assertEquals('aos_products_quotes', $aosProductsQuotes->table_name);
+        self::assertEquals(true, $aosProductsQuotes->new_schema);
+        self::assertEquals(true, $aosProductsQuotes->disable_row_level_security);
+        self::assertEquals(true, $aosProductsQuotes->importable);
     }
 
-    public function testmark_lines_deleted()
+    public function testmark_lines_deleted(): void
     {
         $aosProductsQuotes = BeanFactory::newBean('AOS_Products_Quotes');
 
@@ -83,7 +83,7 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
 
         //get the linked beans and get record count before deletion
         $product_quote_lines = $aosQuote->get_linked_beans('aos_products_quotes', $aosQuote->object_name);
-        $expected = count($product_quote_lines);
+        $expected = is_countable($product_quote_lines) ? count($product_quote_lines) : 0;
         $product_quote_lines = null;
 
         $aosProductsQuotes->mark_lines_deleted($aosQuote);
@@ -93,8 +93,8 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
         $aosQuote = BeanFactory::newBean('AOS_Quotes');
         $aosQuote->id = 1;
         $product_quote_lines = $aosQuote->get_linked_beans('aos_products_quotes', $aosQuote->object_name);
-        $actual = count($product_quote_lines);
+        $actual = is_countable($product_quote_lines) ? count($product_quote_lines) : 0;
 
-        $this->assertLessThanOrEqual($expected, $actual);
+        self::assertLessThanOrEqual($expected, $actual);
     }
 }

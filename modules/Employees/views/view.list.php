@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class EmployeesViewList extends ViewList
 {
     public function preDisplay()
@@ -79,10 +80,10 @@ class EmployeesViewList extends ViewList
 
         $theTitle = "<div class='moduleTitle'>\n<h2>";
 
-        $module = preg_replace("/ /", "", $this->module);
+        $module = preg_replace("/ /", "", (string) $this->module);
 
         $params = $this->_getModuleTitleParams();
-        $count = count($params);
+        $count = is_countable($params) ? count($params) : 0;
         $index = 0;
 
         if (SugarThemeRegistry::current()->directionality == "rtl") {
@@ -145,6 +146,46 @@ EOHTML;
             $this->lv->setup($this->seed, $tplFile, $this->where, $this->params);
             $savedSearchName = empty($_REQUEST['saved_search_select_name']) ? '' : (' - ' . $_REQUEST['saved_search_select_name']);
             echo $this->lv->display();
+        }
+    }
+    /**
+     * Process Search Form
+     */
+    public function processSearchForm()
+    {
+        if (isset($_REQUEST['query'])) {
+            // we have a query
+            if (!empty($_SERVER['HTTP_REFERER']) && preg_match('/action=EditView/', (string) $_SERVER['HTTP_REFERER'])) { // from EditView cancel
+                $this->searchForm->populateFromArray($this->storeQuery->query);
+            } else {
+                $this->searchForm->populateFromRequest();
+            }
+        }
+        $where_clauses = $this->searchForm->generateSearchWhere(true, $this->seed->module_dir);
+
+        if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
+            $this->where = '(' . implode(' ) AND ( ', $where_clauses) . ')';
+        }
+        $GLOBALS['log']->info("List View Where Clause: $this->where");
+        
+        if ($this->use_old_search) {
+            switch (isset($view) ? $view : null) {
+                case 'basic_search':
+                    $this->searchForm->setup();
+                    $this->searchForm->displayBasic($this->headers);
+                    break;
+                case 'advanced_search':
+                    $this->searchForm->setup();
+                    $this->searchForm->displayAdvanced($this->headers);
+                    break;
+                case 'saved_views':
+                    echo $this->searchForm->displaySavedViews($this->listViewDefs, $this->lv, $this->headers);
+                    break;
+            }
+        } else {
+            $output = $this->searchForm->display($this->headers);
+            $this->savedSearchData = $this->searchForm->getSavedSearchData();
+            echo $output;
         }
     }
 }

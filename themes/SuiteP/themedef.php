@@ -76,6 +76,7 @@ if (!empty($app_strings['LBL_SUBTHEMES'])) {
             'Day'   => $app_strings['LBL_SUBTHEME_OPTIONS_DAY'],
             'Dusk'  => $app_strings['LBL_SUBTHEME_OPTIONS_DUSK'],
             'Night' => $app_strings['LBL_SUBTHEME_OPTIONS_NIGHT'],
+            'Noon' => $app_strings['LBL_SUBTHEME_OPTIONS_NOON'],
         ),
     );
     $themedef['config_options']['sub_themes']['default'] = 'Dawn';

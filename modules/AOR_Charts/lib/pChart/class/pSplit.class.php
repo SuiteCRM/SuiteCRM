@@ -17,16 +17,18 @@
  define("TEXT_POS_RIGHT"	, 690002);
 
  /* pSplit class definition */
+ #[\AllowDynamicProperties]
  class pSplit
   {
-   var $pChartObject;
+   public $pChartObject;
 
-   /* Class creator */
-   function pSplit()
-    { }
+     /* Class creator */
+     public function __construct()
+     {
+     }
 
    /* Create the encoded string */
-   function drawSplitPath($Object,$Values,$Format="")
+   public function drawSplitPath($Object,$Values,$Format="")
     {
      $this->pChartObject = $Object;
 
@@ -53,7 +55,7 @@
       { if ( $SerieName != $LabelSerie && $DataSerie == "" ) { $DataSerie = $SerieName; } }
 
      $DataSerieSum   = array_sum($Data["Series"][$DataSerie]["Data"]);
-     $DataSerieCount = count($Data["Series"][$DataSerie]["Data"]);
+     $DataSerieCount = is_countable($Data["Series"][$DataSerie]["Data"]) ? count($Data["Series"][$DataSerie]["Data"]) : 0;
 
      /* Scale Processing */
      if ( $TextPos == TEXT_POS_RIGHT )
@@ -94,7 +96,7 @@
 
        $Settings = array("R"=>$Palette[$Key]["R"],"G"=>$Palette[$Key]["G"],"B"=>$Palette[$Key]["B"],"Alpha"=>$Palette[$Key]["Alpha"],"NoDraw"=>TRUE,"Segments"=>$Segments,"Surrounding"=>$Surrounding);
 
-       $PolyGon = "";
+       $PolyGon = [];
 
        $Angle    = $Object->getAngle($X2,$RightY1,$X1,$LeftY1);
        $VectorX1 = cos(deg2rad($Angle+90)) * $Force + ($X2-$X1)/2 + $X1;

@@ -35,10 +35,8 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function Datetimecombo(datetime,field,timeformat,tabindex,showCheckbox,checked,allowEmptyHM){this.datetime=datetime;this.allowEmptyHM=allowEmptyHM;if(typeof this.datetime=="undefined"||datetime==''||trim(datetime).length<10){this.datetime='';var d=new Date();var month=d.getMonth();var date=d.getDate();var year=d.getYear();var hours=d.getHours();var minutes=d.getMinutes();}
-this.fieldname=field;if(datetime!='')
-{parts=datetime.split(' ');this.hrs=parseInt(parts[1].substring(0,2),10);this.mins=parseInt(parts[1].substring(3,5),10);}
+ */function Datetimecombo(datetime,field,timeformat,tabindex,showCheckbox,checked,allowEmptyHM){this.datetime=datetime;this.allowEmptyHM=allowEmptyHM;if(typeof this.datetime=="undefined"||datetime==''||trim(datetime).length<10){this.datetime='';var d=new Date();var month=d.getMonth();var date=d.getDate();var year=d.getYear();var hours=d.getHours();var minutes=d.getMinutes();}
+this.fieldname=field;if(datetime!=''){parts=datetime.split(' ');this.hrs=parseInt(parts[1].substring(0,2),10);this.mins=parseInt(parts[1].substring(3,5),10);}
 this.timeformat=timeformat;this.tabindex=tabindex==null||isNaN(tabindex)?1:tabindex;this.timeseparator=this.timeformat.substring(2,3);this.has12Hours=/^11/.test(this.timeformat);this.hasMeridiem=/am|pm/i.test(this.timeformat);if(this.hasMeridiem){this.pm=/pm/.test(this.timeformat);}
 this.meridiem=this.hasMeridiem?trim(this.datetime.substring(16)):'';this.datetime=this.datetime.substr(0,10);this.showCheckbox=showCheckbox;this.checked=parseInt(checked);YAHOO.util.Selector.query('input#'+this.fieldname+'_date')[0].value=this.datetime;if(this.mins>0&&this.mins<15){this.mins=15;}else if(this.mins>15&&this.mins<30){this.mins=30;}else if(this.mins>30&&this.mins<45){this.mins=45;}else if(this.mins>45){this.hrs+=1;this.mins=0;if(this.hasMeridiem&&this.hrs==12){if(this.meridiem=="pm"||this.meridiem=="am"){if(this.meridiem=="pm"){this.meridiem="am";}else{this.meridiem="pm";}}else{if(this.meridiem=="PM"){this.meridiem="AM";}else{this.meridiem="PM";}}}
 if(this.hasMeridiem&&this.hrs>12){this.hrs=this.hrs-12;}}}
@@ -55,7 +53,5 @@ updateListeners=true;var d=YAHOO.util.Selector.query('input#'+this.fieldname+'_d
 var newdate=d.value+' '+h.value+this.timeseparator+m.value;if(this.hasMeridiem){ampm=YAHOO.util.Selector.query('select#'+this.fieldname+"_meridiem")[0].value;newdate+=ampm;}
 if(trim(newdate)==""+this.timeseparator+""){newdate='';}
 YAHOO.util.Selector.query('input#'+this.fieldname)[0].value=newdate;if(updateListeners)
-SUGAR.util.callOnChangeListers(this.fieldname);if(this.showCheckbox){flag=this.fieldname+'_flag';date=this.fieldname+'_date';hours=this.fieldname+'_hours';mins=this.fieldname+'_minutes';if(YAHOO.util.Selector.query('input#'+flag)[0].checked)
-{YAHOO.util.Selector.query('input#'+flag)[0].value=1;YAHOO.util.Selector.query('input#'+this.fieldname)[0].value='';YAHOO.util.Selector.query('input#'+date)[0].disabled=true;YAHOO.util.Selector.query('select#'+hours)[0].disabled=true;YAHOO.util.Selector.query('select#'+mins)[0].disabled=true;}
-else
-{YAHOO.util.Selector.query('input#'+flag)[0].value=0;YAHOO.util.Selector.query('input#'+date)[0].disabled=false;YAHOO.util.Selector.query('select#'+hours)[0].disabled=false;YAHOO.util.Selector.query('select#'+mins)[0].disabled=false;}}};
+SUGAR.util.callOnChangeListers(this.fieldname);if(this.showCheckbox){flag=this.fieldname+'_flag';date=this.fieldname+'_date';hours=this.fieldname+'_hours';mins=this.fieldname+'_minutes';if(YAHOO.util.Selector.query('input#'+flag)[0].checked){YAHOO.util.Selector.query('input#'+flag)[0].value=1;YAHOO.util.Selector.query('input#'+this.fieldname)[0].value='';YAHOO.util.Selector.query('input#'+date)[0].disabled=true;YAHOO.util.Selector.query('select#'+hours)[0].disabled=true;YAHOO.util.Selector.query('select#'+mins)[0].disabled=true;}
+else{YAHOO.util.Selector.query('input#'+flag)[0].value=0;YAHOO.util.Selector.query('input#'+date)[0].disabled=false;YAHOO.util.Selector.query('select#'+hours)[0].disabled=false;YAHOO.util.Selector.query('select#'+mins)[0].disabled=false;}}};

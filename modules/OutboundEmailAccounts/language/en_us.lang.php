@@ -64,7 +64,13 @@ $mod_strings = array(
     'LBL_MODULE_TITLE' => 'Outbound Email Accounts',
     'LBL_HOMEPAGE_TITLE' => 'My Outbound Email Accounts',
     'LNK_NEW_RECORD' => 'Create Outbound Email Accounts',
-    'LNK_LIST' => 'View Outbound Email Accounts',
+
+    'LNK_LIST_CREATE_NEW_PERSONAL' => 'New Personal Outbound Email Account',
+    'LNK_LIST_CREATE_NEW_GROUP' => 'New Group Outbound Email Account',
+    'LNK_LIST_CREATE_SYSTEM_OVERRIDE_GROUP' => 'New System Override Outbound Email Account',
+
+    'LNK_LIST' => 'Outbound Email Accounts',
+    'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Inbound Email Accounts',
     'LBL_SEARCH_FORM_TITLE' => 'Search Outbound Email Accounts',
     'LBL_HISTORY_SUBPANEL_TITLE' => 'View History',
     'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Activities',
@@ -76,16 +82,18 @@ $mod_strings = array(
     'LBL_SMTP_PORT' => 'SMTP Port',
     'LBL_SMTP_PROTOCOL' => 'SMTP Protocol',
     'LBL_EDITVIEW_PANEL1' => 'Account settings',
+    'LBL_OUTBOUND_CONFIGURATION' => 'Outbound Configuration',
+    'LBL_CONNECTION_CONFIGURATION' => 'Server Configuration',
     'LBL_CHANGE_PASSWORD' => 'Change password',
     'LBL_SEND_TEST_EMAIL' => 'Send Test Email',
 
     // for outbound email dialog
     'LBL_MISSING_DEFAULT_OUTBOUND_SMTP_SETTINGS' => 'The administrator has not yet configured the default outbound account. Unable to send test email.',
     'LBL_MAIL_SMTPAUTH_REQ' => 'Use SMTP Authentication?',
-    'LBL_MAIL_SMTPPASS' => 'SMTP Password:',
-    'LBL_MAIL_SMTPPORT' => 'SMTP Port:',
-    'LBL_MAIL_SMTPSERVER' => 'SMTP Server:',
-    'LBL_MAIL_SMTPUSER' => 'SMTP Username:',
+    'LBL_MAIL_SMTPPASS' => 'Password',
+    'LBL_MAIL_SMTPPORT' => 'Port',
+    'LBL_MAIL_SMTPSERVER' => 'Server',
+    'LBL_MAIL_SMTPUSER' => 'Username',
     'LBL_MAIL_SMTP_SETTINGS' => 'SMTP Server Specification',
     'LBL_CHOOSE_EMAIL_PROVIDER' => 'Choose your Email provider:',
     'LBL_YAHOOMAIL_SMTPPASS' => 'Yahoo! Mail Password:',
@@ -102,4 +110,13 @@ $mod_strings = array(
     'LBL_MAIL_SMTPSSL' => 'Mail SMTP/SSL',
     'LBL_SMTP_FROM_NAME' => '"From" name',
     'LBL_SMTP_FROM_ADDR' => '"From" address',
+    'LBL_REPLY_TO_NAME' => '"Reply-to" name',
+    'LBL_REPLY_TO_ADDR' => '"Reply-to" address',
+
+    'LBL_SECURITYGROUPS_SUBPANEL_TITLE' => 'Security Groups',
+
+    'LBL_OWNER' => 'Owner',
+    'LBL_OWNER_NAME' => 'Owner',
+
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'External OAuth Connections'
 );

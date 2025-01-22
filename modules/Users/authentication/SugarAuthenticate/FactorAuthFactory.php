@@ -45,9 +45,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 include_once __DIR__ . '/../../../../include/Exceptions/SuiteException.php';
 
+#[\AllowDynamicProperties]
 class FactorAuthFactory
 {
-    const DEFAULT_FACTOR_AUTH_INTERFACE = 'FactorAuthEmailCode';
+    public const DEFAULT_FACTOR_AUTH_INTERFACE = 'FactorAuthEmailCode';
 
     /**
      * @var FactorAuthInterface[]

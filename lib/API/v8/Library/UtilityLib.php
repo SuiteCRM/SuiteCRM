@@ -42,6 +42,7 @@ namespace SuiteCRM\API\v8\Library;
 
 use SuiteCRM\Utility\Paths;
 
+#[\AllowDynamicProperties]
 class UtilityLib
 {
     /**

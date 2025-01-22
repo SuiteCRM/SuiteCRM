@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,27 +37,27 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+namespace SuiteCRM\Search\ElasticSearch;
+
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
 use Elasticsearch\Client;
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
-use SuiteCRM\Search\ElasticSearch\ElasticSearchClientBuilder;
-use SuiteCRM\Search\Exceptions\SearchInvalidRequestException;
+use SuiteCRM\Exception\InvalidArgumentException;
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
 use SuiteCRM\Search\SearchResults;
+use SuiteCRM\Search\SearchWrapper;
 
 /**
  * SearchEngine that use Elasticsearch index for performing almost real-time search.
  */
+#[\AllowDynamicProperties]
 class ElasticSearchEngine extends SearchEngine
 {
     /** @var Client */
     private $client;
-    /** @var string */
-    private $index = 'main';
 
     /**
      * ElasticSearchEngine constructor.
@@ -66,13 +66,14 @@ class ElasticSearchEngine extends SearchEngine
      */
     public function __construct(Client $client = null)
     {
-        $this->client = empty($client) ? ElasticSearchClientBuilder::getClient() : $client;
+        $this->client = $client ?? ElasticSearchClientBuilder::getClient();
     }
 
     /**
      * @inheritdoc
+     * @throws InvalidArgumentException
      */
-    public function search(SearchQuery $query)
+    public function search(SearchQuery $query): SearchResults
     {
         $this->validateQuery($query);
         $params = $this->createSearchParams($query);
@@ -81,29 +82,14 @@ class ElasticSearchEngine extends SearchEngine
         $results = $this->parseHits($hits);
         $end = microtime(true);
         $searchTime = ($end - $start);
-        return new SearchResults($results, true, $searchTime, $hits['hits']['total']);
-    }
 
-    /**
-     * @return string
-     */
-    public function getIndex()
-    {
-        return $this->index;
-    }
-
-    /**
-     * @param string $index
-     */
-    public function setIndex($index)
-    {
-        $this->index = $index;
+        return new SearchResults($results, true, $searchTime, $hits['hits']['total']['value']);
     }
 
     /**
      * @param SearchQuery $query
      */
-    protected function validateQuery(SearchQuery &$query)
+    protected function validateQuery(SearchQuery $query): void
     {
         $query->trim();
         $query->convertEncoding();
@@ -116,18 +102,44 @@ class ElasticSearchEngine extends SearchEngine
      *
      * @return array
      */
-    private function createSearchParams($query)
+    private function createSearchParams(SearchQuery $query): array
     {
-        $params = [
-            'index' => $this->index,
+        $searchStr = $query->getSearchString();
+        $searchModules = SearchWrapper::getModules();
+        $indexes = implode(',', array_map('strtolower', $searchModules));
+
+        // Wildcard character required for Elasticsearch
+        $wildcardBe = "*";
+
+        // Override frontend wildcard character
+        if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
+            $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
+            if ($wildcardFe !== $wildcardBe && strlen((string) $wildcardFe) === 1) {
+                $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
+            }
+        }
+
+        // Add wildcard at the beginning of the search string
+        if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
+            $GLOBALS['sugar_config']['search_wildcard_infront'] === true && $searchStr[0] !== $wildcardBe) {
+            $searchStr = $wildcardBe . $searchStr;
+        }
+
+        // Add wildcard at the end of search string
+        if ((substr_compare($searchStr, $wildcardBe, -strlen($wildcardBe))) !== 0) {
+            $searchStr .= $wildcardBe;
+        }
+
+        return [
+            'index' => $indexes,
             'body' => [
                 'stored_fields' => [],
                 'from' => $query->getFrom(),
                 'size' => $query->getSize(),
                 'query' => [
                     'query_string' => [
-                        'query' => $query->getSearchString(),
-                        'fields' => ['name.*^5', '_all'],
+                        'query' => $searchStr,
+                        'fields' => ['name.*^5', '*'],
                         'analyzer' => 'standard',
                         'default_operator' => 'OR',
                         'minimum_should_match' => '66%',
@@ -135,8 +147,6 @@ class ElasticSearchEngine extends SearchEngine
                 ],
             ],
         ];
-
-        return $params;
     }
 
     /**
@@ -146,15 +156,9 @@ class ElasticSearchEngine extends SearchEngine
      *
      * @return array
      */
-    private function runElasticSearch($params)
+    private function runElasticSearch(array $params): array
     {
-        try {
-            $results = $this->client->search($params);
-        } /** @noinspection PhpRedundantCatchClauseInspection */ catch (BadRequest400Exception $exception) {
-            throw new SearchInvalidRequestException('The query was not valid.');
-        }
-
-        return $results;
+        return $this->client->search($params);
     }
 
     /**
@@ -165,16 +169,26 @@ class ElasticSearchEngine extends SearchEngine
      *
      * @return array
      */
-    private function parseHits($hits)
+    private function parseHits(array $hits): array
     {
         $hitsArray = $hits['hits']['hits'];
 
-        $results = [];
+        $initialResults = [];
 
         foreach ($hitsArray as $hit) {
-            $results[$hit['_type']][] = $hit['_id'];
+            $recordModule = $hit['_index'];
+            $initialResults[$recordModule][] = $hit['_id'];
         }
 
-        return $results;
+        $searchResults = [];
+
+        foreach ($initialResults as $index => $hit) {
+            $params = ['index' => $index];
+            $meta = $this->client->indices()->getMapping($params);
+            $moduleName = $meta[$index]['mappings']['_meta']['module_name'];
+            $searchResults[$moduleName] = $hit;
+        }
+
+        return $searchResults;
     }
 }

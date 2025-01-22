@@ -56,6 +56,12 @@ require_once 'modules/ModuleBuilder/parsers/relationships/AbstractRelationship.p
 class ManyToManyRelationship extends AbstractRelationship
 {
 
+    public $relationship_only;
+    public $rhs_module;
+    public $relationship_name;
+    public $lhs_module;
+    public $lhs_subpanel;
+    public $rhs_subpanel;
     /*
      * Constructor
      * @param array $definition Parameters passed in as array with keys defined in parent::keys

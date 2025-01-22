@@ -52,11 +52,6 @@ class ListViewDisplay
     public $show_mass_update_form = false;
     public $show_action_dropdown = true;
 
-    /**
-     * @var bool Show Bulk Action button as Delete link
-     */
-    public $show_action_dropdown_as_delete = false;
-
     public $rowCount;
     public $mass = null;
     public $seed;
@@ -84,19 +79,7 @@ class ListViewDisplay
         $this->searchColumns = array() ;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ListViewDisplay()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function shouldProcess($moduleDir)
@@ -245,15 +228,16 @@ class ListViewDisplay
     {
         if (!is_array($data)) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data) . ' given.');
+            $data = [];
         } else if (is_array($data) && !is_array($data['data'])) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data['data']) . ' given and converting to an array.');
         }
-        $this->rowCount = count((array)$data['data']);
+        $this->rowCount = count((array)($data['data'] ?? []));
         if (!isset($data['pageData']['bean'])) {
             $GLOBALS['log']->warn("List view process error: Invalid data, bean is not set");
             return false;
         }
-        $this->moduleString = $data['pageData']['bean']['moduleDir'] . '2_' . strtoupper($htmlVar) . '_offset';
+        $this->moduleString = ($data['pageData']['bean']['moduleDir'] ?? '') . '2_' . strtoupper($htmlVar) . '_offset';
         return true;
     }
 
@@ -353,17 +337,8 @@ class ListViewDisplay
                 }
             }
         } else {
-            // delete
-            if (
-                ACLController::checkAccess($this->seed->module_dir, 'delete', true)
-                && $this->delete
-            ) {
-                if ($this->show_action_dropdown_as_delete) {
-                    $menuItems[] = $this->buildDeleteLink($location);
-                } else {
-                    $menuItems[] = $this->buildBulkActionButton($location);
-                }
-            }
+            // Bulk Action label
+            $menuItems[] = $this->buildBulkActionButton($location);
 
             // Compose email
             if (isset($this->email) && $this->email === true) {
@@ -414,10 +389,12 @@ class ListViewDisplay
 
 
             if (
-                $this->delete
-                && !$this->show_action_dropdown_as_delete
+                $this->delete &&
+                ACLController::checkAccess($this->seed->module_dir, 'delete', true)
             ) {
                 $menuItems[] = $this->buildDeleteLink($location);
+            } else {
+                $menuItems[] = "<a style='display:none'></a>";
             }
         }
         $link = array(

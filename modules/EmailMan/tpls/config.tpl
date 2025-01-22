@@ -187,6 +187,8 @@ function change_state(radiobutton) {
 											<td width="20%">&nbsp;</td>
 											<td width="30%">&nbsp;</td>
 										</tr>
+									</table>
+									<table width="100%" cellpadding="0" cellspacing="0">
 										<tr id="mail_allow_user">
 											<td width="20%" scope="row">
 												{$MOD.LBL_ALLOW_DEFAULT_SELECTION}&nbsp;
@@ -197,22 +199,19 @@ function change_state(radiobutton) {
 												<input id="notify_allow_default_outbound" name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
 											</td>
 										</tr>
+										<tr class="legacy-compose-option" {if isset($legacyEmailConfigEnabled)}style="display:none"{/if}>
+											<td width="20%" scope="row">
+												{$MOD.LBL_ALLOW_SEND_AS_USER}&nbsp;
+												<img border="0" class="inlineHelpTip" onclick="return SUGAR.util.showHelpTips(this,'{$MOD.LBL_ALLOW_SEND_AS_USER_DESC}','','','dialogHelpPopup')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
+											</td>
+											<td width="30%">
+												<input type='hidden' id="mail_allowusersend_hidden_input" name='mail_allowusersend' value='0'>
+												<input id='mail_allowusersend' name='mail_allowusersend' type="checkbox" class="checkbox" value="1" tabindex='1' {$mail_allow_user_send}>
+											</td>
+											<td></td>
+											<td></td>
+										</tr>
 									</table>
-                                                                                        
-                                                                        <table width="100%" cellpadding="0" cellspacing="0">
-                                                                            <tr>
-                                                                                <td width="20%" scope="row">
-                                                                                    {$MOD.LBL_ALLOW_SEND_AS_USER}&nbsp;
-                                                                                    <img border="0" class="inlineHelpTip" onclick="return SUGAR.util.showHelpTips(this,'{$MOD.LBL_ALLOW_SEND_AS_USER_DESC}','','','dialogHelpPopup')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
-                                                                                </td>
-                                                                                <td width="30%">
-                                                                                    <input type='hidden' id="mail_allowusersend_hidden_input" name='mail_allowusersend' value='0'>
-                                                                                    <input id='mail_allowusersend' name='mail_allowusersend' type="checkbox" class="checkbox" value="1" tabindex='1' {$mail_allow_user_send}>
-                                                                                </td>
-                                                                                <td></td>
-                                                                                <td></td>
-                                                                            </tr>
-                                                                        </table>
 								</div>
 							</td>
 						</tr>
@@ -296,6 +295,15 @@ function change_state(radiobutton) {
 							</td>
 							<td width="30%"  valign='top'>
 								<select name="email_template_id_opt_in">{$EMAIL_OPT_IN_TEMPLATES}</select>
+							</td>
+
+						</tr>
+                        <tr>
+							<td width="20%" scope="row" valign='top'>
+								{$MOD.LBL_LEGACY_EMAIL_COMPOSE_BEHAVIOR}:&nbsp;
+							</td>
+							<td width="30%"  valign='top'>
+								<input id="legacy_email_behaviour" name='legacy_email_behaviour' value="true" tabindex='1' class="checkbox" type="checkbox" {if !empty($legacyEmailConfigEnabled)}checked="checked{/if}">
 							</td>
 
 						</tr>
@@ -663,15 +671,11 @@ function notify_setrequired(f) {
 	document.getElementById("smtp_auth1").style.visibility = (document.getElementById('mail_smtpauth_req').checked) ? "visible" : "hidden";
 	document.getElementById("smtp_auth2").style.display = (document.getElementById('mail_smtpauth_req').checked) ? "" : "none";
 	document.getElementById("smtp_auth2").style.visibility = (document.getElementById('mail_smtpauth_req').checked) ? "visible" : "hidden";
-	if( document.getElementById('mail_smtpauth_req').checked)
-	   YAHOO.util.Dom.removeClass('mail_allow_user', "yui-hidden");
-	else
-	   YAHOO.util.Dom.addClass("mail_allow_user", "yui-hidden");
 
 	return true;
 }
 
-function setDefaultSMTPPort() 
+function setDefaultSMTPPort()
 {
     if (!first_load)
     {
@@ -798,6 +802,25 @@ if(window.addEventListener){
 }else{
     window.attachEvent("onload", function() { SUGAR.util.setEmailPasswordDisplay('mail_smtppass', {/literal}{$mail_haspass}{literal}); });
 }
+
+function toggleLegacyComposeOptions()
+{
+    var isSelected = $('#legacy_email_behaviour').is(':checked') || false;
+
+    var displayMethod = 'hide';
+    if(isSelected) {
+        displayMethod = 'show';
+    }
+
+    $('.legacy-compose-option')[displayMethod]();
+}
+
+$(document).ready(function () {
+    toggleLegacyComposeOptions()
+    $('#legacy_email_behaviour').on('change', function(){
+        toggleLegacyComposeOptions()
+    });
+});
 {/literal}{if !empty($mail_smtptype)}{literal}
 changeEmailScreenDisplay("{/literal}{$mail_smtptype}{literal}", false);
 {/literal}{/if}{literal}

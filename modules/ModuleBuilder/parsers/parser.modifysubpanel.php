@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/ModuleBuilder/parsers/parser.modifylistview.php') ;
 
+#[\AllowDynamicProperties]
 class ParserModifySubPanel extends ParserModifyListView
 {
     public $listViewDefs = false ;
@@ -140,7 +141,7 @@ class ParserModifySubPanel extends ParserModifyListView
             foreach ($this->subPanelParentModule->field_defs as $key => $fieldDefinition) {
                 $fieldName = strtolower($key) ;
                 if (! isset($lowerFieldList [ $fieldName ])) { // bug 16728 - check this first, so that other conditions (e.g., studio == visible) can't override and add duplicate entries
-                    if ((empty($fieldDefinition [ 'source' ]) || $fieldDefinition [ 'source' ] == 'db' || $fieldDefinition [ 'source' ] == 'custom_fields') && $fieldDefinition [ 'type' ] != 'id' && strcmp($fieldName, 'deleted') != 0 || (isset($def [ 'name' ]) && strpos($def [ 'name' ], "_name") != false) || ! empty($def [ 'custom_type' ]) && (empty($fieldDefinition [ 'dbType' ]) || $fieldDefinition [ 'dbType' ] != 'id') && (empty($fieldDefinition [ 'dbtype' ]) || $fieldDefinition [ 'dbtype' ] != 'id') || (! empty($fieldDefinition [ 'studio' ]) && $fieldDefinition [ 'studio' ] == 'visible')) {
+                    if ((empty($fieldDefinition [ 'source' ]) || $fieldDefinition [ 'source' ] == 'db' || $fieldDefinition [ 'source' ] == 'custom_fields') && $fieldDefinition [ 'type' ] != 'id' && strcmp($fieldName, 'deleted') != 0 || (isset($def [ 'name' ]) && strpos((string) $def [ 'name' ], "_name") != false) || ! empty($def [ 'custom_type' ]) && (empty($fieldDefinition [ 'dbType' ]) || $fieldDefinition [ 'dbType' ] != 'id') && (empty($fieldDefinition [ 'dbtype' ]) || $fieldDefinition [ 'dbtype' ] != 'id') || (! empty($fieldDefinition [ 'studio' ]) && $fieldDefinition [ 'studio' ] == 'visible')) {
                         $label = (isset($fieldDefinition [ 'vname' ])) ? $fieldDefinition [ 'vname' ] : (isset($fieldDefinition [ 'label' ]) ? $fieldDefinition [ 'label' ] : $fieldDefinition [ 'name' ]) ;
                         $this->availableFields [ $fieldName ] = array( 'width' => '10' , 'label' => $label ) ;
                     }
@@ -213,7 +214,7 @@ class ParserModifySubPanel extends ParserModifyListView
             
             // Now set the field width if specified in the $_REQUEST data
             if (isset($_REQUEST [ strtolower($field) . 'width' ])) {
-                $width = substr($_REQUEST [ strtolower($field) . 'width' ], 6, 3) ;
+                $width = substr((string) $_REQUEST [ strtolower($field) . 'width' ], 6, 3) ;
                 if (strpos($width, "%") != false) {
                     $width = substr($width, 0, 2) ;
                 }

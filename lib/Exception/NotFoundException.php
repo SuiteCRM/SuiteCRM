@@ -46,6 +46,7 @@ use SuiteCRM\Enumerator\ExceptionCode;
  * Class NotFoundException
  * @package SuiteCRM\Exception
  */
+#[\AllowDynamicProperties]
 class NotFoundException extends Exception
 {
     /**

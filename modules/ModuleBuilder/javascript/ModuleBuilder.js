@@ -660,6 +660,9 @@ if (typeof('console') == 'undefined') {
               width: 500,
               close: true
             });
+            window.setTimeout(function() {
+                YAHOO.SUGAR.MessageBox.hide();
+            }, 1000);
             ModuleBuilder.updateContent(o);
           }
 
@@ -733,6 +736,9 @@ if (typeof('console') == 'undefined') {
               width: 500,
               close: true
             });
+            window.setTimeout(function() {
+                YAHOO.SUGAR.MessageBox.hide();
+            }, 1000);
             successCall(o);
           }
         }

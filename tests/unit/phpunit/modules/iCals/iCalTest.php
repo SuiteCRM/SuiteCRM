@@ -5,15 +5,15 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 require_once 'modules/iCals/iCal.php';
 class iCalTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function test__construct()
+    public function test__construct(): void
     {
         self::markTestIncomplete('environment dependency');
-        
+
         // Execute the constructor and check for the Object type and  attributes
         $ical = new iCal();
-        $this->assertInstanceOf('iCal', $ical);
-        $this->assertInstanceOf('vCal', $ical);
-        $this->assertInstanceOf('SugarBean', $ical);
+        self::assertInstanceOf('iCal', $ical);
+        self::assertInstanceOf('vCal', $ical);
+        self::assertInstanceOf('SugarBean', $ical);
     }
 
 //    public function testgetVcalIcal()

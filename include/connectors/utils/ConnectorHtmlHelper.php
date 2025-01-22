@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Connector's HTML helper
  * @api
  */
+#[\AllowDynamicProperties]
 class ConnectorHtmlHelper
 {
     /**

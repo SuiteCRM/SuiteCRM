@@ -50,6 +50,7 @@ use SugarBean;
 /**
  * Class BeanJsonSerializer converts a SugarBean into a pretty JSON Document.
  */
+#[\AllowDynamicProperties]
 class BeanJsonSerializer
 {
     /** @var ArrayMapper */
@@ -307,26 +308,26 @@ class BeanJsonSerializer
                 continue;
             }
 
-            if (preg_match('/^email([0-9]+)$/', $key)) {
+            if (preg_match('/^email([0-9]+)$/', (string) $key)) {
                 $prettyBean['email'][] = $value;
                 continue;
             }
             //endregion
 
             //region phone
-            if (preg_match('/^phone\_([a-z_]+)$/', $key, $matches)) {
+            if (preg_match('/^phone\_([a-z_]+)$/', (string) $key, $matches)) {
                 $prettyBean['phone'][$matches[1]] = $value;
                 continue;
             }
             //endregion
 
             //region address
-            if (preg_match('/^address\_([a-z_]+)$/', $key, $matches)) {
+            if (preg_match('/^address\_([a-z_]+)$/', (string) $key, $matches)) {
                 $prettyBean['address']['primary'][$matches[1]] = $value;
                 continue;
             }
 
-            if (preg_match('/^([a-z]+)\_address\_([a-z_]+)$/', $key, $matches)) {
+            if (preg_match('/^([a-z]+)\_address\_([a-z_]+)$/', (string) $key, $matches)) {
                 $prettyBean['address'][$matches[1]][$matches[2]] = $value;
                 continue;
             }

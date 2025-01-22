@@ -106,7 +106,7 @@
 		new YAHOO.util.LocalDataSource(enabled_modules, {
 			responseSchema: {
 			   resultsList : "modules",
-			   fields : [{key : "module"}, {key : "label"}]
+			   fields : [{key : "module"}, {key : "label"}, {key : "disabled"}]
 			}
 		}),
 		{height: "300px"}

@@ -79,5 +79,7 @@ $mod_strings = array(
     'LBL_SURVEYS_SURVEYRESPONSES_FROM_SURVEYS_TITLE'                                 => 'Survey',
     'LBL_QUESTION_RESPONSES_DISPLAY'                                                 => 'Question Responses',
     'LBL_SURVEYRESPONSES_CAMPAIGNS_FROM_CAMPAIGNS_TITLE'                             => 'Campaign',
+    'LBL_QUESTION' => 'Question',
+    'LBL_RESPONSE' => 'Response'
 
 );

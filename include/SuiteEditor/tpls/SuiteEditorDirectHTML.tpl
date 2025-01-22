@@ -112,4 +112,4 @@
     {rdelim});
 </script>
 
-<textarea id="{$elementId}" name="{$elementId}" title="">{$contents}</textarea>
+<textarea id="{$elementId}" name="{$elementId}" cols="100" rows="25" style="width:100%"  title="">{$contents}</textarea>

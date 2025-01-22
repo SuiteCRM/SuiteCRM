@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 require_once('include/Sugar_Smarty.php');
 
+#[\AllowDynamicProperties]
 class RSSDashlet extends Dashlet
 {
     protected $url = 'https://salesagility.com/component/easyblog/tags/suitecrm?format=feed&type=rss';
@@ -141,9 +142,7 @@ class RSSDashlet extends Dashlet
      * @param array $req $_REQUEST
      * @return array filtered options to save
      */
-    public function saveOptions(
-        array $req
-        ) {
+    public function saveOptions($req) {
         $options = array();
         $options['title'] = $req['title'];
         $options['url'] = $req['url'];
@@ -159,7 +158,7 @@ class RSSDashlet extends Dashlet
         // suppress XML errors
         libxml_use_internal_errors(true);
         $data = file_get_contents($url);
-        $urlparse = parse_url($url);
+        $urlparse = parse_url((string) $url);
         if (empty($urlparse['scheme']) || empty($urlparse['host'])) {
             return $this->dashletStrings['ERR_LOADING_FEED'];
         }
@@ -201,7 +200,7 @@ EOHTML;
                 if (empty($link)) {
                     $link = $entry->link[0]['href'];
                 }
-                $link = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
+                $link = htmlspecialchars((string) $link, ENT_QUOTES, 'UTF-8');
                 $title = htmlspecialchars($entry->title, ENT_QUOTES, 'UTF-8');
                 $summary = htmlspecialchars($entry->summary, ENT_QUOTES, 'UTF-8');
                 $output .= <<<EOHTML

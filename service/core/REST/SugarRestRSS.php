@@ -58,11 +58,14 @@ class SugarRestRSS extends SugarRest
 	 */
 	public function generateResponse($input)
 	{
-		if(!isset($input['entry_list'])) {
+		global $app_strings;
+        $app_strings = $app_strings ?? [];
+
+        if(!isset($input['entry_list'])) {
 		    $this->fault($app_strings['ERR_RSS_INVALID_RESPONSE']);
 		}
 		ob_clean();
-		$this->generateResponseHeader(count($input['entry_list']));
+		$this->generateResponseHeader(is_countable($input['entry_list']) ? count($input['entry_list']) : 0);
 		$this->generateItems($input);
 		$this->generateResponseFooter();
 	} // fn
@@ -99,18 +102,18 @@ EORSS;
 
     protected function generateItem($item)
     {
-        $name = !empty($item['name_value_list']['name']['value'])?htmlentities( $item['name_value_list']['name']['value']): '';
+        $name = !empty($item['name_value_list']['name']['value'])?htmlentities( (string) $item['name_value_list']['name']['value']): '';
         $url = $GLOBALS['sugar_config']['site_url']  . htmlentities('/index.php?module=' . $item['module_name']. '&action=DetailView&record=' . $item['id']);
         $date = TimeDate::httpTime(TimeDate::getInstance()->fromDb($item['name_value_list']['date_modified']['value'])->getTimestamp());
         $description = '';
         $displayFieldNames = true;
-        if(count($item['name_value_list']) == 2 &&isset($item['name_value_list']['name']))$displayFieldNames = false;
+        if((is_countable($item['name_value_list']) ? count($item['name_value_list']) : 0) == 2 &&isset($item['name_value_list']['name']))$displayFieldNames = false;
         foreach($item['name_value_list'] as $k=>$v){
             if ( $k == 'name' || $k == 'date_modified') {
                 continue;
             }
-            if($displayFieldNames) $description .= '<b>' .htmlentities( $k) . ':<b>&nbsp;';
-            $description .= htmlentities( $v['value']) . "<br>";
+            if($displayFieldNames) $description .= '<b>' .htmlentities( (string) $k) . ':<b>&nbsp;';
+            $description .= htmlentities( (string) $v['value']) . "<br>";
         }
 
         echo <<<EORSS

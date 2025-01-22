@@ -35,6 +35,5 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-SUGAR.yui={loader:new YAHOO.util.YUILoader({skin:{base:'blank',defaultSkin:''}})}
+ */SUGAR.yui={loader:new YAHOO.util.YUILoader({skin:{base:'blank',defaultSkin:''}})}
 SUGAR.yui.loader.addModule({name:'sugarwidgets',type:'js',path:'SugarYUIWidgets.js',requires:['yahoo','layout','dragdrop','treeview','json','datatable','container','button','tabview'],varname:YAHOO.SUGAR});

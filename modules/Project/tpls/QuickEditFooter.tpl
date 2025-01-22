@@ -44,7 +44,7 @@
         <td>
         {if $bean->aclAccess("save")}<input title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button primary" onclick="this.form.action.value='Save';this.form.return_action.value='ProjectTemplatesListView';if(check_form('{$view}'))return DCMenu.save(this.form.id, 'Project_subpanel_save_button');return false;" type="submit" name="Project_dcmenu_save_button" id="Project_dcmenu_save_button" value="{$APP.LBL_SAVE_BUTTON_LABEL}">{/if}
         {{foreach from=$form.buttons key=val item=button}}
-           {{sugar_button module="$module" id="$button" view="$view"}}
+           {{sugar_button module="$module" id=$button view="$view"}}
         {{/foreach}}
         <input title="{$APP.LBL_FULL_FORM_BUTTON_TITLE}" accessKey="{$APP.LBL_FULL_FORM_BUTTON_KEY}" class="button" accept=""  onclick="disableOnUnloadEditView(this.form); this.form.return_action.value='ProjectTemplatesDetailView'; this.form.action.value='ProjectTemplatesEditView'; this.form.return_module.value='Project';this.form.return_id.value=this.form.record.value;if(typeof(this.form.to_pdf)!='undefined') this.form.to_pdf.value='0';SUGAR.ajaxUI.submitForm(this.form,null,true);DCMenu.closeOverlay();"  type="button" name="Project_subpanel_full_form_button"  id="Project_subpanel_full_form_button"  value="{$APP.LBL_FULL_FORM_BUTTON_LABEL}">
         <input type="hidden" name="full_form" value="full_form">

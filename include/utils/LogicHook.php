@@ -66,6 +66,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @api
  */
+#[\AllowDynamicProperties]
 class LogicHook
 {
     public $bean = null;
@@ -74,19 +75,7 @@ class LogicHook
     {
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function LogicHook()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     /**
@@ -133,7 +122,7 @@ class LogicHook
                         foreach ($hook_array as $type => $hookg) {
                             foreach ($hookg as $index => $hook) {
                                 $this->hookscan[$type][] = $hook;
-                                $idx = count($this->hookscan[$type])-1;
+                                $idx = (is_countable($this->hookscan[$type]) ? count($this->hookscan[$type]) : 0)-1;
                                 $this->hook_map[$type][$idx] = array("file" => $extpath.'/'.$entry, "index" => $index);
                             }
                         }
@@ -191,7 +180,7 @@ class LogicHook
      *
      * @param string $module_dir
      * @param string $event
-     * @param array $arguments
+     * @param object|array $arguments
      * @param SugarBean $bean
      */
     public function call_custom_logic($module_dir, $event, $arguments = null)
@@ -221,7 +210,7 @@ class LogicHook
      *
      * @param array $hook_array
      * @param string $event
-     * @param array $arguments
+     * @param object|array $arguments
      * @param SugarBean $bean
      */
     public function process_hooks($hook_array, $event, $arguments)

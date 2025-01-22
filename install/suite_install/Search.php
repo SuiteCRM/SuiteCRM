@@ -73,6 +73,9 @@ function install_es()
         'host' => 'localhost',
         'user' => '',
         'pass' => '',
+        'index' => $sugar_config['unique_key'],
+        'search_wildcard_char' => '%',
+        'search_wildcard_infront' => true
     ];
 
     ksort($sugar_config);

@@ -118,6 +118,7 @@ $mod_strings = array(
 
     'LBL_GROUP_SELECT' => 'Select which groups should have access to this record',
     'LBL_ERROR_DUPLICATE' => 'Due to a possible duplicate detected by SuiteCRM you will have to manually add Security Groups to your newly created record.',
+    'LBL_ERROR_EXPORT_WHERE_CHANGED' => 'Update failed because the search filter was modified. Please try again.',
 
     'LBL_INBOUND_EMAIL' => 'Inbound email account',
     'LBL_INBOUND_EMAIL_DESC' => 'Only allow access to an email account if user belongs to a group that is assigned to the mail account.',

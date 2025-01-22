@@ -46,6 +46,7 @@ require_once('modules/Trackers/monitor/Monitor.php');
 require_once('modules/Trackers/Metric.php');
 require_once('modules/Trackers/Trackable.php');
 
+#[\AllowDynamicProperties]
 class BlankMonitor extends Monitor implements Trackable
 {
 
@@ -57,19 +58,7 @@ class BlankMonitor extends Monitor implements Trackable
     }
 
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function BlankMonitor()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     /**
      * setValue
@@ -108,7 +97,7 @@ class BlankMonitor extends Monitor implements Trackable
      * the flush method passing with the montior ($this) instance.
      *
      */
-    public function save()
+    public function save($flush = \true)
     {
     }
 

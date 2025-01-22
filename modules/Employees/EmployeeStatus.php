@@ -50,7 +50,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 function getEmployeeStatusOptions($focus, $name = 'employee_status', $value = null, $view = 'DetailView')
 {
-    global $current_user, $app_list_strings;
+    global $current_user, $app_list_strings, $sugar_config;
+
+    $sugar_config = $sugar_config ?? [];
+
     if (($view == 'EditView' || $view == 'MassUpdate') && is_admin($current_user)) {
         $employee_status  = "<select name='$name'";
         if (!empty($sugar_config['default_user_name'])
@@ -64,14 +67,14 @@ function getEmployeeStatusOptions($focus, $name = 'employee_status', $value = nu
         $employee_status .= "</select>\n";
         return $employee_status;
     }
-        
+
     if (!empty($value)){
     	$focus->employee_status = $value;
     }
     if (isset($app_list_strings['employee_status_dom'][$focus->employee_status])) {
         return $app_list_strings['employee_status_dom'][$focus->employee_status];
     }
-      
+
     return $focus->employee_status;
 }
 
@@ -84,6 +87,6 @@ function getMessengerTypeOptions($focus, $name = 'messenger_type', $value = null
         $messenger_type .= '</select>';
         return $messenger_type;
     }
-   
+
     return $app_list_strings['messenger_type_dom'][$focus->messenger_type];
 }

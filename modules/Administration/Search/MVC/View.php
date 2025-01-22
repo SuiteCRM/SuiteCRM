@@ -58,7 +58,7 @@ abstract class View extends BaseView
      *
      * Extend to assign more variable.
      */
-    public function preDisplay()
+    public function preDisplay(): void
     {
         global $mod_strings;
         global $app_list_strings;
@@ -74,10 +74,11 @@ abstract class View extends BaseView
         $this->smarty->assign('error', $errors);
         $this->smarty->assign('BUTTONS', $this->getButtons());
 
-        if (!isset($sugar_config['search']) || !$sugar_config['search']) {
+        if (empty($sugar_config['search'])) {
             LoggerManager::getLogger()->warn('Configuration does not contains default search settings.');
         }
-        $search = isset($sugar_config['search']) ? $sugar_config['search'] : null;
+
+        $search = $sugar_config['search'] ?? null;
         $this->smarty->assign('config', $search);
     }
 
@@ -86,7 +87,7 @@ abstract class View extends BaseView
      *
      * @return string
      */
-    protected function getButtons()
+    protected function getButtons(): string
     {
         global $mod_strings;
         global $app_strings;
@@ -113,7 +114,7 @@ EOQ;
      *
      * @return array
      */
-    protected function getEngines()
+    protected function getEngines(): array
     {
         $engines = [];
 

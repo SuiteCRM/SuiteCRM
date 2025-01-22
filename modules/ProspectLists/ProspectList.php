@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class ProspectList extends SugarBean
 {
     public $field_name_map;
@@ -100,19 +101,7 @@ class ProspectList extends SugarBean
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ProspectList()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public $new_schema = true;
@@ -438,7 +427,7 @@ FROM prospect_lists_prospects plp
 
     public function mark_deleted($id)
     {
-        $query = "UPDATE prospect_lists_prospects SET deleted = 1 WHERE prospect_list_id = '{$id}' ";
+        $query = "UPDATE prospect_lists_prospects SET deleted = 1, date_modified = NOW() WHERE prospect_list_id = '{$id}' AND deleted = 0";
         $this->db->query($query);
         return parent::mark_deleted($id);
     }

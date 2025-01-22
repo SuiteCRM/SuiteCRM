@@ -203,7 +203,7 @@ class Facebook extends BaseFacebook
         $cookie_name = $this->getSharedSessionCookieName();
         unset($_COOKIE[$cookie_name]);
         $base_domain = $this->getBaseDomain();
-        setcookie($cookie_name, '', 1, '/', '.'.$base_domain, false, true);
+        SugarApplication::setCookie($cookie_name, '', 1, '/', '.'.$base_domain, false, true);
     }
 
     /**

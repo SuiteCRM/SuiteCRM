@@ -5,6 +5,7 @@ use Api\V8\BeanDecorator\BeanManager;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class PageParams extends BaseParam
 {
     /**

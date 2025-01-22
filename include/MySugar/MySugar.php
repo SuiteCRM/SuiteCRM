@@ -55,21 +55,6 @@ class MySugar
         $this->type = $type;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function MySugar($type)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($type);
-    }
-
-
     public function checkDashletDisplay()
     {
         if ((!in_array($this->type, $GLOBALS['moduleList'])
@@ -109,6 +94,11 @@ class MySugar
             $pages = $current_user->getPreference('pages', $this->type);
 
             $dashlets = $current_user->getPreference('dashlets', $this->type);
+
+            if (!empty($_POST['type_module']) && stripos($_POST['type_module'], 'phar://') !== false) {
+                LoggerManager::getLogger()->security('MySugar:addDashlet unsecure type_module received: ' . $_POST['type_module']);
+                throw new RuntimeException('Invalid type_module');
+            }
 
             $guid = create_guid();
             $options = array();

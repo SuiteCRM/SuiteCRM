@@ -51,6 +51,7 @@ require_once("include/SugarObjects/templates/company/Company.php");
 require_once __DIR__ . '/../../include/EmailInterface.php';
 
 // Account is used to store account information.
+#[\AllowDynamicProperties]
 class Account extends Company implements EmailInterface
 {
     public $field_name_map = array();
@@ -162,20 +163,6 @@ class Account extends Company implements EmailInterface
             $_REQUEST['parent_name'] = '';
             $_REQUEST['parent_id'] = '';
         }
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Account()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
     }
 
     public function get_summary_text()
@@ -323,7 +310,7 @@ class Account extends Company implements EmailInterface
                         $joinAlias . '.' . $field_def['rname'],
                         $newWhereClause
                     );
-                    $where = str_replace($whereClause, $newWhereClause, $where);
+                    $where = str_replace($whereClause, $newWhereClause, (string) $where);
                 }
             }
         }
@@ -375,7 +362,7 @@ class Account extends Company implements EmailInterface
     {
         $xtpl->assign("ACCOUNT_NAME", $account->name);
         $xtpl->assign("ACCOUNT_TYPE", $account->account_type);
-        $xtpl->assign("ACCOUNT_DESCRIPTION", $account->description);
+        $xtpl->assign("ACCOUNT_DESCRIPTION", nl2br($account->description));
 
         return $xtpl;
     }

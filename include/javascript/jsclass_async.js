@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function method_callback(o){var resp=JSON.parse(o.responseText),request_id=o.tId,result=resp.result;if(result==null){return;}
+ */function method_callback(o){var resp=JSON.parse(o.responseText),request_id=o.tId,result=resp.result;if(result==null){return;}
 reqid=global_request_registry[request_id];if(typeof(reqid)!='undefined'){widget=global_request_registry[request_id][0];method_name=global_request_registry[request_id][1];widget[method_name](result);}}
 SugarClass.inherit("SugarVCalClient","SugarClass");function SugarVCalClient(){this.init();}
 SugarVCalClient.prototype.init=function(){};SugarVCalClient.prototype.load=function(user_id,request_id){this.user_id=user_id;YAHOO.util.Connect.asyncRequest('GET','./vcal_server.php?type=vfb&source=outlook&noAuth=noAuth&user_id='+user_id,{success:function(result){if(typeof GLOBAL_REGISTRY.freebusy=='undefined'){GLOBAL_REGISTRY.freebusy=new Object();}

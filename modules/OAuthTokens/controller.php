@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class OAuthTokensController extends SugarController
 {
     protected function action_delete()

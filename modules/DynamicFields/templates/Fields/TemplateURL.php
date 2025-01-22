@@ -44,6 +44,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 class TemplateURL extends TemplateText
 {
+    public $gen;
+    public $link_target;
     public $supports_unified_search = true;
 
     public function __construct()
@@ -68,7 +70,7 @@ class TemplateURL extends TemplateText
     public function get_xtpl_detail()
     {
         $value = parent::get_xtpl_detail();
-        if (!empty($value) && substr_count($value, '://') == 0 && substr($value, 0, 8) != 'index.php') {
+        if (!empty($value) && substr_count((string) $value, '://') == 0 && substr((string) $value, 0, 8) != 'index.php') {
             $value = 'http://' . $value;
         }
         return $value;

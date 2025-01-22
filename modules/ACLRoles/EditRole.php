@@ -64,7 +64,7 @@ $role_name = '';
 $return= array('module'=>'ACLRoles', 'action'=>'index', 'record'=>'');
 if (!empty($_REQUEST['record'])) {
     $role->retrieve($_REQUEST['record']);
-    $categories = ACLRole::getRoleActions($_REQUEST['record']);
+    $categories = $role->getRoleActions($_REQUEST['record']);
     
     $role_name =  $role->name;
     if (!empty($_REQUEST['isDuplicate'])) {
@@ -75,7 +75,7 @@ if (!empty($_REQUEST['record'])) {
         $return['action']='DetailView';
     }
 } else {
-    $categories = ACLRole::getRoleActions('');
+    $categories = $role->getRoleActions('');
 }
 $sugar_smarty->assign('ROLE', $role->toArray());
 $tdwidth = 10;
@@ -93,13 +93,13 @@ if (isset($_REQUEST['return_module'])) {
 $sugar_smarty->assign('RETURN', $return);
 $names = ACLAction::setupCategoriesMatrix($categories);
 if (!empty($names)) {
-    $tdwidth = 100 / count($names);
+    $tdwidth = 100 / (is_countable($names) ? count($names) : 0);
 }
 $sugar_smarty->assign('CATEGORIES', $categories);
 $sugar_smarty->assign('CATEGORY_NAME', $_REQUEST['category_name']);
 $sugar_smarty->assign('TDWIDTH', $tdwidth);
 $sugar_smarty->assign('ACTION_NAMES', $names);
-$actions = $categories[$_REQUEST['category_name']]['module'];
+$actions = !empty($categories[$_REQUEST['category_name']]['module']) ? $categories[$_REQUEST['category_name']]['module'] : '' ;
 $sugar_smarty->assign('ACTIONS', $actions);
 ob_clean();
 

@@ -49,6 +49,7 @@ require_once __DIR__ . '/../../../../../modules/InboundEmail/InboundEmail.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class InboundEmailMock extends InboundEmail
 {
     /**

@@ -46,6 +46,7 @@ require_once('include/EditView/QuickCreate.php');
 
 
 
+#[\AllowDynamicProperties]
 class CallsQuickCreate extends QuickCreate
 {
     public $javascript;
@@ -87,9 +88,9 @@ class CallsQuickCreate extends QuickCreate
         }
 
         $this->ss->assign("DATE_START", $focus->date_start);
-        $this->ss->assign("TIME_START", substr($focus->time_start, 0, 5));
-        $time_start_hour = (int)substr($focus->time_start, 0, 2);
-        $time_start_minutes = substr($focus->time_start, 3, 5);
+        $this->ss->assign("TIME_START", substr((string) $focus->time_start, 0, 5));
+        $time_start_hour = (int)substr((string) $focus->time_start, 0, 2);
+        $time_start_minutes = substr((string) $focus->time_start, 3, 5);
 
         if ($time_start_minutes > 0 && $time_start_minutes < 15) {
             $time_start_minutes = "15";
@@ -115,16 +116,16 @@ class CallsQuickCreate extends QuickCreate
         $start_at = 0;
 
         $time_pref = $timedate->get_time_format();
-        if (strpos($time_pref, 'a') || strpos($time_pref, 'A')) {
+        if (strpos((string) $time_pref, 'a') || strpos((string) $time_pref, 'A')) {
             $num_of_hours = 13;
             $start_at = 1;
 
             // It's important to do this block first before we recalculate $time_start_hour
-            $options = strpos($time_pref, 'a') ? $app_list_strings['dom_meridiem_lowercase'] : $app_list_strings['dom_meridiem_uppercase'];
-            if (strpos($time_pref, 'a')) {
-                $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($options, strpos($focus->time_start, 'a') ? 'am' : 'pm'));
+            $options = strpos((string) $time_pref, 'a') ? $app_list_strings['dom_meridiem_lowercase'] : $app_list_strings['dom_meridiem_uppercase'];
+            if (strpos((string) $time_pref, 'a')) {
+                $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($options, strpos((string) $focus->time_start, 'a') ? 'am' : 'pm'));
             } else {
-                $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($options, strpos($focus->time_start, 'A') ? 'AM' : 'PM'));
+                $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($options, strpos((string) $focus->time_start, 'A') ? 'AM' : 'PM'));
             }
 
             // the $num_of_hours array is keyed by values 01, 02, ... 12 for meridiem times

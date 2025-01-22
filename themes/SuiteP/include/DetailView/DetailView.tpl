@@ -333,7 +333,7 @@
                         $('#content div.panel-content div.panel.tab-panel-' + tab).show();
                     };
 
-                    let selectTabOnError = function(tab) {
+                    var selectTabOnError = function(tab) {
                         selectTabDetailView(tab);
                         $('#content ul.nav.nav-tabs > li').removeClass('active');
                         $('#content ul.nav.nav-tabs > li a').css('color', '');
@@ -352,7 +352,7 @@
                     $(function(){
                         $('#content ul.nav.nav-tabs > li > a[data-toggle="tab"]').click(function(e){
                             if(typeof $(this).parent().find('a').first().attr('id') != 'undefined') {
-                                var tab = parseInt($(this).parent().find('a').first().attr('id').match(/^tab(.)*$/)[1]);
+                                var tab = parseInt($(this).parent().find('a').first().attr('id').match(/^tab(?<number>(.)*)$/)[1]);
                                 selectTabDetailView(tab);
                             }
                         });

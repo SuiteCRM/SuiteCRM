@@ -4,20 +4,14 @@ namespace Step\Acceptance;
 
 use \AcceptanceTester as Tester;
 
+#[\AllowDynamicProperties]
 class Workflow extends Tester
 {
-    /**
-     * @param \Step\Acceptance\NavigationBar $navigationBar
-     * @param \Step\Acceptance\ListView $listView
-     */
-    public function navigateToWorkflow(
-        NavigationBarTester $navigationBar,
-        ListView $listView
-    ) {
-        $navigationBar->clickAllMenuItem('WorkFlow');
-        $listView->waitForListViewVisible();
-        $this->see('WORKFLOW');
-    }
+    public function navigateToWorkflow(): void
+    {
+        $this->visitPage('Administration', 'index');
+        $this->click('#workflow_management');
+        $this->waitForText('WORKFLOW');}
 
     /**
      * @param $module

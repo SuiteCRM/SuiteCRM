@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 /**
  * The Browser History Manager provides the ability to use the back/forward
@@ -406,7 +406,7 @@ YAHOO.util.History = (function () {
      * @param {String} string string to decode
      * @return {String} decoded string
      * @private
-     * @since 2.9.0
+     * @since 2.9.1
      */
     function _decode(string) {
         return decodeURIComponent(string.replace(/\+/g, ' '));
@@ -420,7 +420,7 @@ YAHOO.util.History = (function () {
      * @param {String} string string to encode
      * @return {String} encoded string
      * @private
-     * @since 2.9.0
+     * @since 2.9.1
      */
     function _encode(string) {
         return encodeURIComponent(string).replace(/%20/g, '+');
@@ -806,4 +806,4 @@ YAHOO.util.History = (function () {
     };
 
 })();
-YAHOO.register("history", YAHOO.util.History, {version: "2.9.0", build: "2800"});
+YAHOO.register("history", YAHOO.util.History, {version: "2.9.1", build: "2800"});

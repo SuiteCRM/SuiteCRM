@@ -4,27 +4,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_PDF_TemplatesViewEdit extends ViewEdit
 {
     public function __construct()
     {
         parent::__construct();
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AOS_PDF_TemplatesViewEdit()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
-
 
     public function display()
     {
@@ -40,8 +26,9 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
         //Loading Sample Files
         $json = getJSONobj();
         $samples = array();
+        $sample_options_array = [];
+
         if ($handle = opendir('modules/AOS_PDF_Templates/samples')) {
-            $sample_options_array[] = ' ';
             while (false !== ($file = readdir($handle))) {
                 if ($value = ltrim(rtrim($file, '.php'), 'smpl_')) {
                     require_once('modules/AOS_PDF_Templates/samples/'.$file);
@@ -233,7 +220,7 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
 		<select name='variable_name' id='variable_name' tabindex="50" onchange="showVariable(this.options[this.selectedIndex].value);">
 		</select>
 		<input type="text" size="30" tabindex="60" name="variable_text" id="variable_text" />
-		<input type='button' tabindex="70" onclick='insert_variable(document.EditView.variable_text.value, "email_template_editor");' class='button' value='${mod_strings['LBL_BUTTON_INSERT']}'>
+		<input type='button' tabindex="70" onclick='insert_variable(document.EditView.variable_text.value, "email_template_editor");' class='button' value='{$mod_strings['LBL_BUTTON_INSERT']}'>
 		<script type="text/javascript">
 			populateModuleVariables("$type");
 	</script>

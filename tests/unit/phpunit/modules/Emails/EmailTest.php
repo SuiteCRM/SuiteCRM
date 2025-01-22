@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2019 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,22 +50,24 @@ require_once __DIR__ . '/EmailMock.php';
 
 class EmailTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         global $current_user;
         get_sugar_config_defaults();
         $current_user = BeanFactory::newBean('Users');
+        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Emails');
     }
 
-    public function testSendSaveAndStoreInSentOk()
+    public function testSendSaveAndStoreInSentOk(): void
     {
         // handle non-gmail sent folder (mailbox is set)
         $mailer = new SugarPHPMailerMock();
         $ie = BeanFactory::newBean('InboundEmail');
-        $ieId = $ie->save();
-        $this->assertTrue((bool)$ieId);
+        $ie->save();
+        $ieId = $ie->id;
+        self::assertTrue((bool)$ieId);
         $_REQUEST['inbound_email_id'] = $ieId;
         $email = new EmailMock();
         $email->to_addrs_arr = ['foo@bazz.bar'];
@@ -78,20 +80,20 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $mailer->oe->mail_smtptype = 'foomail';
         $ret = $email->send($mailer, $nonGmailSentFolder, $ie);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
-        $this->assertEquals(Email::NO_ERROR, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
+        self::assertEquals(Email::NO_ERROR, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
     }
 
-    public function testSendSaveAndStoreInSentOkButIEDoesntMatch()
+    public function testSendSaveAndStoreInSentOkButIEDoesntMatch(): void
     {
         // handle non-gmail sent folder (mailbox is set)
         $mailer = new SugarPHPMailerMock();
         $ie = BeanFactory::newBean('InboundEmail');
         $ieId = $ie->save();
-        $this->assertTrue((bool)$ieId);
+        self::assertTrue((bool)$ieId);
         $_REQUEST['inbound_email_id'] = $ieId;
         $email = new EmailMock();
         $email->to_addrs_arr = ['foo@bazz.bar'];
@@ -104,20 +106,20 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $mailer->oe->mail_smtptype = 'foomail';
         $ret = $email->send($mailer, $nonGmailSentFolder, $ie);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
-        $this->assertEquals(Email::NO_ERROR, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
+        self::assertEquals(Email::NO_ERROR, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
     }
 
-    public function testSendSaveAndStoreInSentNoSentFolder()
+    public function testSendSaveAndStoreInSentNoSentFolder(): void
     {
         // handle non-gmail sent folder (mailbox is set but no ie stored option: sentFolder)
         $mailer = new SugarPHPMailerMock();
         $ie = BeanFactory::newBean('InboundEmail');
         $ieId = $ie->save();
-        $this->assertTrue((bool)$ieId);
+        self::assertTrue((bool)$ieId);
         $_REQUEST['inbound_email_id'] = $ieId;
         $email = new EmailMock();
         $email->to_addrs_arr = ['foo@bazz.bar'];
@@ -127,23 +129,22 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $mailer->oe->mail_smtptype = 'foomail';
         $ret = $email->send($mailer, $nonGmailSentFolder, $ie);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertEquals(Email::ERR_NOT_STORED_AS_SENT, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
-        $this->assertEquals(
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertEquals(Email::ERR_NOT_STORED_AS_SENT, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
+        self::assertEquals(
             NonGmailSentFolderHandler::ERR_NO_STORED_SENT_FOLDER,
             $email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError()
         );
     }
 
-    public function testSendSaveAndStoreInSentNoMailbox()
+    public function testSendSaveAndStoreInSentNoMailbox(): void
     {
         // mailbox is not set
         $mailer = new SugarPHPMailerMock();
-        $ie = BeanFactory::newBean('InboundEmail');
-        $ieId = $ie->save();
-        $this->assertTrue((bool)$ieId);
+        $ieId = BeanFactory::newBean('InboundEmail')->save();
+        self::assertTrue((bool)$ieId);
         $_REQUEST['inbound_email_id'] = $ieId;
         $email = new EmailMock();
         $email->to_addrs_arr = ['foo@bazz.bar'];
@@ -151,14 +152,14 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $mailer->oe->mail_smtptype = 'foomail';
         $ret = $email->send($mailer);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertEquals(Email::ERR_NOT_STORED_AS_SENT, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
-        $this->assertEquals(NonGmailSentFolderHandler::ERR_EMPTY_MAILBOX, $email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertEquals(Email::ERR_NOT_STORED_AS_SENT, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
+        self::assertEquals(NonGmailSentFolderHandler::ERR_EMPTY_MAILBOX, $email->getTempEmailAtSend()->getNonGmailSentFolderHandler()->getLastError());
     }
 
-    public function testSendSaveAndStoreInSentNoIE()
+    public function testSendSaveAndStoreInSentNoIE(): void
     {
         // no IE
         $mailer = new SugarPHPMailerMock();
@@ -168,14 +169,14 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $email->saved_attachments = [];
         $ret = $email->send($mailer);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertEquals(Email::ERR_IE_RETRIEVE, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler());
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertEquals(Email::ERR_IE_RETRIEVE, $email->getTempEmailAtSend()->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getTempEmailAtSend()->getNonGmailSentFolderHandler());
     }
 
-    public function testSendSaveAndStoreInSentSendFailedButItsOk()
+    public function testSendSaveAndStoreInSentSendFailedButItsOk(): void
     {
         // should send successfully
         $mailer = new SugarPHPMailerMock();
@@ -184,13 +185,13 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $email->saved_attachments = [];
         $ret = $email->send($mailer);
 
-        $this->assertTrue($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend());
+        self::assertTrue($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend());
     }
 
-    public function testSendSaveAndStoreInSentSendFailed()
+    public function testSendSaveAndStoreInSentSendFailed(): void
     {
         // sending should failing
         $email = BeanFactory::newBean('Emails');
@@ -198,49 +199,51 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $email->saved_attachments = [];
         $ret = $email->send();
 
-        $this->assertFalse($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend());
+        self::assertFalse($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend());
     }
 
-    public function testSendSaveAndStoreInSentSendNoAttachment()
+    public function testSendSaveAndStoreInSentSendNoAttachment(): void
     {
         // attachenemt error
         $email = BeanFactory::newBean('Emails');
         $email->to_addrs_arr = ['foo@bazz.bar'];
         $ret = $email->send();
 
-        $this->assertFalse($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend());
+        self::assertFalse($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend());
     }
 
-    public function testSendSaveAndStoreInSentSendNoTo()
+    public function testSendSaveAndStoreInSentSendNoTo(): void
     {
         // "to" array is required
         $email = BeanFactory::newBean('Emails');
         $ret = $email->send();
 
-        $this->assertFalse($ret);
-        $this->assertNull($email->getLastSaveAndStoreInSentError());
-        $this->assertNull($email->getNonGmailSentFolderHandler());
-        $this->assertNull($email->getTempEmailAtSend());
+        self::assertFalse($ret);
+        self::assertNull($email->getLastSaveAndStoreInSentError());
+        self::assertNull($email->getNonGmailSentFolderHandler());
+        self::assertNull($email->getTempEmailAtSend());
     }
 
-    public function testSetLastSaveAndStoreInSentErrorNo()
+    public function testSetLastSaveAndStoreInSentErrorNo(): void
     {
         $email = new EmailMock();
         try {
             $email->setLastSaveAndStoreInSentErrorPublic(null);
-            $this->assertTrue(false);
+            self::assertTrue(false);
         } catch (InvalidArgumentException $e) {
-            $this->assertEquals(Email::ERR_CODE_SHOULD_BE_INT, $e->getCode());
+            self::assertEquals(Email::ERR_CODE_SHOULD_BE_INT, $e->getCode());
+        } catch (EmailException $e) {
+            self::assertEquals(Email::UNHANDLED_LAST_ERROR, $e->getCode());
         }
     }
 
-    public function testSaveAndStoreInSentFolderIfNoGmailWithNoIE()
+    public function testSaveAndStoreInSentFolderIfNoGmailWithNoIE(): void
     {
         $email = BeanFactory::newBean('Emails');
         $ie = BeanFactory::newBean('InboundEmail');
@@ -249,60 +252,58 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $nonGmailSentFolder = new NonGmailSentFolderHandler();
         $ret = $email->saveAndStoreInSentFolderIfNoGmail($ie, $ieId, $mail, $nonGmailSentFolder);
 
-        $this->assertNull($ret);
-        $this->assertEquals(Email::ERR_IE_RETRIEVE, $email->getLastSaveAndStoreInSentError());
+        self::assertNull($ret);
+        self::assertEquals(Email::ERR_IE_RETRIEVE, $email->getLastSaveAndStoreInSentError());
     }
 
-    public function testEmail()
+    public function testEmail(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $email = BeanFactory::newBean('Emails');
-        $this->assertInstanceOf('Email', $email);
-        $this->assertInstanceOf('SugarBean', $email);
+        self::assertInstanceOf('Email', $email);
+        self::assertInstanceOf('SugarBean', $email);
 
-        $this->assertAttributeEquals('Emails', 'module_dir', $email);
-        $this->assertAttributeEquals('Email', 'object_name', $email);
-        $this->assertAttributeEquals('emails', 'table_name', $email);
-        $this->assertAttributeEquals('Emails', 'module_name', $email);
-
-        $this->assertAttributeEquals(true, 'new_schema', $email);
-        $this->assertAttributeEquals('archived', 'type', $email);
+        self::assertEquals('Emails', $email->module_dir);
+        self::assertEquals('Email', $email->object_name);
+        self::assertEquals('emails', $email->table_name);
+        self::assertEquals('Emails', $email->module_name);
+        self::assertEquals(true, $email->new_schema);
+        self::assertEquals('archived', $email->type);
     }
 
-    public function testemail2init()
+    public function testemail2init(): void
     {
         $email = BeanFactory::newBean('Emails');
         $email->email2init();
 
-        $this->assertInstanceOf('EmailUI', $email->et);
+        self::assertInstanceOf('EmailUI', $email->et);
     }
 
-    public function testbean_implements()
+    public function testbean_implements(): void
     {
         // test
         $email = BeanFactory::newBean('Emails');
-        $this->assertEquals(false, $email->bean_implements('')); //test with blank value
-        $this->assertEquals(false, $email->bean_implements('test')); //test with invalid value
-        $this->assertEquals(true, $email->bean_implements('ACL')); //test with valid value
+        self::assertEquals(false, $email->bean_implements('')); //test with blank value
+        self::assertEquals(false, $email->bean_implements('test')); //test with invalid value
+        self::assertEquals(true, $email->bean_implements('ACL')); //test with valid value
     }
 
-    public function testemail2saveAttachment()
+    public function testemail2saveAttachment(): void
+    {
+        $result = BeanFactory::newBean('Emails')->email2saveAttachment();
+        self::assertIsArray($result);
+    }
+
+    public function testsafeAttachmentName(): void
     {
         $email = BeanFactory::newBean('Emails');
-        $result = $email->email2saveAttachment();
-        $this->assertTrue(is_array($result));
+
+        self::assertEquals(false, $email->safeAttachmentName('test.ext'));
+        self::assertEquals(false, $email->safeAttachmentName('test.exe'));
+        self::assertEquals(true, $email->safeAttachmentName('test.cgi'));
     }
 
-    public function testsafeAttachmentName()
-    {
-        $email = BeanFactory::newBean('Emails');
-
-        $this->assertEquals(false, $email->safeAttachmentName('test.ext'));
-        $this->assertEquals(false, $email->safeAttachmentName('test.exe'));
-        $this->assertEquals(true, $email->safeAttachmentName('test.cgi'));
-    }
-
-    public function testemail2ParseAddresses()
+    public function testemail2ParseAddresses(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -314,132 +315,78 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         );
 
         $result = $email->email2ParseAddresses($addresses);
-        $this->assertSame($expected, $result);
+        self::assertSame($expected, $result);
     }
 
-    public function testemail2ParseAddressesForAddressesOnly()
+    public function testemail2ParseAddressesForAddressesOnly(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with simplest format
         $addresses = 'abc@xyz.com,xyz@abc.com';
         $result = $email->email2ParseAddressesForAddressesOnly($addresses);
-        $this->assertEquals(array('abc@xyz.com', 'xyz@abc.com'), $result);
+        self::assertEquals(array('abc@xyz.com', 'xyz@abc.com'), $result);
 
         //test with more used format
         $addresses = 'abc<abc@xyz.com>,xyz<xyz@abc.com>';
         $result = $email->email2ParseAddressesForAddressesOnly($addresses);
-        $this->assertEquals(array('abc@xyz.com', 'xyz@abc.com'), $result);
+        self::assertEquals(array('abc@xyz.com', 'xyz@abc.com'), $result);
     }
 
-    public function testemail2GetMime()
+    public function testemail2GetMime(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
         //test with a filename
-        $result = $email->email2GetMime('config.php');
-        $this->assertEquals('text/x-php', $result);
+        $result = BeanFactory::newBean('Emails')->email2GetMime('config.php');
+        self::assertEquals('text/x-php', $result);
     }
 
-    public function testdecodeDuringSend()
+    public function testdecodeDuringSend(): void
     {
         $email = BeanFactory::newBean('Emails');
 
-        $this->assertEquals('some text', $email->decodeDuringSend('some text'));
-        $this->assertEquals(
+        self::assertEquals('some text', $email->decodeDuringSend('some text'));
+        self::assertEquals(
             '&lt; some text &gt;',
             $email->decodeDuringSend('sugarLessThan some text sugarGreaterThan')
         );
     }
 
-    public function testisDraftEmail()
+    public function testisDraftEmail(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with required parametr set
-        $this->assertEquals(true, $email->isDraftEmail(array('saveDraft' => '1')));
+        self::assertEquals(true, $email->isDraftEmail(array('saveDraft' => '1')));
 
         //test with one of required attribute set
         $email->type = 'draft';
-        $this->assertEquals(false, $email->isDraftEmail(array()));
+        self::assertEquals(false, $email->isDraftEmail(array()));
 
         //test with both of required attribute set
         $email->status = 'draft';
-        $this->assertEquals(true, $email->isDraftEmail(array()));
+        self::assertEquals(true, $email->isDraftEmail(array()));
     }
 
-    public function testgetNamePlusEmailAddressesForCompose()
+    public function testgetNamePlusEmailAddressesForCompose(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
-        $result = $email->getNamePlusEmailAddressesForCompose('Users', array(1));
-        $this->assertGreaterThanOrEqual(0, strlen($result));
+        $result = BeanFactory::newBean('Emails')->getNamePlusEmailAddressesForCompose('Users', array(1));
+        self::assertGreaterThanOrEqual(0, strlen((string) $result));
     }
 
-    public function test_arrayToDelimitedString()
+    public function test_arrayToDelimitedString(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty array
         $result = $email->_arrayToDelimitedString(array());
-        $this->assertEquals('', $result);
+        self::assertEquals('', $result);
 
         //test with valid array
         $result = $email->_arrayToDelimitedString(array('value1', 'value2'));
-        $this->assertEquals('value1,value2', $result);
+        self::assertEquals('value1,value2', $result);
     }
 
-    public function testsendEmailTest()
-    {
-        $this->markTestIncomplete('Not testing sending email currently');
-        /*
-    	$email = BeanFactory::newBean('Emails');
-
-    	$result = $email->sendEmailTest('mail.someserver.com', 25, 425, false, '', '', 'admin@email.com', 'abc@email.com', 'smtp', 'admin');
-
-    	$expected = array( "status"=>false, "errorMessage"=> "Error:SMTP connect() failed. https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting");
-    	$this->assertSame($expected, $result);
-    	*/
-    }
-
-    public function testemail2Send()
-    {
-        $this->markTestIncomplete('Not testing sending email currently');
-        /*	$email = BeanFactory::newBean('Emails');
-
-            $_REQUEST['sendSubject'] = "test subject";
-            $_REQUEST['sendDescription'] = "test text";
-            $_REQUEST['fromAccount'] = "from@email.com";
-            $_REQUEST['setEditor']  = 1;
-            $_REQUEST['description_html']  = "test html";
-            $_REQUEST['sendTo'] = "abc@email.com";
-
-            $result = $email->email2Send($_REQUEST);
-
-            $this->assertEquals(false, $result);
-        */
-    }
-
-    public function testsend()
-    {
-        $this->markTestIncomplete('Not testing sending email currently');
-        /*
-    	$email = BeanFactory::newBean('Emails');
-
-    	$email->to_addrs_arr = array('email' =>'abc@xyz.com', 'display' => 'abc');
-    	$email->cc_addrs_arr = array('email' =>'abc@xyz.com', 'display' => 'abc');
-    	$email->bcc_addrs_arr = array('email' =>'abc@xyz.com', 'display' => 'abc');
-
-    	$email->from_addr = "abc@xyz.com";
-    	$email->from_name = "abc";
-    	$email->reply_to_name = "xyz";
-
-    	$result = $email->send();
-    	$this->assertEquals(false, $result);
-    	*/
-    }
-
-    public function testsaveAndOthers()
+    public function testsaveAndOthers(): void
     {
         // test
         $email = BeanFactory::newBean('Emails');
@@ -461,8 +408,8 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $result = $email->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($email->id));
-        $this->assertEquals(36, strlen($email->id));
+        self::assertTrue(isset($email->id));
+        self::assertEquals(36, strlen((string) $email->id));
 
         //test retrieve method
         $this->retrieve($email->id);
@@ -486,25 +433,23 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $this->delete($email->id);
     }
 
-    public function retrieve($id)
+    public function retrieve($id): void
     {
-        $email = BeanFactory::newBean('Emails');
+        $result = BeanFactory::newBean('Emails')->retrieve($id);
 
-        $result = $email->retrieve($id);
+        self::assertTrue(isset($result->id));
+        self::assertEquals(36, strlen((string) $result->id));
 
-        $this->assertTrue(isset($result->id));
-        $this->assertEquals(36, strlen($result->id));
+        self::assertTrue(isset($result->from_addr_name));
+        self::assertTrue(isset($result->to_addrs_names));
+        self::assertTrue(isset($result->cc_addrs_names));
+        self::assertTrue(isset($result->bcc_addrs_names));
 
-        $this->assertTrue(isset($result->from_addr_name));
-        $this->assertTrue(isset($result->to_addrs_names));
-        $this->assertTrue(isset($result->cc_addrs_names));
-        $this->assertTrue(isset($result->bcc_addrs_names));
-
-        $this->assertTrue(isset($result->raw_source));
-        $this->assertTrue(isset($result->description_html));
+        self::assertTrue(isset($result->raw_source));
+        self::assertTrue(isset($result->description_html));
     }
 
-    public function saveEmailAddresses($id)
+    public function saveEmailAddresses($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -519,26 +464,26 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         //retrieve and verify that email addresses were saved properly
         $email->retrieveEmailAddresses();
 
-        $this->assertNotSame(false, strpos($email->from_addr, 'from_test@email.com'));
-        $this->assertNotSame(false, strpos($email->to_addrs, 'to_test@email.com'));
-        $this->assertNotSame(false, strpos($email->cc_addrs, 'cc_test@email.com'));
-        $this->assertNotSame(false, strpos($email->bcc_addrs, 'bcc_test@email.com'));
+        self::assertNotFalse(strpos($email->from_addr, 'from_test@email.com'));
+        self::assertNotFalse(strpos($email->to_addrs, 'to_test@email.com'));
+        self::assertNotFalse(strpos($email->cc_addrs, 'cc_test@email.com'));
+        self::assertNotFalse(strpos($email->bcc_addrs, 'bcc_test@email.com'));
     }
 
-    public function retrieveEmailAddresses($id)
+    public function retrieveEmailAddresses($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
         $email->id = $id;
         $email->retrieveEmailAddresses();
 
-        $this->assertTrue(isset($email->from_addr_name));
-        $this->assertTrue(isset($email->to_addrs_names));
-        $this->assertTrue(isset($email->cc_addrs_names));
-        $this->assertTrue(isset($email->bcc_addrs_names));
+        self::assertTrue(isset($email->from_addr_name));
+        self::assertTrue(isset($email->to_addrs_names));
+        self::assertTrue(isset($email->cc_addrs_names));
+        self::assertTrue(isset($email->bcc_addrs_names));
     }
 
-    public function linkEmailToAddress($id)
+    public function linkEmailToAddress($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -546,11 +491,11 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $email->linkEmailToAddress(1, 'from');
 
-        $this->assertTrue(isset($result));
-        $this->assertEquals(36, strlen($result));
+        self::assertTrue(isset($result));
+        self::assertEquals(36, strlen((string) $result));
     }
 
-    public function retrieveEmailText($id)
+    public function retrieveEmailText($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -558,17 +503,17 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $email->retrieveEmailText();
 
-        $this->assertTrue(isset($email->from_addr_name));
-        $this->assertTrue(isset($email->reply_to_addr));
-        $this->assertTrue(isset($email->to_addrs_names));
-        $this->assertTrue(isset($email->cc_addrs_names));
-        $this->assertTrue(isset($email->bcc_addrs_names));
+        self::assertTrue(isset($email->from_addr_name));
+        self::assertTrue(isset($email->reply_to_addr));
+        self::assertTrue(isset($email->to_addrs_names));
+        self::assertTrue(isset($email->cc_addrs_names));
+        self::assertTrue(isset($email->bcc_addrs_names));
 
-        $this->assertTrue(isset($email->raw_source));
-        $this->assertTrue(isset($email->description_html));
+        self::assertTrue(isset($email->raw_source));
+        self::assertTrue(isset($email->description_html));
     }
 
-    public function handleAttachments($id)
+    public function handleAttachments($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -580,20 +525,20 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $email->handleAttachments();
 
-        $this->assertTrue(is_array($email->attachments));
+        self::assertIsArray($email->attachments);
     }
 
-    public function delete($id)
+    public function delete($id): void
     {
         $email = BeanFactory::newBean('Emails');
 
         $email->delete($id);
 
         $result = $email->retrieve($id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testSaveTempNoteAttachmentsAndGetNotesAndDoesImportedEmailHaveAttachment()
+    public function testSaveTempNoteAttachmentsAndGetNotesAndDoesImportedEmailHaveAttachment(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -604,43 +549,43 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         //test doesImportedEmailHaveAttachment method to verify note created.
         $result = $email->doesImportedEmailHaveAttachment($email->id);
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
 
         //test getNotes method and verify that it retrieves the created note.
         $email->getNotes($email->id);
-        $this->assertTrue(is_array($email->attachments));
+        self::assertIsArray($email->attachments);
         foreach ($email->attachments as $note) {
-            $this->assertTrue(isset($note));
-            $this->assertInstanceOf('Note', $note);
+            self::assertTrue(isset($note));
+            self::assertInstanceOf('Note', $note);
         }
 
         //finally cleanup
         $email->delete($email->id);
     }
 
-    public function testgetNotesSqlEscape()
+    public function testgetNotesSqlEscape(): void
     {
         $email = BeanFactory::newBean('Emails');
         $email->getNotes("'=");
-        $this->assertFalse(DBManagerFactory::getInstance()->lastError());
+        self::assertFalse(DBManagerFactory::getInstance()->lastError());
     }
 
-    public function testcleanEmails()
+    public function testcleanEmails(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with simplest format
         $addresses = 'abc@xyz.com,xyz@abc.com';
         $result = $email->cleanEmails($addresses);
-        $this->assertEquals('abc@xyz.com, xyz@abc.com', $result);
+        self::assertEquals('abc@xyz.com, xyz@abc.com', $result);
 
         //test with more used format
         $addresses = 'abc<abc@xyz.com>,xyz<xyz@abc.com>';
         $result = $email->cleanEmails($addresses);
-        $this->assertEquals('abc <abc@xyz.com>, xyz <xyz@abc.com>', $result);
+        self::assertEquals('abc <abc@xyz.com>, xyz <xyz@abc.com>', $result);
     }
 
-    public function testgetForwardHeader()
+    public function testgetForwardHeader(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -650,13 +595,13 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $email->to_addrs = 'to@email.com';
         $email->cc_addrs = 'cc@email.com';
 
-        $expected = '<br /><br />>  from test<br />>  2016-01-01<br />>  to@email.com<br />>  cc@email.com<br />>  test<br />> <br />';
+        $expected = '<br /><br />> From: from test<br />> Date Sent/Received: 2016-01-01<br />> To: to@email.com<br />> Cc: cc@email.com<br />> Subject: test<br />> <br />';
 
         $actual = $email->getForwardHeader();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testgetReplyHeader()
+    public function testgetReplyHeader(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -664,68 +609,68 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $email->time_start = '01:01:00';
         $email->date_start = '2016-01-01';
 
-        $expected = '<br> 2016-01-01, 01:01:00, from test ';
+        $expected = '<br>On 2016-01-01, 01:01:00, from test wrote:';
 
         $actual = $email->getReplyHeader();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testquotePlainTextEmail()
+    public function testquotePlainTextEmail(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with plain string containing no line breaks
         $expected = "\n> some text\r";
         $actual = $email->quotePlainTextEmail('some text');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with string containing line breaks
         $expected = "\n> some\r> text\r> with\r> new\r> lines\r";
         $actual = $email->quotePlainTextEmail("some\ntext\nwith\nnew\nlines");
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testquoteHtmlEmail()
+    public function testquoteHtmlEmail(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty string
         $expected = '';
         $actual = $email->quoteHtmlEmail('');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with plain string
         $expected = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>some test</div>";
         $actual = $email->quoteHtmlEmail('some test');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with string containing special charecters
         $expected = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>some test with <&</div>";
         $actual = $email->quoteHtmlEmail('some test with <&');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testquoteHtmlEmailForNewEmailUI()
+    public function testquoteHtmlEmailForNewEmailUI(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty string
         $expected = '';
         $actual = $email->quoteHtmlEmailForNewEmailUI('');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with plain string
         $expected = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>some test</div>";
         $actual = $email->quoteHtmlEmailForNewEmailUI('some test');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with string containing special charecters
         $expected = "<div style='border-left:1px solid #00c; padding:5px; margin-left:10px;'>some test with</div>";
         $actual = $email->quoteHtmlEmailForNewEmailUI("some test with \n");
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testcheck_email_settings()
+    public function testcheck_email_settings(): void
     {
         global $current_user;
 
@@ -733,23 +678,21 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         //test without a valid current user
         $result = $email->check_email_settings();
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
 
         //test with a valid current user
         $current_user = new User(1);
         $result = $email->check_email_settings();
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
     }
 
-    public function testjs_set_archived()
+    public function testjs_set_archived(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
-        $actual = $email->js_set_archived();
-        $this->assertGreaterThan(0, strlen($actual));
+        $actual = BeanFactory::newBean('Emails')->js_set_archived();
+        self::assertGreaterThan(0, strlen((string) $actual));
     }
 
-    public function testu_get_clear_form_js()
+    public function testu_get_clear_form_js(): void
     {
         self::markTestIncomplete('environment dependency (CRLF?)');
         $email = BeanFactory::newBean('Emails');
@@ -765,37 +708,35 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 			}
 		//  End --></script>";
         $actual = $email->u_get_clear_form_js('', '', '');
-        $this->assertSame($expected, $actual, "exp:[" . print_r($expected, true) . "] act:[" . print_r($actual, true) . "]");
+        self::assertSame($expected, $actual, "exp:[" . print_r($expected, true) . "] act:[" . print_r($actual, true) . "]");
 
         //with valid params
         $expected = "\n		<script type=\"text/javascript\" language=\"JavaScript\"><!-- Begin\n			function clear_form(form) {\n				var newLoc = \"index.php?action=\" + form.action.value + \"&module=\" + form.module.value + \"&query=true&clear_query=true&type=out&assigned_user_id=1\";\n				if(typeof(form.advanced) != \"undefined\"){\n					newLoc += \"&advanced=\" + form.advanced.value;\n				}\n				document.location.href= newLoc;\n			}\n		//  End --></script>";
         $actual = $email->u_get_clear_form_js('out', '', '1');
-        $this->assertSame($expected, $actual, "exp:[" . print_r($expected, true) . "] act:[" . print_r($actual, true) . "]");
+        self::assertSame($expected, $actual, "exp:[" . print_r($expected, true) . "] act:[" . print_r($actual, true) . "]");
     }
 
-    public function testpickOneButton()
+    public function testpickOneButton(): void
     {
         $email = BeanFactory::newBean('Emails');
 
-        $expected = "<div><input	title=\"\"
+        $expected = "<div><input	title=\"Take from Group\"
 						class=\"button\"
 						type=\"button\" name=\"button\"
 						onClick=\"window.location='index.php?module=Emails&action=Grab';\"
 						style=\"margin-bottom:2px\"
-						value=\"    \"></div>";
+						value=\"  Take from Group  \"></div>";
         $actual = $email->pickOneButton();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testgetUserEditorPreference()
+    public function testgetUserEditorPreference(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
-        $result = $email->getUserEditorPreference();
-        $this->assertEquals('html', $result);
+        $result = BeanFactory::newBean('Emails')->getUserEditorPreference();
+        self::assertEquals('html', $result);
     }
 
-    public function testparse_addrs()
+    public function testparse_addrs(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -811,10 +752,10 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $actual = $email->parse_addrs($addrs, $addrs_ids, $addrs_names, $addrs_emails);
 
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testremove_empty_fields()
+    public function testremove_empty_fields(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -822,16 +763,16 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $expected = array('val1', 'val2');
         $fields = array('val1', ' ', 'val2');
         $actual = $email->remove_empty_fields($fields);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test for array without empty values
         $expected = array('val1', 'val2');
         $fields = array('val1', 'val2');
         $actual = $email->remove_empty_fields($fields);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testhasSignatureInBody()
+    public function testhasSignatureInBody(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -841,26 +782,26 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         //test for strings with signature present
         $sig = array('signature_html' => 'sign', 'signature' => 'sign');
         $result = $email->hasSignatureInBody($sig);
-        $this->assertEquals(true, $result);
+        self::assertEquals(true, $result);
 
         //test for strings with signature absent
         $sig = array('signature_html' => 'signature', 'signature' => 'signature');
         $result = $email->hasSignatureInBody($sig);
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
     }
 
-    public function testremoveAllNewlines()
+    public function testremoveAllNewlines(): void
     {
         $email = BeanFactory::newBean('Emails');
 
-        $this->assertEquals('', $email->removeAllNewlines(''));
-        $this->assertEquals('some text', $email->removeAllNewlines('some text'));
-        $this->assertEquals('some text', $email->removeAllNewlines('some text<br>'));
-        $this->assertEquals('some text', $email->removeAllNewlines("some\n text\n"));
-        $this->assertEquals('some text', $email->removeAllNewlines("some\r\n text\r\n"));
+        self::assertEquals('', $email->removeAllNewlines(''));
+        self::assertEquals('some text', $email->removeAllNewlines('some text'));
+        self::assertEquals('some text', $email->removeAllNewlines('some text<br>'));
+        self::assertEquals('some text', $email->removeAllNewlines("some\n text\n"));
+        self::assertEquals('some text', $email->removeAllNewlines("some\r\n text\r\n"));
     }
 
-    public function testgetStartPage()
+    public function testgetStartPage(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -877,7 +818,7 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
             'return_module' => 'Users',
         );
         $actual = $email->getStartPage($url);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with assigned_user_id in url
         $url = 'index.php?module=Users&offset=6&stamp=1453274421025259800&return_module=Users&action=DetailView&record=seed_max_id&assigned_user_id=1';
@@ -894,20 +835,18 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
             'current_view' => 'DetailView&module=Users&assigned_user_id=1&type=',
         );
         $actual = $email->getStartPage($url);
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testsetMailer()
+    public function testsetMailer(): void
     {
-        $email = BeanFactory::newBean('Emails');
+        $result = BeanFactory::newBean('Emails')->setMailer(new SugarPHPMailer(), '', '');
 
-        $result = $email->setMailer(new SugarPHPMailer(), '', '');
-
-        $this->assertInstanceOf('SugarPHPMailer', $result);
-        $this->assertInstanceOf('OutboundEmail', $result->oe);
+        self::assertInstanceOf('SugarPHPMailer', $result);
+        self::assertInstanceOf('OutboundEmail', $result->oe);
     }
 
-    public function testhandleBody()
+    public function testhandleBody(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -916,10 +855,10 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $result = $email->handleBody(new SugarPHPMailer());
         $expected = "some email description containing email text & ' \n ";
         $actual = $email->description;
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
         $expected = 'SugarPHPMailer';
         $actual = $result;
-        $this->assertInstanceOf($expected, $result);
+        self::assertInstanceOf($expected, $result);
 
         // TODO: TASK: UNDEFINED - Refactor html body
         //test with REQUEST parameters set
@@ -935,7 +874,7 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 //        $this->assertInstanceOf('SugarPHPMailer', $result);
     }
 
-    public function testhandleBodyInHTMLformat()
+    public function testhandleBodyInHTMLformat(): void
     {
         // TODO: TASK: UNDEFINED - Refactor html body
 //        $email = BeanFactory::newBean('Emails');
@@ -949,7 +888,7 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 //        $this->assertEquals("some email description containing email text & ' <br> ", $mailer->Body);
     }
 
-    public function testlistviewACLHelper()
+    public function testlistviewACLHelper(): void
     {
         self::markTestIncomplete('environment dependency (span os a?)');
 
@@ -959,35 +898,35 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $expected = array('MAIN' => 'span', 'PARENT' => 'a', 'CONTACT' => 'span');
         $actual = $email->listviewACLHelper();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testgetSystemDefaultEmail()
+    public function testgetSystemDefaultEmail(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         $expected = array('email', 'name');
         $actual = array_keys($email->getSystemDefaultEmail());
 
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testcreate_new_list_query()
+    public function testcreate_new_list_query(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty string params
         $expected = "SELECT emails.*, users.user_name as assigned_user_name\n FROM emails\n LEFT JOIN users ON emails.assigned_user_id=users.id \nWHERE  emails.deleted=0 \n ORDER BY date_sent_received DESC";
         $actual = $email->create_new_list_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = "SELECT emails.*, users.user_name as assigned_user_name\n FROM emails\n LEFT JOIN users ON emails.assigned_user_id=users.id \nWHERE users.user_name = \"\" AND  emails.deleted=0 \n ORDER BY emails.id";
         $actual = $email->create_new_list_query('emails.id', 'users.user_name = ""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testfill_in_additional_list_fields()
+    public function testfill_in_additional_list_fields(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -997,11 +936,11 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $email->fill_in_additional_list_fields();
 
-        $this->assertEquals('DetailView', $email->link_action);
-        $this->assertEquals('', $email->attachment_image);
+        self::assertEquals('DetailView', $email->link_action);
+        self::assertEquals('', $email->attachment_image);
     }
 
-    public function testfill_in_additional_detail_fields()
+    public function testfill_in_additional_detail_fields(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -1012,29 +951,29 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         $email->fill_in_additional_list_fields();
 
-        $this->assertEquals('Administrator', $email->created_by_name);
-        $this->assertEquals('Administrator', $email->modified_by_name);
-        $this->assertEquals('Send Error', $email->type_name);
-        $this->assertEquals('(no subject)', $email->name);
-        $this->assertEquals('DetailView', $email->link_action);
+        self::assertEquals('Administrator', $email->created_by_name);
+        self::assertEquals('Administrator', $email->modified_by_name);
+        self::assertEquals('Send Error', $email->type_name);
+        self::assertEquals('(no subject)', $email->name);
+        self::assertEquals('DetailView', $email->link_action);
     }
 
-    public function testcreate_export_query()
+    public function testcreate_export_query(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty string params
         $expected = 'SELECT emails.* FROM emails where emails.deleted=0 ORDER BY emails.name';
         $actual = $email->create_export_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = 'SELECT emails.* FROM emails where users.user_name = "" AND emails.deleted=0 ORDER BY emails.id';
         $actual = $email->create_export_query('emails.id', 'users.user_name = ""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
         // TODO: TASK: UNDEFINED - Update to handle new list view
 //        $email = BeanFactory::newBean('Emails');
@@ -1071,38 +1010,36 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 //                $this->assertSame($expected[$expectedKey], $actual[$expectedKey]);
 //            }
 //        }
-        $this->markTestIncomplete('Need to be updated');
+        self::markTestIncomplete('Need to be updated');
     }
 
-    public function testquickCreateForm()
+    public function testquickCreateForm(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         $expected = '~/images/advanced_search~';
 
         $actual = $email->quickCreateForm();
-        $this->assertRegExp($expected, $actual);
+        self::assertMatchesRegularExpression($expected, $actual);
     }
 
-    public function testsearchImportedEmails()
+    public function testsearchImportedEmails(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
-        $actual = $email->searchImportedEmails();
-        $this->assertTrue(is_array($actual));
+        $actual = BeanFactory::newBean('Emails')->searchImportedEmails();
+        self::assertIsArray($actual);
     }
 
-    public function test_genereateSearchImportedEmailsQuery()
+    public function test_genereateSearchImportedEmailsQuery(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         $expected = "SELECT emails.id , emails.mailbox_id, emails.name, emails.date_sent_received, emails.status, emails.type, emails.flagged, emails.reply_to_status,
 		                      emails_text.from_addr, emails_text.to_addrs  FROM emails   JOIN emails_text on emails.id = emails_text.email_id   WHERE (emails.type= 'inbound' OR emails.type='archived' OR emails.type='out') AND emails.deleted = 0 ";
         $actual = $email->_genereateSearchImportedEmailsQuery();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function test_generateSearchImportWhereClause()
+    public function test_generateSearchImportWhereClause(): void
     {
         // test
         $email = BeanFactory::newBean('Emails');
@@ -1110,20 +1047,20 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         //test without request params
         $expected = '';
         $actual = $email->_generateSearchImportWhereClause();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with searchDateFrom request param only
         $_REQUEST['searchDateFrom'] = '2015-01-01 00:00:00';
         $expected = "emails.date_sent_received >= '' ";
         $actual = $email->_generateSearchImportWhereClause();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with searchDateTo request param only
         $_REQUEST['searchDateFrom'] = '';
         $_REQUEST['searchDateTo'] = '2015-01-01 00:00:00';
         $expected = "emails.date_sent_received <= '' ";
         $actual = $email->_generateSearchImportWhereClause();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with both request params
         $_REQUEST['searchDateFrom'] = '2015-01-01 00:00:00';
@@ -1131,37 +1068,37 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         $expected = "( emails.date_sent_received >= '' AND
                                           emails.date_sent_received <= '' )";
         $actual = $email->_generateSearchImportWhereClause();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testtrimLongTo()
+    public function testtrimLongTo(): void
     {
         $email = BeanFactory::newBean('Emails');
 
-        $this->assertEquals('test string', $email->trimLongTo('test string')); //test without any separator
-        $this->assertEquals(
+        self::assertEquals('test string', $email->trimLongTo('test string')); //test without any separator
+        self::assertEquals(
             'test string 1...',
             $email->trimLongTo('test string 1, test string2')
         ); //test with , separator
-        $this->assertEquals(
+        self::assertEquals(
             'test string 1...',
             $email->trimLongTo('test string 1; test string2')
         );//test with ; separator
     }
 
-    public function testget_summary_text()
+    public function testget_summary_text(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test without setting name
-        $this->assertEquals(null, $email->get_summary_text());
+        self::assertEquals(null, $email->get_summary_text());
 
         //test with name set
         $email->name = 'test';
-        $this->assertEquals('test', $email->get_summary_text());
+        self::assertEquals('test', $email->get_summary_text());
     }
 
-    public function testdistributionForm()
+    public function testdistributionForm(): void
     {
         // test
         require_once 'include/utils/layout_utils.php';
@@ -1169,60 +1106,58 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
 
         //test with empty string
         $result = $email->distributionForm('');
-        $this->assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
 
         //test with valid string
         $result = $email->distributionForm('test');
-        $this->assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
     }
 
-    public function testuserSelectTable()
+    public function testuserSelectTable(): void
     {
-        $email = BeanFactory::newBean('Emails');
-
-        $result = $email->userSelectTable();
-        $this->assertGreaterThan(0, strlen($result));
+        $result = BeanFactory::newBean('Emails')->userSelectTable();
+        self::assertGreaterThan(0, strlen((string) $result));
     }
 
-    public function testcheckInbox()
+    public function testcheckInbox(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         //test with empty string
-        $expected = "<div><input	title=\"\"
+        $expected = "<div><input	title=\"Check For New Email\"
 						class=\"button\"
 						type=\"button\" name=\"button\"
 						onClick=\"window.location='index.php?module=Emails&action=Check&type=';\"
 						style=\"margin-bottom:2px\"
-						value=\"    \"></div>";
+						value=\"  Check Mail  \"></div>";
         $actual = $email->checkInbox('');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string
-        $expected = "<div><input	title=\"\"
+        $expected = "<div><input	title=\"Check For New Email\"
 						class=\"button\"
 						type=\"button\" name=\"button\"
 						onClick=\"window.location='index.php?module=Emails&action=Check&type=test';\"
 						style=\"margin-bottom:2px\"
-						value=\"    \"></div>";
+						value=\"  Check Mail  \"></div>";
         $actual = $email->checkInbox('test');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testfillPrimaryParentFields()
+    public function testfillPrimaryParentFields(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $email->fillPrimaryParentFields();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testcid2Link()
+    public function testcid2Link(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -1232,13 +1167,13 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $email->cid2Link('1', 'image/png');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testcids2Links()
+    public function testcids2Links(): void
     {
         $email = BeanFactory::newBean('Emails');
 
@@ -1248,35 +1183,35 @@ class EmailTest extends SuitePHPUnitFrameworkTestCase
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $email->cids2Links();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testsetFieldNullable()
+    public function testsetFieldNullable(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $email->setFieldNullable('description');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testrevertFieldNullable()
+    public function testrevertFieldNullable(): void
     {
         $email = BeanFactory::newBean('Emails');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $email->revertFieldNullable('description');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 }

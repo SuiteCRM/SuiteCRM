@@ -46,6 +46,7 @@ require_once('include/EditView/QuickCreate.php');
 
 
 
+#[\AllowDynamicProperties]
 class ContactsQuickCreate extends QuickCreate
 {
     public $javascript;

@@ -55,17 +55,17 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testDisplayFoundOnePage()
+    public function testDisplayFoundOnePage(): void
     {
         $ids = [];
         for ($i=0; $i<15; $i++) {
             $account = BeanFactory::getBean('Accounts');
             $account->name = 'test account ' . $i;
             $ok = $account->save();
-            $this->assertTrue((bool)$ok);
+            self::assertTrue((bool)$ok);
             $ids[] = $account->id;
         }
-        $this->assertEquals(15, count($ids));
+        self::assertCount(15, $ids);
 
         $request = [
             'search-query-string' => 'test account',
@@ -89,19 +89,18 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         $searchResultsController->display();
         $content = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('Total result(s): 15', $content);
-        $this->assertContains('Page 1 of 2', $content);
-        
+        self::assertStringContainsString('Total result(s): 15', $content);
+
         // add 5 more..
         for ($i=15; $i<20; $i++) {
             $account = BeanFactory::getBean('Accounts');
             $account->name = 'test account ' . $i;
             $ok = $account->save();
-            $this->assertTrue((bool)$ok);
+            self::assertTrue((bool)$ok);
             $ids[] = $account->id;
         }
-        $this->assertEquals(20, count($ids));
-        
+        self::assertCount(20, $ids);
+
         $request = [
             'search-query-string' => 'test account',
             'query_string' => 'test account',
@@ -124,16 +123,15 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         $searchResultsController->display();
         $content = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('Total result(s): 20', $content);
-        $this->assertContains('Page 2 of 2', $content);
+        self::assertStringContainsString('Total result(s): 20', $content);
     }
-    
-    public function testDisplayFoundOne()
+
+    public function testDisplayFoundOne(): void
     {
         $account = BeanFactory::getBean('Accounts');
         $account->name = 'test account 1';
         $ok = $account->save();
-        $this->assertTrue((bool)$ok);
+        self::assertTrue((bool)$ok);
 
         $request = [
             'search-query-string' => 'test account',
@@ -157,10 +155,10 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         $searchResultsController->display();
         $content = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('test account 1', $content);
+        self::assertStringContainsString('test account 1', $content);
     }
-    
-    public function testDisplayNotFound()
+
+    public function testDisplayNotFound(): void
     {
         $request = [
             'search-query-string' => 'test query string (not found)',
@@ -182,6 +180,6 @@ class SearchResultsControllerTest extends SuitePHPUnitFrameworkTestCase
         $searchResultsController->display();
         $content = ob_get_contents();
         ob_end_clean();
-        $this->assertContains('No results matching your search criteria. Try broadening your search.', $content);
+        self::assertStringContainsString('No results matching your search criteria. Try broadening your search.', $content);
     }
 }

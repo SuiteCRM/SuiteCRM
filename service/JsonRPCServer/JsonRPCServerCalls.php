@@ -50,6 +50,7 @@ require_once __DIR__ . '/JsonRPCServerUtils.php';
 /**
  * Class JsonServerCalls
  */
+#[\AllowDynamicProperties]
 class JsonRPCServerCalls
 {
     /**
@@ -107,7 +108,7 @@ class JsonRPCServerCalls
         if (is_array($args['conditions'])) {
             foreach ($args['conditions'] as $key => $condition) {
                 if (!empty($condition['value'])) {
-                    $where = $jsonParser::decode(utf8_encode($condition['value']));
+                    $where = $jsonParser::decode(mb_convert_encoding($condition['value'], 'UTF-8', 'ISO-8859-1'));
                     $where = empty($where) ? $condition['value'] : $where;
                     $args['conditions'][$key]['value'] = $db->quote($where);
                 }
@@ -125,7 +126,7 @@ class JsonRPCServerCalls
 
             $query_orderby = '';
             if (!empty($args['order'])) {
-                $query_orderby = preg_replace('/[^\w_.-]+/i', '', $args['order']['by']);
+                $query_orderby = preg_replace('/[^\w_.-]+/i', '', (string) $args['order']['by']);
                 if (!empty($args['order']['desc'])) {
                     $query_orderby .= ' DESC';
                 } else {

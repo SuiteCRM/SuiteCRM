@@ -115,7 +115,7 @@ function getEncryptedPassword(login, password, mailbox) {
 	return words;
 } // fn
 
-function ie_test_open_popup_with_submit(module_name, action, pageTarget, width, height, mail_server, protocol, port, login, password, mailbox, ssl, personal, formName, ie_id)
+function ie_test_open_popup_with_submit(module_name, action, pageTarget, width, height, mail_server, protocol, port, login, password, mailbox, ssl, personal, formName, ie_id, connectionString, auth_type, externalOauthConnectionName, externalOauthConnectionId)
 {
 	if (!formName) formName = "testSettingsView";
 	var words = getEncryptedPassword(login, password, mailbox);
@@ -143,7 +143,17 @@ function ie_test_open_popup_with_submit(module_name, action, pageTarget, width, 
 		+ '&mailbox=' + words[2]
 		+ '&ssl=' + ssl
 		+ '&ie_id=' + ie_id
-		+ '&personal=' + isPersonal;
+		+ '&personal=' + isPersonal
+	    + '&auth_type=' + auth_type;
+
+	if (externalOauthConnectionName && externalOauthConnectionId){
+		URL += '&externalOauthConnectionName=' + externalOauthConnectionName
+		+ '&externalOauthConnectionId=' + externalOauthConnectionId;
+	}
+
+  if(connectionString) {
+    URL += '&connection_string=' + encodeURIComponent(connectionString);
+  }
 
 	var SI = SUGAR.inboundEmail;
 	if (!SI.testDlg) {
@@ -199,6 +209,31 @@ function isDataValid(formName, validateMonitoredFolder) {
     		errors.push(SUGAR.language.get('app_strings', 'LBL_EMAIL_ERROR_MONITORED_FOLDER'));
     	} // if
     }
+
+	if(formObject.auth_type && formObject.email_password){
+		if(formObject.auth_type.value === 'oauth'){
+
+			if (!formObject.external_oauth_connection_name.value || !formObject.external_oauth_connection_id.value){
+				errors.push(SUGAR.language.get('app_strings', 'LBL_OAUTH_CONNECTION_NOT_SET'));
+			}
+
+		}
+
+		if(formObject.auth_type.value === 'basic'){
+			if (formObject.external_oauth_connection_name){
+				formObject.external_oauth_connection_name = '';
+			}
+
+			if (formObject.external_oauth_connection_id){
+				formObject.external_oauth_connection_id = '';
+			}
+
+			if (formObject.email_password.value === '' && !formObject.email_password.dataset.isValueSet){
+				errors.push(SUGAR.language.get('app_strings', 'LBL_EMAIL_PASSWORD_NOT_SET'));
+			}
+
+		}
+	}
     if(formObject.port.value == "") {
         errors.push(SUGAR.language.get('app_strings', 'LBL_EMAIL_ERROR_PORT'));
     }
@@ -220,7 +255,7 @@ function isDataValid(formName, validateMonitoredFolder) {
 
 } // fn
 
-function getFoldersListForInboundAccount(module_name, action, pageTarget, width, height, mail_server, protocol, port, login, password, mailbox, ssl, personal, searchFieldValue, formName) {
+function getFoldersListForInboundAccount(module_name, action, pageTarget, width, height, mail_server, protocol, port, login, password, mailbox, ssl, personal, searchFieldValue, formName, extraParams) {
 	if (!formName) formName = "testSettingsView";
 
 	var words = getEncryptedPassword(login, password, mailbox);
@@ -242,6 +277,12 @@ function getFoldersListForInboundAccount(module_name, action, pageTarget, width,
         + '&ssl=' + ssl
         + '&personal=' + isPersonal
 		+ '&searchField='+ searchFieldValue;
+
+  if(extraParams && typeof extraParams === 'object' && Object.keys(extraParams).length) {
+    Object.keys(extraParams).forEach(function (key) {
+      URL += '&' + key + '=' + (extraParams[key] || '');
+    })
+  }
 
 	var SI = SUGAR.inboundEmail;
     if (!SI.listDlg) {

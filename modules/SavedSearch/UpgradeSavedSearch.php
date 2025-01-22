@@ -41,10 +41,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class UpgradeSavedSearch
 {
     public function __construct()
     {
+        $searchdefs = [];
+        $searchFields = [];
         $result = DBManagerFactory::getInstance()->query("SELECT id FROM saved_search");
         while ($row = DBManagerFactory::getInstance()->fetchByAssoc($result)) {
             $focus = BeanFactory::newBean('SavedSearch');
@@ -134,17 +137,5 @@ class UpgradeSavedSearch
         } //while
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function UpgradeSavedSearch()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 }

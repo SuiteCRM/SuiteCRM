@@ -79,6 +79,7 @@ $mod_strings = array(
     'LBL_ACTUAL_EFFORT' => 'Actual Effort (hrs):',
     'LBL_UTILIZATION' => 'Utilization (%):',
     'LBL_DELETED' => 'Deleted:',
+    'LBL_IMPORT_PROJECT_TASKS' => 'Import Project Tasks',
 
     'LBL_LIST_NAME' => 'Name',
     'LBL_LIST_PARENT_NAME' => 'Project',
@@ -113,4 +114,7 @@ $mod_strings = array(
     'LBL_DAYS' => 'Days',
     'LBL_HOURS' => 'Hours',
     'LBL_RELATIONSHIP_TYPE' => 'Relationship Type',
+
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
 );

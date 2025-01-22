@@ -7,44 +7,45 @@ require_once 'install/install_utils.php';
 
 class SchedulerTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
         global $current_user;
         get_sugar_config_defaults();
         $current_user = BeanFactory::newBean('Users');
+        $GLOBALS['mod_strings'] = return_module_language($GLOBALS['current_language'], 'Schedulers');
     }
 
-    public function test__construct()
+    public function test__construct(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $scheduler = BeanFactory::newBean('Schedulers');
 
-        $this->assertInstanceOf('Scheduler', $scheduler);
-        $this->assertInstanceOf('SugarBean', $scheduler);
+        self::assertInstanceOf('Scheduler', $scheduler);
+        self::assertInstanceOf('SugarBean', $scheduler);
 
-        $this->assertAttributeEquals('schedulers', 'table_name', $scheduler);
-        $this->assertAttributeEquals('Schedulers', 'module_dir', $scheduler);
-        $this->assertAttributeEquals('Scheduler', 'object_name', $scheduler);
+        self::assertEquals('schedulers', $scheduler->table_name);
+        self::assertEquals('Schedulers', $scheduler->module_dir);
+        self::assertEquals('Scheduler', $scheduler->object_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $scheduler);
-        $this->assertAttributeEquals(true, 'process_save_dates', $scheduler);
+        self::assertEquals(true, $scheduler->new_schema);
+        self::assertEquals(true, $scheduler->process_save_dates);
     }
 
-    public function testinitUser()
+    public function testinitUser(): void
     {
         $user = Scheduler::initUser();
-        $this->assertInstanceOf('User', $user);
+        self::assertInstanceOf('User', $user);
     }
 
-    public function testfireQualified()
+    public function testfireQualified(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
         //test without setting any attributes
         $result = $scheduler->fireQualified();
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
 
         //test with required attributes set
         $scheduler->id = 1;
@@ -52,33 +53,32 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         $scheduler->date_time_start = '2015-01-01 10:30:01';
 
         $result = $scheduler->fireQualified();
-        $this->assertEquals(true, $result);
+        self::assertEquals(true, $result);
     }
 
-    public function testcreateJob()
+    public function testcreateJob(): void
     {
-        $scheduler = BeanFactory::newBean('Schedulers');
-        $result = $scheduler->createJob();
+        $result = BeanFactory::newBean('Schedulers')->createJob();
 
-        $this->assertInstanceOf('SchedulersJob', $result);
+        self::assertInstanceOf('SchedulersJob', $result);
     }
 
-    public function testcheckPendingJobs()
+    public function testcheckPendingJobs(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $scheduler->checkPendingJobs(new SugarJobQueue());
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testderiveDBDateTimes()
+    public function testderiveDBDateTimes(): void
     {
-        $this->markTestIncomplete('Need to implement!');
+        self::markTestIncomplete('Need to implement!');
 
 //        $scheduler = BeanFactory::newBean('Schedulers');
 //
@@ -101,19 +101,19 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
 //        $this->assertEquals(false, (bool)$result);
     }
 
-    public function testhandleIntervalType()
+    public function testhandleIntervalType(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
         //execute the method with different job intervals
-        $this->assertEquals('', $scheduler->handleIntervalType('0', '0', '2', '2'));
-        $this->assertEquals('00:02', $scheduler->handleIntervalType('1', '0', '2', '2'));
-        $this->assertEquals('30th', $scheduler->handleIntervalType('2', '0', '2', '2'));
-        $this->assertEquals('December', $scheduler->handleIntervalType('3', '0', '2', '2'));
-        $this->assertEquals('', $scheduler->handleIntervalType('4', '0', '2', '2'));
+        self::assertEquals('On thehour', $scheduler->handleIntervalType('0', '0', '2', '2'));
+        self::assertEquals('00:02', $scheduler->handleIntervalType('1', '0', '2', '2'));
+        self::assertEquals('30th', $scheduler->handleIntervalType('2', '0', '2', '2'));
+        self::assertEquals('December', $scheduler->handleIntervalType('3', '0', '2', '2'));
+        self::assertEquals('Sunday', $scheduler->handleIntervalType('4', '0', '2', '2'));
     }
 
-    public function testsetIntervalHumanReadable()
+    public function testsetIntervalHumanReadable(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
@@ -121,15 +121,15 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         $scheduler->job_interval = '0::3::3::*::*';
         $scheduler->parseInterval();
         $scheduler->setIntervalHumanReadable();
-        $this->assertEquals('03:00; 3rd', $scheduler->intervalHumanReadable);
+        self::assertEquals('On thehour; 03:00; 3rd', $scheduler->intervalHumanReadable);
 
         $scheduler->job_interval = '0::3::3::3::3';
         $scheduler->parseInterval();
         $scheduler->setIntervalHumanReadable();
-        $this->assertEquals('03:00; 3rd; March', $scheduler->intervalHumanReadable);
+        self::assertEquals('On thehour; 03:00; 3rd; March; Wednesday', $scheduler->intervalHumanReadable);
     }
 
-    public function testsetStandardArraysAttributes()
+    public function testsetStandardArraysAttributes(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
@@ -137,14 +137,14 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
 
         $scheduler->setStandardArraysAttributes();
 
-        $this->assertEquals(array('*', 1, 2, 3, 4, 5, 6, 0), $scheduler->dayInt);
-        $this->assertEquals(array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), $scheduler->monthsInt);
-        $this->assertEquals(array('', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'), $scheduler->monthsLabel);
-        $this->assertEquals(array('*', '/', '-', ','), $scheduler->metricsVar);
-        $this->assertEquals(array(' every ', '', ' thru ', ' and '), $scheduler->metricsVal);
+        self::assertEquals(array('*', 1, 2, 3, 4, 5, 6, 0), $scheduler->dayInt);
+        self::assertEquals(array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), $scheduler->monthsInt);
+        self::assertEquals(array('', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'), $scheduler->monthsLabel);
+        self::assertEquals(array('*', '/', '-', ','), $scheduler->metricsVar);
+        self::assertEquals(array(' every ', '', ' thru ', ' and '), $scheduler->metricsVal);
     }
 
-    public function testparseInterval()
+    public function testparseInterval(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
@@ -159,24 +159,24 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         //execute the method and verify related attributes
         $scheduler->parseInterval();
 
-        $this->assertTrue(is_array($scheduler->intervalParsed));
-        $this->assertSame($expected, $scheduler->intervalParsed);
+        self::assertIsArray($scheduler->intervalParsed);
+        self::assertSame($expected, $scheduler->intervalParsed);
     }
 
-    public function testcheckCurl()
+    public function testcheckCurl(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $scheduler->checkCurl();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testdisplayCronInstructions()
+    public function testdisplayCronInstructions(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
@@ -188,25 +188,25 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         $renderedContent = ob_get_contents();
         ob_end_clean();
 
-        $this->assertGreaterThanOrEqual(0, strlen($renderedContent));
+        self::assertGreaterThanOrEqual(0, strlen($renderedContent));
     }
 
-    public function testrebuildDefaultSchedulers()
+    public function testrebuildDefaultSchedulers(): void
     {
         self::markTestIncomplete('enviroment dependency');
-        
+
         $scheduler = BeanFactory::newBean('Schedulers');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $scheduler->rebuildDefaultSchedulers();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testcreate_export_query()
+    public function testcreate_export_query(): void
     {
         self::markTestIncomplete('environment dependency');
         $scheduler = BeanFactory::newBean('Schedulers');
@@ -214,15 +214,15 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         //test with empty string params
         $expected = " SELECT  schedulers.*  , jt0.user_name created_by_name , jt0.created_by created_by_name_owner  , 'Users' created_by_name_mod , jt1.user_name modified_by_name , jt1.created_by modified_by_name_owner  , 'Users' modified_by_name_mod FROM schedulers   LEFT JOIN  users jt0 ON jt0.id=schedulers.created_by AND jt0.deleted=0\n AND jt0.deleted=0  LEFT JOIN  users jt1 ON schedulers.modified_user_id=jt1.id AND jt1.deleted=0\n\n AND jt1.deleted=0 where schedulers.deleted=0";
         $actual = $scheduler->create_export_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = " SELECT  schedulers.*  , jt0.user_name created_by_name , jt0.created_by created_by_name_owner  , 'Users' created_by_name_mod , jt1.user_name modified_by_name , jt1.created_by modified_by_name_owner  , 'Users' modified_by_name_mod FROM schedulers   LEFT JOIN  users jt0 ON jt0.id=schedulers.created_by AND jt0.deleted=0\n AND jt0.deleted=0  LEFT JOIN  users jt1 ON schedulers.modified_user_id=jt1.id AND jt1.deleted=0\n\n AND jt1.deleted=0 where (schedulers.name = \"\") AND schedulers.deleted=0";
         $actual = $scheduler->create_export_query('schedulers.id', 'schedulers.name = ""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testfill_in_additional_list_fields()
+    public function testfill_in_additional_list_fields(): void
     {
         self::markTestIncomplete('environment dependency');
         $scheduler = BeanFactory::newBean('Schedulers');
@@ -230,28 +230,28 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $scheduler->fill_in_additional_list_fields();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testfill_in_additional_detail_fields()
+    public function testfill_in_additional_detail_fields(): void
     {
         $scheduler = BeanFactory::newBean('Schedulers');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $scheduler->fill_in_additional_detail_fields();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
 
-        $this->markTestIncomplete('method has no implementation');
+        self::markTestIncomplete('method has no implementation');
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
         self::markTestIncomplete('environment dependency');
         $scheduler = BeanFactory::newBean('Schedulers');
@@ -276,27 +276,27 @@ class SchedulerTest extends SuitePHPUnitFrameworkTestCase
         );
 
         $actual = $scheduler->get_list_view_data();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testget_summary_text()
+    public function testget_summary_text(): void
     {
         self::markTestIncomplete('environment dependency');
         $scheduler = BeanFactory::newBean('Schedulers');
 
         //test without setting name
-        $this->assertEquals(null, $scheduler->get_summary_text());
+        self::assertEquals(null, $scheduler->get_summary_text());
 
         //test with name set
         $scheduler->name = 'test';
-        $this->assertEquals('test', $scheduler->get_summary_text());
+        self::assertEquals('test', $scheduler->get_summary_text());
     }
 
-    public function testgetJobsList()
+    public function testgetJobsList(): void
     {
         self::markTestIncomplete('environment dependency');
 
         $result = Scheduler::getJobsList();
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
     }
 }

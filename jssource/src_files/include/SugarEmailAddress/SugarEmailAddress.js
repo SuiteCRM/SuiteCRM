@@ -37,7 +37,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-(function () {
+ (function () {
   //Do not double define
   if (SUGAR.EmailAddressWidget) return;
 
@@ -284,7 +284,9 @@
       recordId.attr('value', typeof(emailId) != 'undefined' ? emailId : '');
       recordId.attr('enabled', "true");
 
-
+      // Fix #9271 - Keeping record of primary email, after adding secondary
+      var primaryPreviousValue = $("input[name='"+ _eaw.module + "0emailAddressPrimaryFlag']:checked").val();
+      
       // Primary checkbox
       var primaryCheckbox = lineContainer.find('input#email-address-primary-flag');
       primaryCheckbox.attr('name', _eaw.module + '0emailAddressPrimaryFlag');
@@ -302,6 +304,11 @@
       // Prevent users from removing their primary email address
       if (this.module == 'Users' &&  primaryCheckbox.attr("checked")) {
         removeButton.prop('disabled', true);
+      }
+      
+      // Fix #9271 - Keeping record of primary email, after adding secondary
+      if (!primaryFlag && primaryPreviousValue) {
+        $('input[value="'+primaryPreviousValue+'"].email-address-primary-flag').prop("checked", true);
       }
 
       // Reply to checkbox

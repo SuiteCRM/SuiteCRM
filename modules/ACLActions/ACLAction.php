@@ -51,6 +51,7 @@ if (file_exists(__DIR__ . '/../../modules/ACLActions/actiondefs.override.php')) 
 
 /* END - SECURITY GROUPS */
 
+#[\AllowDynamicProperties]
 class ACLAction extends SugarBean
 {
     public $module_dir = 'ACLActions';
@@ -59,21 +60,8 @@ class ACLAction extends SugarBean
     public $new_schema = true;
     public $disable_custom_fields = true;
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function ACLAction()
+    public function __construct()
     {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        $this->__construct();
-    }
-
-    function __construct() {
         parent::__construct();
     }
 
@@ -213,7 +201,7 @@ class ACLAction extends SugarBean
     {
         global $ACLActionAccessLevels;
         if (isset($ACLActionAccessLevels[$access])) {
-            $label = preg_replace('/(LBL_ACCESS_)(.*)/', '$2', $ACLActionAccessLevels[$access]['label']);
+            $label = preg_replace('/(LBL_ACCESS_)(.*)/', '$2', (string) $ACLActionAccessLevels[$access]['label']);
 
             return strtolower($label);
         }

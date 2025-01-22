@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,24 +39,46 @@
 
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
+use SuiteCRM\Search\SearchResults;
 
+/**
+ * Class SearchEngineMock
+ */
 class SearchEngineMock extends SearchEngine
 {
-    public function search(SearchQuery $query)
+    /**
+     * @param SearchQuery $query
+     * @return SearchResults
+     * @throws \SuiteCRM\Exception\InvalidArgumentException
+     */
+    public function search(SearchQuery $query): SearchResults
     {
-        if ($query->getSearchString() == 'foo') {
-            return 'bar';
+        $start = microtime(true);
+        $results = [];
+        $hits = 0;
+
+        if ($query->getSearchString() === 'foo') {
+            $results = ['bar'];
+            $hits++;
         }
 
-        if ($query->getSearchString() == 'fooz') {
-            return 'barz';
+        if ($query->getSearchString() === 'fooz') {
+            $results = ['barz'];
+            $hits++;
         }
 
-        return false;
+        $end = microtime(true);
+        $elapsed = $end - $start;
+
+        return new SearchResults($results, false, $elapsed, $hits);
     }
 
-    public function searchAndDisplay(SearchQuery $query)
+    /**
+     * @param SearchQuery $query
+     * @throws \SuiteCRM\Exception\InvalidArgumentException
+     */
+    public function searchAndDisplay(SearchQuery $query): void
     {
-        echo $this->search($query);
+        echo $this->search($query)->getTotal();
     }
 }

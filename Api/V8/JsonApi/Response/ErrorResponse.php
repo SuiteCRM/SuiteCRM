@@ -5,6 +5,7 @@ use Api\Core\Config\ApiConfig;
 use Exception;
 use JsonSerializable;
 
+#[\AllowDynamicProperties]
 class ErrorResponse implements JsonSerializable
 {
     /**

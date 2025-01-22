@@ -49,6 +49,7 @@ require_once('include/SubPanel/SubPanelDefinitions.php');
  * Subpanel tiles
  * @api
  */
+#[\AllowDynamicProperties]
 class SubPanelTiles
 {
     public $id;
@@ -190,10 +191,12 @@ class SubPanelTiles
         $tabs_properties = array();
         $tab_names = array();
 
+        $module_sub_panels = [];
+
         $default_div_display = 'inline';
         if (!empty($sugar_config['hide_subpanels_on_login'])) {
             if (!isset($_SESSION['visited_details'][$this->focus->module_dir])) {
-                setcookie($this->focus->module_dir . '_divs', '', 0, null, null, isSSL(), true);
+                SugarApplication::setCookie($this->focus->module_dir . '_divs', '', 0, null, null, isSSL(), true);
                 unset($_COOKIE[$this->focus->module_dir . '_divs']);
                 $_SESSION['visited_details'][$this->focus->module_dir] = true;
             }
@@ -373,7 +376,7 @@ class SubPanelTiles
                     $countStr = '...';
                     $extraClass = ' incomplete';
                 }
-                
+
                 $tabs_properties[$t]['title'] .= ' (<span class="subPanelCountHint' . $extraClass . '" data-subpanel="' . $tab . '" data-module="' . $layout_def_key . '" data-record="' . $_REQUEST['record'] . '">' . $countStr . '</span>)';
             }
 
@@ -452,6 +455,7 @@ class SubPanelTiles
             [
                 'buttons' => $buttons,
                 'class' => 'clickMenu fancymenu',
+                'flat' => $thisPanel->get_inst_prop_value('flat')
             ],
             $this->xTemplate
         );

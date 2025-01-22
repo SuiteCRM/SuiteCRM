@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function password_confirmation(){var new_pwd=document.getElementById('new_password').value;var old_pwd=document.getElementById('old_password').value;var confirm_pwd=document.getElementById('confirm_pwd');if(confirm_pwd.value!=new_pwd)
+ */function password_confirmation(){var new_pwd=document.getElementById('new_password').value;var old_pwd=document.getElementById('old_password').value;var confirm_pwd=document.getElementById('confirm_pwd');if(confirm_pwd.value!=new_pwd)
 confirm_pwd.style.borderColor='red';else
 confirm_pwd.style.borderColor='';if(confirm_pwd.value!=(new_pwd.substring(0,confirm_pwd.value.length)))
 document.getElementById('comfirm_pwd_match').style.display='inline';else

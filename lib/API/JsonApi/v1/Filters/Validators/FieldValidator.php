@@ -49,6 +49,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class FieldValidator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Validators
  */
+#[\AllowDynamicProperties]
 class FieldValidator implements ValidatorInterface
 {
     /**

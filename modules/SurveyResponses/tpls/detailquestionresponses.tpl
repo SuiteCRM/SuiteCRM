@@ -3,10 +3,10 @@
         <tr>
             <th></th>
             <th>
-                Question
+                {$MOD.LBL_QUESTION}
             </th>
             <th>
-                Response
+                {$MOD.LBL_RESPONSE}
             </th>
         </tr>
         {foreach from=$questionResponses item=questionResponse}

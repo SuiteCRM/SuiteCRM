@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Home/Dashlets/iFrameDashlet/iFrameDashlet.php');
 
+#[\AllowDynamicProperties]
 class SugarNewsDashlet extends iFrameDashlet
 {
     public $displayTpl = 'modules/Home/Dashlets/SugarNewsDashlet/display.tpl';
@@ -56,19 +57,5 @@ class SugarNewsDashlet extends iFrameDashlet
     {
         $this->title = translate('LBL_DASHLET_SUITE_NEWS', 'Home');
         parent::__construct($id, $options);
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarNewsDashlet($id, $options = null)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($id, $options);
     }
 }

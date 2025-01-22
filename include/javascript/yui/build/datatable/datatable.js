@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 /**
  * Mechanism to execute a series of callbacks in a non-blocking queue.  Each callback is executed via setTimout unless configured with a negative timeout, in which case it is run in blocking mode in the same execution thread as the previous callback.  Callbacks can be function references or object literals with the following keys:
@@ -657,7 +657,7 @@ YAHOO.lang.augmentProto(YAHOO.util.Chain,YAHOO.util.EventProvider);
     Event.on = Event.addListener;
 
 }());
-YAHOO.register("event-mouseenter", YAHOO.util.Event, {version: "2.9.0", build: "2800"});
+YAHOO.register("event-mouseenter", YAHOO.util.Event, {version: "2.9.1", build: "2800"});
 
 var Y = YAHOO,
     Y_DOM = YAHOO.util.Dom,
@@ -1630,7 +1630,7 @@ Y_mix(Selector.operators, {
 Selector.combinators['~'] = {
     axis: 'previousSibling'
 };
-YAHOO.register("selector", YAHOO.util.Selector, {version: "2.9.0", build: "2800"});
+YAHOO.register("selector", YAHOO.util.Selector, {version: "2.9.1", build: "2800"});
 
 
 
@@ -19077,4 +19077,4 @@ lang.augmentObject(CE, BCE);
 
 })();
 
-YAHOO.register("datatable", YAHOO.widget.DataTable, {version: "2.9.0", build: "2800"});
+YAHOO.register("datatable", YAHOO.widget.DataTable, {version: "2.9.1", build: "2800"});

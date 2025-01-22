@@ -42,6 +42,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class SugarSecure
 {
     public $results = array();
@@ -53,7 +54,7 @@ class SugarSecure
         }
         echo '</table>';
     }
-    
+
     public function save($file='')
     {
         $fp = fopen($file, 'ab');
@@ -62,7 +63,7 @@ class SugarSecure
         }
         fclose($fp);
     }
-    
+
     public function scan($path= '.', $ext = '.php')
     {
         $dir = dir($path);
@@ -70,22 +71,23 @@ class SugarSecure
             if (is_dir($path . '/' . $entry) && $entry != '.' && $entry != '..') {
                 $this->scan($path .'/' . $entry);
             }
-            if (is_file($path . '/'. $entry) && substr($entry, strlen($entry) - strlen($ext), strlen($ext)) == $ext) {
+            if (is_file($path . '/'. $entry) && substr($entry, strlen($entry) - strlen((string) $ext), strlen((string) $ext)) == $ext) {
                 $contents = file_get_contents($path .'/'. $entry);
                 $this->scanContents($contents, $path .'/'. $entry);
             }
         }
     }
-    
+
     public function scanContents($contents)
     {
         return;
     }
 }
 
+#[\AllowDynamicProperties]
 class ScanFileIncludes extends SugarSecure
 {
-    public function scanContents($contents, $file)
+    public function scanContents($contents, $file = null)
     {
         $results = array();
         $found = '';
@@ -101,27 +103,27 @@ class ScanFileIncludes extends SugarSecure
         }
         */
         $results = array();
-        preg_match_all("'require\([^\)]*\\$[^\)]*\)'si", $contents, $results, PREG_SET_ORDER);
+        preg_match_all("'require\([^\)]*\\$[^\)]*\)'si", (string) $contents, $results, PREG_SET_ORDER);
         foreach ($results as $result) {
             $found .= "\n" . $result[0];
         }
         $results = array();
-        preg_match_all("'include\([^\)]*\\$[^\)]*\)'si", $contents, $results, PREG_SET_ORDER);
+        preg_match_all("'include\([^\)]*\\$[^\)]*\)'si", (string) $contents, $results, PREG_SET_ORDER);
         foreach ($results as $result) {
             $found .= "\n" . $result[0];
         }
         $results = array();
-        preg_match_all("'require_once\([^\)]*\\$[^\)]*\)'si", $contents, $results, PREG_SET_ORDER);
+        preg_match_all("'require_once\([^\)]*\\$[^\)]*\)'si", (string) $contents, $results, PREG_SET_ORDER);
         foreach ($results as $result) {
             $found .= "\n" . $result[0];
         }
         $results = array();
-        preg_match_all("'fopen\([^\)]*\\$[^\)]*\)'si", $contents, $results, PREG_SET_ORDER);
+        preg_match_all("'fopen\([^\)]*\\$[^\)]*\)'si", (string) $contents, $results, PREG_SET_ORDER);
         foreach ($results as $result) {
             $found .= "\n" . $result[0];
         }
         $results = array();
-        preg_match_all("'file_get_contents\([^\)]*\\$[^\)]*\)'si", $contents, $results, PREG_SET_ORDER);
+        preg_match_all("'file_get_contents\([^\)]*\\$[^\)]*\)'si", (string) $contents, $results, PREG_SET_ORDER);
         foreach ($results as $result) {
             $found .= "\n" . $result[0];
         }
@@ -130,9 +132,10 @@ class ScanFileIncludes extends SugarSecure
         }
     }
 }
-    
 
 
+
+#[\AllowDynamicProperties]
 class SugarSecureManager
 {
     public $scanners = array();
@@ -140,7 +143,7 @@ class SugarSecureManager
     {
         $this->scanners[] = new $class();
     }
-    
+
     public function scan()
     {
         while ($scanner = current($this->scanners)) {
@@ -149,7 +152,7 @@ class SugarSecureManager
         }
         reset($this->scanners);
     }
-    
+
     public function display()
     {
         while ($scanner = current($this->scanners)) {
@@ -159,9 +162,10 @@ class SugarSecureManager
         }
         reset($this->scanners);
     }
-    
+
     public function save()
     {
+        $scanner = null;
         //reset($this->scanners);
         $name = 'SugarSecure'. time() . '.txt';
         while ($this->scanners  = next($this->scanners)) {

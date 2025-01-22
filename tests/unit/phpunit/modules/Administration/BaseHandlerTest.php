@@ -46,13 +46,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 class BaseHandlerTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
     }
 
-    public function testFirst()
+    public function testFirst(): void
     {
-        $this->assertEquals(true, true);
+        self::assertEquals(true, true);
     }
 }

@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 global $disable_date_format;
 $disable_date_format = true;
 
+#[\AllowDynamicProperties]
 class SoapHelperWebServices
 {
     public function get_field_list($value, $fields, $translate = true)
@@ -274,7 +275,7 @@ class SoapHelperWebServices
                 } else {
                     // match class C IP addresses
                     for ($i = 0; $i < 3; $i++) {
-                        if ($session_parts[$i] == $client_parts[$i]) {
+                        if ($session_parts[$i] === $client_parts[$i]) {
                             $classCheck = 1;
                             continue;
                         }
@@ -464,7 +465,7 @@ class SoapHelperWebServices
                     $type = $var['type'];
 
                     if (strcmp($type, 'date') == 0) {
-                        $val = substr($val, 0, 10);
+                        $val = substr((string) $val, 0, 10);
                     } elseif (strcmp($type, 'enum') == 0 && !empty($var['options'])) {
                         //$val = $app_list_strings[$var['options']][$val];
                     }
@@ -536,7 +537,7 @@ class SoapHelperWebServices
                     $type = $var['type'];
 
                     if (strcmp($type, 'date') == 0) {
-                        $val = substr($val, 0, 10);
+                        $val = substr((string) $val, 0, 10);
                     } elseif (strcmp($type, 'enum') == 0 && !empty($var['options'])) {
                         //$val = $app_list_strings[$var['options']][$val];
                     }
@@ -840,7 +841,7 @@ class SoapHelperWebServices
         require_once($beanFiles[$class_name]);
         $ids = array();
         $count = 1;
-        $total = count($name_value_lists);
+        $total = is_countable($name_value_lists) ? count($name_value_lists) : 0;
         foreach ($name_value_lists as $name_value_list) {
             $seed = new $class_name();
 
@@ -858,7 +859,7 @@ class SoapHelperWebServices
                     $vardef = $seed->field_name_map[$value['name']];
                     if (isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$value])) {
                         if (in_array($val, $app_list_strings[$vardef['options']])) {
-                            $val = array_search($val, $app_list_strings[$vardef['options']]);
+                            $val = array_search($val, $app_list_strings[$vardef['options']], true);
                         }
                     }
                 }
@@ -915,7 +916,7 @@ class SoapHelperWebServices
                             $query = $seed->table_name . ".outlook_id = '" . DBManagerFactory::getInstance()->quote($seed->outlook_id) . "'";
                             $response = $seed->get_list($order_by, $query, 0, -1, -1, 0);
                             $list = $response['list'];
-                            if (count($list) > 0) {
+                            if ((is_countable($list) ? count($list) : 0) > 0) {
                                 foreach ($list as $value) {
                                     $seed->id = $value->id;
                                     break;

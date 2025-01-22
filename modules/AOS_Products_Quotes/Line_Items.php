@@ -176,11 +176,7 @@ function display_lines($focus, $field, $value, $view)
                 $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".get_discount_string($line_item->discount, $line_item->product_discount, $params, $locale, $sep)."</td>";
 
                 $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->product_unit_price, $params)."</td>";
-                if ($locale->getPrecision()) {
-                    $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".rtrim(rtrim(format_number($line_item->vat), '0'), $sep[1])."%</td>";
-                } else {
-                    $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".format_number($line_item->vat)."%</td>";
-                }
+                $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".display_tax_detail_view($locale, $line_item->vat, $sep)."</td>";
                 $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->vat_amt, $params)."</td>";
                 $product .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->product_total_price, $params)."</td>";
                 $product .= "</tr>";
@@ -204,10 +200,8 @@ function display_lines($focus, $field, $value, $view)
                 $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->product_list_price, $params)."</td>";
 
                 $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".get_discount_string($line_item->discount, $line_item->product_discount, $params, $locale, $sep)."</td>";
-
-
                 $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->product_unit_price, $params)."</td>";
-                $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".rtrim(rtrim(format_number($line_item->vat), '0'), $sep[1])."%</td>";
+                $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".display_tax_detail_view($locale, $line_item->vat, $sep)."</td>";
                 $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->vat_amt, $params)."</td>";
                 $service .= "<td class='tabDetailViewDF' style='text-align: right; padding:2px;'>".currency_format_number($line_item->product_total_price, $params)."</td>";
                 $service .= "</tr>";
@@ -227,7 +221,7 @@ function display_lines($focus, $field, $value, $view)
 //will also be stripped off) The custom decimal separator is passed in to the function from the locale settings
 function stripDecimalPointsAndTrailingZeroes($inputString, $decimalSeparator)
 {
-    return preg_replace('/'.preg_quote($decimalSeparator).'[0]+$/', '', $inputString);
+    return preg_replace('/'.preg_quote((string) $decimalSeparator).'[0]+$/', '', (string) $inputString);
 }
 
 function get_discount_string($type, $amount, $params, $locale, $sep)
@@ -258,4 +252,24 @@ function display_shipping_vat($focus, $field, $value, $view)
         return $html;
     }
     return format_number($value);
+}
+
+/**
+ * Returns formatted value for the tax field;
+ * @param $locale
+ * @param $value
+ * @param $sep
+ * @return string
+ */
+function display_tax_detail_view($locale, $value, $sep): string
+{
+    global $app_strings;
+
+    if ($locale->getPrecision()) {
+        $value = rtrim(rtrim(format_number($value), '0'), $sep[1]) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+    } else {
+        $value = format_number($value) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+    }
+
+    return $value;
 }

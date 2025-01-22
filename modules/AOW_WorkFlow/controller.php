@@ -25,6 +25,7 @@
 
 require_once("modules/AOW_WorkFlow/aow_utils.php");
 
+#[\AllowDynamicProperties]
 class AOW_WorkFlowController extends SugarController
 {
     protected function action_getModuleFields()
@@ -55,7 +56,7 @@ class AOW_WorkFlowController extends SugarController
             } else {
                 $module = $_REQUEST['aow_module'];
             }
-            echo htmlspecialchars($module);
+            echo htmlspecialchars((string) $module);
         }
         die;
     }
@@ -256,7 +257,9 @@ class AOW_WorkFlowController extends SugarController
         $focus = new $beanList[$module];
         $vardef = $focus->getFieldDefinition($fieldname);
 
-        switch ($vardef['type']) {
+        $vardefType = $vardef['type'] ?? '';
+
+        switch ($vardefType) {
             case 'double':
             case 'decimal':
             case 'float':
@@ -328,6 +331,14 @@ class AOW_WorkFlowController extends SugarController
             $value = '';
         }
 
+        $params = [];
+        $isValueSet = $_REQUEST['is_value_set'] ?? 'false';
+        if ($isValueSet === 'false'){
+            $params['value_set'] = false;
+        } else{
+            $params['value_set'] = true;
+        }
+
         switch ($_REQUEST['aow_type']) {
             case 'Field':
                 if (isset($_REQUEST['alt_module']) && $_REQUEST['alt_module'] != '') {
@@ -354,7 +365,7 @@ class AOW_WorkFlowController extends SugarController
                 // no break
             case 'Value':
             default:
-                echo getModuleField($rel_module, $fieldname, $aow_field, $view, $value);
+                echo getModuleField($rel_module, $fieldname, $aow_field, $view, $value, '', '', $params);
                 break;
         }
         die;
@@ -543,12 +554,16 @@ class AOW_WorkFlowController extends SugarController
 
         $id = '';
         $params = array();
-        if (isset($_REQUEST['id'])) {
+        if (isset($_REQUEST['id']) && strlen(trim($_REQUEST['id'])) > 0 ) {
             require_once('modules/AOW_Actions/AOW_Action.php');
             $aow_action = BeanFactory::newBean('AOW_Actions');
             $aow_action->retrieve($_REQUEST['id']);
             $id = $aow_action->id;
-            $params = unserialize(base64_decode($aow_action->parameters));
+            $params = unserialize(base64_decode($aow_action->parameters ?? ''));
+
+            if ($params === false) {
+                $params = [];
+            }
         }
 
         $action = new $action_name($id);

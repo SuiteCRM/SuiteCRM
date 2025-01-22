@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    line-height: normal;
+    color: #151319;
+    text-indent: 0;
+}
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0.75em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+    margin: 0.83em 0;
+}
+
+h4 {
+    font-weight: bold;
+    margin: 1.12em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    font-weight: bold;
+    margin: 1.5em 0;
+}
+
+h6 {
+    font-size: 0.75em;
+    font-weight: bold;
+    margin: 1.67em 0;
+}
+
+p {
+    margin: 1.12em 0;
+}
+
+table {
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 2px;
+    empty-cells: show;
+    line-height: 1.2;
+    vertical-align: middle;
+    padding: 1.6px;
+}
+
+th {
+    font-weight: bold;
+    text-align: center;
+}
+
+td {
+    page-break-inside: avoid;
+}
+
+img {
+    margin: 0;
+    vertical-align: baseline;
+}

@@ -1,0 +1,25 @@
+name: Add comment
+on:
+  issues:
+    types:
+      - labeled
+jobs:
+  add-comment:
+    if: contains(github.event.label.name, 'Bug')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Add comment
+        run: gh issue comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          BODY: |
+            Hey @${{ github.actor }}!
+            Thanks for contributing to the SuiteCRM project :sparkles:
+
+            > **Remember to support your issue by voting!**
+            Get more information [here](https://docs.suitecrm.com/community/raising-issues/issues-voting/)
+          reactions: '+1'

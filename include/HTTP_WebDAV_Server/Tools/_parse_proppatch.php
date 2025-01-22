@@ -27,6 +27,7 @@
  * @author Hartmut Holzgraefe <hholzgra@php.net>
  * @version 0.99.1dev
  */
+#[\AllowDynamicProperties]
 class _parse_proppatch
 {
     /**
@@ -136,7 +137,7 @@ class _parse_proppatch
      */
     public function _startElement($parser, $name, $attrs)
     {
-        if (strstr($name, " ")) {
+        if (strstr((string) $name, " ")) {
             list($ns, $tag) = explode(" ", $name);
             if ($ns == "") {
                 $this->success = false;
@@ -161,7 +162,7 @@ class _parse_proppatch
         if ($this->depth >= 4) {
             $this->current["val"] .= "<$tag";
             foreach ($attr as $key => $val) {
-                $this->current["val"] .= ' '.$key.'="'.str_replace('"', '&quot;', $val).'"';
+                $this->current["val"] .= ' '.$key.'="'.str_replace('"', '&quot;', (string) $val).'"';
             }
             $this->current["val"] .= ">";
         }
@@ -181,7 +182,7 @@ class _parse_proppatch
      */
     public function _endElement($parser, $name)
     {
-        if (strstr($name, " ")) {
+        if (strstr((string) $name, " ")) {
             list($ns, $tag) = explode(" ", $name);
             if ($ns == "") {
                 $this->success = false;

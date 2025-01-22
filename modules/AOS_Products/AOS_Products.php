@@ -28,6 +28,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AOS_Products/AOS_Products_sugar.php');
+#[\AllowDynamicProperties]
 class AOS_Products extends AOS_Products_sugar
 {
     public function __construct()
@@ -35,19 +36,7 @@ class AOS_Products extends AOS_Products_sugar
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AOS_Products()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     public function getGUID()
     {
@@ -75,6 +64,14 @@ class AOS_Products extends AOS_Products_sugar
 
         require_once('include/upload_file.php');
         $GLOBALS['log']->debug('UPLOADING PRODUCT IMAGE');
+
+        if(!empty($_FILES['uploadimage']['name'])){
+            $imageFileName = $_FILES['uploadimage']['name'] ?? '';
+            if (!has_valid_image_extension('AOS_Products Uploaded image file: ' . $imageFileName , $imageFileName)) {
+                LoggerManager::getLogger()->fatal("AOS_Products save - Invalid image file ext : '$imageFileName'.");
+                throw new RuntimeException('Invalid request');
+            }
+        }
 
         if (!empty($_FILES['uploadimage']['tmp_name']) && verify_uploaded_image($_FILES['uploadimage']['tmp_name'])) {
             if ($_FILES['uploadimage']['size'] > $sugar_config['upload_maxsize']) {

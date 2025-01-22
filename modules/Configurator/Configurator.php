@@ -42,12 +42,30 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Configurator
 {
     /** @var array */
     public $config = '';
     public $override = '';
-    public $allow_undefined = array('stack_trace_errors', 'export_delimiter', 'use_real_names', 'developerMode', 'default_module_favicon', 'authenticationClass', 'SAML_loginurl', 'SAML_logouturl', 'SAML_X509Cert', 'dashlet_auto_refresh_min', 'show_download_tab', 'enable_action_menu','enable_line_editing_list','enable_line_editing_detail', 'hide_subpanels');
+    public $allow_undefined = [
+        'stack_trace_errors',
+        'export_delimiter',
+        'use_real_names',
+        'developerMode',
+        'default_module_favicon',
+        'authenticationClass',
+        'SAML_loginurl',
+        'SAML_logouturl',
+        'SAML_X509Cert',
+        'dashlet_auto_refresh_min',
+        'show_download_tab',
+        'enable_action_menu',
+        'enable_line_editing_list',
+        'enable_line_editing_detail',
+        'hide_subpanels',
+        'stackTrace'
+    ];
     public $errors = array('main' => '');
     public $logger = null;
     public $previous_sugar_override_config_array = array();
@@ -75,19 +93,17 @@ class Configurator
     public function populateFromPost()
     {
         $sugarConfig = SugarConfig::getInstance();
+
+        $this->checkLoggerFileName();
+
         foreach ($_POST as $key => $value) {
-            if ($key == "logger_file_ext") {
+            if ($key === "logger_file_ext" || $key === 'logger_file_name') {
                 if ($value === '') {
                     $GLOBALS['log']->security("Log file extension can't be blank.");
                     continue;
                 }
-
-                $trim_value = preg_replace('/.*\.([^\.]+)$/', '\1', $value);
-                if (in_array($trim_value, $this->config['upload_badext'])) {
-                    $GLOBALS['log']->security("Invalid log file extension: trying to use invalid file extension '$value'.");
-                    continue;
-                }
             }
+
             if (isset($this->config[$key]) || in_array($key, $this->allow_undefined)) {
                 if (strcmp((string)$value, 'true') == 0) {
                     $value = true;
@@ -103,6 +119,122 @@ class Configurator
                 }
             }
         }
+    }
+
+    public function checkLoggerFileName()
+    {
+
+        $logFileName =  '';
+        if (!empty($_POST['logger_file_name'])) {
+            $logFileName = $_POST['logger_file_name'];
+        }
+
+        $logFileExt = '';
+        if (!empty($_POST['logger_file_ext'])) {
+            $logFileExt = $_POST['logger_file_ext'];
+        }
+
+        $logFileExt = $this->prependDot($logFileExt);
+
+        if (!$this->hasValidExtension('logger_file_ext', $logFileExt)) {
+            $_POST['logger_file_ext'] = 'log';
+            $logFileExt = $this->prependDot('log');
+            LoggerManager::getLogger()->security("Setting logger_file_ext to '.log'.");
+        }
+
+        $fullName = $logFileName . $logFileExt;
+        $_POST['logger_file_name'] = $logFileName;
+        $_POST['logger_file_ext'] = $logFileExt;
+        $valid = true;
+
+        if (!hasValidFileName('logger_file_name', $logFileName) ||
+            !$this->hasValidExtension('logger_file_name', $logFileName)
+        ) {
+            LoggerManager::getLogger()->security("Setting logger_file_name to ''.");
+            $_POST['logger_file_name'] = '';
+            $valid = false;
+        }
+
+        if (!$valid) {
+            return;
+        }
+
+        if (!hasValidFileName('logger_full_name', $fullName) ||
+            !$this->hasValidExtension('logger_full_name', $fullName)
+        ) {
+            LoggerManager::getLogger()->security("Setting logger_file_name and  logger_file_ext to ''.");
+            $_POST['logger_file_name'] = '';
+            $_POST['logger_file_ext'] = '';
+        }
+    }
+
+    /**
+     * Trim value
+     * @param string $value
+     * @return string
+     */
+    public function trimValue($value)
+    {
+        return preg_replace('/.*\.([^\.]+)$/', '\1', $value);
+    }
+
+    /**
+     * Prepend dot
+     * @param string $value
+     * @return string
+     */
+    public function prependDot($value)
+    {
+
+        if (empty($value)) {
+            return $value;
+        }
+
+        if ($value[0] === '.') {
+            return $value;
+        }
+
+        return '.' . $value;
+    }
+
+    /**
+     * Check if has valid extension
+     * @param string $fieldName
+     * @param string $value
+     * @return bool
+     */
+    public function hasValidExtension(string $fieldName, string $value): bool
+    {
+
+        if ($value === '.' || empty($value)) {
+            LoggerManager::getLogger()->security("Invalid ext  $fieldName : '$value'.");
+
+            return false;
+        }
+
+        $defaults = get_sugar_config_defaults() ?? [];
+        $badExtDefaults = $defaults['upload_badext'] ?? [];
+        $badExtensions = array_merge($badExtDefaults, $this->config['upload_badext'] ?? []) ?? [];
+
+        $badExt = array_map('strtolower', $badExtensions);
+
+        $parts = explode('.', $value);
+
+        if (empty($parts)) {
+            LoggerManager::getLogger()->security("Invalid ext  $fieldName : '$value'.");
+
+            return false;
+        }
+
+        $ext = array_pop($parts);
+
+        if (in_array(strtolower($this->trimValue($ext)), $badExt, true)) {
+            LoggerManager::getLogger()->security("Invalid $fieldName: '$value'.");
+
+            return false;
+        }
+
+        return true;
     }
 
     public function handleOverride($fromParseLoggerSettings = false)
@@ -225,16 +357,14 @@ class Configurator
             $GLOBALS['log']->fatal("Unable to write to the config_override.php file. Check the file permissions");
             return;
         }
-        $fp = sugar_fopen('config_override.php', 'w');
-        fwrite($fp, $override);
-        fclose($fp);
+        sugar_file_put_contents('config_override.php', $override);
     }
 
     public function overrideClearDuplicates($array_name, $key)
     {
         if (!empty($this->override)) {
             $pattern = '/.*CONFIGURATOR[^\$]*\$' . $array_name . '\[\'' . $key . '\'\][\ ]*=[\ ]*[^;]*;\n/';
-            $this->override = preg_replace($pattern, '', $this->override);
+            $this->override = preg_replace($pattern, '', (string) $this->override);
         } else {
             $this->override = "<?php\n\n?>";
         }
@@ -245,7 +375,7 @@ class Configurator
         $GLOBALS[$array_name][$key] = $value;
         $this->overrideClearDuplicates($array_name, $key);
         $new_entry = '/***CONFIGURATOR***/' . override_value_to_string($array_name, $key, $value);
-        $this->override = str_replace('?>', "$new_entry\n?>", $this->override);
+        $this->override = str_replace('?>', "$new_entry\n?>", (string) $this->override);
     }
 
     public function restoreConfig()
@@ -274,6 +404,7 @@ class Configurator
             $this->error = $error;
             return false;
         }
+
         return $path;
     }
 

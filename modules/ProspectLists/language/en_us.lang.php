@@ -89,4 +89,6 @@ $mod_strings = array(
 
     'LBL_EMAIL_MARKETING' => 'Email Marketing',
 
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
 );

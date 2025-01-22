@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldInt extends SugarWidgetReportField
 {
     public function displayList(&$layout_def)
@@ -87,6 +88,7 @@ class SugarWidgetFieldInt extends SugarWidgetReportField
  
     public function display($layout_def)
     {
+        $obj = null;
         //Bug40995
         if (isset($obj->layout_manager->defs['reporter']->focus->field_name_map[$layout_def['name']]['precision'])) {
             $precision=$obj->layout_manager->defs['reporter']->focus->field_name_map[$layout_def['name']]['precision'];

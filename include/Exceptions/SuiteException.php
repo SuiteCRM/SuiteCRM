@@ -42,7 +42,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class SuiteException extends Exception
 {
-    const NO_ID = 1;
+    public const NO_ID = 1;
 }

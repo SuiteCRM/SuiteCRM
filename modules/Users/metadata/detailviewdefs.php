@@ -80,20 +80,6 @@ $viewdefs['Users']['DetailView'] = array(
                         ),
                 ),
         ),
-    'useTabs' => true,
-    'tabDefs' =>
-        array(
-            'LBL_USER_INFORMATION' =>
-                array(
-                    'newTab' => true,
-                    'panelDefault' => 'expanded',
-                ),
-            'LBL_EMPLOYEE_INFORMATION' =>
-                array(
-                    'newTab' => true,
-                    'panelDefault' => 'expanded',
-                ),
-        ),
     'panels' =>
         array(
             'LBL_USER_INFORMATION' =>
@@ -109,7 +95,7 @@ $viewdefs['Users']['DetailView'] = array(
                             1 =>
                                 array(
                                     'name' => 'UserType',
-                                    'customCode' => '{$USER_TYPE_READONLY}',
+                                    'customCode' => '{if isset($USER_TYPE_READONLY)}{$USER_TYPE_READONLY}{/if}',
                                 ),
                         ),
                     2 =>

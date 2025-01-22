@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class DocumentsViewEdit extends ViewEdit
 {
 
@@ -55,19 +56,7 @@ class DocumentsViewEdit extends ViewEdit
         $this->useForSubpanel = true;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function DocumentsViewEdit()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     /**
@@ -119,12 +108,12 @@ class DocumentsViewEdit extends ViewEdit
 
         //get related document name.
         if (!empty($this->bean->related_doc_id)) {
-            $this->ss->assign("RELATED_DOCUMENT_NAME", Document::get_document_name($this->bean->related_doc_id));
+            $this->ss->assign("RELATED_DOCUMENT_NAME", (new Document())->get_document_name($this->bean->related_doc_id));
             $this->ss->assign("RELATED_DOCUMENT_ID", $this->bean->related_doc_id);
             if (!empty($this->bean->related_doc_rev_id)) {
-                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id(DocumentRevision::get_document_revisions($this->bean->related_doc_id), $this->bean->related_doc_rev_id));
+                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id((new DocumentRevision)->get_document_revisions($this->bean->related_doc_id), $this->bean->related_doc_rev_id));
             } else {
-                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id(DocumentRevision::get_document_revisions($this->bean->related_doc_id), ''));
+                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id((new DocumentRevision)->get_document_revisions($this->bean->related_doc_id), ''));
             }
         } else {
             $this->ss->assign("RELATED_DOCUMENT_REVISION_DISABLED", "disabled");

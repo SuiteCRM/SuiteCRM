@@ -50,7 +50,7 @@ if (is_admin($current_user)) {
     foreach ($actionarr as $actionobj) {
         if (!isset($beanList[$actionobj->category]) || !file_exists($beanFiles[$beanList[$actionobj->category]])) {
             if (!isset($_REQUEST['upgradeWizard'])) {
-                echo 'Removing for ' . $actionobj->category . '<br>';
+                echo sprintf('Removing "%s" ACL for module "%s"<br>', $actionobj->name, $actionobj->category);
             }
             $foundOne = true;
             ACLAction::removeActions($actionobj->category);

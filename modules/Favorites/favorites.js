@@ -12,19 +12,22 @@ var favorite_module = $('.favorite').attr("module");
 check_favorite();
 
 /*handles a user clicking on the empty star to add a favorite*/
-$(favorite_icon_outline).on('click', function () {
-    create_record();
-    show_star(favorite_icon_fill,favorite_icon_outline);
-    get_sidebar_elements();
-});
+$(favorite_icon_outline).unbind('click.favorite').bind('click.favorite', markFavorite);
 
-/*handles a user clicking on the filled star to add a favorite*/
-$(favorite_icon_fill).on('click', function () {
+/*handles a user clicking on the filled star to remove a favorite*/
+$(favorite_icon_fill).unbind('click.favorite').bind('click.favorite', unmarkFavorite);
+
+function unmarkFavorite() {
     remove_record();
     show_star(favorite_icon_outline,favorite_icon_fill);
     remove_favorite_sidebar();
-});
+}
 
+function markFavorite() {
+    create_record();
+    show_star(favorite_icon_fill,favorite_icon_outline);
+    get_sidebar_elements();
+}
 
 /* Takes the html for a sidebar element and appends it to the sidebar.*/
 function add_favorite_sidebar(sidebar_element){

@@ -1,10 +1,11 @@
 <?php /** @noinspection PhpUnhandledExceptionInspection */
+
 /**
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,22 +38,23 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+use Elasticsearch\Client;
 use SuiteCRM\Search\ElasticSearch\ElasticSearchClientBuilder;
-use SuiteCRM\Search\SearchTestAbstract;
+use SuiteCRM\Tests\Unit\lib\SuiteCRM\Search\SearchTestAbstract;
 
 class ElasticSearchClientBuilderTest extends SearchTestAbstract
 {
-    public function testGetClient()
+    public function testGetClient(): void
     {
         $client = ElasticSearchClientBuilder::getClient();
 
-        self::assertInstanceOf(\Elasticsearch\Client::class, $client);
+        self::assertInstanceOf(Client::class, $client);
     }
 
-    public function testLoadConfig()
+    public function testLoadConfig(): void
     {
         $builder = new ElasticSearchClientBuilder();
-        $config = self::invokeMethod($builder, 'loadFromFile', [__DIR__ . '/TestData/ElasticsearchServerConfig.json']);
+        $config = $this->invokeMethod($builder, 'loadFromFile', [__DIR__ . '/TestData/ElasticsearchServerConfig.json']);
         $expected = [
             [
                 'host' => 'foo.com',
@@ -70,10 +72,10 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
     }
 
     // Tests if the default configs are returned when the config file is not found
-    public function testLoadConfigFileNotThere()
+    public function testLoadConfigFileNotThere(): void
     {
         $builder = new ElasticSearchClientBuilder();
-        $config = self::invokeMethod($builder, 'loadFromFile', [__DIR__ . '/TestData/NopeNotHere.json']);
+        $config = $this->invokeMethod($builder, 'loadFromFile', [__DIR__ . '/TestData/NopeNotHere.json']);
         $expected = [
             ['host' => '127.0.0.1']
         ];
@@ -81,7 +83,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $config);
     }
 
-    public function testLoadSugarConfig()
+    public function testLoadSugarConfig(): void
     {
         global $sugar_config;
 
@@ -101,7 +103,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $actual);
     }
 
-    public function testLoadSugarConfig2()
+    public function testLoadSugarConfig2(): void
     {
         global $sugar_config;
 
@@ -123,7 +125,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
 
     }
 
-    public function testLoadSugarConfig3()
+    public function testLoadSugarConfig3(): void
     {
         global $sugar_config;
 
@@ -145,16 +147,18 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
     private function loadFromSugarConfig()
     {
         $builder = new ElasticSearchClientBuilder();
-        return self::invokeMethod($builder, 'loadFromSugarConfig');
+
+        return $this->invokeMethod($builder, 'loadFromSugarConfig');
     }
 
     private function sanitizeHost(array $host)
     {
         $builder = new ElasticSearchClientBuilder();
-        return self::invokeMethod($builder, 'sanitizeHost', [$host]);
+
+        return $this->invokeMethod($builder, 'sanitizeHost', [$host]);
     }
 
-    public function testUrlParser1()
+    public function testUrlParser1(): void
     {
         $data = [
             'host' => 'www.example.com'
@@ -169,7 +173,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $actual);
     }
 
-    public function testUrlParser2()
+    public function testUrlParser2(): void
     {
         $data = [
             'host' => 'https://www.example.com',
@@ -187,7 +191,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $actual);
     }
 
-    public function testUrlParser3()
+    public function testUrlParser3(): void
     {
         $data = [
             'host' => 'https://www.example.com:42',
@@ -208,7 +212,7 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $actual);
     }
 
-    public function testUrlParser4()
+    public function testUrlParser4(): void
     {
         $data = [
             'host' => 'bar:pass@mydomain.server.com:9201',
@@ -227,57 +231,40 @@ class ElasticSearchClientBuilderTest extends SearchTestAbstract
         self::assertEquals($expected, $actual);
     }
 
-    public function testUrlParser5()
+    public function testUrlParser5(): void
     {
         $data = [
             'user' => 'foo',
         ];
 
-        try {
-            $this->sanitizeHost($data);
-        } catch (InvalidArgumentException $e) {
-            return;
-        }
-
-        $this->fail('Exception not thrown!');
+        $this->expectException(InvalidArgumentException::class);
+        $this->sanitizeHost($data);
     }
 
-    public function testUrlParser6()
+    public function testUrlParser6(): void
     {
         $data = [
             'host' => 0.5,
             'user' => 'foo',
         ];
 
-        try {
-            $this->sanitizeHost($data);
-        } catch (InvalidArgumentException $e) {
-            return;
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->sanitizeHost($data);
     }
 
-    public function testUrlParserBadUrls()
+    public function testUrlParserBadUrls(): void
     {
         $url1 = ['host' => 'http:///example.com'];
         $url2 = ['host' => 'http://:80'];
         $url3 = ['host' => 'http://user@:80'];
 
-        try {
-            $this->sanitizeHost($url1);
-            $this->fail('Exception not thrown!');
-        } catch (InvalidArgumentException $e) {
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->sanitizeHost($url1);
 
-        try {
-            $this->sanitizeHost($url2);
-            $this->fail('Exception not thrown!');
-        } catch (InvalidArgumentException $e) {
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->sanitizeHost($url2);
 
-        try {
-            $this->sanitizeHost($url3);
-            $this->fail('Exception not thrown!');
-        } catch (InvalidArgumentException $e) {
-        }
+        $this->expectException(InvalidArgumentException::class);
+        $this->sanitizeHost($url3);
     }
 }

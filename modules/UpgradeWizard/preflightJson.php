@@ -54,7 +54,7 @@ if (file_exists($persist = sugar_cached('/modules/UpgradeWizard/_persistence.php
     require_once $persist;
 }
 require_once('modules/UpgradeWizard/uw_utils.php');
-require_once('include/utils/zip_utils.php');
+require_once('include/utils/php_zip_utils.php');
 
 switch ($_REQUEST['preflightStep']) {
     case 'find_upgrade_files':

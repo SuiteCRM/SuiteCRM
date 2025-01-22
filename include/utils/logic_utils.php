@@ -91,9 +91,8 @@ function write_logic_file($module_name, $contents)
 {
     $file = "modules/".$module_name . '/logic_hooks.php';
     $file = create_custom_directory($file);
-    $fp = sugar_fopen($file, 'wb');
-    fwrite($fp, $contents);
-    fclose($fp);
+
+    return sugar_file_put_contents($file, $contents) !== false;
 
     //end function write_logic_file
 }

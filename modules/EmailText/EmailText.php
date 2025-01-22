@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class for separate storage of Email texts
  */
+#[\AllowDynamicProperties]
 class EmailText extends SugarBean
 {
     public $disable_row_level_security = true;

@@ -45,6 +45,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+require_once 'include/Services/NormalizeRecords/NormalizeRecords.php';
+
 /**
  * Set up an array of Jobs with the appropriate metadata
  * 'jobName' => array (
@@ -181,7 +183,7 @@ function pollMonitoredInboxes()
                                 if ($ieX->isMailBoxTypeCreateCase()) {
                                     $userId = "";
                                     if ($distributionMethod == 'roundRobin') {
-                                        if (count($users) == 1) {
+                                        if (count($users) === 1) {
                                             $userId = $users[0];
                                             $lastRobin = $users[0];
                                         } else {
@@ -196,7 +198,7 @@ function pollMonitoredInboxes()
                                             }
                                         } // else
                                     } else {
-                                        if (count($users) == 1) {
+                                        if (count($users) === 1) {
                                             foreach ($users as $k => $value) {
                                                 $userId = $value;
                                             } // foreach
@@ -314,7 +316,7 @@ function pruneDatabase()
             }
 
             $custom_columns = array();
-            if (array_search($table . '_cstm', $tables)) {
+            if (array_search($table . '_cstm', $tables, true)) {
                 $custom_columns = $db->get_columns($table . '_cstm');
                 if (empty($custom_columns['id_c'])) {
                     $custom_columns = array();
@@ -617,8 +619,14 @@ function pollMonitoredInboxesAOP()
                     $isGroupFolderExists = false;
                     $users = array();
                     if ($groupFolderId != null && $groupFolderId != "") {
+                        // FIX #6994 - Unable to retrieve Sugar Folder due to incorrect groupFolderId
                         $sugarFolder->retrieve($groupFolderId);
-                        $isGroupFolderExists = true;
+                        if (empty($sugarFolder->id)) {
+                            $sugarFolder->retrieve($aopInboundEmailX->id);
+                        }
+                        if (!empty($sugarFolder->id)) {
+                            $isGroupFolderExists = true;
+                        }
                     } // if
                     $messagesToDelete = array();
                     if ($aopInboundEmailX->isMailBoxTypeCreateCase()) {
@@ -656,6 +664,9 @@ function pollMonitoredInboxesAOP()
                                         if (!$aopInboundEmailX->email->retrieve($emailId)) {
                                             throw new Exception('Email retrieving error to handle case create, email id was: ' . $emailId);
                                         }
+                                    }
+                                    if (empty($aopInboundEmailX->email)) {
+                                        throw new Exception('Invalid type for email id ' . $emailId);
                                     }
                                     $aopInboundEmailX->handleCreateCase($aopInboundEmailX->email, $userId);
                                 } // if
@@ -714,6 +725,7 @@ function pollMonitoredInboxesAOP()
 
 /**
  * Scheduled job function to index any unindexed beans.
+ * @deprecated since v7.12.0
  * @return bool
  */
 function aodIndexUnindexed()
@@ -730,6 +742,10 @@ function aodIndexUnindexed()
     return true;
 }
 
+/**
+ * @deprecated since v7.12.0
+ * @return bool
+ */
 function aodOptimiseIndex()
 {
     $index = BeanFactory::getBean("AOD_Index")->getIndex();
@@ -737,12 +753,15 @@ function aodOptimiseIndex()
     return true;
 }
 
-
+/**
+ * @deprecated since v7.12.0
+ * @return int|void
+ */
 function performLuceneIndexing()
 {
     global $sugar_config;
     $db = DBManagerFactory::getInstance();
-    
+
     if (empty($sugar_config['aod']['enable_aod'])) {
         return;
     }
@@ -817,6 +836,7 @@ function processAOW_Workflow()
     return $workflow->run_flows();
 }
 
+#[\AllowDynamicProperties]
 class AORScheduledReportJob implements RunnableSchedulerJob
 {
     public function setJob(SchedulersJob $job)
@@ -885,9 +905,9 @@ EOF;
     }
 }
 
-function runElasticSearchIndexerScheduler($data)
+function runElasticSearchIndexerScheduler($job, $data = '{}')
 {
-    return \SuiteCRM\Search\ElasticSearch\ElasticSearchIndexer::schedulerJob(json_decode($data));
+    return \SuiteCRM\Search\ElasticSearch\ElasticSearchIndexer::schedulerJob(json_decode(html_entity_decode($data), true));
 }
 
 if (file_exists('custom/modules/Schedulers/_AddJobsHere.php')) {

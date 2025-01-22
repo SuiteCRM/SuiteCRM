@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class SchedulersViewEdit extends ViewEdit
 {
     protected static $xtDays = array(
@@ -80,8 +81,8 @@ class SchedulersViewEdit extends ViewEdit
         // job functions
         $this->bean->job_function = $this->bean->job;
         $this->ss->assign('JOB', $this->bean->job);
-        if (substr($this->bean->job, 0, 5) == "url::") {
-            $this->bean->job_url = substr($this->bean->job, 5);
+        if (substr((string) $this->bean->job, 0, 5) == "url::") {
+            $this->bean->job_url = substr((string) $this->bean->job, 5);
             $this->ss->assign('JOB', 'url::');
         }
         // interval
@@ -125,6 +126,7 @@ class SchedulersViewEdit extends ViewEdit
         }
 
         // Hours
+        $ints = [];
         for ($i=1; $i<=30; $i++) {
             $ints[$i] = $i;
         }

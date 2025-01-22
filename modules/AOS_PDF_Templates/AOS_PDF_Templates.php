@@ -28,6 +28,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AOS_PDF_Templates/AOS_PDF_Templates_sugar.php');
+#[\AllowDynamicProperties]
 class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
 {
     public function __construct()
@@ -35,17 +36,11 @@ class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function AOS_PDF_Templates()
+    public function cleanBean()
     {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
+        parent::cleanBean();
+        $this->pdfheader = purify_html($this->pdfheader, ['HTML.ForbiddenElements' => ['iframe' => true]]);
+        $this->description = purify_html($this->description, ['HTML.ForbiddenElements' => ['iframe' => true]]);
+        $this->pdffooter = purify_html($this->pdffooter, ['HTML.ForbiddenElements' => ['iframe' => true]]);
     }
 }

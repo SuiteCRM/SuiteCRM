@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 //TODO Rename this to close button field
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelCloseButton extends SugarWidgetField
 {
     public function displayList(&$layout_def)

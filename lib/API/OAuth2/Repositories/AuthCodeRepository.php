@@ -46,6 +46,7 @@ use League\OAuth2\Server\Repositories\AuthCodeRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\AuthCodeEntity;
 use SuiteCRM\API\v8\Exception\NotImplementedException;
 
+#[\AllowDynamicProperties]
 class AuthCodeRepository implements AuthCodeRepositoryInterface
 {
     /**

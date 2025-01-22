@@ -47,6 +47,7 @@
 require_once('include/MVC/View/SugarView.php');
 require_once('modules/Contacts/Popup_picker.php');
 
+#[\AllowDynamicProperties]
 class ContactsViewMailMergePopup extends SugarView
 {
     public function ContactAddressPopup()

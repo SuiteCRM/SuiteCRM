@@ -12,8 +12,7 @@
  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-YAHOO.widget.TreeView=function(id){if(id){this.init(id);}};YAHOO.widget.TreeView.prototype={id:null,_el:null,_nodes:null,locked:false,_expandAnim:null,_collapseAnim:null,_animCount:0,maxAnim:2,setExpandAnim:function(type){if(YAHOO.widget.TVAnim.isValid(type)){this._expandAnim=type;}},setCollapseAnim:function(type){if(YAHOO.widget.TVAnim.isValid(type)){this._collapseAnim=type;}},animateExpand:function(el,node){if(this._expandAnim&&this._animCount<this.maxAnim){var tree=this;var a=YAHOO.widget.TVAnim.getAnim(this._expandAnim,el,function(){tree.expandComplete(node);});if(a){++this._animCount;this.fireEvent("animStart",{"node":node,"type":"expand"});a.animate();}
+ */YAHOO.widget.TreeView=function(id){if(id){this.init(id);}};YAHOO.widget.TreeView.prototype={id:null,_el:null,_nodes:null,locked:false,_expandAnim:null,_collapseAnim:null,_animCount:0,maxAnim:2,setExpandAnim:function(type){if(YAHOO.widget.TVAnim.isValid(type)){this._expandAnim=type;}},setCollapseAnim:function(type){if(YAHOO.widget.TVAnim.isValid(type)){this._collapseAnim=type;}},animateExpand:function(el,node){if(this._expandAnim&&this._animCount<this.maxAnim){var tree=this;var a=YAHOO.widget.TVAnim.getAnim(this._expandAnim,el,function(){tree.expandComplete(node);});if(a){++this._animCount;this.fireEvent("animStart",{"node":node,"type":"expand"});a.animate();}
 return true;}
 return false;},animateCollapse:function(el,node){if(this._collapseAnim&&this._animCount<this.maxAnim){var tree=this;var a=YAHOO.widget.TVAnim.getAnim(this._collapseAnim,el,function(){tree.collapseComplete(node);});if(a){++this._animCount;this.fireEvent("animStart",{"node":node,"type":"collapse"});a.animate();}
 return true;}

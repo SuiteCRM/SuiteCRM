@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class CampaignLogTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,46 +13,43 @@ class CampaignLogTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testCampaignLog()
+    public function testCampaignLog(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $campaignLog = BeanFactory::newBean('CampaignLog');
-        $this->assertInstanceOf('CampaignLog', $campaignLog);
-        $this->assertInstanceOf('SugarBean', $campaignLog);
+        self::assertInstanceOf('CampaignLog', $campaignLog);
+        self::assertInstanceOf('SugarBean', $campaignLog);
 
-        $this->assertAttributeEquals('CampaignLog', 'module_dir', $campaignLog);
-        $this->assertAttributeEquals('CampaignLog', 'object_name', $campaignLog);
-        $this->assertAttributeEquals('campaign_log', 'table_name', $campaignLog);
-        $this->assertAttributeEquals(true, 'new_schema', $campaignLog);
+        self::assertEquals('CampaignLog', $campaignLog->module_dir);
+        self::assertEquals('CampaignLog', $campaignLog->object_name);
+        self::assertEquals('campaign_log', $campaignLog->table_name);
+        self::assertEquals(true, $campaignLog->new_schema);
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
-        $campaignLog = BeanFactory::newBean('CampaignLog');
-
         //execute the method and verify it returns an array
-        $actual = $campaignLog->get_list_view_data();
-        $this->assertTrue(is_array($actual));
-        $this->assertSame(array(), $actual);
+        $actual = BeanFactory::newBean('CampaignLog')->get_list_view_data();
+        self::assertIsArray($actual);
+        self::assertSame(array(), $actual);
     }
 
-    public function testretrieve_email_address()
+    public function testretrieve_email_address(): void
     {
-        $campaignLog = BeanFactory::newBean('CampaignLog');
-        $actual = $campaignLog->retrieve_email_address();
-        $this->assertGreaterThanOrEqual('', $actual);
+        $actual = BeanFactory::newBean('CampaignLog')->retrieve_email_address();
+        self::assertGreaterThanOrEqual('', $actual);
     }
 
-    public function testget_related_name()
+    public function testGetRelatedName(): void
     {
         $campaignLog = BeanFactory::newBean('CampaignLog');
 
-        //execute the method and verify that it retunrs expected results for all type parameters
-        $this->assertEquals('1Emails', $campaignLog->get_related_name(1, 'Emails'));
-        $this->assertEquals('1Contacts', $campaignLog->get_related_name(1, 'Contacts'));
-        $this->assertEquals('1Leads', $campaignLog->get_related_name(1, 'Leads'));
-        $this->assertEquals('1Prospects', $campaignLog->get_related_name(1, 'Prospects'));
-        $this->assertEquals('1CampaignTrackers', $campaignLog->get_related_name(1, 'CampaignTrackers'));
-        $this->assertEquals('1Accounts', $campaignLog->get_related_name(1, 'Accounts'));
+        // Execute the method and verify that it returns expected results for all type parameters
+        self::assertEquals('1Emails', $campaignLog::get_related_name(1, 'Emails'));
+        self::assertEquals('1Contacts', $campaignLog::get_related_name(1, 'Contacts'));
+        self::assertEquals('1Leads', $campaignLog::get_related_name(1, 'Leads'));
+        self::assertEquals('1Prospects', $campaignLog::get_related_name(1, 'Prospects'));
+        self::assertEquals('1CampaignTrackers', $campaignLog::get_related_name(1, 'CampaignTrackers'));
+        self::assertEquals('1Accounts', $campaignLog::get_related_name(1, 'Accounts'));
     }
 }

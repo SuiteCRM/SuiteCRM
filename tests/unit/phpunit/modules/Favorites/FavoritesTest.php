@@ -4,52 +4,50 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class FavoritesTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testFavorites()
+    public function testFavorites(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $favorites = BeanFactory::newBean('Favorites');
-        $this->assertInstanceOf('Favorites', $favorites);
-        $this->assertInstanceOf('Basic', $favorites);
-        $this->assertInstanceOf('SugarBean', $favorites);
+        self::assertInstanceOf('Favorites', $favorites);
+        self::assertInstanceOf('Basic', $favorites);
+        self::assertInstanceOf('SugarBean', $favorites);
 
-        $this->assertAttributeEquals('Favorites', 'module_dir', $favorites);
-        $this->assertAttributeEquals('Favorites', 'object_name', $favorites);
-        $this->assertAttributeEquals('favorites', 'table_name', $favorites);
-        $this->assertAttributeEquals(true, 'new_schema', $favorites);
+        self::assertEquals('Favorites', $favorites->module_dir);
+        self::assertEquals('Favorites', $favorites->object_name);
+        self::assertEquals('favorites', $favorites->table_name);
+        self::assertEquals(true, $favorites->new_schema);
     }
 
-    public function testdeleteFavorite()
+    public function testdeleteFavorite(): void
     {
-        $favorites = BeanFactory::newBean('Favorites');
-
         //testing with an empty ID
-        $result = $favorites->deleteFavorite('');
-        $this->assertEquals(false, $result);
+        $result = BeanFactory::newBean('Favorites')->deleteFavorite('');
+        self::assertEquals(false, $result);
     }
 
-    public function testgetFavoriteID()
+    public function testgetFavoriteID(): void
     {
         $favorites = BeanFactory::newBean('Favorites');
 
         //test with blank string parameters
         $result = $favorites->getFavoriteID('', '');
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
 
         //test with string parameters
         $result = $favorites->getFavoriteID('Accounts', '1');
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
     }
 
-    public function testgetCurrentUserSidebarFavorites()
+    public function testgetCurrentUserSidebarFavorites(): void
     {
         $favorites = BeanFactory::newBean('Favorites');
 
         //test with empty string parameter
         $result = $favorites->getCurrentUserSidebarFavorites();
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
 
         //test with string
         $result = $favorites->getCurrentUserSidebarFavorites('1');
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
     }
 }

@@ -46,6 +46,7 @@ require_once('include/SugarObjects/templates/file/File.php');
 
 
 // User is used to store Forecast information.
+#[\AllowDynamicProperties]
 class Document extends File
 {
     public $id;
@@ -99,8 +100,8 @@ class Document extends File
         'contract_id' => 'contracts',
     );
 
-    public $authenticated = null;
-    public $show_preview = true;
+    public $authenticated;
+    public $show_preview = false;
 
     public function __construct()
     {
@@ -109,19 +110,7 @@ class Document extends File
         $this->disable_row_level_security = false;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Document()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function save($check_notify = false)
@@ -202,6 +191,7 @@ class Document extends File
                 $this->document_revision_id = $Revision->id;
             }
 
+            $save_revision = [];
 
             //set relationship field values if contract_id is passed (via subpanel create)
             if (!empty($_POST['contract_id'])) {
@@ -210,7 +200,7 @@ class Document extends File
                 $this->contracts->add($_POST['contract_id'], $save_revision);
             }
 
-            if ((isset($_POST['load_signed_id']) and !empty($_POST['load_signed_id']))) {
+            if ((isset($_POST['load_signed_id']) && !empty($_POST['load_signed_id']))) {
                 $loadSignedIdQuoted = $this->db->quote($_POST['load_signed_id']);
                 $query="update linked_documents set deleted=1 where id='".$loadSignedIdQuoted."'";
                 $this->db->query($query);
@@ -241,10 +231,7 @@ class Document extends File
 
     public function fill_in_additional_detail_fields()
     {
-        global $theme;
-        global $current_language;
-        global $timedate;
-        global $locale;
+        global $current_language, $timedate, $locale, $sugar_config;
 
         parent::fill_in_additional_detail_fields();
 
@@ -275,16 +262,18 @@ class Document extends File
 
             //image is selected based on the extension name <ext>_icon_inline, extension is stored in document_revisions.
             //if file is not found then default image file will be used.
-            global $img_name;
-            global $img_name_bare;
+            global $img_name, $img_name_bare;
 
             if (!empty($row['file_ext'])) {
                 $img_name = SugarThemeRegistry::current()->getImageURL(strtolower($row['file_ext']) . "_image_inline.gif");
                 $img_name_bare = strtolower($row['file_ext']) . "_image_inline";
-            
-                if ($row['file_ext'] == 'svg') {
-                    $this->show_preview = false;
+
+                $allowedPreview = $sugar_config['allowed_preview'] ?? [];
+
+                if (!empty($row['file_ext']) && in_array($row['file_ext'], $allowedPreview, true)) {
+                    $this->show_preview = true;
                 }
+
             }
         }
 
@@ -338,8 +327,8 @@ class Document extends File
             $this->status = $app_list_strings['document_status_dom'][$this->status_id];
         }
         if (!empty($this->related_doc_id)) {
-            $this->related_doc_name = Document::get_document_name($this->related_doc_id);
-            $this->related_doc_rev_number = DocumentRevision::get_document_revision_name($this->related_doc_rev_id);
+            $this->related_doc_name = (new Document())->get_document_name($this->related_doc_id);
+            $this->related_doc_rev_number = (new DocumentRevision)->get_document_revision_name($this->related_doc_rev_id);
         }
     }
 

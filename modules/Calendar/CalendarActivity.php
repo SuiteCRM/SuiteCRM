@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'include/utils/activity_utils.php';
 
+#[\AllowDynamicProperties]
 class CalendarActivity
 {
     public $sugar_bean;
@@ -225,7 +226,8 @@ class CalendarActivity
         }
 
         foreach ($activities as $key => $activity) {
-            if ($key === 'Tasks' && !$show_tasks) {
+            if ($key === 'Tasks' && !$show_tasks ||
+                $key === 'Calls' && !$show_calls) {
                 continue;
             }
 
@@ -266,11 +268,12 @@ class CalendarActivity
                 }
 
                 $focus_list = build_related_list_by_user_id($bean, $user_id, $where);
-                require_once 'modules/SecurityGroups/SecurityGroup.php';
+                //require_once 'modules/SecurityGroups/SecurityGroup.php';
                 foreach ($focus_list as $focusBean) {
                     if (isset($seen_ids[$focusBean->id])) {
                         continue;
                     }
+                    /* TODO update currently unused functionality, disabled as expensive
                     $in_group = SecurityGroup::groupHasAccess($key, $focusBean->id, 'list');
                     $show_as_busy = !ACLController::checkAccess(
                         $key,
@@ -279,7 +282,7 @@ class CalendarActivity
                         'module',
                         $in_group
                     );
-                    $focusBean->show_as_busy = $show_as_busy;
+                    $focusBean->show_as_busy = $show_as_busy;*/
 
                     $seen_ids[$focusBean->id] = 1;
                     $act = new CalendarActivity($focusBean);

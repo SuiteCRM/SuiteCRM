@@ -50,5 +50,5 @@ $metafiles[$module_name] = array(
     'searchdefs' => 'modules/' . $module_name . '/metadata/searchdefs.php',
     'popupdefs' => 'modules/' . $module_name . '/metadata/popupdefs.php',
     'searchfields' => 'modules/' . $module_name . '/metadata/SearchFields.php',
-
+    'subpaneldefs' => 'modules/' . $module_name . '/metadata/subpaneldefs.php',
 );

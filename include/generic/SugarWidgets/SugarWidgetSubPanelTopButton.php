@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelTopButton extends SugarWidget
 {
     public $module;
@@ -100,20 +101,6 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
                 $this->form_value = translate($form_value, $module);
             }
         }
-    }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarWidgetSubPanelTopButton($module='', $title='', $access_key='', $form_value='')
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($module, $title, $access_key, $form_value);
     }
 
     public function getWidgetId($buttonSuffix = true)
@@ -236,8 +223,13 @@ class SugarWidgetSubPanelTopButton extends SugarWidget
             $additionalFormFields['account_name'] = $defines['focus']->account_name;
         }
 
-        if (!empty($defines['child_module_name']) and $defines['child_module_name']=='Contacts' and !empty($defines['parent_bean_name']) and $defines['parent_bean_name']=='contact') {
-            if (!empty($defines['focus']->id) and !empty($defines['focus']->name)) {
+        if (
+            !empty($defines['child_module_name']) &&
+            $defines['child_module_name']=='Contacts' &&
+            !empty($defines['parent_bean_name']) &&
+            $defines['parent_bean_name']=='contact'
+        ) {
+            if (!empty($defines['focus']->id) && !empty($defines['focus']->name)) {
                 $formValues['reports_to_id'] = $defines['focus']->id;
                 $formValues['reports_to_name'] = $defines['focus']->name;
             }

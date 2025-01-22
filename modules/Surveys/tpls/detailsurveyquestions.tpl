@@ -3,13 +3,13 @@
     <table id="questionTable" class="table table-bordered">
         <tr>
             <th>
-                Question
+                {$MOD.LBL_SURVEY_QUESTION}
             </th>
             <th>
-                Text
+                {$MOD.LBL_SURVEY_TEXT}
             </th>
             <th>
-                Type
+                {$MOD.LBL_SURVEY_TYPE}
             </th>
         </tr>
         {foreach from=$questions item=question}

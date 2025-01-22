@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class OpportunityTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,69 +13,69 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testOpportunity()
+    public function testOpportunity(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $opportunity = BeanFactory::newBean('Opportunities');
 
-        $this->assertInstanceOf('Opportunity', $opportunity);
-        $this->assertInstanceOf('SugarBean', $opportunity);
+        self::assertInstanceOf('Opportunity', $opportunity);
+        self::assertInstanceOf('SugarBean', $opportunity);
 
-        $this->assertAttributeEquals('opportunities', 'table_name', $opportunity);
-        $this->assertAttributeEquals('accounts_opportunities', 'rel_account_table', $opportunity);
-        $this->assertAttributeEquals('opportunities_contacts', 'rel_contact_table', $opportunity);
-        $this->assertAttributeEquals('Opportunities', 'module_dir', $opportunity);
-        $this->assertAttributeEquals('Opportunity', 'object_name', $opportunity);
+        self::assertEquals('opportunities', $opportunity->table_name);
+        self::assertEquals('accounts_opportunities', $opportunity->rel_account_table);
+        self::assertEquals('opportunities_contacts', $opportunity->rel_contact_table);
+        self::assertEquals('Opportunities', $opportunity->module_dir);
+        self::assertEquals('Opportunity', $opportunity->object_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $opportunity);
-        $this->assertAttributeEquals(true, 'importable', $opportunity);
+        self::assertEquals(true, $opportunity->new_schema);
+        self::assertEquals(true, $opportunity->importable);
     }
 
-    public function testget_summary_text()
+    public function testget_summary_text(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         //test without setting name
-        $this->assertEquals(null, $opportunity->get_summary_text());
+        self::assertEquals(null, $opportunity->get_summary_text());
 
         //test with name set
         $opportunity->name = 'test';
-        $this->assertEquals('test', $opportunity->get_summary_text());
+        self::assertEquals('test', $opportunity->get_summary_text());
     }
 
-    public function testcreate_list_query()
+    public function testcreate_list_query(): void
     {
-        $this->markTestIncomplete('Breaks on php 7.1');
+        self::markTestIncomplete('Breaks on php 7.1');
         $opportunity = BeanFactory::newBean('Opportunities');
 
         //test with empty string params
         $expected = "SELECT \n                            accounts.id as account_id,\n                            accounts.name as account_name,\n                            accounts.assigned_user_id account_id_owner,\n                            users.user_name as assigned_user_name ,opportunities_cstm.* ,opportunities.*\n                            FROM opportunities LEFT JOIN users\n                            ON opportunities.assigned_user_id=users.id LEFT JOIN accounts_opportunities\n                            ON opportunities.id=accounts_opportunities.opportunity_id\n                            LEFT JOIN accounts\n                            ON accounts_opportunities.account_id=accounts.id  LEFT JOIN opportunities_cstm ON opportunities.id = opportunities_cstm.id_c where \n			(accounts_opportunities.deleted is null OR accounts_opportunities.deleted=0)\n			AND (accounts.deleted is null OR accounts.deleted=0)\n			AND opportunities.deleted=0 ORDER BY opportunities.name";
         $actual = $opportunity->create_list_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = "SELECT \n                            accounts.id as account_id,\n                            accounts.name as account_name,\n                            accounts.assigned_user_id account_id_owner,\n                            users.user_name as assigned_user_name ,opportunities_cstm.* ,opportunities.*\n                            FROM opportunities LEFT JOIN users\n                            ON opportunities.assigned_user_id=users.id LEFT JOIN accounts_opportunities\n                            ON opportunities.id=accounts_opportunities.opportunity_id\n                            LEFT JOIN accounts\n                            ON accounts_opportunities.account_id=accounts.id  LEFT JOIN opportunities_cstm ON opportunities.id = opportunities_cstm.id_c where (accounts.name=\"\") AND \n			(accounts_opportunities.deleted is null OR accounts_opportunities.deleted=0)\n			AND (accounts.deleted is null OR accounts.deleted=0)\n			AND opportunities.deleted=0 ORDER BY accounts.id";
         $actual = $opportunity->create_list_query('accounts.id', 'accounts.name=""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testcreate_export_query()
+    public function testcreate_export_query(): void
     {
-        $this->markTestIncomplete('Breaks on php 7.1');
+        self::markTestIncomplete('Breaks on php 7.1');
         $opportunity = BeanFactory::newBean('Opportunities');
 
         //test with empty string params
         $expected = "SELECT \n                            accounts.id as account_id,\n                            accounts.name as account_name,\n                            accounts.assigned_user_id account_id_owner,\n                            users.user_name as assigned_user_name ,opportunities_cstm.* ,opportunities.*\n                            FROM opportunities LEFT JOIN users\n                            ON opportunities.assigned_user_id=users.id LEFT JOIN accounts_opportunities\n                            ON opportunities.id=accounts_opportunities.opportunity_id\n                            LEFT JOIN accounts\n                            ON accounts_opportunities.account_id=accounts.id  LEFT JOIN opportunities_cstm ON opportunities.id = opportunities_cstm.id_c where \n			(accounts_opportunities.deleted is null OR accounts_opportunities.deleted=0)\n			AND (accounts.deleted is null OR accounts.deleted=0)\n			AND opportunities.deleted=0 ORDER BY opportunities.name";
         $actual = $opportunity->create_list_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = "SELECT \n                            accounts.id as account_id,\n                            accounts.name as account_name,\n                            accounts.assigned_user_id account_id_owner,\n                            users.user_name as assigned_user_name ,opportunities_cstm.* ,opportunities.*\n                            FROM opportunities LEFT JOIN users\n                            ON opportunities.assigned_user_id=users.id LEFT JOIN accounts_opportunities\n                            ON opportunities.id=accounts_opportunities.opportunity_id\n                            LEFT JOIN accounts\n                            ON accounts_opportunities.account_id=accounts.id  LEFT JOIN opportunities_cstm ON opportunities.id = opportunities_cstm.id_c where (accounts.name=\"\") AND \n			(accounts_opportunities.deleted is null OR accounts_opportunities.deleted=0)\n			AND (accounts.deleted is null OR accounts.deleted=0)\n			AND opportunities.deleted=0 ORDER BY accounts.id";
         $actual = $opportunity->create_list_query('accounts.id', 'accounts.name=""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testfill_in_additional_list_fields()
+    public function testfill_in_additional_list_fields(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
@@ -88,47 +88,45 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
             $opportunity->force_load_details = true;
             $opportunity->fill_in_additional_list_fields();
 
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testfill_in_additional_detail_fields()
+    public function testfill_in_additional_detail_fields(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $opportunity->fill_in_additional_detail_fields();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testget_contacts()
+    public function testget_contacts(): void
     {
-        $opportunity = BeanFactory::newBean('Opportunities');
-
-        $result = $opportunity->get_contacts();
-        $this->assertTrue(is_array($result));
+        $result = BeanFactory::newBean('Opportunities')->get_contacts();
+        self::assertIsArray($result);
     }
 
-    public function testupdate_currency_id()
+    public function testupdate_currency_id(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $opportunity->update_currency_id(array('GBP', 'EUR'), 'USD');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
@@ -143,35 +141,35 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
 
         $actual = $opportunity->get_list_view_data();
         //$this->assertSame($expected, $actual);
-        $this->assertEquals($expected['NAME'], $actual['NAME']);
-        $this->assertEquals($expected['DELETED'], $actual['DELETED']);
-        $this->assertEquals($expected['SALES_STAGE'], $actual['SALES_STAGE']);
-        $this->assertEquals($expected['ENCODED_NAME'], $actual['ENCODED_NAME']);
+        self::assertEquals($expected['NAME'], $actual['NAME']);
+        self::assertEquals($expected['DELETED'], $actual['DELETED']);
+        self::assertEquals($expected['SALES_STAGE'], $actual['SALES_STAGE']);
+        self::assertEquals($expected['ENCODED_NAME'], $actual['ENCODED_NAME']);
     }
 
-    public function testget_currency_symbol()
+    public function testget_currency_symbol(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         //te4st without currency id
-        $this->assertEquals('', $opportunity->get_currency_symbol());
+        self::assertEquals('', $opportunity->get_currency_symbol());
 
         //test with invalid currency id
         $opportunity->currency_id = 1;
-        $this->assertEquals('', $opportunity->get_currency_symbol());
+        self::assertEquals('', $opportunity->get_currency_symbol());
     }
 
-    public function testbuild_generic_where_clause()
+    public function testbuild_generic_where_clause(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         //test with empty string params
         $expected = "opportunities.name like '%' or accounts.name like '%'";
         $actual = $opportunity->build_generic_where_clause('');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testsave()
+    public function testsave(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
@@ -182,43 +180,43 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
         $result = $opportunity->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($opportunity->id));
-        $this->assertEquals(36, strlen($opportunity->id));
-        $this->assertEquals(-99, $opportunity->currency_id);
-        $this->assertEquals(30, $opportunity->probability);
+        self::assertTrue(isset($opportunity->id));
+        self::assertEquals(36, strlen((string) $opportunity->id));
+        self::assertEquals(-99, $opportunity->currency_id);
+        self::assertEquals(30, $opportunity->probability);
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $opportunity->mark_deleted($opportunity->id);
         $result = $opportunity->retrieve($opportunity->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testsave_relationship_changes()
+    public function testsave_relationship_changes(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
         $opportunity->account_id = 1;
 
         try {
             $opportunity->save_relationship_changes(true);
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testset_opportunity_contact_relationship()
+    public function testset_opportunity_contact_relationship(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         try {
             $opportunity->set_opportunity_contact_relationship('1');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testset_notification_body()
+    public function testset_notification_body(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
@@ -232,49 +230,47 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $opportunity->set_notification_body(new Sugar_Smarty(), $opportunity);
 
-        $this->assertEquals($opportunity->name, $result->_tpl_vars['OPPORTUNITY_NAME']);
-        $this->assertEquals($opportunity->amount, $result->_tpl_vars['OPPORTUNITY_AMOUNT']);
-        $this->assertEquals($opportunity->date_closed, $result->_tpl_vars['OPPORTUNITY_CLOSEDATE']);
-        $this->assertEquals($opportunity->sales_stage, $result->_tpl_vars['OPPORTUNITY_STAGE']);
-        $this->assertEquals($opportunity->description, $result->_tpl_vars['OPPORTUNITY_DESCRIPTION']);
+        self::assertEquals($opportunity->name, $result->tpl_vars['OPPORTUNITY_NAME']->value);
+        self::assertEquals($opportunity->amount, $result->tpl_vars['OPPORTUNITY_AMOUNT']->value);
+        self::assertEquals($opportunity->date_closed, $result->tpl_vars['OPPORTUNITY_CLOSEDATE']->value);
+        self::assertEquals($opportunity->sales_stage, $result->tpl_vars['OPPORTUNITY_STAGE']->value);
+        self::assertEquals($opportunity->description, $result->tpl_vars['OPPORTUNITY_DESCRIPTION']->value);
     }
 
-    public function testbean_implements()
+    public function testbean_implements(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
-        $this->assertEquals(false, $opportunity->bean_implements('')); //test with blank value
-        $this->assertEquals(false, $opportunity->bean_implements('test')); //test with invalid value
-        $this->assertEquals(true, $opportunity->bean_implements('ACL')); //test with valid value
+        self::assertEquals(false, $opportunity->bean_implements('')); //test with blank value
+        self::assertEquals(false, $opportunity->bean_implements('test')); //test with invalid value
+        self::assertEquals(true, $opportunity->bean_implements('ACL')); //test with valid value
     }
 
-    public function testlistviewACLHelper()
+    public function testlistviewACLHelper(): void
     {
         $opportunity = BeanFactory::newBean('Opportunities');
 
         $expected = array('MAIN' => 'a', 'ACCOUNT' => 'a');
         $actual = $opportunity->listviewACLHelper();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testget_account_detail()
+    public function testget_account_detail(): void
     {
-        $opportunity = BeanFactory::newBean('Opportunities');
-
-        $result = $opportunity->get_account_detail('1');
-        $this->assertTrue(is_array($result));
+        $result = BeanFactory::newBean('Opportunities')->get_account_detail('1');
+        self::assertIsArray($result);
     }
 
-    public function testgetCurrencyType()
+    public function testgetCurrencyType(): void
     {
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             getCurrencyType();
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
 
-        $this->markTestIncomplete('This method has no implementation');
+        self::markTestIncomplete('This method has no implementation');
     }
 }

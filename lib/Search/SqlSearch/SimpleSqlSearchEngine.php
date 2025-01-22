@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,10 +37,15 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+namespace SuiteCRM\Search\SqlSearch;
+
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+use BeanFactory;
+use DBManagerFactory;
+use SuiteCRM\Exception\InvalidArgumentException;
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
 use SuiteCRM\Search\SearchResults;
@@ -59,8 +64,9 @@ class SimpleSqlSearchEngine extends SearchEngine
      * @param SearchQuery $query
      *
      * @return SearchResults
+     * @throws InvalidArgumentException
      */
-    public function search(SearchQuery $query)
+    public function search(SearchQuery $query): SearchResults
     {
         $modules = SearchWrapper::getModules();
 
@@ -83,16 +89,16 @@ class SimpleSqlSearchEngine extends SearchEngine
      *
      * @return array
      */
-    protected function filterTableStructure(array $fields)
+    protected function filterTableStructure(array $fields): array
     {
         $filteredFields = [];
 
         foreach ($fields as $name => $type) {
-            if (strpos($type, 'varchar') == 0) {
+            if (strpos((string) $type, 'varchar') === 0) {
                 $filteredFields[$name] = 'varchar';
             }
 
-            if (strpos($type, 'text') == 0) {
+            if (strpos((string) $type, 'text') === 0) {
                 $filteredFields[$name] = 'text';
             }
         }
@@ -103,13 +109,12 @@ class SimpleSqlSearchEngine extends SearchEngine
     /**
      * Uses the DBManager getTableDescription method to retrieve the structure of the table in a name->type format.
      *
-     * @see \DBManager::getTableDescription()
-     *
      * @param string $table
      *
      * @return array
+     * @see \DBManager::getTableDescription()
      */
-    protected function getTableStructure($table)
+    protected function getTableStructure(string $table): array
     {
         $descriptions = DBManagerFactory::getInstance()->getTableDescription($table);
 
@@ -123,7 +128,7 @@ class SimpleSqlSearchEngine extends SearchEngine
     }
 
     /** @inheritdoc */
-    protected function validateQuery(SearchQuery &$query)
+    protected function validateQuery(SearchQuery $query): void
     {
         parent::validateQuery($query);
         $query->convertEncoding();
@@ -133,14 +138,13 @@ class SimpleSqlSearchEngine extends SearchEngine
      * Performs a search in a single module table and returns a list of ids.
      *
      * @param SearchQuery $query
-     * @param string      $module
+     * @param string $module
      *
      * @return array
      */
-    private function searchModule(SearchQuery $query, $module)
+    private function searchModule(SearchQuery $query, string $module): array
     {
-        $seed = BeanFactory::getBean($module);
-        $table = $seed->table_name;
+        $table = BeanFactory::getBean($module)->table_name;
 
         $fields = $this->filterTableStructure($this->getTableStructure($table));
 
@@ -150,10 +154,12 @@ class SimpleSqlSearchEngine extends SearchEngine
 
         $db = DBManagerFactory::getInstance();
 
-        $result = $db->query($sql);
+        if (isset($db)) {
+            $result = $db->query($sql);
 
-        while ($row = $db->fetchRow($result)) {
-            $hits [] = $row['id'];
+            while ($row = $db->fetchRow($result)) {
+                $hits [] = $row['id'];
+            }
         }
 
         return $hits;
@@ -163,12 +169,12 @@ class SimpleSqlSearchEngine extends SearchEngine
      * Makes the search SQL query.
      *
      * @param SearchQuery $query
-     * @param string      $table
-     * @param array       $fields
+     * @param string $table
+     * @param array $fields
      *
      * @return string
      */
-    private function makeSearchQuery(SearchQuery $query, $table, array $fields)
+    private function makeSearchQuery(SearchQuery $query, string $table, array $fields): string
     {
         $sql = 'SELECT id FROM %s WHERE %s AND deleted=0';
 
@@ -182,7 +188,6 @@ class SimpleSqlSearchEngine extends SearchEngine
             $wheres[] = sprintf("%s LIKE '%s'", $name, $slashedString);
         }
 
-        $sql = sprintf($sql, $table, implode(' OR ', $wheres));
-        return $sql;
+        return sprintf($sql, $table, implode(' OR ', $wheres));
     }
 }

@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * class GoogleApiKeySaverEntryPoint
  */
+#[\AllowDynamicProperties]
 class GoogleApiKeySaverEntryPoint
 {
 
@@ -71,7 +72,7 @@ class GoogleApiKeySaverEntryPoint
 
     /**
      *
-     * @var Google_Client
+     * @var Google\Client
      */
     protected $client;
 
@@ -85,10 +86,10 @@ class GoogleApiKeySaverEntryPoint
      *
      * @param User $current_user
      * @param array $sugar_config
-     * @param Google_Client $client
+     * @param Google\Client $client
      * @param array $request
      */
-    public function __construct(User $current_user, $sugar_config, Google_Client $client, $request)
+    public function __construct(User $current_user, $sugar_config, Google\Client $client, $request)
     {
         $this->currentUser = $current_user;
         $this->sugarConfig = $sugar_config;
@@ -105,7 +106,7 @@ class GoogleApiKeySaverEntryPoint
     protected function handleEntryPoint()
     {
         $this->client->setApplicationName('SuiteCRM');
-        $this->client->setScopes(Google_Service_Calendar::CALENDAR);
+        $this->client->setScopes(Google\Service\Calendar::CALENDAR);
         if (!isset($this->sugarConfig['google_auth_json'])) {
             throw new Exception('google_auth_json requested variable is missing', 1);
         }
@@ -121,7 +122,7 @@ class GoogleApiKeySaverEntryPoint
 
         $this->handleRequest();
     }
-    
+
     /**
      *
      * @param array $config
@@ -242,7 +243,7 @@ class GoogleApiKeySaverEntryPoint
         $url = $this->sugarConfig['site_url'] . "/index.php?module=Users&action=EditView&record=" . $this->currentUser->id;
         $this->redirect($url);
     }
-    
+
     /**
      * protected function for SugarApplication::redirect() so test mock can override it
      * @param string $url
@@ -251,7 +252,7 @@ class GoogleApiKeySaverEntryPoint
     {
         SugarApplication::redirect($url);
     }
-    
+
     /**
      * protected function for die() so test mock can override it
      * @param string $exitstring

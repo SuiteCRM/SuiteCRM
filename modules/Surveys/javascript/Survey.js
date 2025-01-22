@@ -6,7 +6,7 @@ var Survey = (function ($) {
         var resultTable = $('#' + clickedElement.data('question-id') + 'List');
 
         resultTable.slideToggle(500, function () {
-            clickedElement.text(resultTable.is(':visible') ? 'Hide responses' : 'Show responses');
+            clickedElement.text(resultTable.is(':visible') ? SUGAR.language.translate('Surveys', 'LBL_HIDE_RESPONSES') : SUGAR.language.translate('Surveys', 'LBL_SHOW_RESPONSES'));
         });
     };
 

@@ -71,7 +71,7 @@ function runCheck($install_script, $mod_strings = array())
 
     // check IIS and FastCGI
     $server_software = $_SERVER["SERVER_SOFTWARE"];
-    if ((strpos($_SERVER["SERVER_SOFTWARE"], 'Microsoft-IIS') !== false)
+    if ((strpos((string) $_SERVER["SERVER_SOFTWARE"], 'Microsoft-IIS') !== false)
         && php_sapi_name() == 'cgi-fcgi'
         && ini_get('fastcgi.logging') != '0') {
         installLog($mod_strings['ERR_CHECKSYS_FASTCGI_LOGGING']);
@@ -83,9 +83,9 @@ function runCheck($install_script, $mod_strings = array())
     ';
     }
 
-    if (strpos($server_software, 'Microsoft-IIS') !== false) {
+    if (strpos((string) $server_software, 'Microsoft-IIS') !== false) {
         $iis_version = '';
-        if (preg_match_all("/^.*\/(\d+\.?\d*)$/", $server_software, $out)) {
+        if (preg_match_all("/^.*\/(\d+\.?\d*)$/", (string) $server_software, $out)) {
             $iis_version = $out[1][0];
         }
 
@@ -134,20 +134,7 @@ function runCheck($install_script, $mod_strings = array())
         ';
     }
 
-    //Php Backward compatibility checks
-    if (ini_get("zend.ze1_compatibility_mode")) {
-        installLog($mod_strings['LBL_BACKWARD_COMPATIBILITY_ON'].'  '.'Php Backward Compatibility');
-        $phpCompatibility = "<b><span class=stop>{$mod_strings['LBL_BACKWARD_COMPATIBILITY_ON']}</span></b>";
-        $error_found = true;
-        $error_txt .= '
-      <tr>
-        <p><b>Php Backward Compatibility</b></p>
-        <p><span class="error">'.$phpCompatibility.'</span></p>
-    ';
-    }
-
     // database and connect
-
     if (!empty($_REQUEST['setup_db_type'])) {
         $_SESSION['setup_db_type'] = $_REQUEST['setup_db_type'];
     }
@@ -249,6 +236,7 @@ function runCheck($install_script, $mod_strings = array())
 
 
     // cache dir
+    $cache_files = [];
     $cache_files[] = '';
     $cache_files[] = 'images';
     $cache_files[] = 'layout';

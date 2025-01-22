@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class WebToLeadFormBuilder
 {
 
@@ -270,11 +271,11 @@ HTML;
         $html = self::getFieldLabelHTML($fieldLabel, $isRequired, $webRequiredSymbol);
         $_type = $fieldName == 'email1' || $fieldName == 'email2' ? 'email' : 'text';
         $html .= "<input id=\"$fieldName\" name=\"$fieldName\" type=\"$_type\"$_required>";
-        
+
         if ($_type == 'email') {
             $html .= self::getOptInCheckboxHTML($fieldName);
         }
-        
+
         return $html;
     }
 
@@ -313,12 +314,12 @@ HTML;
         $_required = $fieldRequired ? ' required' : '';
         $html = self::getFieldLabelHTML($fieldLabel, $fieldRequired, $webRequiredSymbol);
         $html .= "<input id=\"$fieldName\" name=\"$fieldName\" type=\"email\"$_required>";
-        
+
         $html .= self::getOptInCheckboxHTML($fieldName);
-        
+
         return $html;
     }
-    
+
     /**
      *
      * @param string $fieldName
@@ -333,7 +334,7 @@ HTML;
         ) {
             return '';
         }
-        
+
         $tpl = new Sugar_Smarty();
         $tpl->assign('fieldName', $fieldName);
         $html = $tpl->fetch('modules/Campaigns/WebToLeadFormBuilderOptInCheckbox.tpl');
@@ -345,21 +346,26 @@ HTML;
 
     private static function getFormTwoColumns($request, $formCols)
     {
+        $columns = null;
         $colsFirst = isset($request[$formCols[0]]) ? $request[$formCols[0]] : null;
         $colsSecond = isset($request[$formCols[1]]) ? $request[$formCols[1]] : null;
+
+        $countFirst = is_countable($colsFirst) ? count($colsFirst) : 0;
+        $countSecond = is_countable($colsSecond) ? count($colsSecond) : 0;
+
         if (!empty($colsFirst) && !empty($colsSecond)) {
-            if (count($colsFirst) < count($colsSecond)) {
-                $columns= count($colsSecond);
+            if ($countFirst < $countSecond) {
+                $columns= $countSecond;
             }
-            if (count($colsFirst) > count($colsSecond) || count($colsFirst) == count($colsSecond)) {
-                $columns= count($colsFirst);
+            if ($countFirst > $countSecond || $countFirst === $countSecond) {
+                $columns= $countFirst;
             }
         } else {
             if (!empty($colsFirst)) {
-                $columns= count($colsFirst);
+                $columns= $countFirst;
             } else {
                 if (!empty($colsSecond)) {
-                    $columns= count($colsSecond);
+                    $columns= $countSecond;
                 }
             }
         }
@@ -379,7 +385,7 @@ HTML;
 
     private static function getArrayOfFieldInfo($lead, $colsField, &$requiredFields)
     {
-        $field_vname= preg_replace('/:$/', '', translate($lead->field_defs[$colsField]['vname'], $lead->module_dir));
+        $field_vname= preg_replace('/:$/', '', (string) translate($lead->field_defs[$colsField]['vname'], $lead->module_dir));
         $field_name= $colsField;
         $field_label = $field_vname .": ";
         if (isset($lead->field_defs[$colsField]['custom_type']) && $lead->field_defs[$colsField]['custom_type'] != null) {
@@ -453,7 +459,7 @@ HTML;
                 $colsFields[$k] = !empty($request[$formCol][$i]) ? $request[$formCol][$i] : null;
             }
 
-            if ($colsFieldCount = count($formCols)) {
+            if ($colsFieldCount = is_countable($formCols) ? count($formCols) : 0) {
                 $colHtml = '';
                 $foundField = false;
                 for ($j = 0; $j < $colsFieldCount; $j++) {

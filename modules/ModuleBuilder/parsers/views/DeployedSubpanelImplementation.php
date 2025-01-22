@@ -54,10 +54,11 @@ require_once 'modules/ModuleBuilder/parsers/constants.php';
  * For subpanels we must make use of the SubPanelDefinitions class to do this; this also means that the history mechanism,
  * which tracks files, not objects, needs us to create an intermediate file representation of the definition that it can manage and restore
  */
+#[\AllowDynamicProperties]
 class DeployedSubpanelImplementation extends AbstractMetaDataImplementation implements MetaDataImplementationInterface
 {
-    const HISTORYFILENAME = 'restored.php';
-    const HISTORYVARIABLENAME = 'layout_defs';
+    public const HISTORYFILENAME = 'restored.php';
+    public const HISTORYVARIABLENAME = 'layout_defs';
 
     /**
      * @var string $_subpanelName
@@ -233,7 +234,7 @@ class DeployedSubpanelImplementation extends AbstractMetaDataImplementation impl
         $sm = StudioModuleFactory::getStudioModule($moduleName);
         foreach ($sm->sources as $file => $def) {
             if (!empty($def['view'])) {
-                $filenames[$def['view']] = substr($file, 0, strlen($file) - 4);
+                $filenames[$def['view']] = substr((string) $file, 0, strlen((string) $file) - 4);
             }
         }
 

@@ -40,6 +40,7 @@
 
  require_once('ModuleInstall/PackageManager/PackageManagerDisplay.php');
  require_once('ModuleInstall/PackageManager/PackageManager.php');
+ #[\AllowDynamicProperties]
  class PackageController
  {
      public $_pm;
@@ -52,21 +53,6 @@
      {
          $this->_pm = new PackageManager();
      }
-
-     /**
-      * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-      */
-     public function PackageController()
-     {
-         $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-         if (isset($GLOBALS['log'])) {
-             $GLOBALS['log']->deprecated($deprecatedMessage);
-         } else {
-             trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-         }
-         self::__construct();
-     }
-
 
      public function performBasicSearch()
      {
@@ -257,7 +243,7 @@
          }
          //patches
          $filter = array(array('name' => 'type', 'value' => "'patch'"));
-         $releases = $pm->getReleases('', '', $filter);
+         $releases = PackageManager::getReleases('', '', $filter);
          if (!empty($releases['packages'])) {
              foreach ($releases['packages'] as $update) {
                  $update = PackageManager::fromNameValueList($update);
@@ -334,7 +320,7 @@
          if (!empty($username) && !empty($password)) {
              $password = md5($password);
              $result = PackageManager::authenticate($username, $password, $servername, $terms_checked);
-             if (!is_array($result) && $result == true) {
+             if (!is_array($result) && $result === true) {
                  $status  = 'success';
              } else {
                  $status  = $result['faultstring'];

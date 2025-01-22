@@ -2,7 +2,7 @@
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 Code licensed under the BSD License:
 http://developer.yahoo.com/yui/license.html
-version: 2.9.0
+version: 2.9.1
 */
 YAHOO.namespace("tool");
 
@@ -2129,4 +2129,4 @@ YAHOO.util.DateAssert = {
     }
     
 };
-YAHOO.register("yuitest_core", YAHOO.tool.TestRunner, {version: "2.9.0", build: "2800"});
+YAHOO.register("yuitest_core", YAHOO.tool.TestRunner, {version: "2.9.1", build: "2800"});

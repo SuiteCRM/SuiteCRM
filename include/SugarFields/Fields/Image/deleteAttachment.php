@@ -41,10 +41,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-    $field = $_REQUEST['field'];
-    $removeFile = "upload://{$_REQUEST[$field . '_record_id'] }_" . $field;
-    $bean = BeanFactory::getBean($_REQUEST['module'], $_REQUEST[$field . "_record_id"]);
+$field = $_REQUEST['field'];
+$removeFile = "upload://{$_REQUEST[$field . '_record_id'] }_" . $field;
+$bean = BeanFactory::getBean($_REQUEST['module'], $_REQUEST[$field . "_record_id"]);
 
+if (!$bean->ACLAccess('save')){
+    throw new RuntimeException('Not authorized');
+}
 
 if (file_exists($removeFile)) {
     if (!unlink($removeFile)) {

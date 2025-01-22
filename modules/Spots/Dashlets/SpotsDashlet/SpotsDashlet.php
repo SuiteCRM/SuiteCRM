@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 require_once 'include/Dashlets/Dashlet.php';
 
+#[\AllowDynamicProperties]
 class SpotsDashlet extends Dashlet
 {
     public $pivotId;
@@ -56,7 +57,7 @@ class SpotsDashlet extends Dashlet
      * @param guid  $id  id for the current dashlet (assigned from Home module)
      * @param array $def options saved for this dashlet
      */
-    public function SpotsDashlet($id, $def)
+    public function __construct($id, $def)
     {
         $this->loadLanguage('SpotsDashlet', 'modules/Spots/Dashlets/'); // load the language strings here
 
@@ -74,7 +75,7 @@ class SpotsDashlet extends Dashlet
             $this->showGui = 0;
         }
 
-        parent::Dashlet($id); // call parent constructor
+        parent::__construct($id); // call parent constructor
 
         $this->isConfigurable = true; // dashlet is configurable
         $this->hasScript = true;  // dashlet has javascript attached to it
@@ -175,7 +176,7 @@ class SpotsDashlet extends Dashlet
             foreach ($beanList as $b) {
                 $bean = new stdClass();
                 $bean->type = $b->type;
-                $bean->config = htmlspecialchars_decode($b->config);
+                $bean->config = htmlspecialchars_decode((string) $b->config);
                 $bean->name = $b->name;
                 $bean->id = $b->id;
                 $returnArray[] = $bean;

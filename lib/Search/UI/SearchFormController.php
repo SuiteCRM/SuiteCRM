@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -58,18 +58,23 @@ class SearchFormController extends Controller
      *
      * @param SearchQuery $query
      */
-    public function __construct($query)
+    public function __construct(SearchQuery $query)
     {
         parent::__construct(new SearchFormView());
         $this->query = $query;
     }
 
-    public function display()
+    public function display(): void
     {
-        $this->view->getTemplate()->assign('searchQueryString', htmlspecialchars($this->query->getSearchString(), ENT_COMPAT | ENT_XHTML, 'UTF-8'));
-        $this->view->getTemplate()->assign('searchQuerySize', $this->query->getSize());
-        $this->view->getTemplate()->assign('searchQueryFrom', $this->query->getFrom());
-        $this->view->getTemplate()->assign('searchQueryEngine', $this->query->getEngine());
+        $smarty = $this->view->getTemplate();
+
+        $smarty->assign(
+            'searchQueryString',
+            htmlspecialchars($this->query->getSearchString(), ENT_COMPAT | ENT_XHTML, 'UTF-8')
+        );
+        $smarty->assign('searchQuerySize', $this->query->getSize());
+        $smarty->assign('searchQueryFrom', $this->query->getFrom());
+        $smarty->assign('searchQueryEngine', $this->query->getEngine());
 
         parent::display();
     }

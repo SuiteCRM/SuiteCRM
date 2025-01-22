@@ -23,6 +23,13 @@
  * @author SalesAgility Ltd <support@salesagility.com>
  */
 
+
+
+/**
+ * @deprecated since v7.12.0
+ * @param $revisionId
+ * @return string
+ */
 function getDocumentRevisionPath($revisionId)
 {
     return "upload/$revisionId";
@@ -30,52 +37,58 @@ function getDocumentRevisionPath($revisionId)
 
 /**
  * Given a path to a PPTX document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createPPTXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Pptx::loadPptxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
 /**
  * Given a path to a XLSX document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createXLSXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Xlsx::loadXlsxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 /**
  * Given a path to a HTML document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createHTMLDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Html::loadHTMLFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
+
 /**
  * Given a path to a DocX document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createDocXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Docx::loadDocxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
 /**
  * Given a path to a Doc document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
@@ -95,7 +108,7 @@ function createDocDocument($path)
     $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/", "", $outtext);
 
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $outtext));
     fclose($fileHandle);
     return $doc;
@@ -103,6 +116,7 @@ function createDocDocument($path)
 
 /**
  * Given a path to a PDF document returns a lucene document with filename and contents set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
@@ -111,13 +125,14 @@ function createPDFDocument($path)
     require_once('PdfParser.php');
     $text = PdfParser::parseFile($path);
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $text));
     return $doc;
 }
 
 /**
  * Given a path to an ODT doc returns a lucene document with contents and filename set.
+ * @deprecated since v7.12.0
  * @param $path
  * @return bool|Zend_Search_Lucene_Document
  */
@@ -140,19 +155,20 @@ function createOdtDocument($path)
     // Close file
     $package->close();
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', implode(' ', $documentBody), 'UTF-8'));
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
 /**
  * Given a path to a plain text doc returns a lucene document with $filename and $contents set appropriately.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createTextDocument($path)
 {
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', file_get_contents($path)));
     return $doc;
 }
@@ -160,23 +176,30 @@ function createTextDocument($path)
 
 /**
  * Given the path to an rtf document returns a lucene document with $filename and $contents set appropriately.
+ * @deprecated since v7.12.0
  * @param $path
  * @return Zend_Search_Lucene_Document
  */
 function createRTFDocument($path)
 {
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $contents = rtf2text($path);
     //print_r($contents);
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $contents));
     return $doc;
 }
 
+/**
+ * @deprecated since v7.12.0
+ * @param $s
+ * @return bool
+ */
 function rtf_isPlainText($s)
 {
     $arrfailAt = array("*", "fonttbl", "colortbl", "datastore", "themedata");
-    for ($i = 0; $i < count($arrfailAt); $i++) {
+    $arrfailAtCount = count($arrfailAt);
+    for ($i = 0; $i < $arrfailAtCount; $i++) {
         if (!empty($s[$arrfailAt[$i]])) {
             return false;
         }
@@ -184,6 +207,11 @@ function rtf_isPlainText($s)
     return true;
 }
 
+/**
+ * @deprecated since v7.12.0
+ * @param $filename
+ * @return string
+ */
 function rtf2text($filename)
 {
     // Read the data from the input file.

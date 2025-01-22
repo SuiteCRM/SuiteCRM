@@ -547,6 +547,7 @@
 								<input type="checkbox" name="update_exists_template" class="form-checkbox input-sm hidden">
 							</span>
 						</div>
+						{if !$hide_width_set}
 						<script>
 							{literal}
 							$(function(){
@@ -554,6 +555,16 @@
 									onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
 								}
 							});
+							{/literal}
+                        </script>
+						{/if}
+						<script>
+							{literal}
+							function loadtemplate() {
+									if (document.getElementById('template_id').value) {
+										onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
+									}
+							}
 							{/literal}
 						</script>
 					</div>
@@ -1131,7 +1142,7 @@
 				if(oe_stored_options[mailbox.value]) {
 					var focusOe = oe_stored_options[mailbox.value];
 					// from name
-                                        
+
                                         if(!fn.value) {
                                             var fromName = focusOe.smtp_from_name ? focusOe.smtp_from_name : (
                                                 focusOe.from_name ? focusOe.from_name : (
@@ -1432,12 +1443,16 @@ function determine_back(){
 		<form id="upload_form" name="upload_form" method="POST" action="index.php?entryPoint=emailTemplateData&func=uploadAttachments" enctype="multipart/form-data"> <!-- action='AttachDocuments.php' -->
 			<input type="submit" style="display:none;">
 			<div id="upload_div">
-				<input type="file" id="my_file" name="file_1" size="40" />
+				<input type="button" name="add_doc" id="add_doc" onclick="selectDoc();" value='{$MOD.LBL_SUITE_DOCUMENT}' class="button" />
+				<label class="button">
+					<input type="file" id="my_file" name="file_1" size="40" style="display: none" />
+					{$MOD.LBL_UPLOAD_FILE}
+				</label>
 				<input type="hidden" id="documentName" name="uploaddoc" onchange="docUpload(); form_reset_doc();" size="1" />
 				<input type="hidden" id="documentId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="docRevId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="documentType" name="seldoc" tabindex="0" />
-				<input type="button" name="add_doc" id="add_doc" onclick="selectDoc();" value='{$MOD.LBL_SUITE_DOCUMENT}' class="button" />
+
 
 				<input type="hidden" name="attach_to_template_id" id="attach_to_template_id" value="{$TEMPLATE_ID}">
 				<input type="hidden" name="campaign_id" value="{$CAMPAIGN_ID}">

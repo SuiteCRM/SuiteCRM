@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOP_Case_UpdatesTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,24 +13,24 @@ class AOP_Case_UpdatesTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testAOP_Case_Updates()
+    public function testAOP_Case_Updates(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
-        $this->assertInstanceOf('AOP_Case_Updates', $aopCaseUpdates);
-        $this->assertInstanceOf('Basic', $aopCaseUpdates);
-        $this->assertInstanceOf('SugarBean', $aopCaseUpdates);
+        self::assertInstanceOf('AOP_Case_Updates', $aopCaseUpdates);
+        self::assertInstanceOf('Basic', $aopCaseUpdates);
+        self::assertInstanceOf('SugarBean', $aopCaseUpdates);
 
-        $this->assertAttributeEquals('AOP_Case_Updates', 'module_dir', $aopCaseUpdates);
-        $this->assertAttributeEquals('AOP_Case_Updates', 'object_name', $aopCaseUpdates);
-        $this->assertAttributeEquals('aop_case_updates', 'table_name', $aopCaseUpdates);
-        $this->assertAttributeEquals(true, 'new_schema', $aopCaseUpdates);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aopCaseUpdates);
-        $this->assertAttributeEquals(false, 'importable', $aopCaseUpdates);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $aopCaseUpdates);
+        self::assertEquals('AOP_Case_Updates', $aopCaseUpdates->module_dir);
+        self::assertEquals('AOP_Case_Updates', $aopCaseUpdates->object_name);
+        self::assertEquals('aop_case_updates', $aopCaseUpdates->table_name);
+        self::assertEquals(true, $aopCaseUpdates->new_schema);
+        self::assertEquals(true, $aopCaseUpdates->disable_row_level_security);
+        self::assertEquals(false, $aopCaseUpdates->importable);
+        self::assertEquals(false, $aopCaseUpdates->tracker_visibility);
     }
 
-    public function testsave()
+    public function testsave(): void
     {
         self::markTestIncomplete('environment dependency');
 
@@ -43,60 +43,52 @@ class AOP_Case_UpdatesTest extends SuitePHPUnitFrameworkTestCase
         $aopCaseUpdates->save();
 
         //test for record ID to verify that record is saved
-        $this->assertEquals(36, strlen($aopCaseUpdates->id));
+        self::assertEquals(36, strlen((string) $aopCaseUpdates->id));
 
         //mark the record as deleted for cleanup
         $aopCaseUpdates->mark_deleted($aopCaseUpdates->id);
     }
 
-    public function testgetCase()
+    public function testgetCase(): void
     {
-        $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
-
         //execute the method and verify that it returns a Case object
-        $result = $aopCaseUpdates->getCase();
+        $result = BeanFactory::newBean('AOP_Case_Updates')->getCase();
 
-        $this->assertInstanceOf('aCase', $result);
+        self::assertInstanceOf('aCase', $result);
     }
 
-    public function testgetContacts()
+    public function testgetContacts(): void
     {
-        $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
-
         //execute the method and verify that it returns an array
-        $result = $aopCaseUpdates->getContacts();
-        $this->assertTrue(is_array($result));
+        $result = BeanFactory::newBean('AOP_Case_Updates')->getContacts();
+        self::assertIsArray($result);
     }
 
-    public function testgetUpdateContact()
+    public function testgetUpdateContact(): void
     {
         $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
 
         //execute the method without contact_id and verify that it returns null
         $result = $aopCaseUpdates->getUpdateContact();
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
 
         //execute the method without contact_id and verify that it returns false
         $aopCaseUpdates->contact_id = 1;
         $result = $aopCaseUpdates->getUpdateContact();
-        $this->assertEquals(false, $result);
+        self::assertEquals(false, $result);
     }
 
-    public function testgetUser()
+    public function testgetUser(): void
     {
-        $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
-
         //execute the method and verify that it returns an instance of User
-        $result = $aopCaseUpdates->getUser();
-        $this->assertInstanceOf('User', $result);
+        $result = BeanFactory::newBean('AOP_Case_Updates')->getUser();
+        self::assertInstanceOf('User', $result);
     }
 
-    public function testgetUpdateUser()
+    public function testgetUpdateUser(): void
     {
-        $aopCaseUpdates = BeanFactory::newBean('AOP_Case_Updates');
-
         //execute the method and verify that it returns an instance of User
-        $result = $aopCaseUpdates->getUpdateUser();
-        $this->assertInstanceOf('User', $result);
+        $result = BeanFactory::newBean('AOP_Case_Updates')->getUpdateUser();
+        self::assertInstanceOf('User', $result);
     }
 }

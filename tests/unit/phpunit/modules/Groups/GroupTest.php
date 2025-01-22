@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class GroupTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,20 +13,20 @@ class GroupTest extends SuitePHPUnitFrameworkTestCase
         get_sugar_config_defaults();
     }
 
-    public function testGroup()
+    public function testGroup(): void
     {
         //execute the constructor and check for the Object type and attributes
         $group = BeanFactory::newBean('Groups');
-        $this->assertInstanceOf('Group', $group);
-        $this->assertInstanceOf('User', $group);
-        $this->assertInstanceOf('SugarBean', $group);
+        self::assertInstanceOf('Group', $group);
+        self::assertInstanceOf('User', $group);
+        self::assertInstanceOf('SugarBean', $group);
 
-        $this->assertAttributeEquals('Group', 'status', $group);
-        $this->assertAttributeEquals('', 'password', $group);
-        $this->assertAttributeEquals(false, 'importable', $group);
+        self::assertEquals('Group', $group->status);
+        self::assertEquals('', $group->password);
+        self::assertEquals(false, $group->importable);
     }
 
-    public function testmark_deleted()
+    public function testmark_deleted(): void
     {
         self::markTestIncomplete('environment dependency (php7: Incorrect state hash: Hash doesn\'t match at key "database::users".)');
 
@@ -35,24 +35,24 @@ class GroupTest extends SuitePHPUnitFrameworkTestCase
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $group->mark_deleted('');
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testcreate_export_query()
+    public function testcreate_export_query(): void
     {
         $group = BeanFactory::newBean('Groups');
 
         //test with empty string params
         $expected = 'SELECT users.* FROM users  WHERE  users.deleted = 0 ORDER BY users.user_name';
         $actual = $group->create_export_query('', '');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
 
         //test with valid string params
         $expected = 'SELECT users.* FROM users  WHERE users.user_name="" AND  users.deleted = 0 ORDER BY users.id';
         $actual = $group->create_export_query('users.id', 'users.user_name=""');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 }

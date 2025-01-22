@@ -213,6 +213,14 @@ $dictionary['AOW_WorkFlow'] = array(
                 'bean_name' => 'AOW_Processed',
                 'source' => 'non-db',
             ),
+        'run_on_import' =>
+            array(
+                'name' => 'run_on_import',
+                'vname' => 'LBL_RUN_ON_IMPORT',
+                'type' => 'bool',
+                'default' => '0',
+                'reportable' => false,
+            ),
     ),
     'relationships' => array(
         'aow_workflow_aow_conditions' =>

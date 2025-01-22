@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 // Task is used to store customer information.
+#[\AllowDynamicProperties]
 class Task extends SugarBean
 {
     public $field_name_map;
@@ -94,19 +95,7 @@ class Task extends SugarBean
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Task()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public $new_schema = true;
@@ -128,7 +117,7 @@ class Task extends SugarBean
     {
         $custom_join = $this->getCustomJoin(true, true, $where);
         $custom_join['join'] .= $relate_link_join;
-        $contact_required = stristr($where, "contacts");
+        $contact_required = stristr((string) $where, "contacts");
         if ($contact_required) {
             $query = "SELECT tasks.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
             $query .= $custom_join['select'];
@@ -224,7 +213,7 @@ class Task extends SugarBean
             $this->parent_name_owner = $row['parent_name_owner'];
             $this->parent_name_mod = $this->parent_type;
         }
-        if (is_subclass_of($parent, 'Person') and $row != null) {
+        if (is_subclass_of($parent, 'Person') && $row != null) {
             $this->parent_name = $locale->getLocaleFormattedName(stripslashes($row['first_name']), stripslashes($row['last_name']));
         } else {
             if (is_subclass_of($parent, 'File') && $row != null) {
@@ -274,7 +263,7 @@ class Task extends SugarBean
 
     public function get_list_view_data()
     {
-        global $action, $currentModule, $focus, $current_module_strings, $app_list_strings, $timedate;
+        global $mod_strings, $app_list_strings, $timedate;
 
         $override_date_for_subpanel = false;
         if (!empty($_REQUEST['module']) && $_REQUEST['module'] !='Calendar' && $_REQUEST['module'] !='Tasks' && $_REQUEST['module'] !='Home') {
@@ -329,7 +318,8 @@ class Task extends SugarBean
         $task_fields['CONTACT_PHONE']= $this->contact_phone;
         $task_fields['TITLE'] = '';
         if (!empty($task_fields['CONTACT_NAME'])) {
-            $task_fields['TITLE'] .= $current_module_strings['LBL_LIST_CONTACT'].": ".$task_fields['CONTACT_NAME'];
+            $title = !empty($mod_strings['LBL_LIST_CONTACT']) ? $mod_strings['LBL_LIST_CONTACT'] . ': ' : '';
+            $task_fields['TITLE'] .= $title . $task_fields['CONTACT_NAME'];
         }
         if (!empty($this->parent_name)) {
             $task_fields['TITLE'] .= "\n".$app_list_strings['parent_type_display'][$this->parent_type].": ".$this->parent_name;
@@ -357,7 +347,7 @@ class Task extends SugarBean
         }
 
         $xtpl->assign("TASK_STATUS", (isset($task->status)?$app_list_strings['task_status_dom'][$task->status]:""));
-        $xtpl->assign("TASK_DESCRIPTION", $task->description);
+        $xtpl->assign("TASK_DESCRIPTION", nl2br($task->description));
 
         return $xtpl;
     }

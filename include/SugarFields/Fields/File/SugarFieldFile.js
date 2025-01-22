@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-if(typeof(SUGAR.field)=='undefined'){SUGAR.field=new Object();}
+ */if(typeof(SUGAR.field)=='undefined'){SUGAR.field=new Object();}
 if(typeof(SUGAR.field.file)=='undefined'){SUGAR.field.file={deleteAttachment:function(elemBaseName,docTypeName,elem){ajaxStatus.showStatus(SUGAR.language.get("app_strings","LBL_REMOVING_ATTACHMENT"));elem.form.deleteAttachment.value=1;elem.form.action.value="deleteattachment";var callback=SUGAR.field.file.deleteAttachmentCallbackGen(elemBaseName,docTypeName);var success=function(data){if(data){callback(data.responseText);}}
 YAHOO.util.Connect.setForm(elem.form);var cObj=YAHOO.util.Connect.asyncRequest('POST','index.php',{success:success,failure:success});elem.form.deleteAttachment.value=0;elem.form.action.value="";},deleteAttachmentCallbackGen:function(elemBaseName,docTypeName){return function(text){if(text=='true'){document.getElementById(elemBaseName+'_new').style.display='';ajaxStatus.hideStatus();document.getElementById(elemBaseName+'_old').innerHTML='';if(docTypeName){document.getElementById(docTypeName).disabled=false;}
 document.getElementById(elemBaseName).value='';}else{document.getElementById(elemBaseName+'_new').style.display='none';ajaxStatus.flashStatus(SUGAR.language.get('app_strings','ERR_REMOVING_ATTACHMENT'),2000);}}},checkEapiLogin:function(res){var failedLogins=YAHOO.lang.JSON.parse(res.responseText);if(failedLogins.length==0){return;}

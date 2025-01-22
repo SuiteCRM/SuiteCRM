@@ -58,7 +58,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
                 continue;
             }
 
-            if ($bean->field_name_map[strtolower($i)]['type'] == 'datetime' or $bean->field_name_map[strtolower($i)]['type'] == 'datetimecombo') {
+            if ($bean->field_name_map[strtolower($i)]['type'] == 'datetime' || $bean->field_name_map[strtolower($i)]['type'] == 'datetimecombo') {
                 $db_date = $timedate->fromUser($f);
                 $db_date_format = $db_date->format('Y-m-d H:i:s');
                 $fields['DB_'.$i] = $db_date_format;

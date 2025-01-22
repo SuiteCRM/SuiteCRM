@@ -51,6 +51,7 @@ use SugarBean;
 /**
  * This class facilitates pulling Sugarbeans from a module
  */
+#[\AllowDynamicProperties]
 class ElasticSearchModuleDataPuller
 {
     /** 
@@ -110,7 +111,7 @@ class ElasticSearchModuleDataPuller
     protected $recordsPulled = 0;
 
 
-    function __construct($module, $isDifferential, $logger)
+    public function __construct($module, $isDifferential, $logger)
     {
         $this->module = $module;
         $this->seed = BeanFactory::getBean($module);
@@ -167,7 +168,7 @@ class ElasticSearchModuleDataPuller
         $results = $this->seed->get_list('id', $this->generateWhere(), $this->offset, $this->batchSize, $this->batchSize, $this->showDeleted);
 
         $this->offset = $results['next_offset'];
-        $this->recordsPulled += count($results['list']);
+        $this->recordsPulled += is_countable($results['list']) ? count($results['list']) : 0;
 
         return $results['row_count'] ? $results['list'] : null;
     }
@@ -179,7 +180,7 @@ class ElasticSearchModuleDataPuller
      */
     protected function generateWhere()
     {
-        if($this->isDifferential AND empty($this->lastIndexTime)){
+        if($this->isDifferential && empty($this->lastIndexTime)){
             throw new RuntimeException("A differential search must have a lastIndexTime to filter off of");
         }
 

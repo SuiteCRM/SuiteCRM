@@ -49,6 +49,7 @@ require_once 'data/Relationships/SugarRelationship.php';
  *
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarRelationshipFactory
 {
     public static $rfInstance;
@@ -92,7 +93,7 @@ class SugarRelationshipFactory
     }
 
     /**
-     * @param  $relationshipName String name of relationship to load
+     * @param string $relationshipName name of relationship to load
      *
      * @return SugarRelationship|bool
      */
@@ -146,7 +147,7 @@ class SugarRelationshipFactory
     }
 
     /**
-     * @param $relationshipName
+     * @param string $relationshipName
      * @return bool
      */
     public function getRelationshipDef($relationshipName)

@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class CampaignsViewModulelistmenu extends ViewModulelistmenu
 {
     public function display()

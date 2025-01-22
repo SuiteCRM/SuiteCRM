@@ -44,6 +44,7 @@ if (!defined('sugarEntry')) {
 
 require_once('service/v4/registry.php');
 
+#[\AllowDynamicProperties]
 class registry_v4_1 extends registry_v4
 {
 

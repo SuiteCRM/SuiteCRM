@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * PHP wrapper class for Javascript driven TinyMCE WYSIWYG HTML editor
  */
+#[\AllowDynamicProperties]
 class SugarTinyMCE
 {
     public $jsroot = "include/javascript/tiny_mce/";
@@ -120,7 +121,7 @@ class SugarTinyMCE
 
         $config = $this->defaultConfig;
         //include tinymce lang file
-        $lang = substr($GLOBALS['current_language'], 0, 2);
+        $lang = substr((string) $GLOBALS['current_language'], 0, 2);
         if (file_exists('include/javascript/tiny_mce/langs/'.$lang.'.js')) {
             $config['language'] = $lang;
         }
@@ -147,13 +148,13 @@ class SugarTinyMCE
 <script type="text/javascript">
 <!--
 $(document).ready(function(){
-  if (!SUGAR.ajaxUI.hist_loaded){
-	load_mce_{$unique}();
-	}
-});
-if (SUGAR.ajaxUI && SUGAR.ajaxUI.hist_loaded){
-    setTimeout(function(){ load_mce_{$unique}();},40);
-}
+    if (!SUGAR.ajaxUI.hist_loaded){
+      load_mce_{$unique}();
+    }
+    if (SUGAR.ajaxUI && SUGAR.ajaxUI.hist_loaded){
+      setTimeout(function(){ load_mce_{$unique}();},40);
+    }
+  });
 function load_mce_{$unique}(){
     if (!SUGAR.util.isTouchScreen()) {
         if(tinyMCE.editors.length === 0 ){
@@ -190,7 +191,7 @@ eoq;
 
         $config = $this->defaultConfig;
         //include tinymce lang file
-        $lang = substr($GLOBALS['current_language'], 0, 2);
+        $lang = substr((string) $GLOBALS['current_language'], 0, 2);
         if (file_exists('include/javascript/tiny_mce/langs/'.$lang.'.js')) {
             $config['language'] = $lang;
         }
@@ -215,7 +216,7 @@ eoq;
      */
     public function cleanEncodedMCEHtml($html)
     {
-        $html = str_replace("mce:script", "script", $html);
+        $html = str_replace("mce:script", "script", (string) $html);
         $html = str_replace("mce_src=", "src=", $html);
         $html = str_replace("mce_href=", "href=", $html);
         return $html;

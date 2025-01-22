@@ -68,6 +68,9 @@ function updateCRONFields(id){
     if(month !== '*'){
         canShowBasic = false;
     }
+    if(!mins && !hours && !day && !month && !weekday){
+        canShowBasic = true;//New field
+    }
     if(!canShowBasic){
         $('#'+id+'_raw').attr('checked',true);
         $('#'+id+'_raw').change();

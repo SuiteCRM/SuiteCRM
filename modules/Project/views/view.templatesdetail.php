@@ -41,6 +41,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class ProjectViewTemplatesDetail extends ViewDetail
 {
     /**

@@ -58,7 +58,7 @@ tr#pagination {
 .list #pagination td .paginationTable .pageNumbers {
   position: static;
   font-weight: bold;
-  color: $list-view-header-color;
+  color: $list-view-pagination-color;
   padding: 0 8px 0 0;
   margin: 0 0 0 0;
 }
@@ -247,7 +247,7 @@ tr#pagination {
 
 .list tr th {
   font-size: 13px;
-  padding: 10px 10px 10px 10px;
+  padding: 13px 10px;
   border-left: none;
   border-right: none;
   text-align: left;
@@ -266,10 +266,29 @@ tr#pagination {
   white-space: nowrap;
 }
 
+.list tr td[scope=record] {
+  padding: 10px 10px 10px 10px;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#errors_table .list tr th {
+  font-size: 13px;
+  padding: 13px 10px;
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  white-space: nowrap;
+  font-weight: 700;
+  color: #534D64;
+}
+
 .edit .list tr th {
   font-size: 13px;
   font-weight: 800;
-  padding: 10px 10px 10px 10px;
+  padding: 13px 10px;
   border-left: none;
   border-right: none;
   text-align: left;
@@ -483,12 +502,6 @@ a.listViewTdToolsS1 {
 }
 
 .table-responsive.list > tbody > tr > td {
- /*
-  padding-top: 15px;
-  padding-bottom: 12px;
-  padding-left: 10px;
-  padding-right: 10px;
-  */
   padding:3px 5px;
 }
 
@@ -947,7 +960,7 @@ a.listViewTdToolsS1 {
 
 #selectLinkTop > .sugar_action_button > .subnav a {
   background-color: $list-view-action-menu-bg;
-  color: $default-btn-color;
+  color: $text-label-color;
   line-height: 24px;
   width: 100%;
 
@@ -1025,7 +1038,7 @@ a.listViewTdToolsS1 {
 
 #selectLinkBottom > .sugar_action_button > .subnav a {
   background-color: $list-view-action-menu-bg;
-  color: $default-btn-color;
+  color: $text-label-color;
   line-height: 24px;
   width: 100%;
 
@@ -1125,7 +1138,7 @@ a.listViewTdToolsS1 {
 
 #actionLinkTop .sugar_action_button .subnav.ddopen a {
   display: block;
-  color: $default-btn-color;
+  color: $text-label-color;
   float: none;
 }
 
@@ -1137,7 +1150,7 @@ a.listViewTdToolsS1 {
 
 #actionLinkTop .sugar_action_button .subnav.ddopen a:hover {
   display: block;
-  color: $default-btn-color;
+  color: $text-hover-listview;
   float: none;
   background-color: $list-view-action-menu-link-bg;
   width: 100%;
@@ -1145,7 +1158,7 @@ a.listViewTdToolsS1 {
 
 .action-link-top .sugar_action_button .subnav.ddopen a:hover {
   display: block;
-  color: $default-btn-color;
+  color: $text-hover-listview;
   float: none;
   background-color: $list-view-action-menu-link-bg;
   width: 100%;
@@ -1153,7 +1166,7 @@ a.listViewTdToolsS1 {
 
 #actionLinkBottom .sugar_action_button .subnav.ddopen a {
   display: block;
-  color: $default-btn-color;
+  color: $text-label-color;
   float: none;
 }
 
@@ -1165,7 +1178,7 @@ a.listViewTdToolsS1 {
 
 #actionLinkBottom .sugar_action_button .subnav.ddopen a:hover {
   display: block;
-  color: $default-btn-color;
+  color: $text-hover-listview;
   float: none;
   background-color: $list-view-action-menu-link-bg;
   width: 100%;
@@ -1173,7 +1186,7 @@ a.listViewTdToolsS1 {
 
 .action-link-bottom .sugar_action_button .subnav.ddopen a:hover {
   display: block;
-  color: $default-btn-color;
+  color: $text-hover-listview;
   float: none;
   background-color: $list-view-action-menu-link-bg;
   width: 100%;
@@ -1712,6 +1725,12 @@ div.modal-footer > button.btn.button.purple.btn-default:hover {
   background-color: #9589B3;
 }
 
+div.modal-footer {
+  .btn-primary {
+    color: $text-label-color;
+  }
+}
+
 ul.clickMenu.selectmenu.SugarActionMenu.columnsFilterLink.listViewLinkButton {
   top: -1px;
 }
@@ -1772,7 +1791,7 @@ div.qtip.qtip-default {
 
 #search_form label {
   font-weight: bold;
-  white-space: nowrap;
+  line-height: $line-height-base;
 }
 
 .modal-content #search_form label {
@@ -1801,13 +1820,11 @@ div.qtip.qtip-default {
 .search_form .view .dateTimeRangeChoice {
   display: block;
   float: left;
-  margin-top: 5px;
 }
 
 .search_form .view .dateTimeRangeChoice select {
-  width: auto;
+  width: 130px;
   margin-right: 4px;
-  padding-right: 30px;
 }
 
 .search_form .view .dateTimeRangeChoiceClear {
@@ -1833,12 +1850,6 @@ div.qtip.qtip-default {
   width: 80%;
 }
 
-.search_form .view .col-xs-12 input[type="text"].dateRangeInput,
-.search_form .view .col-xs-12 input[type="text"].date_input,{
-    width: auto;
-    margin-top: 5px;
-}
-
 .search_form .view .templateGroupChooser {
   width: 100%;
 }
@@ -1858,7 +1869,7 @@ div.qtip.qtip-default {
 .search_form.non-popup select,
 .search_form.non-popup textarea {
   border: none;
-  height: auto;
+  height: 20px;
   min-height: 20px;
   padding: 5px;
   line-height: 20px;
@@ -1942,8 +1953,8 @@ ul.clickMenu.selectmenu.SugarActionMenu.listViewLinkButton > li.desktopOnly > a.
     background-color: $navbar-alert-count-bg;
     padding: 0;
     position: absolute;
-    right: 1px;
-    top: -4px;
+    right: -8px;
+    top: -5px;
   }
 
 }
@@ -1994,16 +2005,11 @@ ul.clickMenu.selectmenu.SugarActionMenu.listViewLinkButton > li.desktopOnly > a.
   width: 80%;
 }
 
-.search_form .view .col-xs-12 input[type="text"].dateRangeInput {
-    width: auto;
-    margin-top: 5px;
-}
-
 .search_form.non-popup input[type="text"],
 .search_form.non-popup select,
 .search_form.non-popup textarea {
   border: none;
-  height: auto;
+  height: 20px;
   min-height: 20px;
   padding: 5px;
   line-height: 20px;
@@ -2981,28 +2987,28 @@ table.subpanel-table ul.subpanel > a {
 #actionLinkTop li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
 .action-link-top li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
 #actionLinkBottom li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
 .action-link-bottom li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
@@ -3016,14 +3022,14 @@ table.subpanel-table li.sugar_action_button {
 .listViewLinkButton li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
 #selectLinkTop li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
@@ -3036,7 +3042,7 @@ table.subpanel-table li.sugar_action_button {
 #selectLinkBottom li.sugar_action_button {
   padding: 0px;
   background-color: $list-view-action-button-bg;
-  border: 1px solid transparent;
+  border: 1px solid $list-view-action-button-border-color;
   border-radius: $border-radius-base;
 }
 
@@ -3101,14 +3107,17 @@ table.subpanel-table li.sugar_action_button:hover {
 
 table.subpanel-table .pagination .sugar_action_button:hover {
   background-color: $list-view-header-bg;
+  color: $subpanel-text-hover;
 }
 
 table.subpanel-table .pagination li.sugar_action_button:hover > form > a {
   background-color: $list-view-header-bg;
+  color: $subpanel-text-hover;
 }
 
 table.subpanel-table .pagination .sugar_action_button:hover > form > a {
   background-color: $list-view-header-bg;
+  color: $subpanel-text-hover;
 }
 
 table.subpanel-table ul.subpanel a:hover {
@@ -3400,18 +3409,13 @@ ul.clickMenu > li > span.searchAppliedAlert {
   width: 80%;
 }
 
-.search_form .view .col-xs-12 input[type="text"].dateRangeInput {
-    width: auto;
-    margin-top: 5px;
-}
-
 .search_form .view .col-xs-12 textarea {
   width: 80%;
 }
 
 .search_form.non-popup input[type="text"] {
   border: none;
-  height: auto;
+  height: 28px;
   min-height: 20px;
   padding: 5px;
   line-height: 20px;
@@ -3419,10 +3423,11 @@ ul.clickMenu > li > span.searchAppliedAlert {
 
 .search_form.non-popup select {
   border: none;
-  height: auto;
+  height: 28px;
   min-height: 20px;
   padding: 5px;
   line-height: 20px;
+  width: 150px;
 }
 
 .search_form.non-popup textarea {

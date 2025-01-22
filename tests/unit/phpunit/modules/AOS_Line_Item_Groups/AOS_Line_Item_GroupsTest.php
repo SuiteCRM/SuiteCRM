@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOS_Line_Item_GroupsTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,24 +13,24 @@ class AOS_Line_Item_GroupsTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testAOS_Line_Item_Groups()
+    public function testAOS_Line_Item_Groups(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $aosLineItemGroup = BeanFactory::newBean('AOS_Line_Item_Groups');
-        $this->assertInstanceOf('AOS_Line_Item_Groups', $aosLineItemGroup);
-        $this->assertInstanceOf('Basic', $aosLineItemGroup);
-        $this->assertInstanceOf('SugarBean', $aosLineItemGroup);
+        self::assertInstanceOf('AOS_Line_Item_Groups', $aosLineItemGroup);
+        self::assertInstanceOf('Basic', $aosLineItemGroup);
+        self::assertInstanceOf('SugarBean', $aosLineItemGroup);
 
-        $this->assertAttributeEquals('AOS_Line_Item_Groups', 'module_dir', $aosLineItemGroup);
-        $this->assertAttributeEquals('AOS_Line_Item_Groups', 'object_name', $aosLineItemGroup);
-        $this->assertAttributeEquals('aos_line_item_groups', 'table_name', $aosLineItemGroup);
-        $this->assertAttributeEquals(true, 'new_schema', $aosLineItemGroup);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aosLineItemGroup);
-        $this->assertAttributeEquals(true, 'importable', $aosLineItemGroup);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $aosLineItemGroup);
+        self::assertEquals('AOS_Line_Item_Groups', $aosLineItemGroup->module_dir);
+        self::assertEquals('AOS_Line_Item_Groups', $aosLineItemGroup->object_name);
+        self::assertEquals('aos_line_item_groups', $aosLineItemGroup->table_name);
+        self::assertEquals(true, $aosLineItemGroup->new_schema);
+        self::assertEquals(true, $aosLineItemGroup->disable_row_level_security);
+        self::assertEquals(true, $aosLineItemGroup->importable);
+        self::assertEquals(false, $aosLineItemGroup->tracker_visibility);
     }
 
-    public function testsave_groups()
+    public function testsave_groups(): void
     {
         $aosLineItemGroup = BeanFactory::newBean('AOS_Line_Item_Groups');
 
@@ -56,7 +56,7 @@ class AOS_Line_Item_GroupsTest extends SuitePHPUnitFrameworkTestCase
         }
     }
 
-    public function testsave()
+    public function testsave(): void
     {
         $aosLineItemGroup = BeanFactory::newBean('AOS_Line_Item_Groups');
         $aosLineItemGroup->name = 'test';
@@ -66,12 +66,12 @@ class AOS_Line_Item_GroupsTest extends SuitePHPUnitFrameworkTestCase
         $aosLineItemGroup->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($aosLineItemGroup->id));
-        $this->assertEquals(36, strlen($aosLineItemGroup->id));
+        self::assertTrue(isset($aosLineItemGroup->id));
+        self::assertEquals(36, strlen((string) $aosLineItemGroup->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosLineItemGroup->mark_deleted($aosLineItemGroup->id);
         $result = $aosLineItemGroup->retrieve($aosLineItemGroup->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 }

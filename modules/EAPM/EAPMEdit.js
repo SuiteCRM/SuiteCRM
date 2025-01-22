@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-function EAPMChange(){var apiName='';var passwordPlaceholder='::PASSWORD::';if(EAPMFormName=='EditView'){apiName=document.getElementById('application').value;}else{apiName=document.getElementById('application_raw').value;}
+ */function EAPMChange(){var apiName='';var passwordPlaceholder='::PASSWORD::';if(EAPMFormName=='EditView'){apiName=document.getElementById('application').value;}else{apiName=document.getElementById('application_raw').value;}
 if(SUGAR.eapm[apiName]){var apiOpts=SUGAR.eapm[apiName];var urlObj=new SUGAR.forms.VisibilityAction('url',(apiOpts.needsUrl?'true':'false'),EAPMFormName);urlObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));if(EAPMFormName=='EditView'){EAPMSetFieldRequired('url',(apiOpts.needsUrl==true));}
 var userObj=new SUGAR.forms.VisibilityAction('name',((apiOpts.authMethod=='password')?'true':'false'),EAPMFormName);userObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));if(EAPMFormName=='EditView'){EAPMSetFieldRequired('name',(apiOpts.authMethod=='password'));}
 var passObj=new SUGAR.forms.VisibilityAction('password',((apiOpts.authMethod=='password')?'true':'false'),EAPMFormName);passObj.setContext(new SUGAR.forms.FormExpressionContext(this.form));if(EAPMFormName=='EditView'){EAPMSetFieldRequired('password',(apiOpts.authMethod=='password'));var $el=$('#password');if($el.val()==passwordPlaceholder){var instructions=$(EAPMBClickToEdit);instructions.click(function(e){e.preventDefault();$el.val('');instructions.hide();$el.show();$el.focus();});$el.parent().append(instructions);$el.hide();$el.focusout(function(){if($el.val()==''){$el.val(passwordPlaceholder);instructions.show();$el.hide();}});}}

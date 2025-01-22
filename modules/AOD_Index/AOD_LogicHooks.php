@@ -22,8 +22,15 @@
  *
  * @author SalesAgility Ltd <support@salesagility.com>
  */
+#[\AllowDynamicProperties]
 class AOD_LogicHooks
 {
+    /**
+     * @deprecated since v7.12.0
+     * @param SugarBean $bean
+     * @param $event
+     * @param $arguments
+     */
     public function saveModuleChanges(SugarBean $bean, $event, $arguments)
     {
         if ($bean->module_name == 'AOD_Index') {
@@ -40,6 +47,12 @@ class AOD_LogicHooks
         }
     }
 
+    /**
+     * @deprecated since v7.12.0
+     * @param SugarBean $bean
+     * @param $event
+     * @param $arguments
+     */
     public function saveModuleDelete(SugarBean $bean, $event, $arguments)
     {
         if ($bean->module_name == 'AOD_Index') {
@@ -56,6 +69,12 @@ class AOD_LogicHooks
         }
     }
 
+    /**
+     * @deprecated since v7.12.0
+     * @param SugarBean $bean
+     * @param $event
+     * @param $arguments
+     */
     public function saveModuleRestore(SugarBean $bean, $event, $arguments)
     {
         if ($bean->module_name == 'AOD_Index') {

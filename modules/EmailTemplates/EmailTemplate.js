@@ -35,8 +35,7 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */
-var focus_obj=false;var label=SUGAR.language.get('app_strings','LBL_DEFAULT_LINK_TEXT');function remember_place(obj){focus_obj=obj;}
+ */var focus_obj=false;var label=SUGAR.language.get('app_strings','LBL_DEFAULT_LINK_TEXT');function remember_place(obj){focus_obj=obj;}
 function showVariable(form){if(!form){form='EditView';}
 document[form].variable_text.value=document[form].variable_name.options[document[form].variable_name.selectedIndex].value;}
 function addVariables(the_select,the_module,form){the_select.options.length=0;for(var i=0;i<field_defs[the_module].length;i++){var new_option=document.createElement("option");new_option.value="$"+field_defs[the_module][i].name;new_option.text=field_defs[the_module][i].value;the_select.options.add(new_option,i);}
@@ -44,11 +43,8 @@ showVariable(form);}
 function toggle_text_only(firstRun){if(typeof(firstRun)=='undefined')
 firstRun=false;var text_only=document.getElementById('text_only');if(document.getElementById('toggle_textonly').checked==true){document.getElementById('body_text_div').style.display='none';document.getElementById('toggle_textarea_option').style.display='none';document.getElementById('text_div').style.display='block';text_only.value=1;}else{document.getElementById('body_text_div').style.display='inline';document.getElementById('toggle_textarea_option').style.display='inline';document.getElementById('text_div').style.display='none';text_only.value=0;}
 update_textarea_button();}
-function update_textarea_button()
-{if(document.getElementById('text_div').style.display=='none'){document.getElementById('toggle_textarea_elem').value=toggle_textarea_elem_values[0];}else{document.getElementById('toggle_textarea_elem').value=toggle_textarea_elem_values[1];}}
-function toggle_textarea_edit(obj)
-{if(document.getElementById('text_div').style.display=='none')
-{document.getElementById('text_div').style.display='block';}else{document.getElementById('text_div').style.display='none';}
+function update_textarea_button(){if(document.getElementById('text_div').style.display=='none'){document.getElementById('toggle_textarea_elem').value=toggle_textarea_elem_values[0];}else{document.getElementById('toggle_textarea_elem').value=toggle_textarea_elem_values[1];}}
+function toggle_textarea_edit(obj){if(document.getElementById('text_div').style.display=='none'){document.getElementById('text_div').style.display='block';}else{document.getElementById('text_div').style.display='none';}
 update_textarea_button();}
 function setTinyHTML(text){var tiny=tinyMCE.getInstanceById('body_text');if(tiny.getContent()!=null){tiny.setContent(text)}else{setTimeout(setTinyHTML(text),1000);}}
 function stripTags(str){var theText=new String(str);if(theText!='undefined'){return theText.replace(/<\/?[^>]+>/gi,'');}}
@@ -94,5 +90,5 @@ setTrackerUrlSelectVisibility();});}
 switch(action){case"create":$('#url_text').val('');$('#tracker_name').val('');$('#tracker_url_add').val('');$('#is_optout').attr('checked',false);$('#tracker_url_add').removeAttr('disabled')
 createTemplateManagerDialog($('#LBL_CREATE_TRACKER_BTN'));$('#templateManagerActionOK').val($('#LBL_CREATE_TRACKER_BTN').val());$('#templateManagerDialog').children('div').addClass('hidden');$('#emailTrackerDialog').removeClass('hidden');$('#templateManagerDialogActions').removeClass('hidden');$('#templateManagerActionOK').val(SUGAR.language.translate('Campaigns','LBL_CREATE_TRACKER_BTN'));$('#templateManagerActionOK').unbind();$('#templateManagerActionCancel').unbind();$('#templateManagerActionOK').click(create);$('#templateManagerActionCancel').click(revertValues);$('#templateManagerDialog').show();break;case"insert":if($('#trackerUrlSelect').val()=='-1'){alert(SUGAR.language.translate('Campaigns','LBL_SELECT_EMAIL_TRACKER'));return;}
 var text=$('select[name="tracker_url"] option:selected').val();text=text.replace('{','');text=text.replace('}','');insert_variable_html_link(text,$('select[name="tracker_url"] option:selected').val());break;case"edit":if($('#trackerUrlSelect').val()=='-1'){alert(SUGAR.language.translate('Campaigns','LBL_SELECT_EMAIL_TRACKER'));return;}
-var text=$('select[name="tracker_url"] option:selected').val();text=text.replace('{','');text=text.replace('}','');$('#url_text').val(text);$('#tracker_url_add').val($('select[name="tracker_url"] option:selected').attr('data-url'));$('#tracker_name').val('');$('#template_subject').val('');$('#templateManagerActionOK').val(SUGAR.language.translate('Campaigns','LBL_EDIT_TRACKER_BTN'));createTemplateManagerDialog($('#LBL_CREATE_TRACKER_BTN'));$('#templateManagerDialog').children('div').addClass('hidden');$('#emailTrackerDialog').removeClass('hidden');$('#templateManagerDialogActions').removeClass('hidden');$('#templateManagerActionOK').unbind();$('#templateManagerActionCancel').unbind();$('#templateManagerActionOK').click(save);$('#templateManagerActionCancel').click(revertValues);$('#templateManagerDialog').show();break;default:break;}}
+var text=$('select[name="tracker_url"] option:selected').val();text=text.replace('{','');text=text.replace('}','');$('#url_text').val(text);$('#tracker_url_add').val($('select[name="tracker_url"] option:selected').attr('data-url'));$('#tracker_name').val('');$('#templateManagerActionOK').val(SUGAR.language.translate('Campaigns','LBL_EDIT_TRACKER_BTN'));createTemplateManagerDialog($('#LBL_CREATE_TRACKER_BTN'));$('#templateManagerDialog').children('div').addClass('hidden');$('#emailTrackerDialog').removeClass('hidden');$('#templateManagerDialogActions').removeClass('hidden');$('#templateManagerActionOK').unbind();$('#templateManagerActionCancel').unbind();$('#templateManagerActionOK').click(save);$('#templateManagerActionCancel').click(revertValues);$('#templateManagerDialog').show();break;default:break;}}
 $(document).on("mousemove",function(event){$templateManagerDialogX=event.pageX;$templateManagerDialogY=event.pageY;});

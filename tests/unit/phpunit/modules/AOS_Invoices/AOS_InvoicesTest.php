@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOS_InvoicesTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,23 +13,23 @@ class AOS_InvoicesTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testAOS_Invoices()
+    public function testAOS_Invoices(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $aosInvoices = BeanFactory::newBean('AOS_Invoices');
-        $this->assertInstanceOf('AOS_Invoices', $aosInvoices);
-        $this->assertInstanceOf('Basic', $aosInvoices);
-        $this->assertInstanceOf('SugarBean', $aosInvoices);
+        self::assertInstanceOf('AOS_Invoices', $aosInvoices);
+        self::assertInstanceOf('Basic', $aosInvoices);
+        self::assertInstanceOf('SugarBean', $aosInvoices);
 
-        $this->assertAttributeEquals('AOS_Invoices', 'module_dir', $aosInvoices);
-        $this->assertAttributeEquals('AOS_Invoices', 'object_name', $aosInvoices);
-        $this->assertAttributeEquals('aos_invoices', 'table_name', $aosInvoices);
-        $this->assertAttributeEquals(true, 'new_schema', $aosInvoices);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aosInvoices);
-        $this->assertAttributeEquals(true, 'importable', $aosInvoices);
+        self::assertEquals('AOS_Invoices', $aosInvoices->module_dir);
+        self::assertEquals('AOS_Invoices', $aosInvoices->object_name);
+        self::assertEquals('aos_invoices', $aosInvoices->table_name);
+        self::assertEquals(true, $aosInvoices->new_schema);
+        self::assertEquals(true, $aosInvoices->disable_row_level_security);
+        self::assertEquals(true, $aosInvoices->importable);
     }
 
-    public function testSaveAndMark_deleted()
+    public function testSaveAndMark_deleted(): void
     {
         $aosInvoices = BeanFactory::newBean('AOS_Invoices');
         $aosInvoices->name = 'test';
@@ -37,13 +37,13 @@ class AOS_InvoicesTest extends SuitePHPUnitFrameworkTestCase
         $aosInvoices->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($aosInvoices->id));
-        $this->assertEquals(36, strlen($aosInvoices->id));
-        $this->assertGreaterThan(0, $aosInvoices->number);
+        self::assertTrue(isset($aosInvoices->id));
+        self::assertEquals(36, strlen((string) $aosInvoices->id));
+        self::assertGreaterThan(0, $aosInvoices->number);
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosInvoices->mark_deleted($aosInvoices->id);
         $result = $aosInvoices->retrieve($aosInvoices->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 }

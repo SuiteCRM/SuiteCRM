@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,6 +48,7 @@ use Sugar_Smarty;
 /**
  * Generic view for the Search Framework.
  */
+#[\AllowDynamicProperties]
 abstract class View
 {
     /** @var Sugar_Smarty */
@@ -60,7 +61,7 @@ abstract class View
      *
      * @param string $file
      */
-    public function __construct($file)
+    public function __construct(string $file)
     {
         $this->smarty = new Sugar_Smarty();
         $this->templateFile = $file;
@@ -69,7 +70,7 @@ abstract class View
     /**
      * @return Sugar_Smarty
      */
-    public function getTemplate()
+    public function getTemplate(): Sugar_Smarty
     {
         return $this->smarty;
     }
@@ -77,14 +78,14 @@ abstract class View
     /**
      * Where to assign vars to the template.
      */
-    public function preDisplay()
+    public function preDisplay(): void
     {
     }
 
     /**
      * Renders the template.
      */
-    public function display()
+    public function display(): void
     {
         $this->smarty->display($this->templateFile);
     }
@@ -92,7 +93,7 @@ abstract class View
     /**
      * @return string
      */
-    public function getTemplateFile()
+    public function getTemplateFile(): string
     {
         return $this->templateFile;
     }
@@ -100,7 +101,7 @@ abstract class View
     /**
      * @param string $templateFile
      */
-    public function setTemplateFile($templateFile)
+    public function setTemplateFile(string $templateFile): void
     {
         $this->templateFile = $templateFile;
     }

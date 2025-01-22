@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,9 @@
 
 namespace SuiteCRM\Search\UI\MVC;
 
+use JsonException;
+use LoggerManager;
+
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
@@ -46,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Generic controller for the Search Framework.
  */
+#[\AllowDynamicProperties]
 abstract class Controller
 {
     /** @var View */
@@ -66,11 +70,12 @@ abstract class Controller
      *
      * Always falls back to the 'display' method.
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->isActionRequest()) {
             $methodName = $this->getActionName();
             $this->$methodName();
+
             return;
         }
 
@@ -80,7 +85,7 @@ abstract class Controller
     /**
      * Echoes the view.
      */
-    public function display()
+    public function display(): void
     {
         $this->view->preDisplay();
         $this->view->display();
@@ -91,7 +96,7 @@ abstract class Controller
      *
      * @param string $location
      */
-    public function redirect($location)
+    public function redirect(string $location): void
     {
         header("Location: $location");
         exit;
@@ -102,9 +107,9 @@ abstract class Controller
      *
      * @return bool
      */
-    public function isAjax()
+    public function isAjax(): bool
     {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
     }
 
     /**
@@ -112,11 +117,15 @@ abstract class Controller
      *
      * @param array $data
      */
-    public function yieldJson(array $data)
+    public function yieldJson(array $data): void
     {
-        ob_clean(); // deletes the rest of the html previous to this.
+        ob_clean();
         header('Content-Type: application/json');
-        echo json_encode($data);
+        try {
+            echo json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (JSONException $e) {
+            LoggerManager::getLogger()->warn('Search UI JSON encoding failed: ' . $e->getMessage());
+        }
         exit;
     }
 
@@ -125,7 +134,7 @@ abstract class Controller
      *
      * @return bool
      */
-    private function isActionRequest()
+    private function isActionRequest(): bool
     {
         return method_exists($this, $this->getActionName());
     }
@@ -135,7 +144,7 @@ abstract class Controller
      *
      * @return string
      */
-    private function getActionName()
+    private function getActionName(): string
     {
         return 'do' . filter_input(INPUT_GET, 'do', FILTER_SANITIZE_STRING);
     }

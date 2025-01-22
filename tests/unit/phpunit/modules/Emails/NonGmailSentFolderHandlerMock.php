@@ -49,6 +49,7 @@ require_once __DIR__ . '/../../../../../modules/Emails/NonGmailSentFolderHandler
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class NonGmailSentFolderHandlerMock extends NonGmailSentFolderHandler
 {
     /**
@@ -57,6 +58,7 @@ class NonGmailSentFolderHandlerMock extends NonGmailSentFolderHandler
      * @param SugarPHPMailer $mail
      * @param string $sentFolder
      * @return bool
+     * @noinspection ReturnTypeCanBeDeclaredInspection
      */
     protected function connectToNonGmailServer(InboundEmail $ie, SugarPHPMailer $mail, $sentFolder, $options = "\\Seen")
     {
@@ -70,7 +72,7 @@ class NonGmailSentFolderHandlerMock extends NonGmailSentFolderHandler
      * @param SugarPHPMailer $mail
      * @return string
      */
-    public function getProblemOfStoringInNonGmailSentFolderPublic(InboundEmail $ie, SugarPHPMailer $mail)
+    public function getProblemOfStoringInNonGmailSentFolderPublic(InboundEmail $ie, SugarPHPMailer $mail): string
     {
         return parent::getProblemOfStoringInNonGmailSentFolder($ie, $mail);
     }
@@ -82,7 +84,7 @@ class NonGmailSentFolderHandlerMock extends NonGmailSentFolderHandler
      * @param string $sentFolder
      * @return bool
      */
-    public function connectToNonGmailServerPublic(InboundEmail $ie, SugarPHPMailer $mail, $sentFolder, $options = "\\Seen")
+    public function connectToNonGmailServerPublic(InboundEmail $ie, SugarPHPMailer $mail, $sentFolder, $options = "\\Seen"): bool
     {
         return parent::connectToNonGmailServer($ie, $mail, $sentFolder, $options);
     }

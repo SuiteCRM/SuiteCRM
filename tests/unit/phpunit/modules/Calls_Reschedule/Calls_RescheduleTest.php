@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class Calls_RescheduleTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,20 +13,20 @@ class Calls_RescheduleTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testCalls_Reschedule()
+    public function testCalls_Reschedule(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $callsReschedule = BeanFactory::newBean('Calls_Reschedule');
-        $this->assertInstanceOf('Calls_Reschedule', $callsReschedule);
-        $this->assertInstanceOf('Basic', $callsReschedule);
-        $this->assertInstanceOf('SugarBean', $callsReschedule);
+        self::assertInstanceOf('Calls_Reschedule', $callsReschedule);
+        self::assertInstanceOf('Basic', $callsReschedule);
+        self::assertInstanceOf('SugarBean', $callsReschedule);
 
-        $this->assertAttributeEquals('Calls_Reschedule', 'module_dir', $callsReschedule);
-        $this->assertAttributeEquals('Calls_Reschedule', 'object_name', $callsReschedule);
-        $this->assertAttributeEquals('calls_reschedule', 'table_name', $callsReschedule);
-        $this->assertAttributeEquals(true, 'new_schema', $callsReschedule);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $callsReschedule);
-        $this->assertAttributeEquals(true, 'importable', $callsReschedule);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $callsReschedule);
+        self::assertEquals('Calls_Reschedule', $callsReschedule->module_dir);
+        self::assertEquals('Calls_Reschedule', $callsReschedule->object_name);
+        self::assertEquals('calls_reschedule', $callsReschedule->table_name);
+        self::assertEquals(true, $callsReschedule->new_schema);
+        self::assertEquals(true, $callsReschedule->disable_row_level_security);
+        self::assertEquals(true, $callsReschedule->importable);
+        self::assertEquals(false, $callsReschedule->tracker_visibility);
     }
 }

@@ -133,6 +133,28 @@ function sugar_fopen($filename, $mode, $use_include_path = false, $context = nul
 }
 
 /**
+ * sugar_fclose
+ * Call this function instead of fclose to make sure the closed file
+ * is removed from caches
+ *
+ * @param resource $handle - Handle of the file to close
+ *
+ * @return bool - Returns true on success, false otherwise
+ */
+function sugar_fclose($handle)
+{
+    $filename = stream_get_meta_data($handle)['uri'];
+
+    $result = fclose($handle);
+
+    if ((new SplFileInfo($filename))->getExtension() == 'php') {
+        SugarCache::cleanFile($filename);
+    }
+
+    return $result;
+}
+
+/**
  * sugar_file_put_contents
  * Call this function instead of file_put_contents to apply pre-configured permission
  * settings when creating the file.  This method is basically
@@ -160,8 +182,14 @@ function sugar_file_put_contents($filename, $data, $flags = null, $context = nul
         return false;
     }
 
+    if ($flags === null){
+        $flags = 0;
+    }
+
     $result = file_put_contents($filename, $data, $flags, $context);
-    SugarCache::cleanFile($filename);
+    if ((new SplFileInfo($filename))->getExtension() == 'php') {
+        SugarCache::cleanFile($filename);
+    }
 
     return $result;
 }
@@ -207,7 +235,15 @@ function sugar_file_put_contents_atomic($filename, $data, $mode = 'wb')
     }
 
     if (file_exists($filename)) {
-        return sugar_chmod($filename, 0755);
+        if (!empty($GLOBALS['sugar_config']['default_permissions']['file_mode'])) {
+            $result = sugar_chmod($filename, $GLOBALS['sugar_config']['default_permissions']['file_mode']);
+        }else{
+            $result = sugar_chmod($filename, 0755);
+        }
+        if ((new SplFileInfo($filename))->getExtension() == 'php') {
+            SugarCache::cleanFile($filename);
+        }
+        return $result;
     }
 
     return false;
@@ -329,7 +365,7 @@ function sugar_chown($filename, $user = '')
         if (strlen($user)) {
             return chown($filename, $user);
         } else {
-            if (strlen($GLOBALS['sugar_config']['default_permissions']['user'])) {
+            if (strlen((string) $GLOBALS['sugar_config']['default_permissions']['user'])) {
                 $user = $GLOBALS['sugar_config']['default_permissions']['user'];
 
                 return chown($filename, $user);

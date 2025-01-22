@@ -241,8 +241,8 @@ sub {
     bottom: -0.25em;
 }
 
-::selection {background: #F08377;color:#534d64;} /* Safari */
-::-moz-selection {background: #F08377;color:#534d64;} /* Firefox */ 
+::selection {background: #F08377;color:#196579;} /* Safari */
+::-moz-selection {background: #F08377;color:#196579;} /* Firefox */ 
 
 
 /* =============================================================================

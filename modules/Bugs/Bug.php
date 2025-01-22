@@ -58,6 +58,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 // Bug is used to store customer information.
+#[\AllowDynamicProperties]
 class Bug extends SugarBean
 {
     public $field_name_map = array();
@@ -127,19 +128,7 @@ class Bug extends SugarBean
         }
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Bug()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     public $new_schema = true;
 
@@ -189,7 +178,7 @@ class Bug extends SugarBean
         } else {
             $query .= "where ".$where_auto;
         }
-        if (substr_count($order_by, '.') > 0) {
+        if (substr_count((string) $order_by, '.') > 0) {
             $query .= " ORDER BY $order_by";
         } else {
             if ($order_by != "") {
@@ -376,7 +365,7 @@ class Bug extends SugarBean
         $xtpl->assign("BUG_STATUS", $app_list_strings['bug_status_dom'][$bug->status]);
         $xtpl->assign("BUG_RESOLUTION", $app_list_strings['bug_resolution_dom'][$bug->resolution]);
         $xtpl->assign("BUG_RELEASE", $bug->release_name);
-        $xtpl->assign("BUG_DESCRIPTION", $bug->description);
+        $xtpl->assign("BUG_DESCRIPTION", nl2br($bug->description));
         $xtpl->assign("BUG_WORK_LOG", $bug->work_log);
         $xtpl->assign("BUG_BUG_NUMBER", $bug->bug_number);
         return $xtpl;

@@ -241,7 +241,7 @@ $(document).ready(function() {ldelim}
     };
 
     var selectTabOnErrorInputHandle = function(inputHandle) {
-        var tab = $(inputHandle).closest('.tab-pane-NOBOOTSTRAPTOGGLER').attr('id').match(/^detailpanel_(.*)$/)[1];
+        var tab = $(inputHandle).closest('.tab-pane-NOBOOTSTRAPTOGGLER').attr('id').match(/^tab-content-(.*)$/)[1];
         selectTabOnError(tab);
     };
 
@@ -249,7 +249,7 @@ $(document).ready(function() {ldelim}
     $(function(){
         $('#EditView_tabs ul.nav.nav-tabs li > a[data-toggle="tab"]').click(function(e){
             if(typeof $(this).parent().find('a').first().attr('id') != 'undefined') {
-                var tab = parseInt($(this).parent().find('a').first().attr('id').match(/^tab(.)*$/)[1]);
+                var tab = parseInt($(this).parent().find('a').first().attr('id').match(/^tab(?<number>(.)*)$/)[1]);
                 selectTab(tab);
             }
         });

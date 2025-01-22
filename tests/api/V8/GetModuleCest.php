@@ -4,6 +4,7 @@ namespace Test\Api\V8;
 use ApiTester;
 use Codeception\Example;
 
+#[\AllowDynamicProperties]
 class GetModuleCest
 {
     /**
@@ -28,7 +29,7 @@ class GetModuleCest
         /** @var \ArrayIterator $iterator */
         $iterator = $example->getIterator();
         $id = $I->createAccount();
-        $endpoint = str_replace('{id}', $id, $iterator->offsetGet('endPoint'));
+        $endpoint = str_replace('{id}', $id, (string) $iterator->offsetGet('endPoint'));
 
         $I->sendGET($I->getInstanceURL() . $endpoint);
         $I->seeResponseCodeIs(200);
@@ -40,7 +41,8 @@ class GetModuleCest
 
         $I->seeResponseJsonMatchesJsonPath('$.data.attributes');
         $assert = $iterator->current() === 'withFields' ? 'assertEquals' : 'assertGreaterThan';
-        $I->{$assert}(2, count($I->grabDataFromResponseByJsonPath('$.data.attributes')[0]));
+        $attributes = $I->grabDataFromResponseByJsonPath('$.data.attributes')[0];
+        $I->{$assert}(2, is_countable($attributes) ? count($attributes) : 0);
 
         $I->deleteBean('accounts', $id);
     }
@@ -62,7 +64,7 @@ class GetModuleCest
         if (in_array($iterator->current(), ['withInvalidField', 'withInvalidFieldKey'], true)) {
             $id = $I->createAccount();
             $endpoint = str_replace('{id}', $id, $endpoint);
-            $detail = str_replace('{id}', $id, $detail);
+            $detail = str_replace('{id}', $id, (string) $detail);
         }
 
         $expectedResult = [

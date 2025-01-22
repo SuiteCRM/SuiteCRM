@@ -46,6 +46,7 @@ use League\OAuth2\Server\Repositories\UserRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\UserEntity;
 use SuiteCRM\Utility\Paths;
 
+#[\AllowDynamicProperties]
 class UserRepository implements UserRepositoryInterface
 {
     /**

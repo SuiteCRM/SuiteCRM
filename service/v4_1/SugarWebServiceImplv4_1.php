@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('service/v4/SugarWebServiceImplv4.php');
 require_once('service/v4_1/SugarWebServiceUtilv4_1.php');
 
+#[\AllowDynamicProperties]
 class SugarWebServiceImplv4_1 extends SugarWebServiceImplv4
 {
 
@@ -155,7 +156,7 @@ class SugarWebServiceImplv4_1 extends SugarWebServiceImplv4
             $list = $result['rows'];
             $filterFields = $result['fields_set_on_rows'];
 
-            if (count($list) > 0) {
+            if ((is_countable($list) ? count($list) : 0) > 0) {
                 // get the related module name and instantiate a bean for that
                 $submodulename = $mod->$link_field_name->getRelatedModuleName();
                 $submoduletemp = BeanFactory::getBean($submodulename);

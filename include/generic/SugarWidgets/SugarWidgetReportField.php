@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $used_aliases = array();
 $alias_map = array();
 
+#[\AllowDynamicProperties]
 class SugarWidgetReportField extends SugarWidgetField
 {
     /**
@@ -62,21 +63,6 @@ class SugarWidgetReportField extends SugarWidgetField
         parent::__construct($layout_manager);
         $this->reporter = $this->layout_manager->getAttribute("reporter");
     }
-
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarWidgetReportField(&$layout_manager)
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct($layout_manager);
-    }
-
 
     public function getSubClass($layout_def)
     {
@@ -162,7 +148,7 @@ class SugarWidgetReportField extends SugarWidgetField
             }
 
             // for a field with type='currency' conversion of values into a user-preferred currency
-            if ($layout_def['type'] == 'currency' && strpos($layout_def['name'], '_usdoll') === false) {
+            if ($layout_def['type'] == 'currency' && strpos((string) $layout_def['name'], '_usdoll') === false) {
                 $currency = $this->reporter->currency_obj;
                 $currency_alias = isset($layout_def['currency_alias'])
                 ? $layout_def['currency_alias'] : $currency->table_name;

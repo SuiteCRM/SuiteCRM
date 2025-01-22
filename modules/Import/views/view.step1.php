@@ -52,6 +52,7 @@ require_once('include/externalAPI/ExternalAPIFactory.php');
 require_once('modules/Import/Importer.php');
 
 
+#[\AllowDynamicProperties]
 class ImportViewStep1 extends ImportView
 {
     protected $pageTitleKey = 'LBL_STEP_1_TITLE';
@@ -65,14 +66,14 @@ class ImportViewStep1 extends ImportView
             $this->importModule = 'Administration';
         }
     }
-    
+
     /**
      * @see SugarView::_getModuleTitleParams()
      */
     protected function _getModuleTitleParams($browserTitle = false)
     {
         global $mod_strings, $app_list_strings;
-        
+
         $iconPath = $this->getModuleTitleIconPath($this->module);
         $returnArray = array();
         if (!empty($iconPath) && !$browserTitle) {
@@ -82,7 +83,7 @@ class ImportViewStep1 extends ImportView
         }
         $returnArray[] = "<a href='index.php?module=Import&action=Step1&import_module={$_REQUEST['import_module']}'>".$mod_strings['LBL_MODULE_NAME']."</a>";
         $returnArray[] = $mod_strings['LBL_STEP_1_TITLE'];
-        
+
         return $returnArray;
     }
 
@@ -124,7 +125,7 @@ class ImportViewStep1 extends ImportView
         $this->ss->assign("selectExternalSource", $selectExternal);
 
         $content = $this->ss->fetch('modules/Import/tpls/step1.tpl');
-        
+
         $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
         $submitContent .= "<input title=\"".$mod_strings['LBL_IMPORT_COMPLETE']."\" onclick=\"SUGAR.importWizard.closeDialog();\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_IMPORT_COMPLETE']."  \" id=\"finished\">";
         $submitContent .= "<input title=\"".$mod_strings['LBL_NEXT']."\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_NEXT']."  \"  id=\"gonext\"></td></tr></table>";
@@ -168,7 +169,7 @@ class ImportViewStep1 extends ImportView
         global $mod_strings;
         $EXTERNAL_AUTHENTICATED_SOURCES = json_encode($this->getAuthenticatedImportableExternalEAPMs());
         $selectExternalSource = !empty($_REQUEST['application']) ? $_REQUEST['application'] : '';
-        
+
         $showModuleSelection = ($this->importModule == 'Administration');
         $importableModulesOptions = array();
         $importablePersonModules = array();
@@ -179,7 +180,7 @@ class ImportViewStep1 extends ImportView
 
 
         $PERSON_MODULE_LIST = json_encode($importablePersonModules);
-        
+
         return <<<EOJAVASCRIPT
 
 

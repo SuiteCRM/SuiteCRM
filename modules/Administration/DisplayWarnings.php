@@ -58,7 +58,7 @@ if (!isset($_SERVER['SERVER_SOFTWARE'])) {
     LoggerManager::getLogger()->warn('SERVER_SOFTVARE is undefined got Display Warnings');
 }
 
-if (isset($_SERVER['SERVER_SOFTWARE']) && (strpos($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false) && (php_sapi_name() == 'cgi-fcgi') && (ini_get('fastcgi.logging') != '0')) {
+if (isset($_SERVER['SERVER_SOFTWARE']) && (strpos((string) $_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') !== false) && (php_sapi_name() == 'cgi-fcgi') && (ini_get('fastcgi.logging') != '0')) {
     displayAdminError(translate('LBL_FASTCGI_LOGGING', 'Administration'));
 }
 if (is_admin($current_user)) {

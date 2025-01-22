@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @since      Class available since Release 4.0
  */
 
+#[\AllowDynamicProperties]
 class QuickSearchDefaults
 {
     public $form_name = 'EditView';

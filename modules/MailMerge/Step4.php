@@ -81,7 +81,7 @@ if (!empty($_POST['selected_objects'])) {
 $selObjs = $_SESSION['SELECTED_OBJECTS_DEF'];
 $sel_obj = array();
 
-parse_str(stripslashes(html_entity_decode($selObjs, ENT_QUOTES)), $sel_obj);
+parse_str(stripslashes(html_entity_decode((string) $selObjs, ENT_QUOTES)), $sel_obj);
 foreach ($sel_obj as $key=>$value) {
     $sel_obj[$key] = stripslashes($value);
 }

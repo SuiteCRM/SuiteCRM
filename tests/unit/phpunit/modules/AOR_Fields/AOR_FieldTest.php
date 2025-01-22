@@ -4,24 +4,24 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class AOR_FieldTest extends SuitePHPUnitFrameworkTestCase
 {
-    public function testAOR_Field()
+    public function testAOR_Field(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $aor_Field = BeanFactory::newBean('AOR_Fields');
-        $this->assertInstanceOf('AOR_Field', $aor_Field);
-        $this->assertInstanceOf('Basic', $aor_Field);
-        $this->assertInstanceOf('SugarBean', $aor_Field);
+        self::assertInstanceOf('AOR_Field', $aor_Field);
+        self::assertInstanceOf('Basic', $aor_Field);
+        self::assertInstanceOf('SugarBean', $aor_Field);
 
-        $this->assertAttributeEquals('AOR_Fields', 'module_dir', $aor_Field);
-        $this->assertAttributeEquals('AOR_Field', 'object_name', $aor_Field);
-        $this->assertAttributeEquals('aor_fields', 'table_name', $aor_Field);
-        $this->assertAttributeEquals(true, 'new_schema', $aor_Field);
-        $this->assertAttributeEquals(true, 'disable_row_level_security', $aor_Field);
-        $this->assertAttributeEquals(true, 'importable', $aor_Field);
-        $this->assertAttributeEquals(false, 'tracker_visibility', $aor_Field);
+        self::assertEquals('AOR_Fields', $aor_Field->module_dir);
+        self::assertEquals('AOR_Field', $aor_Field->object_name);
+        self::assertEquals('aor_fields', $aor_Field->table_name);
+        self::assertEquals(true, $aor_Field->new_schema);
+        self::assertEquals(true, $aor_Field->disable_row_level_security);
+        self::assertEquals(true, $aor_Field->importable);
+        self::assertEquals(false, $aor_Field->tracker_visibility);
     }
 
-    public function testsave_lines()
+    public function testsave_lines(): void
     {
         $aor_Field = BeanFactory::newBean('AOR_Fields');
 
@@ -42,9 +42,9 @@ class AOR_FieldTest extends SuitePHPUnitFrameworkTestCase
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $aor_Field->save_lines($post_data, BeanFactory::newBean('AOR_Reports'));
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 }

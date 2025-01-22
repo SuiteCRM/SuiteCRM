@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,53 +38,43 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
- //Request object must have these property values:
- //		Module: module name, this module should have a file called TreeData.php
- //		Function: name of the function to be called in TreeData.php, the function will be called statically.
- //		PARAM prefixed properties: array of these property/values will be passed to the function as parameter.
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
+
+//Request object must have these property values:
+//		Module: module name, this module should have a file called TreeData.php
+//		Function: name of the function to be called in TreeData.php, the function will be called statically.
+//		PARAM prefixed properties: array of these property/values will be passed to the function as parameter.
 
 require_once('include/JSON.php');
 require_once('include/upload_file.php');
 
-//require_once('modules/UpgradeWizard/uw_utils.php');
-
 $json = getJSONobj();
-$file_name = $json->decode(html_entity_decode($_REQUEST['file_name']));
+$file_name = $json::decode(html_entity_decode($_REQUEST['file_name']));
 if (isset($file_name['jsonObject']) && $file_name['jsonObject'] != null) {
     $file_name = $file_name['jsonObject'];
 }
 
-if (strpos($file_name, 'phar://') !== false) {
+$comparisonString = strtolower($file_name);
+if (strpos($comparisonString, 'phar://') !== false) {
     return;
 }
 
 $filesize = '';
 if (file_exists($file_name)) {
-    $filesize =filesize($file_name);
+    $filesize = filesize($file_name);
 }
-
 
 $response = '';
 
-//$GLOBALS['log']->fatal('file name '.$file_name);
-//$GLOBALS['log']->fatal('file size loaded '.filesize($file_name));
-
-
-//if($filesize > ini_get("upload_max_filesize"))
-//$GLOBALS['log']->fatal($filesize);
-//$GLOBALS['log']->fatal(substr(ini_get("upload_max_filesize"), 0, strlen( ini_get("upload_max_filesize")) - 1));
-//get the file size defined in php.ini
-//$uploadSizeIni = substr(ini_get("upload_max_filesize"), 0, strlen( ini_get("upload_max_filesize")) - 1);
-//$GLOBALS['log']->fatal('Upload php setting Size '.return_bytes(ini_get("upload_max_filesize")));
-if ($filesize != null) {
-    if (($filesize > return_bytes(ini_get("upload_max_filesize"))) || ($filesize > return_bytes(ini_get("post_max_size")))) {
-        $response=$filesize;
-        //$response= "<script>alert('File size is bigger than the max_upload-size setting in php.ini. Upgrade attempt will fail. Increase the upload_max_size in php.ini to greater than ')</script>";
-    }
+if ($filesize !== null && (($filesize > return_bytes(ini_get("upload_max_filesize"))) || ($filesize > return_bytes(ini_get("post_max_size"))))) {
+    $response = $filesize;
 }
 
 if (!empty($response)) {
     echo $response;
 }
+
 sugar_cleanup();
 exit();

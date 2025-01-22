@@ -44,6 +44,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/DynamicFields/templates/Fields/TemplateText.php');
 class TemplateTextArea extends TemplateText
 {
+    public $rows;
+    public $cols;
     public $type = 'text';
     public $len = '';
 

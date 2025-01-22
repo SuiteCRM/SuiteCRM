@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,229 +38,102 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-global $current_user,$admin_group_header;
+global $current_user, $admin_group_header;
 
 //users and security.
-$admin_option_defs=array();
-$admin_option_defs['Users']['user_management']= array('UserManagement','LBL_MANAGE_USERS_TITLE','LBL_MANAGE_USERS','./index.php?module=Users&action=index', 'user-management');
-$admin_option_defs['Users']['roles_management']= array('Roles','LBL_MANAGE_ROLES_TITLE','LBL_MANAGE_ROLES','./index.php?module=ACLRoles&action=index', 'roles');
-$admin_option_defs['Administration']['password_management']= array('Password','LBL_MANAGE_PASSWORD_TITLE','LBL_MANAGE_PASSWORD','./index.php?module=Administration&action=PasswordManager', 'password');
-$admin_group_header[]= array('LBL_USERS_TITLE','',false,$admin_option_defs, 'LBL_USERS_DESC');
-$license_management = false;
-    if (!isset($GLOBALS['sugar_config']['hide_admin_licensing']) || !$GLOBALS['sugar_config']['hide_admin_licensing']) {
-        $license_management = array('License','LBL_MANAGE_LICENSE_TITLE','LBL_MANAGE_LICENSE','./index.php?module=Administration&action=LicenseSettings');
-    }
-
-//system.
-$admin_option_defs=array();
-$admin_option_defs['Administration']['configphp_settings']= array('Administration','LBL_CONFIGURE_SETTINGS_TITLE','LBL_CONFIGURE_SETTINGS','./index.php?module=Configurator&action=EditView', 'system-settings');
-$admin_option_defs['Administration']['import']= array('Import','LBL_IMPORT_WIZARD','LBL_IMPORT_WIZARD_DESC','./index.php?module=Import&action=step1&import_module=Administration', 'import');
-$admin_option_defs['Administration']['locale']= array('Currencies','LBL_MANAGE_LOCALE','LBL_LOCALE','./index.php?module=Administration&action=Locale&view=default', 'locale');
-
-if (!defined('TEMPLATE_URL')) {
-    $admin_option_defs['Administration']['upgrade_wizard']= array('Upgrade','LBL_UPGRADE_WIZARD_TITLE','LBL_UPGRADE_WIZARD','./index.php?module=UpgradeWizard&action=index', 'upgrade-wizard');
-}
-
-$admin_option_defs['Administration']['currencies_management']= array('Currencies','LBL_MANAGE_CURRENCIES','LBL_CURRENCY','./index.php?module=Currencies&action=index', 'currencies');
-
-if (!isset($GLOBALS['sugar_config']['hide_admin_backup']) || !$GLOBALS['sugar_config']['hide_admin_backup']) {
-    $admin_option_defs['Administration']['backup_management']= array('Backups','LBL_BACKUPS_TITLE','LBL_BACKUPS','./index.php?module=Administration&action=Backups', 'backups');
-}
-
-$admin_option_defs['Administration']['languages']= array('Currencies','LBL_MANAGE_LANGUAGES','LBL_LANGUAGES','./index.php?module=Administration&action=Languages&view=default', 'languages');
-
-$admin_option_defs['Administration']['repair']= array('Repair','LBL_UPGRADE_TITLE','LBL_UPGRADE','./index.php?module=Administration&action=Upgrade', 'repair');
-
-$admin_option_defs['Administration']['global_search']=array('icon_SearchForm','LBL_GLOBAL_SEARCH_SETTINGS','LBL_GLOBAL_SEARCH_SETTINGS_DESC','./index.php?module=Administration&action=GlobalSearchSettings', 'global-search');
-
-if (!isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) || !$GLOBALS['sugar_config']['hide_admin_diagnostics']) {
-    $admin_option_defs['Administration']['diagnostic']= array('Diagnostic','LBL_DIAGNOSTIC_TITLE','LBL_DIAGNOSTIC_DESC','./index.php?module=Administration&action=Diagnostic', 'diagnostic');
-}
-
-// Connector Integration
-$admin_option_defs['Administration']['connector_settings']=array('icon_Connectors','LBL_CONNECTOR_SETTINGS','LBL_CONNECTOR_SETTINGS_DESC','./index.php?module=Connectors&action=ConnectorSettings', 'connectors');
-
-
-// Theme Enable/Disable
-$admin_option_defs['Administration']['theme_settings']=array('icon_AdminThemes','LBL_THEME_SETTINGS','LBL_THEME_SETTINGS_DESC','./index.php?module=Administration&action=ThemeSettings', 'themes');
-
-$admin_option_defs['Administration']['scheduler'] = array('Schedulers','LBL_SUITE_SCHEDULER_TITLE','LBL_SUITE_SCHEDULER','./index.php?module=Schedulers&action=index', 'scheduler');
-
-$admin_option_defs['Administration']['feed_settings']=array('icon_SugarFeed','LBL_SUITEFEED_SETTINGS','LBL_SUITEFEED_SETTINGS_DESC','./index.php?module=SugarFeed&action=AdminSettings', 'activity-streams');
-
-
-
-
-
+$admin_option_defs = [];
+$admin_option_defs['Users']['user_management'] = [
+    'UserManagement',
+    'LBL_MANAGE_USERS_TITLE',
+    'LBL_MANAGE_USERS',
+    './index.php?module=Users&action=index',
+    'user-management'
+];
+$admin_option_defs['Administration']['password_management'] = [
+    'Password',
+    'LBL_MANAGE_PASSWORD_TITLE',
+    'LBL_MANAGE_PASSWORD',
+    './index.php?module=Administration&action=PasswordManager',
+    'password'
+];
+$admin_option_defs['Administration']['oauth2_clients'] = [
+    'Password',
+    'LBL_OAUTH2_CLIENTS_TITLE',
+    'LBL_OAUTH2_CLIENTS',
+    './index.php?module=OAuth2Clients&action=index',
+    'oauth2'
+];
 require_once 'include/SugarOAuthServer.php';
 if (SugarOAuthServer::enabled()) {
-    $admin_option_defs['Administration']['oauth_keys'] = array(
+    $admin_option_defs['Administration']['oauth_keys'] = [
         'Password',
         'LBL_OAUTH_TITLE',
         'LBL_OAUTH',
         './index.php?module=OAuthKeys&action=index',
         'oauth-keys'
-    );
+    ];
 }
+$admin_option_defs['Users']['roles_management'] = [
+    'Roles',
+    'LBL_MANAGE_ROLES_TITLE',
+    'LBL_MANAGE_ROLES',
+    './index.php?module=ACLRoles&action=index',
+    'roles'
+];
+$admin_option_defs['Administration']['securitygroup_management'] = [
+    'SecuritySuiteGroupManagement',
+    'LBL_MANAGE_SECURITYGROUPS_TITLE',
+    'LBL_MANAGE_SECURITYGROUPS',
+    './index.php?module=SecurityGroups&action=index',
+    'security'
+];
+$admin_option_defs['Administration']['securitygroup_config'] = [
+    'SecurityGroupsManagement',
+    'LBL_CONFIG_SECURITYGROUPS_TITLE',
+    'LBL_CONFIG_SECURITYGROUPS',
+    './index.php?module=SecurityGroups&action=config',
+    'security-suite-group-management'
+];
 
-$admin_option_defs['Administration']['oauth2_clients'] = array(
-    'Password',
-    'LBL_OAUTH2_CLIENTS_TITLE',
-    'LBL_OAUTH2_CLIENTS',
-    './index.php?module=OAuth2Clients&action=index',
-    'password'
-);
+$admin_group_header[] = ['LBL_USERS_TITLE', '', false, $admin_option_defs, 'LBL_USERS_DESC'];
 
-$admin_group_header[]= array('LBL_ADMINISTRATION_HOME_TITLE','',false,$admin_option_defs, 'LBL_ADMINISTRATION_HOME_DESC');
-
-
-//email manager.
-$admin_option_defs=array();
-$admin_option_defs['Emails']['mass_Email_config']= array('EmailMan','LBL_MASS_EMAIL_CONFIG_TITLE','LBL_MASS_EMAIL_CONFIG_DESC','./index.php?module=EmailMan&action=config', 'email-settings');
-
-$admin_option_defs['Campaigns']['campaignconfig']= array('EmailCampaigns','LBL_CAMPAIGN_CONFIG_TITLE','LBL_CAMPAIGN_CONFIG_DESC','./index.php?module=EmailMan&action=campaignconfig', 'campaign-email-settings');
-
-$admin_option_defs['Emails']['mailboxes']= array('EmailInbound','LBL_MANAGE_MAILBOX','LBL_MAILBOX_DESC','./index.php?module=InboundEmail&action=index', 'inbound-email');
-$admin_option_defs['Emails']['mailboxes_outbound']= array('EmailOutbound','LBL_MANAGE_MAILBOX_OUTBOUND','LBL_MAILBOX_OUTBOUND_DESC','./index.php?module=OutboundEmailAccounts&action=index', 'outbound-email');
-$admin_option_defs['Campaigns']['mass_Email']= array('EmailQueue','LBL_MASS_EMAIL_MANAGER_TITLE','LBL_MASS_EMAIL_MANAGER_DESC','./index.php?module=EmailMan&action=index', 'email-queue');
-
-
-$admin_group_header[]= array('LBL_EMAIL_TITLE','',false,$admin_option_defs, 'LBL_EMAIL_DESC');
-
-
-
-
-//studio.
-$admin_option_defs=array();
-$admin_option_defs['studio']['studio']= array('Studio','LBL_STUDIO','LBL_STUDIO_DESC','./index.php?module=ModuleBuilder&action=index&type=studio', 'studio');
-if (isset($GLOBALS['beanFiles']['iFrame'])) {
-    $admin_option_defs['Administration']['portal']= array('iFrames','LBL_IFRAME','DESC_IFRAME','./index.php?module=iFrames&action=index');
-}
-$admin_option_defs['Administration']['rename_tabs']= array('RenameTabs','LBL_RENAME_TABS','LBL_CHANGE_NAME_MODULES',"./index.php?action=wizard&module=Studio&wizard=StudioWizard&option=RenameTabs", 'rename-modules');
-$admin_option_defs['Administration']['moduleBuilder']= array('ModuleBuilder','LBL_MODULEBUILDER','LBL_MODULEBUILDER_DESC','./index.php?module=ModuleBuilder&action=index&type=mb', 'module-builder');
-$admin_option_defs['Administration']['history_contacts_emails'] = array('ConfigureTabs', 'LBL_HISTORY_CONTACTS_EMAILS', 'LBL_HISTORY_CONTACTS_EMAILS_DESC', './index.php?module=Configurator&action=historyContactsEmails', 'history-subpanel');
-$admin_option_defs['Administration']['configure_tabs']= array('ConfigureTabs','LBL_CONFIGURE_TABS_AND_SUBPANELS','LBL_CONFIGURE_TABS_AND_SUBPANELS_DESC','./index.php?module=Administration&action=ConfigureTabs', 'display-modules-and-subpanels');
-$admin_option_defs['Administration']['module_loader'] = array('ModuleLoader','LBL_MODULE_LOADER_TITLE','LBL_MODULE_LOADER','./index.php?module=Administration&action=UpgradeWizard&view=module', 'module-loader');
-
-
-$admin_option_defs['Administration']['configure_group_tabs']= array('ConfigureTabs','LBL_CONFIGURE_GROUP_TABS','LBL_CONFIGURE_GROUP_TABS_DESC','./index.php?action=wizard&module=Studio&wizard=StudioWizard&option=ConfigureGroupTabs', 'configure-module-menu-filters');
-
-$admin_option_defs['any']['dropdowneditor']= array('Dropdown','LBL_DROPDOWN_EDITOR','DESC_DROPDOWN_EDITOR','./index.php?module=ModuleBuilder&action=index&type=dropdowns', 'dropdown-editor');
-
-
-//$admin_option_defs['migrate_custom_fields']= array('MigrateFields','LBL_EXTERNAL_DEV_TITLE','LBL_EXTERNAL_DEV_DESC','./index.php?module=Administration&action=Development');
-
-
-$admin_group_header[]= array('LBL_STUDIO_TITLE','',false,$admin_option_defs, 'LBL_TOOLS_DESC');
-
-$admin_option_defs=array();
-
-$admin_option_defs['jjwg_Maps']['config'] = array(
-    'Administration',
-    'LBL_JJWG_MAPS_ADMIN_CONFIG_TITLE',
-    'LBL_JJWG_MAPS_ADMIN_CONFIG_DESC',
-    './index.php?module=jjwg_Maps&action=config',
-    'google-maps-settings'
-);
-$admin_option_defs['jjwg_Maps']['geocoded_counts'] = array(
-    'Geocoded_Counts',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODED_COUNTS_TITLE',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODED_COUNTS_DESC',
-    './index.php?module=jjwg_Maps&action=geocoded_counts',
-    'geocoded-counts'
-);
-$admin_option_defs['jjwg_Maps']['geocoding_test'] = array(
-    'GeocodingTests',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODING_TEST_TITLE',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODING_TEST_DESC',
-    './index.php?module=jjwg_Maps&action=geocoding_test',
-    'geocoding-test'
-);
-$admin_option_defs['jjwg_Maps']['geocode_addresses'] = array(
-    'GeocodeAddresses',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODE_ADDRESSES_TITLE',
-    'LBL_JJWG_MAPS_ADMIN_GEOCODE_ADDRESSES_DESC',
-    './index.php?module=jjwg_Maps&action=geocode_addresses',
-    'geocode-addresses'
-);
-$admin_option_defs['jjwg_Maps']['address_cache'] = array(
-    'Address_Cache',
-    'LBL_JJWG_MAPS_ADMIN_ADDRESS_CACHE_TITLE',
-    'LBL_JJWG_MAPS_ADMIN_ADDRESS_CACHE_DESC',
-    './index.php?module=jjwg_Address_Cache&action=index',
-    'address-cache'
-);
-
-$admin_option_defs['Administration']['google_calendar_settings'] = array(
-    'Google Calendar Settings',
-    'LBL_GOOGLE_CALENDAR_SETTINGS_TITLE',
-    'LBL_GOOGLE_CALENDAR_SETTINGS_DESC',
-    './index.php?module=Administration&action=GoogleCalendarSettings',
-    'system-settings'
-);
-
-$admin_group_header[] = array(
-    'LBL_GOOGLE_SUITE_ADMIN_HEADER',
-    '',
-    false,
-    $admin_option_defs,
-    'LBL_GOOGLE_SUITE_ADMIN_DESC'
-);
-
-
-$admin_option_defs = array();
-$admin_option_defs['Administration']['securitygroup_management'] = array('SecuritySuiteGroupManagement', 'LBL_MANAGE_SECURITYGROUPS_TITLE', 'LBL_MANAGE_SECURITYGROUPS', './index.php?module=SecurityGroups&action=index', 'security');
-$admin_option_defs['Administration']['securitygroup_config'] = array('SecurityGroupsManagement', 'LBL_CONFIG_SECURITYGROUPS_TITLE', 'LBL_CONFIG_SECURITYGROUPS', './index.php?module=SecurityGroups&action=config', 'security-suite-group-management');
-
-$admin_option_defs['Administration'] = array_merge((array)$admin_group_header[0][3]['Administration'], (array)$admin_option_defs['Administration']);
-
-
-$admin_group_header[0] = array('LBL_USERS_TITLE', '', false, array_merge((array)$admin_group_header[0][3], (array)$admin_option_defs), 'LBL_USERS_DESC');
-
-
-$admin_option_defs=array();
-$admin_option_defs['Administration']['aos'] = array(
-    'AOS',
-    'LBL_AOS_SETTINGS',
-    'LBL_CHANGE_SETTINGS',
-    './index.php?module=Administration&action=AOSAdmin',
-    'aos-settings'
-);
-
-$admin_option_defs['Administration']['aod'] = array(
-    'AOD',
-    'LBL_AOD_SETTINGS',
-    'LBL_CHANGE_SETTINGS_AOD',
-    './index.php?module=Administration&action=AODAdmin',
-    'aod-settings'
-);
-$admin_option_defs['Administration']['aop'] = array(
-    'AOP',
-    'LBL_AOP_SETTINGS',
-    'LBL_CHANGE_SETTINGS_AOP',
-    './index.php?module=Administration&action=AOPAdmin',
-    'aop-settings'
-);
-
-$admin_option_defs['Administration']['business_hours'] = array(
-    'AOBH_BusinessHours',
-    'LBL_BUSINESS_HOURS',
-    'LBL_AOP_BUSINESS_HOURS_DESC',
-    './index.php?module=Administration&action=BusinessHours',
-    'aobh-businesshours'
-);
-
-$admin_group_header['sagility'] = array(
-    'LBL_SALESAGILITY_ADMIN',
-    '',
-    false,
-    $admin_option_defs,
-    ''
-);
-
-
+//system.
 $admin_option_defs = [];
-
+$admin_option_defs['Administration']['configphp_settings'] = [
+    'Administration',
+    'LBL_CONFIGURE_SETTINGS_TITLE',
+    'LBL_CONFIGURE_SETTINGS',
+    './index.php?module=Configurator&action=EditView',
+    'system-settings'
+];
+$admin_option_defs['Administration']['currencies_management'] = [
+    'Currencies',
+    'LBL_MANAGE_CURRENCIES',
+    'LBL_CURRENCY',
+    './index.php?module=Currencies&action=index',
+    'currencies'
+];
+$admin_option_defs['Administration']['languages'] = [
+    'Currencies',
+    'LBL_MANAGE_LANGUAGES',
+    'LBL_LANGUAGES',
+    './index.php?module=Administration&action=Languages&view=default',
+    'languages'
+];
+$admin_option_defs['Administration']['locale'] = [
+    'Currencies',
+    'LBL_MANAGE_LOCALE',
+    'LBL_LOCALE',
+    './index.php?module=Administration&action=Locale&view=default',
+    'locale'
+];
+$admin_option_defs['Administration']['pdf'] = [
+    'PDF',
+    'LBL_PDF_HEADER',
+    'LBL_CHANGE_PDF_SETTINGS',
+    './index.php?module=Administration&action=PDFSettings',
+    'pdf-settings'
+];
 $admin_option_defs['Administration']['search_wrapper'] = [
     'icon_SearchForm',
     'LBL_SEARCH_WRAPPER',
@@ -268,15 +141,6 @@ $admin_option_defs['Administration']['search_wrapper'] = [
     './index.php?module=Administration&action=SearchSettings',
     'global-search'
 ];
-
-$admin_option_defs['Administration']['global_search'] = [
-    'icon_SearchForm',
-    'LBL_SEARCH_MODULES',
-    'LBL_SEARCH_MODULES_HELP',
-    './index.php?module=Administration&action=GlobalSearchSettings',
-    'global-search'
-];
-
 $admin_option_defs['Administration']['elastic_search'] = [
     'ElasticSearchIndexerSettings',
     'LBL_ELASTIC_SEARCH_SETTINGS',
@@ -284,21 +148,305 @@ $admin_option_defs['Administration']['elastic_search'] = [
     './index.php?module=Administration&action=ElasticSearchSettings',
     'global-search'
 ];
+$admin_option_defs['Administration']['scheduler'] = [
+    'Schedulers',
+    'LBL_SUITE_SCHEDULER_TITLE',
+    'LBL_SUITE_SCHEDULER',
+    './index.php?module=Schedulers&action=index',
+    'scheduler'
+];
+// Theme Enable/Disable
+$admin_option_defs['Administration']['theme_settings'] = [
+    'icon_AdminThemes',
+    'LBL_THEME_SETTINGS',
+    'LBL_THEME_SETTINGS_DESC',
+    './index.php?module=Administration&action=ThemeSettings',
+    'themes'
+];
 
-// SearchWrapper
+$admin_group_header[] = ['LBL_ADMINISTRATION_HOME_TITLE', '', false, $admin_option_defs, 'LBL_ADMINISTRATION_HOME_DESC'];
+
+//Module Settings
+$admin_option_defs = [];
+$admin_option_defs['Administration']['feed_settings'] = [
+    'icon_SugarFeed',
+    'LBL_SUITEFEED_SETTINGS',
+    'LBL_SUITEFEED_SETTINGS_DESC',
+    './index.php?module=SugarFeed&action=AdminSettings',
+    'activity-streams'
+];
+$admin_option_defs['Administration']['business_hours'] = [
+    'AOBH_BusinessHours',
+    'LBL_BUSINESS_HOURS',
+    'LBL_AOP_BUSINESS_HOURS_DESC',
+    './index.php?module=Administration&action=BusinessHours',
+    'aobh-businesshours'
+];
+$admin_option_defs['Administration']['aop'] = [
+    'AOP',
+    'LBL_AOP_SETTINGS',
+    'LBL_CHANGE_SETTINGS_AOP',
+    './index.php?module=Administration&action=AOPAdmin',
+    'aop-settings'
+];
+$admin_option_defs['Administration']['configure_group_tabs'] = [
+    'ConfigureTabs',
+    'LBL_CONFIGURE_GROUP_TABS',
+    'LBL_CONFIGURE_GROUP_TABS_DESC',
+    './index.php?action=wizard&module=Studio&wizard=StudioWizard&option=ConfigureGroupTabs',
+    'configure-module-menu-filters'
+];
+$admin_option_defs['Administration']['connector_settings'] = [
+    'icon_Connectors',
+    'LBL_CONNECTOR_SETTINGS',
+    'LBL_CONNECTOR_SETTINGS_DESC',
+    './index.php?module=Connectors&action=ConnectorSettings',
+    'connectors'
+];
+$admin_option_defs['Administration']['configure_tabs'] = [
+    'ConfigureTabs',
+    'LBL_CONFIGURE_TABS_AND_SUBPANELS',
+    'LBL_CONFIGURE_TABS_AND_SUBPANELS_DESC',
+    './index.php?module=Administration&action=ConfigureTabs',
+    'display-modules-and-subpanels'
+];
+$admin_option_defs['Administration']['history_contacts_emails'] = [
+    'ConfigureTabs',
+    'LBL_HISTORY_CONTACTS_EMAILS',
+    'LBL_HISTORY_CONTACTS_EMAILS_DESC',
+    './index.php?module=Configurator&action=historyContactsEmails',
+    'history-subpanel'
+];
+$admin_option_defs['Bugs']['bug_tracker'] = [
+    'Releases',
+    'LBL_MANAGE_RELEASES',
+    'LBL_RELEASE',
+    './index.php?module=Releases&action=index',
+    'releases'
+];
+$admin_option_defs['Administration']['aos'] = [
+    'AOS',
+    'LBL_AOS_SETTINGS',
+    'LBL_CHANGE_SETTINGS',
+    './index.php?module=Administration&action=AOSAdmin',
+    'aos-settings'
+];
+
+$admin_group_header['sagility'] = ['LBL_MODULE_ADMIN', '', false, $admin_option_defs, 'LBL_MODULE_ADMIN_HEADER_DESC'];
+
+
+//email manager.
+$admin_option_defs = [];
+$admin_option_defs['Emails']['mass_Email_config'] = [
+    'EmailMan',
+    'LBL_MASS_EMAIL_CONFIG_TITLE',
+    'LBL_MASS_EMAIL_CONFIG_DESC',
+    './index.php?module=EmailMan&action=config',
+    'email-settings'
+];
+
+$admin_option_defs['Campaigns']['campaignconfig'] = [
+    'EmailCampaigns',
+    'LBL_CAMPAIGN_CONFIG_TITLE',
+    'LBL_CAMPAIGN_CONFIG_DESC',
+    './index.php?module=EmailMan&action=campaignconfig',
+    'campaign-email-settings'
+];
+
+$admin_option_defs['Emails']['mailboxes'] = [
+    'EmailInbound',
+    'LBL_MANAGE_MAILBOX',
+    'LBL_MAILBOX_DESC',
+    './index.php?module=InboundEmail&action=index',
+    'inbound-email'
+];
+$admin_option_defs['Emails']['mailboxes_outbound'] = [
+    'EmailOutbound',
+    'LBL_MANAGE_MAILBOX_OUTBOUND',
+    'LBL_MAILBOX_OUTBOUND_DESC',
+    './index.php?module=OutboundEmailAccounts&action=index',
+    'outbound-email'
+];
+$admin_option_defs['Emails']['external_oauth_connections'] = [
+    'ExternalOAuthConnection',
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS',
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS_DESC',
+    'index.php?module=ExternalOAuthConnection&action=index',
+    'oauth2'
+];
+$admin_option_defs['Emails']['external_oauth_providers'] = [
+    'ExternalOAuthProvider',
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS',
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS_DESC',
+    'index.php?module=ExternalOAuthProvider&action=index',
+    'oauth2'
+];
+$admin_option_defs['Campaigns']['mass_Email'] = [
+    'EmailQueue',
+    'LBL_MASS_EMAIL_MANAGER_TITLE',
+    'LBL_MASS_EMAIL_MANAGER_DESC',
+    './index.php?module=EmailMan&action=index',
+    'email-queue'
+];
+
+
+$admin_group_header[] = ['LBL_EMAIL_TITLE', '', false, $admin_option_defs, 'LBL_EMAIL_DESC'];
+
+//admin tools
+$admin_option_defs = [];
+$admin_option_defs['Administration']['repair'] = [
+    'Repair',
+    'LBL_UPGRADE_TITLE',
+    'LBL_UPGRADE',
+    './index.php?module=Administration&action=Upgrade',
+    'repair'
+];
+if (!isset($GLOBALS['sugar_config']['hide_admin_backup']) || !$GLOBALS['sugar_config']['hide_admin_backup']) {
+    $admin_option_defs['Administration']['backup_management'] = [
+        'Backups',
+        'LBL_BACKUPS_TITLE',
+        'LBL_BACKUPS',
+        './index.php?module=Administration&action=Backups',
+        'backups'
+    ];
+}
+if (!isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) || !$GLOBALS['sugar_config']['hide_admin_diagnostics']) {
+    $admin_option_defs['Administration']['diagnostic'] = [
+        'Diagnostic',
+        'LBL_DIAGNOSTIC_TITLE',
+        'LBL_DIAGNOSTIC_DESC',
+        './index.php?module=Administration&action=Diagnostic',
+        'diagnostic'
+    ];
+}
+$admin_option_defs['Administration']['import'] = [
+    'Import',
+    'LBL_IMPORT_WIZARD',
+    'LBL_IMPORT_WIZARD_DESC',
+    './index.php?module=Import&action=step1&import_module=Administration',
+    'import'
+];
+$admin_option_defs['Administration']['module_loader'] = [
+    'ModuleLoader',
+    'LBL_MODULE_LOADER_TITLE',
+    'LBL_MODULE_LOADER',
+    './index.php?module=Administration&action=UpgradeWizard&view=module',
+    'module-loader'
+];
+if (!defined('TEMPLATE_URL')) {
+    $admin_option_defs['Administration']['upgrade_wizard'] = [
+        'Upgrade',
+        'LBL_UPGRADE_WIZARD_TITLE',
+        'LBL_UPGRADE_WIZARD',
+        './index.php?module=UpgradeWizard&action=index',
+        'upgrade-wizard'
+    ];
+}
+
+$admin_group_header[] = ['LBL_ADMIN_TOOLS_TITLE', '', false, $admin_option_defs, 'LBL_ADMIN_TOOLS_HEADER_DESC'];
+
+//studio.
+$admin_option_defs = [];
+$admin_option_defs['studio']['studio'] = [
+    'Studio',
+    'LBL_STUDIO',
+    'LBL_STUDIO_DESC',
+    './index.php?module=ModuleBuilder&action=index&type=studio',
+    'studio'
+];
+if (isset($GLOBALS['beanFiles']['iFrame'])) {
+    $admin_option_defs['Administration']['portal'] = [
+        'iFrames',
+        'LBL_IFRAME',
+        'DESC_IFRAME',
+        './index.php?module=iFrames&action=index'
+    ];
+}
+$admin_option_defs['Administration']['rename_tabs'] = [
+    'RenameTabs',
+    'LBL_RENAME_TABS',
+    'LBL_CHANGE_NAME_MODULES',
+    "./index.php?action=wizard&module=Studio&wizard=StudioWizard&option=RenameTabs",
+    'rename-modules'
+];
+$admin_option_defs['Administration']['moduleBuilder'] = [
+    'ModuleBuilder',
+    'LBL_MODULEBUILDER',
+    'LBL_MODULEBUILDER_DESC',
+    './index.php?module=ModuleBuilder&action=index&type=mb',
+    'module-builder'
+];
+
+$admin_option_defs['any']['dropdowneditor'] = [
+    'Dropdown',
+    'LBL_DROPDOWN_EDITOR',
+    'DESC_DROPDOWN_EDITOR',
+    './index.php?module=ModuleBuilder&action=index&type=dropdowns',
+    'dropdown-editor'
+];
+$admin_option_defs['any']['workflow_management'] = [
+    'Workflow',
+    'LBL_WORKFLOW_MANAGER',
+    'LBL_WORKFLOW_MANAGER_DESC',
+    './index.php?module=AOW_WorkFlow',
+    'workflow'
+];
+
+$admin_group_header[] = ['LBL_STUDIO_TITLE', '', false, $admin_option_defs, 'LBL_TOOLS_DESC'];
+
+//Google Settings
+$admin_option_defs = [];
+
+$admin_option_defs['Administration']['google_calendar_settings'] = [
+    'Google Calendar Settings',
+    'LBL_GOOGLE_CALENDAR_SETTINGS_TITLE',
+    'LBL_GOOGLE_CALENDAR_SETTINGS_DESC',
+    './index.php?module=Administration&action=GoogleCalendarSettings',
+    'system-settings'
+];
+$admin_option_defs['jjwg_Maps']['config'] = [
+    'Administration',
+    'LBL_JJWG_MAPS_ADMIN_CONFIG_TITLE',
+    'LBL_JJWG_MAPS_ADMIN_CONFIG_DESC',
+    './index.php?module=jjwg_Maps&action=config',
+    'google-maps-settings'
+];
+$admin_option_defs['jjwg_Maps']['geocoded_counts'] = [
+    'Geocoded_Counts',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODED_COUNTS_TITLE',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODED_COUNTS_DESC',
+    './index.php?module=jjwg_Maps&action=geocoded_counts',
+    'geocoded-counts'
+];
+$admin_option_defs['jjwg_Maps']['geocoding_test'] = [
+    'GeocodingTests',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODING_TEST_TITLE',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODING_TEST_DESC',
+    './index.php?module=jjwg_Maps&action=geocoding_test',
+    'geocoding-test'
+];
+$admin_option_defs['jjwg_Maps']['geocode_addresses'] = [
+    'GeocodeAddresses',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODE_ADDRESSES_TITLE',
+    'LBL_JJWG_MAPS_ADMIN_GEOCODE_ADDRESSES_DESC',
+    './index.php?module=jjwg_Maps&action=geocode_addresses',
+    'geocode-addresses'
+];
+$admin_option_defs['jjwg_Maps']['address_cache'] = [
+    'Address_Cache',
+    'LBL_JJWG_MAPS_ADMIN_ADDRESS_CACHE_TITLE',
+    'LBL_JJWG_MAPS_ADMIN_ADDRESS_CACHE_DESC',
+    './index.php?module=jjwg_Address_Cache&action=index',
+    'address-cache'
+];
+
 $admin_group_header[] = [
-    'LBL_SEARCH_HEADER',
+    'LBL_GOOGLE_SUITE_ADMIN_HEADER',
     '',
     false,
     $admin_option_defs,
-    'LBL_SEARCH_HEADER_DESC'
+    'LBL_GOOGLE_SUITE_ADMIN_DESC'
 ];
-
-//bugs.
-$admin_option_defs=array();
-$admin_option_defs['Bugs']['bug_tracker']= array('Releases','LBL_MANAGE_RELEASES','LBL_RELEASE','./index.php?module=Releases&action=index', 'releases');
-$admin_group_header[]= array('LBL_BUG_TITLE','',false,$admin_option_defs, 'LBL_BUG_DESC');
-
 
 if (file_exists('custom/modules/Administration/Ext/Administration/administration.ext.php')) {
     include('custom/modules/Administration/Ext/Administration/administration.ext.php');
@@ -307,16 +455,16 @@ if (file_exists('custom/modules/Administration/Ext/Administration/administration
 //For users with MLA access we need to find which entries need to be shown.
 //lets process the $admin_group_header and apply all the access control rules.
 $access = $current_user->getDeveloperModules();
-foreach ($admin_group_header as $key=>$values) {
+foreach ($admin_group_header as $key => $values) {
     $module_index = array_keys($values[3]);  //get the actual links..
-    foreach ($module_index as $mod_key=>$mod_val) {
+    foreach ($module_index as $mod_key => $mod_val) {
         if (is_admin($current_user) ||
             in_array($mod_val, $access) ||
-            $mod_val=='studio'||
-            ($mod_val=='Forecasts' && in_array('ForecastSchedule', $access)) ||
-            ($mod_val =='any')
-           ) {
-            if (!is_admin($current_user)&& isset($values[3]['Administration'])) {
+            $mod_val == 'studio' ||
+            ($mod_val == 'Forecasts' && in_array('ForecastSchedule', $access)) ||
+            ($mod_val == 'any')
+        ) {
+            if (!is_admin($current_user) && isset($values[3]['Administration'])) {
                 unset($values[3]['Administration']);
             }
             if (displayStudioForCurrentUser() == false) {
@@ -328,15 +476,15 @@ foreach ($admin_group_header as $key=>$values) {
             }
 
             // Need this check because Quotes and Products share the header group
-            if (!in_array('Quotes', $access)&& isset($values[3]['Quotes'])) {
+            if (!in_array('Quotes', $access) && isset($values[3]['Quotes'])) {
                 unset($values[3]['Quotes']);
             }
-            if (!in_array('Products', $access)&& isset($values[3]['Products'])) {
+            if (!in_array('Products', $access) && isset($values[3]['Products'])) {
                 unset($values[3]['Products']);
             }
 
             // Need this check because Emails and Campaigns share the header group
-            if (!in_array('Campaigns', $access)&& isset($values[3]['Campaigns'])) {
+            if (!in_array('Campaigns', $access) && isset($values[3]['Campaigns'])) {
                 unset($values[3]['Campaigns']);
             }
 

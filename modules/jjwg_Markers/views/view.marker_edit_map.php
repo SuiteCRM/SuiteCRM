@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MarkersViewMarker_Edit_Map extends SugarView
 {
     public function __construct()
@@ -11,19 +12,7 @@ class Jjwg_MarkersViewMarker_Edit_Map extends SugarView
         parent::__construct();
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Jjwg_MarkersViewMarker_Edit_Map()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
 
     public function display()
@@ -43,7 +32,7 @@ class Jjwg_MarkersViewMarker_Edit_Map extends SugarView
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-  <title><?php echo $GLOBALS['mod_strings']['LBL_MARKER_DISPLAY']; ?></title>
+  <title><?php echo $GLOBALS['mod_strings']['LBL_MARKER_DISPLAY'] ?? ''; ?></title>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="cache/themes/<?php echo $GLOBALS['theme']; ?>/css/style.css" />

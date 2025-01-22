@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Request a Feature/Suggestion/Enhancement
+    url: https://community.suitecrm.com/c/suggestion-box/13
+    about: If you would like to request an enhancement/feature, please do so via the forum, as this allows community members to vote for the suggestions more easily
+  - name: Raise a Documentation Issue
+    url: https://github.com/salesagility/SuiteDocs/issues/new
+    about: Please use this item if you would like to report a documentation issue
+    button-text: Start
+  - name: Raise a SuiteCRM 8 Bug
+    url: https://github.com/salesagility/SuiteCRM-Core/issues/new/choose
+    about: Use this item if your issue is specific to SuiteCRM 8 and above

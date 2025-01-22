@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2021 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,14 +38,19 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
+global $current_user;
+global $app_strings;
 
 if (!is_admin($current_user)) {
     sugar_die($app_strings['ERR_NOT_ADMIN']);
 }
 
 require_once('include/utils/db_utils.php');
-require_once('include/utils/zip_utils.php');
+require_once('include/utils/php_zip_utils.php');
 require_once('modules/UpgradeWizard/uw_utils.php');
 require_once('modules/Administration/UpgradeHistory.php');
 
@@ -59,6 +61,8 @@ if (!isset($locale) || empty($locale)) {
 }
 global $sugar_config;
 global $sugar_flavor;
+global $current_language;
+
 
 require_once('modules/Trackers/TrackerManager.php');
 $trackerManager = TrackerManager::getInstance();
@@ -255,7 +259,9 @@ if (isset($_REQUEST['step']) && $_REQUEST['step'] !=null) {
         //echo 'Previous run '.$previouUpgradeRun.'</br>';
         $upgradeStepFile = $previouUpgradeRun;
         //reset REQUEST
-        for ($i=0; $i<count($steps['files']); $i++) {
+        $itemsCount = count($steps['files']);
+        //reset REQUEST
+        for ($i=0; $i<$itemsCount; $i++) {
             if ($steps['files'][$i]== $previouUpgradeRun) {
                 $_REQUEST['step']=$i;
                 break;
@@ -288,8 +294,9 @@ if ($upgradeStepFile == 'end') {
     //}
 }
 
-if(!$_REQUEST['additional_step']) {
-    require('modules/UpgradeWizard/'.$upgradeStepFile.'.php');
+$additionalStep = $_REQUEST['additional_step'] ?? false;
+if (!isset($additionalStep) || !$additionalStep) {
+    require('modules/UpgradeWizard/' . $upgradeStepFile . '.php');
 }
 
 $afterCurrentStep = $_REQUEST['step'] + 1;
@@ -365,7 +372,7 @@ foreach ($installeds as $installed) {
                 $manifest_copy_files_to_dir = isset($manifest['copy_files']['to_dir']) ? clean_path($manifest['copy_files']['to_dir']) : "";
                 $manifest_copy_files_from_dir = isset($manifest['copy_files']['from_dir']) ? clean_path($manifest['copy_files']['from_dir']) : "";
                 $manifest_icon = clean_path($manifest['icon']);
-                $icon = "<!--not_in_theme!--><img src=\"" . $manifest_copy_files_to_dir . ($manifest_copy_files_from_dir != "" ? substr($manifest_icon, strlen($manifest_copy_files_from_dir)+1) : $manifest_icon) . "\">";
+                $icon = "<!--not_in_theme!--><img src=\"" . $manifest_copy_files_to_dir . ($manifest_copy_files_from_dir != "" ? substr((string) $manifest_icon, strlen((string) $manifest_copy_files_from_dir)+1) : $manifest_icon) . "\">";
             } else {
                 $icon = getImageForType($manifest['type']);
             }
@@ -500,7 +507,7 @@ function getSelectedModulesForLayoutMerge()
 eoq;
 
 // If we are on step  4 then force a redirect to run again to pick up changes to smarty before setting the template.
-if ($_REQUEST['step'] === '4' && !$_REQUEST['additional_step']) {
+if ($_REQUEST['step'] === '4' && !$additionalStep) {
     // Set session variables
     $_SESSION['UW_MAIN'] = $uwMain;
     $_SESSION['UW_JS'] = $js;
@@ -539,7 +546,7 @@ if ($_REQUEST['step'] === '4' && !$_REQUEST['additional_step']) {
     die();
 }
 
-if($_REQUEST['step'] === '4' && $_REQUEST['additional_step']) {
+if($_REQUEST['step'] === '4' && $additionalStep) {
     // Set Smarty variables
     $uwMain = $_SESSION['UW_MAIN'];
     $js = $_SESSION['UW_JS'];
@@ -561,7 +568,7 @@ if($_REQUEST['step'] === '4' && $_REQUEST['additional_step']) {
     $_SESSION['STEPS_STEP'] = $_REQUEST['step'];
     $uwHistory = $_SESSION['UW_HISTORY'];
     $disableNextForLicense = $_SESSION['disableNextForLicense'];
-    $frozen = $_SESSION['frozen'];
+    $frozen = $_SESSION['frozen'] ?? '';
     $u_allow = $_SESSION['u_allow'];
     $_SESSION['top_message'] = $GLOBALS['top_message'];
 }

@@ -12,7 +12,7 @@
   "billing_address_street_2": "",
   "billing_address_street_3": "",
   "billing_address_street_4": "",
-  "description": "",
+  "description": null,
   "email1": "hr.kid@example.tv",
   "email2": "kid.phone@example.co.jp",
   "email_opt_out": 0,

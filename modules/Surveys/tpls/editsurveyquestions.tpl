@@ -2,19 +2,19 @@
     <input type="hidden" name="survey_questions_supplied" value="1">
     <table id="questionTable" class="table table-bordered">
         <tr>
-            <th>
-                Question
-            </th>
-            <th>
-                Text
-            </th>
-            <th>
-                Type
-            </th>
-            <th>Actions</th>
+          <th>
+            {$MOD.LBL_SURVEY_QUESTION}
+          </th>
+          <th>
+            {$MOD.LBL_SURVEY_TEXT}
+          </th>
+          <th>
+            {$MOD.LBL_SURVEY_TYPE}
+          </th>
+            <th>{$MOD.LBL_SURVEY_ACTIONS}</th>
         </tr>
     </table>
-    <button type="button" class="button" id="newQuestionButton">New Question</button>
+    <button type="button" class="button" id="newQuestionButton">{$MOD.LBL_SURVEY_NEW_QUESTION}</button>
 </div>
 {literal}
 <script>
@@ -132,10 +132,10 @@
       newRow += "<td>";
       newRow += "</td>";
       newRow += "<td>";
-      newRow += "<strong>Options</strong>";
+      newRow += "<strong>{/literal}{$MOD.LBL_OPTIONS}{literal}</strong>";
       newRow += "<ul style='list-style: none;' class='optionList'>";
       newRow += "</ul>";
-      newRow += "<button class='addOptionButton button' data-question-index='" + createQuestion.questionCount + "' type='button'>Add option</button>";
+      newRow += "<button class='addOptionButton button' data-question-index='" + createQuestion.questionCount + "' type='button'>{/literal}{$MOD.LBL_ADD_OPTION}{literal}</button>";
       newRow += "</td>";
       newRow += "<td>";
       newRow += "</td>";

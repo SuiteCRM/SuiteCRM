@@ -54,11 +54,11 @@ require_once __DIR__ . '/../../../../../modules/Emails/EmailFromValidator.php';
 class EmailFromValidatorTest extends SuitePHPUnitFrameworkTestCase
 {
     // TODO: !@# Needs more test...
-    public function testValidateWrongFromAddr()
+    public function testValidateWrongFromAddr(): void
     {
         $email = BeanFactory::newBean('Emails');
         $validator = new EmailFromValidator();
-        
+
         // from_addr is not set
         $email->From = 'gusta@yammee.org';
         unset($email->from_addr);
@@ -67,51 +67,51 @@ class EmailFromValidatorTest extends SuitePHPUnitFrameworkTestCase
         $email->from_addr_name = 'Mr. Wee Gusta <gusta@yammee.org>';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_ADDR_IS_NOT_SET,
         ], $errors);
-        
-        
+
+
         // from_addr is empty
         $email->from_addr = '';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_ADDR_IS_EMPTY,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM_ADDR,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
-        
-        
+
+
         // from_addr is invalid
         $email->from_addr = 'gustayammee';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_ADDR_IS_INVALID,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM_ADDR,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
-        
+
         // from_addr is not match to From and/or from_addr_name - address part
         $email->from_addr = 'langusta@yammee.org';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM_ADDR,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
     }
-    
-    public function testValidateWrongFrom()
+
+    public function testValidateWrongFrom(): void
     {
         $email = BeanFactory::newBean('Emails');
         $validator = new EmailFromValidator();
-        
+
         // From is not set
         unset($email->From);
         $email->from_addr = 'gusta@yammee.org';
@@ -120,51 +120,51 @@ class EmailFromValidatorTest extends SuitePHPUnitFrameworkTestCase
         $email->from_addr_name = 'Mr. Wee Gusta <gusta@yammee.org>';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_IS_NOT_SET,
         ], $errors);
-        
-        
+
+
         // From is empty
         $email->From = '';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_IS_EMPTY,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
-        
-        
+
+
         // From is invalid
         $email->From = 'gustayammee';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_IS_INVALID,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
-        
+
         // From is not match to from_addr and/or from_addr_name - address part
         $email->From = 'langusta@yammee.org';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertFalse($valid);
-        $this->assertEquals([
+        self::assertFalse($valid);
+        self::assertEquals([
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM,
             EmailFromValidator::ERR_FIELD_FROM_ADDR_NAME_IS_INVALID,
         ], $errors);
     }
-    
-    public function testValidateOk()
+
+    public function testValidateOk(): void
     {
         $email = BeanFactory::newBean('Emails');
         $validator = new EmailFromValidator();
-        
+
         $email->From = 'gusta@yammee.org';
         $email->from_addr = 'gusta@yammee.org';
         $email->FromName = 'Mr. Wee Gusta';
@@ -172,7 +172,7 @@ class EmailFromValidatorTest extends SuitePHPUnitFrameworkTestCase
         $email->from_addr_name = 'Mr. Wee Gusta <gusta@yammee.org>';
         $valid = $validator->isValid($email);
         $errors = $validator->getErrors();
-        $this->assertTrue($valid);
-        $this->assertEmpty($errors);
+        self::assertTrue($valid);
+        self::assertEmpty($errors);
     }
 }

@@ -22,8 +22,6 @@ $warning: $color-47;
 $selection-color: $color-80;
 $selection-bg: $color-56;
 
-$nav-selection-color: $color-80;
-$nav-selection-bg: $color-56;
 
 //
 $page-content-spacing: 20px;
@@ -676,6 +674,7 @@ $alert-warning-border:        $state-warning-border !default;
 
 $alert-danger-bg:             $state-danger-bg !default;
 $alert-danger-text:           $state-danger-text !default;
+$alert-danger-text-color:     $color-80;
 $alert-danger-border:         $state-danger-border !default;
 
 
@@ -937,6 +936,10 @@ $default-text-disabled-border-color: $color-45;
 $default-input-group-color: $color-40;
 $default-btn-bg: $color-28;
 $default-btn-bg-hover: $color-28;
+$text-hover-listview: $color-80;
+$subpanel-text-hover: $color-90;
+
+$text-label-color: $color-90;
 
 $primary-btn-bg: $primary;
 $primary-btn-bg-hover: $color-20;
@@ -1006,6 +1009,9 @@ $navbar-alert-count-bg: $color-4;
 
 $navbar-user-color: $navbar-link-color;
 $navbar-user-color-hover: $navbar-link-color-hover;
+
+$nav-selection-bg: $color-80;
+$nav-selection-color: $color-7;
 
 $mobile-navbar-toolbar-bg: $color-33;
 
@@ -1080,6 +1086,7 @@ $confirm-opt-in-tick-color-in-confirmed: $color-16;
 $list-view-toolbar-bg: $color-39;
 $list-view-header-bg: $color-20;
 $list-view-header-color: $color-80;
+$list-view-pagination-color: $color-80;
 $list-view-button-color: $color-80;
 $list-view-text-color: $color-46;
 $list-view-link-color: $color-46;
@@ -1097,6 +1104,7 @@ $list-view-data-icon-font-size: 18px;
 $list-view-data-icon-color: $main-font-color;
 $page-list-view-font-size: 12px;
 $mass-update-text-color: $main-font-color;
+$list-view-action-button-border-color: transparent;
 
 // mass assign form
 $mass-assign-color: $main-font-color;
@@ -1116,6 +1124,11 @@ $input-select-bg: $color-34;
 $input-select-border: $color-34;
 $input-border: $color-34;
 
+$select-size-background-url: "../../../../../themes/SuiteP/css/Day/select.ico";
+$select-form-control-background-url: "../../../../../themes/SuiteP/css/Day/select.ico";
+$select-background-url: "../../../../../themes/SuiteP/css/Day/select.ico";
+$saved-search-select-background-url: "../../../../../themes/SuiteP/css/Day/select.ico";
+$select-ui-widget-control-background-url: "../../../../../themes/SuiteP/css/Day/select.ico";
 
 // tables
 $table-header-bg: $color-20;
@@ -1284,3 +1297,6 @@ $notification-text: $color-82 !default;
 // Required *
 $required-bg: transparent;
 $required-color: $color-49;
+
+$navigation-hover-color: $color-80;
+$error-background-color: $color-4;

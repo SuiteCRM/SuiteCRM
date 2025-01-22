@@ -46,6 +46,7 @@
  */
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 require_once('modules/ModuleBuilder/views/view.modulefields.php');
+#[\AllowDynamicProperties]
 class ViewLabels extends ViewModulefields
 {
     /**
@@ -65,6 +66,7 @@ class ViewLabels extends ViewModulefields
     //TODO Bundle Studio and ModuleBuilder label handling to increase maintainability.
     public function display()
     {
+        $translatedEditModule = '';
         $editModule = $_REQUEST['view_module'];
         $allLabels = (!empty($_REQUEST['labels']) && $_REQUEST['labels']== 'all');
 
@@ -131,8 +133,8 @@ class ViewLabels extends ViewModulefields
         //return_module_language($selected_lang, $editModule,false) : the mod_strings will be included from cache files here.
         foreach (return_module_language($selected_lang, $editModule, false) as $name=>$label) {
             //#25294
-            if ($allLabels || isset($vnames[$name]) || preg_match('/lbl_city|lbl_country|lbl_billing_address|lbl_alt_address|lbl_shipping_address|lbl_postal_code|lbl_state$/si', $name)) {
-                $formatted_mod_strings[$name] = htmlentities($label, ENT_QUOTES, 'UTF-8');
+            if ($allLabels || isset($vnames[$name]) || preg_match('/lbl_city|lbl_country|lbl_billing_address|lbl_alt_address|lbl_shipping_address|lbl_postal_code|lbl_state$/si', (string) $name)) {
+                $formatted_mod_strings[$name] = htmlentities((string) $label, ENT_QUOTES, 'UTF-8');
             }
         }
         //Grab everything from the custom files
@@ -170,30 +172,30 @@ class ViewLabels extends ViewModulefields
         $ajax->addSection('center', $GLOBALS['mod_strings']['LBL_SECTION_EDLABELS'], $html);
         echo $ajax->getJavascript();
     }
-    
+
     // fixing bug #39749: Quick Create in Studio
     public function getVariableMap($module)
     {
         $variableMap = array(MB_EDITVIEW => 'EditView',
                              MB_DETAILVIEW => 'DetailView',
                              MB_QUICKCREATE => 'QuickCreate');
-        
+
         $hideQuickCreateForModules = array('KBDocuments',
                                            'ProjectTask',
                                            'Campaigns',
                                            'Quotes',
                                            'ProductTemplates');
-        
+
         if (in_array($module, $hideQuickCreateForModules)) {
             if (isset($variableMap['quickcreate'])) {
                 unset($variableMap['quickcreate']);
             }
         }
-        
+
         if ($module == 'KBDocuments') {
             $variableMap  = array();
         }
-        
+
         return $variableMap;
     }
 }

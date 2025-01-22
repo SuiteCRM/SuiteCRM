@@ -55,6 +55,7 @@ require_once('include/SugarLogger/LoggerTemplate.php');
  * Default SugarCRM Logger
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarLogger implements LoggerTemplate
 {
     /**
@@ -68,6 +69,7 @@ class SugarLogger implements LoggerTemplate
     protected $filesuffix = "";
     protected $date_suffix = "";
     protected $log_dir = '.';
+    protected $defaultPerms = 0664;
 
 
     /**
@@ -127,6 +129,7 @@ class SugarLogger implements LoggerTemplate
         $this->logSize = $config->get('logger.file.maxSize', $this->logSize);
         $this->maxLogs = $config->get('logger.file.maxLogs', $this->maxLogs);
         $this->filesuffix = $config->get('logger.file.suffix', $this->filesuffix);
+        $this->defaultPerms = $config->get('logger.file.perms', $this->defaultPerms);
         $log_dir = $config->get('log_dir', $this->log_dir);
         $this->log_dir = $log_dir . (empty($log_dir)?'':'/');
         unset($config);
@@ -149,22 +152,25 @@ class SugarLogger implements LoggerTemplate
 
     /**
      * Checks to see if the SugarLogger file can be created and written to
+     * @noinspection PhpUndefinedFieldInspection
+     * @return bool
      */
     protected function _fileCanBeCreatedAndWrittenTo()
     {
-        $this->_attemptToCreateIfNecessary();
-        return file_exists($this->full_log_file) && is_writable($this->full_log_file);
-    }
-
-    /**
-     * Creates the SugarLogger file if it doesn't exist
-     */
-    protected function _attemptToCreateIfNecessary()
-    {
-        if (file_exists($this->full_log_file)) {
-            return;
+        if (is_writable($this->full_log_file)) {
+            return true;
         }
-        @touch($this->full_log_file);
+
+        if (!is_file($this->full_log_file)) {
+            @touch($this->full_log_file);
+            if ($this->defaultPerms !== false) {
+                @chmod($this->full_log_file, $this->defaultPerms);
+            }
+
+            return is_writable($this->full_log_file);
+        }
+
+        return false;
     }
 
     /**

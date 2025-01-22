@@ -49,6 +49,7 @@ require_once 'modules/ModuleBuilder/parsers/constants.php';
 class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDataParserInterface
 {
 
+    public $_view;
     /**
      * @var array $variableMap
      */
@@ -322,7 +323,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
      */
     public function addField($def, $panelID = false)
     {
-        if (count($this->_viewdefs ['panels']) == 0) {
+        if ((is_countable($this->_viewdefs ['panels']) ? count($this->_viewdefs ['panels']) : 0) == 0) {
             $GLOBALS ['log']->error(get_class($this) . "->addField(): _viewdefs empty for module {$this->_moduleName} and view {$this->_view}");
         }
 
@@ -334,7 +335,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 
         if (isset($this->_viewdefs ['panels'] [$panelID])) {
             $panel = $this->_viewdefs ['panels'] [$panelID];
-            $lastrow = count($panel) - 1; // index starts at 0
+            $lastrow = (is_countable($panel) ? count($panel) : 0) - 1; // index starts at 0
             $maxColumns = $this->getMaxColumns();
             $lastRowDef = $this->_viewdefs ['panels'] [$panelID] [$lastrow];
             for ($column = 0; $column < $maxColumns; $column++) {
@@ -383,7 +384,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
 
         foreach ($this->_viewdefs ['panels'] as $panelID => $panel) {
             $lastRowTouched = false;
-            $lastRowID = count($this->_viewdefs ['panels'] [$panelID]) - 1; // zero offset
+            $lastRowID = (is_countable($this->_viewdefs ['panels'] [$panelID]) ? count($this->_viewdefs ['panels'] [$panelID]) : 0) - 1; // zero offset
 
             foreach ($panel as $rowID => $row) {
                 foreach ($row as $colID => $field) {
@@ -408,7 +409,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
                 if ($empty) {
                     unset($this->_viewdefs ['panels'] [$panelID] [$lastRowID]);
                     // if the row was the only one in the panel, and the panel is not the first (default) panel, then remove the panel also
-                    if (count($this->_viewdefs ['panels'] [$panelID]) == 0 && $panelID != $firstPanelID) {
+                    if ((is_countable($this->_viewdefs ['panels'] [$panelID]) ? count($this->_viewdefs ['panels'] [$panelID]) : 0) == 0 && $panelID != $firstPanelID) {
                         unset($this->_viewdefs ['panels'] [$panelID]);
                     }
                 }
@@ -447,7 +448,7 @@ class GridLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
         $firstNewPanelId = 0;
         foreach ($this->_viewdefs ['panels'] as $panelID => $panel) {
             // strip out all but the numerics from the panelID - can't just use a cast as numbers may not be first in the string
-            for ($i = 0, $result = ''; $i < strlen($panelID); $i++) {
+            for ($i = 0, $result = ''; $i < strlen((string) $panelID); $i++) {
                 if (is_numeric($panelID [$i])) {
                     $result .= $panelID [$i];
                 }

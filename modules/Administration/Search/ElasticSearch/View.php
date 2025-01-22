@@ -58,7 +58,7 @@ class View extends AbstractView
         parent::__construct(__DIR__ . '/view.tpl');
     }
 
-    public function preDisplay()
+    public function preDisplay(): void
     {
         parent::preDisplay();
 
@@ -67,9 +67,9 @@ class View extends AbstractView
         if (!isset($sugar_config['search']['ElasticSearch']) || $sugar_config['search']['ElasticSearch']) {
             LoggerManager::getLogger()->warn('Configuration does not contains Elasticsearch default settings.');
         }
-        
+
         $elasticsearchConfig = isset($sugar_config['search']['ElasticSearch']) ? $sugar_config['search']['ElasticSearch'] : null;
-        
+
         $this->smarty->assign('config', $elasticsearchConfig);
     }
 }

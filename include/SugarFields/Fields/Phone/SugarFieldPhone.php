@@ -39,7 +39,7 @@
  */
 
 require_once('include/SugarFields/Fields/Base/SugarFieldBase.php');
-
+#[\AllowDynamicProperties]
 class SugarFieldPhone extends SugarFieldBase
 {
     

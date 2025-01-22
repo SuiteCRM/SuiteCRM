@@ -56,6 +56,4 @@ include_once 'modules/Administration/SyncInboundEmailAccounts/SyncInboundEmailAc
 include_once 'modules/Administration/SyncInboundEmailAccounts/SyncInboundEmailAccountsPage.php';
 include_once __DIR__ . '/../../include/Imap/ImapHandlerFactory.php';
 
-$imapFactory = new ImapHandlerFactory();
-$imap = $imapFactory->getImapHandler();
-new SyncInboundEmailAccountsPage(get_defined_vars(), $imap);
+new SyncInboundEmailAccountsPage(get_defined_vars());

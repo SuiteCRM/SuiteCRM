@@ -13,7 +13,7 @@ class CodeCoverageCommandsTest extends SuitePHPUnitFrameworkTestCase
     /** @var \SuiteCRM\Robo\Plugin\Commands\CodeCoverageCommands **/
     protected static $testClass;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -22,10 +22,9 @@ class CodeCoverageCommandsTest extends SuitePHPUnitFrameworkTestCase
         }
     }
 
-    public function testIsEnvironmentTravisCI()
+    public function testIsEnvironmentTravisCI(): void
     {
-        $reflection = new ReflectionClass(CodeCoverageCommands::class);
-        $method = $reflection->getMethod('isEnvironmentTravisCI');
+        $method = (new ReflectionClass(CodeCoverageCommands::class))->getMethod('isEnvironmentTravisCI');
         $method->setAccessible(true);
 
         $actual = $method->invoke(
@@ -33,13 +32,12 @@ class CodeCoverageCommandsTest extends SuitePHPUnitFrameworkTestCase
         );
 
         $returnType = is_string($actual) || is_array($actual) || is_bool($actual);
-        $this->assertTrue($returnType);
+        self::assertTrue($returnType);
     }
 
-    public function testGetCommitRangeForTravisCi()
+    public function testGetCommitRangeForTravisCi(): void
     {
-        $reflection = new ReflectionClass(CodeCoverageCommands::class);
-        $method = $reflection->getMethod('getCommitRangeForTravisCi');
+        $method = (new ReflectionClass(CodeCoverageCommands::class))->getMethod('getCommitRangeForTravisCi');
         $method->setAccessible(true);
 
         $actual = $method->invoke(
@@ -47,21 +45,20 @@ class CodeCoverageCommandsTest extends SuitePHPUnitFrameworkTestCase
         );
 
         $returnType = is_string($actual) || is_array($actual) || is_bool($actual);
-        $this->assertTrue($returnType);
+        self::assertTrue($returnType);
     }
 
-    public function testGetCodeCoverageCommand()
+    public function testGetCodeCoverageCommand(): void
     {
         $commandExpected = './vendor/bin/phpunit --configuration ./tests/phpunit.xml.dist --coverage-clover ./tests/_output/coverage.xml ./tests/unit/phpunit';
         // Run tests
-        $reflection = new ReflectionClass(CodeCoverageCommands::class);
-        $method = $reflection->getMethod('getCodeCoverageCommand');
+        $method = (new ReflectionClass(CodeCoverageCommands::class))->getMethod('getCodeCoverageCommand');
         $method->setAccessible(true);
 
         $actual = $method->invoke(
             self::$testClass
         );
 
-        $this->assertEquals($commandExpected, $actual);
+        self::assertEquals($commandExpected, $actual);
     }
 }

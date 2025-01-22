@@ -15,7 +15,7 @@ class CurrentLanguageTest extends SuitePHPUnitFrameworkTestCase
     private static $language;
 
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         if (self::$language === null) {
@@ -23,9 +23,9 @@ class CurrentLanguageTest extends SuitePHPUnitFrameworkTestCase
         }
     }
 
-    public function testGetCurrentLanguage()
+    public function testGetCurrentLanguage(): void
     {
         $language = self::$language->getCurrentLanguage();
-        $this->assertNotEmpty($language);
+        self::assertNotEmpty($language);
     }
 }

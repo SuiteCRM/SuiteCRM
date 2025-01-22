@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class Call extends SugarBean
 {
     public $field_name_map;
@@ -139,19 +140,7 @@ class Call extends SugarBean
         }
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function Call()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     /**
      * Disable edit if call is recurring and source is not Sugar. It should be edited only from Outlook.
@@ -186,7 +175,7 @@ class Call extends SugarBean
         global $timedate;
 
         if (!empty($this->date_start)) {
-            if (!empty($this->duration_hours) && !empty($this->duration_minutes)) {
+            if (!empty($this->duration_hours) || !empty($this->duration_minutes)) {
                 $td = $timedate->fromDb($this->date_start);
                 if ($td) {
                     $this->date_end = $td->modify(
@@ -244,7 +233,7 @@ class Call extends SugarBean
         if (isset($_REQUEST['reminders_data']) && !self::$remindersInSaving) {
             self::$remindersInSaving = true;
             $reminderData = json_encode(
-                $this->removeUnInvitedFromReminders(json_decode(html_entity_decode($_REQUEST['reminders_data']), true))
+                $this->removeUnInvitedFromReminders(json_decode(html_entity_decode((string) $_REQUEST['reminders_data']), true))
             );
             Reminder::saveRemindersDataJson('Calls', $return_id, $reminderData);
             self::$remindersInSaving = false;
@@ -320,7 +309,7 @@ class Call extends SugarBean
         $query = "SELECT ";
         $query .= "
 			calls.*,";
-        if (preg_match("/calls_users\.user_id/", $where)) {
+        if (preg_match("/calls_users\.user_id/", (string) $where)) {
             $query .= "calls_users.required,
 				calls_users.accept_status,";
         }
@@ -331,19 +320,19 @@ class Call extends SugarBean
 
         // this line will help generate a GMT-metric to compare to a locale's timezone
 
-        if (preg_match("/contacts/", $where)) {
+        if (preg_match("/contacts/", (string) $where)) {
             $query .= ", contacts.first_name, contacts.last_name";
             $query .= ", contacts.assigned_user_id contact_name_owner";
         }
         $query .= " FROM calls ";
 
-        if (preg_match("/contacts/", $where)) {
+        if (preg_match("/contacts/", (string) $where)) {
             $query .=	"LEFT JOIN calls_contacts
 	                    ON calls.id=calls_contacts.call_id
 	                    LEFT JOIN contacts
 	                    ON calls_contacts.contact_id=contacts.id ";
         }
-        if (preg_match('/calls_users\.user_id/', $where)) {
+        if (preg_match('/calls_users\.user_id/', (string) $where)) {
             $query .= "LEFT JOIN calls_users
 			ON calls.id=calls_users.call_id and calls_users.deleted=0 ";
         }
@@ -379,7 +368,7 @@ class Call extends SugarBean
     {
         $custom_join = $this->getCustomJoin(true, true, $where);
         $custom_join['join'] .= $relate_link_join;
-        $contact_required = stristr($where, "contacts");
+        $contact_required = stristr((string) $where, "contacts");
         if ($contact_required) {
             $query = "SELECT calls.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
             $query .= $custom_join['select'];
@@ -599,7 +588,7 @@ class Call extends SugarBean
         $xtpl->assign("CALL_HOURS", $call->duration_hours);
         $xtpl->assign("CALL_MINUTES", $call->duration_minutes);
         $xtpl->assign("CALL_STATUS", ((isset($call->status))?$app_list_strings['call_status_dom'][$call->status] : ""));
-        $xtpl->assign("CALL_DESCRIPTION", $call->description);
+        $xtpl->assign("CALL_DESCRIPTION", nl2br($call->description));
 
         return $xtpl;
     }

@@ -44,7 +44,8 @@ namespace SuiteCRM\API\JsonApi\v1\Enumerator;
  * @package SuiteCRM\API\JsonApi\v1
  * @see http://jsonapi.org/format/1.0/#document-resource-objects
  */
+#[\AllowDynamicProperties]
 class ResourceEnum
 {
-    const DEFAULT_SOURCE = '/data';
+    public const DEFAULT_SOURCE = '/data';
 }

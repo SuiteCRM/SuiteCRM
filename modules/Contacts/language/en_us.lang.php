@@ -68,7 +68,7 @@ $mod_strings = array(
     'LBL_BIRTHDATE' => 'Birthdate:',
     'LBL_CITY' => 'City:',
     'LBL_CAMPAIGN_ID' => 'Campaign ID',
-    'LBL_CONTACT_INFORMATION' => 'OVERVIEW',
+    'LBL_CONTACT_INFORMATION' => 'OVERVIEW', //No need to be translated in all caps. Translation used just in menu action items when using the SuiteP template
     'LBL_CONTACT_NAME' => 'Contact Name:',
     'LBL_CONTACT_OPP_FORM_TITLE' => 'Contact-Opportunity:',
     'LBL_CONTACT_ROLE' => 'Role:',
@@ -216,4 +216,6 @@ $mod_strings = array(
     'LBL_AOS_INVOICES' => 'Invoices',
     'LBL_AOS_QUOTES' => 'Quotes',
     'LBL_PROJECT_CONTACTS_1_FROM_PROJECT_TITLE' => 'Project Contacts from Project Title',
+
+    'LBL_LIST_INVITE_STATUS' => 'Invite Status',
 );

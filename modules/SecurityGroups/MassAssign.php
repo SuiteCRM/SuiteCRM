@@ -40,12 +40,17 @@ elseif (isset($_REQUEST['entire'])) {
     if (isset($_SESSION['export_where']) && !empty($_SESSION['export_where'])) { // bug 4679
         $where = $_SESSION['export_where'];
         $whereArr = explode(" ", trim($where));
-        if ($whereArr[0] == trim('where')) {
+        if ($whereArr[0] === trim('where')) {
             $whereClean = array_shift($whereArr);
         }
         $where = implode(" ", $whereArr);
     } else {
         $where = '';
+    }
+    $export_where = !empty($_SESSION['export_where']) ? $_SESSION['export_where'] : '';
+    if (empty($_REQUEST['export_where_md5']) || $_REQUEST['export_where_md5'] !== md5($export_where)) {
+        $err = translate('LBL_ERROR_EXPORT_WHERE_CHANGED', 'SecurityGroups');
+        sugar_die($err);
     }
     if (empty($order_by)) {
         $order_by = '';
@@ -67,7 +72,7 @@ if (isset($_POST['mass']) && is_array($_POST['mass'])) {
             $sugarbean->retrieve($id);
 
             //if($sugarbean->ACLAccess('Delete')){
-                
+
             $GLOBALS['log']->debug("MassAssign - deleting relationship: $groupFocus->name");
             if ($sugarbean->module_dir == 'Users') {
                 $rel_name = "SecurityGroups";
@@ -78,7 +83,7 @@ if (isset($_POST['mass']) && is_array($_POST['mass'])) {
             }
             $sugarbean->load_relationship($rel_name);
             $sugarbean->$rel_name->delete($sugarbean->id, $groupFocus->id);
-                
+
         //As of 6.3.0 many-to-many requires a link field set in both modules...so lets bypass that
                 //$groupFocus->removeGroupFromRecord($sugarbean->module_dir, $id, $groupFocus->id);
             //}
@@ -86,7 +91,7 @@ if (isset($_POST['mass']) && is_array($_POST['mass'])) {
             $sugarbean->retrieve($id);
 
             //if($sugarbean->ACLAccess('Save')){
-                
+
             $GLOBALS['log']->debug("MassAssign - adding relationship: $groupFocus->name");
             if ($sugarbean->module_dir == 'Users') {
                 $rel_name = "SecurityGroups";
@@ -98,7 +103,7 @@ if (isset($_POST['mass']) && is_array($_POST['mass'])) {
             $GLOBALS['log']->debug("MassAssign - adding relationship relationship name: ".$rel_name);
             $sugarbean->load_relationship($rel_name);
             $sugarbean->$rel_name->add($groupFocus->id);
-                
+
 
             //As of 6.3.0 many-to-many requires a link field set in both modules...so lets bypass that
                 /**

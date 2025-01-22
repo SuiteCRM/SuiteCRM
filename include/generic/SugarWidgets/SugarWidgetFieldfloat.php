@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldFloat extends SugarWidgetFieldInt
 {
     public function displayList(&$layout_def)

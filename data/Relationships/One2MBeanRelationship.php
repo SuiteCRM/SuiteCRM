@@ -48,6 +48,7 @@ require_once("data/Relationships/One2MRelationship.php");
  * Represents a one to many relationship that is table based.
  * @api
  */
+#[\AllowDynamicProperties]
 class One2MBeanRelationship extends One2MRelationship
 {
     //Type is read in sugarbean to determine query construction
@@ -59,9 +60,9 @@ class One2MBeanRelationship extends One2MRelationship
     }
 
     /**
-     * @param  $lhs SugarBean left side bean to add to the relationship.
-     * @param  $rhs SugarBean right side bean to add to the relationship.
-     * @param  $additionalFields key=>value pairs of fields to save on the relationship
+     * @param SugarBean $lhs left side bean to add to the relationship.
+     * @param SugarBean $rhs right side bean to add to the relationship.
+     * @param mixed $additionalFields key=>value pairs of fields to save on the relationship
      * @return boolean true if successful
      */
     public function add($lhs, $rhs, $additionalFields = array())
@@ -176,7 +177,7 @@ class One2MBeanRelationship extends One2MRelationship
     }
 
     /**
-     * @param  $link Link2 loads the relationship for this link.
+     * @param Link2 $link loads the relationship for this link.
      * @return void
      */
     public function load($link, $params = array())
@@ -343,7 +344,7 @@ class One2MBeanRelationship extends One2MRelationship
         $alias = empty($params['join_table_alias']) ? "{$link->name}_rel": $params['join_table_alias'];
         $alias = DBManagerFactory::getInstance()->getValidDBName($alias, false, 'alias');
 
-        $tableInRoleFilter = "";
+        $tableInRoleFilter = $startingTable;
         if (
             (
                 $startingTable == "meetings"
@@ -359,7 +360,7 @@ class One2MBeanRelationship extends One2MRelationship
                 || $targetTable == "tasks"
                 || $targetTable == "calls"
             )
-            && substr($alias, 0, 12 + strlen($targetTable)) == $targetTable . "_activities_"
+            && substr((string) $alias, 0, 12 + strlen((string) $targetTable)) == $targetTable . "_activities_"
         ) {
             $tableInRoleFilter = $linkIsLHS ? $alias : $startingTable;
         }

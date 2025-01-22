@@ -90,6 +90,8 @@
          }
      }
      $dropdowns = array_keys($my_list_strings);
+    //  Adding a default empty list
+     $dropdowns[] = '';
      sort($dropdowns);
      $default_dropdowns = array();
      if (!empty($vardef['options']) && !empty($my_list_strings[$vardef['options']])) {

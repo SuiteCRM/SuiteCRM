@@ -23,18 +23,19 @@
  define("INDICATOR_VALUE_LABEL"		, 700022);
 
  /* pIndicator class definition */
+ #[\AllowDynamicProperties]
  class pIndicator
   {
-   var $pChartObject;
+   public $pChartObject;
 
-   /* Class creator */
-   function pIndicator($pChartObject)
-    {
-     $this->pChartObject = $pChartObject;
-    }
+     /* Class creator */
+     public function __construct($pChartObject)
+     {
+         $this->pChartObject = $pChartObject;
+     }
 
    /* Draw an indicator */
-   function draw($X,$Y,$Width,$Height,$Format="")
+   public function draw($X,$Y,$Width,$Height,$Format="")
     {
      $Values			= isset($Format["Values"]) ? $Format["Values"] : VOID;
      $IndicatorSections		= isset($Format["IndicatorSections"]) ? $Format["IndicatorSections"] : NULL;
@@ -63,7 +64,7 @@
      $Unit			= isset($Format["Unit"]) ? $Format["Unit"] : "";
 
      /* Convert the Values to display to an array if needed */
-     if ( !is_array($Values) ) { $Value = $Values; $Values = ""; $Values[] = $Value; }
+     if ( !is_array($Values) ) { $Value = $Values; $Values = []; $Values[] = $Value; }
 
      /* No section, let's die */
      if ( $IndicatorSections == NULL ) { return(0); }
@@ -75,7 +76,7 @@
        if ( $Settings["End"] > $OverallMax )   { $OverallMax = $Settings["End"]; }
        if ( $Settings["Start"] < $OverallMin ) { $OverallMin = $Settings["Start"]; }
       }
-     $RealWidth = $Width - (count($IndicatorSections)-1)*$SectionsMargin;
+     $RealWidth = $Width - ((is_countable($IndicatorSections) ? count($IndicatorSections) : 0)-1)*$SectionsMargin;
      $XScale    = $RealWidth / ($OverallMax-$OverallMin);
 
      $X1 = $X; $ValuesPos = "";
@@ -89,14 +90,14 @@
 
        if ( $Key == 0 && $DrawLeftHead )
         {
-         $Poly = ""; $Poly[] = $X1-1; $Poly[] = $Y; $Poly[] = $X1-1; $Poly[] = $Y+$Height; $Poly[] = $X1-1-$HeadSize; $Poly[] = $Y+($Height/2);
+         $Poly = []; $Poly[] = $X1-1; $Poly[] = $Y; $Poly[] = $X1-1; $Poly[] = $Y+$Height; $Poly[] = $X1-1-$HeadSize; $Poly[] = $Y+($Height/2);
          $this->pChartObject->drawPolygon($Poly,$Color);
          $this->pChartObject->drawLine($X1-2,$Y,$X1-2-$HeadSize,$Y+($Height/2),$Color);
          $this->pChartObject->drawLine($X1-2,$Y+$Height,$X1-2-$HeadSize,$Y+($Height/2),$Color);
         }
 
        /* Determine the position of the breaks */
-       $Break = "";
+       $Break = [];
        foreach($Values as $iKey => $Value)
         {
          if ( $Value >= $Settings["Start"] && $Value <= $Settings["End"] )
@@ -114,7 +115,7 @@
          else
           {
            sort($Break);
-           $Poly = ""; $Poly[] = $X1; $Poly[] = $Y; $LastPointWritten = FALSE;
+           $Poly = []; $Poly[] = $X1; $Poly[] = $Y; $LastPointWritten = FALSE;
            foreach($Break as $iKey => $Value)
             {
              if ( $Value-5 >= $X1 )
@@ -122,7 +123,7 @@
              elseif ($X1 - ($Value-5) > 0 )
               {
                $Offset = $X1 - ($Value-5);
-               $Poly = ""; $Poly[] = $X1; $Poly[] = $Y + $Offset;
+               $Poly = []; $Poly[] = $X1; $Poly[] = $Y + $Offset;
               }
 
              $Poly[] = $Value;   $Poly[] = $Y+5;
@@ -147,9 +148,9 @@
        else
         $this->pChartObject->drawFilledRectangle($X1,$Y,$X2,$Y+$Height,$Color);
 
-       if ( $Key == count($IndicatorSections)-1 && $DrawRightHead )
+       if ( $Key == (is_countable($IndicatorSections) ? count($IndicatorSections) : 0)-1 && $DrawRightHead )
         {
-         $Poly = ""; $Poly[] = $X2+1; $Poly[] = $Y; $Poly[] = $X2+1; $Poly[] = $Y+$Height; $Poly[] = $X2+1+$HeadSize; $Poly[] = $Y+($Height/2);
+         $Poly = []; $Poly[] = $X2+1; $Poly[] = $Y; $Poly[] = $X2+1; $Poly[] = $Y+$Height; $Poly[] = $X2+1+$HeadSize; $Poly[] = $Y+($Height/2);
          $this->pChartObject->drawPolygon($Poly,$Color);
          $this->pChartObject->drawLine($X2+1,$Y,$X2+1+$HeadSize,$Y+($Height/2),$Color);
          $this->pChartObject->drawLine($X2+1,$Y+$Height,$X2+1+$HeadSize,$Y+($Height/2),$Color);
@@ -226,7 +227,7 @@
               }
              elseif( $ValueDisplay == INDICATOR_VALUE_LABEL )
               {
-               $Caption = "";
+               $Caption = [];
                $Caption[] = array("Format"=>array("R"=>$Settings["R"],"G"=>$Settings["G"],"B"=>$Settings["B"],"Alpha"=>100),"Caption"=>$Value.$Unit);
                $this->pChartObject->drawLabelBox(floor($X1),floor($Y)+2,"Value - ".$Settings["Caption"],$Caption);
               }

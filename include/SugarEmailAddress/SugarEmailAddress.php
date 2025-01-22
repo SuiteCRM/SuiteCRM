@@ -211,19 +211,7 @@ class SugarEmailAddress extends SugarBean
         self::$count++;
     }
 
-    /**
-     * @deprecated deprecated since version 7.6, PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code, use __construct instead
-     */
-    public function SugarEmailAddress()
-    {
-        $deprecatedMessage = 'PHP4 Style Constructors are deprecated and will be remove in 7.8, please update your code';
-        if (isset($GLOBALS['log'])) {
-            $GLOBALS['log']->deprecated($deprecatedMessage);
-        } else {
-            trigger_error($deprecatedMessage, E_USER_DEPRECATED);
-        }
-        self::__construct();
-    }
+
 
     /**
      * Legacy email address handling.  This is to allow support for SOAP or customizations
@@ -251,7 +239,7 @@ class SugarEmailAddress extends SugarBean
             || !isset($_REQUEST[$bean->module_dir . '_email_widget_id'])
             || !isset($_REQUEST['massupdate'])
         ) {
-            if (empty($this->addresses) || (!empty($bean->email1))) {
+            if (empty($this->addresses)) {
                 $this->addresses = array();
                 $optOut = (isset($bean->email_opt_out) && $bean->email_opt_out == '1');
                 $invalid = (isset($bean->invalid_email) && $bean->invalid_email == '1');
@@ -478,7 +466,7 @@ class SugarEmailAddress extends SugarBean
                     email_address = '$_address', 
                     email_address_caps = '$_addressCaps' 
                   WHERE 
-                    id = '{$_id}' AND
+                    id = {$_id} AND
                     deleted = 0";
             $result = $db->query($query);
             if (!$result) {

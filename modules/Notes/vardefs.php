@@ -75,6 +75,7 @@ $dictionary['Note'] = array(
                 'type' => 'datetime',
                 'comment' => 'Date record last modified',
                 'enable_range_search' => true,
+                'options' => 'date_range_search_dom',
               ],
 
           'modified_user_id' =>
@@ -256,7 +257,7 @@ $dictionary['Note'] = array(
                 'reportable'=>false,
                 'comment' => 'Record deletion indicator'
             ],
-        
+
         'filecontents' =>
             [
                 'name' => 'filecontents',
@@ -281,7 +282,8 @@ $dictionary['Note'] = array(
                 'name' => 'show_preview',
                 'type' => 'bool',
                 'source' => 'non-db',
-                'reportable' => false
+                'reportable' => false,
+                'mass_update' => false
             ],
 
          'contact_name'=>
@@ -333,6 +335,15 @@ $dictionary['Note'] = array(
                 'type' => 'id',
                 'reportable'=>false,
                 'source'=>'non-db',
+            ],
+
+        'campaign_id' =>
+            [
+                'name' => 'campaign_id',
+                'vname' => 'LBL_CAMPAIGN_ID',
+                'type' => 'id',
+                'reportable' => false,
+                'source' => 'non-db',
             ],
 
           'acase_id' =>
@@ -430,6 +441,15 @@ $dictionary['Note'] = array(
                 'source'=>'non-db',
                 'vname'=>'LBL_BUGS',
               ],
+
+        'campaigns' =>
+            [
+                'name' => 'campaigns',
+                'type' => 'link',
+                'relationship' => 'campaign_notes',
+                'source' => 'non-db',
+                'vname' => 'LBL_CAMPAIGNS',
+            ],
 
           'aos_contracts' =>
               [

@@ -52,31 +52,40 @@ if (!empty($_REQUEST['remove_default_id'])) {
         SecurityGroup::saveDefaultGroup($_REQUEST['default_group'], $_REQUEST['default_module']);
     }
 
-
-
     require_once('modules/Configurator/Configurator.php');
     $cfg = new Configurator();
-    
+
+    $securitysuiteAdditive = $_REQUEST['securitysuite_additive'] ?? 0;
+    $securitysuiteStrictRights = $_REQUEST['securitysuite_strict_rights'] ?? 0;
+    $securitysuiteFilterUserList = $_REQUEST['securitysuite_filter_user_list'] ?? 0;
+    $securitysuiteUserRolePrecedence = $_REQUEST['securitysuite_user_role_precedence'] ?? 0;
+    $securitysuiteUserPopup = $_REQUEST['securitysuite_user_popup'] ?? 0;
+    $securitysuitePopupSelect = $_REQUEST['securitysuite_popup_select'] ?? 0;
+    $securitysuiteInheritCreator = $_REQUEST['securitysuite_inherit_creator'] ?? 0;
+    $securitysuiteInheritParent = $_REQUEST['securitysuite_inherit_parent'] ?? 0;
+    $securitysuiteInheritAssigned = $_REQUEST['securitysuite_inherit_assigned'] ?? 0;
+    $securitysuiteInboundEmail = $_REQUEST['securitysuite_inbound_email'] ?? 0;
+
     // save securitysuite_additive setting
-    $cfg->config['securitysuite_additive'] = ($_REQUEST['securitysuite_additive'] == 1) ? true : false;
+    $cfg->config['securitysuite_additive'] = $securitysuiteAdditive == 1;
     // save securitysuite_strict_rights setting
-    $cfg->config['securitysuite_strict_rights'] = ($_REQUEST['securitysuite_strict_rights'] == 1) ? true : false;
+    $cfg->config['securitysuite_strict_rights'] = $securitysuiteStrictRights == 1;
     // save securitysuite_filter_user_list setting
-    $cfg->config['securitysuite_filter_user_list'] = ($_REQUEST['securitysuite_filter_user_list'] == 1) ? true : false;
+    $cfg->config['securitysuite_filter_user_list'] = $securitysuiteFilterUserList== 1;
     // save securitysuite_user_role_precedence setting
-    $cfg->config['securitysuite_user_role_precedence'] = ($_REQUEST['securitysuite_user_role_precedence'] == 1) ? true : false;
+    $cfg->config['securitysuite_user_role_precedence'] = $securitysuiteUserRolePrecedence == 1;
     // save securitysuite_user_popup setting
-    $cfg->config['securitysuite_user_popup'] = ($_REQUEST['securitysuite_user_popup'] == 1) ? true : false;
+    $cfg->config['securitysuite_user_popup'] = $securitysuiteUserPopup == 1;
     // save securitysuite_popup_select setting
-    $cfg->config['securitysuite_popup_select'] = ($_REQUEST['securitysuite_popup_select'] == 1) ? true : false;
+    $cfg->config['securitysuite_popup_select'] = $securitysuitePopupSelect == 1;
     // save securitysuite_inherit_creator setting
-    $cfg->config['securitysuite_inherit_creator'] = ($_REQUEST['securitysuite_inherit_creator'] == 1) ? true : false;
+    $cfg->config['securitysuite_inherit_creator'] = $securitysuiteInheritCreator == 1;
     // save securitysuite_inherit_parent setting
-    $cfg->config['securitysuite_inherit_parent'] = ($_REQUEST['securitysuite_inherit_parent'] == 1) ? true : false;
+    $cfg->config['securitysuite_inherit_parent'] = $securitysuiteInheritParent == 1;
     // save securitysuite_inherit_assigned setting
-    $cfg->config['securitysuite_inherit_assigned'] = ($_REQUEST['securitysuite_inherit_assigned'] == 1) ? true : false;
+    $cfg->config['securitysuite_inherit_assigned'] = $securitysuiteInheritAssigned == 1;
     // save securitysuite_inbound_email setting
-    $cfg->config['securitysuite_inbound_email'] = ($_REQUEST['securitysuite_inbound_email'] == 1) ? true : false;
+    $cfg->config['securitysuite_inbound_email'] = $securitysuiteInboundEmail == 1;
 
     if (!isset($cfg->config['addAjaxBannedModules'])) {
         $cfg->config['addAjaxBannedModules'] = array();

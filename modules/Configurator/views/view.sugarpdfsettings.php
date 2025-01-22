@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class ConfiguratorViewSugarpdfsettings extends SugarView
 {
     /**
@@ -72,7 +73,10 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
      */
     public function display()
     {
+
         global $mod_strings, $app_strings, $app_list_strings;
+
+        $SugarpdfSettings = [];
 
         require_once("modules/Configurator/metadata/SugarpdfSettingsdefs.php");
         if (file_exists('custom/modules/Configurator/metadata/SugarpdfSettingsdefs.php')) {
@@ -169,7 +173,7 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
         $files = array('sugarpdf_pdf_header_logo'=>$_FILES['new_header_logo'], 'sugarpdf_pdf_small_header_logo'=>$_FILES['new_small_header_logo']);
         foreach ($files as $k=>$v) {
             if (empty($error) && isset($v) && !empty($v['name'])) {
-                $file_name = K_PATH_CUSTOM_IMAGES .'pdf_logo_'. basename($v['name']);
+                $file_name = K_PATH_CUSTOM_IMAGES .'pdf_logo_'. basename((string) $v['name']);
                 if (file_exists($file_name)) {
                     rmdir_recursive($file_name);
                 }
@@ -196,7 +200,7 @@ class ConfiguratorViewSugarpdfsettings extends SugarView
                         if (!empty($error)) {
                             rmdir_recursive($file_name);
                         } else {
-                            $_POST[$k]='pdf_logo_'. basename($v['name']);
+                            $_POST[$k]='pdf_logo_'. basename((string) $v['name']);
                         }
                     } else {
                         $error='ERR_ALERT_FILE_UPLOAD';

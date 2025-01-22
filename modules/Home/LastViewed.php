@@ -52,7 +52,7 @@ global $current_user;
 // Create the head of the table.
 ?>
 		<table cellpadding="2" cellspacing="0" border="0">
-		
+
 <?php
 $current_row=1;
 $tracker = BeanFactory::newBean('Trackers');

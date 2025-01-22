@@ -50,6 +50,7 @@ include_once get_custom_file_if_exists('modules/Users/authentication/SugarAuthen
  * This file is where the user authentication occurs. No redirection should happen in this file.
  *
  */
+#[\AllowDynamicProperties]
 class SugarAuthenticateUser
 {
 

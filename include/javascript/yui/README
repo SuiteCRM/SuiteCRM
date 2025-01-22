@@ -1,5 +1,68 @@
 YUI Library Release Notes
 
+*** version 2.9.1 ***
+
+see https://clarle.github.io/yui3/support/20121030-vulnerability/
+
+*** version 2.8.1 ***
+
+2.8.1 is a bug fix release that includes:
+- Proper version of Uploader SWF now included in /build
+- A fix to an IE issue in History
+- Updates to DataTable's Row Expansion example
+
+
+*** version 2.8.0 ***
+
+The 2.8.0 release of YUI contains:
+
+New components:
+  - Storage
+  - SWFStore
+  _ SWF
+  - ProgressBar
+
+Significant additions. To the following components:
+  - Calendar
+    - Year offset support
+  - Carousel
+    - Gallery
+  - Charts
+    - Support for multiple Y axes
+    - Visibility control for individual series
+    - Custom event marker
+  - Connection
+    - Cross-domain support
+  - Event
+    - Event Delegation
+
+
+There have been bug fixes and feature enhancements to many components.  Refer to the README files for full
+details of the specific changes made to each component.
+
+
+*** version 2.7.0 ***
+
+The 2.7.0 release of YUI contains:
+
+One new component:
+  - StyleSheet
+
+Three components promoted from Beta to GA status
+  - Element
+  - ProfilerViewer
+  - Selector
+
+One components promoted from Experimental to Beta status
+  - Uploader
+
+2.7.0 contains a number of updates to the components to provide IE8 compatibility based on the testing we
+have done with the pre-release distributions.  Further updates will be made, if needed, following the
+official launch of the browser.
+
+Bug fixes and feature enhancements were added to many components.  Refer to the README files for full
+details on the specific changes to each component.
+
 *** version 2.6.0 ***
 
 The 2.6.0 release of YUI contains:
@@ -55,7 +118,7 @@ This update contains the following:
 - additions to the Yahoo, Uploader, Editor, and DataSource components to improve YUI support for Adobe AIR
 - Douglas Crockford's fix for a security vulnerability where the JSON parser could be tricked into processing
 an unquoted string as quoted which could allow unsafe scripts to be evaled
-- a new aggregate file Ñ yuiloader-dom-event.js that is the ideal baseline rollup to use to be able to 
+- a new aggregate file ï¿½ yuiloader-dom-event.js that is the ideal baseline rollup to use to be able to 
 lazy-load any part of YUI on-demand
 - over 60 bug fixes
 

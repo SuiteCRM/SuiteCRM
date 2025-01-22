@@ -4,7 +4,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 
 class MeetingTest extends SuitePHPUnitFrameworkTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -13,57 +13,56 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
         $current_user = BeanFactory::newBean('Users');
     }
 
-    public function testMeeting()
+    public function testMeeting(): void
     {
         // Execute the constructor and check for the Object type and  attributes
         $meeting = BeanFactory::newBean('Meetings');
 
-        $this->assertInstanceOf('Meeting', $meeting);
-        $this->assertInstanceOf('SugarBean', $meeting);
+        self::assertInstanceOf('Meeting', $meeting);
+        self::assertInstanceOf('SugarBean', $meeting);
 
-        $this->assertAttributeEquals('Meetings', 'module_dir', $meeting);
-        $this->assertAttributeEquals('Meeting', 'object_name', $meeting);
-        $this->assertAttributeEquals('meetings', 'table_name', $meeting);
+        self::assertEquals('Meetings', $meeting->module_dir);
+        self::assertEquals('Meeting', $meeting->object_name);
+        self::assertEquals('meetings', $meeting->table_name);
 
-        $this->assertAttributeEquals(true, 'new_schema', $meeting);
-        $this->assertAttributeEquals(true, 'importable', $meeting);
-        $this->assertAttributeEquals(false, 'syncing', $meeting);
-        $this->assertAttributeEquals(true, 'update_vcal', $meeting);
+        self::assertEquals(true, $meeting->new_schema);
+        self::assertEquals(true, $meeting->importable);
+        self::assertEquals(false, $meeting->syncing);
+        self::assertEquals(true, $meeting->update_vcal);
 
-        $this->assertAttributeEquals('meetings_users', 'rel_users_table', $meeting);
-        $this->assertAttributeEquals('meetings_contacts', 'rel_contacts_table', $meeting);
-        $this->assertAttributeEquals('meetings_leads', 'rel_leads_table', $meeting);
+        self::assertEquals('meetings_users', $meeting->rel_users_table);
+        self::assertEquals('meetings_contacts', $meeting->rel_contacts_table);
+        self::assertEquals('meetings_leads', $meeting->rel_leads_table);
 
-        $this->assertAttributeEquals(null, 'cached_get_users', $meeting);
-        $this->assertAttributeEquals(false, 'date_changed', $meeting);
+        self::assertEquals(null, $meeting->cached_get_users);
+        self::assertEquals(false, $meeting->date_changed);
     }
 
-    public function testACLAccess()
+    public function testACLAccess(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         //test without recurring_source
-        $this->assertEquals(true, $meeting->ACLAccess('edit'));
-        $this->assertEquals(true, $meeting->ACLAccess('save'));
-        $this->assertEquals(true, $meeting->ACLAccess('editview'));
-        $this->assertEquals(true, $meeting->ACLAccess('delete'));
+        self::assertEquals(true, $meeting->ACLAccess('edit'));
+        self::assertEquals(true, $meeting->ACLAccess('save'));
+        self::assertEquals(true, $meeting->ACLAccess('editview'));
+        self::assertEquals(true, $meeting->ACLAccess('delete'));
 
         //test with recurring_source
         $meeting->recurring_source = 'test';
-        $this->assertEquals(false, $meeting->ACLAccess('edit'));
-        $this->assertEquals(false, $meeting->ACLAccess('save'));
-        $this->assertEquals(false, $meeting->ACLAccess('editview'));
-        $this->assertEquals(false, $meeting->ACLAccess('delete'));
+        self::assertEquals(false, $meeting->ACLAccess('edit'));
+        self::assertEquals(false, $meeting->ACLAccess('save'));
+        self::assertEquals(false, $meeting->ACLAccess('editview'));
+        self::assertEquals(false, $meeting->ACLAccess('delete'));
     }
 
-    public function testhasIntegratedMeeting()
+    public function testhasIntegratedMeeting(): void
     {
-        $meeting = BeanFactory::newBean('Meetings');
-        $result = $meeting->hasIntegratedMeeting();
-        $this->assertEquals(false, $result);
+        $result = BeanFactory::newBean('Meetings')->hasIntegratedMeeting();
+        self::assertEquals(false, $result);
     }
 
-    public function testSaveAndMarkdeletedAndSetAcceptStatus()
+    public function testSaveAndMarkdeletedAndSetAcceptStatus(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
@@ -79,8 +78,8 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
         $meeting->save();
 
         //test for record ID to verify that record is saved
-        $this->assertTrue(isset($meeting->id));
-        $this->assertEquals(36, strlen($meeting->id));
+        self::assertTrue(isset($meeting->id));
+        self::assertEquals(36, strlen((string) $meeting->id));
 
         /* Test set_accept_status method */
 
@@ -102,27 +101,22 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $meeting->mark_deleted($meeting->id);
         $result = $meeting->retrieve($meeting->id);
-        $this->assertEquals(null, $result);
+        self::assertEquals(null, $result);
     }
 
-    public function testget_summary_text()
+    public function testget_summary_text(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         //test without setting name
-        $this->assertEquals(null, $meeting->get_summary_text());
+        self::assertEquals(null, $meeting->get_summary_text());
 
         //test with name set
         $meeting->name = 'test';
-        $this->assertEquals('test', $meeting->get_summary_text());
+        self::assertEquals('test', $meeting->get_summary_text());
     }
 
-    public function testcreate_export_query()
-    {
-//        $this->markTestIncomplete('export query produces queries which fields chagne order in different enironments');
-    }
-
-    public function testfill_in_additional_detail_fields()
+    public function testfill_in_additional_detail_fields(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
@@ -135,23 +129,23 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
         $meeting->fill_in_additional_detail_fields();
 
         //verify effected atributes
-        $this->assertEquals('Administrator', $meeting->assigned_user_name);
-        $this->assertEquals('Administrator', $meeting->created_by_name);
-        $this->assertEquals('Administrator', $meeting->modified_by_name);
-        $this->assertTrue(isset($meeting->time_start_hour));
-        $this->assertTrue(isset($meeting->date_start));
-        $this->assertTrue(isset($meeting->time_start));
-        $this->assertTrue(isset($meeting->duration_hours));
-        $this->assertTrue(isset($meeting->duration_minutes));
-        $this->assertEquals(-1, $meeting->reminder_time);
-        $this->assertTrue(isset($meeting->reminder_time));
-        $this->assertEquals(false, $meeting->reminder_checked);
-        $this->assertEquals(-1, $meeting->email_reminder_time);
-        $this->assertEquals(false, $meeting->email_reminder_checked);
-        $this->assertEquals('Accounts', $meeting->parent_type);
+        self::assertEquals('Administrator', $meeting->assigned_user_name);
+        self::assertEquals('Administrator', $meeting->created_by_name);
+        self::assertEquals('Administrator', $meeting->modified_by_name);
+        self::assertTrue(isset($meeting->time_start_hour));
+        self::assertTrue(isset($meeting->date_start));
+        self::assertTrue(isset($meeting->time_start));
+        self::assertTrue(isset($meeting->duration_hours));
+        self::assertTrue(isset($meeting->duration_minutes));
+        self::assertEquals(-1, $meeting->reminder_time);
+        self::assertTrue(isset($meeting->reminder_time));
+        self::assertEquals(false, $meeting->reminder_checked);
+        self::assertEquals(-1, $meeting->email_reminder_time);
+        self::assertEquals(false, $meeting->email_reminder_checked);
+        self::assertEquals('Accounts', $meeting->parent_type);
     }
 
-    public function testget_list_view_data()
+    public function testget_list_view_data(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
         $current_theme = SugarThemeRegistry::current();
@@ -186,19 +180,19 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
         $actual = $meeting->get_list_view_data();
 
         //$this->assertSame($expected, $actual);
-        $this->assertEquals($expected['PARENT_TYPE'], $actual['PARENT_TYPE']);
-        $this->assertEquals($expected['STATUS'], $actual['STATUS']);
-        $this->assertEquals($expected['TYPE'], $actual['TYPE']);
-        $this->assertEquals($expected['REMINDER_TIME'], $actual['REMINDER_TIME']);
-        $this->assertEquals($expected['EMAIL_REMINDER_TIME'], $actual['EMAIL_REMINDER_TIME']);
-        $this->assertEquals($expected['EMAIL_REMINDER_SENT'], $actual['EMAIL_REMINDER_SENT']);
-        $this->assertEquals($expected['CONTACT_NAME'], $actual['CONTACT_NAME']);
-        $this->assertEquals($expected['CONTACT_ID'], $actual['CONTACT_ID']);
-        $this->assertEquals($expected['REPEAT_INTERVAL'], $actual['REPEAT_INTERVAL']);
-        $this->assertEquals($expected['PARENT_MODULE'], $actual['PARENT_MODULE']);
+        self::assertEquals($expected['PARENT_TYPE'], $actual['PARENT_TYPE']);
+        self::assertEquals($expected['STATUS'], $actual['STATUS']);
+        self::assertEquals($expected['TYPE'], $actual['TYPE']);
+        self::assertEquals($expected['REMINDER_TIME'], $actual['REMINDER_TIME']);
+        self::assertEquals($expected['EMAIL_REMINDER_TIME'], $actual['EMAIL_REMINDER_TIME']);
+        self::assertEquals($expected['EMAIL_REMINDER_SENT'], $actual['EMAIL_REMINDER_SENT']);
+        self::assertEquals($expected['CONTACT_NAME'], $actual['CONTACT_NAME']);
+        self::assertEquals($expected['CONTACT_ID'], $actual['CONTACT_ID']);
+        self::assertEquals($expected['REPEAT_INTERVAL'], $actual['REPEAT_INTERVAL']);
+        self::assertEquals($expected['PARENT_MODULE'], $actual['PARENT_MODULE']);
     }
 
-    public function testset_notification_body()
+    public function testset_notification_body(): void
     {
         global $current_user;
         $current_user = new User(1);
@@ -217,15 +211,15 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $meeting->set_notification_body(new Sugar_Smarty(), $meeting);
 
-        $this->assertEquals($meeting->name, $result->_tpl_vars['MEETING_SUBJECT']);
-        $this->assertEquals($meeting->status, $result->_tpl_vars['MEETING_STATUS']);
-        $this->assertEquals('SuiteCRM', $result->_tpl_vars['MEETING_TYPE']);
-        $this->assertEquals($meeting->duration_hours, $result->_tpl_vars['MEETING_HOURS']);
-        $this->assertEquals($meeting->duration_minutes, $result->_tpl_vars['MEETING_MINUTES']);
-        $this->assertEquals($meeting->description, $result->_tpl_vars['MEETING_DESCRIPTION']);
+        self::assertEquals($meeting->name, $result->tpl_vars['MEETING_SUBJECT']->value);
+        self::assertEquals($meeting->status, $result->tpl_vars['MEETING_STATUS']->value);
+        self::assertEquals('SuiteCRM', $result->tpl_vars['MEETING_TYPE']->value);
+        self::assertEquals($meeting->duration_hours, $result->tpl_vars['MEETING_HOURS']->value);
+        self::assertEquals($meeting->duration_minutes, $result->tpl_vars['MEETING_MINUTES']->value);
+        self::assertEquals($meeting->description, $result->tpl_vars['MEETING_DESCRIPTION']->value);
     }
 
-    public function testcreate_notification_email()
+    public function testcreate_notification_email(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
@@ -234,101 +228,100 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
 
         //test without setting user
         $result = $meeting->create_notification_email(BeanFactory::newBean('Users'));
-        $this->assertInstanceOf('SugarPHPMailer', $result);
+        self::assertInstanceOf('SugarPHPMailer', $result);
 
         //test with valid user
         $result = $meeting->create_notification_email(new User(1));
-        $this->assertInstanceOf('SugarPHPMailer', $result);
+        self::assertInstanceOf('SugarPHPMailer', $result);
     }
 
-    public function testsend_assignment_notifications()
+    public function testsend_assignment_notifications(): void
     {
+        $notify_user = new User(1);
+
         $meeting = BeanFactory::newBean('Meetings');
 
         $meeting->date_start = '2016-02-11 17:30:00';
         $meeting->date_end = '2016-02-11 17:30:00';
+        $meeting->sentAssignmentNotifications = [];
+        $meeting->sentAssignmentNotifications[] = $notify_user->id;
 
         $admin = BeanFactory::newBean('Administration');
         $admin->retrieveSettings();
-        $sendNotifications = false;
-
-        $notify_user = new User(1);
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $meeting->send_assignment_notifications($notify_user, $admin);
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testget_meeting_users()
+    public function testget_meeting_users(): void
     {
-        $meeting = BeanFactory::newBean('Meetings');
-
-        $result = $meeting->get_meeting_users();
-        $this->assertTrue(is_array($result));
+        $result = BeanFactory::newBean('Meetings')->get_meeting_users();
+        self::assertIsArray($result);
     }
 
-    public function testget_invite_meetings()
+    public function testget_invite_meetings(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         $user = BeanFactory::newBean('Users');
         $result = $meeting->get_invite_meetings($user);
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
     }
 
-    public function testget_notification_recipients()
+    public function testget_notification_recipients(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         //test without special_notification
         $result = $meeting->get_notification_recipients();
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
 
         //test with special_notification
         $meeting->special_notification = 1;
         $result = $meeting->get_notification_recipients();
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
     }
 
-    public function testbean_implements()
+    public function testbean_implements(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
-        $this->assertEquals(false, $meeting->bean_implements('')); //test with blank value
-        $this->assertEquals(false, $meeting->bean_implements('test')); //test with invalid value
-        $this->assertEquals(true, $meeting->bean_implements('ACL')); //test with valid value
+        self::assertEquals(false, $meeting->bean_implements('')); //test with blank value
+        self::assertEquals(false, $meeting->bean_implements('test')); //test with invalid value
+        self::assertEquals(true, $meeting->bean_implements('ACL')); //test with valid value
     }
 
-    public function testlistviewACLHelper()
+    public function testlistviewACLHelper(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         $expected = array('MAIN' => 'a', 'PARENT' => 'a', 'CONTACT' => 'a');
         $actual = $meeting->listviewACLHelper();
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testsave_relationship_changes()
+    public function testsave_relationship_changes(): void
     {
         $meeting = BeanFactory::newBean('Meetings');
 
         // Execute the method and test that it works and doesn't throw an exception.
         try {
             $meeting->save_relationship_changes(false);
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
     /**
      * This will throw FATAL error on php7
      */
-    public function testafterImportSave()
+    public function testafterImportSave(): void
     {
         require_once 'data/Link.php';
 
@@ -346,31 +339,30 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
             $meeting->parent_type = 'Leads';
             $meeting->afterImportSave();
 
-            $this->assertTrue(true);
+            self::assertTrue(true);
         } catch (Exception $e) {
-            $this->fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
+            self::fail($e->getMessage() . "\nTrace:\n" . $e->getTraceAsString());
         }
     }
 
-    public function testgetDefaultStatus()
+    public function testgetDefaultStatus(): void
     {
-        $meeting = BeanFactory::newBean('Meetings');
-        $result = $meeting->getDefaultStatus();
-        $this->assertEquals('Planned', $result);
+        $result = BeanFactory::newBean('Meetings')->getDefaultStatus();
+        self::assertEquals('Planned', $result);
     }
 
-    public function testgetMeetingsExternalApiDropDown()
+    public function testgetMeetingsExternalApiDropDown(): void
     {
         $actual = getMeetingsExternalApiDropDown();
         $expected = array('Sugar' => 'SuiteCRM');
-        $this->assertSame($expected, $actual);
+        self::assertSame($expected, $actual);
     }
 
-    public function testgetMeetingTypeOptions()
+    public function testgetMeetingTypeOptions(): void
     {
         global $dictionary, $app_list_strings;
 
         $result = getMeetingTypeOptions($dictionary, $app_list_strings);
-        $this->assertTrue(is_array($result));
+        self::assertIsArray($result);
     }
 }

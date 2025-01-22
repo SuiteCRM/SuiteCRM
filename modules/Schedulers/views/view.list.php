@@ -43,12 +43,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SchedulersViewList extends ViewList
 {
     public function display()
     {
         parent::display();
-        if (!($this->options['show_all'] === false)) {
+        if (!isset($this->options['show_all']) || !($this->options['show_all'] === false)) {
             $this->seed->displayCronInstructions();
         }
     }
