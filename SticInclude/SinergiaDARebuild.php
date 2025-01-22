@@ -63,7 +63,10 @@ class SinergiaDARebuild
                 $msg .= $match . "<br>";
             }
 
-            unlink('sdaRebuildError.txt');
+            if(file_exists('sdaRebuildError.txt'))
+            {
+                unlink('sdaRebuildError.txt');
+            }
             
             // Return 'ok' or the error message
             if (empty($msg)) {

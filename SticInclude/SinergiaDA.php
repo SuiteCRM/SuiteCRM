@@ -75,6 +75,9 @@ class ExternalReporting
         'stic_Validation_Results',
         'stic_Custom_Views',
     ];
+    private $viewPrefix;
+    private $listViewPrefix;            
+    private $maxNonAdminUsers;
 
     public function __construct()
     {
@@ -127,6 +130,9 @@ class ExternalReporting
 
         $this->viewPrefix = "{$this->versionPrefix}";
         $this->listViewPrefix = "{$this->viewPrefix}_l";
+        
+        // Get configured limit for non-admin user processing
+        $this->maxNonAdminUsers = $sugar_config['stic_sinergiada']['max_users_processed'] ?? 100;
     }
     /**
      * Main function responsible for creating and managing MariaDB views and tables (as specified in stic_Settings) based on CRM modules.
@@ -213,6 +219,7 @@ class ExternalReporting
 
         // Get & populate users ACL metadata (must run after $modulesList is created)
         $this->getAndSaveUserACL($modulesList);
+
         foreach ($modulesList as $moduleName) {
             // Reset module index list
             unset($indexesToCreate);
@@ -379,6 +386,8 @@ class ExternalReporting
                     case 'currency_id':
                     case 'emailbody':
                     case 'none':
+                    case 'ColourPicker':
+                    case 'collection':
                         continue 2;
                         break;
                     case 'relate':
@@ -811,7 +820,7 @@ class ExternalReporting
                 || $this->sdaSettings['publishAsTable'][0] == '1'
             ) {
                 $tableMode = 'table';
-                $createViewQueryHeader = " CREATE OR REPLACE TABLE {$viewName} ENGINE=MyISAM AS SELECT ";
+                $createViewQueryHeader = " CREATE OR REPLACE TABLE {$viewName} ENGINE=InnoDB AS SELECT ";
             } else {
                 $tableMode = 'view';
                 $createViewQueryHeader = " CREATE OR REPLACE VIEW {$viewName} AS SELECT ";
@@ -1309,62 +1318,39 @@ class ExternalReporting
         // 3) eda_def_users_groups
         $sqlMetadata[] = "CREATE or REPLACE VIEW `sda_def_user_groups` AS
                             -- Normal users are assigned to their own security groups.
-                            SELECT
-                                user_name,
-                                CONCAT('SCRM_',s.name) as name
-                            FROM
-                                users u
-                            JOIN securitygroups_users su ON
-                                u.id = su.user_id
-                            JOIN securitygroups s ON
-                                s.id = su.securitygroup_id
-                            WHERE
-                                u.is_admin = 0
-                                AND u.deleted = 0
-                                AND su.deleted = 0
-                                AND s.deleted = 0
-                            UNION
-                            -- Administrator users should always belong to the EDA_ADMIN group.
-                            SELECT
-                                user_name,
-                                'EDA_ADMIN'
-                            FROM
-                                users u
-                            WHERE
-                                u.is_admin = 1
-                                AND u.deleted = 0;";
-        // 4) eda_def_permissions
+                            SELECT * FROM (
+                                -- Select 1: Regular users with $this->maxNonAdminUsers LIMIT
+                                SELECT 
+                                    user_name,
+                                    CONCAT('SCRM_', s.name) as name
+                                FROM (
+                                    SELECT DISTINCT u.id, u.user_name
+                                    FROM users u
+                                    JOIN users_cstm uc ON uc.id_c = u.id
+                                    WHERE u.is_admin = 0
+                                        AND u.deleted = 0
+                                        AND uc.sda_allowed_c = 1
+                                        AND u.status = 'Active'
+                                    LIMIT $this->maxNonAdminUsers
+                                ) AS limited_users
+                                JOIN securitygroups_users su ON limited_users.id = su.user_id
+                                JOIN securitygroups s ON s.id = su.securitygroup_id
+                                WHERE su.deleted = 0
+                                    AND s.deleted = 0
+                                ) AS limited_users
+                                -- Select 2: Administrator users should always belong to the EDA_ADMIN group.
+                                UNION
+                                SELECT
+                                    user_name,
+                                    'EDA_ADMIN'
+                                FROM
+                                    users u
+                                WHERE
+                                    u.is_admin = 1
+                                    AND u.deleted = 0
+                                    AND u.status='Active';";
 
-        $sqlMetadata[] = "CREATE or REPLACE VIEW `sda_def_permissions` AS
-                            SELECT * from sda_def_permissions_actions  p where p.stic_permission_source IN ('ACL_ALLOW_ALL', 'ACL_ALLOW_GROUP_priv','ACL_ALLOW_OWNER')
-                            UNION
-                     SELECT
-                        sdug.user_name,
-                        `group`,
-                        `table`,
-                        `column`,
-                        `global`,
-                        stic_permission_source
-                        FROM
-                        sda_def_permissions_actions p
-                        JOIN sda_def_user_groups sdug ON
-                        p.`group` = sdug.name
-                        WHERE
-                        p.stic_permission_source IN('ACL_ALLOW_GROUP') AND(
-                            CONCAT(sdug.user_name, `table`) IN(
-                            SELECT
-                                CONCAT(p.user_name, `table`)
-                            FROM
-                                sda_def_permissions_actions p
-                            WHERE
-                                p.stic_permission_source = 'ACL_ALLOW_GROUP_priv'
-                        )
-                        )
-                        GROUP BY
-                        `group`,
-                        `table`,
-                        sdug.user_name;";
-        // 5) eda_def_security_group_records
+        // 4) eda_def_security_group_records
 
         // Set a switch to determine whether to populate the sda_def_security_group_records view based
         // on the value of $sugar_config['stic_sinergiada']['group_permissions_enabled']
@@ -1413,16 +1399,14 @@ class ExternalReporting
         $sqlMetadata = [];
 
         // 1) eda_def_tables
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_tables`';
         $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_tables` (
                             `table` VARCHAR(64) NOT NULL,
                             `label` VARCHAR(100) NOT NULL,
                             `description` VARCHAR(255) NOT NULL,
                             `visible` BIT DEFAULT 1
-                        ) ENGINE = MyISAM;';
+                        ) ENGINE = InnoDB;';
 
         // 2) eda_def_columns
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_columns`';
         $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_columns` (
                             `table` VARCHAR(64) NOT NULL,
                             `column` VARCHAR(64) NOT NULL,
@@ -1434,9 +1418,8 @@ class ExternalReporting
                             `visible` BIT DEFAULT 1,
                             `sda_hidden` INT DEFAULT 0,
                             `stic_type` VARCHAR(20)
-                        ) ENGINE = MyISAM;';
+                        ) ENGINE = InnoDB;';
         // 3) eda_def_relationships
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_relationships`';
         $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_relationships` (
                             `id` VARCHAR(64) NOT NULL,
                             `source_table` VARCHAR(64) NOT NULL,
@@ -1445,10 +1428,9 @@ class ExternalReporting
                             `target_column` VARCHAR(64) NOT NULL,
                             `label` VARCHAR(255) NOT NULL,
                             `info` VARCHAR(255) NOT NULL
-                        ) ENGINE = MyISAM;';
+                        ) ENGINE = InnoDB;';
 
         // 4) eda_def_enumerations
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_enumerations`';
         $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_enumerations` (
                             -- `id` CHAR(64) NOT NULL,
                             `source_table` VARCHAR(64) NOT NULL,
@@ -1461,25 +1443,34 @@ class ExternalReporting
                             `target_bridge` VARCHAR(64) NOT NULL,
                             `stic_type` VARCHAR(20) NOT NULL,
                             `info` VARCHAR(255) NOT NULL
-                        ) ENGINE = MyISAM;';
+                        ) ENGINE = InnoDB;';
 
         // 5) eda_def_permissions
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_permissions_actions`';
-        $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_permissions_actions` (
-                            `user_name` VARCHAR(64) NOT NULL,
-                            `group` VARCHAR(64) NOT NULL,
-                            `table` VARCHAR(64) NOT NULL,
-                            `column` VARCHAR(64) NOT NULL,
-                            `global` VARCHAR(64) NOT NULL,
-                            `stic_permission_source` VARCHAR (20) NOT NULL
-                        ) ENGINE = MyISAM;';
+
+        // remove old objects if exists
+
+        $sqlMetadata[] = 'CREATE TABLE `sda_def_permissions` (
+                            `id` bigint(20) NOT NULL AUTO_INCREMENT,
+                            `user_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
+                            `group` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+                            `table` varchar(64) NOT NULL,
+                            `column` varchar(64) NOT NULL,
+                            `global` tinyint(1) NOT NULL,
+                            `stic_permission_source` varchar(20) NOT NULL,
+                            PRIMARY KEY (`id`),
+                            KEY `sda_def_permissions_user_name_IDX` (`user_name`) USING BTREE,
+                            KEY `sda_def_permissions_group_IDX` (`group`) USING BTREE,
+                            KEY `sda_def_permissions_table_IDX` (`table`) USING BTREE,
+                            KEY `sda_def_permissions_stic_permission_source_IDX` (`stic_permission_source`) USING BTREE,
+                            KEY `idx_table_user` (`table`, `user_name`),
+                            KEY `idx_table_group` (`table`, `group`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;';
 
         // 6) sda_def_config
-        $sqlMetadata[] = 'DROP TABLE IF EXISTS `sda_def_config`';
         $sqlMetadata[] = 'CREATE TABLE IF NOT EXISTS `sda_def_config` (
                             `key` VARCHAR(64) NOT NULL,
                             `value` VARCHAR(64) NOT NULL
-                        ) ENGINE = MyISAM;';
+                        ) ENGINE = InnoDB;';
 
         foreach ($sqlMetadata as $key => $value) {
             if (!$db->query($value)) {
@@ -1546,7 +1537,6 @@ class ExternalReporting
         $currentList = $app_list_strings[$listName];
 
         // Drop the table if it already exists
-        $dropTableCommand = "DROP TABLE IF EXISTS {$this->listViewPrefix}_{$listViewName}";
         $db->query($dropTableCommand);
 
         // Start building the SQL command to create the table
@@ -1591,7 +1581,6 @@ class ExternalReporting
     private function createEnumView($listName, $listViewName)
     {
 
-        // return $this->createEnumTable($listName, $listViewName);
 
         // Get the global variable $app_list_strings
         global $app_list_strings;
@@ -1599,8 +1588,15 @@ class ExternalReporting
         // Get instance of DBManagerFactory
         $db = DBManagerFactory::getInstance();
 
-        // Get the current list
+        // Get the current listm or return if not exists
         $currentList = $app_list_strings[$listName];
+        if(!$currentList) {
+            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "The referenced dropdown list [{$listName}] is not available. Ommited");
+        return;
+        }
+
+
+
 
         // Start building the SQL command
         $sqlCommand = "CREATE OR REPLACE VIEW {$this->listViewPrefix}_{$listViewName} AS ";
@@ -1620,7 +1616,7 @@ class ExternalReporting
         // Execute the SQL command
         if (!$db->query($sqlCommand)) {
             $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$db->last_error}] running Query: [{$sqlCommand}]");
-            // $this->info .= "[FATAL: No se ha podido crear la vista {$this->listViewPrefix}_{$listViewName}]";
+            
         } else {
             return $listViewName;
         };
@@ -1653,14 +1649,23 @@ class ExternalReporting
                 }
             }
 
-            // Get all the tables with matching prefixes
-            $res = $db->query("select table_name from information_schema.tables where table_name like '{$prefix}%'");
+            // Get all the tables & views with matching prefixes
+            $res = $db->query("select table_name, table_type from information_schema.tables where table_name like '{$prefix}%'");
             // Loop through the views
             while ($view = $db->fetchByAssoc($res, false)) {
-                // Delete the view
-                if ($db->query("DROP TABLE {$view['table_name']}")) {
-                    $counterTable++;
+                if($view['table_type'] == 'VIEW'){
+                    // Delete the view
+                    if ($db->query("DROP VIEW IF EXISTS {$view['table_name']}")) {
+                        $counterTable++;
+                    }
+                } elseif ($view['table_type'] == 'BASE TABLE') {
+                    // Delete the table
+                    if ($db->query("DROP TABLE IF EXISTS {$view['table_name']}")) {
+                        $counterTable++;
+                    }
                 }
+                
+                
             }
 
         }
@@ -1733,26 +1738,30 @@ class ExternalReporting
     }
 
     /**
-     * Function to get and save user access control list (ACL) for specified modules in SuiteCRM
+     * Retrieves and saves Access Control List (ACL) permissions for users in the system.
      *
-     * @param array $modules The modules for which the user's ACL should be retrieved and saved
+     * This function processes ACL permissions for users and creates corresponding entries in the
+     * permissions metadata table. It handles different types of permissions including:
+     * - Security group based permissions
+     * - Owner based permissions
+     * - Global permissions
      *
-     * This function retrieves the list of active users from the 'users' table, and for each user,
-     * it retrieves their ACL for the specified modules using the 'ACLAction::getUserActions' method.
-     * Then it processes the ACL for each module and saves metadata for the user's access level and source of access,
-     * such as 'ACL_ALLOW_GROUP' or 'ACL_ALLOW_OWNER' in the 'sda_def_permissions_actions' table.
-     * It also saves the user's access level for each module in the 'aclList' array.
-     *
+     * @param array $modules Array of modules to process permissions for
      * @return void
+     * @global array $sugar_config Global SuiteCRM configuration array
+     * @throws SQLException If there are database errors during processing
      */
     public function getAndSaveUserACL($modules)
     {
-        global $sugar_config;
+        // Track total processing time
+        $startTime = microtime(true);
+        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': Starting ACL processing');
 
+        global $sugar_config;
         $db = DBManagerFactory::getInstance();
         include_once 'modules/ACLActions/ACLAction.php';
 
-        // List of ACL sources
+        // Define mapping of access levels to their identifier constants
         $aclSourcesList = [
             100 => 'ACL_ALLOW_ADMIN_DEV',
             99 => 'ACL_ALLOW_ADMIN',
@@ -1764,117 +1773,205 @@ class ExternalReporting
             0 => 'ACL_ALLOW_DEFAULT',
         ];
 
-        // Get list of active users
-        $res = $db->query("SELECT id,user_name, is_admin FROM users join users_cstm on users.id = users_cstm.id_c  WHERE status='Active' AND deleted=0 AND sda_allowed_c=1 AND user_hash IS NOT NULL;");
+       
+       
 
-        while ($u = $db->fetchByAssoc($res, false)) {
-            $allModulesACL = array_intersect_key(ACLAction::getUserActions($u['id'], true), $modules);
-            foreach ($allModulesACL as $key => $value) {
-                unset($aclSource);
-                // Access to the users module is allowed only for administrator users
-                if ($u['is_admin'] == 0 && $key == 'Users') {
-                    continue;
-                }
-
-                $aclSource = $aclSourcesList[$value['module']['view']['aclaccess']];
-
-                // Fix for special cases when the module name is different from the table name
-                $key = $key == 'ProjectTask' ? 'Project_Task' : $key;
-                $key = $key == 'CampaignLog' ? 'Campaign_Log' : $key;
-
-                $currentTable = $this->viewPrefix . '_' . strtolower($key);
-                
-                if ($u['is_admin'] == 0 && $value['module']['access']['aclaccess'] >= 0 && $value['module']['view']['aclaccess'] >= 0) {
-                    // Determine the metadata to be saved based on the type of permissions,
-                    // first we'll add them to the $userModuleAccessMode array with a unique key to avoid duplicates
-                    switch ($value['module']['view']['aclaccess']) {
-                        case '80': // Security groups
-
-                            // If $sugar_config['stic_sinergiada']['group_permissions_enabled'] is disabled, access is also disabled to
-                            // modules where the user has restricted access to their group's records.
-                            if (($sugar_config['stic_sinergiada']['group_permissions_enabled'] ?? null) != true) {
-                                continue 2;
-                            }
-
-                            // In the case of Security Groups we add a unique entry for each of the groups the user belongs to,
-                            // ensuring that it does not exist previously for each module.
-                            $userGroupsRes = $db->query("SELECT distinct(name) as 'group' FROM sda_def_user_groups ug WHERE user_name='{$u['user_name']}';");
-
-                            while ($userGroups = $db->fetchByAssoc($userGroupsRes, false)) {
-
-                                $crmGroupName = explode('SCRM_', $userGroups['group'])[1];
-
-                                // Verify whether or not the group or user has access to the module for their roles
-                                $groupHasAccessToModule = groupHasAccess($crmGroupName, $u['id'], $key, 'view');
-
-                                if ($groupHasAccessToModule) {
-
-                                    $userModuleAccessMode["{$u['user_name']}_{$aclSource}_{$userGroups['group']}_{$currentTable}"] = [
-                                        'user_name' => null,
-                                        'group' => $userGroups['group'],
-                                        'table' => $currentTable,
-                                        'column' => 'id',
-                                        'stic_permission_source' => $aclSource,
-                                        'global' => 0,
-                                    ];
-
-                                    // Additionally we insert a record that allows each user's access to the records in which match
-                                    // the user_name with the assigned_user_name field content in each module in which the user has group permission
-                                    $userModuleAccessMode["{$u['user_name']}_{$aclSource}_{$userGroups['group']}_private_{$currentTable}"] = [
-                                        'user_name' => $u['user_name'],
-                                        'group' => $userGroups['group'],
-                                        'table' => $currentTable,
-                                        'column' => 'assigned_user_name',
-                                        'stic_permission_source' => "{$aclSource}_priv",
-                                        'global' => 0,
-                                    ];
-                                }
-                            }
-
-                            break;
-
-                        case '75': // Owner case
-                            // Modules where the user has restricted access to their own/assigned records .
-
-                            $userModuleAccessMode["{$aclSource}_{$u['user_name']}_{$currentTable}"] = [
-                                'user_name' => $u['user_name'],
-                                'table' => $currentTable,
-                                'column' => 'assigned_user_name',
-                                'stic_permission_source' => $aclSource,
-                                'global' => 0,
-                            ];
-                            break;
-
-                        default: // Other (normal) cases
-                            // add metadata record for normal cases
-                            $userModuleAccessMode["{$aclSource}_{$u['user_name']}_{$currentTable}"] = [
-                                'user_name' => $u['user_name'],
-                                'table' => $currentTable,
-                                'column' => 'users_id',
-                                'stic_permission_source' => $aclSource,
-                                'global' => 1,
-                            ];
-                            break;
-                    }
-                    $aclList[$u['user_name']][$key] = $value['module']['view']['aclaccess'];
-                }
+        // Preload user groups if group permissions are enabled for better performance
+        $userGroups = [];
+        if ($sugar_config['stic_sinergiada']['group_permissions_enabled']) {
+            $groupsQuery = "SELECT user_name, name as 'group'
+                       FROM sda_def_user_groups";
+            $groupsResult = $db->query($groupsQuery);
+            while ($group = $db->fetchByAssoc($groupsResult)) {
+                $userGroups[$group['user_name']][] = $group['group'];
             }
-            unset($allModulesACL);
         }
 
-        // Add the permissions with the values determined in the previous switch case to the metadata table, based on the case.
-        foreach (array_unique($userModuleAccessMode, SORT_REGULAR) as $key => $value) {
-            $this->addMetadataRecord(
-                'sda_def_permissions_actions',
-                [
-                    'user_name' => $value['user_name'],
-                    'group' => $value['group'],
-                    'table' => $value['table'],
-                    'column' => $value['column'],
-                    'global' => $value['global'],
-                    'stic_permission_source' => $value['stic_permission_source'],
-                ]
-            );
+        // Query to get active non-admin users
+        $nonAdminQuery = "SELECT id, user_name, is_admin
+                     FROM users
+                     JOIN users_cstm ON users.id = users_cstm.id_c
+                     WHERE status='Active' AND deleted=0
+                     AND sda_allowed_c=1 AND is_admin=0
+                     LIMIT $this->maxNonAdminUsers ";
+
+        $nonAdminUsers = $db->query($nonAdminQuery);
+        $userQueries = [$nonAdminUsers];
+
+        // Process each user query result set
+        foreach ($userQueries as $users) {
+            while ($user = $db->fetchByAssoc($users, false)) {
+                $userStartTime = microtime(true);
+
+                // Process each module's permissions for current user
+                foreach ($modules as $moduleName => $moduleData) {
+                    // Skip Users module for non-admin users
+                    if ($user['is_admin'] == 0 && $moduleName == 'Users') {
+                        continue;
+                    }
+
+                    $userActions = ACLAction::getUserActions($user['id'], false, $moduleName);
+                    $value = $userActions[$moduleName]['module'] ?? $userActions['module'] ?? null;
+
+                    // Only process valid permission configurations
+                    if (!empty($value) && $user['is_admin'] == 0 &&
+                        $value['access']['aclaccess'] >= 0 &&
+                        $value['view']['aclaccess'] >= 0) {
+
+                        $aclSource = $aclSourcesList[$value['view']['aclaccess']];
+
+                        // Handle special module name cases
+                        $key = $moduleName == 'ProjectTask' ? 'Project_Task' : $moduleName;
+                        $key = $key == 'CampaignLog' ? 'Campaign_Log' : $key;
+
+                        $currentTable = $this->viewPrefix . '_' . strtolower($key);
+
+                        // Process permissions based on access level
+                        switch ($value['view']['aclaccess']) {
+                            case '80': // Security group permissions
+                                if (!empty($userGroups[$user['user_name']])) {
+                                    foreach ($userGroups[$user['user_name']] as $group) {
+                                        $permissionsBatch[] = [
+                                            'user_name' => $user['user_name'],
+                                            'group' => $group,
+                                            'table' => $currentTable,
+                                            'column' => 'id',
+                                            'stic_permission_source' => $aclSource,
+                                            'global' => 0,
+                                        ];
+                                    }
+                                }
+                                break;
+
+                            case '75': // Owner-based permissions
+                                $permissionsBatch[] = [
+                                    'user_name' => $user['user_name'],
+                                    'group' =>null,
+                                    'table' => $currentTable,
+                                    'column' => 'assigned_user_name',
+                                    'stic_permission_source' => $aclSource,
+                                    'global' => 0,
+                                ];
+                                break;
+
+                            default: // Global permissions
+                                $permissionsBatch[] = [
+                                    'user_name' => $user['user_name'],
+                                    'group' =>null,
+                                    'table' => $currentTable,
+                                    'column' => 'users_id',
+                                    'stic_permission_source' => $aclSource,
+                                    'global' => 1,
+                                ];
+                                break;
+                        }
+                    }
+                }
+
+                // Record processing time for current user
+                $userEndTime = microtime(true);
+                $userProcessingTime = round($userEndTime - $userStartTime, 4);
+            }
+
+            // Insert accumulated permissions in batch
+            $this->batchInsertPermissions($permissionsBatch);
+            unset($permissionsBatch);
+        }
+
+        // Log total execution time
+        $endTime = microtime(true);
+        $totalProcessingTime = round($endTime - $startTime, 4);
+
+        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': Completed ACL processing for <=' . $maxNonAdminUsers . ' users in ' . $totalProcessingTime . ' seconds');
+    }
+
+    /**
+     * Performs batch insertions of permission records into the database.
+     *
+     * This function handles the bulk insertion of permission records into the sda_def_permissions table,
+     * implementing batch processing to optimize database performance. It includes:
+     * - Validation of record structure
+     * - Sanitization of input values
+     * - Batch size management to prevent memory issues
+     * - Error handling and logging
+     *
+     * @param array $permissionsBatch Array of permission records to insert. Each record should contain:
+     *        - user_name: string
+     *        - group: string
+     *        - table: string
+     *        - column: string
+     *        - stic_permission_source: string
+     *        - global: string
+     * @return void
+     * @throws Exception If database errors occur during insertion
+     */
+    private function batchInsertPermissions($permissionsBatch)
+    {
+        // Get database instance
+        $db = DBManagerFactory::getInstance();
+
+        // Define base SQL for all insertions
+        $baseSQL = "INSERT INTO sda_def_permissions
+           (user_name, `group`, `table`, `column`, stic_permission_source, `global`)
+           VALUES ";
+
+        // Set batch processing parameters
+        $subBatchSize = 100000; // Maximum records per batch
+        $values = [];
+        $count = 0;
+
+        // Process each permission record
+        foreach ($permissionsBatch as $record) {
+            // Ensure record has all required fields
+            if (count($record) !== 6) {
+                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': Invalid record structure: ' . print_r($record, true));
+                continue;
+            }
+
+            // Sanitize and quote record values
+            $sanitizedValues = [];
+            foreach ($record as $value) {
+                $sanitizedValues[] = "'" . str_replace("'", "''", $value) . "'";
+            }
+
+            // Add formatted record to batch
+            $values[] = "(" . implode(",", $sanitizedValues) . ")";
+            $count++;
+
+            // Execute insertion when batch limit is reached
+            if ($count >= $subBatchSize) {
+                $this->executeInsertBatch($db, $baseSQL, $values);
+
+                // Reset batch tracking
+                $values = [];
+                $count = 0;
+            }
+        }
+
+        // Process remaining records if any
+        if (!empty($values)) {
+            $this->executeInsertBatch($db, $baseSQL, $values);
+        }
+    }
+
+    /**
+     * Helper function to execute a batch of INSERT statements.
+     *
+     * @param object $db Database instance
+     * @param string $baseSQL Base SQL statement
+     * @param array $values Array of formatted value strings
+     * @return void
+     */
+    private function executeInsertBatch($db, $baseSQL, $values)
+    {
+        $sql = $baseSQL . implode(',', $values);
+        try {
+            if (!$db->query($sql)) {
+                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': SQL Error: ' . $db->last_error);
+                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': Failed SQL: ' . $sql);
+            }
+        } catch (Exception $e) {
+            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': Insert error: ' . $e->getMessage());
         }
     }
 
@@ -1940,7 +2037,7 @@ class ExternalReporting
             UNION SELECT `table`,'sda_def_tables', 'table' FROM sda_def_tables
             UNION SELECT source_table,'sda_def_enumerations','source_table' FROM sda_def_enumerations
             UNION SELECT master_table,'sda_def_enumerations', 'master_table' FROM sda_def_enumerations
-            UNION SELECT `table`, 'sda_def_permissions_actions','table' FROM sda_def_permissions_actions
+            UNION SELECT `table`, 'sda_def_permissions','table' FROM sda_def_permissions
             UNION SELECT source_table,'sda_def_relationships','source_table' FROM sda_def_relationships
             UNION SELECT target_table,'sda_def_relationships','target_table' FROM sda_def_relationships)
             AS source WHERE (
