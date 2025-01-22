@@ -659,7 +659,12 @@ var aL = function (e) {
                                 e.record.set(e.column.id + "key", e.value);
                                 e.record.set(
                                     e.column.id,
-                                    K.kreports.whereOperators.ay.getAt(K.kreports.whereOperators.ay.find("value", e.value)).get("text")
+                                    // STIC-Custom 20240117 EPS - Wrong literal was being displayed when keys begin with same root. Changed find to search for exact match
+                                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/547
+                                    // More info at https://cdn.sencha.com/ext/gpl/4.2.1/docs/#!/api/Ext.data.Store
+                                    // K.kreports.whereOperators.ay.getAt(K.kreports.whereOperators.ay.find("value", e.value)).get("text")
+                                    K.kreports.whereOperators.ay.getAt(K.kreports.whereOperators.ay.findExact("value", e.value)).get("text")
+                                    // END STIC-Custom
                                 );
                                 break;
                         }
