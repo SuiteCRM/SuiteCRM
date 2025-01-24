@@ -145,7 +145,7 @@ EOF;
 function displaySurvey($survey, $contactId, $trackerId)
 {
     ?>
-    <form method="post">
+    <form method="post" onsubmit="disableSubmitButton(this)">
         <input type="hidden" name="entryPoint" value="surveySubmit">
         <input type="hidden" name="id" value="<?= $survey->id ?>">
         <input type="hidden" name="contact" value="<?= $contactId ?>">
@@ -163,6 +163,11 @@ function displaySurvey($survey, $contactId, $trackerId)
     } ?>
         <button class="btn btn-primary" type="submit"><?php echo $survey->getSubmitText(); ?></button>
     </form>
+    <script>
+        function disableSubmitButton(form) {
+            form.querySelector('button[type="submit"]').disabled = true; 
+        }
+    </script>    
     <?php
 }
 
