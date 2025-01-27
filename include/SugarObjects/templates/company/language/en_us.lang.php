@@ -125,6 +125,7 @@ $mod_strings = array(
     'NTC_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record?',
 
     'LBL_EDIT_BUTTON' => 'Edit  ',
+    'LBL_QUICKEDIT_BUTTON' => '↙ Edit',
     'LBL_REMOVE' => 'Remove',
 
 );
