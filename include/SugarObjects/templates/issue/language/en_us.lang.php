@@ -63,6 +63,7 @@ $mod_strings = array(
     'LBL_SUBJECT' => 'Subject:',
 
     'LBL_EDIT_BUTTON' => 'Edit',
+    'LBL_QUICKEDIT_BUTTON' => '↙ Edit',
     'LBL_REMOVE' => 'Remove',
 
 );
