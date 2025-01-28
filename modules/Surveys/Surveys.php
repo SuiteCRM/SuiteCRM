@@ -158,27 +158,33 @@ class Surveys extends Basic
             return $res;
         }
 
-        foreach ($_REQUEST['survey_questions_names'] as $key => $val) {
-            if (!empty($_REQUEST['survey_questions_ids'][$key])) {
-                $question = BeanFactory::getBean('SurveyQuestions', $_REQUEST['survey_questions_ids'][$key]);
-            } else {
-                $question = BeanFactory::newBean('SurveyQuestions');
-            }
-            $question->name = $val;
-            $question->type = $_REQUEST['survey_questions_types'][$key];
-            $question->sort_order = $_REQUEST['survey_questions_sortorder'][$key];
-            $question->survey_id = $this->id;
-            $question->deleted = $_REQUEST['survey_questions_deleted'][$key];
-            $question->save();
-            if (!empty($_REQUEST['survey_questions_options'][$key])) {
-                $this->saveOptions(
-                    $_REQUEST['survey_questions_options'][$key],
-                    $_REQUEST['survey_questions_options_id'][$key],
-                    $_REQUEST['survey_questions_options_deleted'][$key],
-                    $question->id
-                );
+        // Prevent redundant execution of this method if it has already been executed
+        if (!isset($this->already_saved)) {
+            foreach ($_REQUEST['survey_questions_names'] as $key => $val) {
+                if (!empty($_REQUEST['survey_questions_ids'][$key])) {
+                    $question = BeanFactory::getBean('SurveyQuestions', $_REQUEST['survey_questions_ids'][$key]);
+                } else {
+                    $question = BeanFactory::newBean('SurveyQuestions');
+                }
+                $question->name = $val;
+                $question->type = $_REQUEST['survey_questions_types'][$key];
+                $question->sort_order = $_REQUEST['survey_questions_sortorder'][$key];
+                $question->survey_id = $this->id;
+                $question->deleted = $_REQUEST['survey_questions_deleted'][$key];
+                $question->save();
+                if (!empty($_REQUEST['survey_questions_options'][$key])) {
+                    $this->saveOptions(
+                        $_REQUEST['survey_questions_options'][$key],
+                        $_REQUEST['survey_questions_options_id'][$key],
+                        $_REQUEST['survey_questions_options_deleted'][$key],
+                        $question->id
+                    );
+                }
             }
         }
+
+        // Set a control variable to indicate that the save method has already been executed
+        $this->already_saved = true;
 
         return $res;
     }
