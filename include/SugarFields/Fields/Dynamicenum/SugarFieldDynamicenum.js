@@ -130,3 +130,25 @@ function updateDynamicEnum(field, subfield) {
         selector.fireEvent("onchange");
 
 }
+
+/**
+ * 
+ * @param {module} 
+ * @param {*} id 
+ * @param {*} field 
+ * @returns 
+ */
+function getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName){
+
+    $.ajaxSetup({ async: false });
+    var result = $.getJSON("index.php", {
+        module: "Home",
+        action: "getParentValueFromDynamicEnum",
+        dynamicFieldName: dynamicFieldName,
+        moduleName: moduleName,
+        recordId: recordId
+    });
+    $.ajaxSetup({ async: true });
+    return result.responseText;
+
+}
