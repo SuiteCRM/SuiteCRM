@@ -130,7 +130,7 @@ abstract class ImportDataSource implements Iterator
      * @return void
      */
     abstract public function getHeaderColumns();
-    
+
     /**
      * Set the source name.
      *
@@ -197,7 +197,7 @@ abstract class ImportDataSource implements Iterator
         if ($module == 'Case') {
             $module = 'aCase';
         }
-        
+
         $last_import->bean_type = $module;
         $last_import->bean_id = $id;
         return $last_import->save();
@@ -228,9 +228,9 @@ abstract class ImportDataSource implements Iterator
     {
         global $current_language;
         $mod_strings = return_module_language($current_language, 'Import');
-        return "<b>{$mod_strings['LBL_ERROR']}</b> $error <br/>".
-               "<b>{$mod_strings['LBL_FIELD_NAME']}</b> $fieldName <br/>" .
-               "<b>{$mod_strings['LBL_VALUE']}</b> $fieldValue <br/>";
+        return "{$mod_strings['LBL_ERROR']}: $error. ".
+               "- {$mod_strings['LBL_FIELD_NAME']}: $fieldName.  " .
+               "- {$mod_strings['LBL_VALUE']}: $fieldValue";
     }
     public function resetRowErrorCounter()
     {
@@ -330,7 +330,7 @@ abstract class ImportDataSource implements Iterator
         //Add the error message to the first column
         array_unshift($rowData, $errorMessage);
         fputcsv($fp, $rowData);
-        
+
         fclose($fp);
         fclose($fpNoErrors);
     }
