@@ -2856,7 +2856,17 @@ class SugarBean
                 }
             }
         }
-
+        // Assign the record indicated in the subpanel form instead of 
+        // the parent record (record from which the subpanel was opened) since they might be different
+        if (!empty($new_rel_id) 
+            && ( // Relationships with an ID in the _ida field of the relationship different from the parent record
+                 (!is_null($this->{$new_rel_link}) || (is_null($this->{$new_rel_link}) &&  $rel_link != $new_rel_link))
+                 // Special relationships like member_accounts where the parent_id is not equal to the ID of the parent record
+                 || (empty($this->{$new_rel_link}) && !empty($this->parent_id) && $new_rel_id !=$this->parent_id)
+                )
+        ) {
+            $new_rel_id = ''; // Assign the empty value to this variable, in the same way as when creating the record from the edit view
+        }
         return array($new_rel_id, $new_rel_link);
     }
 
