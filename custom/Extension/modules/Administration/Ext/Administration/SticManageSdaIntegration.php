@@ -25,6 +25,7 @@ $admin_option_defs = array();
 
 // Create SinergiaDA element in SinergiaCRM admin section
 require_once 'modules/stic_Settings/Utils.php';
+global $sugar_config;
 $sdaEnabled = $sugar_config['stic_sinergiada']['enabled'] ?? false;
 if (!empty($sdaEnabled) && $sdaEnabled) {
     $admin_option_defs['Administration']['manage-sda-integration-link'] = array(

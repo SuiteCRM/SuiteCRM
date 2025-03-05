@@ -93,7 +93,7 @@ class SinergiaDARebuild
     public static function callApiRebuildSDA($callUpdateModel = false, $rebuildFilter = 'all')
     {
         global $sugar_config;
-        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API");
+        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API");
 
         $db_user_name = $sugar_config['dbconfig']['db_user_name'];
 
@@ -130,13 +130,16 @@ class SinergiaDARebuild
 
         // Check if any error occurred
         if (curl_errno($ch)) {
-            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API. ERROR " . curl_error($ch));
+            $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API. ERROR " . curl_error($ch));
+        } else{
+            $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API. OK " );
+
         }
 
         // Close the curl instance
         curl_close($ch);
 
-        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API. END");
+        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Rebuilding SinergiaDA via API. END");
     }
 
 }

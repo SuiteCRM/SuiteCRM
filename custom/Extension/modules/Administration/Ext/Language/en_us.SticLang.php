@@ -43,6 +43,7 @@ $mod_strings['LBL_STIC_TEST_DATA_DESCRIPTION'] = 'Load or delete test data.';
 
 $mod_strings['LBL_STIC_SINERGIADA_LINK_TITLE'] = 'Sinergia Data Analytics';
 $mod_strings['LBL_STIC_SINERGIADA_DESCRIPTION'] = 'Rebuild the integration with Sinergia Data Analytics.';
+$mod_strings['LBL_STIC_SINERGIADA_MAX_USERS_ERROR'] = 'Non-admin users limit in SinergiaDA exceeded. Maximum allowed: <b>__max_users__</b>. Current value: <b>__enabled_users__</b>. Deactivate the appropiate number of users and try it again.';
 
 $mod_strings['LBL_STIC_MAIN_MENU_LINK_TITLE'] = 'Main menu';
 $mod_strings['LBL_STIC_MAIN_MENU_DESCRIPTION'] = 'Set main menu structure and content';
@@ -63,7 +64,7 @@ $mod_strings['LBL_STIC_RUN_SDA_ACTIONS_LINK_TITLE'] = 'Rebuild now';
 $mod_strings['LBL_STIC_RUN_SDA_ACTIONS_DESCRIPTION'] = 'Rebuild and repair the views and other necessary elements for integration with Sinergia Data Analytics. Add new fields if needed.';
 $mod_strings['LBL_STIC_GO_TO_SDA_LINK_TITLE'] = 'Go to Sinergia Data Analytics';
 $mod_strings['LBL_STIC_RUN_SDA_SUCCESS_MSG'] = 'Rebuild of Sinergia Data Analytics has been successfully completed.';
-$mod_strings['LBL_STIC_RUN_SDA_ERROR_MSG'] = 'The following errors have been found in the rebuild of Sinergia Data Analytics';
+$mod_strings['LBL_STIC_RUN_SDA_ERROR_MSG'] = 'The following errors have been found in the rebuild of Sinergia Data Analytics. Please contact SinergiaTIC technical support if needed.';
 
 // Advanced main menu
 $mod_strings['LBL_STIC_MENU_CONFIGURE_TITLE'] = 'Main menu settings';

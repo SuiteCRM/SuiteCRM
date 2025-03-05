@@ -43,6 +43,7 @@ $mod_strings['LBL_STIC_TEST_DATA_DESCRIPTION'] = 'Carrega o elimina dades de pro
 
 $mod_strings['LBL_STIC_SINERGIADA_LINK_TITLE'] = 'Sinergia Data Analytics';
 $mod_strings['LBL_STIC_SINERGIADA_DESCRIPTION'] = 'Reconstrueix la integració amb Sinergia Data Analytics.';
+$mod_strings['LBL_STIC_SINERGIADA_MAX_USERS_ERROR'] = "S'ha excedit el límit d'usuaris no administradors a SinergiaDA. Màxim permès: <b>__max_users__</b>. Valor actual: <b>__enabled_users__</b>. Desactiveu els usuaris que calgui i torneu a provar-ho.";
 
 $mod_strings['LBL_STIC_MAIN_MENU_LINK_TITLE'] = 'Menú principal';
 $mod_strings['LBL_STIC_MAIN_MENU_DESCRIPTION'] = "Configuració de l'estructura i el contingut del menú";
@@ -63,7 +64,7 @@ $mod_strings['LBL_STIC_RUN_SDA_ACTIONS_LINK_TITLE'] = 'Reconstrueix ara';
 $mod_strings['LBL_STIC_RUN_SDA_ACTIONS_DESCRIPTION'] = "Reconstrueix i repara les vistes i els elements necessaris per a la integració amb Sinergia Data Analytics. Si n'hi ha, afegeix els nous camps.";
 $mod_strings['LBL_STIC_GO_TO_SDA_LINK_TITLE'] = 'Ves a Sinergia Data Analytics';
 $mod_strings['LBL_STIC_RUN_SDA_SUCCESS_MSG'] = 'La reconstrucció de Sinergia Data Analytics ha acabat correctament.';
-$mod_strings['LBL_STIC_RUN_SDA_ERROR_MSG'] = "Durant la reconstrucció de Sinergia Data Analytics s'han trobat els següents errors";
+$mod_strings['LBL_STIC_RUN_SDA_ERROR_MSG'] = "Durant la reconstrucció de Sinergia Data Analytics s'han trobat els següents errors. Contacteu amb el suport tècnic de SinergiaTIC si ho considereu necessari.";
 
 // Menú principal avançat
 $mod_strings['LBL_STIC_MENU_CONFIGURE_TITLE'] = 'Configuració del menú principal';

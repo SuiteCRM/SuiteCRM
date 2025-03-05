@@ -21,7 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
-class ExternalReporting
+ class ExternalReporting
 {
     // Default language, it will be used if the instance language cannot be obtained from the settings.
     private $lang = 'es';
@@ -76,8 +76,12 @@ class ExternalReporting
         'stic_Custom_Views',
     ];
     private $viewPrefix;
-    private $listViewPrefix;            
+    private $listViewPrefix;
     private $maxNonAdminUsers;
+    private $hostName;
+    private $baseHostname;
+    private $sdaSettings = [];
+    private $langCode;
 
     public function __construct()
     {
@@ -86,25 +90,7 @@ class ExternalReporting
         $this->hostName = $sugar_config['host_name'];
         $this->baseHostname = explode('.', $this->hostName)[0];
 
-        // Retrieve the settings related to SinergiaDA
-        require_once 'modules/stic_Settings/Utils.php';
-        $this->sdaSettings = stic_SettingsUtils::getSettingsByType('SINERGIADA');
         $this->sdaSettings['publishAsTable'] = $sugar_config['stic_sinergiada']['publish_as_table'] ?? [];
-
-        //  Check if certain parameters are present in the request and set the corresponding
-        // instance variables accordingly.
-        if (!isset($_REQUEST['do']) || empty($_REQUEST['do'])) {
-            // If the 'do' parameter is not present or is empty, set the instance variables to true.
-            $this->doCreateViews = true;
-            $this->doCreateMetadata = true;
-            $this->doCreateSecurity = true;
-        } else {
-            // If the 'do' parameter is present and not empty, set the instance variables based on the presence of certain substrings.
-            $do = $_REQUEST['do'];
-            $this->doCreateViews = strpos($do, 'createViews') !== false ? true : false;
-            $this->doCreateMetadata = strpos($do, 'createMetadata') !== false ? true : false;
-            $this->doCreateSecurity = strpos($do, 'createSecurity') !== false ? true : false;
-        }
 
         // If a specific language is not provided, the language defined for the instance will be used.
         if (!empty($_REQUEST['lang'])) {
@@ -130,12 +116,10 @@ class ExternalReporting
 
         $this->viewPrefix = "{$this->versionPrefix}";
         $this->listViewPrefix = "{$this->viewPrefix}_l";
-        
-        // Get configured limit for non-admin user processing
-        $this->maxNonAdminUsers = $sugar_config['stic_sinergiada']['max_users_processed'] ?? 100;
+
     }
     /**
-     * Main function responsible for creating and managing MariaDB views and tables (as specified in stic_Settings) based on CRM modules.
+     * Main function responsible for creating and managing MariaDB views and tables based on CRM modules.
      *
      * Here's a breakdown of its operations:
      * 1) For each enabled CRM module (excluding specified ones), it creates a MariaDB view or table. These are derived from the module's primary table and, if present, the _cstm table, excluding records marked as deleted.
@@ -153,7 +137,7 @@ class ExternalReporting
         $startTime = microtime(true);
         $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "SinergiaDA rebuild script starts!");
 
-        global $app_list_strings;
+        global $app_list_strings, $sugar_config;
 
         $archivo = __FILE__; // Ruta del archivo actual
         $fechaModificacion = filemtime($archivo);
@@ -166,6 +150,32 @@ class ExternalReporting
         $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ': Running Createviews() function');
 
         $db = DBManagerFactory::getInstance();
+
+        // Check number of non-admin users enabled
+        // Get configured limit for non-admin user processing
+        if (is_numeric($sugar_config['stic_sinergiada']['max_users_processed'])) {
+            $maxNonAdminUsers = $sugar_config['stic_sinergiada']['max_users_processed'];
+            $normalUsersEnabled = $db->query("SELECT
+                                                    distinct u.id
+                                                FROM users u
+                                                INNER JOIN users_cstm uc ON uc.id_c = u.id
+                                                    WHERE
+                                                        u.is_admin = 0
+                                                        AND u.deleted = 0
+                                                        AND u.status = 'Active'
+                                                        AND uc.sda_allowed_c=1;"
+            );
+            // If the number of non-admin users enabled is greater than the limit allowed, the operation is aborted
+            // to protect the system from possible performance problems
+            if (!empty($normalUsersEnabled) && is_object($normalUsersEnabled) && $normalUsersEnabled->num_rows > $maxNonAdminUsers) {
+                $errorString = return_module_language($_SESSION['authenticated_user_language'], 'Administration')['LBL_STIC_SINERGIADA_MAX_USERS_ERROR'];
+                $errorString = str_replace('__max_users__', $maxNonAdminUsers, $errorString);
+                $errorString = str_replace('__enabled_users__', $normalUsersEnabled->num_rows, $errorString);
+                $this->info .= "[FATAL: {$errorString}]";
+                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': Number of non-admin users enabled is greater than the limit allowed. Is not possible to enable more than {$maxNonAdminUsers} non-admin users. There is a total of {$normalUsersEnabled->num_rows} non-admin users enabled.');
+                return $this->info;
+            }
+        }
 
         // Before create any view, delete previous old views
         $this->deleteOldViews();
@@ -305,11 +315,11 @@ class ExternalReporting
 
                 // To avoid exceptional cases where the table name is defined in uppercase
                 // (like in the relationship between Contacts and Cases) we convert the table name to lowercase
-                $fieldV['table'] = strtolower($fieldV['table']);
+                $fieldV['table'] = strtolower($fieldV['table'] ?? null);
 
                 $fieldName = $fieldV['name'];
 
-                $fieldPrefix = $fieldV['source'] == 'custom_fields' ? 'c' : 'm';
+                $fieldPrefix = ($fieldV['source'] ?? null) == 'custom_fields' ? 'c' : 'm';
 
                 // If the field is excluded, skip it
                 if (in_array($fieldV['name'], $this->evenExcludedFields)) {
@@ -325,13 +335,13 @@ class ExternalReporting
                     $sdaHiddenField = true;
                 }
 
-                $fieldV['label'] = $this->sanitizeText($modStrings[$fieldV['vname']]);
+                $fieldV['label'] = $this->sanitizeText($modStrings[$fieldV['vname'] ?? null] ?? null);
 
                 // Attempts to assign a translated label to the field.
                 // If no translation is found, it tries to translate it directly.
                 // The field is skipped if no translation is obtained.
                 if (empty($fieldV['label']) && $fieldV['name'] != 'id') {
-                    $directTranslate = translate($fieldV['vname'], $fieldV['module']);
+                    $directTranslate = translate($fieldV['vname'] ?? '', $fieldV['module'] ?? null);
                     if (!empty($directTranslate)) {
                         $fieldV['label'] = $this->sanitizeText($directTranslate);
                     } else {
@@ -392,13 +402,13 @@ class ExternalReporting
                         break;
                     case 'relate':
                         if (
-                            (in_array($fieldV['module'], $this->evenExcludedModules) && $fieldV['name'] != 'assigned_user_name')
+                            (in_array($fieldV['module'] ?? null, $this->evenExcludedModules) && $fieldV['name'] != 'assigned_user_name')
 
                         ) {
                             continue 2;
                         } else {
 
-                            $relatedModuleName = "{$app_list_strings['moduleList'][$fieldV['module']]}";
+                            $relatedModuleName = $app_list_strings['moduleList'][$fieldV['module'] ?? ''] ?? '';
 
                             // The relationship between contacts and accounts does not have the 'link' property,
                             // which is necessary for retrieval of the relationship values, so we add it directly.
@@ -410,7 +420,7 @@ class ExternalReporting
 
                                 // Build and obtain the translated value from the other side of the relationship so it can be properly displayed in SinergiaDA
                                 $joinModuleRelLabel = 'LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_TITLE';
-                                $joinLabel = translate($joinModuleRelLabel, $fieldV['module']);
+                                $joinLabel = translate($joinModuleRelLabel, $fieldV['module'] ?? '');
                                 $joinLabel = empty($joinLabel) || $joinLabel == $joinModuleRelLabel ? $txModuleName : $joinLabel;
 
                                 $res = $this->createRelateLeftJoin($fieldV, $tableName, $joinLabel);
@@ -457,7 +467,7 @@ class ExternalReporting
                                 $secureName = preg_replace('([^A-Za-z0-9])', '_', $app_list_strings['moduleList'][$fieldV['module']]) . ' (' . $fieldV['label'] . ')';
 
                                 // It is necessary to detect whether or not the field is custom, and in this case, we obtain it looking at the property of the field containing the ID of the Relationship Table ("...id_c")
-                                $fieldV['source'] = $moduleBean->getFieldDefinitions()[$fieldV['id_name']]['source'] ?: $fieldV['source'];
+                                $fieldV['source'] = $moduleBean->getFieldDefinitions()[$fieldV['id_name']]['source'] ?? $fieldV['source'] ?? null;
 
                                 $fieldPrefix = $fieldV['source'] == 'custom_fields' ? 'c' : 'm';
 
@@ -475,7 +485,7 @@ class ExternalReporting
                                 $indexesToCreate[] = "{$fieldV['id_name']}";
 
                                 //Add relate record name
-                                if (in_array($fieldV['module'], ['Contacts', 'Leads']) || (Beanfactory::newBean($fieldV['module'])->field_defs['last_name']) && $fieldV['module'] != 'Users') {
+                                if (in_array($fieldV['module'], ['Contacts', 'Leads']) || (Beanfactory::newBean($fieldV['module'])->field_defs['last_name'] ?? null) && $fieldV['module'] != 'Users') {
                                     $relatedName = " concat_ws(' ', {$leftJoinAlias}.first_name, {$leftJoinAlias}.last_name) ";
                                 } elseif ($fieldV['module'] == 'Users') {
                                     $relatedName = "{$leftJoinAlias}.user_name";
@@ -657,7 +667,7 @@ class ExternalReporting
                     case 'float':
                         $edaType = 'numeric';
                         $edaPrecision = $fieldV['type'] == 'currency' ? 2 : 0;
-                        $edaPrecision = $fieldV['precision'] ? $fieldV['precision'] : $edaPrecision;
+                        $edaPrecision = $fieldV['precision'] ?? $edaPrecision;
                         break;
                     case 'date':
                     case 'datetime':
@@ -699,10 +709,10 @@ class ExternalReporting
 
                 if (isset($fieldSrc)) {
                     // Add to the array of normal base and custom fields
-                    if ($fieldV['source'] == 'custom_fields') {
+                    if (!empty($fieldV['source']) && $fieldV['source'] == 'custom_fields') {
                         $fieldList['custom'][$fieldK] = $fieldSrc;
                         $addColumnToMetadata = 1;
-                    } else if ($fieldV['source'] == 'non-db' && $fieldV['name'] != 'full_name' && $fieldV['name'] != 'email1') {
+                    } else if (!empty($fieldV['source']) && $fieldV['source'] == 'non-db' && $fieldV['name'] != 'full_name' && $fieldV['name'] != 'email1') {
                         // This source is not processed, so we are moving them away
                         $fieldList['non-db'][$fieldK] = $fieldSrc;
                         $addColumnToMetadata = 0;
@@ -713,7 +723,7 @@ class ExternalReporting
                         }
                     }
 
-                    if ($excludeColumnFromMetadada == true) {
+                    if (isset($excludeColumnFromMetadada) && $excludeColumnFromMetadada == true) {
                         $addColumnToMetadata = 0;
                     }
                     // Only the columns that are really going to be added to the views are added to the SDA_def_Columns table
@@ -725,7 +735,7 @@ class ExternalReporting
                                 'table' => "{$this->viewPrefix}_{$tableName}",
                                 'column' => $fieldV['alias'],
                                 'type' => $edaType,
-                                'decimals' => $edaPrecision,
+                                'decimals' => $edaPrecision ?? 0,
                                 'aggregations' => empty($edaAggregations) ? 'none' : $edaAggregations,
                                 'label' => html_entity_decode($fieldV['label'], ENT_QUOTES),
                                 'description' => addslashes($fieldV['label']),
@@ -817,7 +827,7 @@ class ExternalReporting
             // Sql Header. Depending on the value of the SDA_MODE_MODE setting we create tables or views mysql
             if (
                 in_array($moduleName, $this->sdaSettings['publishAsTable'])
-                || $this->sdaSettings['publishAsTable'][0] == '1'
+                || (!empty($this->sdaSettings['publishAsTable'][0]) && $this->sdaSettings['publishAsTable'][0] == '1')
             ) {
                 $tableMode = 'table';
                 $createViewQueryHeader = " CREATE OR REPLACE TABLE {$viewName} ENGINE=InnoDB AS SELECT ";
@@ -875,9 +885,9 @@ class ExternalReporting
             // Create FROM
             unset($createViewQueryFrom);
             if (isset($fieldList['custom'])) {
-                $createViewQueryFrom .= " FROM  {$tableName} m LEFT JOIN {$tableName}_cstm c ON m.id=c.id_c ";
+                $createViewQueryFrom = " FROM  {$tableName} m LEFT JOIN {$tableName}_cstm c ON m.id=c.id_c ";
             } else {
-                $createViewQueryFrom .= " FROM  {$tableName} AS m ";
+                $createViewQueryFrom = " FROM  {$tableName} AS m ";
             }
 
             // Create left joins
@@ -902,28 +912,12 @@ class ExternalReporting
                 $this->info .= '<div style="font-size:80%"><b>Listas creadas:</b> ' . join(' | ', array_unique($listNames)) . '</div>';
             };
 
-            // If we are in table mode, we must add the corresponding indices to the table
-            // if ($this->sdaSettings['SDA_TABLE_MODE'] == '1') {
-            //     foreach ($indexesToCreate as $indexToCreate) {
-            //         $createIndexQuery = "ALTER TABLE {$viewName} ADD INDEX ($indexToCreate);";
-            //         if (!$db->query($createIndexQuery)) {
-            //             $lastSQLError = array_pop(explode(':', $db->last_error));
-            //             $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$lastSQLError}] running Query: [{$createIndexQuery}]");
-            //             $this->info .= "<div class='error' style='color:red;'>ERROR: <textarea style='width:100%;height:300px;border:1px solid red;'> {$createIndexQuery} </textarea>({$lastSQLError})</div>";
-            //             $this->info .= "[FATAL: Unable to create index $indexToCreate]";
-            //         } else {
-            //             $this->info .= '<div style="font-size:80%"><b>Índice creado OK:</b> ' . $indexToCreate . '</div>';
-            //         }
-
-            //     }
-            // }
-
             $this->info .= "<h2>Base fields</h2>";
-            $this->info .= print_r($fieldList['base'], true);
+            $this->info .= print_r($fieldList['base'] ?? '', true);
             $this->info .= "<h2>Custom fields</h2>";
-            $this->info .= print_r($fieldList['custom'], true);
+            $this->info .= print_r($fieldList['custom'] ?? '', true);
             $this->info .= "<h2>Virtual Fields</h2>";
-            $this->info .= print_r($fieldList['virtual'], true);
+            $this->info .= print_r($fieldList['virtual'] ?? '', true);
 
             $this->info .= "</div>";
             $isTable = $tableMode == 'table' ? ' <b style=color:orange>[Table]</b> ' : ' <b style=color:green>[View]</b> ';
@@ -1117,7 +1111,7 @@ class ExternalReporting
             // Standard join using join table
 
             // **Determine join side based on current module:**
-            if ($rel['lhs_module'] == $field['module']) {
+            if (!empty($rel['lhs_module']) && !empty($field['module']) && $rel['lhs_module'] == $field['module']) {
                 // Current module is on the left side
 
                 // Add metadata record
@@ -1138,7 +1132,7 @@ class ExternalReporting
                     'field' => "{$rel['join_table']}.{$rel['join_key_lhs']}",
                     'leftJoin' => " LEFT JOIN {$rel['join_table']} ON {$rel['join_table']}.{$rel['join_key_rhs']}=m.id AND {$rel['join_table']}.deleted=0 ",
                 ];
-            } elseif ($rel['rhs_module'] == $field['module']) {
+            } elseif (!empty($rel['rhs_module']) && !empty($field['module']) && $rel['rhs_module'] == $field['module']) {
                 // Current module is on the right side
 
                 // Add metadata record
@@ -1317,38 +1311,36 @@ class ExternalReporting
                                   ;";
         // 3) eda_def_users_groups
         $sqlMetadata[] = "CREATE or REPLACE VIEW `sda_def_user_groups` AS
-                            -- Normal users are assigned to their own security groups.
-                            SELECT * FROM (
-                                -- Select 1: Regular users with $this->maxNonAdminUsers LIMIT
-                                SELECT 
+                                -- Select 1: Regular users
+                            	SELECT
                                     user_name,
                                     CONCAT('SCRM_', s.name) as name
-                                FROM (
-                                    SELECT DISTINCT u.id, u.user_name
-                                    FROM users u
-                                    JOIN users_cstm uc ON uc.id_c = u.id
-                                    WHERE u.is_admin = 0
-                                        AND u.deleted = 0
-                                        AND uc.sda_allowed_c = 1
-                                        AND u.status = 'Active'
-                                    LIMIT $this->maxNonAdminUsers
-                                ) AS limited_users
-                                JOIN securitygroups_users su ON limited_users.id = su.user_id
+                                FROM
+                                    users u
+                                JOIN users_cstm uc ON uc.id_c = u.id
+                                JOIN securitygroups_users su ON u.id = su.user_id
                                 JOIN securitygroups s ON s.id = su.securitygroup_id
-                                WHERE su.deleted = 0
-                                    AND s.deleted = 0
-                                ) AS limited_users
-                                -- Select 2: Administrator users should always belong to the EDA_ADMIN group.
-                                UNION
-                                SELECT
+                                WHERE
+                                    u.is_admin = 0
+                                    AND u.deleted = 0
+                                    AND su.deleted=0
+                                    AND s.deleted=0
+                                    AND uc.sda_allowed_c = 1
+                                    AND u.status = 'Active'
+                                    AND u.user_hash IS NOT NULL
+                                    -- Select 2: Administrator users should always belong to the EDA_ADMIN group.
+                            UNION SELECT
                                     user_name,
                                     'EDA_ADMIN'
                                 FROM
                                     users u
+                                JOIN users_cstm uc ON uc.id_c = u.id
                                 WHERE
                                     u.is_admin = 1
                                     AND u.deleted = 0
-                                    AND u.status='Active';";
+                                    AND u.status = 'Active'
+                                    AND u.user_hash IS NOT NULL
+                                AND uc.sda_allowed_c =1;";
 
         // 4) eda_def_security_group_records
 
@@ -1519,59 +1511,6 @@ class ExternalReporting
         }
     }
 
-/**
- * Function to create an MariaDB table for a specific $app_list_strings
- * @param string $listName The name of the SuiteCRM list ($app_mod_string)
- * @param string $listViewName then name of the MariaDB table to create.
- * @return mixed The name of the list if the table is successfully created, void otherwise
- */
-    private function createEnumTable($listName, $listViewName)
-    {
-        // Get the global variable $app_list_strings
-        global $app_list_strings;
-
-        // Get instance of DBManagerFactory
-        $db = DBManagerFactory::getInstance();
-
-        // Get the current list
-        $currentList = $app_list_strings[$listName];
-
-        // Drop the table if it already exists
-        $db->query($dropTableCommand);
-
-        // Start building the SQL command to create the table
-        $sqlCommand = "CREATE TABLE {$this->listViewPrefix}_{$listViewName} (code VARCHAR(100), value VARCHAR(100)) AS ";
-        $isFirst = false;
-
-        // Loop through the current list
-        foreach ($currentList as $key => $value) {
-            // If it's the first iteration, add SELECT statement
-            if ($isFirst == false) {
-                $sqlCommand .= "SELECT '{$key}' as 'code', '{$db->quote($value)}' as 'value' ";
-                $isFirst = true;
-            } else {
-                // Add UNION SELECT statement for the rest of the iterations
-                $sqlCommand .= "UNION SELECT '{$key}', '{$db->quote($value)}' ";
-            }
-        }
-
-        // Execute the SQL command
-        if (!$db->query($sqlCommand)) {
-            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$db->last_error}] running Query: [{$sqlCommand}]");
-            return;
-        }
-
-        // Create an index on the 'value' column
-        $indexCommand = "CREATE INDEX value_index ON {$this->listViewPrefix}_{$listViewName} (value)";
-
-        if (!$db->query($indexCommand)) {
-            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$db->last_error}] creating Index on: [{$this->listViewPrefix}_{$listViewName}]");
-            return;
-        }
-
-        return $listViewName;
-    }
-
     /**
      * Function to create an MariaDB view for a specific $app_list_strings
      * @param string $listName The name of the SuiteCRM list ($app_mod_string)
@@ -1581,22 +1520,18 @@ class ExternalReporting
     private function createEnumView($listName, $listViewName)
     {
 
-
         // Get the global variable $app_list_strings
         global $app_list_strings;
 
         // Get instance of DBManagerFactory
         $db = DBManagerFactory::getInstance();
 
-        // Get the current listm or return if not exists
-        $currentList = $app_list_strings[$listName];
-        if(!$currentList) {
+        // Get the current list or return if not exists
+        $currentList = $app_list_strings[$listName] ?? null;
+        if (!$currentList) {
             $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "The referenced dropdown list [{$listName}] is not available. Ommited");
-        return;
+            return;
         }
-
-
-
 
         // Start building the SQL command
         $sqlCommand = "CREATE OR REPLACE VIEW {$this->listViewPrefix}_{$listViewName} AS ";
@@ -1616,7 +1551,7 @@ class ExternalReporting
         // Execute the SQL command
         if (!$db->query($sqlCommand)) {
             $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$db->last_error}] running Query: [{$sqlCommand}]");
-            
+
         } else {
             return $listViewName;
         };
@@ -1628,6 +1563,7 @@ class ExternalReporting
      */
     public function deleteOldViews()
     {
+        global $sugar_config;
         // List of prefixes to be deleted
         $prefixesToDelete = ['sda_'];
 
@@ -1639,8 +1575,8 @@ class ExternalReporting
         // Loop through the prefixes
         foreach ($prefixesToDelete as $prefix) {
 
-            // Get all the views with matching prefixes
-            $res = $db->query("select table_name from information_schema.views where table_name like '{$prefix}%'");
+            // Get all the views with matching prefixes for the current database
+            $res = $db->query("SELECT table_name FROM information_schema.views WHERE table_name LIKE '{$prefix}%' AND table_schema='{$sugar_config['dbconfig']['db_name']}'");
             // Loop through the views
             while ($view = $db->fetchByAssoc($res, false)) {
                 // Delete the view
@@ -1653,7 +1589,7 @@ class ExternalReporting
             $res = $db->query("select table_name, table_type from information_schema.tables where table_name like '{$prefix}%'");
             // Loop through the views
             while ($view = $db->fetchByAssoc($res, false)) {
-                if($view['table_type'] == 'VIEW'){
+                if ($view['table_type'] == 'VIEW') {
                     // Delete the view
                     if ($db->query("DROP VIEW IF EXISTS {$view['table_name']}")) {
                         $counterTable++;
@@ -1664,8 +1600,7 @@ class ExternalReporting
                         $counterTable++;
                     }
                 }
-                
-                
+
             }
 
         }
@@ -1773,9 +1708,6 @@ class ExternalReporting
             0 => 'ACL_ALLOW_DEFAULT',
         ];
 
-       
-       
-
         // Preload user groups if group permissions are enabled for better performance
         $userGroups = [];
         if ($sugar_config['stic_sinergiada']['group_permissions_enabled']) {
@@ -1792,8 +1724,7 @@ class ExternalReporting
                      FROM users
                      JOIN users_cstm ON users.id = users_cstm.id_c
                      WHERE status='Active' AND deleted=0
-                     AND sda_allowed_c=1 AND is_admin=0
-                     LIMIT $this->maxNonAdminUsers ";
+                     AND sda_allowed_c=1 AND is_admin=0";
 
         $nonAdminUsers = $db->query($nonAdminQuery);
         $userQueries = [$nonAdminUsers];
@@ -1846,7 +1777,7 @@ class ExternalReporting
                             case '75': // Owner-based permissions
                                 $permissionsBatch[] = [
                                     'user_name' => $user['user_name'],
-                                    'group' =>null,
+                                    'group' => null,
                                     'table' => $currentTable,
                                     'column' => 'assigned_user_name',
                                     'stic_permission_source' => $aclSource,
@@ -1857,7 +1788,7 @@ class ExternalReporting
                             default: // Global permissions
                                 $permissionsBatch[] = [
                                     'user_name' => $user['user_name'],
-                                    'group' =>null,
+                                    'group' => null,
                                     'table' => $currentTable,
                                     'column' => 'users_id',
                                     'stic_permission_source' => $aclSource,
@@ -1874,15 +1805,17 @@ class ExternalReporting
             }
 
             // Insert accumulated permissions in batch
-            $this->batchInsertPermissions($permissionsBatch);
-            unset($permissionsBatch);
+            if (!empty($permissionsBatch)) {
+                $this->batchInsertPermissions($permissionsBatch);
+                unset($permissionsBatch);
+            }
         }
 
         // Log total execution time
         $endTime = microtime(true);
         $totalProcessingTime = round($endTime - $startTime, 4);
 
-        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': Completed ACL processing for <=' . $maxNonAdminUsers . ' users in ' . $totalProcessingTime . ' seconds');
+        $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': Completed ACL processing for users in ' . $totalProcessingTime . ' seconds');
     }
 
     /**
@@ -2013,7 +1946,7 @@ class ExternalReporting
         FROM information_schema.tables
         WHERE table_schema = DATABASE();";
         $result = $db->query($query);
-        while ($row = mysqli_fetch_assoc($result)) {
+        while ($row = $db->fetchByAssoc($result)) {
             if ($row['table_name'] == $tableToCheck) {
                 return true;
             }
@@ -2048,7 +1981,7 @@ class ExternalReporting
         $result = $db->query($missingTables);
         if ($result !== false) {
             if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
+                while ($row = $db->fetchByassoc($result)) {
                     $queryDelete = "DELETE FROM {$row['sda_def_columns']} WHERE {$row['column_name']} = '{$row['table']}';";
 
                     $deleteResult = $db->query($queryDelete);

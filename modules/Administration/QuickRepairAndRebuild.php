@@ -58,6 +58,7 @@ class RepairAndClear
     public function repairAndClearAll($selected_actions, $modules, $autoexecute = false, $show_output = true)
     {
         global $mod_strings;
+        global $sugar_config;
         $this->module_list = $modules;
         $this->show_output = $show_output;
         $this->actions = $selected_actions;
@@ -141,7 +142,7 @@ class RepairAndClear
                 isset($_REQUEST['silent']) && $_REQUEST['silent'] == 'true' &&
                 isset($_REQUEST['action']) && in_array($_REQUEST['action'], ['DeleteField', 'DeleteRelationship'])
             ) {
-                $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Action {$_REQUEST['action']}. Rebuilding SinergiaDA");
+                $GLOBALS['log']->stic('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Action {$_REQUEST['action']}. Rebuilding SinergiaDA");
                 require_once 'SticInclude/SinergiaDARebuild.php';
                 SinergiaDARebuild::callApiRebuildSDA(true, 'views');
             }
