@@ -287,7 +287,7 @@ class EmailTemplate extends SugarBean
 
     public function fill_in_additional_detail_fields()
     {
-        if (empty($this->body) && !empty($this->body_html)) {
+        if (!empty($this->body_html)) {
             global $sugar_config;
 
             $bodyCleanup = $this->body_html;
