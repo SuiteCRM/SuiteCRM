@@ -4142,7 +4142,7 @@ class InboundEmail extends SugarBean
         $uid,
         $type = null,
         $clean_email = true
-    ): string
+    ): ?string
     {
         $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
 
