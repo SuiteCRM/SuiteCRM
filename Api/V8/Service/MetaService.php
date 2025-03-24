@@ -76,8 +76,9 @@ class MetaService
         'default',
         'len',
         'precision',
-        'comments',
+        'comment',
         'required',
+        'vname'
     ];
 
     /**
