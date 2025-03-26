@@ -67,7 +67,7 @@ class templateParser
             if (isset($field_def['name']) && $field_def['name'] != '') {
                 $fieldName = $field_def['name'];
 
-                if (empty($focus->$fieldName)) {
+                if (empty($focus->$fieldName) && !($field_def['type'] == 'radioenum' || $field_def['type'] == 'enum' || $field_def['type'] == 'dynamicenum')) {
                     $repl_arr[$key . '_' . $fieldName] = '';
                     continue;
                 }
