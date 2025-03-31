@@ -258,6 +258,7 @@ class stic_Custom_Views_ProcessorLogicHooks
                 return str_replace('.', $dec_sep, $value);
 
             case "date":
+                return $timedate->asUser($timedate->fromDbFormat($value, TimeDate::DB_DATE_FORMAT), $current_user);
             case "datetime":
             case "datetimecombo":
                 return $timedate->asUser($timedate->fromDbFormat($value, TimeDate::DB_DATETIME_FORMAT), $current_user);
