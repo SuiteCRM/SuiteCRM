@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+ #[\AllowDynamicProperties]
  class ConnectorRecord extends MergeRecord
  {
      public $object_name = 'ConnectorRecord';

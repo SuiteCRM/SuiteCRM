@@ -54,7 +54,7 @@ class SugarFieldWysiwyg extends SugarFieldBase {
     {
         $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 
-        $form_name = '';
+        $form_name = $displayParams['formName'] ?? '';
 
         if (!empty($this->ss->_tpl_vars['displayParams']['formName'])) {
             $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
@@ -64,7 +64,11 @@ class SugarFieldWysiwyg extends SugarFieldBase {
         $config['height'] = 250;
         $config['menubar'] = false;
         $config['plugins']  = 'code, table, link, image, wordcount';
-        $config['selector'] = "#{$form_name} "."#".$vardef['name'];
+        if ($form_name !== '') {
+            $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
+        } else {
+            $config['selector'] = "#" . $vardef['name'];
+        }
         $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';
 
         $jsConfig = json_encode($config);

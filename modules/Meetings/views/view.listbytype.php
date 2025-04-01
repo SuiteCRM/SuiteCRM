@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 require_once('modules/EAPM/EAPM.php');
+#[\AllowDynamicProperties]
 class MeetingsViewListbytype extends ViewList
 {
     public $options = array('show_header' => false, 'show_title' => false, 'show_subpanels' => false, 'show_search' => true, 'show_footer' => false, 'show_javascript' => false, 'view_print' => false,);

@@ -63,7 +63,7 @@ $focus = BeanFactory::newBean('Roles');
 
 $detailView = new DetailView();
 $offset=0;
-if (isset($_REQUEST['offset']) or isset($_REQUEST['record'])) {
+if (isset($_REQUEST['offset']) || isset($_REQUEST['record'])) {
     $result = $detailView->processSugarBean("ROLE", $focus, $offset);
     if ($result == null) {
         sugar_die($app_strings['ERROR_NO_RECORD']);

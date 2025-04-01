@@ -40,6 +40,7 @@
 
 require_once('service/v4/SugarWebServiceUtilv4.php');
 
+#[\AllowDynamicProperties]
 class SugarWebServiceUtilv4_1 extends SugarWebServiceUtilv4
 {
     /**

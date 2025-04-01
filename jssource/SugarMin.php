@@ -2,6 +2,7 @@
 
 use JShrink\Minifier;
 
+#[\AllowDynamicProperties]
 class SugarMin
 {
 

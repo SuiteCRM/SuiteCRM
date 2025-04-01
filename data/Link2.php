@@ -552,6 +552,11 @@ class Link2
             if ($success == false) {
                 $failures[] = $key->id;
             }
+
+            // remove temporary beans to prevent runaway memory usage
+            if(isset($this->tempBeans[$key->id])) {
+                unset($this->tempBeans[$key->id]);
+            }
         }
 
         if (!empty($failures)) {
@@ -600,6 +605,11 @@ class Link2
 
             if ($success == false) {
                 $failures[] = $keyBean->id;
+            }
+
+            // remove temporary beans to prevent runaway memory usage
+            if(isset($this->tempBeans[$keyBean->id])) {
+                unset($this->tempBeans[$keyBean->id]);
             }
         }
 

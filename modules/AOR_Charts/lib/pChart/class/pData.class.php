@@ -50,9 +50,10 @@
  define("VOID", 0.123456789);
 
  /* Euro symbol for GD fonts */
- define("EURO_SYMBOL", utf8_encode("&#8364;"));
+ define("EURO_SYMBOL", mb_convert_encoding("&#8364;", 'UTF-8', 'ISO-8859-1'));
 
  /* pData class definition */
+ #[\AllowDynamicProperties]
  class pData
  {
      public $Data;
@@ -128,7 +129,7 @@
      public function getSerieCount($Serie)
      {
          if (isset($this->Data["Series"][$Serie]["Data"])) {
-             return(count($this->Data["Series"][$Serie]["Data"]));
+             return(is_countable($this->Data["Series"][$Serie]["Data"]) ? count($this->Data["Series"][$Serie]["Data"]) : 0);
          }
          return(0);
      }
@@ -405,7 +406,7 @@
      {
          if (isset($this->Data["Series"][$Serie])) {
              $SerieData = $this->stripVOID($this->Data["Series"][$Serie]["Data"]);
-             return(array_sum($SerieData)/count($SerieData));
+             return(array_sum($SerieData)/(is_countable($SerieData) ? count($SerieData) : 0));
          }
          return(null);
      }
@@ -419,7 +420,7 @@
              foreach ($SerieData as $Key => $Value) {
                  $Seriesum = $Seriesum * $Value;
              }
-             return(pow($Seriesum, 1/count($SerieData)));
+             return(pow($Seriesum, 1/(is_countable($SerieData) ? count($SerieData) : 0)));
          }
          return(null);
      }
@@ -433,7 +434,7 @@
              foreach ($SerieData as $Key => $Value) {
                  $Seriesum = $Seriesum + 1/$Value;
              }
-             return(count($SerieData)/$Seriesum);
+             return((is_countable($SerieData) ? count($SerieData) : 0)/$Seriesum);
          }
          return(null);
      }
@@ -450,7 +451,7 @@
                  $DeviationSum = $DeviationSum + ($Value-$Average)*($Value-$Average);
              }
 
-             $Deviation = sqrt($DeviationSum/count($SerieData));
+             $Deviation = sqrt($DeviationSum/(is_countable($SerieData) ? count($SerieData) : 0));
 
              return($Deviation);
          }
@@ -478,7 +479,7 @@
          if (isset($this->Data["Series"][$Serie])) {
              $SerieData = $this->stripVOID($this->Data["Series"][$Serie]["Data"]);
              sort($SerieData);
-             $SerieCenter = floor(count($SerieData)/2);
+             $SerieCenter = floor((is_countable($SerieData) ? count($SerieData) : 0)/2);
 
              if (isset($SerieData[$SerieCenter])) {
                  return($SerieData[$SerieCenter]);
@@ -495,7 +496,7 @@
              return(null);
          }
 
-         $Values = count($this->Data["Series"][$Serie]["Data"])-1;
+         $Values = (is_countable($this->Data["Series"][$Serie]["Data"]) ? count($this->Data["Series"][$Serie]["Data"]) : 0)-1;
          if ($Values < 0) {
              $Values = 0;
          }
@@ -780,7 +781,7 @@
      public function initialise($Serie)
      {
          if (isset($this->Data["Series"])) {
-             $ID = count($this->Data["Series"]);
+             $ID = is_countable($this->Data["Series"]) ? count($this->Data["Series"]) : 0;
          } else {
              $ID = 0;
          }
@@ -820,8 +821,10 @@
                  if ($Serie["Axis"] == $AxisID && $Serie["isDrawable"] == true && $SerieName != $Abscissa) {
                      $SelectedSeries[$SerieName] = $SerieName;
 
-                     if (count($Serie["Data"]) > $MaxVal) {
-                         $MaxVal = count($Serie["Data"]);
+                     $count = is_countable($Serie["Data"]) ? count($Serie["Data"]) : 0;
+
+                     if ($count > $MaxVal) {
+                         $MaxVal = $count;
                      }
                  }
              }
@@ -908,6 +911,7 @@
      /* Create a dataset based on a formula */
      public function createFunctionSerie($SerieName, $Formula="", $Options="")
      {
+         $return = '';
          $MinX		= isset($Options["MinX"]) ? $Options["MinX"] : -10;
          $MaxX		= isset($Options["MaxX"]) ? $Options["MaxX"] : 10;
          $XStep		= isset($Options["XStep"]) ? $Options["XStep"] : 1;
@@ -919,17 +923,17 @@
              return(0);
          }
 
-         $Result = "";
-         $Abscissa = "";
+         $Result = [];
+         $Abscissa = [];
          for ($i=$MinX; $i<=$MaxX; $i=$i+$XStep) {
-             $Expression = "\$return = '!'.(".str_replace("z", $i, $Formula).");";
+             $Expression = "\$return = '!'.(".str_replace("z", $i, (string) $Formula).");";
              if (@eval($Expression) === false) {
                  $return = VOID;
              }
              if ($return == "!") {
                  $return = VOID;
              } else {
-                 $return = $this->right($return, strlen($return)-1);
+                 $return = $this->right($return, strlen((string) $return)-1);
              }
              if ($return == "NAN") {
                  $return = VOID;
@@ -961,7 +965,7 @@
          }
          foreach ($Series as $Key => $SerieName) {
              if (isset($this->Data["Series"][$SerieName])) {
-                 $Data = "";
+                 $Data = [];
                  foreach ($this->Data["Series"][$SerieName]["Data"] as $Key => $Value) {
                      if ($Value == VOID) {
                          $Data[] = VOID;
@@ -1022,7 +1026,7 @@
      /* Convert a string to a single elements array */
      public function convertToArray($Value)
      {
-         $Values = "";
+         $Values = [];
          $Values[] = $Value;
          return($Values);
      }
@@ -1035,14 +1039,14 @@
 
      public function left($value, $NbChar)
      {
-         return substr($value, 0, $NbChar);
+         return substr((string) $value, 0, $NbChar);
      }
      public function right($value, $NbChar)
      {
-         return substr($value, strlen($value)-$NbChar, $NbChar);
+         return substr((string) $value, strlen((string) $value)-$NbChar, $NbChar);
      }
      public function mid($value, $Depart, $NbChar)
      {
-         return substr($value, $Depart-1, $NbChar);
+         return substr((string) $value, $Depart-1, $NbChar);
      }
  }

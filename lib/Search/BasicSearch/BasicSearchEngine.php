@@ -62,6 +62,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class BasicAndAodEngine
  */
+#[\AllowDynamicProperties]
 class BasicSearchEngine extends SearchEngine
 {
     /* path to search form */
@@ -92,7 +93,7 @@ class BasicSearchEngine extends SearchEngine
         $totalHits = 0;
 
         foreach ($results['modules'] as $moduleHit) {
-            $totalHits += count($moduleHit);
+            $totalHits += is_countable($moduleHit) ? count($moduleHit) : 0;
         }
 
         return new SearchResults($results['modules'], true, $elapsed, $totalHits);
@@ -186,7 +187,7 @@ class BasicSearchEngine extends SearchEngine
                         if (empty($def['db_field'])) {
                             continue;
                         }
-                        $def['innerjoin'] = str_replace('INNER', 'LEFT', $def['innerjoin']);
+                        $def['innerjoin'] = str_replace('INNER', 'LEFT', (string) $def['innerjoin']);
                     }
 
                     if (isset($seed->field_defs[$field]['type'])) {

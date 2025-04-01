@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class PredefinedChart
 {
     public $params = array();
@@ -130,11 +131,11 @@ class PredefinedChart
         $datax_selected= array();
         $user_tempx = $current_user->getPreference('pbss_sales_stages');
         //get list of sales stage keys to display
-        if (!empty($user_tempx) && count($user_tempx) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
+        if (!empty($user_tempx) && (is_countable($user_tempx) ? count($user_tempx) : 0) > 0 && !isset($_REQUEST['pbss_sales_stages'])) {
             $tempx = $user_tempx ;
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_sales_stages'] is:");
             $GLOBALS['log']->debug($user_tempx);
-        } elseif (isset($_REQUEST['pbss_sales_stages']) && count($_REQUEST['pbss_sales_stages']) > 0) {
+        } elseif (isset($_REQUEST['pbss_sales_stages']) && (is_countable($_REQUEST['pbss_sales_stages']) ? count($_REQUEST['pbss_sales_stages']) : 0) > 0) {
             $tempx = $_REQUEST['pbss_sales_stages'];
             $current_user->setPreference('pbss_sales_stages', $_REQUEST['pbss_sales_stages']);
             $GLOBALS['log']->debug("_REQUEST['pbss_sales_stages'] is:");
@@ -144,7 +145,7 @@ class PredefinedChart
         }
 
         //set $datax using selected sales stage keys
-        if (count($tempx) > 0) {
+        if ((is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 array_push($datax_selected, $key);
@@ -160,12 +161,12 @@ class PredefinedChart
         $new_ids = array();
         $user_ids = $current_user->getPreference('pbss_ids');
         //get list of user ids for which to display data
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['pbss_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['pbss_ids'])) {
             $ids = $user_ids;
 
             $GLOBALS['log']->debug("USER PREFERENCES['pbss_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['pbss_ids']) && count($_REQUEST['pbss_ids']) > 0) {
+        } elseif (isset($_REQUEST['pbss_ids']) && (is_countable($_REQUEST['pbss_ids']) ? count($_REQUEST['pbss_ids']) : 0) > 0) {
             $ids = $_REQUEST['pbss_ids'];
             $current_user->setPreference('pbss_ids', $_REQUEST['pbss_ids']);
             $GLOBALS['log']->debug("_REQUEST['pbss_ids'] is:");
@@ -181,7 +182,7 @@ class PredefinedChart
         $opp = new Opportunity;
         $where="";
         //build the where clause for the query that matches $user
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         $user_list = get_user_array(false);
         foreach ($user_id as $key) {
@@ -195,7 +196,7 @@ class PredefinedChart
             $where .= "opportunities.assigned_user_id IN ($ids) ";
         }
         //build the where clause for the query that matches $datax
-        $count = count($datax);
+        $count = is_countable($datax) ? count($datax) : 0;
         $dataxArr = array();
         if ($count>0) {
             foreach ($datax as $key=>$value) {
@@ -241,10 +242,10 @@ class PredefinedChart
         //get list of sales stage keys to display
 
         $tempx = $filters['lsbo_lead_sources'];
-        if (!empty($lsbo_lead_sources) && count($lsbo_lead_sources) > 0 && !isset($_REQUEST['lsbo_lead_sources'])) {
+        if (!empty($lsbo_lead_sources) && (is_countable($lsbo_lead_sources) ? count($lsbo_lead_sources) : 0) > 0 && !isset($_REQUEST['lsbo_lead_sources'])) {
             $GLOBALS['log']->fatal("user->getPreference('lsbo_lead_sources') is:");
             $GLOBALS['log']->fatal($tempx);
-        } elseif (isset($_REQUEST['lsbo_lead_sources']) && count($_REQUEST['lsbo_lead_sources']) > 0) {
+        } elseif (isset($_REQUEST['lsbo_lead_sources']) && (is_countable($_REQUEST['lsbo_lead_sources']) ? count($_REQUEST['lsbo_lead_sources']) : 0) > 0) {
             $tempx = $_REQUEST['lsbo_lead_sources'];
             $current_user->setPreference('lsbo_lead_sources', $_REQUEST['lsbo_lead_sources']);
             $GLOBALS['log']->fatal("_REQUEST['lsbo_lead_sources'] is:");
@@ -253,7 +254,7 @@ class PredefinedChart
             $GLOBALS['log']->fatal($current_user->getPreference('lsbo_lead_sources'));
         }
         //set $datax using selected sales stage keys
-        if (!empty($tempx) && count($tempx) > 0) {
+        if (!empty($tempx) && (is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['lead_source_dom'][$key];
                 array_push($selected_datax, $key);
@@ -267,10 +268,10 @@ class PredefinedChart
 
         $ids = $filters['lsbo_ids'];
         //get list of user ids for which to display data
-        if (!empty($ids) && count($ids) != 0 && !isset($_REQUEST['lsbo_ids'])) {
+        if (!empty($ids) && (is_countable($ids) ? count($ids) : 0) != 0 && !isset($_REQUEST['lsbo_ids'])) {
             $GLOBALS['log']->debug("_SESSION['lsbo_ids'] is:");
             $GLOBALS['log']->debug($ids);
-        } elseif (isset($_REQUEST['lsbo_ids']) && count($_REQUEST['lsbo_ids']) > 0) {
+        } elseif (isset($_REQUEST['lsbo_ids']) && (is_countable($_REQUEST['lsbo_ids']) ? count($_REQUEST['lsbo_ids']) : 0) > 0) {
             $ids = $_REQUEST['lsbo_ids'];
             $current_user->setPreference('lsbo_ids', $_REQUEST['lsbo_ids']);
             $GLOBALS['log']->debug("_REQUEST['lsbo_ids'] is:");
@@ -287,7 +288,7 @@ class PredefinedChart
         $opp = BeanFactory::newBean('Opportunities');
         $where="";
         //build the where clause for the query that matches $user
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         if ($count>0) {
             foreach ($user_id as $the_id) {
@@ -298,7 +299,7 @@ class PredefinedChart
         }
 
         //build the where clause for the query that matches $datay
-        $count = count($datay);
+        $count = is_countable($datay) ? count($datay) : 0;
         $datayArr = array();
         if ($count>0) {
             foreach ($datay as $key=>$value) {
@@ -353,11 +354,11 @@ class PredefinedChart
         $ids = array();
         //get list of user ids for which to display data
         $user_ids = $current_user->getPreference('obm_ids');
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['obm_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['obm_ids'])) {
             $ids = $user_ids;
             $GLOBALS['log']->debug("USER PREFERENCES['obm_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['obm_ids']) && count($_REQUEST['obm_ids']) > 0) {
+        } elseif (isset($_REQUEST['obm_ids']) && (is_countable($_REQUEST['obm_ids']) ? count($_REQUEST['obm_ids']) : 0) > 0) {
             $ids = $_REQUEST['obm_ids'];
             $current_user->setPreference('obm_ids', $_REQUEST['obm_ids']);
             $GLOBALS['log']->debug("_REQUEST['obm_ids'] is:");
@@ -373,7 +374,7 @@ class PredefinedChart
 
         $where = "";
         //build the where clause for the query that matches $user
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         if ($count>0) {
             foreach ($user_id as $the_id) {
@@ -407,11 +408,11 @@ class PredefinedChart
 
         //get list of sales stage keys to display
         $user_tempx = $filters['pbls_lead_sources'];
-        if (!empty($user_tempx) && count($user_tempx) > 0 && !isset($_REQUEST['pbls_lead_sources'])) {
+        if (!empty($user_tempx) && (is_countable($user_tempx) ? count($user_tempx) : 0) > 0 && !isset($_REQUEST['pbls_lead_sources'])) {
             $tempx = $user_tempx;
             $GLOBALS['log']->debug("USER PREFERENCES['pbls_lead_sources'] is:");
             $GLOBALS['log']->debug($user_tempx);
-        } elseif (isset($_REQUEST['pbls_lead_sources']) && count($_REQUEST['pbls_lead_sources']) > 0) {
+        } elseif (isset($_REQUEST['pbls_lead_sources']) && (is_countable($_REQUEST['pbls_lead_sources']) ? count($_REQUEST['pbls_lead_sources']) : 0) > 0) {
             $tempx = $_REQUEST['pbls_lead_sources'];
             $current_user->setPreference('pbls_lead_sources', $_REQUEST['pbls_lead_sources']);
             $GLOBALS['log']->debug("_REQUEST['pbls_lead_sources'] is:");
@@ -421,7 +422,7 @@ class PredefinedChart
         }
 
         //set $datax using selected sales stage keys
-        if (count($tempx) > 0) {
+        if ((is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['lead_source_dom'][$key];
                 array_push($selected_datax, $key);
@@ -436,7 +437,7 @@ class PredefinedChart
         $ids = array();
         $user_ids = $filters['pbls_ids'];
         //get list of user ids for which to display data
-        if (!empty($user_ids) && count($user_ids) > 0) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) > 0) {
             $ids = $user_ids;
         } else {
             $ids = get_user_array(false);
@@ -450,7 +451,7 @@ class PredefinedChart
         $where="";
         //build the where clause for the query that matches $user
 
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         if ($count > 0 && !empty($user_id)) {
             foreach ($user_id as $the_id) {
@@ -463,7 +464,7 @@ class PredefinedChart
             $where .= 'AND';
         }
         //build the where clause for the query that matches $datax
-        $count = count($legends);
+        $count = is_countable($legends) ? count($legends) : 0;
         $legendItem = array();
         if ($count > 0 && !empty($legends)) {
             foreach ($legends as $key=>$value) {
@@ -481,7 +482,7 @@ class PredefinedChart
 
     public function myModuleUsageLast30Days()
     {
-        global $current_user;
+        global $current_user, $timedate;
         $dateValue = DBManagerFactory::getInstance()->convert("'".$timedate->getNow()->modify("-30 days")->asDb()."'", "datetime");
 
         $query  = "SELECT tracker.module_name as module_name ";

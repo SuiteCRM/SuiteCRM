@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php') ;
 require_once('modules/ModuleBuilder/MB/MBPackage.php');
 
+#[\AllowDynamicProperties]
 class ParserSearchFields extends ModuleBuilderParser
 {
     public $searchFields;

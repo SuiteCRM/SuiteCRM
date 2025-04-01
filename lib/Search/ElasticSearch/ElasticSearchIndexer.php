@@ -61,6 +61,7 @@ use SuiteCRM\Search\Index\IndexingStatisticsTrait;
 /**
  * Class ElasticSearchIndexer takes care of creating a search index for the database.
  */
+#[\AllowDynamicProperties]
 class ElasticSearchIndexer extends AbstractIndexer
 {
     use IndexingStatisticsTrait;
@@ -91,7 +92,7 @@ class ElasticSearchIndexer extends AbstractIndexer
     /**
      * Returns whether the Elasticsearch is enabled by user configuration or not.
      *
-     * @return bool
+     * @return bool|null
      */
     public static function isEnabled(): ?bool
     {
@@ -369,7 +370,7 @@ class ElasticSearchIndexer extends AbstractIndexer
      *
      * @param string $module name of the module
      *
-     * @return array an associative array with the metadata
+     * @return mixed[]|null an associative array with the metadata
      */
     public function getMeta(string $module): ?array
     {
@@ -381,7 +382,7 @@ class ElasticSearchIndexer extends AbstractIndexer
             return null;
         }
 
-        return $results[$lowercaseModule]['mappings']['_meta'];
+        return $results[$lowercaseModule]['mappings']['_meta'] ?? array();
     }
 
     /**

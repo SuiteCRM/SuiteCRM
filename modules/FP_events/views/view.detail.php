@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class FP_eventsViewDetail extends ViewDetail
 {
     public $currSymbol;

@@ -43,12 +43,6 @@
             document.getElementById("mail_smtpserver").value = '';
             document.getElementById("mail_smtpport").value = '25';
             document.getElementById("mail_smtpauth_req").checked = true;
-            document.getElementById("mailsettings1").style.display = '';
-            document.getElementById("mailsettings2").style.display = '';
-            document.getElementById("password_change_label").innerHTML = '{/literal}{$MOD.LBL_MAIL_SMTPPASS}{literal}';
-            document.getElementById("mail_smtpport_label").innerHTML = '{/literal}{$MOD.LBL_MAIL_SMTPPORT}{literal}';
-            document.getElementById("mail_smtpserver_label").innerHTML = '{/literal}{$MOD.LBL_MAIL_SMTPSERVER}{literal}';
-            document.getElementById("mail_smtpuser_label").innerHTML = '{/literal}{$MOD.LBL_MAIL_SMTPUSER}{literal}';
         }
 
         switch (smtptype) {

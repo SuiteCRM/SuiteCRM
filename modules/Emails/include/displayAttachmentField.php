@@ -76,8 +76,9 @@ function displayAttachmentField($focus, $field, $value, $view)
 
         if ($inboundEmail->messageStructureHasAttachment($structure)) {
             foreach ($structure->parts as $part) {
-                if (is_string($part->dparameters[0]->value)) {
-                    $attachments[] = $part->dparameters[0]->value;
+                $attachmentElement = $part->dparameters[0]->value ?? '';
+                if (is_string($attachmentElement)) {
+                    $attachments[] = $attachmentElement;
                 }
             }
         }

@@ -37,6 +37,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class Favorites extends Basic
 {
     public $new_schema = true;

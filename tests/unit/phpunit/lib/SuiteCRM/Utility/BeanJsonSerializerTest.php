@@ -46,7 +46,7 @@ class BeanJsonSerializerTest extends SuitePHPUnitFrameworkTestCase
     public function testToArrayContact(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.json');
-        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.expected.json'), true);
+        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/ContactBean.expected.json'), true, 512, JSON_THROW_ON_ERROR);
         $actual = BeanJsonSerializer::make()->toArray($mockBean, false);
 
         self::assertEquals($expected, $actual);
@@ -55,7 +55,7 @@ class BeanJsonSerializerTest extends SuitePHPUnitFrameworkTestCase
     public function testToArrayAccount(): void
     {
         $mockBean = new BeanMock(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.json');
-        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.expected.json'), true);
+        $expected = json_decode(file_get_contents(__DIR__ . '/BeanJsonSerializerTestData/AccountBean.expected.json'), true, 512, JSON_THROW_ON_ERROR);
         $actual = BeanJsonSerializer::make()->toArray($mockBean, false);
 
         self::assertEquals($expected, $actual);

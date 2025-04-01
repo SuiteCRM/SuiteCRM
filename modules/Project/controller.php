@@ -23,6 +23,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ProjectController extends SugarController
 {
     //Loads the gantt view
@@ -95,13 +96,14 @@ class ProjectController extends SugarController
         $task_name = $_POST['task_name'];
         $project_id = $_POST['project_id'];
         $override_business_hours = (int)$_POST['override_business_hours'];
-        $task_id = $_POST['task_id'];
+        $task_id = $_POST['task_id'] ?? '';
         $predecessor = $_POST['predecessor'];
         $rel_type = $_POST['rel_type'];
         $resource = $_POST['resource'];
         $percent = $_POST['percent'];
         $note = $_POST['note'];
         $actual_duration = $_POST['actual_duration'];
+        $milestone_flag = '';
 
         if ($_POST['milestone'] == 'Milestone') {
             $milestone_flag = '1';
@@ -256,7 +258,7 @@ class ProjectController extends SugarController
     {
 
        //convert quotes in json string back to normal
-        $jArray = htmlspecialchars_decode($_POST['orderArray']);
+        $jArray = htmlspecialchars_decode((string) $_POST['orderArray']);
 
         //create object/array from json data
         $orderArray = json_decode($jArray, true);

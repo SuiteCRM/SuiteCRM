@@ -170,12 +170,12 @@ class BugTest extends SuitePHPUnitFrameworkTestCase
         //test with attributes preset and verify template variables are set accordingly
         $result = $bug->set_notification_body(new Sugar_Smarty(), $bug);
 
-        self::assertEquals($bug->name, $result->_tpl_vars['BUG_SUBJECT']);
-        self::assertEquals($bug->type, $result->_tpl_vars['BUG_TYPE']);
-        self::assertEquals($bug->priority, $result->_tpl_vars['BUG_PRIORITY']);
-        self::assertEquals($bug->status, $result->_tpl_vars['BUG_STATUS']);
-        self::assertEquals($bug->resolution, $result->_tpl_vars['BUG_RESOLUTION']);
-        self::assertEquals($bug->bug_number, $result->_tpl_vars['BUG_BUG_NUMBER']);
+        self::assertEquals($bug->name, $result->tpl_vars['BUG_SUBJECT']->value);
+        self::assertEquals($bug->type, $result->tpl_vars['BUG_TYPE']->value);
+        self::assertEquals($bug->priority, $result->tpl_vars['BUG_PRIORITY']->value);
+        self::assertEquals($bug->status, $result->tpl_vars['BUG_STATUS']->value);
+        self::assertEquals($bug->resolution, $result->tpl_vars['BUG_RESOLUTION']->value);
+        self::assertEquals($bug->bug_number, $result->tpl_vars['BUG_BUG_NUMBER']->value);
     }
 
     public function testbean_implements(): void
@@ -201,7 +201,7 @@ class BugTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($bug->id));
-        self::assertEquals(36, strlen($bug->id));
+        self::assertEquals(36, strlen((string) $bug->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $bug->mark_deleted($bug->id);

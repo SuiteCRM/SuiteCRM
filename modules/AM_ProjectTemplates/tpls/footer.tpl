@@ -58,11 +58,11 @@
 <script type='text/javascript' src='{sugar_getjspath file='include/javascript/popup_helper.js'}'></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui2.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
-  
+
 <script type="text/javascript">
 {literal}
 
-document.getElementById("date_start").value = new Date().toLocaleString(); 
+document.getElementById("date_start").value = new Date().toLocaleString();
 
 SUGAR.project_template = {};
 var project_templateLoader = new YAHOO.util.YUILoader({
@@ -73,7 +73,7 @@ var project_templateLoader = new YAHOO.util.YUILoader({
         defaultSkin: ''
     },
     onSuccess: function(){
-		
+
 		SUGAR.project_template.fill_invitees = function() {
 			if (typeof(GLOBAL_REGISTRY) != 'undefined')  {
 				SugarWidgetScheduler.fill_invitees(document.EditView);
@@ -120,7 +120,7 @@ YAHOO.util.Event.onContentReady("{/literal}{{$form_name}}{literal}",function() {
 <div class="buttons">
 {{if !empty($form) && !empty($form.buttons_footer)}}
    {{foreach from=$form.buttons_footer key=val item=button}}
-      {{sugar_button module="$module" id="$button" location="FOOTER" view="$view"}}
+      {{sugar_button module="$module" id=$button location="FOOTER" view="$view"}}
    {{/foreach}}
 {{else}}
 	{{sugar_button module="$module" id="SAVE" view="$view"}}
@@ -128,4 +128,4 @@ YAHOO.util.Event.onContentReady("{/literal}{{$form_name}}{literal}",function() {
 {{/if}}
 
 {{sugar_button module="$module" id="Audit" view="$view"}}
-</div> 
+</div>

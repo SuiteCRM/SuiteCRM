@@ -52,6 +52,7 @@ require_once __DIR__ . '/../../modules/Meetings/Meeting.php';
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSyncHelper
 {
     /**
@@ -60,8 +61,8 @@ class GoogleSyncHelper
      * When given a single calendar object, determine its type and return an action.
      * At least one of the params is required.
      *
-     * @param Meeting $meeting (optional) Meeting Bean
-     * @param \Google\Service\Calendar\Event $event (optional) Google\Service\Calendar\Event Object
+     * @param Meeting|null $meeting (optional) Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event (optional) Google\Service\Calendar\Event Object
      *
      * @return string push, pull, skip, or false on error
      */

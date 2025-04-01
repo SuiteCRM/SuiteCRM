@@ -38,6 +38,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class AOW_Action extends Basic
 {
     public $new_schema = true;
@@ -86,7 +87,7 @@ class AOW_Action extends Basic
         $j = 0;
         for ($i = 0; $i < $line_count; ++$i) {
             if (isset($post_data[$key . 'deleted'][$i]) && $post_data[$key . 'deleted'][$i] == 1) {
-                $this->mark_deleted($post_data[$key . 'id'][$i]);
+                $this->mark_deleted($post_data[$key . 'id'][$i] ?? '');
             } else {
                 $action = BeanFactory::newBean('AOW_Actions');
                 foreach ($this->field_defs as $field_def) {
@@ -96,7 +97,8 @@ class AOW_Action extends Basic
                     }
                 }
                 $params = array();
-                foreach ($post_data[$key . 'param'][$i] as $param_name => $param_value) {
+                $postData = $post_data[$key . 'param'][$i] ?? [];
+                foreach ($postData as $param_name => $param_value) {
                     if ($param_name == 'value') {
                         foreach ($param_value as $p_id => $p_value) {
                             if (!isset($post_data[$key . 'param'][$i]['value_type'])) {
@@ -107,7 +109,18 @@ class AOW_Action extends Basic
                                 if ($post_data[$key . 'param'][$i]['value_type'][$p_id] == 'Value' && is_array($p_value)) {
                                     $param_value[$p_id] = encodeMultienumValue($p_value);
                                 }elseif($post_data[$key . 'param'][$i]['value_type'][$p_id] == 'Value'){
-                                    $param_value[$p_id] = fixUpFormatting($params["record_type"], $post_data[$key . 'param'][$i]["field"][$p_id], $p_value);
+                                    if (isset($params['rel_type']) && !empty($params['rel_type']) && ($params['rel_type'] !== $params['record_type'])) {
+                                        $relName = $params['rel_type'];
+                                        $moduleBean = BeanFactory::getBean($params['record_type']);
+                                        if (!$moduleBean->load_relationship($relName)) {
+                                            $GLOBALS['log']->fatal('Line '.__LINE__.': '.__METHOD__.': '."Relationship ".$relName." doesn't exist.");
+                                            continue;
+                                        }
+                                        $moduleName = $moduleBean->$relName->getRelatedModuleName();
+                                    } else {
+                                        $moduleName = $params["record_type"];
+                                    }
+                                    $param_value[$p_id] = fixUpFormatting($moduleName, $post_data[$key . 'param'][$i]["field"][$p_id], $p_value);
                                 }
                             }
                         }

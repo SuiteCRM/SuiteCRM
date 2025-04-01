@@ -47,6 +47,7 @@ use Codeception\Scenario;
  * Class AccountsTester
  * @package Step\Acceptance
  */
+#[\AllowDynamicProperties]
 class AccountsTester extends AcceptanceTester
 {
     /**

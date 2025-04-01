@@ -107,7 +107,7 @@ function getInstallType($type_string)
     global $subdirs;
 
     foreach ($subdirs as $subdir) {
-        if (preg_match("#/$subdir/#", $type_string)) {
+        if (preg_match("#/$subdir/#", (string) $type_string)) {
             return($subdir);
         }
     }
@@ -117,6 +117,10 @@ function getInstallType($type_string)
 
 function getImageForType($type)
 {
+    global $mod_strings;
+
+    $mod_strings = $mod_strings ?? [];
+
     $icon = "";
     switch ($type) {
         case "full":
@@ -154,14 +158,14 @@ function getUITextForType($type)
 {
     $type = 'LBL_UW_TYPE_'.strtoupper($type);
     global $mod_strings;
-    return $mod_strings[$type];
+    return $mod_strings[$type] ?? '';
 }
 
 function getUITextForMode($mode)
 {
     $mode = 'LBL_UW_MODE_'.strtoupper($mode);
     global $mod_strings;
-    return $mod_strings[$mode];
+    return $mod_strings[$mode] ?? '';
 }
 
 function validate_manifest($manifest)
@@ -188,7 +192,7 @@ function getDiffFiles($unzip_dir, $install_file, $is_install = true, $previous_v
     $modified_files = array();
     if (!empty($installdefs['copy'])) {
         foreach ($installdefs['copy'] as $cp) {
-            $cp['to'] = clean_path(str_replace('<basepath>', $unzip_dir, $cp['to']));
+            $cp['to'] = clean_path(str_replace('<basepath>', $unzip_dir, (string) $cp['to']));
             $restore_path = remove_file_extension(urldecode($install_file))."-restore/";
             $backup_path = clean_path($restore_path.$cp['to']);
             //check if this file exists in the -restore directory
@@ -197,13 +201,13 @@ function getDiffFiles($unzip_dir, $install_file, $is_install = true, $previous_v
                 $from = $backup_path;
                 $needle = $restore_path;
                 if (!$is_install) {
-                    $from = str_replace('<basepath>', $unzip_dir, $cp['from']);
+                    $from = str_replace('<basepath>', $unzip_dir, (string) $cp['from']);
                     $needle = $unzip_dir;
                 }
                 $files_found = md5DirCompare($from.'/', $cp['to'].'/', array('.svn'), false);
-                if (count($files_found > 0)) {
+                if (is_countable($files_found > 0) ? count($files_found > 0) : 0) {
                     foreach ($files_found as $key=>$value) {
-                        $modified_files[] = str_replace($needle, '', $key);
+                        $modified_files[] = str_replace($needle, '', (string) $key);
                     }
                 }
             }//fi

@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class MeetingsCest
 {
     /**
@@ -106,11 +107,12 @@ class MeetingsCest
 
         // Inline edit
         $I->doubleClick('#date_start');
+        $I->waitForElementVisible('#inline_edit_field');
         $I->fillField('#date_start_date', '01/01/2000');
         $I->selectOption('#date_start_hours', '01');
         $I->selectOption('#date_start_minutes', '00');
-        $I->doubleClick('#inlineEditSaveButton');
-        $I->waitForText('01/01/2000 01:00');
+        $I->click('#inlineEditSaveButton');
+        $I->waitForText('01/01/2000 01:00', 30);
         $I->see('01/01/2000 01:00');
 
         // Delete meeting

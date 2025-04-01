@@ -77,10 +77,10 @@ $object_arr = array();
 $object_arr[$bean->module_dir] = $bean->id;
 
 //backward compatibility
-$object_arr['Accounts'] = $bean->billing_account_id;
-$object_arr['Contacts'] = $bean->billing_contact_id;
-$object_arr['Users'] = $bean->assigned_user_id;
-$object_arr['Currencies'] = $bean->currency_id;
+$object_arr['Accounts'] = $bean->billing_account_id ?? '';
+$object_arr['Contacts'] = $bean->billing_contact_id ?? '';
+$object_arr['Users'] = $bean->assigned_user_id ?? '';
+$object_arr['Currencies'] = $bean->currency_id ?? '';
 
 $search = array('/<script[^>]*?>.*?<\/script>/si',      // Strip out javascript
     '/<[\/\!]*?[^<>]*?>/si',        // Strip out HTML tags
@@ -110,9 +110,9 @@ $replace = array('',
     'chr(%1)'
 );
 
-$header = preg_replace($search, $replace, $template->pdfheader);
-$footer = preg_replace($search, $replace, $template->pdffooter);
-$text = preg_replace($search, $replace, $template->description);
+$header = preg_replace($search, $replace, (string) $template->pdfheader);
+$footer = preg_replace($search, $replace, (string) $template->pdffooter);
+$text = preg_replace($search, $replace, (string) $template->description);
 $text = str_replace("<p><pagebreak /></p>", "<pagebreak />", $text);
 $text = preg_replace_callback(
     '/\{DATE\s+(.*?)\}/',
@@ -136,10 +136,10 @@ $converted = templateParser::parse_template($text, $object_arr);
 $header = templateParser::parse_template($header, $object_arr);
 $footer = templateParser::parse_template($footer, $object_arr);
 
-$printable = str_replace("\n", "<br />", $converted);
+$printable = str_replace("\n", "<br />", (string) $converted);
 
 if ($task === 'pdf' || $task === 'emailpdf') {
-    $file_name = $mod_strings['LBL_PDF_NAME'] . "_" . str_replace(" ", "_", $bean->name) . ".pdf";
+    $file_name = $mod_strings['LBL_PDF_NAME'] . "_" . str_replace(" ", "_", (string) $bean->name) . ".pdf";
 
     try {
         $pdf = PDFWrapper::getPDFEngine();
@@ -193,7 +193,7 @@ function populate_group_lines($text, $lineItemsGroups, $lineItems, $element = 't
     $groups = BeanFactory::newBean('AOS_Line_Item_Groups');
     foreach ($groups->field_defs as $name => $arr) {
         if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || $arr['type'] == 'id' || $arr['type'] == 'link')) {
-            $curNum = strpos($text, '$aos_line_item_groups_' . $name);
+            $curNum = strpos((string) $text, '$aos_line_item_groups_' . $name);
             if ($curNum) {
                 if ($curNum < $firstNum || $firstNum == 0) {
                     $firstValue = '$aos_line_item_groups_' . $name;
@@ -211,13 +211,13 @@ function populate_group_lines($text, $lineItemsGroups, $lineItems, $element = 't
         $parts = explode($firstValue, $text);
         $text = $parts[0];
         $parts = explode($lastValue, $parts[1]);
-        if ($lastValue == $firstValue) {
+        if ($lastValue === $firstValue) {
             $groupPart = $firstValue . $parts[0];
         } else {
             $groupPart = $firstValue . $parts[0] . $lastValue;
         }
 
-        if (count($lineItemsGroups) != 0) {
+        if ((is_countable($lineItemsGroups) ? count($lineItemsGroups) : 0) != 0) {
             //Read line start <tr> value
             $tcount = strrpos($text, $startElement);
             $lsValue = substr($text, $tcount);
@@ -234,7 +234,7 @@ function populate_group_lines($text, $lineItemsGroups, $lineItems, $element = 't
 
             $tdTemp = explode($lsValue, $text);
 
-            $groupPart = $lsValue . $tdTemp[count($tdTemp) - 1] . $groupPart . $leValue;
+            $groupPart = $lsValue . $tdTemp[(is_countable($tdTemp) ? count($tdTemp) : 0) - 1] . $groupPart . $leValue;
 
             $text = $tdTemp[0];
 
@@ -281,7 +281,7 @@ function populate_product_lines($text, $lineItems, $element = 'tr')
     $product_quote = BeanFactory::newBean('AOS_Products_Quotes');
     foreach ($product_quote->field_defs as $name => $arr) {
         if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || $arr['type'] == 'id' || $arr['type'] == 'link')) {
-            $curNum = strpos($text, '$aos_products_quotes_' . $name);
+            $curNum = strpos((string) $text, '$aos_products_quotes_' . $name);
 
             if ($curNum) {
                 if ($curNum < $firstNum || $firstNum == 0) {
@@ -299,7 +299,7 @@ function populate_product_lines($text, $lineItems, $element = 'tr')
     $product = BeanFactory::newBean('AOS_Products');
     foreach ($product->field_defs as $name => $arr) {
         if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || $arr['type'] == 'id' || $arr['type'] == 'link')) {
-            $curNum = strpos($text, '$aos_products_' . $name);
+            $curNum = strpos((string) $text, '$aos_products_' . $name);
             if ($curNum) {
                 if ($curNum < $firstNum || $firstNum == 0) {
                     $firstValue = '$aos_products_' . $name;
@@ -322,7 +322,7 @@ function populate_product_lines($text, $lineItems, $element = 'tr')
         $temp = $tparts[0];
 
         //check if there is only one line item
-        if ($firstNum == $lastNum) {
+        if ($firstNum === $lastNum) {
             $linePart = $firstValue;
         } else {
             $tparts = explode($lastValue, $tparts[1]);
@@ -340,12 +340,12 @@ function populate_product_lines($text, $lineItems, $element = 'tr')
         $leValue = substr($tparts[1], 0, $tcount);
         $tdTemp = explode($lsValue, $temp);
 
-        $linePart = $lsValue . $tdTemp[count($tdTemp) - 1] . $linePart . $leValue;
+        $linePart = $lsValue . $tdTemp[(is_countable($tdTemp) ? count($tdTemp) : 0) - 1] . $linePart . $leValue;
         $parts = explode($linePart, $text);
         $text = $parts[0];
 
         //Converting Line Items
-        if (count($lineItems) != 0) {
+        if ((is_countable($lineItems) ? count($lineItems) : 0) != 0) {
             foreach ($lineItems as $id => $productId) {
                 if ($productId != null && $productId != '0') {
                     $obb['AOS_Products_Quotes'] = $id;
@@ -354,8 +354,9 @@ function populate_product_lines($text, $lineItems, $element = 'tr')
                 }
             }
         }
+        $partsCount = is_countable($parts) ? count($parts) : 0;
 
-        for ($i = 1; $i < count($parts); $i++) {
+        for ($i = 1; $i < $partsCount; $i++) {
             $text .= $parts[$i];
         }
     }
@@ -373,7 +374,7 @@ function populate_service_lines($text, $lineItems, $element = 'tr')
     $startElement = '<' . $element;
     $endElement = '</' . $element . '>';
 
-    $text = str_replace("\$aos_services_quotes_service", "\$aos_services_quotes_product", $text);
+    $text = str_replace("\$aos_services_quotes_service", "\$aos_services_quotes_product", (string) $text);
 
     //Find first and last valid line values
     $product_quote = BeanFactory::newBean('AOS_Products_Quotes');
@@ -401,7 +402,7 @@ function populate_service_lines($text, $lineItems, $element = 'tr')
         $temp = $tparts[0];
 
         //check if there is only one line item
-        if ($firstNum == $lastNum) {
+        if ($firstNum === $lastNum) {
             $linePart = $firstValue;
         } else {
             $tparts = explode($lastValue, $tparts[1]);
@@ -418,12 +419,12 @@ function populate_service_lines($text, $lineItems, $element = 'tr')
         $leValue = substr($tparts[1], 0, $tcount);
         $tdTemp = explode($lsValue, $temp);
 
-        $linePart = $lsValue . $tdTemp[count($tdTemp) - 1] . $linePart . $leValue;
+        $linePart = $lsValue . $tdTemp[(is_countable($tdTemp) ? count($tdTemp) : 0) - 1] . $linePart . $leValue;
         $parts = explode($linePart, $text);
         $text = $parts[0];
 
         //Converting Line Items
-        if (count($lineItems) != 0) {
+        if ((is_countable($lineItems) ? count($lineItems) : 0) != 0) {
             foreach ($lineItems as $id => $productId) {
                 if ($productId == null || $productId == '0') {
                     $obb['AOS_Products_Quotes'] = $id;
@@ -431,8 +432,9 @@ function populate_service_lines($text, $lineItems, $element = 'tr')
                 }
             }
         }
+        $partsCount = is_countable($parts) ? count($parts) : 0;
 
-        for ($i = 1; $i < count($parts); $i++) {
+        for ($i = 1; $i < $partsCount; $i++) {
             $text .= $parts[$i];
         }
     }

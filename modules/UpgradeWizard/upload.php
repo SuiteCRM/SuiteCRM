@@ -161,8 +161,8 @@ switch ($run) {
                 if (isset($manifest['icon']) && $manifest['icon'] != "") {
                     logThis('extracting icons.');
                     $icon_location = extractFile($tempFile, $manifest['icon']);
-                    $path_parts = pathinfo($icon_location);
-                    copy($icon_location, remove_file_extension($target_path) . "-icon." . pathinfo($icon_location, PATHINFO_EXTENSION));
+                    $path_parts = pathinfo((string) $icon_location);
+                    copy($icon_location, remove_file_extension($target_path) . "-icon." . pathinfo((string) $icon_location, PATHINFO_EXTENSION));
                 }
 
                 if (rename($tempFile, $target_path)) {
@@ -180,7 +180,7 @@ switch ($run) {
                 $out = "<b><span class='error'>{$mod_strings['ERR_UW_NO_MANIFEST']}</span></b><br />";
                 break;
             }
-            $_SESSION['install_file'] = basename($tempFile);
+            $_SESSION['install_file'] = basename((string) $tempFile);
             logThis('zip file moved to ['.$_SESSION['install_file'].']');
             //rrs serialize manifest for saving in the db
             $serial_manifest = array();

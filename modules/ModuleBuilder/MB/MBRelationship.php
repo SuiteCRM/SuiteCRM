@@ -50,6 +50,7 @@ require_once 'modules/ModuleBuilder/parsers/relationships/ManyToManyRelationship
  * As ModuleBuilder is updated, references to this MBRelationship class should be replaced by direct references to UndeployedRelationships
  */
 
+#[\AllowDynamicProperties]
 class MBRelationship
 {
     public $relatableModules = array( ) ; // required by MBModule

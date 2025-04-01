@@ -76,6 +76,7 @@ $mod_strings = array(
     'LBL_STATUS' => 'Status',
     'LBL_CUSTOMER_SIGNED_DATE' => 'Customer Signed Date',
     'LBL_COMPANY_SIGNED_DATE' => 'Company Signed Date',
+    'LBL_RENEWAL_REMINDER' => ' Contract Renewal Reminder',
     'LBL_RENEWAL_REMINDER_DATE' => 'Renewal Reminder Date',
     'LBL_CONTRACT_TYPE' => 'Contract Type',
     'LBL_CONTACT' => 'Contact',

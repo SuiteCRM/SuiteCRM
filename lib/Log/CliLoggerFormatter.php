@@ -49,6 +49,7 @@ use Monolog\Logger;
 /**
  * CliLoggerFormatter for CliLoggerHandler.
  */
+#[\AllowDynamicProperties]
 class CliLoggerFormatter implements FormatterInterface
 {
     /**  @var array a list of the available colours for quicker usage */
@@ -114,7 +115,7 @@ class CliLoggerFormatter implements FormatterInterface
             $message = $color . $message . $this->colors['reset'];
         }
 
-        $message = preg_replace("/\n\s*/", $this->padding . $color, $message);
+        $message = preg_replace("/\n\s*/", $this->padding . $color, (string) $message);
 
         $time = (new \DateTime())->format('H:i:s');
 

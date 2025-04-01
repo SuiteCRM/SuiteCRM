@@ -46,6 +46,7 @@ use SuiteCRM\Enumerator\ExceptionCode;
  * Class Exception
  * @package SuiteCRM\InvalidArgumentException
  */
+#[\AllowDynamicProperties]
 class InvalidArgumentException extends Exception
 {
     /**

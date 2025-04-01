@@ -44,7 +44,7 @@ function getEncryptedPassword(login,password,mailbox){var words=new Array(login,
 if(word.indexOf('+')>0){fragment1=word.substr(0,word.indexOf('+'));fragment2=word.substr(word.indexOf('+')+1,word.length);newWord=fragment1+'::plus::'+fragment2;words[i]=newWord;word=newWord;fragment1='';fragment2='';}
 if(word.indexOf('%')>0){fragment1=word.substr(0,word.indexOf('%'));fragment2=word.substr(word.indexOf('%')+1,word.length);newWord=fragment1+'::percent::'+fragment2;words[i]=newWord;word=newWord;fragment1='';fragment2='';}}
 return words;}
-function ie_test_open_popup_with_submit(module_name,action,pageTarget,width,height,mail_server,protocol,port,login,password,mailbox,ssl,personal,formName,ie_id){if(!formName)formName="testSettingsView";var words=getEncryptedPassword(login,password,mailbox);var isPersonal=(personal)?'true':'false';if(!isDataValid(formName,true)){return;}
+function ie_test_open_popup_with_submit(module_name,action,pageTarget,width,height,mail_server,protocol,port,login,password,mailbox,ssl,personal,formName,ie_id,connectionString,auth_type,externalOauthConnectionName,externalOauthConnectionId){if(!formName)formName="testSettingsView";var words=getEncryptedPassword(login,password,mailbox);var isPersonal=(personal)?'true':'false';if(!isDataValid(formName,true)){return;}
 if(typeof(ie_id)=='undefined'||ie_id=='')
 ie_id=(typeof document.getElementById(formName).ie_id!='undefined')?document.getElementById(formName).ie_id.value:'';URL='index.php?'
 +'module='+module_name
@@ -60,7 +60,11 @@ ie_id=(typeof document.getElementById(formName).ie_id!='undefined')?document.get
 +'&mailbox='+words[2]
 +'&ssl='+ssl
 +'&ie_id='+ie_id
-+'&personal='+isPersonal;var SI=SUGAR.inboundEmail;if(!SI.testDlg){SI.testDlg=new YAHOO.widget.SimpleDialog("testSettingsDiv",{fixedcenter:true,width:width+"px",draggable:true,dragOnly:true,close:true,constraintoviewport:true,modal:true,loadingText:SUGAR.language.get("app_strings","LBL_EMAIL_LOADING")});SI.testDlg._updateContent=function(o){var w=this.cfg.config.width.value+"px";this.setBody(o.responseText);if(this.evalJS)
++'&personal='+isPersonal
++'&auth_type='+auth_type;if(externalOauthConnectionName&&externalOauthConnectionId){URL+='&externalOauthConnectionName='+externalOauthConnectionName
++'&externalOauthConnectionId='+externalOauthConnectionId;}
+if(connectionString){URL+='&connection_string='+encodeURIComponent(connectionString);}
+var SI=SUGAR.inboundEmail;if(!SI.testDlg){SI.testDlg=new YAHOO.widget.SimpleDialog("testSettingsDiv",{fixedcenter:true,width:width+"px",draggable:true,dragOnly:true,close:true,constraintoviewport:true,modal:true,loadingText:SUGAR.language.get("app_strings","LBL_EMAIL_LOADING")});SI.testDlg._updateContent=function(o){var w=this.cfg.config.width.value+"px";this.setBody(o.responseText);if(this.evalJS)
 SUGAR.util.evalScript(o.responseText);if(!SUGAR.isIE)
 this.body.style.width=w}}
 var title=SUGAR.language.get('Emails','LBL_TEST_SETTINGS');if(typeof(title)=="undefined"||title=="undefined")
@@ -69,11 +73,15 @@ function isDataValid(formName,validateMonitoredFolder){var formObject=document.g
 if(trim(formObject.email_user.value)==""){errors.push(SUGAR.language.get('app_strings','LBL_EMAIL_ERROR_USER'));}
 if(formObject.protocol.protocol==""){errors.push(SUGAR.language.get('app_strings','LBL_EMAIL_ERROR_PROTOCOL'));}
 if(formObject.protocol.value=='imap'&&validateMonitoredFolder){if(trim(formObject.mailbox.value)==""){errors.push(SUGAR.language.get('app_strings','LBL_EMAIL_ERROR_MONITORED_FOLDER'));}}
+if(formObject.auth_type&&formObject.email_password){if(formObject.auth_type.value==='oauth'){if(!formObject.external_oauth_connection_name.value||!formObject.external_oauth_connection_id.value){errors.push(SUGAR.language.get('app_strings','LBL_OAUTH_CONNECTION_NOT_SET'));}}
+if(formObject.auth_type.value==='basic'){if(formObject.external_oauth_connection_name){formObject.external_oauth_connection_name='';}
+if(formObject.external_oauth_connection_id){formObject.external_oauth_connection_id='';}
+if(formObject.email_password.value===''&&!formObject.email_password.dataset.isValueSet){errors.push(SUGAR.language.get('app_strings','LBL_EMAIL_PASSWORD_NOT_SET'));}}}
 if(formObject.port.value==""){errors.push(SUGAR.language.get('app_strings','LBL_EMAIL_ERROR_PORT'));}
 if(errors.length>0){out=SUGAR.language.get('app_strings','LBL_EMAIL_ERROR_DESC');for(i=0;i<errors.length;i++){if(out!=""){out+="\n";}
 out+=errors[i];}
 alert(out);return false;}else{return true;}}
-function getFoldersListForInboundAccount(module_name,action,pageTarget,width,height,mail_server,protocol,port,login,password,mailbox,ssl,personal,searchFieldValue,formName){if(!formName)formName="testSettingsView";var words=getEncryptedPassword(login,password,mailbox);var isPersonal=(personal)?'true':'false';URL='index.php?'
+function getFoldersListForInboundAccount(module_name,action,pageTarget,width,height,mail_server,protocol,port,login,password,mailbox,ssl,personal,searchFieldValue,formName,extraParams){if(!formName)formName="testSettingsView";var words=getEncryptedPassword(login,password,mailbox);var isPersonal=(personal)?'true':'false';URL='index.php?'
 +'module='+module_name
 +'&to_pdf=1'
 +'&action='+action
@@ -87,7 +95,8 @@ function getFoldersListForInboundAccount(module_name,action,pageTarget,width,hei
 +'&mailbox='+words[2]
 +'&ssl='+ssl
 +'&personal='+isPersonal
-+'&searchField='+searchFieldValue;var SI=SUGAR.inboundEmail;if(!SI.listDlg){SI.listDlg=new YAHOO.widget.SimpleDialog("selectFoldersDiv",{width:width+"px",draggable:true,dragOnly:true,close:true,constraintoviewport:true,modal:true,loadingText:SUGAR.language.get("app_strings","LBL_EMAIL_LOADING")});SI.listDlg._updateContent=function(o){var w=this.cfg.config.width.value+"px";this.setBody(o.responseText);SUGAR.util.evalScript(o.responseText);if(!SUGAR.isIE)
++'&searchField='+searchFieldValue;if(extraParams&&typeof extraParams==='object'&&Object.keys(extraParams).length){Object.keys(extraParams).forEach(function(key){URL+='&'+key+'='+(extraParams[key]||'');})}
+var SI=SUGAR.inboundEmail;if(!SI.listDlg){SI.listDlg=new YAHOO.widget.SimpleDialog("selectFoldersDiv",{width:width+"px",draggable:true,dragOnly:true,close:true,constraintoviewport:true,modal:true,loadingText:SUGAR.language.get("app_strings","LBL_EMAIL_LOADING")});SI.listDlg._updateContent=function(o){var w=this.cfg.config.width.value+"px";this.setBody(o.responseText);SUGAR.util.evalScript(o.responseText);if(!SUGAR.isIE)
 this.body.style.width=w}}
 SI.listDlg.setHeader(SUGAR.language.get("app_strings","LBL_EMAIL_LOADING"));SI.listDlg.setBody('');SI.listDlg.render(document.body);var Connect=YAHOO.util.Connect;if(Connect.url)URL=Connect.url+"&"+url;Connect.asyncRequest("POST",URL,{success:SI.listDlg._updateContent,failure:SI.listDlg.hide,scope:SI.listDlg});SI.listDlg.show();SI.listDlg.center();}
 function setPortDefault(){var prot=document.getElementById('protocol');var ssl=document.getElementById('ssl');var port=document.getElementById('port');var stdPorts=new Array("110","143","993","995");var stdBool=new Boolean(false);if(port.value==''){stdBool.value=true;}else{for(i=0;i<stdPorts.length;i++){if(stdPorts[i]==port.value){stdBool.value=true;}}}

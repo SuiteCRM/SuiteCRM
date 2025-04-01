@@ -6,6 +6,7 @@ use Api\V8\Factory\ValidatorFactory;
 use Api\V8\Param\Options\BaseOption;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[\AllowDynamicProperties]
 abstract class BaseParam implements \JsonSerializable
 {
     /**

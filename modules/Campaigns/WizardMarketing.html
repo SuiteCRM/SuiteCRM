@@ -547,6 +547,7 @@
 								<input type="checkbox" name="update_exists_template" class="form-checkbox input-sm hidden">
 							</span>
 						</div>
+						{if !$hide_width_set}
 						<script>
 							{literal}
 							$(function(){
@@ -554,6 +555,16 @@
 									onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
 								}
 							});
+							{/literal}
+                        </script>
+						{/if}
+						<script>
+							{literal}
+							function loadtemplate() {
+									if (document.getElementById('template_id').value) {
+										onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
+									}
+							}
 							{/literal}
 						</script>
 					</div>
@@ -1131,7 +1142,7 @@
 				if(oe_stored_options[mailbox.value]) {
 					var focusOe = oe_stored_options[mailbox.value];
 					// from name
-                                        
+
                                         if(!fn.value) {
                                             var fromName = focusOe.smtp_from_name ? focusOe.smtp_from_name : (
                                                 focusOe.from_name ? focusOe.from_name : (
@@ -1418,7 +1429,7 @@ function determine_back(){
 			<!-- BEGIN: NoInbound2 -->
 			<tr>
 				<td valign="top" scope="row">
-					{$MOD.LBL_ATTACHMENTS}: 
+					{$MOD.LBL_ATTACHMENTS}:
 				</td>
 				<td colspan="2" nowrap id="attachments_container">
 					{$ATTACHMENTS}
@@ -1441,7 +1452,7 @@ function determine_back(){
 				<input type="hidden" id="documentId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="docRevId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="documentType" name="seldoc" tabindex="0" />
-				
+
 
 				<input type="hidden" name="attach_to_template_id" id="attach_to_template_id" value="{$TEMPLATE_ID}">
 				<input type="hidden" name="campaign_id" value="{$CAMPAIGN_ID}">

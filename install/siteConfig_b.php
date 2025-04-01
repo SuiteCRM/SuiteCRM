@@ -98,7 +98,7 @@ if (is_file("config.php")) {
 ////	errors
 $errors = '';
 if (isset($validation_errors)) {
-    if (count($validation_errors) > 0) {
+    if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
         $errors  = '<div id="errorMsgs">';
         $errors .= '<p>'.$mod_strings['LBL_SITECFG_FIX_ERRORS'].'</p><ul>';
         foreach ($validation_errors as $error) {

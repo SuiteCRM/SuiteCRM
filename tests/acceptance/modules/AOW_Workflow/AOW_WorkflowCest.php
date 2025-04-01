@@ -10,6 +10,7 @@ use Step\Acceptance\Workflow;
  *
  * Test login page
  */
+#[\AllowDynamicProperties]
 class AOW_WorkflowCest
 {
     /**

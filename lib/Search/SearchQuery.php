@@ -66,6 +66,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @see    fromArray()
  * @author Vittorio Iocolano
  */
+#[\AllowDynamicProperties]
 class SearchQuery implements JsonSerializable
 {
     public const DEFAULT_SEARCH_SIZE = 10;
@@ -109,7 +110,7 @@ class SearchQuery implements JsonSerializable
      * @param int $size The number of results
      * @param int $from The results offset (for pagination)
      * @param string|null $engine Name of the search engine to use. Use default if `null`
-     * @param array|null $options Array with options (optional)
+     * @param mixed[] $options Array with options (optional)
      *
      * @return SearchQuery a fully built query
      */

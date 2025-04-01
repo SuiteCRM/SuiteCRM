@@ -40,6 +40,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class updateEndDate
 {
     // logic hook is used to update "project end date" when task "end date" exceeds project end date

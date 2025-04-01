@@ -117,8 +117,8 @@ class SearchWrapperTest extends SearchTestAbstract
             3 => 'VeryFakeEngine',
             4 => 'MockSearch',
             5 => 'BadMockSearch',
-            6 => 'BadMockSearch',
-            7 => 'MockSearch',
+            6 => 'MockSearch',
+            7 => 'BadMockSearch',
         ];
         $actual = SearchWrapper::getEngines();
 

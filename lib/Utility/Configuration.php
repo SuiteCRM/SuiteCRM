@@ -47,6 +47,7 @@ use SuiteCRM\Exception\Exception;
  * Class Configuration
  * @package SuiteCRM\Utility
  */
+#[\AllowDynamicProperties]
 class Configuration implements ArrayAccess
 {
 

@@ -53,6 +53,7 @@ require_once('modules/Configurator/Forms.php');
 require_once('modules/Administration/Forms.php');
 require_once('modules/Configurator/Configurator.php');
 
+#[\AllowDynamicProperties]
 class ViewAdminwizard extends SugarView
 {
     public function __construct($bean = null, $view_object_map = array())
@@ -138,7 +139,8 @@ class ViewAdminwizard extends SugarView
         //Start of scenario block
         require_once('install/suite_install/scenarios.php');
         if (isset($installation_scenarios)) {
-            for ($i = 0; $i < count($installation_scenarios); $i++) {
+            $installation_scenariosCount = is_countable($installation_scenarios) ? count($installation_scenarios) : 0;
+            for ($i = 0; $i < $installation_scenariosCount; $i++) {
                 $installation_scenarios[$i]['moduleOverview']='( '.implode(', ', $installation_scenarios[$i]['modules']).')';
             }
 

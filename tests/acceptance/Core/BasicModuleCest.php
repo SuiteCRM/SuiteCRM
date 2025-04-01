@@ -43,6 +43,7 @@ use SuiteCRM\Enumerator\SugarObjectType;
 /**
  * Class BasicModuleCest
  */
+#[\AllowDynamicProperties]
 class BasicModuleCest
 {
     /**

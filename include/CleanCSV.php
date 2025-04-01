@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class CleanCSV
  * @package SuiteCRM
  */
+#[\AllowDynamicProperties]
 class CleanCSV
 {
     /**

@@ -47,6 +47,7 @@ require_once('include/SubPanel/registered_layout_defs.php');
  * Subpanel
  * @api
  */
+#[\AllowDynamicProperties]
 class SubPanel
 {
     public $hideNewButton = false;
@@ -218,8 +219,8 @@ class SubPanel
         //function returns the query that was used to populate sub-panel data.
 
         $query=$ListView->process_dynamic_listview($this->parent_module, $this->parent_bean, $this->subpanel_defs, $countOnly);
-        
-        
+
+
         $this->subpanel_query=$query;
         $ob_contents = ob_get_contents();
         ob_end_clean();
@@ -234,7 +235,7 @@ class SubPanel
         $result_array = array();
 
         $return_string = $this->ProcessSubPanelListView($this->template_file, $result_array, $countOnly);
-        
+
         if ($countOnly) {
             print $return_string['row_count'];
         } else {

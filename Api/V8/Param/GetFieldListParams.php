@@ -51,6 +51,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Class GetFieldListParams
  * @package Api\V8\Param
  */
+#[\AllowDynamicProperties]
 class GetFieldListParams extends BaseParam
 {
     

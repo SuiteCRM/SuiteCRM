@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MapsViewMap_Markers extends SugarView
 {
     public function __construct()
@@ -84,7 +85,7 @@ class Jjwg_MapsViewMap_Markers extends SugarView
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/css/jquery.dataTables.min.css" />
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/datatables-tabletools/2.1.5/css/TableTools.min.css" />
   <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=<?= $GLOBALS['jjwg_config']['google_maps_api_key']; ?>&sensor=false&libraries=drawing,geometry"></script>
-  <script type="text/javascript" src="modules/jjwg_Areas/javascript/jquery-1.8.0.min.js"></script>
+  <script src="include/javascript/jquery/jquery-min.js"></script>
   <script type="text/javascript" src="modules/jjwg_Maps/javascript/jquery.iframe-auto-height.plugin.1.9.3.min.js"></script>
   <script type="text/javascript" src="modules/jjwg_Maps/javascript/markerclusterer_packed.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/jquery.dataTables.min.js"></script>
@@ -121,8 +122,8 @@ var custom_markers = <?php echo (!empty($this->bean->custom_markers)) ? json_enc
 var custom_areas = <?php echo (!empty($this->bean->custom_areas)) ? json_encode($this->bean->custom_areas) : '[]'; ?>;
 <?php
     // Define Map Data
-    $num_markers = count($this->bean->map_markers);
-        $num_groups = count($this->bean->map_markers_groups);
+    $num_markers = is_countable($this->bean->map_markers) ? count($this->bean->map_markers) : 0;
+        $num_groups = is_countable($this->bean->map_markers_groups) ? count($this->bean->map_markers_groups) : 0;
         if ($num_groups > 216) {
             $num_groups = 216;
         }
@@ -155,7 +156,7 @@ var custom_areas = <?php echo (!empty($this->bean->custom_areas)) ? json_encode(
         foreach ($this->bean->custom_markers as $marker) {
             $custom_markers_icons[] = $marker['image'];
         }
-        $num_custom_markers = count($this->bean->custom_markers);
+        $num_custom_markers = is_countable($this->bean->custom_markers) ? count($this->bean->custom_markers) : 0;
         $custom_markers_icons = array_unique($custom_markers_icons); ?>
 
 // Define Map Data for Javascript
@@ -1007,9 +1008,9 @@ $(document).ready(function(){
       ?>
 <br clear="all" />
 <div>
-    <form id="tagetList" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
-        <input type="hidden" name="module" value="<?php echo htmlspecialchars($GLOBALS['currentModule']); ?>">
-        <input type="hidden" name="display_module" value="<?php echo htmlspecialchars($this->bean->display_object->module_name); ?>">
+    <form id="tagetList" action="<?php echo htmlspecialchars((string) $_SERVER['PHP_SELF']); ?>" method="get">
+        <input type="hidden" name="module" value="<?php echo htmlspecialchars((string) $GLOBALS['currentModule']); ?>">
+        <input type="hidden" name="display_module" value="<?php echo htmlspecialchars((string) $this->bean->display_object->module_name); ?>">
         <input type="hidden" name="action" value="add_to_target_list" />
         <input type="hidden" name="to_pdf" value="1" />
         <?php if (array_key_exists('uid', $_GET)) {
@@ -1020,7 +1021,7 @@ $(document).ready(function(){
         <select id="list_id" tabindex="3" name="list_id" title="">
             <?php foreach ($this->bean->list_array as $key=>$value) {
           ?>
-                <option value="<?php echo htmlspecialchars($key); ?>"><?php echo htmlspecialchars($value); ?></option>
+                <option value="<?php echo htmlspecialchars((string) $key); ?>"><?php echo htmlspecialchars((string) $value); ?></option>
             <?php
       } ?>
         </select>

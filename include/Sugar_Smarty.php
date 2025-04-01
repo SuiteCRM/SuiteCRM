@@ -50,13 +50,17 @@ if (!defined('SUGAR_SMARTY_DIR')) {
  * Smarty wrapper for Sugar
  * @api
  */
+#[\AllowDynamicProperties]
 class Sugar_Smarty extends Smarty
 {
+    public $_filepaths_cache = [];
+    protected $_compile_id;
     /**
      * Sugar_Smarty constructor.
      */
     public function __construct()
     {
+        $plugins_dir = [];
         parent::__construct();
         if (!file_exists(SUGAR_SMARTY_DIR)) {
             mkdir_recursive(SUGAR_SMARTY_DIR, true);
@@ -75,13 +79,17 @@ class Sugar_Smarty extends Smarty
         $this->compile_dir = SUGAR_SMARTY_DIR . 'templates_c';
         $this->config_dir = SUGAR_SMARTY_DIR . 'configs';
         $this->cache_dir = SUGAR_SMARTY_DIR . 'cache';
-        $this->request_use_auto_globals = true; // to disable Smarty from using long arrays
+        //$this->request_use_auto_globals = true; // to disable Smarty from using long arrays
+
+        //TODO fix literals
+        $this->auto_literal = false;
 
         if (file_exists('custom/include/Smarty/plugins')) {
             $plugins_dir[] = 'custom/include/Smarty/plugins';
         }
         $plugins_dir[] = 'include/Smarty/plugins';
         $this->plugins_dir = $plugins_dir;
+        $this->muteUndefinedOrNullWarnings();
 
         $this->assign("VERSION_MARK", getVersionedPath(''));
     }
@@ -108,34 +116,25 @@ class Sugar_Smarty extends Smarty
     /**
      * executes & returns or displays the template results
      *
+     * @param null $template
+     * @param string|null $cache_id
+     * @param string|null $compile_id
+     * @param null $parent
+     * @return string
+     * @throws SmartyException
      * @global array $app_list_strings
      * @global array $app_strings
      * @global array $mod_strings
      * @global array $sugar_config
-     * @param string $resource_name
-     * @param string|null $cache_id
-     * @param string|null $compile_id
-     * @param boolean $display
-     * @return string
      */
-    public function fetch($resource_name, $cache_id = null, $compile_id = null, $display = false)
+    public function fetch($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
         global $app_list_strings;
         global $app_strings;
         global $mod_strings;
         global $sugar_config;
-
-        /// Try and fetch the tpl from the theme folder
-        /// if the tpl exists in the theme folder then set the resource_name to the tpl in the theme folder.
-        /// otherwise fall back to the default tpl
-        $current_theme = SugarThemeRegistry::current();
-        $theme_directory = (string)$current_theme;
-        if (strpos($resource_name, "themes" . DIRECTORY_SEPARATOR . $theme_directory) === false) {
-            $test_path = SUGAR_PATH . DIRECTORY_SEPARATOR . "themes" . DIRECTORY_SEPARATOR . $theme_directory . DIRECTORY_SEPARATOR . $resource_name;
-            if (file_exists($test_path)) {
-                $resource_name = "themes" . DIRECTORY_SEPARATOR . $theme_directory . DIRECTORY_SEPARATOR . $resource_name;
-            }
-        }
+        
+        $template = $this->loadTemplatePath($template);
 
         $this->assign('APP_LIST_STRINGS', $app_list_strings);
         $this->assign('APP', $app_strings);
@@ -144,11 +143,11 @@ class Sugar_Smarty extends Smarty
         $errorLevelStored = 0;
 
         if (!empty($sugar_config['developerMode'])) {
-            $level = isset($sugar_config['smarty_error_level']) ? $sugar_config['smarty_error_level'] : 0;
+            $level = $sugar_config['smarty_error_level'] ?? 0;
             $errorLevelStored = error_reporting();
             error_reporting($level);
         }
-        $fetch = parent::fetch(get_custom_file_if_exists($resource_name), $cache_id, $compile_id, $display);
+        $fetch = parent::fetch($template, $cache_id, $compile_id, $parent);
 
         if (!empty($sugar_config['developerMode'])) {
             error_reporting($errorLevelStored);
@@ -157,31 +156,131 @@ class Sugar_Smarty extends Smarty
         return $fetch;
     }
 
-    /**
-     * called for included templates
-     * @param string $_smarty_include_tpl_file
-     * @param string $_smarty_include_vars
-     */
-    function _smarty_include($params)
+    public function display($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
-        $params['smarty_include_tpl_file'] = get_custom_file_if_exists($params['smarty_include_tpl_file']);
-        parent::_smarty_include($params);
+        $template = $this->loadTemplatePath($template);
+        
+        parent::display($template, $cache_id, $compile_id, $parent);
+    }
+
+    public function get_template_vars($name = null)
+    {
+        return $this->getTemplateVars($name);
     }
 
     /**
-     * compile the template and clear opcache
+     * load a filter of specified type and name
      *
-     * @param string $resource_name
-     * @param string $compile_path
-     * @return boolean
+     * @param string $type filter type
+     * @param string $name filter name
+     *
+     * @throws SmartyException
      */
-    function _compile_resource($resource_name, $compile_path)
+    public function load_filter($type, $name)
     {
-        if(parent::_compile_resource($resource_name, $compile_path)) {
-            SugarCache::cleanFile($compile_path);
-            return true;
+        $this->loadFilter($type, $name);
+    }
+
+    function _get_compile_path($resource_name)
+    {
+        return $this->_get_auto_filename($this->compile_dir, $resource_name,
+                $this->_compile_id) . '.php';
+    }
+
+    function _get_auto_filename($auto_base, $auto_source = null, $auto_id = null)
+    {
+        $_compile_dir_sep =  $this->use_sub_dirs ? DIRECTORY_SEPARATOR : '^';
+        $_return = $auto_base . DIRECTORY_SEPARATOR;
+
+        if(isset($auto_id)) {
+            // make auto_id safe for directory names
+            $auto_id = str_replace('%7C',$_compile_dir_sep,(urlencode($auto_id)));
+            // split into separate directories
+            $_return .= $auto_id . $_compile_dir_sep;
         }
-        return false;
+
+        if(isset($auto_source)) {
+            // make source name safe for filename
+            $_filename = urlencode(basename($auto_source));
+            $_crc32 = sprintf('%08X', crc32($auto_source));
+            // prepend %% to avoid name conflicts with
+            // with $params['auto_id'] names
+            $_crc32 = substr($_crc32, 0, 2) . $_compile_dir_sep .
+                substr($_crc32, 0, 3) . $_compile_dir_sep . $_crc32;
+            $_return .= '%%' . $_crc32 . '%%' . $_filename;
+        }
+
+        return $_return;
+    }
+
+    function _get_plugin_filepath($type, $name)
+    {
+        $_params = array('type' => $type, 'name' => $name);
+        return $this->smarty_core_assemble_plugin_filepath($_params, $this);
+    }
+
+    function smarty_core_assemble_plugin_filepath($params, &$smarty)
+    {
+        $_plugin_filename = $params['type'] . '.' . $params['name'] . '.php';
+        if (isset($smarty->_filepaths_cache[$_plugin_filename])) {
+            return $smarty->_filepaths_cache[$_plugin_filename];
+        }
+        $_return = false;
+
+        foreach ((array)$smarty->plugins_dir as $_plugin_dir) {
+
+            $_plugin_filepath = $_plugin_dir . DIRECTORY_SEPARATOR . $_plugin_filename;
+
+            // see if path is relative
+            if (!preg_match("/^([\/\\\\]|[a-zA-Z]:[\/\\\\])/", $_plugin_dir)) {
+                $_relative_paths[] = $_plugin_dir;
+                // relative path, see if it is in the SMARTY_DIR
+                if (is_readable(SMARTY_DIR . $_plugin_filepath)) {
+                    $_return = SMARTY_DIR . $_plugin_filepath;
+                    break;
+                }
+            }
+            // try relative to cwd (or absolute)
+            if (is_readable($_plugin_filepath)) {
+                $_return = $_plugin_filepath;
+                break;
+            }
+        }
+
+//        if($_return === false) {
+//            // still not found, try PHP include_path
+//            if(isset($_relative_paths)) {
+//                foreach ((array)$_relative_paths as $_plugin_dir) {
+//
+//                    $_plugin_filepath = $_plugin_dir . DIRECTORY_SEPARATOR . $_plugin_filename;
+//
+//                    $_params = array('file_path' => $_plugin_filepath);
+//                    require_once(SMARTY_DIR. 'core.get_include_path.php');
+//                    if(smarty_core_get_include_path($_params, $smarty)) {
+//                        $_return = $_params['new_file_path'];
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+        $smarty->_filepaths_cache[$_plugin_filename] = $_return;
+        return $_return;
+    }
+
+    /**
+     * clears compiled version of specified template resource,
+     * or all compiled template files if one is not specified.
+     * This function is for advanced use only, not normally needed.
+     *
+     * @param string $tpl_file
+     * @param string $compile_id
+     * @param string $exp_time
+     *
+     * @return boolean results of {@link smarty_core_rm_auto()}
+     */
+    public function clear_compiled_tpl($tpl_file = null, $compile_id = null, $exp_time = null)
+    {
+        return $this->clearCompiledTemplate($tpl_file, $compile_id, $exp_time);
     }
 
     /**
@@ -192,16 +291,14 @@ class Sugar_Smarty extends Smarty
     public function trigger_error($error_msg, $error_type = E_USER_WARNING)
     {
         $error_msg = htmlentities($error_msg);
-        
+
         switch ($error_type) {
+            case E_USER_NOTICE:
             case E_USER_ERROR:
                 $GLOBALS['log']->error('Smarty: ' . $error_msg);
                 break;
             case E_USER_WARNING:
                 $GLOBALS['log']->warn('Smarty: ' . $error_msg);
-                break;
-            case E_USER_NOTICE:
-                $GLOBALS['log']->error('Smarty: ' . $error_msg);
                 break;
             case E_USER_DEPRECATED:
                 $GLOBALS['log']->debug('Smarty: ' . $error_msg);
@@ -210,5 +307,26 @@ class Sugar_Smarty extends Smarty
                 $GLOBALS['log']->fatal('Smarty: ' . $error_type . ' ' . $error_msg);
                 break;
         }
+    }
+
+    /**
+     * Try and fetch the tpl from the theme folder
+     * if the tpl exists in the theme folder then set the resource_name to the tpl in the theme folder.
+     * otherwise fall back to the default tpl
+     * @param $template
+     * @return string
+     */
+    public function loadTemplatePath($template)
+    {
+        $current_theme = SugarThemeRegistry::current();
+        $theme_directory = (string)$current_theme;
+        if (strpos($template, "themes" . DIRECTORY_SEPARATOR . $theme_directory) === false) {
+            $test_path = SUGAR_PATH . DIRECTORY_SEPARATOR . "themes" . DIRECTORY_SEPARATOR . $theme_directory . DIRECTORY_SEPARATOR . $template;
+            if (file_exists($test_path)) {
+                $template = "themes" . DIRECTORY_SEPARATOR . $theme_directory . DIRECTORY_SEPARATOR . $template;
+            }
+        }
+
+        return get_custom_file_if_exists($template);
     }
 }

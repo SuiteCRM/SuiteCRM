@@ -49,6 +49,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class ArrayMapper maps an array using a mapping definition.
  */
+#[\AllowDynamicProperties]
 class ArrayMapper
 {
     /** @var array|object */
@@ -123,7 +124,7 @@ class ArrayMapper
     }
 
     /**
-     * @param array|null $regexMappings
+     * @param mixed[] $regexMappings
      *
      * @return ArrayMapper fluent setter
      */
@@ -363,7 +364,7 @@ class ArrayMapper
             }
 
             foreach ($matches as $key => $match) {
-                $mappedPath = str_replace("@$key", $match, $mappedPath);
+                $mappedPath = str_replace("@$key", $match, (string) $mappedPath);
             }
 
             $this->handleValue($value, $mappedPath);
@@ -494,8 +495,8 @@ class ArrayMapper
      */
     private function handleValue($value, $mappedPath)
     {
-        if (strpos($mappedPath, '+') === 0) {
-            $mappedPath = substr($mappedPath, 1);
+        if (strpos((string) $mappedPath, '+') === 0) {
+            $mappedPath = substr((string) $mappedPath, 1);
             $this->appendInPath($value, $mappedPath);
         } else {
             $this->putInPath($value, $mappedPath);

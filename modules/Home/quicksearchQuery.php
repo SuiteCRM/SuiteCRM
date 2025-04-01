@@ -54,7 +54,7 @@ if (file_exists('custom/' . $filePath)) {
 }
 
 $json = getJSONobj();
-$data = $json::decode(html_entity_decode($_REQUEST['data']));
+$data = $json::decode(html_entity_decode((string) $_REQUEST['data']));
 
 if (isset($data['field_list'])) {
     foreach ($data['field_list'] as $k => $v) {

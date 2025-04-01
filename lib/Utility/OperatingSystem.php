@@ -39,6 +39,7 @@
  */
 namespace SuiteCRM\Utility;
 
+#[\AllowDynamicProperties]
 class OperatingSystem
 {
     /**

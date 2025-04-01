@@ -2,6 +2,7 @@
 /**
  * Simple class to mirror the passed object from an imap_fetch_overview() call
  */
+#[\AllowDynamicProperties]
 class Overview
 {
     public $subject;

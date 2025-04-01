@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class EmployeesViewEdit extends ViewEdit
 {
     public $useForSubpanel = true;

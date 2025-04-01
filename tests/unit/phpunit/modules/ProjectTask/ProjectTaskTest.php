@@ -72,7 +72,7 @@ class ProjectTaskTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($projectTask->id));
-        self::assertEquals(36, strlen($projectTask->id));
+        self::assertEquals(36, strlen((string) $projectTask->id));
 
         //test _get_depends_on_name method
         $this->_get_depends_on_name($projectTask->id);

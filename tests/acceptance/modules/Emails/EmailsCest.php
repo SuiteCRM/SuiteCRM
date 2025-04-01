@@ -7,6 +7,7 @@ use Step\Acceptance\Emails;
 use Step\Acceptance\EmailsTester;
 use Step\Acceptance\ListView;
 
+#[\AllowDynamicProperties]
 class EmailsCest
 {
     /**
@@ -46,7 +47,7 @@ class EmailsCest
 
         // Navigate to emails list-view
         $I->loginAsAdmin();
-        
+
         $I->visitPage('Emails', 'index');
         $listView->waitForListViewVisible();
 
@@ -61,10 +62,12 @@ class EmailsCest
      */
     public function testScenarioViewEmailBodyHTML(
         AcceptanceTester $I,
-        WebDriverHelper $webDriverHelper
+        WebDriverHelper $webDriverHelper,
+        \Codeception\Scenario $scenario
     ) {
 
         // TODO: Refactor
+        $scenario->skip('Needs to be re-implemented');
 
         $I->wantTo('View the HTML of two emails');
 

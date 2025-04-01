@@ -5,10 +5,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
     $db = DBManagerFactory::getInstance();
 
-    $even_id = $_GET['event'];
-    $delegate_id = $_GET['delegate'];
-    $type = $_GET['type'];
-    $response = $_GET['response'];
+    $even_id = $db->quote($_GET['event'] ?? '');
+    $delegate_id =$db->quote( $_GET['delegate'] ?? '');
+    $type = $db->quote($_GET['type'] ?? '');
+    $response = $db->quote($_GET['response'] ?? '');
 
     //get event
     $event = BeanFactory::newBean('FP_events');

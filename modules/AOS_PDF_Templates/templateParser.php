@@ -27,6 +27,7 @@
 
 use SuiteCRM\Utility\SuiteValidator as SuiteValidator;
 
+#[\AllowDynamicProperties]
 class templateParser
 {
     public static function parse_template($string, $bean_arr)
@@ -58,7 +59,7 @@ class templateParser
      */
     public static function parse_template_bean($string, $key, &$focus)
     {
-        global $app_strings, $sugar_config;
+        global $app_strings, $sugar_config, $locale, $current_user;
         $repl_arr = array();
         $isValidator = new SuiteValidator();
 
@@ -66,7 +67,7 @@ class templateParser
             if (isset($field_def['name']) && $field_def['name'] != '') {
                 $fieldName = $field_def['name'];
 
-                if (empty($focus->$fieldName)) {
+                if (!isset($focus->$fieldName) || $focus->$fieldName === '') {
                     $repl_arr[$key . '_' . $fieldName] = '';
                     continue;
                 }
@@ -100,7 +101,7 @@ class templateParser
                     if (!file_exists('public')) {
                         sugar_mkdir('public', 0777);
                     }
-                    if (!copy($file_location, "public/{$focus->id}".  '_' . (string)$fieldName)) {
+                    if (!copy($file_location, "public/{$focus->id}".  '_' . $fieldName)) {
                         $secureLink = $sugar_config['site_url'] . '/'. $file_location;
                     }
 
@@ -111,10 +112,17 @@ class templateParser
                         $repl_arr[$key . "_" . $fieldName] = '<img src="' . $link . '" width="' . $field_def['width'] . '" height="' . $field_def['height'] . '"/>';
                     }
                 } elseif ($field_def['type'] == 'wysiwyg') {
-                    $repl_arr[$key . "_" . $field_def['name']] = html_entity_decode($focus->$field_def['name'],
+                    $repl_arr[$key . "_" . $field_def['name']] = html_entity_decode((string) $focus->$field_def['name'],
                         ENT_COMPAT, 'UTF-8');
-                    $repl_arr[$key . "_" . $fieldName] = html_entity_decode($focus->{$fieldName},
+                    $repl_arr[$key . "_" . $fieldName] = html_entity_decode((string) $focus->{$fieldName},
                         ENT_COMPAT, 'UTF-8');
+                } elseif ($field_def['type'] == 'decimal' || $field_def['type'] == 'float') {
+                    if ($_REQUEST['entryPoint'] == 'formLetter') {
+                        $value = formatDecimalInConfigSettings($focus->$fieldName, true);
+                    } else {
+                        $value = formatDecimalInConfigSettings($focus->$fieldName, false);
+                    }
+                    $repl_arr[$key . "_" . $fieldName] = $value;
                 } else {
                     $repl_arr[$key . "_" . $fieldName] = $focus->{$fieldName};
                 }
@@ -125,7 +133,7 @@ class templateParser
         reset($repl_arr);
 
         foreach ($repl_arr as $name => $value) {
-            if (strpos($name, 'product_discount') !== false || strpos($name, 'quotes_discount') !== false) {
+            if ((strpos($name, 'product_discount') !== false || strpos($name, 'quotes_discount') !== false) && strpos($name, '_amount') === false) {
                 if ($value !== '' && isset($repl_arr['aos_products_quotes_discount'])) {
                     if ($isValidator->isPercentageField($repl_arr['aos_products_quotes_discount'])) {
                         $sep = get_number_separators();
@@ -150,7 +158,17 @@ class templateParser
 
             if ($isValidator->isPercentageField($name)) {
                 $sep = get_number_separators();
-                $value = rtrim(rtrim(format_number($value), '0'), $sep[1]) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+
+                $precision = $locale->getPrecision($current_user);
+
+                if ($precision === '0') {
+                    $params = [
+                        'percentage' => true,
+                    ];
+                    $value = format_number($value, $precision, $precision, $params);
+                } else {
+                    $value = rtrim(rtrim(format_number($value), '0'), $sep[1]) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+                }
             }
             if (!empty($focus->field_defs[$name]['dbType'])
                 && $focus->field_defs[$name]['dbType'] === 'datetime'
@@ -167,13 +185,13 @@ class templateParser
                 }
             }
             if ($value != '' && is_string($value)) {
-                $string = str_replace("\$$name", $value, $string);
+                $string = str_replace("\$$name", $value, (string) $string);
             } elseif (strpos($name, 'address') > 0) {
-                $string = str_replace("\$$name<br />", '', $string);
+                $string = str_replace("\$$name<br />", '', (string) $string);
                 $string = str_replace("\$$name <br />", '', $string);
                 $string = str_replace("\$$name", '', $string);
             } else {
-                $string = str_replace("\$$name", '&nbsp;', $string);
+                $string = str_replace("\$$name", '&nbsp;', (string) $string);
             }
         }
 

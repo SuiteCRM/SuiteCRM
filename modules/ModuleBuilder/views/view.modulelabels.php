@@ -47,6 +47,7 @@
 
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 
+#[\AllowDynamicProperties]
 class ViewModulelabels extends SugarView
 {
     /**

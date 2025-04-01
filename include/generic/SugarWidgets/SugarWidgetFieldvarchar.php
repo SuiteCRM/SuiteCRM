@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldVarchar extends SugarWidgetReportField
 {
     public function __construct(&$layout_manager)

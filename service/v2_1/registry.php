@@ -44,6 +44,7 @@ if (!defined('sugarEntry')) {
 
 require_once('service/v2/registry.php'); //Extend off of v2 registry
 
+#[\AllowDynamicProperties]
 class registry_v2_1 extends registry
 {
     
@@ -55,9 +56,9 @@ class registry_v2_1 extends registry
     {
         $GLOBALS['log']->info('Begin: registry->registerFunction');
         parent::registerFunction();
-                    
+
         $GLOBALS['log']->info('END: registry->registerFunction');
-            
+
         // END OF REGISTER FUNCTIONS
     }
     

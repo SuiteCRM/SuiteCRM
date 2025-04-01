@@ -48,9 +48,10 @@ require_once('include/externalAPI/ExternalAPIFactory.php');
  * @internal
  * Upload file stream handler
  */
+#[\AllowDynamicProperties]
 class UploadStream
 {
-    const STREAM_NAME = "upload";
+    public const STREAM_NAME = "upload";
     protected static $upload_dir;
 
     /**
@@ -147,7 +148,7 @@ class UploadStream
      */
     public static function register()
     {
-        stream_wrapper_register(self::STREAM_NAME, __CLASS__);
+        stream_wrapper_register(self::STREAM_NAME, self::class);
     }
 
     /**

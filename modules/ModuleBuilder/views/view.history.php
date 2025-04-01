@@ -43,6 +43,7 @@ require_once('modules/ModuleBuilder/MB/AjaxCompose.php') ;
 require_once('modules/ModuleBuilder/parsers/views/History.php') ;
 require_once('modules/ModuleBuilder/parsers/ParserFactory.php') ;
 
+#[\AllowDynamicProperties]
 class ViewHistory extends SugarView
 {
     public $pageSize = 10 ;
@@ -119,6 +120,7 @@ class ViewHistory extends SugarView
 
     public function preview()
     {
+        $view = null;
         global $mod_strings ;
         if (! isset($_REQUEST [ 'sid' ])) {
             die('SID Required') ;

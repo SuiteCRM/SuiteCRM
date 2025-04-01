@@ -53,6 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 global $app_strings, $json;
 $json = getJSONobj();
 
+#[\AllowDynamicProperties]
 class json_config
 {
     public $global_registry_var_name = 'GLOBAL_REGISTRY';
@@ -175,8 +176,8 @@ class json_config
                 }
             }
         }
-        
-        
+
+
         $module_arr['users_arr'] = array();
 
         foreach ($users as $user) {
@@ -254,7 +255,7 @@ class json_config
         foreach ($all_fields as $field) {
             if (isset($focus->$field) && !is_object($focus->$field)) {
                 $focus->$field =  from_html($focus->$field);
-                $focus->$field =  preg_replace("/\r\n/", "<BR>", $focus->$field);
+                $focus->$field =  preg_replace("/\r\n/", "<BR>", (string) $focus->$field);
                 $focus->$field =  preg_replace("/\n/", "<BR>", $focus->$field);
                 $module_arr['fields'][$field] = $focus->$field;
             }

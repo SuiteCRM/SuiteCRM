@@ -53,6 +53,7 @@ require_once __DIR__ . '/../../modules/Configurator/Configurator.php';
  *
  * All the methods are fluent and save() must be called at the end to make the changes permanent.
  */
+#[\AllowDynamicProperties]
 class SearchConfigurator
 {
     /** @var Configurator */

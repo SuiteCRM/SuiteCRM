@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Trackers/monitor/Monitor.php');
 
+#[\AllowDynamicProperties]
 class tracker_monitor extends Monitor
 {
 

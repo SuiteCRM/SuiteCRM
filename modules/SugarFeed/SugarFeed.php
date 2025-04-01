@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class SugarFeed extends Basic
 {
     public $new_schema = true;
@@ -82,7 +83,7 @@ class SugarFeed extends Basic
             $fileList = SugarFeed::getModuleFeedFiles($module);
 
             foreach ($fileList as $fileName) {
-                $feedClass = substr(basename($fileName), 0, -4);
+                $feedClass = substr(basename((string) $fileName), 0, -4);
 
                 require_once($fileName);
                 $tmpClass = new $feedClass();
@@ -103,7 +104,7 @@ class SugarFeed extends Basic
             $fileList = SugarFeed::getModuleFeedFiles($module);
 
             foreach ($fileList as $fileName) {
-                $feedClass = substr(basename($fileName), 0, -4);
+                $feedClass = substr(basename((string) $fileName), 0, -4);
 
                 require_once($fileName);
                 $tmpClass = new $feedClass();
@@ -186,7 +187,7 @@ class SugarFeed extends Basic
                 if (strncmp($key, 'sugarfeed_module_', 17) === 0) {
                     // It's a module setting
                     if ($value == '1') {
-                        $moduleName = substr($key, 17);
+                        $moduleName = substr((string) $key, 17);
                         $feedModules[$moduleName] = $moduleName;
                     }
                 }
@@ -360,6 +361,8 @@ class SugarFeed extends Basic
 
         if (file_exists('custom/modules/SugarFeed/linkHandlers/'.$linkName.'.php')) {
             require_once('custom/modules/SugarFeed/linkHandlers/'.$linkName.'.php');
+        } elseif(!file_exists('modules/SugarFeed/linkHandlers/'.$linkName.'.php')) {
+            return false;
         } else {
             require_once('modules/SugarFeed/linkHandlers/'.$linkName.'.php');
         }
@@ -422,7 +425,7 @@ class SugarFeed extends Basic
             $delete = ' | <a id="sugarFieldDeleteLink'.$dataId.'" href="#" onclick=\'SugarFeed.deleteFeed("'. $dataId . '", "{this.id}"); return false;\'>'. $GLOBALS['app_strings']['LBL_DELETE_BUTTON_LABEL'].'</a>';
         }
 
-        $data['NAME'] .= $this->getTimeLapse($dataDateEntered) . '&nbsp;</span><div class="byLineRight"><a id="sugarFeedReplyLink'.$dataId.'" href="#" onclick=\'SugarFeed.buildReplyForm("'.$dataId.'", "{this.id}", this); return false;\'>'.$GLOBALS['app_strings']['LBL_EMAIL_REPLY'].'</a>' .$delete. '</div></div>';
+        $data['NAME'] .= static::getTimeLapse($dataDateEntered) . '&nbsp;</span><div class="byLineRight"><a id="sugarFeedReplyLink'.$dataId.'" href="#" onclick=\'SugarFeed.buildReplyForm("'.$dataId.'", "{this.id}", this); return false;\'>'.$GLOBALS['app_strings']['LBL_EMAIL_REPLY'].'</a>' .$delete. '</div></div>';
 
         $data['NAME'] .= $this->fetchReplies($data);
         return  $data ;
@@ -441,7 +444,7 @@ class SugarFeed extends Basic
 
         $replies = $seedBean->get_list('date_entered', "related_module = 'SugarFeed' AND related_id = '".$dataId."'");
 
-        if (count($replies['list']) < 1) {
+        if ((is_countable($replies['list']) ? count($replies['list']) : 0) < 1) {
             return '';
         }
 
@@ -462,8 +465,8 @@ class SugarFeed extends Basic
             }
 
             $replyHTML .= '<div style="float: left; margin-right: 3px; width: 50px; height: 50px;"><!--not_in_theme!--><img src="'.$image_url.'" style="max-width: 50px; max-height: 50px;"></div> ';
-            $replyHTML .= str_replace("{this.CREATED_BY}", get_assigned_user_name($reply->created_by), html_entity_decode($reply->name)).'<br>';
-            $replyHTML .= '<div class="byLineBox"><span class="byLineLeft">'. $this->getTimeLapse($reply->date_entered) . '&nbsp;</span><div class="byLineRight">  &nbsp;' .$delete. '</div></div><div class="clear"></div>';
+            $replyHTML .= str_replace("{this.CREATED_BY}", get_assigned_user_name($reply->created_by), html_entity_decode((string) $reply->name)).'<br>';
+            $replyHTML .= '<div class="byLineBox"><span class="byLineLeft">'. static::getTimeLapse($reply->date_entered) . '&nbsp;</span><div class="byLineRight">  &nbsp;' .$delete. '</div></div><div class="clear"></div>';
         }
 
         $replyHTML .= '</blockquote>';
@@ -487,7 +490,7 @@ class SugarFeed extends Basic
         else{
             $first=$first->getTimestamp();
         }
-		
+
         $second=date_create_from_format($user_format,$startDate);
         if(empty($second)){
             LoggerManager::getLogger()->warn('SugarFeed getTimeLapse: Could not fetch startDate ');
@@ -557,7 +560,7 @@ class SugarFeed extends Basic
         $urls = getUrls($input);
         foreach ($urls as $url) {
             $output = "<a href='$url' target='_blank'>".$url."</a>";
-            $input = str_replace($url, $output, $input);
+            $input = str_replace($url, $output, (string) $input);
         }
         return $input;
     }

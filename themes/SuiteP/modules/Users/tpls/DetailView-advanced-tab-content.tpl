@@ -181,7 +181,7 @@ advanced tab content goes here
             <!-- DIV inside - colspan != 3 -->
             <div class="col-xs-12 col-sm-4 label col-1-label">
                 <!-- LABEL -->
-                {$MOD.LBL_TIME_FORMAT|strip_semicolon}
+                {$MOD.LBL_TIMEZONE|strip_semicolon}
             </div>
             <!-- /DIV inside  -->
             <!-- phone (version 1) -->
@@ -223,21 +223,6 @@ advanced tab content goes here
                 <!-- simple hidden finish -->
             </div>
         </div>
-        <div class="col-xs-12 col-sm-6 detail-view-row-item">
-            <!-- [hide!!] -->
-            <!-- DIV inside - colspan != 3 -->
-            <div class="col-xs-12 col-sm-4 label col-1-label">
-                <!-- LABEL -->
-                {$MOD.LBL_NUMBER_GROUPING_SEP|strip_semicolon}
-            </div>
-            <!-- /DIV inside  -->
-            <!-- phone (version 1) -->
-            <div class="col-xs-12 col-sm-8 detail-view-field " type="name" field="name">
-                <!-- simple hidden start -->
-                {$NUM_GRP_SEP}
-                <!-- simple hidden finish -->
-            </div>
-        </div>
     </div>
     <div class="row detail-view-row">
         <div class="col-xs-12 col-sm-6 detail-view-row-item">
@@ -266,7 +251,7 @@ advanced tab content goes here
             <!-- phone (version 1) -->
             <div class="col-xs-12 col-sm-8 detail-view-field " type="name" field="name">
                 <!-- simple hidden start -->
-                {$MOD.LBL_DECIMAL_SEP_TEXT}
+                {$DEC_SEP}
                 <!-- simple hidden finish -->
             </div>
         </div>

@@ -48,6 +48,7 @@ use Sugar_Smarty;
 /**
  * Generic view for the Search Framework.
  */
+#[\AllowDynamicProperties]
 abstract class View
 {
     /** @var Sugar_Smarty */

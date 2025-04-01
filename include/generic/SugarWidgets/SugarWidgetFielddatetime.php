@@ -521,9 +521,9 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
         if (count(explode('-', $content)) == 2) {
             return $content;
         // if date field
-        } elseif (substr_count($layout_def['type'], 'date') > 0) {
+        } elseif (substr_count((string) $layout_def['type'], 'date') > 0) {
             // if date time field
-            if (substr_count($layout_def['type'], 'time') > 0 && $this->get_time_part($content)!= false) {
+            if (substr_count((string) $layout_def['type'], 'time') > 0 && $this->get_time_part($content)!= false) {
                 $td = $timedate->to_display_date_time($content);
                 return $td;
             } else {// if date only field
@@ -538,7 +538,7 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
         global $timedate;
 
         $date_parts=$timedate->split_date_time($date_time_value);
-        if (count($date_parts) > 1) {
+        if ((is_countable($date_parts) ? count($date_parts) : 0) > 1) {
             return $date_parts[1];
         } else {
             return false;
@@ -588,7 +588,7 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
         global $app_list_strings;
         $display = '';
         $match = array();
-        if (preg_match('/(\d{4})-(\d\d)/', $this->displayListPlain($layout_def), $match)) {
+        if (preg_match('/(\d{4})-(\d\d)/', (string) $this->displayListPlain($layout_def), $match)) {
             $match[2] = preg_replace('/^0/', '', $match[2]);
             $display = $app_list_strings['dom_cal_month_long'][$match[2]]." {$match[1]}";
         }
@@ -720,7 +720,7 @@ class SugarWidgetFieldDateTime extends SugarWidgetReportField
     public function displayListquarter(& $layout_def)
     {
         $match = array();
-        if (preg_match('/(\d{4})-(\d)/', $this->displayListPlain($layout_def), $match)) {
+        if (preg_match('/(\d{4})-(\d)/', (string) $this->displayListPlain($layout_def), $match)) {
             return "Q".$match[2]." ".$match[1];
         }
         return '';

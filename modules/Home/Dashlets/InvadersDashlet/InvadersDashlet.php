@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 
 
+#[\AllowDynamicProperties]
 class InvadersDashlet extends Dashlet
 {
     public $savedText; // users's saved text
@@ -163,6 +164,7 @@ class InvadersDashlet extends Dashlet
      */
     public function saveText()
     {
+        $optionsArray = [];
         if (isset($_REQUEST['savedText'])) {
             $optionsArray = $this->loadOptions();
             $optionsArray['savedText'] = nl2br($_REQUEST['savedText']);

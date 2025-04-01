@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -251,7 +251,7 @@ class SugarView
             $content = ob_get_clean();
             $module = $this->module;
             $ajax_ret = array(
-                'content' => mb_detect_encoding($content) == "UTF-8" ? $content : utf8_encode($content),
+                'content' => mb_detect_encoding($content) == "UTF-8" ? $content : mb_convert_encoding($content, 'ISO-8859-1', 'UTF-8'),
                 'menu' => array(
                     'module' => $module,
                     'label' => translate($module),
@@ -1015,6 +1015,7 @@ EOHTML;
 
         $ss = new Sugar_Smarty();
         $ss->assign("AUTHENTICATED", isset($_SESSION["authenticated_user_id"]));
+        $ss->assign("APP", $app_strings);
         $ss->assign('MOD', return_module_language($GLOBALS['current_language'], 'Users'));
 
         $bottomLinkList = array();
@@ -1496,14 +1497,14 @@ EOHTML;
         if (!empty($paramString)) {
             $theTitle .= "<h2 class='module-title-text'> $paramString </h2>";
 
-            if ($this->type == "detail") {
+            if ($this->type === "detail") {
                 $theTitle .= "<div class='favorite' record_id='" .
                     $this->bean->id .
                     "' module='" .
                     $this->bean->module_dir .
-                    "'><div class='favorite_icon_outline'>" .
+                    "'><div class='favorite_icon_outline' title='" . translate('LBL_MARK_FAVORITE', 'Favorites') . "'>" .
                     "<span class='suitepicon suitepicon-favorite-star-outline'></span></div>
-                                                    <div class='favorite_icon_fill' 'title=\"' . translate('LBL_DASHLET_EDIT', 'Home') . '\" border=\"0\"  align=\"absmiddle\"'>" .
+                                                    <div class='favorite_icon_fill' title='" . translate('LBL_UNMARK_FAVORITE', 'Favorites') . "' border=\"0\"  align=\"absmiddle\">" .
 
                     "<span class='suitepicon suitepicon-favorite-star'></span></div></div>";
             }

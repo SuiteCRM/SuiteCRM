@@ -38,6 +38,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class AOR_Condition extends Basic
 {
     public $new_schema = true;
@@ -122,11 +123,11 @@ class AOR_Condition extends Basic
                                 }
                             }
                         }
-                        if ($field_name == 'parenthesis' && $post_data[$key . $field_name][$i] == 'END') {
-                            if (!isset($lastParenthesisStartConditionId)) {
+                        if ($field_name === 'parenthesis' && $post_data[$key . $field_name][$i] !== 'START') {
+                            if (!isset($lastParenthesisStartConditionIds)) {
                                 throw new Exception('a closure parenthesis has no starter pair');
                             }
-                            $condition->parenthesis = $lastParenthesisStartConditionId;
+                            $condition->parenthesis = array_pop($lastParenthesisStartConditionIds);
                         } else {
                             $condition->$field_name = $post_data[$key . $field_name][$i];
                         }
@@ -149,8 +150,8 @@ class AOR_Condition extends Basic
                     }
                     $condition->aor_report_id = $parent->id;
                     $conditionId = $condition->save();
-                    if ($condition->parenthesis == 'START') {
-                        $lastParenthesisStartConditionId = $conditionId;
+                    if ($condition->parenthesis === 'START') {
+                        $lastParenthesisStartConditionIds[] = $conditionId;
                     }
                 }
             }

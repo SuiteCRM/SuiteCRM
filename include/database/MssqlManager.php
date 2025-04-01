@@ -309,9 +309,9 @@ class MssqlManager extends DBManager
 
         if (!$result) {
             $sqlmsg = mssql_get_last_message();
-            $sqlpos = strpos($sqlmsg, 'Changed database context to');
-            $sqlpos2 = strpos($sqlmsg, 'Warning:');
-            $sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
+            $sqlpos = strpos((string) $sqlmsg, 'Changed database context to');
+            $sqlpos2 = strpos((string) $sqlmsg, 'Warning:');
+            $sqlpos3 = strpos((string) $sqlmsg, 'Checking identity information:');
 
             // if sqlmsg has 'Changed database context to', just log it
             if ($sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false) {
@@ -432,8 +432,9 @@ class MssqlManager extends DBManager
      */
     public function limitQuery($sql, $start, $count, $dieOnError = false, $msg = '', $execute = true)
     {
-        $start = (int)$start;
-        $count = (int)$count;
+        $dist_str = 'distinct';
+        $start = $start;
+        $count = $count;
         $countVar = '(@topCount)';
         $newSQL = $sql;
         $distinctSQLARRAY = array();
@@ -499,7 +500,7 @@ class MssqlManager extends DBManager
 
                     //if there is a distinct clause, parse sql string as we will have to insert the rownumber
                     //for paging, AFTER the distinct clause
-                    $grpByStr = '';
+                    $grpByStr = [];
                     $hasDistinct = strpos(strtolower($matches[0]), 'distinct');
                     $hasGroupBy = strpos(strtolower($matches[0]), 'group by');
 
@@ -1048,6 +1049,7 @@ class MssqlManager extends DBManager
      */
     public function full_text_indexing_setup()
     {
+        $FTSqry = [];
         $GLOBALS['log']->debug('MSSQL about to wakeup FTS');
 
         if ($this->getDatabase()) {
@@ -1439,14 +1441,14 @@ EOSQL;
             } elseif (!in_array($row['TYPE_NAME'], array('datetime', 'text'))) {
                 $columns[$column_name]['len'] = strtolower($row['LENGTH']);
             }
-            if (stristr($row['TYPE_NAME'], 'identity')) {
+            if (stristr((string) $row['TYPE_NAME'], 'identity')) {
                 $columns[$column_name]['auto_increment'] = '1';
                 $columns[$column_name]['type'] = str_replace(' identity', '', strtolower($row['TYPE_NAME']));
             }
 
             if (
                 !empty($row['IS_NULLABLE']) && $row['IS_NULLABLE'] == 'NO'
-                && (empty($row['KEY']) || !stristr($row['KEY'], 'PRI'))
+                && (empty($row['KEY']) || !stristr((string) $row['KEY'], 'PRI'))
             ) {
                 $columns[strtolower($row['COLUMN_NAME'])]['required'] = 'true';
             }
@@ -1458,7 +1460,7 @@ EOSQL;
             // NOTE Not using !empty as an empty string may be a viable default value.
             if ($column_def != 0 && ($row['COLUMN_DEF'] != null)) {
                 $matches = array();
-                $row['COLUMN_DEF'] = html_entity_decode($row['COLUMN_DEF'], ENT_QUOTES);
+                $row['COLUMN_DEF'] = html_entity_decode((string) $row['COLUMN_DEF'], ENT_QUOTES);
                 if (preg_match('/\([\(|\'](.*)[\)|\']\)/i', $row['COLUMN_DEF'], $matches)) {
                     $columns[$column_name]['default'] = $matches[1];
                 } elseif (preg_match('/\(N\'(.*)\'\)/i', $row['COLUMN_DEF'], $matches)) {
@@ -1715,7 +1717,7 @@ EOQ;
         }
         if ($fieldDef['type'] == 'decimal'
             && empty($fieldDef['precision'])
-            && !strpos($fieldDef['len'], ',')
+            && !strpos((string) $fieldDef['len'], ',')
         ) {
             $fieldDef['len'] .= ',0'; // Adding 0 precision if it is not specified
         }
@@ -1754,8 +1756,8 @@ EOQ;
         $ref['name'] = $this->quoteIdentifier($ref['name']);
 
         // Bug 24307 - Don't add precision for float fields.
-        if (stristr($ref['colType'], 'float')) {
-            $ref['colType'] = preg_replace('/(,\d+)/', '', $ref['colType']);
+        if (stristr((string) $ref['colType'], 'float')) {
+            $ref['colType'] = preg_replace('/(,\d+)/', '', (string) $ref['colType']);
         }
 
         if ($return_as_array) {
@@ -1776,7 +1778,7 @@ EOQ;
     {
         //Bug 25078 fixed by Martin Hu: sqlserver haven't 'date' type, trim extra "00:00:00"
         if ($changes['data_type'] == 'date') {
-            $changes['before'] = str_replace(' 00:00:00', '', $changes['before']);
+            $changes['before'] = str_replace(' 00:00:00', '', (string) $changes['before']);
         }
 
         return parent::save_audit_records($bean, $changes);
@@ -1827,9 +1829,9 @@ EOQ;
             return false;
         }
 
-        $sqlpos = strpos($sqlmsg, 'Changed database context to');
-        $sqlpos2 = strpos($sqlmsg, 'Warning:');
-        $sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
+        $sqlpos = strpos((string) $sqlmsg, 'Changed database context to');
+        $sqlpos2 = strpos((string) $sqlmsg, 'Warning:');
+        $sqlpos3 = strpos((string) $sqlmsg, 'Checking identity information:');
         if ($sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false) {
             return false;
         } else {
@@ -1842,14 +1844,14 @@ EOQ;
 
                 return false;
             } else {
-                $sqlpos = strpos($sqlmsg, $app_strings['ERR_MSSQL_DB_CONTEXT']);
+                $sqlpos = strpos((string) $sqlmsg, (string) $app_strings['ERR_MSSQL_DB_CONTEXT']);
                 if ($sqlpos !== false) {
                     return false;
                 }
             }
         }
 
-        if (strlen($sqlmsg) > 2) {
+        if (strlen((string) $sqlmsg) > 2) {
             return 'SQL Server error: ' . $sqlmsg;
         }
 
@@ -1891,19 +1893,19 @@ EOQ;
     protected function _appendN($sql)
     {
         // If there are no single quotes, don't bother, will just assume there is no character data
-        if (strpos($sql, "'") === false) {
+        if (strpos((string) $sql, "'") === false) {
             return $sql;
         }
 
         // Flag if there are odd number of single quotes, just continue without trying to append N
-        if (substr_count($sql, "'") & 1) {
+        if (substr_count((string) $sql, "'") & 1) {
             $GLOBALS['log']->error('SQL statement[' . $sql . '] has odd number of single quotes.');
 
             return $sql;
         }
 
         //The only location of three subsequent ' will be at the beginning or end of a value.
-        $sql = preg_replace('/(?<!\')(\'{3})(?!\')/', "'<@#@#@PAIR@#@#@>", $sql);
+        $sql = preg_replace('/(?<!\')(\'{3})(?!\')/', "'<@#@#@PAIR@#@#@>", (string) $sql);
 
         // Remove any remaining '' and do not parse... replace later (hopefully we don't even have any)
         $pairs = array();
@@ -1929,8 +1931,8 @@ EOQ;
                 // One problem we face is the image column type in reports which cannot accept nvarchar data
                 if (
                     !empty($value)
-                    && !is_numeric(trim(str_replace(array("'", ','), '', $value)))
-                    && !preg_match('/^\'[\,]\'$/', $value)
+                    && !is_numeric(trim(str_replace(array("'", ','), '', (string) $value)))
+                    && !preg_match('/^\'[\,]\'$/', (string) $value)
                 ) {
                     $replace[$value] = 'N' . trim($value, 'N');
                 }
@@ -2140,6 +2142,6 @@ EOQ;
      */
     protected function removeIndexLimit($fields)
     {
-        return preg_replace('/(\s?\(\d+\))/', '', $fields);
+        return preg_replace('/(\s?\(\d+\))/', '', (string) $fields);
     }
 }

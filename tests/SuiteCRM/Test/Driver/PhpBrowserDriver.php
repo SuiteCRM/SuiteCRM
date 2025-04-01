@@ -45,6 +45,7 @@ use Codeception\Module\PhpBrowser;
  * Class PhpBrowserDriver
  * @package SuiteCRM\Test\Driver
  */
+#[\AllowDynamicProperties]
 class PhpBrowserDriver extends PhpBrowser
 {
     public function _initialize()

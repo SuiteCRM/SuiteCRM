@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class DocumentsViewEdit extends ViewEdit
 {
 
@@ -107,12 +108,12 @@ class DocumentsViewEdit extends ViewEdit
 
         //get related document name.
         if (!empty($this->bean->related_doc_id)) {
-            $this->ss->assign("RELATED_DOCUMENT_NAME", Document::get_document_name($this->bean->related_doc_id));
+            $this->ss->assign("RELATED_DOCUMENT_NAME", (new Document())->get_document_name($this->bean->related_doc_id));
             $this->ss->assign("RELATED_DOCUMENT_ID", $this->bean->related_doc_id);
             if (!empty($this->bean->related_doc_rev_id)) {
-                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id(DocumentRevision::get_document_revisions($this->bean->related_doc_id), $this->bean->related_doc_rev_id));
+                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id((new DocumentRevision)->get_document_revisions($this->bean->related_doc_id), $this->bean->related_doc_rev_id));
             } else {
-                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id(DocumentRevision::get_document_revisions($this->bean->related_doc_id), ''));
+                $this->ss->assign("RELATED_DOCUMENT_REVISION_OPTIONS", get_select_options_with_id((new DocumentRevision)->get_document_revisions($this->bean->related_doc_id), ''));
             }
         } else {
             $this->ss->assign("RELATED_DOCUMENT_REVISION_DISABLED", "disabled");

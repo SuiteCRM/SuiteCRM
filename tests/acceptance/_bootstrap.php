@@ -2,6 +2,7 @@
 // Here you can initialize variables that will be available to your tests
 
 /* bootstrap composer's autoloader */
+chdir(__DIR__.'/../../');
 require_once __DIR__ . '/../../vendor/autoload.php';
 global $sugar_config, $db;
 

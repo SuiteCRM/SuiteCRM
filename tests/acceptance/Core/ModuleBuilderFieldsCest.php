@@ -44,6 +44,7 @@ use SuiteCRM\Enumerator\SugarObjectType;
  * Class ModuleFieldsCest
  * Tests module fields, layouts, relationships in module builder
  */
+#[\AllowDynamicProperties]
 class ModuleBuilderFieldsCest
 {
     /**

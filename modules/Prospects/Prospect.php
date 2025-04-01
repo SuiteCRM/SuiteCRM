@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/SugarObjects/templates/person/Person.php');
 require_once __DIR__ . '/../../include/EmailInterface.php';
 
+#[\AllowDynamicProperties]
 class Prospect extends Person implements EmailInterface
 {
     public $field_name_map;
@@ -187,13 +188,13 @@ class Prospect extends Person implements EmailInterface
         if (empty($module)) {
             //The call to retrieveTargetList contains a query that may contain a pound token
             $pattern = '/AND related_type = [\'#]([a-zA-Z]+)[\'#]/i';
-            if (preg_match($pattern, $query, $matches)) {
+            if (preg_match($pattern, (string) $query, $matches)) {
                 $module_name = $matches[1];
-                $query = preg_replace($pattern, "", $query);
+                $query = preg_replace($pattern, "", (string) $query);
             }
         }
 
-        $count = count($fields);
+        $count = is_countable($fields) ? count($fields) : 0;
         $index = 1;
         $sel_fields = "";
         if (!empty($fields)) {

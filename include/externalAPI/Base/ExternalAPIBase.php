@@ -47,6 +47,7 @@ require_once('include/connectors/sources/SourceFactory.php');
  * Base implementation for external API
  * @api
  */
+#[\AllowDynamicProperties]
 abstract class ExternalAPIBase implements ExternalAPIPlugin
 {
     public $account_name;
@@ -55,7 +56,7 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
     public $useAuth = true;
     public $requireAuth = true;
 
-    const APP_STRING_ERROR_PREFIX = 'ERR_EXTERNAL_API_';
+    public const APP_STRING_ERROR_PREFIX = 'ERR_EXTERNAL_API_';
     protected $_appStringErrorPrefix = self::APP_STRING_ERROR_PREFIX;
 
     /**
@@ -136,13 +137,14 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
 
     protected function postData($url, $postfields, $headers)
     {
+        $proxy_settings = [];
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
+
         $proxy_config = SugarModule::get('Administration')->loadBean();
         $proxy_config->retrieveSettings('proxy');
-        
+
         if (!empty($proxy_config) &&
             !empty($proxy_config->settings['proxy_on']) &&
             $proxy_config->settings['proxy_on'] == 1) {
@@ -152,7 +154,7 @@ abstract class ExternalAPIBase implements ExternalAPIPlugin
                 curl_setopt($ch, CURLOPT_PROXYUSERPWD, $proxy_settings['proxy_username'] . ':' . $proxy_settings['proxy_password']);
             }
         }
-        
+
         if ((is_array($postfields) && count($postfields) == 0) ||
              empty($postfields)) {
             curl_setopt($ch, CURLOPT_POST, false);

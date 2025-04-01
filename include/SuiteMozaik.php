@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class SuiteMozaik
 {
     private $mozaikPath = 'include/javascript/mozaik';
@@ -65,12 +66,12 @@ class SuiteMozaik
     {
         $this->vendorPath = 'vendor/';
         if ($this->autoInsertThumbnails) {
-            if (count($this->getThumbs())==0 || self::$devMode) {
+            if ((is_countable($this->getThumbs()) ? count($this->getThumbs()) : 0)==0 || self::$devMode) {
                 $ord = 0;
                 foreach (self::$defaultThumbnails as $thumbName => $thumbData) {
                     $templateSectionLine = BeanFactory::newBean('TemplateSectionLine');
                     $templateSectionLine->name = $thumbData['label'];
-                    $templateSectionLine->description = preg_replace('/^string:/', '', $thumbData['tpl']);
+                    $templateSectionLine->description = preg_replace('/^string:/', '', (string) $thumbData['tpl']);
                     $templateSectionLine->description = str_replace('{lipsum}', $this->getContentLipsum(), $templateSectionLine->description);
                     $templateSectionLine->description = str_replace('{imageSmall}', $this->getContentImageSample(130), $templateSectionLine->description);
                     $templateSectionLine->description = str_replace('{image}', $this->getContentImageSample(), $templateSectionLine->description);
@@ -130,10 +131,10 @@ HTML;
         }
 
         if (is_array($tinyMCESetup) || is_object($tinyMCESetup)) {
-            $tinyMCESetup = json_encode($tinyMCESetup);
+            $tinyMCESetup = json_encode($tinyMCESetup, JSON_THROW_ON_ERROR);
         }
 
-        if (!preg_match('/^tinyMCE\s*:\s*/', $tinyMCESetup)) {
+        if (!preg_match('/^tinyMCE\s*:\s*/', (string) $tinyMCESetup)) {
             $tinyMCESetup = "tinyMCE: $tinyMCESetup";
         }
         return $tinyMCESetup;
@@ -147,7 +148,7 @@ HTML;
         if (!$thumbs) {
             $thumbs = self::$defaultThumbnails;
         }
-        $thumbsJSON = json_encode($thumbs);
+        $thumbsJSON = json_encode($thumbs, JSON_THROW_ON_ERROR);
 
         $tinyMCESetup = $this->tinyMCESetupArgumentFixer($tinyMCESetup);
 
@@ -256,7 +257,7 @@ SCRIPT;
                 foreach ($thumbBeans as $thumbBean) {
                     $thumbs[$thumbBean->name] = array(
                         'label' => $thumbBean->thumbnail ? $this->getThumbImageHTML($thumbBean->thumbnail, $thumbBean->name) : $thumbBean->name,
-                        'tpl' => 'string:' . html_entity_decode($thumbBean->description),
+                        'tpl' => 'string:' . html_entity_decode((string) $thumbBean->description),
                     );
                 }
             }

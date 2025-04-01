@@ -129,8 +129,8 @@ function ajaxLink($url)
     $match = array();
     $javascriptMatch = array();
 
-    preg_match('/module=([^&]*)/i', $url, $match);
-    preg_match('/^javascript/i', $url, $javascriptMatch);
+    preg_match('/module=([^&]*)/i', (string) $url, $match);
+    preg_match('/^javascript/i', (string) $url, $javascriptMatch);
 
     if (!empty($sugar_config['disableAjaxUI'])) {
         return $url;

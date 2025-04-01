@@ -44,9 +44,10 @@ namespace SuiteCRM\API\v8\Exception;
  * Class NotAllowedException
  * @package SuiteCRM\API\v8\Exception
  */
+#[\AllowDynamicProperties]
 class NotAllowedException extends ApiException
 {
-    const MSG_PREFIX = '[Not Allowed]';
-    const DEFAULT_CODE = 8005;
-    const HTTP_STATUS = 403;
+    public const MSG_PREFIX = '[Not Allowed]';
+    public const DEFAULT_CODE = 8005;
+    public const HTTP_STATUS = 403;
 }

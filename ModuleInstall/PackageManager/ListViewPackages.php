@@ -40,6 +40,7 @@
 
  require_once('include/ListView/ListViewSmarty.php');
 
+#[\AllowDynamicProperties]
 class ListViewPackages extends ListViewSmarty
 {
     public $secondaryDisplayColumns;

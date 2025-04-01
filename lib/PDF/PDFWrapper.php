@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class PDFWrapper
  * @package SuiteCRM\PDF
  */
+#[\AllowDynamicProperties]
 class PDFWrapper
 {
     /**

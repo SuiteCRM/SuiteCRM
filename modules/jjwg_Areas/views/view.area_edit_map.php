@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_AreasViewArea_Edit_Map extends SugarView
 {
     public function __construct()
@@ -94,7 +95,7 @@ class Jjwg_AreasViewArea_Edit_Map extends SugarView
   </style>
 
   <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=<?= $GLOBALS['jjwg_config']['google_maps_api_key']; ?>&sensor=false&libraries=drawing"></script>
-  <script type="text/javascript" src="modules/jjwg_Areas/javascript/jquery-1.8.0.min.js"></script>
+  <script src="include/javascript/jquery/jquery-min.js"></script>
 
   <script type="text/javascript">
 

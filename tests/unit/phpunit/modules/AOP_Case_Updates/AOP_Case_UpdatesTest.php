@@ -43,7 +43,7 @@ class AOP_Case_UpdatesTest extends SuitePHPUnitFrameworkTestCase
         $aopCaseUpdates->save();
 
         //test for record ID to verify that record is saved
-        self::assertEquals(36, strlen($aopCaseUpdates->id));
+        self::assertEquals(36, strlen((string) $aopCaseUpdates->id));
 
         //mark the record as deleted for cleanup
         $aopCaseUpdates->mark_deleted($aopCaseUpdates->id);

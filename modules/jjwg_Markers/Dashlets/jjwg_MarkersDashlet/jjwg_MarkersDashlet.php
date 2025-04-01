@@ -6,10 +6,16 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/jjwg_Markers/jjwg_Markers.php');
 
+#[\AllowDynamicProperties]
 class jjwg_MarkersDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
+
+        global $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/jjwg_Markers/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

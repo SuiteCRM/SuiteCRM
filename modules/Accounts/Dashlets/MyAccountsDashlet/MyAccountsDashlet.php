@@ -48,11 +48,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 
 
+#[\AllowDynamicProperties]
 class MyAccountsDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/Accounts/Dashlets/MyAccountsDashlet/MyAccountsDashlet.data.php');
 
         parent::__construct($id, $def);
@@ -80,14 +84,14 @@ class MyAccountsDashlet extends DashletGeneric
 
     public function process($lvsParams = array(), $id = null)
     {
-        if (isset($this->displayColumns) && array_search('email1', $this->displayColumns) !== false) {
+        if (isset($this->displayColumns) && array_search('email1', $this->displayColumns, true) !== false) {
             $lvsParams['custom_select'] = ', email_address as email1';
             $lvsParams['custom_from'] = ' LEFT JOIN email_addr_bean_rel eabr ON eabr.deleted = 0 AND bean_module = \'Accounts\''
                                       . ' AND eabr.bean_id = accounts.id AND primary_address = 1'
                                       . ' LEFT JOIN email_addresses ea ON ea.deleted = 0 AND ea.id = eabr.email_address_id';
         }
 
-        if (isset($this->displayColumns) && array_search('parent_name', $this->displayColumns) !== false) {
+        if (isset($this->displayColumns) && array_search('parent_name', $this->displayColumns, true) !== false) {
             $lvsParams['custom_select'] = empty($lvsParams['custom_select']) ? ', a1.name as parent_name ' : $lvsParams['custom_select'] . ', a1.name as parent_name ';
             $lvsParams['custom_from'] = empty($lvsParams['custom_from']) ? ' LEFT JOIN accounts a1 on a1.id = accounts.parent_id' : $lvsParams['custom_from'] . ' LEFT JOIN accounts a1 on a1.id = accounts.parent_id';
         }

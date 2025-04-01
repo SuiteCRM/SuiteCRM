@@ -114,7 +114,7 @@ class SugarFeedTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($sugarFeed->id));
-        self::assertEquals(36, strlen($sugarFeed->id));
+        self::assertEquals(36, strlen((string) $sugarFeed->id));
 
         //mark the record as deleted
         $sugarFeed->mark_deleted($sugarFeed->id);
@@ -130,7 +130,7 @@ class SugarFeedTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($sugarFeed->id));
-        self::assertEquals(36, strlen($sugarFeed->id));
+        self::assertEquals(36, strlen((string) $sugarFeed->id));
 
         //test fetchReplies method
         $this->fetchReplies();
@@ -142,7 +142,7 @@ class SugarFeedTest extends SuitePHPUnitFrameworkTestCase
     public function fetchReplies(): void
     {
         $actual = BeanFactory::newBean('SugarFeed')->fetchReplies(array('ID' => '1'));
-        self::assertGreaterThan(0, strlen($actual));
+        self::assertGreaterThan(0, strlen((string) $actual));
     }
 
     public function testgetLinkTypes(): void
@@ -186,7 +186,7 @@ class SugarFeedTest extends SuitePHPUnitFrameworkTestCase
     {
         $result = SugarFeed::getTimeLapse('2016-01-15 11:16:02');
         self::assertTrue(isset($result));
-        self::assertGreaterThanOrEqual(0, strlen($result));
+        self::assertGreaterThanOrEqual(0, strlen((string) $result));
     }
 
     public function testparseMessage(): void

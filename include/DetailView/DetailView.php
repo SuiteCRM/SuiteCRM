@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * DetailView - display single record
  * @api
  */
+#[\AllowDynamicProperties]
 class DetailView extends ListView
 {
     public $list_row_count = null;
@@ -65,6 +66,12 @@ class DetailView extends ListView
 
 
 
+    /**
+     * @param string $html_varName
+     * @param SugarBean $seed
+     * @param int $offset
+     * @return SugarBean
+     */
     public function processSugarBean($html_varName, $seed, $offset)
     {
         global $row_count, $sugar_config;
@@ -110,7 +117,7 @@ class DetailView extends ListView
             if ($nav_history_set) {
                 //try to locate the ID in the nav_history array.
 
-                $key = array_search($_REQUEST['record'], $nav_ids_visited);
+                $key = array_search($_REQUEST['record'], $nav_ids_visited, true);
                 if ($key === false) {
                     //do not show the VCR buttons.
 
@@ -152,27 +159,11 @@ class DetailView extends ListView
         $db_offset=$offset-1;
 
         $this->populateQueryWhere($isFirstView, $html_varName);
-        if (ACLController::requireOwner($seed->module_dir, 'view')) {
-            global $current_user;
-            $seed->getOwnerWhere($current_user->id);
-            if (!empty($this->query_where)) {
-                $this->query_where .= ' AND ';
-            }
-            $this->query_where .= $seed->getOwnerWhere($current_user->id);
+
+        $accessWhere = $seed->buildAccessWhere('view');
+        if (!empty($accessWhere)) {
+            $this->query_where .= empty($this->query_where) ? $accessWhere : ' AND ' . $accessWhere;
         }
-        /* BEGIN - SECURITY GROUPS */
-        if (ACLController::requireSecurityGroup($seed->module_dir, 'view')) {
-            require_once('modules/SecurityGroups/SecurityGroup.php');
-            global $current_user;
-            $owner_where = $seed->getOwnerWhere($current_user->id);
-            $group_where = SecurityGroup::getGroupWhere($seed->table_name, $seed->module_dir, $current_user->id);
-            if (empty($this->query_where)) {
-                $this->query_where = " (".$owner_where." or ".$group_where.")";
-            } else {
-                $this->query_where .= " AND (".$owner_where." or ".$group_where.")";
-            }
-        }
-        /* END - SECURITY GROUPS */
 
         $order = $this->getLocalSessionVariable($seed->module_dir.'2_'.$html_varName, "ORDER_BY");
         $orderBy = '';
@@ -198,10 +189,10 @@ class DetailView extends ListView
         if (empty($object->id)) {
             $this->no_record_found=true;
         }
-        if (empty($_REQUEST['InDetailNav']) and strcmp($_REQUEST['record'], $object->id)!=0) {
+        if (empty($_REQUEST['InDetailNav']) && strcmp($_REQUEST['record'], $object->id)!=0) {
             $this->offset_key_mismatch=true;
         }
-        if ($this->no_record_found or $this->offset_key_mismatch) {
+        if ($this->no_record_found || $this->offset_key_mismatch) {
             if ($nav_history_set) {
                 $this->return_to_list_only=true;
             }
@@ -388,7 +379,7 @@ class DetailView extends ListView
                                 $this->base_URL	.= "&{$name}[]=".$valuevalue;
                             }
                         } else {
-                            if (substr_count($this->base_URL, '?') > 0) {
+                            if (substr_count((string) $this->base_URL, '?') > 0) {
                                 $this->base_URL	.= "&$name=$value";
                             } else {
                                 $this->base_URL	.= "?$name=$value";

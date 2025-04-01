@@ -50,10 +50,10 @@
 <li>
     <input type="checkbox" name="{$action.name}" value="{$action.name}" checked="checked" />
     {$action.label}
-</li> 
+</li>
 {/foreach}
 </ul>
 </form>
-<button id="execute_repair" onclick="this.disabled = true;
+<button class="button primary" id="execute_repair" onclick="this.disabled = true;
 ajaxStatus.showStatus(SUGAR.language.get('ModuleBuilder', 'LBL_AJAX_LOADING'));
 ModuleBuilder.submitForm('remove_custom')">{sugar_translate label="LBL_RESET"}</button>

@@ -45,6 +45,7 @@ require_once 'modules/ModuleBuilder/parsers/constants.php';
 require_once 'IconRepository.php';
 
 
+#[\AllowDynamicProperties]
 class StudioModule
 {
     /**
@@ -96,7 +97,16 @@ class StudioModule
             )
         );
 
-        $moduleNames = array_change_key_case($GLOBALS ['app_list_strings'] ['moduleList']);
+        $appListStrings = $GLOBALS['app_list_strings'] ?? [];
+        $current_language = $GLOBALS['app_list_strings'] ?? 'en_us';
+
+        if (empty($appListStrings)) {
+            $appListStrings = return_app_list_strings_language($current_language);
+        }
+
+        $moduleList = $appListStrings['moduleList'] ?? [];
+
+        $moduleNames = array_change_key_case($moduleList);
         $this->name = isset($moduleNames [strtolower($module)]) ? $moduleNames [strtolower($module)] : strtolower($module);
         $this->module = $module;
         $this->seed = BeanFactory::getBean($this->module);
@@ -402,10 +412,10 @@ class StudioModule
                 $title = translate($label);
                 if ($label == 'LBL_BASIC_SEARCH') {
                     $name = 'BasicSearch';
-                } elseif ($label == 'LBL_ADVANCED_SEARCH') {
+                } elseif ($label === 'LBL_ADVANCED_SEARCH') {
                     $name = 'AdvancedSearch';
                 } else {
-                    $name = str_replace(' ', '', $title);
+                    $name = str_replace(' ', '', (string) $title);
                 }
                 $nodes [$title] = array(
                     'name' => $title,
@@ -486,10 +496,10 @@ class StudioModule
             if (is_dir($dir)) {
                 foreach (scandir($dir) as $fileName) {
                     // sanity check to confirm that this is a usable subpanel...
-                    if (substr($fileName, 0, 1) !== '.' && substr(strtolower($fileName), -4) == ".php"
+                    if (substr((string) $fileName, 0, 1) !== '.' && substr(strtolower($fileName), -4) == ".php"
                         && AbstractRelationships::validSubpanel("$dir/$fileName")
                     ) {
-                        $subname = str_replace('.php', '', $fileName);
+                        $subname = str_replace('.php', '', (string) $fileName);
                         $this->providedSubpanels [$subname] = $subname;
                     }
                 }

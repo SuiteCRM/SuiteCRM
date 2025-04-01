@@ -51,6 +51,7 @@ require_once __DIR__ . '/ImapHandlerInterface.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class ImapHandler implements ImapHandlerInterface
 {
 
@@ -151,7 +152,7 @@ class ImapHandler implements ImapHandlerInterface
     protected function logCall($func, $args)
     {
         if ($this->logCalls) {
-            $this->logger->debug('IMAP wrapper called: ' . __CLASS__ . "::$func(" . json_encode($args) . ')');
+            $this->logger->debug('IMAP wrapper called: ' . self::class . "::$func(" .  json_encode($args) . ')');
         }
     }
 
@@ -163,7 +164,7 @@ class ImapHandler implements ImapHandlerInterface
     protected function logReturn($func, $ret)
     {
         if ($this->logCalls) {
-            $this->logger->debug('IMAP wrapper return: ' . __CLASS__ . "::$func(...) => " . json_encode($ret));
+            $this->logger->debug('IMAP wrapper return: ' . self::class . "::$func(...) => " . json_encode($ret));
         }
     }
 
@@ -351,7 +352,7 @@ class ImapHandler implements ImapHandlerInterface
 
         return $ret;
     }
-    
+
     /**
      * Execute callback and check IMAP errors for retry
      * @param callback $callback
@@ -360,15 +361,15 @@ class ImapHandler implements ImapHandlerInterface
      */
     protected function executeImapCmd($callback, $charset=null)
     {
-      
+
       // Default to class charset if none is specified
         $emailCharset = !empty($charset) ? $charset : $this->charset;
-        
+
         $ret = false;
-      
+
         try {
             $ret = $callback($emailCharset);
-            
+
             // catch if we have BADCHARSET as exception is not thrown
             if (empty($ret) || $ret === false){
                 $err = imap_last_error();
@@ -385,9 +386,9 @@ class ImapHandler implements ImapHandlerInterface
                 $ret = $callback($emailCharset);
             }
         }
-        
+
         return $ret;
-    }    
+    }
 
     /**
      *
@@ -401,18 +402,18 @@ class ImapHandler implements ImapHandlerInterface
     public function sort($criteria, $reverse, $options = 0, $search_criteria = null, $charset = null)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        
+
         $call = function($charset) use ($criteria, $reverse, $options, $search_criteria){
           return imap_sort($this->getStream(), $criteria, $reverse, $options, $search_criteria, $charset);
         };
-        
+
         $ret = $this->executeImapCmd($call, $charset);
 
         if (!$ret) {
             $this->log('IMAP sort error');
         }
         $this->logReturn(__FUNCTION__, $ret);
-        
+
         return $ret;
     }
 
@@ -795,13 +796,13 @@ class ImapHandler implements ImapHandlerInterface
     public function search($criteria, $options = SE_FREE, $charset = null)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        
+
         $call = function($charset) use ($criteria, $options){
           return imap_search($this->getStream(), $criteria, $options, $charset);
         };
-        
+
         $ret = $this->executeImapCmd($call, $charset);
-        
+
         if (!$ret) {
             $this->log('IMAP search error');
         }
@@ -894,4 +895,157 @@ class ImapHandler implements ImapHandlerInterface
         return $ret;
     }
 
+    /**
+     * @param $stream
+     * @return bool
+     */
+    public function isValidStream($stream): bool
+    {
+        return is_resource($stream);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMessageList(
+        ?string $filterCriteria,
+        $sortCriteria,
+        $sortOrder,
+        int $offset,
+        int $pageSize,
+        array &$mailboxInfo,
+        array $columns,
+        $auth_type
+    ): array {
+
+        if (empty($filterCriteria) && $sortCriteria === SORTDATE) {
+            // Performance fix when no filters are enabled
+            $totalMsgs = $this->getNumberOfMessages();
+            $mailboxInfo['Nmsgs'] = $totalMsgs;
+
+            if ($sortOrder === 0) {
+                // Ascending order
+                if ($offset === "end") {
+                    $firstMsg = $totalMsgs - (int)$pageSize;
+                    $lastMsg = $totalMsgs;
+                } elseif ($offset <= 0) {
+                    $firstMsg = 1;
+                    $lastMsg = $firstMsg + (int)$pageSize;
+                } else {
+                    $firstMsg = (int)$offset;
+                    $lastMsg = $firstMsg + (int)$pageSize;
+                }
+            } else {
+                // Descending order
+                if ($offset === "end") {
+                    $firstMsg = 1;
+                    $lastMsg = $firstMsg + (int)$pageSize;
+                } elseif ($offset <= 0) {
+                    $firstMsg = $totalMsgs - (int)$pageSize;
+                    $lastMsg = $totalMsgs;
+                } else {
+                    $offset = ($totalMsgs - (int)$offset) - (int)$pageSize;
+                    $firstMsg = $offset;
+                    $lastMsg = $firstMsg + (int)$pageSize;
+                }
+            }
+            $firstMsg = $firstMsg < 1 ? 1 : $firstMsg;
+            $firstMsg = $firstMsg > $totalMsgs ? $totalMsgs : $firstMsg;
+            $lastMsg = $lastMsg < $firstMsg ? $firstMsg : $lastMsg;
+            $lastMsg = $lastMsg > $totalMsgs ? $totalMsgs : $lastMsg;
+
+            $sequence = $firstMsg . ':' . $lastMsg;
+            $emailSortedHeaders = $this->fetchOverview($sequence);
+
+            $uids = [];
+            if (!empty($emailSortedHeaders)) {
+                $uids = array_map(
+                    function ($x) {
+                        return $x->uid;
+                    },
+                    $emailSortedHeaders // TODO: this should be an array!
+                );
+            }
+
+        } else {
+            // Filtered case and other sorting cases
+            // Returns an array of msgno's which are sorted and filtered
+            $emailSortedHeaders = $this->sort(
+                $sortCriteria,
+                $sortOrder,
+                SE_UID,
+                $filterCriteria
+            );
+
+            if ($emailSortedHeaders === false) {
+                return [];
+            }
+
+            $uids = array_slice($emailSortedHeaders, $offset, $pageSize);
+
+            $lastSequenceNumber = $mailboxInfo['Nmsgs'] = count($emailSortedHeaders);
+
+            // paginate
+            if ($offset === "end") {
+                $offset = $lastSequenceNumber - $pageSize;
+            } elseif ($offset <= 0) {
+                $offset = 0;
+            }
+        }
+
+        if (empty($uids)) {
+            return [];
+        }
+
+
+        // TODO: uids could be invalid for implode!
+        $uids = implode(',', $uids);
+
+        // Get result
+        $emailHeaders = $this->fetchOverview(
+            $uids,
+            FT_UID
+        );
+        $emailHeaders = json_decode(json_encode($emailHeaders), true);
+        if (isset($columns['has_attachment'])) {
+            // get attachment status
+            foreach ($emailHeaders as $i => $emailHeader) {
+                $structure = $this->fetchStructure($emailHeader['uid'], FT_UID);
+
+                $emailHeaders[$i]['has_attachment'] = $this->messageStructureHasAttachment($structure);
+            }
+        }
+
+        return $emailHeaders;
+    }
+
+    /**
+     * @param $structure
+     * @return bool
+     */
+    public function messageStructureHasAttachment($structure): bool
+    {
+        if (($structure->type !== 0) && ($structure->type !== 1)) {
+            return true;
+        }
+
+
+        $attachments = [];
+
+        if (empty($structure->parts)) {
+            return false;
+        }
+
+        foreach ($structure->parts as $i => $part) {
+            if (empty($part) || empty($part->dparameters[0])) {
+                continue;
+            }
+
+            if (is_string($part->dparameters[0]->value)) {
+                $attachments[] = $part->dparameters[0]->value;
+            }
+        }
+
+        return !empty($attachments);
+    }
 }

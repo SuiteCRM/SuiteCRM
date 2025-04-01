@@ -60,8 +60,7 @@ $viewdefs['Users']['EditView'] = array(
             ),
             array(array(
                       'name' => 'status',
-                      'customCode' => '{if $IS_ADMIN}@@FIELD@@{else}{$STATUS_READONLY}{/if}',
-                      'displayParams' => array('required'=>true),
+                      'customCode' => '{if !empty($IS_ADMIN)}@@FIELD@@{else}{$STATUS_READONLY}{/if}',
                   ),
                   'last_name'),
             array(array(

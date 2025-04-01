@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class HelpItem
 {
     public $associated_field = '';

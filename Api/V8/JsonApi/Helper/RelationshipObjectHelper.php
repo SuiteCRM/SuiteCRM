@@ -5,6 +5,7 @@ use Api\V8\Helper\VarDefHelper;
 use Api\V8\JsonApi\Response\LinksResponse;
 use Api\V8\JsonApi\Response\RelationshipResponse;
 
+#[\AllowDynamicProperties]
 class RelationshipObjectHelper
 {
     /**

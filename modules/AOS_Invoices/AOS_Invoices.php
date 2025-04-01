@@ -28,6 +28,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AOS_Invoices/AOS_Invoices_sugar.php');
+#[\AllowDynamicProperties]
 class AOS_Invoices extends AOS_Invoices_sugar
 {
     public function __construct()

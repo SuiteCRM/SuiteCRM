@@ -1,6 +1,7 @@
 <?php
 namespace Api\V8\JsonApi\Response;
 
+#[\AllowDynamicProperties]
 class LinksResponse implements \JsonSerializable
 {
     /**

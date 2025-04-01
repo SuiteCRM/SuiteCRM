@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
  * Description:  Creates the runtime database connection.
  */
+#[\AllowDynamicProperties]
 class javascript
 {
     public $formname = 'form';
@@ -183,11 +184,11 @@ class javascript
 
     public function stripEndColon($modString)
     {
-        if (substr($modString, -1, 1) == ":") {
-            $modString = substr($modString, 0, (strlen($modString) - 1));
+        if (substr((string) $modString, -1, 1) == ":") {
+            $modString = substr((string) $modString, 0, (strlen((string) $modString) - 1));
         }
-        if (substr($modString, -2, 2) == ": ") {
-            $modString = substr($modString, 0, (strlen($modString) - 2));
+        if (substr((string) $modString, -2, 2) == ": ") {
+            $modString = substr((string) $modString, 0, (strlen((string) $modString) - 2));
         }
         return $modString;
     }

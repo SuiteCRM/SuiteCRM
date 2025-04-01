@@ -47,6 +47,7 @@ require_once('include/ListView/ListViewSmarty.php');
 require_once('include/TemplateHandler/TemplateHandler.php');
 require_once('include/SearchForm/SearchForm2.php');
 define("NUM_COLS", 2);
+#[\AllowDynamicProperties]
 class PopupSmarty extends ListViewSmarty
 {
     public $contextMenus = false;
@@ -130,7 +131,10 @@ class PopupSmarty extends ListViewSmarty
 
         $contextMenuObjectsTypes = array();
         foreach ($this->displayColumns as $name => $params) {
-            $this->displayColumns[$name]['width'] = round($this->displayColumns[$name]['width'] / $adjustment, 2);
+            if (!empty($adjustment)) {
+                $this->displayColumns[$name]['width'] = round($this->displayColumns[$name]['width'] / $adjustment, 2);
+            }
+
             // figure out which contextMenu objectsTypes are required
             if (!empty($params['contextMenu']['objectType'])) {
                 $contextMenuObjectsTypes[$params['contextMenu']['objectType']] = true;

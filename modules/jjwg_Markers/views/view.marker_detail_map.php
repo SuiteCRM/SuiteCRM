@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MarkersViewMarker_Detail_Map extends SugarView
 {
     public function __construct()
@@ -21,7 +22,7 @@ class Jjwg_MarkersViewMarker_Detail_Map extends SugarView
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-  <title><?php echo $GLOBALS['mod_strings']['LBL_MARKER_DISPLAY']; ?></title>
+  <title><?php echo $GLOBALS['mod_strings']['LBL_MARKER_DISPLAY'] ?? ''; ?></title>
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
   <link rel="stylesheet" type="text/css" href="cache/themes/<?php echo $GLOBALS['theme']; ?>/css/style.css" />

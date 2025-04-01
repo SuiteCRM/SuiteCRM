@@ -564,7 +564,7 @@ $contact_user_link_guid',
     'LBL_START' => '',
     'LBL_DB_CONN_ERR' => 'Database error',
     'LBL_OLD_PHP' => 'Old PHP Version Detected!',
-    'LBL_OLD_PHP_MSG' => 'The recommended PHP version to install SuiteCRM is %s <br />Although the minimum PHP version required is %s, is not recommended due to the large number of fixed bugs, including security fixes, released in the more modern versions.<br />You are using PHP version %s, which is EOL: <a href="http://php.net/eol.php">http://php.net/eol.php</a>.<br />Please consider upgrading your PHP version. Instructions on <a href="http://php.net/migration70">http://php.net/migration70</a>. ',
+    'LBL_OLD_PHP_MSG' => 'The recommended PHP version to install SuiteCRM is %s <br />The minimum PHP version required is %s<br />You are using PHP version %s, which is EOL: <a href="http://php.net/eol.php">http://php.net/eol.php</a>.<br />Please consider upgrading your PHP version. ',
     'LBL_OLD_PHP_OK' => 'I\'m aware of the risks and wish to continue.',
 
     'LBL_DBCONF_TITLE_USER_INFO_LABEL' => 'User',

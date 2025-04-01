@@ -182,6 +182,10 @@ function sugar_file_put_contents($filename, $data, $flags = null, $context = nul
         return false;
     }
 
+    if ($flags === null){
+        $flags = 0;
+    }
+
     $result = file_put_contents($filename, $data, $flags, $context);
     if ((new SplFileInfo($filename))->getExtension() == 'php') {
         SugarCache::cleanFile($filename);
@@ -231,7 +235,11 @@ function sugar_file_put_contents_atomic($filename, $data, $mode = 'wb')
     }
 
     if (file_exists($filename)) {
-        $result = sugar_chmod($filename, 0755);
+        if (!empty($GLOBALS['sugar_config']['default_permissions']['file_mode'])) {
+            $result = sugar_chmod($filename, $GLOBALS['sugar_config']['default_permissions']['file_mode']);
+        }else{
+            $result = sugar_chmod($filename, 0755);
+        }
         if ((new SplFileInfo($filename))->getExtension() == 'php') {
             SugarCache::cleanFile($filename);
         }
@@ -357,7 +365,7 @@ function sugar_chown($filename, $user = '')
         if (strlen($user)) {
             return chown($filename, $user);
         } else {
-            if (strlen($GLOBALS['sugar_config']['default_permissions']['user'])) {
+            if (strlen((string) $GLOBALS['sugar_config']['default_permissions']['user'])) {
                 $user = $GLOBALS['sugar_config']['default_permissions']['user'];
 
                 return chown($filename, $user);

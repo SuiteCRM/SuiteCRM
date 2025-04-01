@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class BugsViewDetail extends ViewDetail
 {
     public function __construct()

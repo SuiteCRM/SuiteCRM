@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/json_config.php');
 
 
+#[\AllowDynamicProperties]
 class CampaignsViewDetail extends ViewDetail
 {
     public function __construct()

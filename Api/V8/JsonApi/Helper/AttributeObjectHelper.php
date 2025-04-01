@@ -4,6 +4,7 @@ namespace Api\V8\JsonApi\Helper;
 use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\JsonApi\Response\AttributeResponse;
 
+#[\AllowDynamicProperties]
 class AttributeObjectHelper
 {
     /**

@@ -53,6 +53,7 @@ require_once 'data/Link2.php';
 /**
  * @brief Bug #40166. Campaign Log Report will not display Contact/Account Names
  */
+#[\AllowDynamicProperties]
 class ProspectLink extends Link2
 {
     /**

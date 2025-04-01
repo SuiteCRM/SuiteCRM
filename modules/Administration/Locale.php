@@ -112,7 +112,7 @@ $sugar_smarty->assign('NAMEFORMATS', $locale->getUsableLocaleNameOptions($sugar_
 if ($locale->invalidLocaleNameFormatUpgrade()) {
     $sugar_smarty->assign('upgradeInvalidLocaleNameFormat', 'bad name format upgrade');
 } else {
-    $sugar_smarty->clear_assign('upgradeInvalidLocaleNameFormat');
+    $sugar_smarty->clearAssign('upgradeInvalidLocaleNameFormat');
 }
 
 $sugar_smarty->assign('getNameJs', $locale->getNameJs());

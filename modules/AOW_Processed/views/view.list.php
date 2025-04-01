@@ -25,6 +25,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @author SalesAgility <info@salesagility.com>
  */
 
+#[\AllowDynamicProperties]
 class AOW_ProcessedViewList extends ViewList
 {
     public function __construct()

@@ -8,10 +8,11 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class Attributes extends BaseOption
 {
     // Paradox regex that accepts everything (Match at beginning/end of each word and don't match at beginning/end of each word).
-    const REGEX_ATTRIBUTE_PATTERN = '/\b\B/';
+    public const REGEX_ATTRIBUTE_PATTERN = '/\b\B/';
 
     /**
      * @inheritdoc

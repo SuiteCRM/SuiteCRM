@@ -50,3 +50,4 @@ coverage:
     - modules/AOR_Charts/lib/*
 params:
   - env
+  - .env.test

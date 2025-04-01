@@ -53,6 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class Controller extends SugarBean
 {
     public $focus;
@@ -79,6 +80,9 @@ class Controller extends SugarBean
 
     public function change_component_order($magnitude, $direction, $parent_id="")
     {
+        $affected_id = '';
+        $affected_x = '';
+        $affected_y = '';
         if (!empty($this->type) && $this->type=="Save") {
 
             //safety check

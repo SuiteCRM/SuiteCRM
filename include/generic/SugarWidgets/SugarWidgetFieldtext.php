@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/generic/SugarWidgets/SugarWidgetFieldvarchar.php');
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldText extends SugarWidgetFieldVarchar
 {
     public function __construct(&$layout_manager)

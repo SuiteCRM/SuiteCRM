@@ -40,6 +40,7 @@
 use Faker\Generator;
 use SuiteCRM\Enumerator\SugarObjectType;
 
+#[\AllowDynamicProperties]
 class IssueModuleCest
 {
     /**

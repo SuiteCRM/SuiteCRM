@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2023 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,6 +44,7 @@
 <form action="index.php" method="post" name="DetailView" id="formDetailView">
     <input type="hidden" name="module" value="{$module}">
     <input type="hidden" name="record" value="{$fields.id.value}">
+    <input type="hidden" name="current_user_id" value="{$CURRENT_USER_ID}">
     <input type="hidden" name="return_action">
     <input type="hidden" name="return_module">
     <input type="hidden" name="return_id">
@@ -271,5 +272,13 @@
                         });
                     });
 
+                    var $record =  $("#formDetailView [name='record']").val();
+                    var $currentUser =  $("#formDetailView [name='current_user_id']").val();
+                    var $deleteButton = $("#delete_button");
+
+                    if ($currentUser === $record) {
+                        $deleteButton.closest('li').remove();
+                        $deleteButton.remove();
+                    }
                 </script>
             {/literal}

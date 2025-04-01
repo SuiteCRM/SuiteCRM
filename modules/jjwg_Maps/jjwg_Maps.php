@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/jjwg_Maps/jjwg_Maps_sugar.php');
 require_once('modules/Administration/Administration.php');
 
+#[\AllowDynamicProperties]
 class jjwg_Maps extends jjwg_Maps_sugar
 {
 
@@ -294,10 +295,10 @@ class jjwg_Maps extends jjwg_Maps_sugar
         $settings = $admin->settings;
 
         $rev = array();
-        if (!empty($settings) && count($settings) > 0) {
+        if (!empty($settings) && (is_countable($settings) ? count($settings) : 0) > 0) {
             foreach ($settings as $category_name => $value) {
-                if (substr($category_name, 0, 5) == 'jjwg_') {
-                    $name = substr($category_name, 5);
+                if (substr((string) $category_name, 0, 5) == 'jjwg_') {
+                    $name = substr((string) $category_name, 5);
                     // Set revised settings array
                     $rev[$name] = $value;
                 }
@@ -326,12 +327,12 @@ class jjwg_Maps extends jjwg_Maps_sugar
 
             if (!empty($rev['valid_geocode_modules'])) {
                 if (!is_array($rev['valid_geocode_modules'])) {
-                    $this->settings['valid_geocode_modules'] = preg_split('/[\s,]+/', $rev['valid_geocode_modules']);
+                    $this->settings['valid_geocode_modules'] = preg_split('/[\s,]+/', (string) $rev['valid_geocode_modules']);
                 }
             }
             if (!empty($rev['valid_geocode_tables'])) {
                 if (!is_array($rev['valid_geocode_tables'])) {
-                    $this->settings['valid_geocode_tables'] = preg_split('/[\s,]+/', $rev['valid_geocode_tables']);
+                    $this->settings['valid_geocode_tables'] = preg_split('/[\s,]+/', (string) $rev['valid_geocode_tables']);
                 }
             }
 
@@ -400,7 +401,7 @@ class jjwg_Maps extends jjwg_Maps_sugar
         //$settings = $admin->settings;
         $category = 'jjwg';
 
-        if (!empty($data) && count($data) > 0) {
+        if (!empty($data) && (is_countable($data) ? count($data) : 0) > 0) {
             if (isset($data['google_maps_api_key'])) {
                 $admin->saveSetting($category, 'google_maps_api_key', $data['google_maps_api_key']);
             }
@@ -424,8 +425,8 @@ class jjwg_Maps extends jjwg_Maps_sugar
                 $value = trim($value);
 
                 // Set geocode_modules_to_address_type
-                if (substr($name, 0, 13) == 'address_type_') {
-                    $module = substr($name, 13);
+                if (substr((string) $name, 0, 13) == 'address_type_') {
+                    $module = substr((string) $name, 13);
                     if (in_array($module, $this->settings['valid_geocode_modules'])) {
                         if (in_array($value, array('billing', 'shipping', 'primary', 'alt', 'flex_relate', 'custom', 'address'))) {
                             $admin->saveSetting($category, $name, $value);
@@ -434,8 +435,8 @@ class jjwg_Maps extends jjwg_Maps_sugar
                 }
 
                 // Set map_markers_grouping_field
-                if (substr($name, 0, 15) == 'grouping_field_') {
-                    $module = substr($name, 15);
+                if (substr((string) $name, 0, 15) == 'grouping_field_') {
+                    $module = substr((string) $name, 15);
                     if (in_array($module, $this->settings['valid_geocode_modules'])) {
                         if (!empty($value)) {
                             $admin->saveSetting($category, $name, $value);
@@ -507,7 +508,7 @@ class jjwg_Maps extends jjwg_Maps_sugar
                 $dataGeocodingApiUrl = $data['geocoding_api_url'];
             }
 
-            if (substr($dataGeocodingApiUrl, 0, 4) != 'http' && substr($dataGeocodingApiUrl, 0, 2) != '//') {
+            if (substr((string) $dataGeocodingApiUrl, 0, 4) != 'http' && substr((string) $dataGeocodingApiUrl, 0, 2) != '//') {
                 $data['geocoding_api_url'] = $this->settings['geocoding_api_url'];
             }
 
@@ -904,7 +905,7 @@ class jjwg_Maps extends jjwg_Maps_sugar
          * New Default: https://maps.googleapis.com/maps/api/geocode/json?sensor=false
          */
         $base_url = $this->settings['geocoding_api_url'];
-        if (!(strpos($base_url, '?') > 0)) {
+        if (!(strpos((string) $base_url, '?') > 0)) {
             $base_url .= '?';
         }
         // Add Address Parameter
@@ -963,24 +964,25 @@ class jjwg_Maps extends jjwg_Maps_sugar
          */
         $aInfo = array('address' => $address);
         if (!empty($googlemaps) && isset($googlemaps['status'])) {
+            $resultsGeography = $googlemaps['results'][0]['geometry'] ?? [];
             if ($googlemaps['status'] == 'OVER_QUERY_LIMIT') {
                 // Debug: Log Over Limit
                 $GLOBALS['log']->warn(__METHOD__.' Google Maps API Status of OVER_QUERY_LIMIT: Over Your Quota');
-            } elseif (!$allow_approximate && $googlemaps['results'][0]['geometry']['location_type'] == 'APPROXIMATE') {
+            } elseif (!$allow_approximate && ($resultsGeography['location_type'] ?? '') == 'APPROXIMATE') {
                 // Consider 'APPROXIMATE' to be similar to 'ZERO_RESULTS'
                 @$aInfo = array(
                     'address' => $address,
                     'status' => 'APPROXIMATE',
-                    'lat' => $googlemaps['results'][0]['geometry']['location']['lat'],
-                    'lng' => $googlemaps['results'][0]['geometry']['location']['lng']
+                    'lat' => $resultsGeography['location']['lat'],
+                    'lng' => $resultsGeography['location']['lng']
                 );
             } else {
                 // Return address info
                 @$aInfo = array(
                     'address' => $address,
                     'status' => $googlemaps['status'],
-                    'lat' => $googlemaps['results'][0]['geometry']['location']['lat'],
-                    'lng' => $googlemaps['results'][0]['geometry']['location']['lng']
+                    'lat' => $resultsGeography['location']['lat'],
+                    'lng' => $resultsGeography['location']['lng']
                 );
             }
         }
@@ -1135,7 +1137,7 @@ class jjwg_Maps extends jjwg_Maps_sugar
             $GLOBALS['log']->debug(__METHOD__.' Meeting $parent_id: '.$parent_id);
 
             // If the parent_type is valid module to geocode
-            if (in_array($parent_type, array_keys($this->settings['valid_geocode_modules']))
+            if (array_key_exists($parent_type, $this->settings['valid_geocode_modules'])
                     && !empty($parent_id) && $parent_type != 'Meeting') {
 
                 // Define parent object

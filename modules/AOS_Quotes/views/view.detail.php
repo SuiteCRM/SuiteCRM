@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class AOS_QuotesViewDetail
  */
+#[\AllowDynamicProperties]
 class AOS_QuotesViewDetail extends ViewDetail
 {
     /**

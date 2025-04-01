@@ -58,6 +58,7 @@ $current_module_strings = return_module_language($current_language, 'Activities'
 
 $focus = BeanFactory::getBean($_REQUEST['module_name']);
 
+#[\AllowDynamicProperties]
 class Popup_Picker
 {
 
@@ -70,11 +71,15 @@ class Popup_Picker
 
     public function process_page()
     {
+        global $sugar_config;
         global $focus;
         global $mod_strings;
         global $app_strings;
         global $app_list_strings;
         global $timedate;
+
+        $sugar_config = $sugar_config ?? [];
+
 
         $summary_list = array();
         $task_list = array();
@@ -100,15 +105,15 @@ class Popup_Picker
         //Setup the arrays to store the linked records.
         foreach ($activitiesRels as $relMod => $beanName) {
             $varname = 'focus_' . $relMod . '_list';
-            $$varname = array();
+            ${$varname} = array();
         }
         foreach ($focus->get_linked_fields() as $field => $def) {
             if ($focus->load_relationship($field)) {
                 $relTable = BeanFactory::getBean($focus->$field->getRelatedModuleName())->table_name;
                 if (array_key_exists($relTable, $activitiesRels)) {
                     $varname = 'focus_' . $relTable . '_list';
-                    $$varname =
-                        sugarArrayMerge($$varname, $focus->get_linked_beans($field, $activitiesRels[$relTable]));
+                    ${$varname} =
+                        sugarArrayMerge(${$varname}, $focus->get_linked_beans($field, $activitiesRels[$relTable]));
                 }
             }
         }
@@ -145,7 +150,7 @@ class Popup_Picker
                     'contact_name' => $task->contact_name,
                     'date_modified' => $date_due,
                     'description' => $this->getTaskDetails($task),
-                    'date_type' => $app_strings['DATA_TYPE_DUE'],
+                    'date_type' => $app_strings['DATA_TYPE_DUE'] ?? '',
                     'sort_value' => $ts,
                     'image' => SugarThemeRegistry::current()->getImageURL('Tasks.svg')
                 );
@@ -163,7 +168,7 @@ class Popup_Picker
                     'contact_name' => $task->contact_name,
                     'date_due' => $date_due,
                     'description' => $this->getTaskDetails($task),
-                    'date_type' => $app_strings['DATA_TYPE_DUE']
+                    'date_type' => $app_strings['DATA_TYPE_DUE'] ?? ''
                 );
             }
         } // end Tasks
@@ -365,7 +370,7 @@ class Popup_Picker
                     'module' => 'Notes',
                     'status' => '',
                     'parent_id' => $note->parent_id,
-                    'parent_type' => $app_list_strings['parent_type_display'][$note->parent_type],
+                    'parent_type' => $app_list_strings['parent_type_display'][$note->parent_type] ?? '',
                     'parent_name' => $note->parent_name,
                     'contact_id' => $note->contact_id,
                     'contact_name' => $note->contact_name,
@@ -478,7 +483,7 @@ class Popup_Picker
 
         $details = "";
         if (!empty($task->date_start) && $task->date_start != '0000-00-00') {
-            $details .= $app_strings['DATA_TYPE_START'] . $task->date_start . '<br>';
+            $details .= $app_strings['DATA_TYPE_START'] ?? '' . $task->date_start . '<br>';
             $details .= '<br>';
         }
         $details .= $this->formatDescription($task->description);

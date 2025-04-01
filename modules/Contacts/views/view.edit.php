@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class ContactsViewEdit extends ViewEdit
 {
     public function __construct()

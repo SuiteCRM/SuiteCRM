@@ -45,6 +45,13 @@ require_once('modules/DynamicFields/templates/Fields/TemplateRange.php');
 
 class TemplateInt extends TemplateRange
 {
+    public $auto_increment;
+    public $disable_num_format;
+    public $min;
+    public $max;
+    public $autoinc_next;
+    public $module;
+    public $autoinc_start;
     public $type = 'int';
     public $supports_unified_search = true;
 
@@ -54,7 +61,7 @@ class TemplateInt extends TemplateRange
         $this->vardef_map['autoinc_next'] = 'autoinc_next';
         $this->vardef_map['autoinc_start'] = 'autoinc_start';
         $this->vardef_map['auto_increment'] = 'auto_increment';
-        
+
         $this->vardef_map['min'] = 'ext1';
         $this->vardef_map['max'] = 'ext2';
         $this->vardef_map['disable_num_format'] = 'ext3';

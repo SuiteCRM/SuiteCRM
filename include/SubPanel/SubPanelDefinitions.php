@@ -417,7 +417,8 @@ class aSubPanel
 
     public function isDatasourceFunction()
     {
-        if (strpos($this->get_inst_prop_value('get_subpanel_data'), 'function') === false) {
+        $subpanelData = $this->get_inst_prop_value('get_subpanel_data') ?? '';
+        if (strpos($subpanelData, 'function') === false) {
             return false ;
         }
         return true ;

@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class DocumentsViewDetail extends ViewDetail
 {
     /**

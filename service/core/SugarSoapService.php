@@ -48,6 +48,7 @@ require_once('service/core/SugarWebServiceImpl.php');
  * This ia an abstract class for the soapservice. All the global fun
  *
  */
+#[\AllowDynamicProperties]
 abstract class SugarSoapService extends SugarWebService{
 	protected $soap_version = '1.1';
     // Sugarcrm namespace is necessary for backwards compatibility with existing SOAP clients
@@ -55,7 +56,7 @@ abstract class SugarSoapService extends SugarWebService{
 	protected $implementationClass = 'SugarWebServiceImpl';
 	protected $registryClass = "";
 	protected $soapURL = "";
-	
+
   	/**
   	 * This is an abstract method. The implementation method should registers all the functions you want to expose as services.
   	 *
@@ -64,8 +65,8 @@ abstract class SugarSoapService extends SugarWebService{
   	 * @param Array $output - assoc array of output values: key = param name, value = param type
 	 * @access public
   	 */
-	abstract function registerFunction($function, $input, $output);
-	
+	abstract public function registerFunction($function, $input, $output);
+
 	/**
 	 * This is an abstract method. This implementation method should register all the complex type	 
 	 * 
@@ -79,8 +80,8 @@ abstract class SugarSoapService extends SugarWebService{
 	 * @param String $arrayType - arrayType: namespace:name (xsd:string)
 	 * @access public
 	 */	
-	abstract function registerType($name, $typeClass, $phpType, $compositor, $restrictionBase, $elements, $attrs=array(), $arrayType='');
-	
+	abstract public function registerType($name, $typeClass, $phpType, $compositor, $restrictionBase, $elements, $attrs=array(), $arrayType='');
+
 	/**
 	 * Constructor
 	 *
@@ -88,7 +89,7 @@ abstract class SugarSoapService extends SugarWebService{
 	protected function __construct(){
 		$this->setObservers();
 	}
-	
+
 	/**
 	 * This method sets the soap server object on all the observers
 	 * @access public
@@ -103,7 +104,7 @@ abstract class SugarSoapService extends SugarWebService{
 			}
 		}
 	} // fn
-	
+
 	/**
 	 * This method returns the soapURL
 	 *
@@ -113,11 +114,11 @@ abstract class SugarSoapService extends SugarWebService{
 	public function getSoapURL(){
 		return $this->soapURL;
 	}
-		
+
 	public function getSoapVersion(){
 		return $this->soap_version;
 	}
-	
+
 	/**
 	 * This method returns the namespace
 	 *
@@ -127,7 +128,7 @@ abstract class SugarSoapService extends SugarWebService{
 	public function getNameSpace(){
 		return $this->namespace;
 	}
-	
+
 	/**
 	 * This mehtod returns registered implementation class
 	 *
@@ -147,7 +148,7 @@ abstract class SugarSoapService extends SugarWebService{
 	public function getRegisteredClass() {
 		return $this->registryClass;	
 	}
-	
+
 	/**
 	 * This mehtod returns server
 	 *
@@ -157,6 +158,6 @@ abstract class SugarSoapService extends SugarWebService{
 	public function getServer() {
 		return $this->server;	
 	} // fn
-	
-	
+
+
 } // class

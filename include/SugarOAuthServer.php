@@ -45,6 +45,7 @@ require_once 'modules/OAuthKeys/OAuthKey.php';
  * Sugar OAuth provider implementation
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarOAuthServer
 {
     /**
@@ -264,6 +265,7 @@ class SugarOAuthServer
 
 if (!class_exists('OAuthException')) {
     // we will use this in case oauth extension is not loaded
+    #[\AllowDynamicProperties]
     class OAuthException extends Exception
     {
     }

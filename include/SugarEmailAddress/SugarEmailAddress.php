@@ -466,7 +466,7 @@ class SugarEmailAddress extends SugarBean
                     email_address = '$_address', 
                     email_address_caps = '$_addressCaps' 
                   WHERE 
-                    id = '{$_id}' AND
+                    id = {$_id} AND
                     deleted = 0";
             $result = $db->query($query);
             if (!$result) {

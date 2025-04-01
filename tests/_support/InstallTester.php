@@ -67,6 +67,7 @@ use SuiteCRM\Enumerator\DatabaseDriver;
  *
  * @SuppressWarnings(PHPMD)
  */
+#[\AllowDynamicProperties]
 class InstallTester extends Actor
 {
     use _generated\InstallTesterActions;

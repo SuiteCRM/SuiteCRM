@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarFeedFlush
 {
     public function flushStaleEntries($bean, $event, $arguments)

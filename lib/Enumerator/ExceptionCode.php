@@ -46,22 +46,23 @@ namespace SuiteCRM\Enumerator;
  * Holds all the error codes for exceptions
  * Convention: [Sub_System]_[Error_Name] = unique integer
  */
+#[\AllowDynamicProperties]
 class ExceptionCode
 {
-    const APPLICATION_MALWARE_FOUND = 4000;
-    const APPLICATION_UNHANDLED_BEHAVIOUR = 6000;
-    const APPLICTAION_MODULE_NOT_FOUND = 6005;
-    const API_EXCEPTION = 8000;
-    const API_CONTENT_NEGOTIATION_FAILED = 8005;
-    const API_INVALID_BODY = 8010;
-    const API_MODULE_NOT_FOUND = 8015;
-    const API_MISSING_REQUIRED = 8020;
-    const API_DATE_CONVERTION_SUGARBEAN = 8025;
-    const API_USER_NOT_ACTIVE = 8030;
-    const API_NOT_IMPLEMENTED = 8035;
-    const API_RESERVED_KEYWORD_NOT_ALLOWED = 8040;
-    const API_RELATIONSHIP_NOT_FOUND = 8045;
-    const API_RECORD_NOT_FOUND = 8050;
-    const API_VIEWDEF_NOT_FOUND = 8055;
-    const API_ID_ALREADY_EXISTS = 8060;
+    public const APPLICATION_MALWARE_FOUND = 4000;
+    public const APPLICATION_UNHANDLED_BEHAVIOUR = 6000;
+    public const APPLICTAION_MODULE_NOT_FOUND = 6005;
+    public const API_EXCEPTION = 8000;
+    public const API_CONTENT_NEGOTIATION_FAILED = 8005;
+    public const API_INVALID_BODY = 8010;
+    public const API_MODULE_NOT_FOUND = 8015;
+    public const API_MISSING_REQUIRED = 8020;
+    public const API_DATE_CONVERTION_SUGARBEAN = 8025;
+    public const API_USER_NOT_ACTIVE = 8030;
+    public const API_NOT_IMPLEMENTED = 8035;
+    public const API_RESERVED_KEYWORD_NOT_ALLOWED = 8040;
+    public const API_RELATIONSHIP_NOT_FOUND = 8045;
+    public const API_RECORD_NOT_FOUND = 8050;
+    public const API_VIEWDEF_NOT_FOUND = 8055;
+    public const API_ID_ALREADY_EXISTS = 8060;
 }

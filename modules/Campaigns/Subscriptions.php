@@ -1,4 +1,4 @@
- <?php
+<?php
  /**
   *
   * SugarCRM Community Edition is a customer relationship management program developed by
@@ -213,7 +213,7 @@ function manageSubscriptions($focus)
 
     //compare both arrays and find differences
     $i=0;
-    while ($i<(count($curr_subscription_arr)/2)) {
+    while ($i<((is_countable($curr_subscription_arr) ? count($curr_subscription_arr) : 0)/2)) {
         //if current subscription existed in original subscription list, do nothing
         if (in_array($curr_subscription_arr['campaign'.$i], $orig_subscription_arr)) {
             //nothing to process
@@ -242,7 +242,7 @@ function manageSubscriptions($focus)
     }
     //compare both arrays and find differences
     $i=0;
-    while ($i<(count($curr_unsubscription_arr)/2)) {
+    while ($i<((is_countable($curr_unsubscription_arr) ? count($curr_unsubscription_arr) : 0)/2)) {
         //if current subscription existed in original subscription list, do nothing
         if (in_array($curr_unsubscription_arr['campaign'.$i], $orig_unsubscription_arr)) {
             //nothing to process

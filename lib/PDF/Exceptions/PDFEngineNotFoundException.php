@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class SearchEngineNotFoundException
  * @package SuiteCRM\PDF\Exceptions
  */
+#[\AllowDynamicProperties]
 class PDFEngineNotFoundException extends PDFException
 {
 }

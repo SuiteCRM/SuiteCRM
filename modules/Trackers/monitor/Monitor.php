@@ -47,6 +47,7 @@ require_once('modules/Trackers/Trackable.php');
 
 define('MAX_SESSION_LENGTH', 36);
 
+#[\AllowDynamicProperties]
 class Monitor implements Trackable
 {
     public $metricsFile;
@@ -71,6 +72,8 @@ class Monitor implements Trackable
      */
     public function __construct($name='', $monitorId='', $metadata='', $store='')
     {
+        global $dictionary;
+        $dictionary = $dictionary ?? [];
         if (empty($metadata) || !file_exists($metadata)) {
             $GLOBALS['log']->error($GLOBALS['app_strings']['ERR_MONITOR_FILE_MISSING'] . "($metadata)");
             throw new Exception($GLOBALS['app_strings']['ERR_MONITOR_FILE_MISSING'] . "($metadata)");

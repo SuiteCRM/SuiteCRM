@@ -139,7 +139,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                 $ret['description'] = empty($email->description_html) ? str_replace(
                     "\n",
                     "\n<BR/>",
-                    $email->description
+                    (string) $email->description
                 ) : $email->description_html;
                 //get the forward header and add to description
                 $forward_header = $email->getForwardHeader();
@@ -217,7 +217,7 @@ if (isset($_REQUEST['emailUIAction'])) {
         case "removeUploadedAttachment":
             $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: removeUploadedAttachment");
             $fileFromRequest = from_html($_REQUEST['file']);
-            $fileGUID = substr($fileFromRequest, 0, 36);
+            $fileGUID = substr((string) $fileFromRequest, 0, 36);
             // Bug52727: sanitize fileGUID to remove path components: /\.
             $fileGUID = cleanDirName($fileGUID);
             $fileName = $email->et->userCacheDir . "/" . $fileGUID;
@@ -323,7 +323,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                     foreach ($all_fields as $field) {
                         if (isset($note->$field)) {
                             $note->$field = from_html($note->$field);
-                            $note->$field = preg_replace('/\r\n/', '<BR>', $note->$field);
+                            $note->$field = preg_replace('/\r\n/', '<BR>', (string) $note->$field);
                             $note->$field = preg_replace('/\n/', '<BR>', $note->$field);
                             $js_fields_arr[$i][$field] = addslashes($note->$field);
                         }
@@ -568,7 +568,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                 isset($_REQUEST['type']) && !empty($_REQUEST['type']) &&
                 isset($_REQUEST['folder']) && !empty($_REQUEST['folder']) &&
                 isset($_REQUEST['ieId']) && (!empty($_REQUEST['ieId']) || (empty($_REQUEST['ieId']) && strpos(
-                    $_REQUEST['folder'],
+                    (string) $_REQUEST['folder'],
                     'sugar::'
                 ) !== false))
             ) {
@@ -577,7 +577,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                 if (is_array($uid)) {
                     $uids = $uid;
                 } else {
-                    if (strpos($uid, $app_strings['LBL_EMAIL_DELIMITER']) !== false) {
+                    if (strpos((string) $uid, (string) $app_strings['LBL_EMAIL_DELIMITER']) !== false) {
                         $uids = explode($app_strings['LBL_EMAIL_DELIMITER'], $uid);
                     } else {
                         $uids[] = $uid;
@@ -588,7 +588,7 @@ if (isset($_REQUEST['emailUIAction'])) {
 
                 $ret = array();
                 if (strpos(
-                    $_REQUEST['folder'],
+                    (string) $_REQUEST['folder'],
                     'sugar::'
                 ) !== false && ($_REQUEST['type'] == 'deleted') && !ACLController::checkAccess(
                     'Emails',
@@ -614,7 +614,7 @@ if (isset($_REQUEST['emailUIAction'])) {
             $showFolders = sugar_unserialize(base64_decode($current_user->getPreference('showFolders', 'Emails')));
 
             $ret = array();
-            $ret['numberAccounts'] = count($showFolders);
+            $ret['numberAccounts'] = is_countable($showFolders) ? count($showFolders) : 0;
 
             $GLOBALS['log']->info("EMAIL2.0: async checkEmail - found [ " . $ret['numberAccounts'] . " ] accounts to check");
 
@@ -648,7 +648,7 @@ if (isset($_REQUEST['emailUIAction'])) {
             } elseif (isset($_REQUEST['all']) && !empty($_REQUEST['all'])) {
                 $showFolders = sugar_unserialize(base64_decode($current_user->getPreference('showFolders', 'Emails')));
 
-                $GLOBALS['log']->info("[EMAIL] - checkEmail found " . count($showFolders) . " accounts to check for user [{$current_user->user_name}]");
+                $GLOBALS['log']->info("[EMAIL] - checkEmail found " . (is_countable($showFolders) ? count($showFolders) : 0) . " accounts to check for user [{$current_user->user_name}]");
 
                 if (!empty($showFolders) && is_array($showFolders)) {
                     foreach ($showFolders as $ieId) {
@@ -729,7 +729,7 @@ if (isset($_REQUEST['emailUIAction'])) {
             $return = array();
             $status = true;
             $count = 1;
-            if (strpos($_REQUEST['uid'], $app_strings['LBL_EMAIL_DELIMITER']) !== false) {
+            if (strpos((string) $_REQUEST['uid'], (string) $app_strings['LBL_EMAIL_DELIMITER']) !== false) {
                 $exUids = explode($app_strings['LBL_EMAIL_DELIMITER'], $_REQUEST['uid']);
                 foreach ($exUids as $msgNo) {
                     $uid = $msgNo;
@@ -827,7 +827,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                         empty($email->description_html) ? str_replace(
                             "\n",
                             "\n<BR/>",
-                            $email->description
+                            (string) $email->description
                         ) : $email->description_html;
                     $out['meta']['email']['date_start'] = $email->date_start;
                     $out['meta']['email']['time_start'] = $email->time_start;
@@ -1258,7 +1258,7 @@ eoq;
             global $current_user;
             $oe = new OutboundEmail();
             $outbounds = $oe->getUserMailers($current_user);
-            $results = array('outbound_account_list' => $outbounds, 'count' => count($outbounds));
+            $results = array('outbound_account_list' => $outbounds, 'count' => is_countable($outbounds) ? count($outbounds) : 0);
             $out = $json->encode($results, false);
             echo $out;
 
@@ -1296,7 +1296,7 @@ eoq;
                 //Check if the user has confirmed he wants to delete the email account even if associated to an inbound accnt.
                 $confirmedDelete = (isset($_REQUEST['confirm']) && $_REQUEST['confirm']) ? true : false;
 
-                if (count($affectedInboundAccounts) > 0 && !$confirmedDelete) {
+                if ((is_countable($affectedInboundAccounts) ? count($affectedInboundAccounts) : 0) > 0 && !$confirmedDelete) {
                     $results = array(
                         'is_error' => true,
                         'error_message' => $app_strings['LBL_EMAIL_REMOVE_SMTP_WARNING'],
@@ -1382,7 +1382,7 @@ eoq;
         case "rebuildShowAccount":
             $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: rebuildShowAccount");
             $ret = $email->et->getShowAccountsOptions($ie);
-            $results = array('account_list' => $ret, 'count' => count($ret));
+            $results = array('account_list' => $ret, 'count' => is_countable($ret) ? count($ret) : 0);
             $out = $json->encode($results);
             echo $out;
             break;
@@ -1566,7 +1566,7 @@ eoq;
                 if (!isset($_REQUEST['page'])) {
                     $_REQUEST['page'] = 1;
                 }
-                $_REQUEST['pageSize'] = count($metalist['out']);
+                $_REQUEST['pageSize'] = is_countable($metalist['out']) ? count($metalist['out']) : 0;
                 $out = $email->et->xmlOutput($metalist, 'Email', false);
                 @ob_end_clean();
                 ob_start();
@@ -1657,7 +1657,7 @@ eoq;
         /* The four calls below all have the same return signature */
         case "removeContact":
             $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: removeContacts");
-            if (strpos($_REQUEST['ids'], "::") !== false) {
+            if (strpos((string) $_REQUEST['ids'], "::") !== false) {
                 $removeIds = explode("::", $_REQUEST['ids']);
             } else {
                 $removeIds[] = $_REQUEST['ids'];

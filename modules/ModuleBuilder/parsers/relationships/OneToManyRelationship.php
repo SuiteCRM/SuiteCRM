@@ -75,6 +75,11 @@ require_once 'modules/ModuleBuilder/parsers/relationships/AbstractRelationship.p
 class OneToManyRelationship extends AbstractRelationship
 {
 
+    public $relationship_only;
+    public $rhs_module;
+    public $lhs_module;
+    public $relationship_name;
+    public $rhs_subpanel;
     /*
      * Constructor
      * @param array $definition Parameters passed in as array defined in parent::$definitionKeys
@@ -161,8 +166,8 @@ class OneToManyRelationship extends AbstractRelationship
         if ($this->relationship_only) {
             return array() ;
         }
- 
-        return array( $this->rhs_module =>$this->getValidDBName($this->relationship_name . "_name")); // this must match the name of the relate field from buildVardefs
+
+        return array( $this->rhs_module =>static::getValidDBName($this->relationship_name . "_name")); // this must match the name of the relate field from buildVardefs
     }
        
     /*

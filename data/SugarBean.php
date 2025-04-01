@@ -58,6 +58,7 @@ require_once "data/Relationships/RelationshipFactory.php";
  * a bean should be plural (e.g. contacts).
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarBean
 {
     /**
@@ -581,7 +582,7 @@ class SugarBean
                     // no break
                     default:
                         if (isset($value['default']) && $value['default'] !== '') {
-                            $this->$field = htmlentities($value['default'], ENT_QUOTES, 'UTF-8');
+                            $this->$field = htmlentities((string) $value['default'], ENT_QUOTES, 'UTF-8');
                         } else {
                             $this->$field = '';
                         }
@@ -604,6 +605,7 @@ class SugarBean
      */
     protected function parseDateDefault($value, $time = false)
     {
+        $results = false;
         global $timedate;
         if ($time) {
             $dtAry = explode('&', $value, 2);
@@ -672,7 +674,7 @@ class SugarBean
                     $GLOBALS['log']->fatal('Relationship definitions should be an array');
                     $RelationshipDefs = (array)$RelationshipDefs;
                 }
-                foreach ($RelationshipDefs as $rel_name) {
+                foreach ($RelationshipDefs as $rel_name => $rel_def) {
                     Relationship::delete($rel_name, $db);
                 }
             }
@@ -824,7 +826,7 @@ class SugarBean
         $final_query = '';
         $final_query_rows = '';
         $subpanel_list = array();
-        if (method_exists($subpanel_def, 'isCollection')) {
+        if (method_exists($subpanel_def ?? '', 'isCollection')) {
             if ($subpanel_def->isCollection()) {
                 if ($subpanel_def->load_sub_subpanels() === false) {
                     $subpanel_list = array();
@@ -906,8 +908,8 @@ class SugarBean
 
                 // Find related email address for sub panel ordering
                 if ($order_by && isset($subpanel_def->panel_definition['list_fields'][$order_by]['widget_class']) &&
-                    $subpanel_def->panel_definition['list_fields'][$order_by]['widget_class'] == 'SubPanelEmailLink' &&
-                    !in_array($order_by, array_keys($subquery['query_fields']))) {
+                    $subpanel_def->panel_definition['list_fields'][$order_by]['widget_class'] === 'SubPanelEmailLink' &&
+                    !array_key_exists($order_by, $subquery['query_fields'])) {
                     $relatedBeanTable = $subpanel_def->table_name;
                     $relatedBeanModule = $subpanel_def->get_module_name();
                     $subquery['select'] .= ",
@@ -931,8 +933,8 @@ class SugarBean
                     $first = false;
                 }
                 $query_array = $subquery['query_array'];
-                $select_position = strpos($query_array['select'], "SELECT");
-                $distinct_position = strpos($query_array['select'], "DISTINCT");
+                $select_position = strpos((string) $query_array['select'], "SELECT");
+                $distinct_position = strpos((string) $query_array['select'], "DISTINCT");
                 if (!empty($subquery['params']['distinct']) && !empty($subpanel_def->table_name)) {
                     $query_rows = "( SELECT count(DISTINCT " . $subpanel_def->table_name . ".id)"
                         . $subquery['from_min'] . $query_array['join'] . $subquery['where'] . ' )';
@@ -1001,7 +1003,7 @@ class SugarBean
             return $response;
         }
 
-        if (method_exists($parentbean, 'process_union_list_query')) {
+        if (method_exists($parentbean ?? '', 'process_union_list_query')) {
             return $parentbean->process_union_list_query(
                 $parentbean,
                 $final_query,
@@ -1031,14 +1033,15 @@ class SugarBean
         global $beanList;
         $subqueries = array();
 
-        if (!is_array($subpanel_list) or is_object($subpanel_list)) {
+        if (!is_array($subpanel_list) || is_object($subpanel_list)) {
             $GLOBALS['log']->fatal('Invalid Argument: Subpanel list should be an array.');
             $subpanel_list = (array) $subpanel_list;
         }
 
         foreach ($subpanel_list as $this_subpanel) {
             if (
-            method_exists($this_subpanel, 'isDatasourceFunction')
+                is_object($this_subpanel) &&
+                method_exists($this_subpanel, 'isDatasourceFunction')
             ) {
                 if (!$this_subpanel->isDatasourceFunction() || ($this_subpanel->isDatasourceFunction()
                         && isset($this_subpanel->_instance_properties['generate_select'])
@@ -1048,6 +1051,7 @@ class SugarBean
                     if ($this_subpanel->isDatasourceFunction()) {
                         $shortcut_function_name = $this_subpanel->get_data_source_name();
                         $parameters = $this_subpanel->get_function_parameters();
+                        $query_array = [];
                         if (!empty($parameters)) {
                             //if the import file function is set, then import the file to call the custom function from
                             if (is_array($parameters) && isset($parameters['import_function_file'])) {
@@ -1057,16 +1061,16 @@ class SugarBean
                                 }
                                 //call function from required file
                                 $query_array = $shortcut_function_name($parameters);
-                            } else {
+                            } elseif (!empty($parentbean)) {
                                 //call function from parent bean
                                 $query_array = $parentbean->$shortcut_function_name($parameters);
                             }
-                        } else {
+                        } elseif (!empty($parentbean)) {
                             $query_array = $parentbean->$shortcut_function_name();
                         }
                     } else {
                         $related_field_name = $this_subpanel->get_data_source_name();
-                        if (!method_exists($parentbean, 'load_relationship')) {
+                        if (!method_exists($parentbean ?? '', 'load_relationship')) {
                             $GLOBALS['log']->fatal('Fatal error:  Call to a member function load_relationship() ' .
                                 'on an invalid object');
                         } else {
@@ -1079,14 +1083,14 @@ class SugarBean
                             $query_array = $parentbean->$related_field_name->getSubpanelQuery(array(), true);
                         }
                     }
-                    $table_where = preg_replace('/^\s*WHERE/i', '', $this_subpanel->get_where());
+                    $table_where = preg_replace('/^\s*WHERE/i', '', (string) $this_subpanel->get_where());
                     $queryArrayWhere = '';
                     if (isset($query_array)) {
                         $queryArrayWhere = $query_array['where'];
                     } else {
                         $GLOBALS['log']->fatal('Undefined variable: query_array');
                     }
-                    $where_definition = preg_replace('/^\s*WHERE/i', '', $queryArrayWhere);
+                    $where_definition = preg_replace('/^\s*WHERE/i', '', (string) $queryArrayWhere);
 
                     if (!empty($table_where)) {
                         if (empty($where_definition)) {
@@ -1127,11 +1131,11 @@ class SugarBean
                     }
 
 
-                    if (!method_exists($subpanel_def, 'isCollection')) {
+                    if (!method_exists($subpanel_def ?? '', 'isCollection')) {
                         $GLOBALS['log']->fatal('Call to a member function isCollection() on an invalid object');
                     }
                     if (
-                        method_exists($subpanel_def, 'isCollection') &&
+                        method_exists($subpanel_def ?? '', 'isCollection') &&
                         !$subpanel_def->isCollection() &&
                         isset($list_fields[$order_by]) &&
                         isset($submodule->field_defs[$order_by]) &&
@@ -1145,16 +1149,16 @@ class SugarBean
                     $params['distinct'] = $this_subpanel->distinct_query();
 
                     $params['joined_tables'] = isset($query_array['join_tables']) ? $query_array['join_tables'] : null;
-                    $params['include_custom_fields'] = method_exists($subpanel_def, 'isCollection')
+                    $params['include_custom_fields'] = method_exists($subpanel_def ?? '', 'isCollection')
                         ? !$subpanel_def->isCollection() : null;
-                    $params['collection_list'] = method_exists($subpanel_def, 'get_inst_prop_value')
+                    $params['collection_list'] = method_exists($subpanel_def ?? '', 'get_inst_prop_value')
                         ? $subpanel_def->get_inst_prop_value('collection_list') : null;
 
                     // use single select in case when sorting by relate field
-                    $singleSelect = method_exists($submodule, 'is_relate_field')
+                    $singleSelect = method_exists($submodule ?? '', 'is_relate_field')
                         ? $submodule->is_relate_field($order_by) : null;
 
-                    $subquery = method_exists($submodule, 'create_new_list_query')
+                    $subquery = method_exists($submodule ?? '', 'create_new_list_query')
                         ? $submodule->create_new_list_query(
                             '',
                             $subwhere,
@@ -1216,6 +1220,7 @@ class SugarBean
         $query_row_count = '',
         $secondary_queries = array()
     ) {
+        $current_bean = null;
         if (is_null($subpanel_def)) {
             $GLOBALS['log']->fatal('subpanel_def is null');
         }
@@ -1457,10 +1462,10 @@ class SugarBean
                 //C.L. Bug 43535 - Use the $index value to set the $rows_found value here
                 $rows_found = isset($index) ? $index : $row_offset + count($list);
 
-                if (count($list) >= $limit) {
-                    array_pop($list);
-                }
                 if (!$toEnd) {
+                    if (count($list) >= $limit) {
+                        array_pop($list);
+                    }
                     $next_offset--;
                     $previous_offset++;
                 }
@@ -1492,7 +1497,7 @@ class SugarBean
     {
         $num_rows_in_query = 0;
         if (!$is_count_query) {
-            $count_query = SugarBean::create_list_count_query($query);
+            $count_query = $this->create_list_count_query($query);
         } else {
             $count_query = $query;
         }
@@ -1671,7 +1676,7 @@ class SugarBean
     public function isOwner($user_id)
     {
         //if we don't have an id we must be the owner as we are creating it
-        if (!isset($this->id) || $this->id == "[SELECT_ID_LIST]") {
+        if (!isset($this->id)  || $this->id == "[SELECT_ID_LIST]") {
             return true;
         }
         //if there is an assigned_user that is the owner
@@ -1931,7 +1936,7 @@ class SugarBean
                 if (!is_array($properties)) {
                     $GLOBALS['log']->fatal('array_search() expects parameter 2 to be array, ' .
                         gettype($properties) . ' given');
-                } elseif (array_search('link', $properties) === 'type') {
+                } elseif (array_search('link', $properties, true) === 'type') {
                     $linked_fields[$name] = $properties;
                 }
             }
@@ -2368,6 +2373,7 @@ class SugarBean
             unset($this->date_entered);
         }
         // call the custom business logic
+        $custom_logic_arguments = [];
         $custom_logic_arguments['check_notify'] = $check_notify;
 
 
@@ -2514,13 +2520,18 @@ class SugarBean
                     $type .= $def['dbType'];
                 }
 
+                // Trim name & varchar type values on save when the value is not null
+                if (isset($def['type']) && in_array($def['type'], ['name', 'varchar']) && !is_null($this->$key)) {
+                    $this->$key = trim($this->$key);
+                }
+
                 if (isset($def['type']) && ($def['type'] == 'html' || $def['type'] == 'longhtml')) {
-                    $this->$key = htmlentities(SugarCleaner::cleanHtml($this->$key, true));
+                    $this->$key = purify_html($this->$key, ['HTML.ForbiddenElements' => ['iframe' => true]]);
                 } elseif (
-                    (strpos($type, 'char') !== false || strpos($type, 'text') !== false || $type == 'enum') &&
+                    (strpos((string) $type, 'char') !== false || strpos((string) $type, 'text') !== false || $type == 'enum') &&
                     !empty($this->$key)
                 ) {
-                    $this->$key = htmlentities(SugarCleaner::cleanHtml($this->$key, true));
+                    $this->$key = purify_html($this->$key, ['HTML.ForbiddenElements' => ['iframe' => true]]);
                 }
             }
         }
@@ -2562,7 +2573,7 @@ class SugarBean
                                 break;
                             }
                             if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
-                                $this->$field)) {
+                                (string) $this->$field)) {
                                 $this->$field = $timedate->to_db($this->$field);
                                 $reformatted = true;
                             }
@@ -2572,7 +2583,7 @@ class SugarBean
                                 $this->$field = '';
                                 break;
                             }
-                            if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $this->$field)) {
+                            if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', (string) $this->$field)) {
                                 $this->$field = $timedate->to_db_date($this->$field, false);
                                 $reformatted = true;
                             }
@@ -2582,7 +2593,7 @@ class SugarBean
                                 $this->$field = '';
                                 break;
                             }
-                            if (preg_match('/(am|pm)/i', $this->$field)) {
+                            if (preg_match('/(am|pm)/i', (string) $this->$field)) {
                                 $fromUserTime = $timedate->fromUserTime($this->$field);
                                 if (is_object($fromUserTime) && method_exists($fromUserTime, 'format')) {
                                     $this->$field = $fromUserTime->format(TimeDate::DB_TIME_FORMAT);
@@ -2633,6 +2644,11 @@ class SugarBean
                             break;
                         default:
                             //do nothing
+                    }
+
+
+                    if ($def['type'] !== 'encrypt' && isTrue($def['db_encrypted'] ?? false)) {
+                        $this->$field = $this->encrpyt_before_save($this->$field);
                     }
                 }
                 if ($reformatted) {
@@ -2934,7 +2950,7 @@ class SugarBean
                                 //if before value is not empty then attempt to delete relationship
                                 $GLOBALS['log']->debug("save_relationship_changes(): From field_defs - attempting to " .
                                     "remove the relationship record: {$linkField} = " .
-                                    (string)($this->rel_fields_before_value[$idName]));
+                                    $this->rel_fields_before_value[$idName]);
                                 $success = $this->$linkField->delete(
                                     $this->id,
                                     $this->rel_fields_before_value[$idName]
@@ -3142,10 +3158,10 @@ class SugarBean
      * function NAME(&$bean, $event, $arguments)
      *        $bean - $this bean passed in by reference.
      *        $event - The string for the current event (i.e. before_save)
-     *        $arguments - An array of arguments that are specific to the event.
+     *        $arguments - An object or array of arguments that are specific to the event.
      *
      * @param string $event
-     * @param array $arguments
+     * @param object|array $arguments
      */
     public function call_custom_logic($event, $arguments = null)
     {
@@ -3388,7 +3404,7 @@ class SugarBean
         $xtpl->assign("ASSIGNED_USER", $this->new_assigned_user_name);
         $xtpl->assign("ASSIGNER", $current_user->name);
 
-        $parsedSiteUrl = parse_url($sugar_config['site_url']);
+        $parsedSiteUrl = parse_url((string) $sugar_config['site_url']);
         $host = $parsedSiteUrl['host'];
         if (!isset($parsedSiteUrl['port'])) {
             $parsedSiteUrl['port'] = 80;
@@ -3411,7 +3427,7 @@ class SugarBean
 
         // Improve the text version of the email with some "reverse linkification",
         // making "<a href=link>text</a>" links readable as "text [link]"
-        $tempBody = preg_replace('/<a href=([\"\']?)(.*?)\1>(.*?)<\/a>/', "\\3 [\\2]", $tempBody);
+        $tempBody = preg_replace('/<a href=([\"\']?)(.*?)\1>(.*?)<\/a>/', "\\3 [\\2]", (string) $tempBody);
 
         // all the other HTML tags get removed from the text version:
         $notify_mail->AltBody = strip_tags($tempBody);
@@ -3507,21 +3523,6 @@ class SugarBean
             $show_deleted = 1;
         }
 
-        if ($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, 'list')) {
-            global $current_user;
-            $owner_where = $this->getOwnerWhere($current_user->id);
-
-            //rrs - because $this->getOwnerWhere() can return '' we need to be sure to check for it and
-            //handle it properly else you could get into a situation where you are create a where stmt like
-            //WHERE .. AND ''
-            if (!empty($owner_where)) {
-                if (empty($where)) {
-                    $where = $owner_where;
-                } else {
-                    $where .= ' AND ' . $owner_where;
-                }
-            }
-        }
         $query = $this->create_new_list_query(
             $order_by,
             $where,
@@ -3551,6 +3552,56 @@ class SugarBean
             return " $this->table_name.created_by ='$user_id' ";
         }
         return '';
+    }
+
+
+    /**
+     * @param string $view
+     * @param User $user
+     * @return string
+     */
+    public function buildAccessWhere($view, $user = null)
+    {
+        global $current_user, $sugar_config;
+
+        $conditions = [];
+        $user = $user === null ? $current_user : $user;
+
+        if ($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, $view)) {
+            $ownerWhere = $this->getOwnerWhere($user->id);
+            if (!empty($ownerWhere)) {
+                $conditions['owner'] = $ownerWhere;
+            }
+        }
+
+        /* BEGIN - SECURITY GROUPS */
+        $SecurityGroupFile = BeanFactory::getBeanFile('SecurityGroups');
+        require_once $SecurityGroupFile;
+        if ($view === 'list' && $this->module_dir === 'Users' && !is_admin($user)
+            && isset($sugar_config['securitysuite_filter_user_list'])
+            && $sugar_config['securitysuite_filter_user_list']
+        ) {
+            $groupWhere = SecurityGroup::getGroupUsersWhere($user->id);
+            $conditions['group'] = $groupWhere;
+        } elseif ($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, $view)) {
+            $ownerWhere = $this->getOwnerWhere($user->id);
+            $groupWhere = SecurityGroup::getGroupWhere($this->table_name, $this->module_dir, $user->id);
+            if (!empty($ownerWhere)) {
+                $conditions['group'] = " (" . $ownerWhere . " or " . $groupWhere . ") ";
+            } else {
+                $conditions['group'] = $groupWhere;
+            }
+        }
+        /* END - SECURITY GROUPS */
+
+        $args = new stdClass();
+        $args->view = $view;
+        $args->user = $user;
+        $args->conditions = $conditions;
+
+        $this->call_custom_logic('before_acl_query', $args);
+
+        return implode(' AND ', $args->conditions);
     }
 
     /**
@@ -3587,45 +3638,12 @@ class SugarBean
         $secondarySelectedFields = array();
         $ret_array = array();
         $distinct = '';
-        if ($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, 'list')) {
-            global $current_user;
-            $owner_where = $this->getOwnerWhere($current_user->id);
-            if (empty($where)) {
-                $where = $owner_where;
-            } else {
-                $where .= ' AND ' . $owner_where;
-            }
+
+        $accessWhere = $this->buildAccessWhere('list');
+        if (!empty($accessWhere)) {
+            $where .= empty($where) ? $accessWhere : ' AND ' . $accessWhere;
         }
-        /* BEGIN - SECURITY GROUPS */
-        global $current_user, $sugar_config;
-        if ($this->module_dir == 'Users' && !is_admin($current_user)
-            && isset($sugar_config['securitysuite_filter_user_list'])
-            && $sugar_config['securitysuite_filter_user_list']
-        ) {
-            require_once('modules/SecurityGroups/SecurityGroup.php');
-            global $current_user;
-            $group_where = SecurityGroup::getGroupUsersWhere($current_user->id);
-            if (empty($where)) {
-                $where = " (" . $group_where . ") ";
-            } else {
-                $where .= " AND (" . $group_where . ") ";
-            }
-        } elseif ($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, 'list')) {
-            require_once('modules/SecurityGroups/SecurityGroup.php');
-            global $current_user;
-            $owner_where = $this->getOwnerWhere($current_user->id);
-            $group_where = SecurityGroup::getGroupWhere($this->table_name, $this->module_dir, $current_user->id);
-            if (!empty($owner_where)) {
-                if (empty($where)) {
-                    $where = " (" . $owner_where . " or " . $group_where . ") ";
-                } else {
-                    $where .= " AND (" . $owner_where . " or " . $group_where . ") ";
-                }
-            } else {
-                $where .= ' AND ' . $group_where;
-            }
-        }
-        /* END - SECURITY GROUPS */
+
         if (!empty($params['distinct'])) {
             $distinct = ' DISTINCT ';
         }
@@ -3760,7 +3778,7 @@ class SugarBean
             } elseif ((!isset($data['source']) || $data['source'] == 'custom_fields')
                 && (!empty($alias) || !empty($filter))) {
                 //add this column only if it has NOT already been added to select statement string
-                $colPos = strpos($ret_array['select'], (string)$this->table_name . "_cstm" . ".$field");
+                $colPos = strpos($ret_array['select'], $this->table_name . "_cstm" . ".$field");
                 if (!$colPos || $colPos < 0) {
                     $ret_array['select'] .= ", $this->table_name" . "_cstm" . ".$field $alias";
                 }
@@ -4234,6 +4252,7 @@ class SugarBean
      */
     public function process_list_query($query, $row_offset, $limit = -1, $max_per_page = -1, $where = '')
     {
+        $rows_found = 0;
         global $sugar_config;
         $db = DBManagerFactory::getInstance('listviews');
         /**
@@ -4333,7 +4352,7 @@ class SugarBean
                 $next_offset--;
                 $previous_offset++;
             }
-        } elseif (!isset($rows_found)) {
+        } elseif ($rows_found == 0) {
             $rows_found = $row_offset + count($list);
         }
 
@@ -4466,34 +4485,6 @@ class SugarBean
             $show_deleted = 1;
         }
 
-        if ($this->bean_implements('ACL') && ACLController::requireOwner($this->module_dir, 'list')) {
-            global $current_user;
-            $owner_where = $this->getOwnerWhere($current_user->id);
-
-            if (empty($where)) {
-                $where = $owner_where;
-            } else {
-                $where .= ' AND ' . $owner_where;
-            }
-        }
-
-        /* BEGIN - SECURITY GROUPS */
-        if ($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, 'list')) {
-            require_once('modules/SecurityGroups/SecurityGroup.php');
-            global $current_user;
-            $owner_where = $this->getOwnerWhere($current_user->id);
-            $group_where = SecurityGroup::getGroupWhere($this->table_name, $this->module_dir, $current_user->id);
-            if (!empty($owner_where)) {
-                if (empty($where)) {
-                    $where = " (" . $owner_where . " or " . $group_where . ") ";
-                } else {
-                    $where .= " AND (" . $owner_where . " or " . $group_where . ") ";
-                }
-            } else {
-                $where .= ' AND ' . $group_where;
-            }
-        }
-        /* END - SECURITY GROUPS */
         $query = $this->create_new_list_query($order_by, $where, array(), array(), $show_deleted, $offset);
 
         return $this->process_detail_query($query, $row_offset, $limit, $max, $where, $offset);
@@ -4575,6 +4566,7 @@ class SugarBean
      */
     public function retrieve($id = -1, $encode = true, $deleted = true)
     {
+        $custom_logic_arguments = [];
         $custom_logic_arguments['id'] = $id;
         $this->call_custom_logic('before_retrieve', $custom_logic_arguments);
 
@@ -4856,7 +4848,7 @@ class SugarBean
                                 $this->$field = $timedate->to_display_time($this->$field, true, false);
                             }
                         }
-                    } elseif ($type == 'encrypt' && empty($disable_date_format)) {
+                    } elseif (($type == 'encrypt' && empty($disable_date_format)) || isTrue($fieldDef['db_encrypted'] ?? false)) {
                         $this->$field = $this->decrypt_after_retrieve($this->$field);
                     }
                 }
@@ -5216,6 +5208,7 @@ class SugarBean
         $isFirstTime = true;
         $bean = new $class();
 
+        $list = [];
         // We have some data.
         while (($row = $bean->db->fetchByAssoc($result)) != null) {
             $row = $this->convertRow($row);
@@ -5275,6 +5268,7 @@ class SugarBean
             $this->mark_undeleted($id);
         } else {
             // call the custom business logic
+            $custom_logic_arguments = [];
             $custom_logic_arguments['id'] = $id;
             $this->call_custom_logic("before_delete", $custom_logic_arguments);
             $this->deleted = 1;
@@ -5314,6 +5308,7 @@ class SugarBean
      */
     public function mark_undeleted($id)
     {
+        $custom_logic_arguments = [];
         // call the custom business logic
         $custom_logic_arguments['id'] = $id;
         $this->call_custom_logic("before_restore", $custom_logic_arguments);
@@ -6164,7 +6159,28 @@ class SugarBean
             require_once("modules/SecurityGroups/SecurityGroup.php");
             $in_group = SecurityGroup::groupHasAccess($this->module_dir, $this->id, $view);
         }
-        return ACLController::checkAccess($this->module_dir, $view, $is_owner, $this->acltype, $in_group);
+
+        $args = new stdClass();
+        $args->view = $view;
+        $args->is_owner = $is_owner;
+        $args->in_group = $in_group;
+        $args->access = true;
+        $args->override_acl_check = false;
+
+        $this->call_custom_logic('before_acl_check', $args);
+
+        if ($args->override_acl_check) {
+            return $args->access;
+        }
+
+        return $args->access
+            && ACLController::checkAccess(
+                $this->module_dir,
+                $args->view,
+                $args->is_owner,
+                $this->acltype,
+                $args->in_group
+            );
     }
 
     /**

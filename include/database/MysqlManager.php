@@ -304,10 +304,10 @@ class MysqlManager extends DBManager
             if (empty($row['key'])) {
                 $badQuery[$row['table']] .= ' No Index Key Used;';
             }
-            if (!empty($row['Extra']) && substr_count($row['Extra'], 'Using filesort') > 0) {
+            if (!empty($row['Extra']) && substr_count((string) $row['Extra'], 'Using filesort') > 0) {
                 $badQuery[$row['table']] .= ' Using FileSort;';
             }
-            if (!empty($row['Extra']) && substr_count($row['Extra'], 'Using temporary') > 0) {
+            if (!empty($row['Extra']) && substr_count((string) $row['Extra'], 'Using temporary') > 0) {
                 $badQuery[$row['table']] .= ' Using Temporary Table;';
             }
         }
@@ -344,7 +344,7 @@ class MysqlManager extends DBManager
             $name = strtolower($row['Field']);
             $columns[$name]['name'] = $name;
             $matches = array();
-            preg_match_all('/(\w+)(?:\(([0-9]+,?[0-9]*)\)|)( unsigned)?/i', $row['Type'], $matches);
+            preg_match_all('/(\w+)(?:\(([0-9]+,?[0-9]*)\)|)( unsigned)?/i', (string) $row['Type'], $matches);
             $columns[$name]['type'] = strtolower($matches[1][0]);
             if (isset($matches[2][0]) && in_array(
                 strtolower($matches[1][0]),
@@ -353,10 +353,10 @@ class MysqlManager extends DBManager
             ) {
                 $columns[$name]['len'] = strtolower($matches[2][0]);
             }
-            if (stristr($row['Extra'], 'auto_increment')) {
+            if (stristr((string) $row['Extra'], 'auto_increment')) {
                 $columns[$name]['auto_increment'] = '1';
             }
-            if ($row['Null'] == 'NO' && !stristr($row['Key'], 'PRI')) {
+            if ($row['Null'] == 'NO' && !stristr((string) $row['Key'], 'PRI')) {
                 $columns[$name]['required'] = 'true';
             }
             if (!empty($row['Default'])) {
@@ -790,7 +790,7 @@ class MysqlManager extends DBManager
 	$charset = $this->getCharset();
 
 	$sql = "CREATE TABLE $tablename ($columns $keys) CHARACTER SET $charset COLLATE $collation";
-	
+
 	if (!empty($engine)) {
             $sql .= " ENGINE=$engine";
         }
@@ -1127,7 +1127,7 @@ class MysqlManager extends DBManager
 
         if ($fieldDef['dbType'] == 'decimal') {
             if (isset($fieldDef['len'])) {
-                if (strstr($fieldDef['len'], ",") === false) {
+                if (strstr((string) $fieldDef['len'], ",") === false) {
                     $fieldDef['len'] .= ",0";
                 }
             } else {
@@ -1372,7 +1372,7 @@ class MysqlManager extends DBManager
         }
         $create = $row['Create Table'];
         // rewrite DDL with _temp name
-        $tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", $create);
+        $tempTableQuery = str_replace("CREATE TABLE `{$table}`", "CREATE TABLE `{$table}__uw_temp`", (string) $create);
         $r2 = $this->query($tempTableQuery);
         if (empty($r2)) {
             return false;
@@ -1408,7 +1408,7 @@ class MysqlManager extends DBManager
 
         // test the query on the test table
         $this->log->debug('testing query: [' . $query . ']');
-        $tempTableTestQuery = str_replace("ALTER TABLE `{$table}`", "ALTER TABLE `{$table}__uw_temp`", $query);
+        $tempTableTestQuery = str_replace("ALTER TABLE `{$table}`", "ALTER TABLE `{$table}__uw_temp`", (string) $query);
         if (strpos($tempTableTestQuery, 'idx') === false) {
             if (strpos($tempTableTestQuery, '__uw_temp') === false) {
                 return 'Could not use a temp table to test query!';
@@ -1440,7 +1440,7 @@ class MysqlManager extends DBManager
         }
         // test the query on the test table
         $this->log->debug('testing query: [' . $query . ']');
-        $tempTableTestQuery = str_replace("$querytype `{$table}`", "$querytype `{$table}__uw_temp`", $query);
+        $tempTableTestQuery = str_replace("$querytype `{$table}`", "$querytype `{$table}__uw_temp`", (string) $query);
         if (strpos($tempTableTestQuery, '__uw_temp') === false) {
             return 'Could not use a temp table to test query!';
         }
@@ -1569,11 +1569,12 @@ class MysqlManager extends DBManager
 
     public function preInstall()
     {
+        $setup_db_database_name = '';
         $collation = $this->getCollation();
 	$charset = $this->getCharset();
 
-        $db->query("ALTER DATABASE `{$setup_db_database_name}` DEFAULT CHARACTER SET $charset", true);
-        $db->query("ALTER DATABASE `{$setup_db_database_name}` DEFAULT COLLATE $collation", true);
+        $this->query("ALTER DATABASE `{$setup_db_database_name}` DEFAULT CHARACTER SET $charset", true);
+        $this->query("ALTER DATABASE `{$setup_db_database_name}` DEFAULT COLLATE $collation", true);
     }
 
     /**

@@ -74,7 +74,7 @@ class AOW_WorkFlowTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aowWorkFlow->id));
-        self::assertEquals(36, strlen($aowWorkFlow->id));
+        self::assertEquals(36, strlen((string) $aowWorkFlow->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aowWorkFlow->mark_deleted($aowWorkFlow->id);
@@ -317,7 +317,7 @@ class AOW_WorkFlowTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($processed->id));
-        self::assertEquals(36, strlen($processed->id));
+        self::assertEquals(36, strlen((string) $processed->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $processed->mark_deleted($processed->id);

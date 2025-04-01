@@ -7,6 +7,7 @@ use Codeception\Example;
 use Codeception\Exception\ModuleException;
 use Exception;
 
+#[\AllowDynamicProperties]
 class GetRecordsCest
 {
     /**
@@ -34,7 +35,7 @@ class GetRecordsCest
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
         $responseJson = $I->grabResponse();
-        $responseArray = json_decode($responseJson, true);
+        $responseArray = json_decode((string) $responseJson, true, 512, JSON_THROW_ON_ERROR);
         $I->assertNotEmpty($responseArray);
         $I->assertArrayHasKey('email1', $responseArray['data']['attributes']);
 

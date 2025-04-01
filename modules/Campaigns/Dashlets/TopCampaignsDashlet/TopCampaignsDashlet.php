@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/Dashlets/Dashlet.php');
 
+#[\AllowDynamicProperties]
 class TopCampaignsDashlet extends Dashlet
 {
     protected $top_campaigns = array();

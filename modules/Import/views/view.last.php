@@ -48,6 +48,7 @@ require_once('modules/Import/sources/ImportFile.php');
 require_once('modules/Import/views/ImportListView.php');
 require_once('include/ListView/ListViewFacade.php');
 
+#[\AllowDynamicProperties]
 class ImportViewLast extends ImportView
 {
     protected $pageTitleKey = 'LBL_STEP_5_TITLE';

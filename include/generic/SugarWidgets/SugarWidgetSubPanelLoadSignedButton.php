@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 //this widget is used only by the document subpanel under contracts.
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelLoadSignedButton extends SugarWidgetField
 {
     public function displayHeaderCell($layout_def)
@@ -56,7 +57,7 @@ class SugarWidgetSubPanelLoadSignedButton extends SugarWidgetField
     public function displayList(&$layout_def)
     {
         global $app_strings;
-        
+
 
         $href = 'index.php?module=' . 'Documents'
             . '&action=' . 'EditView'
@@ -73,8 +74,16 @@ class SugarWidgetSubPanelLoadSignedButton extends SugarWidgetField
 
         $edit_icon_html = SugarThemeRegistry::current()->getImage('loadSignedDocument', 'align="absmiddle" border="0"', null, null, '.gif', $app_strings['LNK_LOAD_SIGNED']);
         //if the contract state is executed or document is not a template hide this action.
-        if ((!empty($layout_def['fields']['CONTRACT_STATUS']) && $layout_def['fields']['CONTRACT_STATUS']=='executed') or
-            empty($layout_def['fields']['IS_TEMPLATE']) or $layout_def['fields']['IS_TEMPLATE']==0) {
+        if (
+            (
+                !empty($layout_def['fields']['CONTRACT_STATUS']) &&
+                $layout_def['fields']['CONTRACT_STATUS'] === 'executed'
+            ) ||
+            (
+                empty($layout_def['fields']['IS_TEMPLATE']) ||
+                $layout_def['fields']['IS_TEMPLATE'] == 0
+            )
+        ) {
             return "";
         }
         return '<a href="' . $href . '"' . "title ='". $app_strings['LNK_LOAD_SIGNED_TOOLTIP']."'"

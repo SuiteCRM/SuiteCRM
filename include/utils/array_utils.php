@@ -213,11 +213,12 @@ function object_to_array_recursive($obj)
 // Example: array("a", "b", "c") and array("x", "y", "z") are passed in; array("ax", "by", "cz") is returned
 function array_merge_values($arr1, $arr2)
 {
-    if (count($arr1) != count($arr2)) {
+    if (count($arr1) !== count($arr2)) {
         return false;
     }
+    $arr1Count = count($arr1);
 
-    for ($i = 0; $i < count($arr1); $i++) {
+    for ($i = 0; $i < $arr1Count; $i++) {
         $arr1[$i] .= $arr2[$i];
     }
 
@@ -238,7 +239,7 @@ function array_search_insensitive($key, $haystack)
 
     $found = false;
     foreach ($haystack as $k => $v) {
-        if (strtolower($v) == strtolower($key)) {
+        if (strtolower($v) === strtolower($key)) {
             $found = true;
             break;
         }
@@ -270,7 +271,7 @@ function array_search_insensitive($key, $haystack)
 function fixIndexArrayFormat($indexArray)
 {
     foreach ($indexArray as $key => $value) {
-        $indexArray[$key] = preg_replace("/\s+/u", " ", $value);
+        $indexArray[$key] = preg_replace("/\s+/u", " ", (string) $value);
         $indexArray[$key] = trim($indexArray[$key]);
         $indexArray[$key] = str_replace(['( ', ' )'], ['(', ')'], $indexArray[$key]);
     }
@@ -282,6 +283,7 @@ function fixIndexArrayFormat($indexArray)
  * Wrapper around PHP's ArrayObject class that provides dot-notation recursive searching
  * for multi-dimensional arrays
  */
+#[\AllowDynamicProperties]
 class SugarArray extends ArrayObject
 {
     /**
@@ -322,7 +324,7 @@ class SugarArray extends ArrayObject
 
     private function _getFromSource($key, $default)
     {
-        if (strpos($key, '.') === false) {
+        if (strpos((string) $key, '.') === false) {
             return isset($this[$key]) ? $this[$key] : $default;
         }
 
@@ -335,7 +337,7 @@ class SugarArray extends ArrayObject
     {
         if ($raw_config === $default) {
             return $default;
-        } elseif (count($children) == 0) {
+        } elseif ((is_countable($children) ? count($children) : 0) == 0) {
             return $raw_config;
         } else {
             $next_key = array_shift($children);

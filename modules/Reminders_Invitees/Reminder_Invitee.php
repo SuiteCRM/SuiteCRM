@@ -42,6 +42,7 @@
  * Reminder_Invitee class
  *
  */
+#[\AllowDynamicProperties]
 class Reminder_Invitee extends Basic
 {
     public $name;

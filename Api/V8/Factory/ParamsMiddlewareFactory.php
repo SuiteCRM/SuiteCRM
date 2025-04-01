@@ -7,6 +7,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Api\V8\BeanDecorator\BeanManager;
 
+#[\AllowDynamicProperties]
 class ParamsMiddlewareFactory
 {
     /**

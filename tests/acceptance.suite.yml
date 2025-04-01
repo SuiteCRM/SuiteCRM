@@ -14,5 +14,23 @@ modules:
         - \SuiteCRM\Test\Driver\WebDriver
     config:
         \SuiteCRM\Test\Driver\WebDriver:
-            url: "https://demo.suiteondemand.com"
-            browser: chrome
+            url: '%INSTANCE_URL%'
+            browser: '%BROWSER%'
+            host: '%WEBDRIVER_HOST%'
+            port: '%WEBDRIVER_PORT%'
+env:
+    chrome:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: chrome
+    firefox:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: firefox
+    edge:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: MicrosoftEdge

@@ -52,11 +52,16 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/AOK_Knowledge_Base_Categories/AOK_Knowledge_Base_Categories.php');
 
+#[\AllowDynamicProperties]
 class AOK_Knowledge_Base_CategoriesDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/AOK_Knowledge_Base_Categories/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

@@ -77,7 +77,7 @@ if (!$template) {
     sugar_die("Invalid Template");
 }
 
-$file_name = str_replace(" ", "_", $template->name) . ".pdf";
+$file_name = str_replace(" ", "_", (string) $template->name) . ".pdf";
 
 $pdfConfig = [
     'mode' => 'en',
@@ -142,7 +142,7 @@ foreach ($recordIds as $recordId) {
         '<br>'
     );
 
-    $text = preg_replace($search, $replace, $template->description);
+    $text = preg_replace($search, $replace, (string) $template->description);
     $text = preg_replace_callback(
         '/{DATE\s+(.*?)}/',
         function ($matches) {
@@ -150,14 +150,14 @@ foreach ($recordIds as $recordId) {
         },
         $text
     );
-    $header = preg_replace($search, $replace, $template->pdfheader);
-    $footer = preg_replace($search, $replace, $template->pdffooter);
+    $header = preg_replace($search, $replace, (string) $template->pdfheader);
+    $footer = preg_replace($search, $replace, (string) $template->pdffooter);
 
     $converted = templateParser::parse_template($text, $object_arr);
     $header = templateParser::parse_template($header, $object_arr);
     $footer = templateParser::parse_template($footer, $object_arr);
 
-    $printable = str_replace("\n", "<br />", $converted);
+    $printable = str_replace("\n", "<br />", (string) $converted);
 
     try {
         $note = BeanFactory::newBean('Notes');

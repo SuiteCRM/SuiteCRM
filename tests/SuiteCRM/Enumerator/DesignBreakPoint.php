@@ -43,6 +43,7 @@ namespace SuiteCRM\Enumerator;
  * Class DesignBreakPoint
  * @package SuiteCRM\Tests\SuiteCRM\Enumerator
  */
+#[\AllowDynamicProperties]
 class DesignBreakPoint
 {
     public const xs = 'xs';

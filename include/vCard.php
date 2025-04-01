@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * vCard implementation
  * @api
  */
+#[\AllowDynamicProperties]
 class vCard
 {
     protected $properties = array();
@@ -67,8 +68,8 @@ class vCard
         $bad = array("\n", "\r");
         $good = array("=0A", "=0D");
         $encoding = '';
-        if (strpos($contact->primary_address_street, "\n") || strpos($contact->primary_address_street, "\r")) {
-            $contact->primary_address_street = str_replace($bad, $good, $contact->primary_address_street);
+        if (strpos((string) $contact->primary_address_street, "\n") || strpos((string) $contact->primary_address_street, "\r")) {
+            $contact->primary_address_street = str_replace($bad, $good, (string) $contact->primary_address_street);
             $encoding = 'QUOTED-PRINTABLE';
         }
 
@@ -173,8 +174,8 @@ class vCard
             header("Pragma: public");
             //bug45856 IIS Doesn't like this to be set and it causes the vCard to not get saved
             $serverSoftvare = isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : null;
-            if (preg_match('/iis/i', $serverSoftvare) === 0) {
-                header("Content-Length: ".strlen($content));
+            if (preg_match('/iis/i', (string) $serverSoftvare) === 0) {
+                header("Content-Length: ".strlen((string) $content));
             }
         }
 
@@ -190,8 +191,9 @@ class vCard
         $bean = BeanFactory::getBean($module);
         $bean->assigned_user_id = $current_user->id;
         $email_suffix = 1;
+        $linesCount = count($lines);
 
-        for ($index = 0; $index < count($lines); $index++) {
+        for ($index = 0; $index < $linesCount; $index++) {
             $line = $lines[$index];
 
             // check the encoding and change it if needed
@@ -219,20 +221,24 @@ class vCard
                     break;
                 }
 
+                $keys = [];
+                $key = '';
+                $values = [];
                 $keyvalue = explode(':', $line);
                 if (count($keyvalue) == 2) {
                     $value = $keyvalue[1];
-                    for ($newindex = $index + 1; $newindex < count($lines), substr_count($lines[$newindex], ':') == 0; $newindex++) {
+                    $linesCount = count($lines);
+                    for ($newindex = $index + 1; $newindex < $linesCount, substr_count($lines[$newindex], ':') == 0; $newindex++) {
                         $value .= $lines[$newindex];
                         $index = $newindex;
                     }
                     $values = explode(';', $value);
-                    $key = strtoupper($keyvalue[0]);
+                    $key = strtoupper($keyvalue[0] ?? '');
                     $key = strtr($key, '=', '');
                     $key = strtr($key, ',', ';');
                     $keys = explode(';', $key);
 
-                    if ($keys[0] == 'TEL') {
+                    if (($keys[0] ?? '') == 'TEL') {
                         if (substr_count($key, 'WORK') > 0) {
                             if (substr_count($key, 'FAX') > 0) {
                                 if (!isset($bean->phone_fax)) {
@@ -268,7 +274,7 @@ class vCard
                         }
                     }
 
-                    if ($keys[0] == 'N') {
+                    if (($keys[0] ?? '') == 'N') {
                         if (count($values) > 0) {
                             $bean->last_name = $values[0];
                         }
@@ -280,37 +286,37 @@ class vCard
                         }
                     }
 
-                    if ($keys[0] == 'FN') {
+                    if (($keys[0] ?? '') == 'FN') {
                         $fullname = $value;
                     }
                 }
 
-                if ($keys[0] == 'ADR') {
-                    if (substr_count($key, 'WORK') > 0 && (substr_count($key, 'POSTAL') > 0|| substr_count($key, 'PARCEL') == 0)) {
-                        if (!isset($bean->primary_address_street) && count($values) > 2) {
+                if (($keys[0] ?? '') == 'ADR') {
+                    if (substr_count((string) $key, 'WORK') > 0 && (substr_count((string) $key, 'POSTAL') > 0|| substr_count((string) $key, 'PARCEL') == 0)) {
+                        if (!isset($bean->primary_address_street) && (is_countable($values) ? count($values) : 0) > 2) {
                             $textBreaks = array("\n", "\r");
                             $vcardBreaks = array("=0A", "=0D");
                             $bean->primary_address_street = str_replace($vcardBreaks, $textBreaks, $values[2]);
                         }
-                        if (!isset($bean->primary_address_city) && count($values) > 3) {
+                        if (!isset($bean->primary_address_city) && (is_countable($values) ? count($values) : 0) > 3) {
                             $bean->primary_address_city = $values[3];
                         }
-                        if (!isset($bean->primary_address_state) && count($values) > 4) {
+                        if (!isset($bean->primary_address_state) && (is_countable($values) ? count($values) : 0) > 4) {
                             $bean->primary_address_state = $values[4];
                         }
-                        if (!isset($bean->primary_address_postalcode) && count($values) > 5) {
+                        if (!isset($bean->primary_address_postalcode) && (is_countable($values) ? count($values) : 0) > 5) {
                             $bean->primary_address_postalcode = $values[5];
                         }
-                        if (!isset($bean->primary_address_country) && count($values) > 6) {
+                        if (!isset($bean->primary_address_country) && (is_countable($values) ? count($values) : 0) > 6) {
                             $bean->primary_address_country = $values[6];
                         }
                     }
                 }
 
-                if ($keys[0] == 'TITLE') {
+                if (($keys[0] ?? '') == 'TITLE') {
                     $bean->title = $value;
                 }
-                if ($keys[0] == 'EMAIL') {
+                if (($keys[0] ?? '') == 'EMAIL') {
                     $field = 'email' . $email_suffix;
                     if (!isset($bean->$field)) {
                         $bean->$field = $value;
@@ -321,7 +327,7 @@ class vCard
                     $email_suffix++;
                 }
 
-                if ($keys[0] == 'ORG') {
+                if (($keys[0] ?? '') == 'ORG') {
                     $GLOBALS['log']->debug('I found a company name');
                     if (!empty($value)) {
                         $GLOBALS['log']->debug('I found a company name (fer real)');

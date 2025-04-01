@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class EmailsViewCompose extends ViewEdit
 {
 
@@ -99,7 +100,7 @@ class EmailsViewCompose extends ViewEdit
         $this->ev->ss->assign('RETURN_ACTION', isset($_GET['return_action']) ? $_GET['return_action'] : '');
         $this->ev->ss->assign('RETURN_ID', isset($_GET['return_id']) ? $_GET['return_id'] : '');
         $this->ev->ss->assign('IS_MODAL', isset($_GET['in_popup']) ? $_GET['in_popup'] : false);
-        
+
         $attachmentName = $mod_strings['LBL_ATTACHMENT'];
         if (isset($_GET['return_module']) && isset($_GET['return_id'])) {
             $attachmentName = $attachmentName . ' (' . $_GET['return_module'] . ')';
@@ -118,7 +119,7 @@ class EmailsViewCompose extends ViewEdit
             }
         }
         $this->ev->ss->assign('ATTACHMENT_NAME', $attachmentName);
-        
+
         $this->ev->setup(
             $this->module,
             $this->bean,
@@ -133,13 +134,16 @@ class EmailsViewCompose extends ViewEdit
      */
     public function getEditView()
     {
-        $a = dirname(dirname(__FILE__)) . '/include/ComposeView/ComposeView.php';
+        $a = dirname(__FILE__, 2) . '/include/ComposeView/ComposeView.php';
         require_once 'modules/Emails/include/ComposeView/ComposeView.php';
         return new ComposeView();
     }
 
     /**
      * Prepends body with $user's default signature
+     *
+     * @deprecated
+     *
      * @param Email $email
      * @param User $user
      * @return bool|Email
@@ -147,6 +151,7 @@ class EmailsViewCompose extends ViewEdit
      */
     public function getSignatures(User $user)
     {
+        $email = null;
         if (empty($user->id) || $user->new_with_id === true) {
             throw new \SugarControllerException(
                 'EmailsController::composeSignature() requires an existing User and not a new User object. '.
@@ -164,7 +169,7 @@ class EmailsViewCompose extends ViewEdit
         if (gettype($emailSignatureId) === 'string') {
             $emailSignatures = $user->getSignature($emailSignatureId);
             $email->description .= $emailSignatures['signature'];
-            $email->description_html .= html_entity_decode($emailSignatures['signature_html']);
+            $email->description_html .= html_entity_decode((string) $emailSignatures['signature_html']);
             return $email;
         }
         $GLOBALS['log']->warn(

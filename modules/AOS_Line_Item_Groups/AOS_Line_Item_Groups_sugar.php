@@ -31,6 +31,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class AOS_Line_Item_Groups_sugar extends Basic
 {
     public $new_schema = true;

@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class OpportunityFormBase
 {
     public function checkForDuplicates($prefix)
@@ -71,7 +72,7 @@ class OpportunityFormBase
             if ($i==-1) {
                 return null;
             }
-        
+
             return $rows;
         }
         return null;
@@ -87,12 +88,12 @@ class OpportunityFormBase
             global $mod_strings;
         }
         global $app_strings;
-        $cols = count($rows[0]) * 2 + 1;
+        $cols = (is_countable($rows[0]) ? count($rows[0]) : 0) * 2 + 1;
         $form = '<table width="100%"><tr><td>'.$mod_strings['MSG_DUPLICATE']. '</td></tr><tr><td height="20"></td></tr></table>';
 
         $form .= "<form action='index.php' method='post' name='dupOpps'><input type='hidden' name='selectedOpportunity' value=''>";
         $form .= "<table width='100%' cellpadding='0' cellspacing='0' class='list view'>";
-        $form .= "<tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td><input type='submit' class='button' name='ContinueOpportunity' value='${mod_strings['LNK_NEW_OPPORTUNITY']}'></td></tr></table></td></tr><tr>";
+        $form .= "<tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td><input type='submit' class='button' name='ContinueOpportunity' value='{$mod_strings['LNK_NEW_OPPORTUNITY']}'></td></tr></table></td></tr><tr>";
         $form .= "<tr><td scope='col'>&nbsp;</td>";
         require_once('include/formbase.php');
         $form .= getPostToForm();
@@ -109,15 +110,15 @@ class OpportunityFormBase
         foreach ($rows as $row) {
             $form .= "<tr class='$rowColor'>";
 
-            $form .= "<td width='1%' nowrap='nowrap'><a href='#' onclick='document.dupOpps.selectedOpportunity.value=\"${row['id']}\";document.dupOpps.submit();'>[${app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>";
+            $form .= "<td width='1%' nowrap='nowrap'><a href='#' onclick='document.dupOpps.selectedOpportunity.value=\"{$row['id']}\";document.dupOpps.submit();'>[{$app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>";
             $wasSet = false;
             foreach ($row as $key=>$value) {
                 if ($key != 'id') {
                     if (!$wasSet) {
-                        $form .= "<td scope='row'><a target='_blank' href='index.php?module=Opportunities&action=DetailView&record=${row['id']}'>$value</a></td>";
+                        $form .= "<td scope='row'><a target='_blank' href='index.php?module=Opportunities&action=DetailView&record={$row['id']}'>$value</a></td>";
                         $wasSet = true;
                     } else {
-                        $form .= "<td><a target='_blank' href='index.php?module=Opportunities&action=DetailView&record=${row['id']}'>$value</a></td>";
+                        $form .= "<td><a target='_blank' href='index.php?module=Opportunities&action=DetailView&record={$row['id']}'>$value</a></td>";
                     }
                 }
             }
@@ -129,7 +130,7 @@ class OpportunityFormBase
             }
             $form .= "</tr>";
         }
-        $form .= "<tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td><input type='submit' class='button' name='ContinueOpportunity' value='${mod_strings['LNK_NEW_OPPORTUNITY']}'></td></tr></table></td></tr><tr>";
+        $form .= "<tr class='pagination'><td colspan='$cols'><table width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td><input type='submit' class='button' name='ContinueOpportunity' value='{$mod_strings['LNK_NEW_OPPORTUNITY']}'></td></tr></table></td></tr><tr>";
         $form .= "</table><BR></form>";
 
         return $form;
@@ -159,7 +160,7 @@ class OpportunityFormBase
         $the_form .= <<<EOQ
 		<form name="{$prefix}OppSave" onSubmit="return check_form('{$prefix}OppSave')" method="POST" action="index.php">
 			<input type="hidden" name="{$prefix}module" value="Opportunities">
-			<input type="hidden" name="${prefix}action" value="Save">
+			<input type="hidden" name="{$prefix}action" value="Save">
 EOQ;
         $the_form .= $this->getFormBody($prefix, $mod, "{$prefix}OppSave");
         $the_form .= <<<EOQ
@@ -216,7 +217,7 @@ EOQ;
 	document.getElementsByName('{$prefix}sales_stage')[0].onchange = function() {
 			if(typeof(document.getElementsByName('{$prefix}sales_stage')[0].value) != "undefined" && prob_array[document.getElementsByName('{$prefix}sales_stage')[0].value]) {
 				document.getElementsByName('{$prefix}probability')[0].value = prob_array[document.getElementsByName('{$prefix}sales_stage')[0].value];
-			} 
+			}
 		};
 	$prePopProb
 	</script>
@@ -247,7 +248,7 @@ EOQ;
 
 			<input type="hidden" name="{$prefix}record" value="">
 			<input type="hidden" name="{$prefix}account_name">
-			<input type="hidden" name="{$prefix}assigned_user_id" value='${user_id}'>
+			<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
 
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
 <tr>
@@ -262,13 +263,13 @@ EOQ;
     <td scope="row">$lbl_date_closed&nbsp;<span class="required">$lbl_required_symbol</span></td>
 </tr>
 <tr>
-<td ><input name='{$prefix}date_closed' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='${prefix}jscal_field' type="text" value="">&nbsp;<!--not_in_theme!--><span class="suitepicon suitepicon-module-calendar"></span></td>
+<td ><input name='{$prefix}date_closed' onblur="parseDate(this, '$cal_dateformat');" size='12' maxlength='10' id='{$prefix}jscal_field' type="text" value="">&nbsp;<!--not_in_theme!--><span class="suitepicon suitepicon-module-calendar"></span></td>
 </tr>
 EOQ;
         if ($showaccount) {
             $the_form .= <<<EOQ
 <tr>
-    <td scope="row">${mod_strings['LBL_ACCOUNT_NAME']}&nbsp;<span class="required">${lbl_required_symbol}</span></td>
+    <td scope="row">{$mod_strings['LBL_ACCOUNT_NAME']}&nbsp;<span class="required">{$lbl_required_symbol}</span></td>
 </tr>
 <tr>
     <td ><input readonly id='qc_account_name' name='account_name' type='text' value="" size="16"><input id='qc_account_id' name='account_id' type="hidden" value=''>&nbsp;<input  title="{$app_strings['LBL_SELECT_BUTTON_TITLE']}" type="button" class="button" value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name=btn1 LANGUAGE=javascript onclick='return window.open("index.php?module=Accounts&action=Popup&html=Popup_picker&form={$formname}&form_submit=false","","width=600,height=400,resizable=1,scrollbars=1");'></td>
@@ -306,7 +307,7 @@ EOQ;
 
 		<script type="text/javascript">
 		Calendar.setup ({
-			inputField : "{$prefix}jscal_field", ifFormat : "$cal_dateformat", showsTime : false, button : "${prefix}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
+			inputField : "{$prefix}jscal_field", ifFormat : "$cal_dateformat", showsTime : false, button : "{$prefix}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
 		});
 		</script>
 
@@ -346,6 +347,8 @@ EOQ;
         // global $default_language;
         // global $cal_codes;
 
+        $json = null;
+
         $lbl_required_symbol = $app_strings['LBL_REQUIRED_SYMBOL'];
         $lbl_opportunity_name = $mod_strings['LBL_OPPORTUNITY_NAME'];
         $lbl_sales_stage = $mod_strings['LBL_SALES_STAGE'];
@@ -364,7 +367,7 @@ EOQ;
         $the_form = <<<EOQ
 <p>
 			<input type="hidden" name="{$prefix}record" value="">
-			<input type="hidden" name="{$prefix}assigned_user_id" value='${user_id}'>
+			<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
 
 		$lbl_opportunity_name&nbsp;<span class="required">$lbl_required_symbol</span><br>
 		<input name='{$prefix}name' type="text" value="">
@@ -391,7 +394,7 @@ EOQ;
             ///////////////////////////////////////
 
             $the_form .= <<<EOQ
-		${mod_strings['LBL_ACCOUNT_NAME']}&nbsp;<span class="required">${lbl_required_symbol}</span><br>
+		{$mod_strings['LBL_ACCOUNT_NAME']}&nbsp;<span class="required">{$lbl_required_symbol}</span><br>
 		<input class='sqsEnabled' autocomplete='off' id='qc_account_name' name='account_name' type='text' value="" size="16"><input id='qc_account_id' name='account_id' type="hidden" value=''>&nbsp;<input title="{$app_strings['LBL_SELECT_BUTTON_TITLE']}" type="button" class="button" value='{$app_strings['LBL_SELECT_BUTTON_LABEL']}' name=btn1
 			onclick='open_popup("Accounts", 600, 400, "", true, false, {$encoded_popup_request_data});' /><br>
 EOQ;
@@ -465,8 +468,8 @@ EOQ;
 
         $focus->save($check_notify);
 
-        if (!empty($_POST['duplicate_parent_id'])) {
-            clone_relationship($focus->db, array('opportunities_contacts'), 'opportunity_id', $_POST['duplicate_parent_id'], $focus->id);
+        if (!empty($_POST['duplicate_parent_id']) && (new \SuiteCRM\Utility\SuiteValidator())->isValidId($_POST['duplicate_parent_id'] ?? '')) {
+            clone_relationship($focus->db, array('opportunities_contacts'), 'opportunity_id', $focus->db->quote($_POST['duplicate_parent_id']), $focus->id);
         }
         $return_id = $focus->id;
 

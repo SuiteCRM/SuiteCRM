@@ -54,6 +54,7 @@ require_once('include/charts/Charts.php');
 
 
 
+#[\AllowDynamicProperties]
 class charts
 {
 

@@ -49,6 +49,7 @@ require_once __DIR__ . '/../../../../../modules/Emails/NonGmailSentFolderHandler
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class NonGmailSentFolderHandlerMock extends NonGmailSentFolderHandler
 {
     /**

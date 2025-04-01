@@ -51,6 +51,7 @@ require_once("include/SugarFolders/SugarFolders.php");
 require_once 'include/Exceptions/SuiteException.php';
 
 
+#[\AllowDynamicProperties]
 class EmailUI
 {
     public $db;
@@ -191,7 +192,7 @@ class EmailUI
         $this->smarty->assign('dateFormat', $cuDatePref['date']);
         $this->smarty->assign(
             'dateFormatExample',
-            str_replace(array("Y", "m", "d"), array("yyyy", "mm", "dd"), $cuDatePref['date'])
+            str_replace(array("Y", "m", "d"), array("yyyy", "mm", "dd"), (string) $cuDatePref['date'])
         );
         $this->smarty->assign('calFormat', $timedate->get_cal_date_format());
         $this->smarty->assign('TIME_FORMAT', $timedate->get_user_time_format());
@@ -672,7 +673,7 @@ HTML;
         // but not double quotes since json would escape them
         foreach ($composePackage as $key => $singleCompose) {
             if (is_string($singleCompose)) {
-                $composePackage[$key] = str_replace("&nbsp;", " ", from_html($singleCompose));
+                $composePackage[$key] = str_replace("&nbsp;", " ", (string) from_html($singleCompose));
             }
         }
 
@@ -713,7 +714,7 @@ HTML;
         //Generate Language Packs
         $lang = "var app_strings = new Object();\n";
         foreach ($app_strings as $k => $v) {
-            if (strpos($k, 'LBL_EMAIL_') !== false) {
+            if (strpos((string) $k, 'LBL_EMAIL_') !== false) {
                 $vJS = json_encode($v);
                 $lang .= "app_strings.{$k} = {$vJS};\n";
             }
@@ -723,7 +724,7 @@ HTML;
         $email_mod_strings = return_module_language($current_language, 'Emails');
         $modStrings = "var mod_strings = new Object();\n";
         foreach ($email_mod_strings as $k => $v) {
-            $v = str_replace("'", "\'",str_replace("\\'", "'", $v));
+            $v = str_replace("'", "\'",str_replace("\\'", "'", (string) $v));
             $modStrings .= "mod_strings.{$k} = '{$v}';\n";
         }
         $lang .= "\n\n{$modStrings}\n";
@@ -732,7 +733,7 @@ HTML;
         $ieModStrings = "var ie_mod_strings = new Object();\n";
         $ie_mod_strings = return_module_language($current_language, 'InboundEmail');
         foreach ($ie_mod_strings as $k => $v) {
-            $v = str_replace("'", "\'", $v);
+            $v = str_replace("'", "\'", (string) $v);
             $ieModStrings .= "ie_mod_strings.{$k} = '{$v}';\n";
         }
         $lang .= "\n\n{$ieModStrings}\n";
@@ -916,7 +917,7 @@ HTML;
         $addresses = array();
 
         foreach ($obj as $k => $req) {
-            if (strpos($k, 'emailAddress') !== false) {
+            if (strpos((string) $k, 'emailAddress') !== false) {
                 $addresses[$k] = $req;
             }
         }
@@ -1422,6 +1423,7 @@ HTML;
 
     public function getMailBoxesFromCacheValue($mailAccount)
     {
+        $cacheRoot = sugar_cached("modules/Emails/{$mailAccount->id}");
         $foldersCache = $this->getCacheValue($mailAccount->id, 'folders', "folders.php", 'foldersCache');
         $mailboxes = $foldersCache['mailboxes'];
         $mailboxesArray = $mailAccount->generateFlatArrayFromMultiDimArray(
@@ -1456,14 +1458,15 @@ HTML;
 
         if (count($exMbox) >= 2) {
             $mailbox = "";
-            for ($i = 2; $i < count($exMbox); $i++) {
+            $exMboxCount = count($exMbox);
+            for ($i = 2; $i < $exMboxCount; $i++) {
                 if ($mailbox != "") {
                     $mailbox .= ".";
                 }
-                $mailbox .= (string)($exMbox[$i]);
+                $mailbox .= $exMbox[$i];
             }
 
-            $mailbox = substr($key, strpos($key, '.'));
+            $mailbox = substr((string) $key, strpos((string) $key, '.'));
 
             $unseen = $this->getUnreadCount($ie, $mailbox);
 
@@ -1546,6 +1549,9 @@ HTML;
     public function createCopyOfInboundAttachment($ie, $ret, $uid)
     {
         global $sugar_config;
+
+        $cacheFile = [];
+
         if ($ie->isPop3Protocol()) {
             // get the UIDL from database;
             $cachedUIDL = md5($uid);
@@ -1561,7 +1567,7 @@ HTML;
                 $attachmentHtmlData = $meta['attachments'];
                 $actualAttachmentInfo = array();
                 $this->parseAttachmentInfo($actualAttachmentInfo, $attachmentHtmlData);
-                if (count($actualAttachmentInfo) > 0) {
+                if ((is_countable($actualAttachmentInfo) ? count($actualAttachmentInfo) : 0) > 0) {
                     foreach ($actualAttachmentInfo as $key => $value) {
                         $info_vars = array();
                         parse_str($value, $info_vars);
@@ -1585,9 +1591,9 @@ HTML;
 
     public function parseAttachmentInfo(&$actualAttachmentInfo, $attachmentHtmlData)
     {
-        $downLoadPHP = strpos($attachmentHtmlData, "index.php?entryPoint=download&");
+        $downLoadPHP = strpos((string) $attachmentHtmlData, "index.php?entryPoint=download&");
         while ($downLoadPHP) {
-            $attachmentHtmlData = substr($attachmentHtmlData, $downLoadPHP + 30);
+            $attachmentHtmlData = substr((string) $attachmentHtmlData, $downLoadPHP + 30);
             $final = strpos($attachmentHtmlData, "\">");
             $actualAttachmentInfo[] = substr($attachmentHtmlData, 0, $final);
             $attachmentHtmlData = substr($attachmentHtmlData, $final);
@@ -1812,9 +1818,12 @@ HTML;
      */
     public function getDetailViewForEmail2($emailId)
     {
+        global $app_strings, $app_list_strings, $mod_strings;
+
+        $detailView = null;
+        $meta = [];
+
         require_once('include/DetailView/DetailView.php');
-        global $app_strings, $app_list_strings;
-        global $mod_strings;
 
         $smarty = new Sugar_Smarty();
 
@@ -1911,7 +1920,8 @@ HTML;
         }
 
         $attachments = '';
-        for ($i = 0; $i < count($notes_list); $i++) {
+        $notes_listCount = count($notes_list);
+        for ($i = 0; $i < $notes_listCount; $i++) {
             $the_note = $notes_list[$i];
             $attachments .= "<a href=\"index.php?entryPoint=download&id={$the_note->id}&type=Notes\">" . $the_note->name . "</a><br />";
             $focus->cid2Link($the_note->id, $the_note->file_mime_type);
@@ -2090,7 +2100,7 @@ HTML;
             } // for
         } // if
 
-        if (count($emailIds) > 0) {
+        if ((is_countable($emailIds) ? count($emailIds) : 0) > 0) {
             $this->doDistributionWithMethod($users, $emailIds, $distributeMethod);
         } // if
 
@@ -2113,7 +2123,7 @@ HTML;
         } elseif ($distributionMethod == 'leastBusy') {
             $this->distLeastBusy($users, $emailIds);
         } elseif ($distributionMethod == 'direct') {
-            if (count($users) > 1) {
+            if ((is_countable($users) ? count($users) : 0) > 1) {
                 // only 1 user allowed in direct assignment
                 $error = 1;
             } else {
@@ -2246,8 +2256,10 @@ HTML;
     {
         global $timedate;
         global $app_strings, $mod_strings;
+
         $ie->retrieve($_REQUEST['ieId']);
         $noCache = true;
+        $out = [];
 
         $ie->mailbox = $_REQUEST['mbox'];
         $filename = $_REQUEST['mbox'] . $_REQUEST['uid'] . ".php";
@@ -2366,6 +2378,7 @@ eoq;
      */
     public function displayComposeEmail($email)
     {
+
         global $locale;
         global $current_user;
 
@@ -2377,13 +2390,16 @@ eoq;
             $description = (empty($email->description_html)) ? $email->description : $email->description_html;
         }
 
+        $toAddresses = '';
+        $ccAddresses = '';
+
         //Get the most complete address list availible for this email
         $addresses = array('toAddresses' => 'to', 'ccAddresses' => 'cc', 'bccAddresses' => 'bcc');
         foreach ($addresses as $var => $type) {
-            $$var = "";
+            ${$var} = "";
             foreach (array("{$type}_addrs_names", "{$type}addrs", "{$type}_addrs") as $emailVar) {
                 if (!empty($email->$emailVar)) {
-                    $$var = $email->$emailVar;
+                    ${$var} = $email->$emailVar;
                     break;
                 }
             }
@@ -2421,7 +2437,7 @@ eoq;
 
             $ret['cc'] = from_html($email->cc_addrs);
             $toAddresses = from_html($toAddresses);
-            $to = str_replace($this->addressSeparators, "::", $toAddresses);
+            $to = str_replace($this->addressSeparators, "::", (string) $toAddresses);
             $exTo = explode("::", $to);
 
             if (is_array($exTo)) {
@@ -2454,12 +2470,15 @@ eoq;
     public function handleReplyType($email, $type)
     {
         global $mod_strings;
+
         $GLOBALS['log']->debug("****At Handle Reply Type: $type");
+
+        $header = '';
         switch ($type) {
             case "reply":
             case "replyAll":
                 $header = $email->getReplyHeader();
-                if (!preg_match('/^(re:)+/i', $email->name)) {
+                if (!preg_match('/^(re:)+/i', (string) $email->name)) {
                     $email->name = "{$mod_strings['LBL_RE']} {$email->name}";
                 }
                 if ($type == "reply") {
@@ -2477,7 +2496,7 @@ eoq;
 
             case "forward":
                 $header = $email->getForwardHeader();
-                if (!preg_match('/^(fw:)+/i', $email->name)) {
+                if (!preg_match('/^(fw:)+/i', (string) $email->name)) {
                     $email->name = "{$mod_strings['LBL_FW']} {$email->name}";
                 }
                 $email->cc_addrs = "";
@@ -2492,9 +2511,9 @@ eoq;
                 $myCaseMacro = $myCase->getEmailSubjectMacro();
                 $email->parent_name = $myCase->name;
                 $GLOBALS['log']->debug("****Case # : {$myCase->case_number} macro: $myCaseMacro");
-                if (!strpos($email->name, str_replace('%1', $myCase->case_number, $myCaseMacro))) {
+                if (!strpos((string) $email->name, str_replace('%1', $myCase->case_number, (string) $myCaseMacro))) {
                     $GLOBALS['log']->debug("Replacing");
-                    $email->name = str_replace('%1', $myCase->case_number, $myCaseMacro) . ' ' . $email->name;
+                    $email->name = str_replace('%1', $myCase->case_number, (string) $myCaseMacro) . ' ' . $email->name;
                 }
                 $email->name = "{$mod_strings['LBL_RE']} {$email->name}";
                 break;
@@ -2543,25 +2562,26 @@ eoq;
             $whereAdd .= "{$column} LIKE '{$clause}%'";
         }
 
+        foreach ($peopleTables as $tableName) {
+            $module = ucfirst($tableName);
+            $personBean = BeanFactory::getBean($module);
 
-        foreach ($peopleTables as $table) {
-            $module = ucfirst($table);
-            $class = substr($module, 0, strlen($module) - 1);
-            require_once("modules/{$module}/{$class}.php");
-            $person = new $class();
-            if (!$person->ACLAccess('list')) {
+            if ($personBean !== false || !$personBean->ACLAccess('list')) {
                 continue;
             } // if
+            $table = $personBean->getTableName();
             $where = "({$table}.deleted = 0 AND eabr.primary_address = 1 AND {$table}.id <> '{$current_user->id}')";
 
-            if (ACLController::requireOwner($module, 'list')) {
-                $where = $where . " AND ({$table}.assigned_user_id = '{$current_user->id}')";
-            } // if
+            $accessWhere = $personBean->buildAccessWhere('list');
+            if (!empty($accessWhere)) {
+                $where .= ' AND '. $accessWhere;
+            }
+
             if (!empty($whereAdd)) {
                 $where .= " AND ({$whereAdd})";
             }
 
-            if ($person === 'accounts') {
+            if ($personBean instanceof Company) {
                 $t = "SELECT {$table}.id, '' first_name, {$table}.name, eabr.primary_address, ea.email_address, '{$module}' module ";
             } else {
                 $t = "SELECT {$table}.id, {$table}.first_name, {$table}.last_name, eabr.primary_address, ea.email_address, '{$module}' module ";
@@ -2570,18 +2590,6 @@ eoq;
             $t .= "JOIN email_addr_bean_rel eabr ON ({$table}.id = eabr.bean_id and eabr.deleted=0) ";
             $t .= "JOIN email_addresses ea ON (eabr.email_address_id = ea.id) ";
             $t .= " WHERE {$where}";
-
-            /* BEGIN - SECURITY GROUPS */
-            //this function may not even be used anymore. Seems like findEmailFromBeanIds is preferred now
-            if ($person->bean_implements('ACL') && ACLController::requireSecurityGroup($module, 'list')) {
-                require_once('modules/SecurityGroups/SecurityGroup.php');
-                global $current_user;
-                $owner_where = $person->getOwnerWhere($current_user->id);
-                $group_where = SecurityGroup::getGroupWhere($table, $module, $current_user->id);
-                $t .= " AND (" . $owner_where . " or " . $group_where . ") ";
-            }
-            /* END - SECURITY GROUPS */
-
 
             if (!empty($q)) {
                 $q .= "\n UNION ALL \n";
@@ -2640,7 +2648,7 @@ eoq;
                 foreach ($searchBeans as $searchBean) {
                     if ($focus->load_relationship($searchBean)) {
                         $data = $focus->$searchBean->get();
-                        if (count($data) != 0) {
+                        if ((is_countable($data) ? count($data) : 0) != 0) {
                             $q[] = '(' . $this->findEmailFromBeanIds($data, $searchBean, $whereArr) . ')';
                         }
                     }
@@ -2651,7 +2659,7 @@ eoq;
             } else {
                 if ($focus->load_relationship($beanType)) {
                     $data = $focus->$beanType->get();
-                    if (count($data) != 0) {
+                    if ((is_countable($data) ? count($data) : 0) != 0) {
                         $finalQuery = $this->findEmailFromBeanIds($data, $beanType, $whereArr);
                     }
                 }
@@ -2665,6 +2673,7 @@ eoq;
     public function findEmailFromBeanIds($beanIds, $beanType, $whereArr)
     {
         global $current_user;
+        $t = '';
         $q = '';
         $whereAdd = "";
         $relatedIDs = '';
@@ -2675,41 +2684,44 @@ eoq;
             $relatedIDs = implode(',', $beanIds);
         }
 
-        if ($beanType == 'accounts') {
-            if (isset($whereArr['first_name'])) {
-                $whereArr['name'] = $whereArr['first_name'];
-            }
-            unset($whereArr['last_name']);
-            unset($whereArr['first_name']);
-        }
+        $module = ucfirst($beanType);
+        $personBean = BeanFactory::getBean($module);
+        if ($personBean !== false  && $personBean->ACLAccess('list')) {
 
-        foreach ($whereArr as $column => $clause) {
-            if (!empty($whereAdd)) {
-                $whereAdd .= " OR ";
+            if ($personBean instanceof Company) {
+                if (isset($whereArr['first_name'])) {
+                    $whereArr['name'] = $whereArr['first_name'];
+                }
+                unset($whereArr['last_name']);
+                unset($whereArr['first_name']);
             }
-            $clause = $current_user->db->quote($clause);
-            $whereAdd .= "{$column} LIKE '{$clause}%'";
-        }
-        $table = $beanType;
-        $module = ucfirst($table);
-        $class = substr($module, 0, strlen($module) - 1);
-        require_once("modules/{$module}/{$class}.php");
-        $person = new $class();
-        if ($person->ACLAccess('list')) {
-            if ($relatedIDs != '') {
+
+            foreach ($whereArr as $column => $clause) {
+                if (!empty($whereAdd)) {
+                    $whereAdd .= " OR ";
+                }
+                $clause = $current_user->db->quote($clause);
+                $whereAdd .= "{$column} LIKE '{$clause}%'";
+            }
+
+
+            $table = $personBean->getTableName();
+            if ($relatedIDs !== '') {
                 $where = "({$table}.deleted = 0 AND eabr.primary_address = 1 AND {$table}.id in ($relatedIDs))";
             } else {
                 $where = "({$table}.deleted = 0 AND eabr.primary_address = 1)";
             }
 
-            if (ACLController::requireOwner($module, 'list')) {
-                $where = $where . " AND ({$table}.assigned_user_id = '{$current_user->id}')";
-            } // if
+            $accessWhere = $personBean->buildAccessWhere('list');
+            if (!empty($accessWhere)) {
+                $where .= ' AND '. $accessWhere;
+            }
+
             if (!empty($whereAdd)) {
                 $where .= " AND ({$whereAdd})";
             }
 
-            if ($beanType === 'accounts') {
+            if ($personBean instanceof Company) {
                 $t = "SELECT {$table}.id, '' first_name, {$table}.name last_name, eabr.primary_address, ea.email_address, '{$module}' module ";
             } else {
                 $t = "SELECT {$table}.id, {$table}.first_name, {$table}.last_name, eabr.primary_address, ea.email_address, '{$module}' module ";
@@ -2719,16 +2731,6 @@ eoq;
             $t .= "JOIN email_addr_bean_rel eabr ON ({$table}.id = eabr.bean_id and eabr.deleted=0) ";
             $t .= "JOIN email_addresses ea ON (eabr.email_address_id = ea.id) ";
             $t .= " WHERE {$where}";
-            /* BEGIN - SECURITY GROUPS */
-            //this function may not even be used anymore. Seems like findEmailFromBeanIds is preferred now
-            if ($person->bean_implements('ACL') && ACLController::requireSecurityGroup($module, 'list')) {
-                require_once('modules/SecurityGroups/SecurityGroup.php');
-                global $current_user;
-                $owner_where = $person->getOwnerWhere($current_user->id);
-                $group_where = SecurityGroup::getGroupWhere($table, $module, $current_user->id);
-                $t .= " AND (" . $owner_where . " or " . $group_where . ") ";
-            }
-            /* END - SECURITY GROUPS */
         } // if
 
         return $t;
@@ -2902,7 +2904,7 @@ eoq;
         $replacee = array("::TYPE::", "::STATUS::", "::USER_ID::");
         $replacer = array($type, $status, $userId);
 
-        $ret = str_replace($replacee, $replacer, $q);
+        $ret = str_replace($replacee, $replacer, (string) $q);
 
         if ($type == 'inbound') {
             $ret .= " AND status NOT IN ('sent', 'archived', 'draft') AND type NOT IN ('out', 'archived', 'draft')";
@@ -3011,7 +3013,7 @@ eoq;
         foreach ($ieAccountsFull as $k => $v) {
             $personalSelected = (!empty($showFolders) && in_array($v->id, $showFolders));
 
-            $allowOutboundGroupUsage = $v->get_stored_options('allow_outbound_group_usage', false);
+            $allowOutboundGroupUsage = isTrue($v->get_stored_options('allow_outbound_group_usage', false) ?? false);
             $groupSelected = (in_array($v->groupfolder_id, $groupSubs) && $allowOutboundGroupUsage);
             $selected = ($personalSelected || $groupSelected);
 
@@ -3197,13 +3199,14 @@ eoq;
         $good = array("&lt;", "&gt;", "&#39;", "&quot;", "&amp;");
 
         $ret = "";
+        $aCount = count($a);
 
-        for ($i = 0; $i < count($a); $i++) {
+        for ($i = 0; $i < $aCount; $i++) {
             $email = $a[$i];
             $ret .= "\n<{$paramName}>";
 
             foreach ($email as $k => $v) {
-                $ret .= "\n\t<{$k}>" . str_replace($bad, $good, $v) . "</{$k}>";
+                $ret .= "\n\t<{$k}>" . str_replace($bad, $good, (string) $v) . "</{$k}>";
             }
             $ret .= "\n</{$paramName}>";
         }
@@ -3231,7 +3234,7 @@ eoq;
             $type = $v->is_personal ? $mod_strings['LBL_MAILBOX_TYPE_PERSONAL'] : $mod_strings['LBL_MAILBOX_TYPE_GROUP'];
 
             $personalSelected = (!empty($showFolders) && in_array($v->id, $showFolders, true));
-            $allowOutboundGroupUsage = $v->get_stored_options('allow_outbound_group_usage', false);
+            $allowOutboundGroupUsage = isTrue($v->get_stored_options('allow_outbound_group_usage', false) ?? false);
             $selected = $personalSelected || $allowOutboundGroupUsage  || is_admin($current_user);
 
             if (!$selected) {
@@ -3260,10 +3263,10 @@ eoq;
             //Retrieve the related IE accounts.
             $relatedIEAccounts = $ie->retrieveByGroupFolderId($singleGroup['id']);
 
-            if (count($relatedIEAccounts) == 0) {
+            if ((is_countable($relatedIEAccounts) ? count($relatedIEAccounts) : 0) == 0) {
                 $server_url = $app_strings['LBL_EMAIL_MULT_GROUP_FOLDER_ACCOUNTS_EMPTY'];
             } else {
-                if (count($relatedIEAccounts) == 1) {
+                if ((is_countable($relatedIEAccounts) ? count($relatedIEAccounts) : 0) == 1) {
                     if ($relatedIEAccounts[0]->status != 'Active' || $relatedIEAccounts[0]->mailbox_type == 'bounce') {
                         continue;
                     }
@@ -3518,15 +3521,12 @@ eoq;
      */
     public function jsonOuput($data, $resultsParam, $count = 0, $fromCache = true, $unread = -1)
     {
+
         global $app_strings;
 
         $count = ($count > 0) ? $count : 0;
 
-        if (isset($a['fromCache'])) {
-            $cached = ($a['fromCache'] == 1) ? 1 : 0;
-        } else {
-            $cached = ($fromCache) ? 1 : 0;
-        }
+        $cached = ($fromCache) ? 1 : 0;
 
         if ($data['mbox'] == 'undefined' || empty($data['mbox'])) {
             $data['mbox'] = $app_strings['LBL_NONE'];
@@ -3597,10 +3597,10 @@ eoq;
         $defaultNum = 2;
         $pattern = '/@.*,/U';
         preg_match_all($pattern, $tempStr, $matchs);
-        $totalCount = count($matchs[0]);
+        $totalCount = is_countable($matchs[0]) ? count($matchs[0]) : 0;
 
         if (!empty($matchs[0]) && $totalCount > $defaultNum) {
-            $position = strpos($tempStr, $matchs[0][$defaultNum]);
+            $position = strpos($tempStr, (string) $matchs[0][$defaultNum]);
             $hiddenCount = $totalCount - $defaultNum;
             $frontStr = substr($tempStr, 0, $position);
             $backStr = substr($tempStr, $position, -1);
@@ -3618,10 +3618,11 @@ eoq;
      */
     public function unifyEmailString($str)
     {
+        $new = [];
         preg_match_all('/@.*;/U', $str, $matches);
         if (!empty($matches[0])) {
             foreach ($matches[0] as $key => $value) {
-                $new[] = str_replace(";", ",", $value);
+                $new[] = str_replace(";", ",", (string) $value);
             }
 
             return str_replace($matches[0], $new, $str);

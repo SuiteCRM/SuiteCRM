@@ -41,6 +41,7 @@
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 require_once('modules/DynamicFields/FieldViewer.php');
 
+#[\AllowDynamicProperties]
 class ViewModulefield extends SugarView
 {
     /**
@@ -208,8 +209,8 @@ class ViewModulefield extends SugarView
                         continue;
                     } //bug51866
                     $enumFields[$field] = translate($def['vname'], $moduleName);
-                    if (substr($enumFields[$field], -1) == ":") {
-                        $enumFields[$field] = substr($enumFields[$field], 0, strlen($enumFields[$field]) - 1);
+                    if (substr((string) $enumFields[$field], -1) == ":") {
+                        $enumFields[$field] = substr((string) $enumFields[$field], 0, strlen((string) $enumFields[$field]) - 1);
                     }
                 }
             }
@@ -217,7 +218,7 @@ class ViewModulefield extends SugarView
 
             $GLOBALS['log']->warn('view.modulefield: hidelevel '.$fv->ss->get_template_vars('hideLevel')." ".print_r($vardef, true));
             if (!empty($vardef['vname'])) {
-                $fv->ss->assign('lbl_value', htmlentities(translate($vardef['vname'], $moduleName), ENT_QUOTES, 'UTF-8'));
+                $fv->ss->assign('lbl_value', htmlentities((string) translate($vardef['vname'], $moduleName), ENT_QUOTES, 'UTF-8'));
             }
             $fv->ss->assign('module', $module);
             if (empty($module->mbvardefs->vardefs['fields']['parent_name']) || (isset($vardef['type']) && $vardef['type'] == 'parent')) {
@@ -269,7 +270,7 @@ class ViewModulefield extends SugarView
             $fv->ss->assign('MB', '1');
 
             if (isset($vardef['vname'])) {
-                $fv->ss->assign('lbl_value', htmlentities($module->getLabel('en_us', $vardef['vname']), ENT_QUOTES, 'UTF-8'));
+                $fv->ss->assign('lbl_value', htmlentities((string) $module->getLabel('en_us', $vardef['vname']), ENT_QUOTES, 'UTF-8'));
             }
             if (empty($module->mbvardefs->vardefs['fields']['parent_name']) || (isset($vardef['type']) && $vardef['type'] == 'parent')) {
                 $field_types['parent'] = $GLOBALS['mod_strings']['parent'];
@@ -281,8 +282,8 @@ class ViewModulefield extends SugarView
                     if (!empty($def['type']) && $def['type'] == "enum" && $field != $vardef['name']) {
                         $enumFields[$field] = isset($module->mblanguage->strings[$current_language][$def['vname']]) ?
                             $this->mbModule->mblanguage->strings[$current_language][$def['vname']] : translate($field);
-                        if (substr($enumFields[$field], -1) == ":") {
-                            $enumFields[$field] = substr($enumFields[$field], 0, strlen($enumFields[$field]) -1);
+                        if (substr((string) $enumFields[$field], -1) == ":") {
+                            $enumFields[$field] = substr((string) $enumFields[$field], 0, strlen((string) $enumFields[$field]) -1);
                         }
                     }
                 }
@@ -297,7 +298,7 @@ class ViewModulefield extends SugarView
             $field->populateFromPost();
             $vardef = $field->get_field_def();
             $vardef['options'] = $_REQUEST['new_dropdown'];
-            $fv->ss->assign('lbl_value', htmlentities($_REQUEST['labelValue'], ENT_QUOTES, 'UTF-8'));
+            $fv->ss->assign('lbl_value', htmlentities((string) $_REQUEST['labelValue'], ENT_QUOTES, 'UTF-8'));
         }
 
         foreach (array("formula", "default", "comments", "help", "visiblityGrid") as $toEscape) {
@@ -332,7 +333,7 @@ class ViewModulefield extends SugarView
             }
             
             if (!isset($field['source']) || $field['source'] != 'non-db') {
-                if (preg_match('/^(.*?)(_c)?$/', $field['name'], $matches)) {
+                if (preg_match('/^(.*?)(_c)?$/', (string) $field['name'], $matches)) {
                     $existing_field_names [] = strtoupper($matches[1]);
                 }
             }

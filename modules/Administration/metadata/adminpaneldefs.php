@@ -267,6 +267,20 @@ $admin_option_defs['Emails']['mailboxes_outbound'] = [
     './index.php?module=OutboundEmailAccounts&action=index',
     'outbound-email'
 ];
+$admin_option_defs['Emails']['external_oauth_connections'] = [
+    'ExternalOAuthConnection',
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS',
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS_DESC',
+    'index.php?module=ExternalOAuthConnection&action=index',
+    'oauth2'
+];
+$admin_option_defs['Emails']['external_oauth_providers'] = [
+    'ExternalOAuthProvider',
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS',
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS_DESC',
+    'index.php?module=ExternalOAuthProvider&action=index',
+    'oauth2'
+];
 $admin_option_defs['Campaigns']['mass_Email'] = [
     'EmailQueue',
     'LBL_MASS_EMAIL_MANAGER_TITLE',

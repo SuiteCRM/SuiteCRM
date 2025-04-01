@@ -56,6 +56,7 @@ use SuiteCRM\Utility\SuiteValidator;
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSyncBase
 {
     /** @var User The SuiteCRM User Bean we're currently working with */
@@ -379,7 +380,7 @@ class GoogleSyncBase
     protected function getSuiteCRMCalendar(Google\Service\Calendar\CalendarList $calendarList)
     {
         foreach ($calendarList->getItems() as $calendarListEntry) {
-            if ($calendarListEntry->getSummary() == $this->suiteCalendarName) {
+            if ($calendarListEntry->getSummary() === $this->suiteCalendarName) {
                 return $calendarListEntry->getId();
                 break;
             }
@@ -419,7 +420,7 @@ class GoogleSyncBase
         if (empty($results)) {
             $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'No events found.');
         } else {
-            $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'Found ' . count($results) . ' Google Events');
+            $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'Found ' . (is_countable($results) ? count($results) : 0) . ' Google Events');
         }
 
         return $results;
@@ -547,8 +548,8 @@ class GoogleSyncBase
      * and inserted. If one is provided, the existing Google Event will
      * be updated.
      *
-     * @param Meeting $event_local : SuiteCRM Meeting Bean
-     * @param \Google\Service\Calendar\Event $event_remote (optional) \Google\Service\Calendar\Event Object
+     * @param Meeting|null $event_local : SuiteCRM Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event_remote (optional) \Google\Service\Calendar\Event Object
      *
      * @return string|bool Meeting Id on success, false on failure
      */
@@ -621,8 +622,8 @@ class GoogleSyncBase
      * If the SuiteCRM Meeting is not provided, a new one will be created
      * and inserted. If one is provided, the existing meeting will be updated.
      *
-     * @param \Google\Service\Calendar\Event $event_remote \Google\Service\Calendar\Event Object
-     * @param Meeting $event_local Meeting (optional) \Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event_remote \Google\Service\Calendar\Event Object
+     * @param Meeting|null $event_local Meeting (optional) \Meeting Bean
      *
      * @return bool Success/Failure of setLastSync, since that's what saves the record
      * @throws GoogleSyncException if returned event invalid
@@ -663,7 +664,7 @@ class GoogleSyncBase
     /**
      * Delete SuiteCRM Meeting
      *
-     * @param Meeting $meeting SuiteCRM Meeting Bean
+     * @param Meeting|null $meeting SuiteCRM Meeting Bean
      *
      * @return string|bool Meeting Id on success, false on failure (from setLastSync, since that's what saves the record)
      */
@@ -681,7 +682,7 @@ class GoogleSyncBase
     /**
      * Delete Google Event
      *
-     * @param \Google\Service\Calendar\Event $event \Google\Service\Calendar\Event Object
+     * @param \Google\Service\Calendar\Event|null $event \Google\Service\Calendar\Event Object
      * @param String $meeting_id SuiteCRM Meeting Id
      *
      * @return string Meeting Id on success

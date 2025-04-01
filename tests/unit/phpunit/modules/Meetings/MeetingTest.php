@@ -79,7 +79,7 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($meeting->id));
-        self::assertEquals(36, strlen($meeting->id));
+        self::assertEquals(36, strlen((string) $meeting->id));
 
         /* Test set_accept_status method */
 
@@ -211,12 +211,12 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $meeting->set_notification_body(new Sugar_Smarty(), $meeting);
 
-        self::assertEquals($meeting->name, $result->_tpl_vars['MEETING_SUBJECT']);
-        self::assertEquals($meeting->status, $result->_tpl_vars['MEETING_STATUS']);
-        self::assertEquals('SuiteCRM', $result->_tpl_vars['MEETING_TYPE']);
-        self::assertEquals($meeting->duration_hours, $result->_tpl_vars['MEETING_HOURS']);
-        self::assertEquals($meeting->duration_minutes, $result->_tpl_vars['MEETING_MINUTES']);
-        self::assertEquals($meeting->description, $result->_tpl_vars['MEETING_DESCRIPTION']);
+        self::assertEquals($meeting->name, $result->tpl_vars['MEETING_SUBJECT']->value);
+        self::assertEquals($meeting->status, $result->tpl_vars['MEETING_STATUS']->value);
+        self::assertEquals('SuiteCRM', $result->tpl_vars['MEETING_TYPE']->value);
+        self::assertEquals($meeting->duration_hours, $result->tpl_vars['MEETING_HOURS']->value);
+        self::assertEquals($meeting->duration_minutes, $result->tpl_vars['MEETING_MINUTES']->value);
+        self::assertEquals($meeting->description, $result->tpl_vars['MEETING_DESCRIPTION']->value);
     }
 
     public function testcreate_notification_email(): void
@@ -238,7 +238,7 @@ class MeetingTest extends SuitePHPUnitFrameworkTestCase
     public function testsend_assignment_notifications(): void
     {
         $notify_user = new User(1);
-        
+
         $meeting = BeanFactory::newBean('Meetings');
 
         $meeting->date_start = '2016-02-11 17:30:00';

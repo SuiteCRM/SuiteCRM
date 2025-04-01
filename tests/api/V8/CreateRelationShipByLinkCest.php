@@ -7,6 +7,7 @@ use \Codeception\Exception\ModuleException;
 
 require_once __DIR__ . '/../../../include/utils.php';
 
+#[\AllowDynamicProperties]
 class CreateRelationShipByLinkCest
 {
     /**
@@ -74,7 +75,7 @@ class CreateRelationShipByLinkCest
 
         $responseJson = $I->grabResponse();
 
-        $responseArray = json_decode($responseJson, true);
+        $responseArray = json_decode((string) $responseJson, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($responseArray);
 

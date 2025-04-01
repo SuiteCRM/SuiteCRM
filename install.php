@@ -130,6 +130,7 @@ function getSupportedInstallLanguages()
         'en_us'	=> 'English (US)',
     );
     if (file_exists('install/lang.config.php')) {
+        $config = [];
         include('install/lang.config.php');
         if (!empty($config['languages'])) {
             foreach ($config['languages'] as $k=>$v) {
@@ -157,7 +158,7 @@ if (!isset($_POST['language']) && (!isset($_SESSION['language']) && empty($_SESS
 }
 
 if (isset($_POST['language'])) {
-    $_SESSION['language'] = str_replace('-', '_', $_POST['language']);
+    $_SESSION['language'] = str_replace('-', '_', (string) $_POST['language']);
 }
 
 $current_language = isset($_SESSION['language']) ? $_SESSION['language'] : $default_lang;
@@ -195,7 +196,7 @@ if (isset($sugar_config['installer_locked']) && $sugar_config['installer_locked'
                 'installer_locked' => false,
             </pre>
             <p>{$mod_strings['LBL_DISABLED_DESCRIPTION_2']}</p>
-        
+
             <p>{$mod_strings['LBL_DISABLED_HELP_1']} <a href="{$mod_strings['LBL_DISABLED_HELP_LNK']}" target="_blank">{$mod_strings['LBL_DISABLED_HELP_2']}</a>.</p>
 EOQ;
 
@@ -593,7 +594,7 @@ EOQ;
                     $_SESSION['setup_db_type'] = $_REQUEST['setup_db_type'];
                 }
                 $validation_errors = validate_systemOptions();
-                if (count($validation_errors) > 0) {
+                if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                     $next_step--;
                 }
                 //break;
@@ -628,7 +629,7 @@ EOQ;
 
                 $validation_errors = array();
                 $validation_errors = validate_siteConfig('a');
-                if (count($validation_errors) > 0 || $_REQUEST['goto'] == 'resend') {
+                if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0 || $_REQUEST['goto'] == 'resend') {
                     $next_step--;
                 }
                 //break;
@@ -665,7 +666,7 @@ EOQ;
 
                 $validation_errors = array();
                 $validation_errors = validate_siteConfig('b');
-                if (count($validation_errors) > 0) {
+                if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                     $next_step--;
                 }
                 break;
@@ -755,17 +756,17 @@ EOQ;
             }
 
             $validation_errors = validate_dbConfig();
-            if (count($validation_errors) > 0) {
+            if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                 $the_file = 'dbConfig_a.php';
                 $si_errors = true;
             }
             $validation_errors = validate_siteConfig('a');
-            if (count($validation_errors) > 0) {
+            if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                 $the_file = 'siteConfig_a.php';
                 $si_errors = true;
             }
             $validation_errors = validate_siteConfig('b');
-            if (count($validation_errors) > 0) {
+            if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                 $the_file = 'siteConfig_b.php';
                 $si_errors = true;
             }
@@ -806,7 +807,7 @@ EOQ;
             if (isset($_REQUEST['cli']) && ($_REQUEST['cli'] == 'true')) {
                 $_SESSION['cli'] = true;
                 // if we have errors, just shoot them back now
-                if (count($validation_errors) > 0) {
+                if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
                     foreach ($validation_errors as $error) {
                         print($mod_strings['ERR_ERROR_GENERAL']."\n");
                         print("    " . $error . "\n");

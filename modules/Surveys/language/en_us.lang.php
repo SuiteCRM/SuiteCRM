@@ -40,6 +40,7 @@
 
 $mod_strings = array(
     'LBL_ASSIGNED_TO_ID'                                     => 'Assigned User Id',
+    'LBL_ADD_OPTION'                                         => 'Add new option',
     'LBL_ASSIGNED_TO_NAME'                                   => 'Assigned to',
     'LBL_SECURITYGROUPS'                                     => 'Security Groups',
     'LBL_SECURITYGROUPS_SUBPANEL_TITLE'                      => 'Security Groups',
@@ -91,6 +92,7 @@ $mod_strings = array(
     'LBL_SURVEYS_SURVEYQUESTIONS_FROM_SURVEYQUESTIONS_TITLE' => 'Survey Questions',
     'LBL_SURVEYS_SURVEYRESPONSES_FROM_SURVEYRESPONSES_TITLE' => 'Survey Responses',
     'LBL_SHOW_RESPONSES' => 'Show responses',
+    'LBL_HIDE_RESPONSES' => 'Hide responses',
     'LBL_SURVEY_QUESTION' => 'Question',
     'LBL_SURVEY_TEXT' => 'Text',
     'LBL_SURVEY_TYPE' => 'Type',
@@ -101,5 +103,7 @@ $mod_strings = array(
     'LBL_SURVEY_DISTINCT' => 'Distinct Surveys Sent:',
     'LBL_DRAFT' => 'Draft',
     'LBL_SUBMIT' => 'Submit',
-    'LBL_STARS' => 'Stars'
+    'LBL_STARS' => 'Stars',
+    'LBL_SURVEY_CLOSE_RESPONSE' => 'Thanks for your interest but this survey is now closed.',
+    'LBL_SURVEY_THANKS' => 'Thanks for completing this survey.',
 );

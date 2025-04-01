@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewSmarty.php');
 
 
+#[\AllowDynamicProperties]
 class ImportListView
 {
     /**
@@ -151,8 +152,8 @@ class ImportListView
     {
         $maxColumns = 0;
         foreach ($this->data as $data) {
-            if (count($data) > $maxColumns) {
-                $maxColumns = count($data);
+            if ((is_countable($data) ? count($data) : 0) > $maxColumns) {
+                $maxColumns = is_countable($data) ? count($data) : 0;
             }
         }
         return $maxColumns;

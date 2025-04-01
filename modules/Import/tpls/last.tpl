@@ -49,7 +49,6 @@
     }
 div.resultsTable {
     overflow: auto;
-    width: 1056px;
     padding-top: 20px;
     position: relative;
 }
@@ -98,7 +97,7 @@ div.resultsTable {
 </form>
 
 <br/>
-    
+
 <table width="100%" id="tabListContainerTable" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td nowrap id="tabListContainerTD">

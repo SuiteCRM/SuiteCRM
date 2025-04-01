@@ -39,6 +39,7 @@
  */
 
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
+#[\AllowDynamicProperties]
 class ViewExportcustomizations extends SugarView
 {
     /**
@@ -56,6 +57,8 @@ class ViewExportcustomizations extends SugarView
 
     public function display()
     {
+        $modules = [];
+        $custom = [];
         global $current_user, $mod_strings;
         $smarty = new Sugar_Smarty();
         $mb = new MBPackage("packageCustom");

@@ -42,15 +42,15 @@ namespace SuiteCRM\API\OAuth2\Repositories;
 
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\ClientEntity;
-use SuiteCRM\API\OAuth2\Exception\GrantTypeNotAllowedForClient;
 
+#[\AllowDynamicProperties]
 class ClientRepository implements ClientRepositoryInterface
 {
     /**
      * {@inheritdoc}
      * @return null|ClientEntity
      */
-    public function getClientEntity($clientIdentifier, $grantType, $clientSecret = null, $mustValidateSecret = true)
+    public function getClientEntity($clientIdentifier)
     {
         $client = new \OAuth2Clients();
         $client->retrieve($clientIdentifier);
@@ -58,25 +58,28 @@ class ClientRepository implements ClientRepositoryInterface
             return null;
         }
 
-        if ($client->allowed_grant_type !== $grantType) {
-            throw new GrantTypeNotAllowedForClient();
-        }
-
-        if (
-            $mustValidateSecret === true
-            && (bool)$client->is_confidential === true
-            && hash('sha256', $clientSecret) !== $client->secret
-        ) {
-            return null;
-        }
-
         $clientEntity = new ClientEntity();
         $clientEntity->setIdentifier($clientIdentifier);
         $clientEntity->setName($client->name);
-
-        $redirect_url = isset($client->redirect_uri) ? $client->redirect_uri : '';
-        $clientEntity->setRedirectUri($redirect_url);
+        $clientEntity->setRedirectUri($client->redirect_uri ?? '');
+        $clientEntity->setIsConfidential($client->is_confidential ?? false);
 
         return $clientEntity;
+    }
+
+    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    {
+        $client = new \OAuth2Clients();
+        $client->retrieve($clientIdentifier);
+        if (empty($client->id)) {
+            return null;
+        }
+
+        if ($grantType === $client->allowed_grant_type || $grantType === 'refresh_token')
+        {
+            return hash('sha256', $clientSecret) === $client->secret;
+        }
+
+        return false;
     }
 }

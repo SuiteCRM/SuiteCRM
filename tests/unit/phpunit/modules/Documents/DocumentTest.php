@@ -44,7 +44,7 @@ class DocumentTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($document->id));
-        self::assertEquals(36, strlen($document->id));
+        self::assertEquals(36, strlen((string) $document->id));
 
         //execute Get_document_name() method and verify it gets the name correctly
         self::assertEquals(null, $document->get_document_name(1));

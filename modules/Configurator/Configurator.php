@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Configurator
 {
     /** @var array */
@@ -363,7 +364,7 @@ class Configurator
     {
         if (!empty($this->override)) {
             $pattern = '/.*CONFIGURATOR[^\$]*\$' . $array_name . '\[\'' . $key . '\'\][\ ]*=[\ ]*[^;]*;\n/';
-            $this->override = preg_replace($pattern, '', $this->override);
+            $this->override = preg_replace($pattern, '', (string) $this->override);
         } else {
             $this->override = "<?php\n\n?>";
         }
@@ -374,7 +375,7 @@ class Configurator
         $GLOBALS[$array_name][$key] = $value;
         $this->overrideClearDuplicates($array_name, $key);
         $new_entry = '/***CONFIGURATOR***/' . override_value_to_string($array_name, $key, $value);
-        $this->override = str_replace('?>', "$new_entry\n?>", $this->override);
+        $this->override = str_replace('?>', "$new_entry\n?>", (string) $this->override);
     }
 
     public function restoreConfig()

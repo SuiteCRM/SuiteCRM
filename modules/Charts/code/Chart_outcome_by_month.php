@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/charts/Charts.php');
 
+#[\AllowDynamicProperties]
 class Chart_outcome_by_month
 {
     public $modules = array('Opportunities');
@@ -105,11 +106,11 @@ class Chart_outcome_by_month
         $ids = array();
         //get list of user ids for which to display data
         $user_ids = $current_user->getPreference('obm_ids');
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['obm_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['obm_ids'])) {
             $ids = $user_ids;
             $GLOBALS['log']->debug("USER PREFERENCES['obm_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['obm_ids']) && count($_REQUEST['obm_ids']) > 0) {
+        } elseif (isset($_REQUEST['obm_ids']) && (is_countable($_REQUEST['obm_ids']) ? count($_REQUEST['obm_ids']) : 0) > 0) {
             $ids = $_REQUEST['obm_ids'];
             $current_user->setPreference('obm_ids', $_REQUEST['obm_ids']);
             $GLOBALS['log']->debug("_REQUEST['obm_ids'] is:");
@@ -175,7 +176,7 @@ class Chart_outcome_by_month
 <tr>
 	<td valign='top' nowrap ><b><?php echo $current_module_strings['LBL_YEAR']?></b><br><span class="dateFormat"><?php echo $app_strings['NTC_YEAR_FORMAT']?></span></td>
 	<td valign='top' ><input class="text" name="obm_year" size='12' maxlength='10' id='obm_year'  value='<?php if (isset($date_start)) {
-            echo substr($date_start, 0, 4);
+            echo substr((string) $date_start, 0, 4);
         } ?>'>&nbsp;&nbsp;</td>
 	<td valign='top'><b><?php echo $current_module_strings['LBL_USERS']; ?></b></td>
 	<td valign='top'><select name="obm_ids[]" multiple size='3'><?php echo get_select_options_with_id(get_user_array(false), $ids); ?></select></td>
@@ -240,7 +241,7 @@ echo get_validate_chart_js();
 
             $where = "";
             //build the where clause for the query that matches $user
-            $count = count($user_id);
+            $count = is_countable($user_id) ? count($user_id) : 0;
             $id = array();
             if ($count>0) {
                 foreach ($user_id as $the_id) {
@@ -401,11 +402,11 @@ echo get_validate_chart_js();
         $ids = array();
         //get list of user ids for which to display data
         $user_ids = $current_user->getPreference('obm_ids');
-        if (!empty($user_ids) && count($user_ids) != 0 && !isset($_REQUEST['obm_ids'])) {
+        if (!empty($user_ids) && (is_countable($user_ids) ? count($user_ids) : 0) != 0 && !isset($_REQUEST['obm_ids'])) {
             $ids = $user_ids;
             $GLOBALS['log']->debug("USER PREFERENCES['obm_ids'] is:");
             $GLOBALS['log']->debug($user_ids);
-        } elseif (isset($_REQUEST['obm_ids']) && count($_REQUEST['obm_ids']) > 0) {
+        } elseif (isset($_REQUEST['obm_ids']) && (is_countable($_REQUEST['obm_ids']) ? count($_REQUEST['obm_ids']) : 0) > 0) {
             $ids = $_REQUEST['obm_ids'];
             $current_user->setPreference('obm_ids', $_REQUEST['obm_ids']);
             $GLOBALS['log']->debug("_REQUEST['obm_ids'] is:");
@@ -421,7 +422,7 @@ echo get_validate_chart_js();
 
         $where = "";
         //build the where clause for the query that matches $user
-        $count = count($user_id);
+        $count = is_countable($user_id) ? count($user_id) : 0;
         $id = array();
         if ($count>0) {
             foreach ($user_id as $the_id) {

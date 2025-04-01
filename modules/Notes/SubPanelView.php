@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SubPanelViewNotes
 {
     public $notes_list = null;

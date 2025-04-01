@@ -19,7 +19,7 @@
   "config": {
     "vendor-dir": "vendor",
     "platform": {
-      "php": "7.3.0"
+      "php": "7.4.0"
     },
     "optimize-autoloader": true,
     "sort-packages": true,
@@ -33,7 +33,7 @@
     "ext-imap": "Needed for emails module"
   },
   "require": {
-    "php": ">=7.3.0",
+    "php": ">=7.4.0",
     "ext-curl": "*",
     "ext-gd": "*",
     "ext-json": "*",
@@ -46,10 +46,10 @@
     "google/recaptcha": "^1.1",
     "gymadarasz/ace": "^1.2",
     "gymadarasz/imagesloaded": "^4.1",
+    "javanile/php-imap2": "^0.1.10",
     "justinrainbow/json-schema": "^5.2",
-    "lcobucci/jwt": "3.3.3",
-    "league/oauth2-server": "^5.1",
-    "league/uri": "^4.2.3",
+    "league/oauth2-client": "^2.6",
+    "league/oauth2-server": "^8.4",
     "monolog/monolog": "^1.23",
     "nesbot/carbon": "^2.0.0",
     "onelogin/php-saml": "3.4.1",
@@ -58,7 +58,7 @@
     "psr/container": "^1.0",
     "psr/log": "^1.0",
     "slim/slim": "^3.8",
-    "smarty/smarty": "^2.6",
+    "smarty/smarty": "^4",
     "soundasleep/html2text": "~0.5",
     "symfony/options-resolver": "^3.4",
     "symfony/validator": "^3.4",
@@ -66,11 +66,10 @@
     "tecnickcom/tcpdf": "^6.4",
     "tedivm/jshrink": "^1.3",
     "tinymce/tinymce": "^5.10",
-    "tuupola/slim-jwt-auth": "^2.0",
     "vlucas/phpdotenv": "^3.5",
     "voku/anti-xss": "^4.0",
     "wikimedia/composer-merge-plugin": "^2.0",
-    "zbateson/mail-mime-parser": "^1.1",
+    "zbateson/mail-mime-parser": "^2.2",
     "zf1/zend-gdata": "^1.12",
     "zf1/zend-loader": "^1.12",
     "zf1/zend-oauth": "^1.12",
@@ -92,7 +91,9 @@
     "jeroendesloovere/vcard": "^1.7",
     "mikey179/vfsstream": "1.6.*",
     "mockery/mockery": "^1.1.0",
+    "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^9.5",
+    "rector/rector": "^0.16.0",
     "scssphp/scssphp": "^1.5"
   },
   "autoload": {

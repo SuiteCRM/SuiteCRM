@@ -3631,7 +3631,7 @@ select#sales_stage_advanced {
   }
 
   .col-sm-12 .col-sm-8.edit-view-field textarea {
-    width: 45%;
+    width: 120%;
   }
 
   [field=bool].col-sm-8.edit-view-field {
@@ -3734,7 +3734,7 @@ select#sales_stage_advanced {
   }
 
   .col-sm-12 .col-sm-8.edit-view-field textarea {
-    width: 45%;
+    width: 120%;
   }
 
   [field=bool].col-sm-8.edit-view-field {
@@ -3758,6 +3758,9 @@ select#sales_stage_advanced {
     width: 45%;
   }
 
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
+  }
 
   .col-sm-12 [type=varchar].col-sm-8.edit-view-field input[type="text"] {
     width: 45%;
@@ -3815,6 +3818,10 @@ select#sales_stage_advanced {
 
   .col-sm-12 [type=varchar].col-sm-8.edit-view-field input[type="text"] {
     width: 45.0%;
+  }
+
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
   }
 
   .col-sm-12 .edit-view-field input[type="text"] {
@@ -3879,6 +3886,10 @@ select#sales_stage_advanced {
 
   .col-sm-12 [type=varchar].col-sm-8.edit-view-field input[type="text"] {
     width: 45.0%;
+  }
+
+  .col-sm-12 .col-sm-8.edit-view-field input[type="password"] {
+    width: 45%;
   }
 
   .col-sm-6 .edit-view-field input[type="text"] {
@@ -5760,7 +5771,7 @@ body.popupBody {
 	input {
       border-radius: 4px;
     }
-  .button {        
+  .button {
       border-radius: 4px;
-    } 
+    }
 }

@@ -4,6 +4,7 @@ namespace Test\Api\V8;
 use ApiTester;
 use Codeception\Example;
 
+#[\AllowDynamicProperties]
 class CreateModuleCest
 {
     /**
@@ -37,7 +38,7 @@ class CreateModuleCest
         ];
 
         if ($iterator->current() === 'withId') {
-            $payload['data']['id'] = str_replace('{id}', $id, $payload['data']['id']);
+            $payload['data']['id'] = str_replace('{id}', $id, (string) $payload['data']['id']);
             $response = $response + ['id' => $id];
         }
 
@@ -45,7 +46,7 @@ class CreateModuleCest
         $I->seeResponseCodeIs(201); // 201 or 200 - both is correct?
         $I->seeResponseIsJson();
         $I->canSeeResponseContainsJson($response);
-        $I->assertGreaterThanOrEqual(2, count($I->grabDataFromResponseByJsonPath('$.data.attributes')[0]));
+        $I->assertGreaterThanOrEqual(2, is_countable($I->grabDataFromResponseByJsonPath('$.data.attributes')[0]) ? count($I->grabDataFromResponseByJsonPath('$.data.attributes')[0]) : 0);
 
         $I->deleteBean('accounts', $id);
     }
@@ -66,8 +67,8 @@ class CreateModuleCest
 
         if ($iterator->current() === 'withExistingBean') {
             $id = $I->createAccount();
-            $detail = str_replace('{id}', $id, $detail);
-            $payload['data']['id'] = str_replace('{id}', $id, $payload['data']['id']);
+            $detail = str_replace('{id}', $id, (string) $detail);
+            $payload['data']['id'] = str_replace('{id}', $id, (string) $payload['data']['id']);
         }
         $endpoint = $I->getInstanceURL() . '/Api/V8/module';
         $expectedResult = [

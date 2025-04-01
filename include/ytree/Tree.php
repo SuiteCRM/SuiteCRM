@@ -54,6 +54,7 @@ require_once('include/JSON.php');
  * subsequent tree data calls will be served by the node class.
  * tree view by default make ajax based calls for all requests.
  */
+#[\AllowDynamicProperties]
 class Tree
 {
     public $tree_style = 'include/ytree/TreeView/css/folders/tree.css';

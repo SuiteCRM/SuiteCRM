@@ -43,6 +43,7 @@ require_once 'include/SugarObjects/templates/basic/Basic.php';
 require_once 'include/externalAPI/ExternalAPIFactory.php';
 require_once 'include/SugarOauth.php';
 
+#[\AllowDynamicProperties]
 class EAPM extends Basic
 {
     public $new_schema = true;

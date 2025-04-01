@@ -113,7 +113,8 @@ $sugarbean->save($check_notify);
 $return_id = $sugarbean->id;
 
 if (isset($_REQUEST['save_type']) || isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true") {
-    for ($i = 0; $i < count($projectTasks); $i++) {
+    $projectTasksCount = count($projectTasks);
+    for ($i = 0; $i < $projectTasksCount; $i++) {
         if (isset($_REQUEST['save_type']) || (isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true")) {
             $projectTasks[$i]->id = '';
             $projectTasks[$i]->project_id = $sugarbean->id;
@@ -121,7 +122,7 @@ if (isset($_REQUEST['save_type']) || isset($_REQUEST['duplicateSave']) && $_REQU
         if ($sugarbean->is_template) {
             $projectTasks[$i]->assigned_user_id = '';
         }
-        $projectTasks[$i]->team_id = $sugarbean->team_id;
+        $projectTasks[$i]->team_id = $sugarbean->team_id ?? '';
         if (empty($projectTasks[$i]->duration_unit)) {
             $projectTasks[$i]->duration_unit = " ";
         } //Since duration_unit cannot be null.

@@ -23,6 +23,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class actionBase
 {
     public $id;

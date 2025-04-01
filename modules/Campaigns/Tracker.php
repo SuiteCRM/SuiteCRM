@@ -78,7 +78,7 @@ if (!empty($_REQUEST['identifier'])) {
 
 
 
-if (preg_match('/^[0-9A-Za-z\-]*$/', $track)) {
+if (preg_match('/^[0-9A-Za-z\-]*$/', (string) $track)) {
     $track = $db->quote($track);
     $query = "SELECT tracker_url FROM campaign_trkrs WHERE id='$track'";
     $res = $db->query($query);

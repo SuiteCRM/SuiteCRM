@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 require_once 'include/DetailView/DetailView2.php';
 
+#[\AllowDynamicProperties]
 class SurveysViewReports extends SugarView
 {
     public function __construct()
@@ -38,7 +39,10 @@ EOF;
         $this->ss->assign('survey', $this->bean->toArray());
         $responses =
             $this->bean->get_linked_beans('surveys_surveyresponses', 'SurveyResponses', 'surveyresponses.date_created');
-        $this->ss->assign('responsesCount', count($responses));
+        $this->ss->assign('responsesCount', is_countable($responses) ? count($responses) : 0);
+
+        $sentCount = [];
+        $distinctCount = [];
 
         $surveysSent = $this->getSurveyStats();
         if ($surveysSent) {
@@ -51,7 +55,8 @@ EOF;
         foreach ($responses as $response) {
             foreach ($response->get_linked_beans('surveyresponses_surveyquestionresponses') as $questionResponse) {
                 $questionId = $questionResponse->surveyquestion_id;
-                switch ($data[$questionId]['type']) {
+                $dataType = $data[$questionId]['type'] ?? '';
+                switch ($dataType) {
                     case "Checkbox":
                         $answerBool = !empty($questionResponse->answer_bool) ? 1 : 0;
                         $data[$questionId]['responses'][$answerBool]['count']++;
@@ -168,7 +173,7 @@ EOF;
     private function getChoiceQuestionSkeleton($arr, $options)
     {
         foreach ($options as $option) {
-            $arr['chartLabels'][$option->id] = html_entity_decode($option->name, ENT_QUOTES | ENT_HTML5);
+            $arr['chartLabels'][$option->id] = html_entity_decode((string) $option->name, ENT_QUOTES | ENT_HTML5);
             $arr['chartData'][$option->id] = 0;
             $arr['responses'][$option->id] = array(
                 'count' => 0,

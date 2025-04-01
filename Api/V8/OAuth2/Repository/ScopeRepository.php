@@ -4,6 +4,7 @@ namespace Api\V8\OAuth2\Repository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 
+#[\AllowDynamicProperties]
 class ScopeRepository implements ScopeRepositoryInterface
 {
     /**

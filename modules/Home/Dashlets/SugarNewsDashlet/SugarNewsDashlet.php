@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Home/Dashlets/iFrameDashlet/iFrameDashlet.php');
 
+#[\AllowDynamicProperties]
 class SugarNewsDashlet extends iFrameDashlet
 {
     public $displayTpl = 'modules/Home/Dashlets/SugarNewsDashlet/display.tpl';

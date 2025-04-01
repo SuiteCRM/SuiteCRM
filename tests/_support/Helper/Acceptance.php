@@ -51,6 +51,7 @@ use SuiteCRM\Test\Driver\WebDriver;
  * Class Acceptance
  * @package Helper
  */
+#[\AllowDynamicProperties]
 class Acceptance extends Module
 {
     public function seePageHas($text, $selector = null): bool

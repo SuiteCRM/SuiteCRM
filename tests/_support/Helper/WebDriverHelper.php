@@ -15,6 +15,7 @@ use SuiteCRM\Test\Driver\WebDriver;
  * @package Helper
  * Helps to get configuration / environment variables for the WebDriver
  */
+#[\AllowDynamicProperties]
 class WebDriverHelper extends Module
 {
     public function getConfig()

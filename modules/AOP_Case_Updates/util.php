@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2023 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,9 +50,7 @@ function getAOPAssignField($assignField, $value)
     $roles = get_bean_select_array(true, 'ACLRole', 'name', '', 'name', true);
     $securityGroups = get_bean_select_array(true, 'SecurityGroup', 'name', '', 'name', true);
 
-    $field = '';
-
-    $field .= "<select type='text' name='$assignField" . '[0]' . "' id='$assignField" . '[0]' . "' onchange='assign_field_change(\"$assignField\")' title='' tabindex='116'>" . get_select_options_with_id($app_list_strings['aow_assign_options'], isset($value[0]) ? $value[0] : null) . '</select>&nbsp;&nbsp;';
+    $field = "<select type='text' name='$assignField" . '[0]' . "' id='$assignField" . '[0]' . "' onchange='assign_field_change(\"$assignField\")' title='' tabindex='116'>" . get_select_options_with_id($app_list_strings['aow_assign_options'], $value[0] ?? null) . '</select>&nbsp;&nbsp;';
     if (!file_exists('modules/SecurityGroups/SecurityGroup.php')) {
         $field .= "<input type='hidden' name='$assignField" . '[1]' . "' id='$assignField" . '[1]' . "' value=''  />";
     } else {
@@ -60,13 +58,62 @@ function getAOPAssignField($assignField, $value)
         if (isset($value[0]) && $value[0] === 'security_group') {
             $display = '';
         }
-        $field .= "<select type='text' style='display:$display' name='$assignField" . '[1]' . "' id='$assignField" . '[1]' . "' title='' tabindex='116'>" . get_select_options_with_id($securityGroups, isset($value[1]) ? $value[1] : null) . '</select>&nbsp;&nbsp;';
+        $field .= "<select type='text' style='display:$display' name='$assignField" . '[1]' . "' id='$assignField" . '[1]' . "' title='' tabindex='116'>" . get_select_options_with_id($securityGroups, $value[0][1] ?? null) . '</select>&nbsp;&nbsp;';
     }
     $display = 'none';
     if (isset($value[0]) && ($value[0] === 'role' || $value[0] === 'security_group')) {
         $display = '';
     }
-    $field .= "<select type='text' style='display:$display' name='$assignField" . '[2]' . "' id='$assignField" . '[2]' . "' title='' tabindex='116'>" . get_select_options_with_id($roles, isset($value[2]) ? $value[2] : null) . '</select>&nbsp;&nbsp;';
+    $field .= "<select type='text' style='display:$display' name='$assignField" . '[2]' . "' id='$assignField" . '[2]' . "' title='' tabindex='116'>" . get_select_options_with_id($roles, $value[0][2] ?? null) . '</select>&nbsp;&nbsp;';
+
+    return $field;
+}
+
+/**
+ * @param mixed $value
+ * @return string
+ */
+function getAOPAssignFieldDetailView($value)
+{
+    global $app_list_strings, $app_strings;
+
+    if (empty($value)){
+        return '';
+    }
+
+    if (is_string($value)){
+        return $value;
+    }
+
+    $roles = get_bean_select_array(true, 'ACLRole', 'name', '', 'name', true);
+    $securityGroups = get_bean_select_array(true, 'SecurityGroup', 'name', '', 'name', true);
+
+    $field = '';
+    $type = $value[0] ?? null;
+    $field .= $app_list_strings['aow_assign_options'][$type] ?? '';
+
+    if (file_exists('modules/SecurityGroups/SecurityGroup.php'))  {
+        $display = 'none';
+        if (isset($value[0]) && $value[0] === 'security_group') {
+            $display = '';
+        }
+        if ($display !== 'none') {
+            $securityGroup = $value[1] ?? null;
+            $field .= ' | ' . $app_strings['LBL_SECURITYGROUP'] . ': ' . $securityGroups[$securityGroup] ?? '';
+        }
+
+    }
+
+    $display = 'none';
+    if (isset($value[0]) && ($value[0] === 'role' || $value[0] === 'security_group')) {
+        $display = '';
+    }
+
+    if ($display !== 'none') {
+        $role = $value[2] ?? null;
+
+        $field .= ' | ' . $app_strings['LBL_ROLE'] . ': ' .  $roles[$role] ?? '';
+    }
 
     return $field;
 }

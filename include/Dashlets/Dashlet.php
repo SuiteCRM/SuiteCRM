@@ -48,6 +48,7 @@ require_once('include/utils/layout_utils.php');
  * Basic Dashlet
  * @api
  */
+#[\AllowDynamicProperties]
 class Dashlet
 {
     /**

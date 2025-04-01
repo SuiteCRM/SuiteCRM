@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldId extends SugarWidgetReportField
 {
     public function queryFilterIs($layout_def)

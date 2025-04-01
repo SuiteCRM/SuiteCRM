@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class AccountsCest
 {
     /**
@@ -118,8 +119,10 @@ class AccountsCest
      */
     public function testScenarioInlineEditListView(
         \AcceptanceTester $I,
+        \Step\Acceptance\DetailView $detailView,
         \Step\Acceptance\ListView $listView,
-        \Step\Acceptance\Accounts $accounts
+        \Step\Acceptance\EditView $editView,
+        \Step\Acceptance\SideBar $sideBar
     ) {
         $I->wantTo('Inline edit an account on the list-view');
 
@@ -130,8 +133,36 @@ class AccountsCest
 
         // Create account
         $this->fakeData->seed($this->fakeDataSeed);
+        $faker = $I->getFaker();
         $account_name = 'Test_'. $this->fakeData->company();
-        $accounts->createAccount($account_name);
+
+        $I->see('Create Account', '.actionmenulink');
+        $sideBar->clickSideBarAction('Create');
+        $editView->waitForEditViewVisible();
+        $I->fillField('#name', $account_name);
+        $I->fillField('#phone_office', $faker->phoneNumber());
+        $I->fillField('#website', $faker->url());
+        $I->fillField('#phone_fax', $faker->phoneNumber());
+        $I->fillField('#Accounts0emailAddress0', $faker->email());
+        $I->fillField('#billing_address_street', $faker->streetAddress());
+        $I->fillField('#billing_address_city', $faker->city());
+        $I->fillField('#billing_address_state', $faker->city());
+        $I->fillField('#billing_address_postalcode', $faker->postcode());
+        $I->fillField('#billing_address_country', $faker->country());
+        $I->fillField('#description', $faker->text());
+        $I->fillField('#annual_revenue', $faker->randomDigit());
+        $I->fillField('#employees', $faker->randomDigit());
+
+        $I->checkOption('#shipping_checkbox');
+        $I->selectOption('#account_type', 'Analyst');
+        $I->selectOption('#industry', 'Apparel');
+
+        $I->seeElement('#assigned_user_name');
+        $I->seeElement('#parent_name');
+        $I->seeElement('#campaign_name');
+
+        $editView->clickSaveButton();
+        $detailView->waitForDetailViewVisible();
 
         // Inline edit
         $I->visitPage('Accounts', 'index');

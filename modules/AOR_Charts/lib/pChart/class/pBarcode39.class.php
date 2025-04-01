@@ -14,6 +14,7 @@
  */
 
  /* pData class definition */
+ #[\AllowDynamicProperties]
  class pBarcode39
  {
      public $Codes;
@@ -58,7 +59,7 @@
          $Height		= isset($Format["Height"]) ? $Format["Height"] : 30;
 
          $TextString    = $this->encode39($TextString);
-         $BarcodeLength = strlen($this->Result);
+         $BarcodeLength = strlen((string) $this->Result);
 
          if ($DrawArea) {
              $WOffset = 20;
@@ -89,7 +90,7 @@
      {
          $this->Result = "100101101101"."0";
          $TextString   = "";
-         for ($i=1;$i<=strlen($Value);$i++) {
+         for ($i=1;$i<=strlen((string) $Value);$i++) {
              $CharCode = ord($this->mid($Value, $i, 1));
              if ($CharCode >= 97 && $CharCode <= 122) {
                  $CharCode = $CharCode - 32;
@@ -139,8 +140,8 @@
              $X1 = $X + cos(($Angle-135) * PI / 180) * 10;
              $Y1 = $Y + sin(($Angle-135) * PI / 180) * 10;
 
-             $X2 = $X1 + cos($Angle * PI / 180) * (strlen($this->Result)+20);
-             $Y2 = $Y1 + sin($Angle * PI / 180) * (strlen($this->Result)+20);
+             $X2 = $X1 + cos($Angle * PI / 180) * (strlen((string) $this->Result)+20);
+             $Y2 = $Y1 + sin($Angle * PI / 180) * (strlen((string) $this->Result)+20);
 
              if ($ShowLegend) {
                  $X3 = $X2 + cos(($Angle+90) * PI / 180) * ($Height+$LegendOffset+$this->pChartObject->FontSize+10);
@@ -150,15 +151,15 @@
                  $Y3 = $Y2 + sin(($Angle+90) * PI / 180) * ($Height+20);
              }
 
-             $X4 = $X3 + cos(($Angle+180) * PI / 180) * (strlen($this->Result)+20);
-             $Y4 = $Y3 + sin(($Angle+180) * PI / 180) * (strlen($this->Result)+20);
+             $X4 = $X3 + cos(($Angle+180) * PI / 180) * (strlen((string) $this->Result)+20);
+             $Y4 = $Y3 + sin(($Angle+180) * PI / 180) * (strlen((string) $this->Result)+20);
 
              $Polygon  = array($X1,$Y1,$X2,$Y2,$X3,$Y3,$X4,$Y4);
              $Settings = array("R"=>$AreaR,"G"=>$AreaG,"B"=>$AreaB,"BorderR"=>$AreaBorderR,"BorderG"=>$AreaBorderG,"BorderB"=>$AreaBorderB);
              $this->pChartObject->drawPolygon($Polygon, $Settings);
          }
 
-         for ($i=1;$i<=strlen($this->Result);$i++) {
+         for ($i=1;$i<=strlen((string) $this->Result);$i++) {
              if ($this->mid($this->Result, $i, 1) == 1) {
                  $X1 = $X + cos($Angle * PI / 180) * $i;
                  $Y1 = $Y + sin($Angle * PI / 180) * $i;
@@ -171,8 +172,8 @@
          }
 
          if ($ShowLegend) {
-             $X1 = $X + cos($Angle * PI / 180) * (strlen($this->Result)/2);
-             $Y1 = $Y + sin($Angle * PI / 180) * (strlen($this->Result)/2);
+             $X1 = $X + cos($Angle * PI / 180) * (strlen((string) $this->Result)/2);
+             $Y1 = $Y + sin($Angle * PI / 180) * (strlen((string) $this->Result)/2);
 
              $LegendX = $X1 + cos(($Angle+90) * PI / 180) * ($Height+$LegendOffset);
              $LegendY = $Y1 + sin(($Angle+90) * PI / 180) * ($Height+$LegendOffset);
@@ -185,11 +186,11 @@
      public function checksum($string)
      {
          $checksum = 0;
-         $length   = strlen($string);
+         $length   = strlen((string) $string);
          $charset  = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%';
 
          for ($i=0; $i < $length; ++$i) {
-             $checksum += strpos($charset, $string[$i]);
+             $checksum += strpos($charset, (string) $string[$i]);
          }
 
          return substr($charset, ($checksum % 43), 1);
@@ -197,14 +198,14 @@
 
      public function left($value, $NbChar)
      {
-         return substr($value, 0, $NbChar);
+         return substr((string) $value, 0, $NbChar);
      }
      public function right($value, $NbChar)
      {
-         return substr($value, strlen($value)-$NbChar, $NbChar);
+         return substr((string) $value, strlen((string) $value)-$NbChar, $NbChar);
      }
      public function mid($value, $Depart, $NbChar)
      {
-         return substr($value, $Depart-1, $NbChar);
+         return substr((string) $value, $Depart-1, $NbChar);
      }
  }

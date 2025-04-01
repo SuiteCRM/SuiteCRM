@@ -4,6 +4,7 @@ namespace Step\Acceptance;
 
 use \AcceptanceTester as Tester;
 
+#[\AllowDynamicProperties]
 class Workflow extends Tester
 {
     public function navigateToWorkflow(): void

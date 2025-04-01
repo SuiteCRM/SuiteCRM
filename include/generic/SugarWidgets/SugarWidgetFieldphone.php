@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldPhone extends SugarWidgetFieldVarchar
 {
 }

@@ -7,6 +7,7 @@ use \LoggerManager;
 /**
  * Class ExtensionManager
  */
+#[\AllowDynamicProperties]
 class ExtensionManager
 {
     /**
@@ -198,7 +199,7 @@ class ExtensionManager
         $moduleInstall,
         $filter
     ) {
-        if ($entry === '.' || $entry === '..' || strtolower(substr($entry, -4)) !== '.php') {
+        if ($entry === '.' || $entry === '..' || strtolower(substr((string) $entry, -4)) !== '.php') {
             return true;
         }
 
@@ -206,7 +207,7 @@ class ExtensionManager
             return true;
         }
 
-        if (!empty($filter) && substr_count($entry, $filter) <= 0) {
+        if (!empty($filter) && substr_count((string) $entry, (string) $filter) <= 0) {
             return true;
         }
 

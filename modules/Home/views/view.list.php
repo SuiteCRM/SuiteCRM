@@ -40,6 +40,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class HomeViewList extends ViewList
 {
     public function ActivitiesViewList()

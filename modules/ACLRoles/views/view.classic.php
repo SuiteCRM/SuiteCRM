@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class ACLRolesViewClassic extends ViewDetail
 {
     public function __construct()

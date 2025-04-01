@@ -28,6 +28,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AOS_Products/AOS_Products_sugar.php');
+#[\AllowDynamicProperties]
 class AOS_Products extends AOS_Products_sugar
 {
     public function __construct()

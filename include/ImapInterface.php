@@ -60,7 +60,7 @@ interface ImapInterface
      * @param string $password
      * @param int $options
      * @param int $n_retries
-     * @param array $params
+     * @param mixed[]|null $params
      *
      * @return resource or <b>FALSE</b> on error.
      */

@@ -4,11 +4,12 @@ namespace Api\V8\BeanDecorator;
 use \SugarBean;
 use \Person;
 
+#[\AllowDynamicProperties]
 class BeanManager
 {
-    const DEFAULT_OFFSET = 0;
-    const DEFAULT_LIMIT = -1;
-    const DEFAULT_ALL_RECORDS = -99;
+    public const DEFAULT_OFFSET = 0;
+    public const DEFAULT_LIMIT = -1;
+    public const DEFAULT_ALL_RECORDS = -99;
 
     /**
      * @var \DBManager
@@ -245,11 +246,25 @@ class BeanManager
      */
     public function countRecords($module, $where)
     {
+        $table_name = $this->newBeanSafe($module)->getTableName();
+        $table_name_cstm = $this->newBeanSafe($module)->get_custom_table_name();
+
+        $join = '';
+        if ($this->db->tableExists($table_name_cstm)) {
+            $join = sprintf(
+                'LEFT JOIN %s on (%s.id = %s.id_c)',
+                $table_name_cstm,
+                $table_name,
+                $table_name_cstm,
+            );
+        }
+
         $rowCount = $this->db->fetchRow(
             $this->db->query(
                 sprintf(
-                    "SELECT COUNT(*) AS cnt FROM %s %s",
-                    $this->newBeanSafe($module)->getTableName(),
+                    "SELECT COUNT(*) AS cnt FROM %s %s %s",
+                    $table_name,
+                    $join,
                     $where === '' ? '' : 'WHERE ' .  $where
                 )
             )

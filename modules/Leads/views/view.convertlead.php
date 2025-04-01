@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once("include/EditView/EditView2.php");
 require_once("include/upload_file.php");
 
+#[\AllowDynamicProperties]
 class ViewConvertLead extends SugarView
 {
     protected $fileName = "modules/Leads/metadata/convertdefs.php";
@@ -216,17 +217,17 @@ class ViewConvertLead extends SugarView
                                         //Special case where company and person have the same field with a different name
                                         $focus->phone_office = $this->focus->phone_work;
                                     } else {
-                                        if (strpos($field, "billing_address") !== false && $focus->field_defs[$field]["type"] == "varchar") /* Bug 42219 fix */
+                                        if (strpos((string) $field, "billing_address") !== false && $focus->field_defs[$field]["type"] == "varchar") /* Bug 42219 fix */
                     {
-                        $tmp_field = str_replace("billing_", "primary_", $field);
+                        $tmp_field = str_replace("billing_", "primary_", (string) $field);
                         $focus->field_defs[$field]["type"] = "text";
                         if (isset($this->focus->$tmp_field)) {
                             $focus->$field = $this->focus->$tmp_field;
                         }
                      } else {
-                         if (strpos($field, "shipping_address") !== false && $focus->field_defs[$field]["type"] == "varchar") /* Bug 42219 fix */
+                         if (strpos((string) $field, "shipping_address") !== false && $focus->field_defs[$field]["type"] == "varchar") /* Bug 42219 fix */
                     {
-                        $tmp_field = str_replace("shipping_", "primary_", $field);
+                        $tmp_field = str_replace("shipping_", "primary_", (string) $field);
                         if (isset($this->focus->$tmp_field)) {
                             $focus->$field = $this->focus->$tmp_field;
                         }
@@ -789,7 +790,7 @@ class ViewConvertLead extends SugarView
             //check users connected to bean
             if ($activity->load_relationship("users")) {
                 $userList = $activity->users->getBeans();
-                if (count($userList) > 0 && $newActivity->load_relationship("users")) {
+                if ((is_countable($userList) ? count($userList) : 0) > 0 && $newActivity->load_relationship("users")) {
                     foreach ($userList as $user) {
                         $newActivity->users->add($user->id);
                     }
@@ -821,6 +822,7 @@ class ViewConvertLead extends SugarView
         $contact,
         $lead
         ) {
+        $vdef = [];
         //Copy data from the contact to new bean
         foreach ($bean->field_defs as $field => $def) {
             if (!isset($_REQUEST[$module . $field]) && isset($lead->$field) && $field != 'id') {
@@ -878,35 +880,35 @@ class ViewConvertLead extends SugarView
     {
         //Copy over address info from the contact to any beans with address not set
         foreach ($bean->field_defs as $field => $def) {
-            if (!isset($_REQUEST[$bean->module_dir . $field]) && strpos($field, "_address_") !== false) {
+            if (!isset($_REQUEST[$bean->module_dir . $field]) && strpos((string) $field, "_address_") !== false) {
                 $set = "primary";
-                if (strpos($field, "alt_") !== false || strpos($field, "shipping_") !== false) {
+                if (strpos((string) $field, "alt_") !== false || strpos((string) $field, "shipping_") !== false) {
                     $set = "alt";
                 }
                 $type = "";
 
-                if (strpos($field, "_address_street_2") !== false) {
+                if (strpos((string) $field, "_address_street_2") !== false) {
                     $type = "_address_street_2";
                 } else {
-                    if (strpos($field, "_address_street_3") !== false) {
+                    if (strpos((string) $field, "_address_street_3") !== false) {
                         $type = "_address_street_3";
                     } else {
-                        if (strpos($field, "_address_street_4") !== false) {
+                        if (strpos((string) $field, "_address_street_4") !== false) {
                             $type = "";
                         } else {
-                            if (strpos($field, "_address_street") !== false) {
+                            if (strpos((string) $field, "_address_street") !== false) {
                                 $type = "_address_street";
                             } else {
-                                if (strpos($field, "_address_city") !== false) {
+                                if (strpos((string) $field, "_address_city") !== false) {
                                     $type = "_address_city";
                                 } else {
-                                    if (strpos($field, "_address_state") !== false) {
+                                    if (strpos((string) $field, "_address_state") !== false) {
                                         $type = "_address_state";
                                     } else {
-                                        if (strpos($field, "_address_postalcode") !== false) {
+                                        if (strpos((string) $field, "_address_postalcode") !== false) {
                                             $type = "_address_postalcode";
                                         } else {
-                                            if (strpos($field, "_address_country") !== false) {
+                                            if (strpos((string) $field, "_address_country") !== false) {
                                                 $type = "_address_country";
                                             }
                                         }

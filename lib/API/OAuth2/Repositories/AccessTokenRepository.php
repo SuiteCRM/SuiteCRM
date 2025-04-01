@@ -46,9 +46,10 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\AccessTokenEntity;
 
+#[\AllowDynamicProperties]
 class AccessTokenRepository implements AccessTokenRepositoryInterface
 {
-    const ACCESS_TOKEN_FIELD = 'access_token';
+    public const ACCESS_TOKEN_FIELD = 'access_token';
     /**
      * {@inheritdoc}
      */

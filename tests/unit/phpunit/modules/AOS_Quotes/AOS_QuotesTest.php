@@ -42,7 +42,7 @@ class AOS_QuotesTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aosQuotes->id));
-        self::assertEquals(36, strlen($aosQuotes->id));
+        self::assertEquals(36, strlen((string) $aosQuotes->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosQuotes->mark_deleted($aosQuotes->id);

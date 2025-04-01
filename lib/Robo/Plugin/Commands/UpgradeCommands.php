@@ -43,6 +43,7 @@ namespace SuiteCRM\Robo\Plugin\Commands;
 use Robo\Tasks;
 use SuiteCRM\Robo\Traits\RoboTrait;
 
+#[\AllowDynamicProperties]
 class UpgradeCommands extends Tasks
 {
     use RoboTrait;

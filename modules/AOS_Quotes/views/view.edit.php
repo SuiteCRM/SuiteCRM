@@ -27,6 +27,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class AOS_QuotesViewEdit extends ViewEdit
 {
     public function __construct()

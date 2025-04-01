@@ -7,6 +7,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/jjwg_Areas/jjwg_Areas_sugar.php');
 require_once('modules/jjwg_Maps/jjwg_Maps.php');
 
+#[\AllowDynamicProperties]
 class jjwg_Areas extends jjwg_Areas_sugar
 {
 
@@ -84,14 +85,14 @@ class jjwg_Areas extends jjwg_Areas_sugar
             return $this->polygon;
         }
 
-        if (preg_match('/[\n\r]/', $this->coordinates)) {
-            $this->coords = preg_split("/[\n\r\s]+/", $this->coordinates, null, PREG_SPLIT_NO_EMPTY);
+        if (preg_match('/[\n\r]/', (string) $this->coordinates)) {
+            $this->coords = preg_split("/[\n\r\s]+/", (string) $this->coordinates, null, PREG_SPLIT_NO_EMPTY);
         } else {
-            $this->coords = preg_split("/[\s]+/", $this->coordinates, null, PREG_SPLIT_NO_EMPTY);
+            $this->coords = preg_split("/[\s]+/", (string) $this->coordinates, null, PREG_SPLIT_NO_EMPTY);
         }
         if (count($this->coords) > 0) {
             foreach ($this->coords as $coord) {
-                $p = preg_split("/[\s\(\)]*,[\s\(\)]*/", $coord, null, PREG_SPLIT_NO_EMPTY);
+                $p = preg_split("/[\s\(\)]*,[\s\(\)]*/", (string) $coord, null, PREG_SPLIT_NO_EMPTY);
                 if ($this->is_valid_lng($p[0]) && $this->is_valid_lat($p[1])) {
                     $this->polygon[] = array(
                         'lng' => $p[0],
@@ -149,7 +150,7 @@ class jjwg_Areas extends jjwg_Areas_sugar
             $this->polygon = $this->define_polygon();
         }
 
-        $n = count($this->polygon);
+        $n = is_countable($this->polygon) ? count($this->polygon) : 0;
         $a = $this->define_area($this->polygon);
         if (empty($a)) {
             return $this->centroid;
@@ -193,7 +194,7 @@ class jjwg_Areas extends jjwg_Areas_sugar
         }
 
         // Based on: http://forums.devnetwork.net/viewtopic.php?f=1&t=44074
-        $n = count($this->polygon);
+        $n = is_countable($this->polygon) ? count($this->polygon) : 0;
         $area = 0.0;
         // Set $p as Polygon and Add Closing Point
         $p = $this->polygon;
@@ -315,14 +316,14 @@ class jjwg_Areas extends jjwg_Areas_sugar
     public function point_in_polygon($point, $point_on_vertex = true)
     {
         $this->point_on_vertex = $point_on_vertex;
-        $polygon = preg_split('/[\s]+/', $this->coordinates);
+        $polygon = preg_split('/[\s]+/', (string) $this->coordinates);
 
         // Chek $polygon count
-        if (!(count($polygon) > 1)) {
+        if (!((is_countable($polygon) ? count($polygon) : 0) > 1)) {
             return false;
         }
         // Add the first point to the end, in order to properly close the loop completely
-        if ($polygon[count($polygon)-1] != $polygon[0]) {
+        if ($polygon[(is_countable($polygon) ? count($polygon) : 0)-1] !== $polygon[0]) {
             $polygon[] = $polygon[0];
         }
 
@@ -334,7 +335,7 @@ class jjwg_Areas extends jjwg_Areas_sugar
         }
 
         // Check if the point sits exactly on a vertex
-        if ($this->point_on_vertex == true and $this->point_on_vertex($point, $vertices) == true) {
+        if ($this->point_on_vertex == true && $this->point_on_vertex($point, $vertices) == true) {
             return true;
         }
 
@@ -345,10 +346,10 @@ class jjwg_Areas extends jjwg_Areas_sugar
         for ($i=1; $i < $vertices_count; $i++) {
             $vertex1 = $vertices[$i-1];
             $vertex2 = $vertices[$i];
-            if ($vertex1['y'] == $vertex2['y'] and $vertex1['y'] == $point['y'] and $point['x'] > min($vertex1['x'], $vertex2['x']) and $point['x'] < max($vertex1['x'], $vertex2['x'])) { // Check if point is on an horizontal polygon boundary
+            if ($vertex1['y'] == $vertex2['y'] && $vertex1['y'] == $point['y'] && $point['x'] > min($vertex1['x'], $vertex2['x']) && $point['x'] < max($vertex1['x'], $vertex2['x'])) { // Check if point is on an horizontal polygon boundary
                 return true;
             }
-            if ($point['y'] > min($vertex1['y'], $vertex2['y']) and $point['y'] <= max($vertex1['y'], $vertex2['y']) and $point['x'] <= max($vertex1['x'], $vertex2['x']) and $vertex1['y'] != $vertex2['y']) {
+            if ($point['y'] > min($vertex1['y'], $vertex2['y']) && $point['y'] <= max($vertex1['y'], $vertex2['y']) && $point['x'] <= max($vertex1['x'], $vertex2['x']) && $vertex1['y'] != $vertex2['y']) {
                 $xinters = ($point['y'] - $vertex1['y']) * ($vertex2['x'] - $vertex1['x']) / ($vertex2['y'] - $vertex1['y']) + $vertex1['x'];
                 if ($xinters == $point['x']) { // Check if point is on the polygon boundary (other than horizontal)
                     return true;
@@ -379,7 +380,7 @@ class jjwg_Areas extends jjwg_Areas_sugar
     {
 
         // Coordinate Results (lng,lat,elv)
-        $coordinates = preg_split('/[,]+/', $pointString);
+        $coordinates = preg_split('/[,]+/', (string) $pointString);
         return array("x" => $coordinates[0], "y" => $coordinates[1]);
     }
 }

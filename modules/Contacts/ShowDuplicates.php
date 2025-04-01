@@ -69,7 +69,7 @@ $xtpl->assign("MOD", $mod_strings);
 $xtpl->assign("APP", $app_strings);
 $xtpl->assign("PRINT_URL", "index.php?".$GLOBALS['request_string']);
 $xtpl->assign("MODULE", $_REQUEST['module']);
-if ($error_msg != '') {
+if ($error_msg !== '') {
     $xtpl->assign("ERROR", $error_msg);
     $xtpl->parse("main.error");
 }
@@ -87,7 +87,7 @@ $GLOBALS['check_notify'] = false;
 
 $query = 'select contacts.id, first_name, last_name, title, accounts.name, primary_address_city from contacts LEFT JOIN accounts_contacts ON contacts.id=accounts_contacts.contact_id and accounts_contacts.deleted = 0 LEFT JOIN accounts ON accounts_contacts.account_id=accounts.id AND accounts_contacts.deleted=0 AND accounts.deleted=0 where contacts.deleted=0 ';
 $duplicates = $_POST['duplicate'];
-$count = count($duplicates);
+$count = is_countable($duplicates) ? count($duplicates) : 0;
 $db = DBManagerFactory::getInstance();
 if ($count > 0) {
     $query .= "and (";
@@ -117,13 +117,13 @@ $xtpl->assign('FORMBODY', $contactForm->buildTableForm($duplicateContacts));
 $input = '';
 foreach ($contact->column_fields as $field) {
     if (!empty($_POST['Contacts'.$field])) {
-        $input .= "<input type='hidden' name='$field' value='${_POST['Contacts'.$field]}'>\n";
+        $input .= "<input type='hidden' name='$field' value='{$_POST['Contacts'.$field]}'>\n";
     }
 }
 
 foreach ($contact->additional_column_fields as $field) {
     if (!empty($_POST['Contacts'.$field])) {
-        $input .= "<input type='hidden' name='$field' value='${_POST['Contacts'.$field]}'>\n";
+        $input .= "<input type='hidden' name='$field' value='{$_POST['Contacts'.$field]}'>\n";
     }
 }
 

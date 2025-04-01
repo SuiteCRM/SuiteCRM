@@ -98,6 +98,7 @@ $dictionary['Task'] = array(
                 'source' => 'non-db',
                 'importable' => 'false',
                 'massupdate' => false,
+                'inline_edit' => false,
             ),
         'date_start_flag' =>
             array(

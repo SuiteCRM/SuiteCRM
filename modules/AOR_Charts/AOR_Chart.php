@@ -22,9 +22,10 @@
  * @author SalesAgility <info@salesagility.com>
  */
 
+#[\AllowDynamicProperties]
 class AOR_Chart extends Basic
 {
-    const COLOUR_DEFAULTS = "['#1f78b4','#a6cee3','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928','#144c73','#6caed1','#8acf4e','#20641c','#f8514f','#9e1214','#fc9d24','#b35900','#a880bb','#442763','#ffff4d','#733a1a']";
+    public const COLOUR_DEFAULTS = "['#1f78b4','#a6cee3','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928','#144c73','#6caed1','#8acf4e','#20641c','#f8514f','#9e1214','#fc9d24','#b35900','#a880bb','#442763','#ffff4d','#733a1a']";
     public $colours;
     public $new_schema = true;
     public $module_dir = 'AOR_Charts';
@@ -166,8 +167,8 @@ class AOR_Chart extends Basic
             //Malformed chart object - missing an axis field
             return '';
         }
-        $xName = str_replace(' ', '_', $x->label) . $this->x_field;
-        $yName = str_replace(' ', '_', $y->label) . $this->y_field;
+        $xName = str_replace(' ', '_', (string) $x->label) . $this->x_field;
+        $yName = str_replace(' ', '_', (string) $y->label) . $this->y_field;
 
         $chartData = new pData();
         $chartData->loadPalette("modules/AOR_Charts/lib/pChart/palettes/navy.color", true);
@@ -274,8 +275,8 @@ class AOR_Chart extends Basic
             //Malformed chart object - missing an axis field
             return '';
         }
-        $xName = str_replace(' ', '_', $x->label) . $this->x_field;
-        $yName = str_replace(' ', '_', $y->label) . $this->y_field;
+        $xName = str_replace(' ', '_', (string) $x->label) . $this->x_field;
+        $yName = str_replace(' ', '_', (string) $y->label) . $this->y_field;
 
         $defaultHeight = 500;
         $defaultWidth = 900;
@@ -351,7 +352,7 @@ class AOR_Chart extends Basic
 
     private function getRGraphRoseChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         if (!is_array($dataArray)||count($dataArray) < 1) {
             return "<h3>$this->noDataMessage</h3>";
         }
@@ -387,7 +388,7 @@ EOF;
     //or stacked (false)
     private function getRGraphGroupedBarChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400, $grouped = false)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         $grouping = 'grouped'; //$mainGroupField->label; //'grouped';
         if (!$grouped) {
             $grouping='stacked';
@@ -404,7 +405,6 @@ EOF;
             data: $chartDataValues,
             options: {
                 grouping:'$grouping',
-                backgroundGrid:false,
                 backgroundGrid:false,
                 gutterBottom: 150,
                 gutterTop:25,
@@ -433,7 +433,7 @@ EOF;
 
     private function getRGraphBarChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         if (!is_array($dataArray)||count($dataArray) < 1) {
             return "<h3>$this->noDataMessage</h3>";
         }
@@ -472,7 +472,7 @@ EOF;
 
     private function getRGraphRadarChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         if (!is_array($dataArray)||count($dataArray) < 1) {
             return "<h3>$this->noDataMessage</h3>";
         }
@@ -504,7 +504,7 @@ EOF;
 
     private function getRGraphPieChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         if (!is_array($dataArray)||count($dataArray) < 1) {
             return "<h3>$this->noDataMessage</h3>";
         }
@@ -539,7 +539,7 @@ EOF;
 
     private function getRGraphLineChart($chartDataValues, $chartLabelValues, $chartTooltips, $chartName, $chartId, $chartHeight = 400, $chartWidth = 400)
     {
-        $dataArray = json_decode($chartDataValues);
+        $dataArray = json_decode((string) $chartDataValues);
         if (!is_array($dataArray)||count($dataArray) < 1) {
             return "<h3>$this->noDataMessage</h3>";
         }
@@ -591,8 +591,8 @@ EOF;
             //Malformed chart object - missing an axis field
             return '';
         }
-        $xName = str_replace(' ', '_', $x->label) . $this->x_field;
-        $yName = str_replace(' ', '_', $y->label) . $this->y_field;
+        $xName = str_replace(' ', '_', (string) $x->label) . $this->x_field;
+        $yName = str_replace(' ', '_', (string) $y->label) . $this->y_field;
 
         switch ($this->type) {
             case 'radar':
@@ -658,7 +658,7 @@ EOF;
 
     private function getShortenedLabel($label, $maxLabelSize = 20)
     {
-        if (strlen($label) > $maxLabelSize) {
+        if (strlen((string) $label) > $maxLabelSize) {
             return mb_substr($label, 0, $maxLabelSize).'...';
         }
         return $label;
@@ -674,7 +674,7 @@ EOF;
         $zName = null;
         foreach ($reportData[0] as $key => $value) {
             $field = str_replace(' ', '_', is_null($mainGroupField) ? 'no data' : $mainGroupField->label);
-            if (preg_match('/^' . $field . '[0-9]+/', $key)) {
+            if (preg_match('/^' . $field . '[0-9]+/', (string) $key)) {
                 $zName = $key;
                 break;
             }
@@ -701,10 +701,12 @@ EOF;
 
         $_data = array();
         foreach ($data as $label => $values) {
+            $_data[$label] = [];
             foreach ($values as $key => $value) {
-                $_data[$label][$tooltips[$label][$key]] += $value;
+                $_data[$label][$tooltips[$label][$key]] = ($_data[$label][$tooltips[$label][$key]] ?? 0) + 1;
             }
         }
+
         $data = $_data;
 
 
@@ -735,6 +737,7 @@ EOF;
 
     private function getRGraphBarChartData($reportData, $xName, $yName)
     {
+        $chart = [];
         $chart['labels']=array();
         $chart['data']=array();
         $chart['tooltips']=array();

@@ -45,9 +45,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class EmailException
  */
+#[\AllowDynamicProperties]
 class EmailException extends Exception
 {
-    const NO_DEFAULT_FROM_ADDR = 10;
-    const NO_DEFAULT_FROM_EMAIL = 20;
-    const NO_PROBLEM_MSG_FOUND = 30;
+    public const NO_DEFAULT_FROM_ADDR = 10;
+    public const NO_DEFAULT_FROM_EMAIL = 20;
+    public const NO_PROBLEM_MSG_FOUND = 30;
 }

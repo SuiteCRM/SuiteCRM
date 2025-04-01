@@ -61,6 +61,7 @@ define('REL_ONE_ONE', 'one-to-one');
  *
  * @api
  */
+#[\AllowDynamicProperties]
 abstract class SugarRelationship
 {
     protected $def;

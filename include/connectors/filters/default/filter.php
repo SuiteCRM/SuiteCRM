@@ -42,6 +42,7 @@
  * Generic filter
  * @api
  */
+#[\AllowDynamicProperties]
 class default_filter
 {
     public $_component;

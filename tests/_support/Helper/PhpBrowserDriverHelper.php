@@ -48,6 +48,7 @@ use SuiteCRM\Enumerator\DatabaseDriver;
  * @package Helper
  * Helps to get configuration / environment variables for the PhpBrowser Driver
  */
+#[\AllowDynamicProperties]
 class PhpBrowserDriverHelper extends Module
 {
 

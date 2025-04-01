@@ -397,8 +397,8 @@ function populate_wizard_bean_from_request($bean, $prefix)
 {
     foreach ($_REQUEST as $key=> $val) {
         $key = trim($key);
-        if ((strstr($key, $prefix)) && (strpos($key, $prefix)== 0)) {
-            $field  =substr($key, strlen($prefix)) ;
+        if ((strstr($key, (string) $prefix)) && (strpos($key, (string) $prefix)== 0)) {
+            $field  =substr($key, strlen((string) $prefix)) ;
             if (isset($_REQUEST[$key]) && !empty($_REQUEST[$key])) {
                 //echo "prefix is $prefix, field is $field,    key is $key,   and value is $val<br>";
                 $value = $_REQUEST[$key];

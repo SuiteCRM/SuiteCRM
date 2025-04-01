@@ -70,7 +70,7 @@ function clearCacheSU($thedir, $extension)
             if ($children != "." && $children != "..") {
                 if (is_dir($thedir . "/" . $children)) {
                     clearCacheSU($thedir . "/" . $children, $extension);
-                } elseif (is_file($thedir . "/" . $children) && substr_count($children, $extension)) {
+                } elseif (is_file($thedir . "/" . $children) && substr_count($children, (string) $extension)) {
                     unlink($thedir . "/" . $children);
                 }
             }
@@ -284,9 +284,9 @@ function verifyArguments($argv, $usage_dce, $usage_regular)
         $upgradeType = constant('DCE_INSTANCE');
         //now that this is dce instance we want to make sure that there are
         // 7 arguments
-        if (count($argv) < 7) {
+        if ((is_countable($argv) ? count($argv) : 0) < 7) {
             echo "*******************************************************************************\n";
-            echo "*** ERROR: Missing required parameters.  Received ".count($argv)." argument(s), require 7.\n";
+            echo "*** ERROR: Missing required parameters.  Received ".(is_countable($argv) ? count($argv) : 0)." argument(s), require 7.\n";
             echo $usage_dce;
             echo "FAILURE\n";
             exit(1);
@@ -311,9 +311,9 @@ function verifyArguments($argv, $usage_dce, $usage_regular)
             echo "FAILURE\n";
             exit(1);
         }
-            if (count($argv) < 5) {
+            if ((is_countable($argv) ? count($argv) : 0) < 5) {
                 echo "*******************************************************************************\n";
-                echo "*** ERROR: Missing required parameters.  Received ".count($argv)." argument(s), require 5.\n";
+                echo "*** ERROR: Missing required parameters.  Received ".(is_countable($argv) ? count($argv) : 0)." argument(s), require 5.\n";
                 echo $usage_regular;
                 echo "FAILURE\n";
                 exit(1);
@@ -341,8 +341,8 @@ function upgradeDCEFiles($argv, $instanceUpgradePath)
         $srcFile = clean_path("{$instanceUpgradePath}/$file");
         $destFile = clean_path("{$argv[3]}/$file");
         if (file_exists($srcFile)) {
-            if (!is_dir(dirname($destFile))) {
-                mkdir_recursive(dirname($destFile)); // make sure the directory exists
+            if (!is_dir(dirname((string) $destFile))) {
+                mkdir_recursive(dirname((string) $destFile)); // make sure the directory exists
             }
             copy_recursive($srcFile, $destFile);
             $_GET['TEMPLATE_PATH'] = $destFile;
@@ -592,7 +592,7 @@ if ($upgradeType == constant('DCE_INSTANCE')) {
             foreach ($customFiles as $file) {
                 $srcFile = clean_path($file);
                 //$targetFile = clean_path(getcwd() . '/' . $srcFile);
-                if (strpos($srcFile, ".svn") !== false) {
+                if (strpos((string) $srcFile, ".svn") !== false) {
                     //do nothing
                 } else {
                     $existsCustomFile = true;

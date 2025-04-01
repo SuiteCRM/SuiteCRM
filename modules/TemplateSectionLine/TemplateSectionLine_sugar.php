@@ -45,6 +45,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class TemplateSectionLine_sugar extends Basic
 {
     public $new_schema = true;

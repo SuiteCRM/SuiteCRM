@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('include/externalAPI/ExternalAPIFactory.php');
 
+#[\AllowDynamicProperties]
 class SugarFeedDashlet extends DashletGeneric
 {
     public $displayRows = 15;
@@ -58,7 +59,9 @@ class SugarFeedDashlet extends DashletGeneric
 
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings, $app_list_strings;
+        global $current_user, $app_strings, $app_list_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
 
         require_once('modules/SugarFeed/metadata/dashletviewdefs.php');
         $this->myItemsOnly = false;
@@ -72,7 +75,7 @@ class SugarFeedDashlet extends DashletGeneric
         $replacements = array();
         $replacements[] = '';
         $replacements[] = '';
-        $this->idjs = preg_replace($pattern, $replacements, $this->id);
+        $this->idjs = preg_replace($pattern, $replacements, (string) $this->id);
         // Add in some default categories.
         $this->categories['ALL'] = translate('LBL_ALL', 'SugarFeed');
         // Need to get the rest of the active SugarFeed modules
@@ -127,9 +130,9 @@ class SugarFeedDashlet extends DashletGeneric
             $this->categories["Twitter"] = "Twitter";
         }
 
-        $catCount = count($this->categories);
+        $catCount = is_countable($this->categories) ? count($this->categories) : 0;
         ACLController::filterModuleList($this->categories, false);
-        if (count($this->categories) < $catCount) {
+        if ((is_countable($this->categories) ? count($this->categories) : 0) < $catCount) {
             if (!empty($this->selectedCategories)) {
                 ACLController::filterModuleList($this->selectedCategories, true);
             } else {
@@ -332,14 +335,14 @@ class SugarFeedDashlet extends DashletGeneric
             );
 
             foreach ($this->lvs->data['data'] as $row => $data) {
-                $this->lvs->data['data'][$row]['NAME'] = str_replace("{this.CREATED_BY}", get_assigned_user_name($this->lvs->data['data'][$row]['CREATED_BY']), $data['NAME']);
+                $this->lvs->data['data'][$row]['NAME'] = str_replace("{this.CREATED_BY}", get_assigned_user_name($this->lvs->data['data'][$row]['CREATED_BY']), (string) $data['NAME']);
 
                 //Translate the SugarFeeds labels if necessary.
                 preg_match('/\{([^\^ }]+)\.([^\}]+)\}/', $this->lvs->data['data'][$row]['NAME'], $modStringMatches);
                 if (count($modStringMatches) == 3 && $modStringMatches[1] == 'SugarFeed' && !empty($data['RELATED_MODULE'])) {
                     $modKey = $modStringMatches[2];
                     $modString = translate($modKey, $modStringMatches[1]);
-                    if (strpos($modString, '{0}') === false || !isset($GLOBALS['app_list_strings']['moduleListSingular'][$data['RELATED_MODULE']])) {
+                    if (strpos((string) $modString, '{0}') === false || !isset($GLOBALS['app_list_strings']['moduleListSingular'][$data['RELATED_MODULE']])) {
                         continue;
                     }
 
@@ -386,7 +389,7 @@ class SugarFeedDashlet extends DashletGeneric
             if ($api !== false) {
                 // FIXME: Actually calculate the oldest sugar feed we can see, once we get an API that supports this sort of filter.
                 $reply = $api->getLatestUpdates(0, $fetchRecordCount);
-                if ($reply['success'] && count($reply['messages']) > 0) {
+                if ($reply['success'] && (is_countable($reply['messages']) ? count($reply['messages']) : 0) > 0) {
                     array_splice($resortQueue, count($resortQueue), 0, $reply['messages']);
                 } else {
                     if (!$reply['success']) {
@@ -440,7 +443,7 @@ class SugarFeedDashlet extends DashletGeneric
     public function pushUserFeed()
     {
         if (!empty($_REQUEST['text']) || (!empty($_REQUEST['link_url']) && !empty($_REQUEST['link_type']))) {
-            $text = htmlspecialchars($_REQUEST['text']);
+            $text = htmlspecialchars((string) $_REQUEST['text']);
             //allow for bold and italic user tags
             $text = preg_replace('/&amp;lt;(\/*[bi])&amp;gt;/i', '<$1>', $text);
             SugarFeed::pushFeed(
@@ -457,7 +460,7 @@ class SugarFeedDashlet extends DashletGeneric
     public function pushUserFeedReply()
     {
         if (!empty($_REQUEST['text'])&&!empty($_REQUEST['parentFeed'])) {
-            $text = htmlspecialchars($_REQUEST['text']);
+            $text = htmlspecialchars((string) $_REQUEST['text']);
             //allow for bold and italic user tags
             $text = preg_replace('/&amp;lt;(\/*[bi])&amp;gt;/i', '<$1>', $text);
             SugarFeed::pushFeed(
@@ -584,7 +587,7 @@ enableQS(false);
             }
         };
 
-        $listview = preg_replace_callback('/\{([^\^ }]+)\.([^\}]+)\}/', $function, $listview);
+        $listview = preg_replace_callback('/\{([^\^ }]+)\.([^\}]+)\}/', $function, (string) $listview);
 
 
         //grab each token and store the module for later processing
@@ -594,7 +597,7 @@ enableQS(false);
         /* BEGIN - SECURITY GROUPS */
         //hide links for those that shouldn't have one
         $listview = preg_replace('/\[(\w+)\:([\w\-\d]*)\:([^\]]*)\]\[HIDELINK\]/', '$3', $listview);
-        /* END - SECURITY GROUPS */ 
+        /* END - SECURITY GROUPS */
         $listview = preg_replace('/\[(\w+)\:([\w\-\d]*)\:([^\]]*)\]/', '<a href="index.php?module=$1&action=DetailView&record=$2"><img src="themes/default/images/$1.gif" border=0 REPLACE_ALT>$3</a>', $listview); /*SKIP_IMAGE_TAG*/
 
 
@@ -639,7 +642,7 @@ enableQS(false);
     public function getDisabledWarning()
     {
         /* Check to see if the sugar feed system is enabled */
-        if (! $this->shouldDisplay()) {
+        if (! static::shouldDisplay()) {
             // The Sugar Feeds are disabled, populate the warning message
             return translate('LBL_DASHLET_DISABLED', 'SugarFeed');
         } else {
@@ -659,7 +662,8 @@ enableQS(false);
             // The user feed system isn't enabled, don't let them post notes
             return '';
         }
-        
+
+        $html = '';
         $user_name = ucfirst($GLOBALS['current_user']->user_name);
         $moreimg = SugarThemeRegistry::current()->getImage('advanced_search', 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"', null, null, '.gif', translate('LBL_SHOW_MORE_OPTIONS', 'SugarFeed'));
         $lessimg = SugarThemeRegistry::current()->getImage('basic_search', 'onclick="toggleDisplay(\'more_' . $this->id . '\'); toggleDisplay(\'more_img_'.$this->id.'\'); toggleDisplay(\'less_img_'.$this->id.'\');"', null, null, '.gif', translate('LBL_HIDE_OPTIONS', 'SugarFeed'));

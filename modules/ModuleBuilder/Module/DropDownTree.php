@@ -42,6 +42,7 @@
 require_once('modules/ModuleBuilder/MB/MBPackageTree.php');
 require_once('modules/ModuleBuilder/Module/DropDownBrowser.php');
 
+#[\AllowDynamicProperties]
 class DropDownTree extends MBPackageTree
 {
     public function __construct()

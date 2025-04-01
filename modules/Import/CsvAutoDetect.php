@@ -88,6 +88,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/parsecsv.lib.php');
 
+#[\AllowDynamicProperties]
 class CsvAutoDetect
 {
     protected $_parser = null;
@@ -166,13 +167,13 @@ class CsvAutoDetect
         $depth = 1;
         $enclosure = "\"";
         $delimiter1 = $this->_parser->auto($this->_csv_file, true, null, null, $enclosure);
-        if (strlen($delimiter1) == 1) { // this means parsing ok
+        if (strlen((string) $delimiter1) == 1) { // this means parsing ok
             $doubleQuoteParsedOK = true;
             // sometimes it parses ok with either single quote or double quote as enclosure
             // so we need to make sure the data do not begin and end with the other enclosure
             foreach ($this->_parser->data as &$row) {
                 foreach ($row as &$data) {
-                    $len = strlen($data);
+                    $len = strlen((string) $data);
                     // check if it begins and ends with single quotes
                     // if it does, then it double quotes may not be the enclosure
                     if ($len>=2 && $data[0] == "'" && $data[$len-1] == "'") {
@@ -199,11 +200,11 @@ class CsvAutoDetect
             $depth = 1;
             $enclosure = "'";
             $delimiter2 = $this->_parser->auto($this->_csv_file, true, null, null, $enclosure);
-            if (strlen($delimiter2) == 1) { // this means parsing ok
+            if (strlen((string) $delimiter2) == 1) { // this means parsing ok
                 $singleQuoteParsedOK = true;
                 foreach ($this->_parser->data as &$row) {
                     foreach ($row as &$data) {
-                        $len = strlen($data);
+                        $len = strlen((string) $data);
                         // check if it begins and ends with double quotes
                         // if it does, then it single quotes may not be the enclosure
                         if ($len>=2 && $data[0] == "\"" && $data[$len-1] == "\"") {
@@ -265,7 +266,7 @@ class CsvAutoDetect
             return false;
         }
 
-        $total_count = count($this->_parser->data[0]);
+        $total_count = is_countable($this->_parser->data[0]) ? count($this->_parser->data[0]) : 0;
         if ($total_count == 0) {
             return false;
         }
@@ -301,13 +302,13 @@ class CsvAutoDetect
                     // check if the CSV item is part of the label or vice versa
                     else {
                         if (isset($defs['vname']) && isset($mod_strings[$defs['vname']])) {
-                            if (stripos(trim($mod_strings[$defs['vname']], ':'), $val) !== false || stripos($val, trim($mod_strings[$defs['vname']], ':')) !== false) {
+                            if (stripos(trim($mod_strings[$defs['vname']], ':'), (string) $val) !== false || stripos((string) $val, trim($mod_strings[$defs['vname']], ':')) !== false) {
                                 $match_count++;
                                 break;
                             }
                         } else {
                             if (isset($defs['vname']) && isset($GLOBALS['app_strings'][$defs['vname']])) {
-                                if (stripos(trim($GLOBALS['app_strings'][$defs['vname']], ':'), $val) !== false || stripos($val, trim($GLOBALS['app_strings'][$defs['vname']], ':')) !== false) {
+                                if (stripos(trim($GLOBALS['app_strings'][$defs['vname']], ':'), (string) $val) !== false || stripos((string) $val, trim($GLOBALS['app_strings'][$defs['vname']], ':')) !== false) {
                                     $match_count++;
                                     break;
                                 }
@@ -346,7 +347,7 @@ class CsvAutoDetect
         foreach ($this->_parser->data as $row) {
             foreach ($row as $val) {
                 foreach ($formats as $format=>$regex) {
-                    $ret = preg_match($regex, $val);
+                    $ret = preg_match($regex, (string) $val);
                     if ($ret) {
                         return $format;
                     }

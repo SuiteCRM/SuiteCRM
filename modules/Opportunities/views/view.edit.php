@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
+#[\AllowDynamicProperties]
 class OpportunitiesViewEdit extends ViewEdit
 {
     public function __construct()

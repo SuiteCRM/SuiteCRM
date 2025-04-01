@@ -3,6 +3,7 @@ namespace Test\Api\V8;
 
 use ApiTester;
 
+#[\AllowDynamicProperties]
 class DeleteModuleCest
 {
     /**

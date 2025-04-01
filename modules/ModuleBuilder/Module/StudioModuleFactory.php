@@ -43,6 +43,7 @@ require_once 'modules/ModuleBuilder/Module/StudioModule.php' ;
 /**
  * Class StudioModuleFactory
  */
+#[\AllowDynamicProperties]
 class StudioModuleFactory
 {
     /**

@@ -40,6 +40,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class UsersViewList extends ViewList
 {
     public function preDisplay()

@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelTopMessage extends SugarWidgetSubPanelTopButton
 {
     public function display($defines, $additionalFormFields = null, $nonbutton = false)

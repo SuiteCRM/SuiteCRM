@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MapsViewMap_Display extends SugarView
 {
     public function __construct()
@@ -21,7 +22,7 @@ class Jjwg_MapsViewMap_Display extends SugarView
         $url = $GLOBALS['sugar_config']['site_url'] . '/index.php?module=' . $GLOBALS['currentModule'] . '&action=map_markers';
         foreach (array_keys($_REQUEST) as $key) {
             if (in_array($key, $valid_names) && !in_array($key, array('action', 'module', 'entryPoint'))) {
-                $url .= '&'.$key.'='.urlencode($_REQUEST[$key]);
+                $url .= '&'.$key.'='.urlencode((string)$_REQUEST[$key]);
             }
         } ?>
 <script type="text/javascript" src="modules/jjwg_Maps/javascript/jquery.iframe-auto-height.plugin.1.9.3.min.js"></script>

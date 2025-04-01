@@ -51,6 +51,7 @@
 require_once('include/MVC/View/SugarView.php');
 require_once("include/JSON.php");
 
+#[\AllowDynamicProperties]
 class ContactsViewRetrieveEmail extends SugarView
 {
     public function __construct()

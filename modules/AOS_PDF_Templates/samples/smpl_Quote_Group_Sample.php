@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../TemplateSampleService.php';
 
+#[\AllowDynamicProperties]
 class smpl_Quote_Group_Sample
 {
     public function getType()

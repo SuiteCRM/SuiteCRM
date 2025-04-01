@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class RolesViewList extends ViewList
 {
     public function preDisplay()

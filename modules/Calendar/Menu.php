@@ -1,7 +1,4 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 
 /**
  *
@@ -9,7 +6,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,9 +39,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-
-
-
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
 global $mod_strings;
 if (ACLController::checkAccess('Meetings', 'edit', true)) {
@@ -57,5 +54,5 @@ if (ACLController::checkAccess('Tasks', 'edit', true)) {
     $module_menu[]=array("index.php?module=Tasks&action=EditView&return_module=Tasks&return_action=DetailView", $mod_strings['LNK_NEW_TASK'],"Create");
 }
 if (ACLController::checkAccess('Calendar', 'list', true)) {
-    $module_menu[]=array("index.php?module=Calendar&action=index&view=day", $mod_strings['LNK_VIEW_CALENDAR'],"Today");
+    $module_menu[]=array("index.php?module=Calendar&action=index&view=agendaDay", $mod_strings['LNK_VIEW_CALENDAR'],"Today");
 }

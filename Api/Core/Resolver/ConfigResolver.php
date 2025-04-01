@@ -1,6 +1,7 @@
 <?php
 namespace Api\Core\Resolver;
 
+#[\AllowDynamicProperties]
 class ConfigResolver
 {
     /**

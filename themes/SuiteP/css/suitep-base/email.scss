@@ -209,7 +209,7 @@
     .col-sm-6 [type].col-sm-8.edit-view-field input[type=text]#parent_name {
       width: 45%;
     }
-    
+
     .col-sm-12 [type].col-sm-8.edit-view-field input[type=text] {
       width: 100%;
     }
@@ -221,7 +221,7 @@
     .col-sm-8[type=parent] {
       width: 100%;
     }
-    
+
     .col-sm-8 {
       width: 83.33%;
     }
@@ -233,6 +233,38 @@
       min-height: 0;
       min-width: 0;
       visibility: collapse;
+    }
+
+
+    .compose-from-email-account {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: start;
+
+      .compose-from-email-address-name {
+        margin-right: 0.5rem;
+      }
+      .compose-from-email-address-from {
+        color: $gray;
+      }
+    }
+
+    .ui-selectmenu-button.ui-button {
+      width: auto;
+      min-width: 50%;
+      background: inherit;
+    }
+
+    .ui-selectmenu-button.ui-button:hover {
+      background: inherit;
+    }
+
+    .ui-selectmenu-menu.ui-front.ui-selectmenu-open {
+      .ui-menu-item-wrapper.ui-state-active {
+        border: 1px solid transparent;
+        background: $gray-lighter
+        50% 50% repeat-x;
+      }
     }
   }
 
@@ -593,6 +625,11 @@
       .col-sm-8 {
         width: 100%;
       }
+
+      .ui-selectmenu-button.ui-button {
+        width: 100%;
+      }
+
     }
   }
 

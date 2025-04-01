@@ -64,6 +64,9 @@ class ListViewDataEmailsSearchOnCrm extends ListViewDataEmailsSearchAbstract
      */
     public function search($filterFields, $request, $where, InboundEmail $inboundEmail, $params, Email $seed, $singleSelect, $id, $limit, User $currentUser, $idField, $offset)
     {
+        $ret_array = [];
+        $filter_fields = [];
+        $pageData = [];
         // Fix fields in filter fields
 
         if (!is_string($id)) {
@@ -201,8 +204,6 @@ class ListViewDataEmailsSearchOnCrm extends ListViewDataEmailsSearchAbstract
                 }
             }
 
-            $pageData = array();
-
             reset($rows);
             while ($row = current($rows)) {
                 $temp = clone $seed;
@@ -213,7 +214,7 @@ class ListViewDataEmailsSearchOnCrm extends ListViewDataEmailsSearchAbstract
                 if (empty($this->lvde->seed->assigned_user_id) && !empty($temp->assigned_user_id)) {
                     $this->lvde->seed->assigned_user_id = $temp->assigned_user_id;
                 }
-                if ($idIndex[$row[$idField]][0] == $dataIndex) {
+                if ($idIndex[$row[$idField]][0] === $dataIndex) {
                     $pageData['tag'][$dataIndex] = $temp->listviewACLHelper();
                 } else {
                     $pageData['tag'][$dataIndex] = $pageData['tag'][$idIndex[$row[$idField]][0]];
@@ -288,7 +289,7 @@ class ListViewDataEmailsSearchOnCrm extends ListViewDataEmailsSearchAbstract
         $queryString = '';
 
         if ((isset($request["searchFormTab"]) && $request["searchFormTab"] == "advanced_search") ||
-            (isset($request["type_basic"]) && (count($request["type_basic"]) > 1 || $request["type_basic"][0] != "")) ||
+            (isset($request["type_basic"]) && ((is_countable($request["type_basic"]) ? count($request["type_basic"]) : 0) > 1 || $request["type_basic"][0] != "")) ||
             (isset($request["module"]) && $request["module"] == "MergeRecords")) {
             $queryString = "-advanced_search";
         } else {
@@ -311,14 +312,14 @@ class ListViewDataEmailsSearchOnCrm extends ListViewDataEmailsSearchAbstract
                     $field_name .= "_basic";
                     if (isset($request[$field_name])  && (!is_array($basicSearchField) || !isset($basicSearchField['type']) || $basicSearchField['type'] == 'text' || $basicSearchField['type'] == 'name')) {
                         // Ensure the encoding is UTF-8
-                        $queryString = htmlentities($request[$field_name], null, 'UTF-8');
+                        $queryString = htmlentities((string) $request[$field_name], null, 'UTF-8');
                         break;
                     }
                 }
             }
         }
 
-        
+
 
         $ret =  array('data'=>$data , 'pageData'=>$pageData, 'query' => $queryString);
 

@@ -5,6 +5,7 @@ require_once('ProjectListViewData.php');
 
 // custom/modules/Project/ProjectListViewSmarty.php
 
+#[\AllowDynamicProperties]
 class ProjectListViewSmarty extends ListViewSmarty
 {
     public function __construct()
@@ -21,7 +22,7 @@ class ProjectListViewSmarty extends ListViewSmarty
         global $app_strings;
         global $sugar_config;
 
-        if (preg_match('/^6\.[2-4]/', $sugar_config['sugar_version'])) { // Older v6.2-6.4
+        if (preg_match('/^6\.[2-4]/', (string) $sugar_config['sugar_version'])) { // Older v6.2-6.4
 
             $script = "<a href='#' style='width: 150px' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' " .
                 "onmouseout='unhiliteItem(this);' onclick=\"return sListView.send_form(true, '{$_REQUEST['module']}', " .

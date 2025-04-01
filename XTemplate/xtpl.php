@@ -94,6 +94,7 @@ r3 - 2004-05-26 22:30:56 -0700 (Wed, 26 May 2004) - sugarjacob - Moving project 
 
 
 
+#[\AllowDynamicProperties]
 class XTemplate {
 
 /*
@@ -124,31 +125,31 @@ class XTemplate {
 
 /***[ variables ]***********************************************************/
 
-var $filecontents="";								/* raw contents of template file */
-var $blocks=array();								/* unparsed blocks */
-var $parsed_blocks=array();					/* parsed blocks */
-var $block_parse_order=array();			/* block parsing order for recursive parsing (sometimes reverse:) */
-var $sub_blocks=array();						/* store sub-block names for fast resetting */
-var $VARS=array();									/* variables array */
-var $alternate_include_directory = "";
+public $filecontents="";								/* raw contents of template file */
+public $blocks=array();								/* unparsed blocks */
+public $parsed_blocks=array();					/* parsed blocks */
+public $block_parse_order=array();			/* block parsing order for recursive parsing (sometimes reverse:) */
+public $sub_blocks=array();						/* store sub-block names for fast resetting */
+public $VARS=array();									/* variables array */
+public $alternate_include_directory = "";
 
-var $file_delim="/\{FILE\s*\"([^\"]+)\"\s*\}/m";  /* regexp for file includes */
-var $block_start_delim="<!-- ";			/* block start delimiter */
-var $block_end_delim="-->";					/* block end delimiter */
-var $block_start_word="BEGIN:";			/* block start word */
-var $block_end_word="END:";					/* block end word */
+public $file_delim="/\{FILE\s*\"([^\"]+)\"\s*\}/m";  /* regexp for file includes */
+public $block_start_delim="<!-- ";			/* block start delimiter */
+public $block_end_delim="-->";					/* block end delimiter */
+public $block_start_word="BEGIN:";			/* block start word */
+public $block_end_word="END:";					/* block end word */
 
 /* this makes the delimiters look like: <!-- BEGIN: block_name --> if you use my syntax. */
 
-var $NULL_STRING=array(""=>"");				/* null string for unassigned vars */
-var $NULL_BLOCK=array(""=>"");	/* null string for unassigned blocks */
-var $mainblock="";
-var $ERROR="";
-var $AUTORESET=1;										/* auto-reset sub blocks */
+public $NULL_STRING=array(""=>"");				/* null string for unassigned vars */
+public $NULL_BLOCK=array(""=>"");	/* null string for unassigned blocks */
+public $mainblock="";
+public $ERROR="";
+public $AUTORESET=1;										/* auto-reset sub blocks */
 
 /***[ constructor ]*********************************************************/
 
-function __construct ($file, $alt_include = "", $mainblock="main") {
+public function __construct ($file, $alt_include = "", $mainblock="main") {
 	$this->alternate_include_directory = $alt_include;
 	$this->mainblock=$mainblock;
 	$this->filecontents=$this->r_getfile($file);	/* read in template file */
@@ -166,7 +167,7 @@ function __construct ($file, $alt_include = "", $mainblock="main") {
 	assign a variable
 */
 
-function assign ($name,$val="") {
+public function assign ($name,$val="") {
 	if (is_array($name)) {
 		foreach ($name as $k => $v) {
 			$this->VARS[$k] = $v;
@@ -176,7 +177,7 @@ function assign ($name,$val="") {
 	}
 }
 
-function append ($varname, $name,$val="") {
+public function append ($varname, $name,$val="") {
 	if(!isset($this->VARS[$varname])){
 		$this->VARS[$varname] = array();
 	}
@@ -190,7 +191,7 @@ function append ($varname, $name,$val="") {
 	parse a block
 */
 
-function parse ($bname) {
+public function parse ($bname) {
 	global $sugar_version, $sugar_config;
 
 	$this->assign('SUGAR_VERSION', $GLOBALS['js_version_key']);
@@ -203,7 +204,7 @@ function parse ($bname) {
 	$copy=$this->blocks[$bname];
 	if (!isset($this->blocks[$bname]))
 		$this->set_error ("parse: blockname [$bname] does not exist");
-	preg_match_all("/\{([A-Za-z0-9\._]+?)}/",$this->blocks[$bname],$var_array);
+	preg_match_all("/\{([A-Za-z0-9\._]+?)}/",(string) $this->blocks[$bname],$var_array);
 	$var_array=$var_array[1];
 	foreach ($var_array as $k => $v) {
 		$sub=explode(".",$v);
@@ -225,7 +226,7 @@ function parse ($bname) {
 			// Commented out due to regular expression issue with '$' in replacement string.
 			//$copy=preg_replace("/\{".$v."\}/","$var",$copy);
 			// This should be faster and work better for '$'
-			$copy=str_replace("{".$v."}",$var,$copy);
+			$copy=str_replace("{".$v."}",$var,(string) $copy);
 		} else {
 			$var=$this->VARS;
 
@@ -250,7 +251,7 @@ function parse ($bname) {
 			// this was periodically returning an array to string conversion error....
 			if(!is_array($var))
 			{
-				$copy=str_replace("{".$v."}",$var,$copy);
+				$copy=str_replace("{".$v."}",$var,(string) $copy);
 			}
 		}
 	}
@@ -276,7 +277,7 @@ function parse ($bname) {
 /*
 	returns true if a block exists otherwise returns false.
 */
-function exists($bname){
+public function exists($bname){
 	return (!empty($this->parsed_blocks[$bname])) || (!empty($this->blocks[$bname]));
 }
 
@@ -285,9 +286,9 @@ function exists($bname){
 /*
 	returns true if a block exists otherwise returns false.
 */
-function var_exists($bname,$vname){
+public function var_exists($bname,$vname){
 	if(!empty($this->blocks[$bname])){
-		return substr_count($this->blocks[$bname], '{'. $vname . '}') >0;
+		return substr_count((string) $this->blocks[$bname], '{'. $vname . '}') >0;
 	}
 	return false;
 }
@@ -298,7 +299,7 @@ function var_exists($bname,$vname){
 	returns the parsed text for a block, including all sub-blocks.
 */
 
-function rparse($bname) {
+public function rparse($bname) {
 	if (!empty($this->sub_blocks[$bname])) {
 		reset($this->sub_blocks[$bname]);
 		foreach($this->sub_blocks[$bname] as $k => $v) {
@@ -316,7 +317,7 @@ function rparse($bname) {
 	inserts a loop ( call assign & parse )
 */
 
-function insert_loop($bname,$var,$value="") {
+public function insert_loop($bname,$var,$value="") {
 	$this->assign($var,$value);
 	$this->parse($bname);
 }
@@ -326,7 +327,7 @@ function insert_loop($bname,$var,$value="") {
 	returns the parsed text for a block
 */
 
-function text($bname) {
+public function text($bname) {
 
     if(!empty($this->parsed_blocks)){
 	   return $this->parsed_blocks[isset($bname) ? $bname :$this->mainblock];
@@ -340,7 +341,7 @@ function text($bname) {
 	prints the parsed text
 */
 
-function out ($bname) {
+public function out ($bname) {
 	global $focus;
 
 	if(isset($focus)){
@@ -362,7 +363,7 @@ function out ($bname) {
 	resets the parsed text
 */
 
-function reset ($bname) {
+public function reset ($bname) {
 	$this->parsed_blocks[$bname]="";
 }
 
@@ -371,7 +372,7 @@ function reset ($bname) {
 	returns true if block was parsed, false if not
 */
 
-function parsed ($bname) {
+public function parsed ($bname) {
 	return (!empty($this->parsed_blocks[$bname]));
 }
 
@@ -380,7 +381,7 @@ function parsed ($bname) {
 	sets the string to replace in case the var was not assigned
 */
 
-function SetNullString($str,$varname="") {
+public function SetNullString($str,$varname="") {
 	$this->NULL_STRING[$varname]=$str;
 }
 
@@ -389,7 +390,7 @@ function SetNullString($str,$varname="") {
 	sets the string to replace in case the block was not parsed
 */
 
-function SetNullBlock($str,$bname="") {
+public function SetNullBlock($str,$bname="") {
 	$this->NULL_BLOCK[$bname]=$str;
 }
 
@@ -400,7 +401,7 @@ function SetNullBlock($str,$bname="") {
 	(for multiple level blocks)
 */
 
-function set_autoreset() {
+public function set_autoreset() {
 	$this->AUTORESET=1;
 }
 
@@ -411,7 +412,7 @@ function set_autoreset() {
 	(for multiple level blocks)
 */
 
-function clear_autoreset() {
+public function clear_autoreset() {
 	$this->AUTORESET=0;
 }
 
@@ -420,8 +421,9 @@ function clear_autoreset() {
 	scans global variables
 */
 
-function scan_globals() {
-	reset($GLOBALS);
+public function scan_globals() {
+	$GLOB = [];
+    reset($GLOBALS);
 	foreach ($GLOBALS as $k => $v) {
         $GLOB[$k] = $v;
 	}
@@ -449,7 +451,7 @@ function scan_globals() {
 */
 
 
-function maketree($con,$block) {
+public function maketree($con,$block) {
 	$con2=explode($this->block_start_delim,$con);
 	$level=0;
 	$block_names=array();
@@ -515,12 +517,12 @@ function maketree($con,$block) {
 	sets and gets error
 */
 
-function get_error()	{
+public function get_error()	{
 	return ($this->ERROR=="")?0:$this->ERROR;
 }
 
 
-function set_error($str)	{
+public function set_error($str)	{
 	$this->ERROR=$str;
 }
 
@@ -529,7 +531,7 @@ function set_error($str)	{
 	returns the contents of a file
 */
 
-function getfile($file) {
+public function getfile($file) {
 	if (!isset($file)) {
 		$this->set_error("!isset file name!");
 		return "";
@@ -558,11 +560,11 @@ function getfile($file) {
 */
 
 
-function r_getfile($file) {
+public function r_getfile($file) {
 	$text=$this->getfile($file);
-	while (preg_match($this->file_delim,$text,$res)) {
+	while (preg_match($this->file_delim,(string) $text,$res)) {
 		$text2=$this->getfile($res[1]);
-		$text=str_replace($res[0], $text2, $text);
+		$text=str_replace($res[0], $text2, (string) $text);
 	}
 	return $text;
 }

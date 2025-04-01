@@ -14,6 +14,7 @@
  */
 
  /* pData class definition */
+ #[\AllowDynamicProperties]
  class pCache
  {
      public $CacheFolder;

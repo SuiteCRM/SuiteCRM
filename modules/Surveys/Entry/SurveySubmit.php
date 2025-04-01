@@ -63,6 +63,7 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
     $response->campaign_id = $campaignId;
     $response->happiness = -1;
     $response->happiness_text = '';
+    $response->assigned_user_id = $survey->assigned_user_id;
 
     foreach ($survey->get_linked_beans('surveys_surveyquestions', 'SurveyQuestions', 'sort_order') as $question) {
         $userResponse = $request['question'][$question->id];

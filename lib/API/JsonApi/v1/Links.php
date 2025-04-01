@@ -50,6 +50,7 @@ use SuiteCRM\Utility\SuiteLogger as Logger;
  * @package SuiteCRM\API\JsonApi\v1
  * @see http://jsonapi.org/format/1.0/#document-links
  */
+#[\AllowDynamicProperties]
 class Links implements LoggerAwareInterface, JsonApiResponseInterface
 {
     /**

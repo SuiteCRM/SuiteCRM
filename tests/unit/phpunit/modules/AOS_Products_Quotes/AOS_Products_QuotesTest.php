@@ -25,7 +25,7 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aosProductsQuotes->id));
-        self::assertEquals(36, strlen($aosProductsQuotes->id));
+        self::assertEquals(36, strlen((string) $aosProductsQuotes->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosProductsQuotes->mark_deleted($aosProductsQuotes->id);
@@ -83,7 +83,7 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
 
         //get the linked beans and get record count before deletion
         $product_quote_lines = $aosQuote->get_linked_beans('aos_products_quotes', $aosQuote->object_name);
-        $expected = count($product_quote_lines);
+        $expected = is_countable($product_quote_lines) ? count($product_quote_lines) : 0;
         $product_quote_lines = null;
 
         $aosProductsQuotes->mark_lines_deleted($aosQuote);
@@ -93,7 +93,7 @@ class AOS_Products_QuotesTest extends SuitePHPUnitFrameworkTestCase
         $aosQuote = BeanFactory::newBean('AOS_Quotes');
         $aosQuote->id = 1;
         $product_quote_lines = $aosQuote->get_linked_beans('aos_products_quotes', $aosQuote->object_name);
-        $actual = count($product_quote_lines);
+        $actual = is_countable($product_quote_lines) ? count($product_quote_lines) : 0;
 
         self::assertLessThanOrEqual($expected, $actual);
     }

@@ -63,24 +63,12 @@ if ($_REQUEST['select_entire_list'] == '1') {
     $mass = new MassUpdate();
     $mass->generateSearchWhere($_REQUEST['module'], $_REQUEST['current_query_by_page']);
     $ret_array = create_export_query_relate_link_patch($_REQUEST['module'], $mass->searchFields, $mass->where_clauses);
-    /* BEGIN - SECURITY GROUPS */
-    //need to hijack the $ret_array['where'] of securitygroup required
-    if ($focus->bean_implements('ACL') && ACLController::requireSecurityGroup($focus->module_dir, 'list')) {
-        require_once('modules/SecurityGroups/SecurityGroup.php');
-        global $current_user;
-        $owner_where = $focus->getOwnerWhere($current_user->id);
-        $group_where = SecurityGroup::getGroupWhere($focus->table_name, $focus->module_dir, $current_user->id);
-        if (!empty($owner_where)) {
-            if (empty($ret_array['where'])) {
-                $ret_array['where'] = " (".  $owner_where." or ".$group_where.") ";
-            } else {
-                $ret_array['where'] .= " AND (".  $owner_where." or ".$group_where.") ";
-            }
-        } else {
-            $ret_array['where'] .= ' AND '.  $group_where;
-        }
+
+    $accessWhere = $focus->buildAccessWhere('list');
+    if (!empty($accessWhere)) {
+        $ret_array['where'] .= empty($ret_array['where']) ? $accessWhere : ' AND ' . $accessWhere;
     }
-    /* END - SECURITY GROUPS */
+    
     $query = $focus->create_export_query($order_by, $ret_array['where'], $ret_array['join']);
     $result = DBManagerFactory::getInstance()->query($query, true);
     $uids = array();

@@ -206,6 +206,7 @@ class EmployeeTest extends SuitePHPUnitFrameworkTestCase
         // test if there is an error
 
         $app_strings['TEST_ERROR_MESSAGE'] = 'Hello error';
+        $request = [];
         $request['error_string'] = 'TEST_ERROR_MESSAGE';
         self::assertEquals('TEST_ERROR_MESSAGE', $request['error_string']);
         ob_start();

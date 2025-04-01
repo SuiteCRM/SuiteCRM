@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Generic controller for the Search Framework.
  */
+#[\AllowDynamicProperties]
 abstract class Controller
 {
     /** @var View */

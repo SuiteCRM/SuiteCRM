@@ -44,11 +44,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/SurveyQuestionOptions/SurveyQuestionOptions.php');
 
+#[\AllowDynamicProperties]
 class SurveyQuestionOptionsDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/SurveyQuestionOptions/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

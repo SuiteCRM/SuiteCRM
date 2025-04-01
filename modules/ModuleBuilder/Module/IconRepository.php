@@ -1,13 +1,14 @@
 <?php
 
+#[\AllowDynamicProperties]
 class IconRepository
 {
-    const DEFAULT_ICON = 'default';
-    const ICON_LABELS = 'labels';
-    const ICON_FIELDS = 'fields';
-    const ICON_RELATIONSHIPS = 'relationships';
-    const ICON_LAYOUTS = 'layouts';
-    const ICON_SUBPANELS = 'labels';
+    public const DEFAULT_ICON = 'default';
+    public const ICON_LABELS = 'labels';
+    public const ICON_FIELDS = 'fields';
+    public const ICON_RELATIONSHIPS = 'relationships';
+    public const ICON_LAYOUTS = 'layouts';
+    public const ICON_SUBPANELS = 'labels';
 
     /**
      * @var array

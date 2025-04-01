@@ -43,12 +43,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 if (isset($_GET['DynamicAction']) && $_GET['DynamicAction'] == "saveImage") {
-    $filename = pathinfo($_POST['filename'], PATHINFO_BASENAME);
+    $filename = pathinfo((string) $_POST['filename'], PATHINFO_BASENAME);
     $ext = pathinfo($filename, PATHINFO_EXTENSION);
     if (!in_array(strtolower($ext), array('jpg', 'png', 'jpeg'))) {
         return false;
     }
-    $image = str_replace(" ", "+", $_POST["imageStr"]);
+    $image = str_replace(" ", "+", (string) $_POST["imageStr"]);
     $data = substr($image, strpos($image, ","));
     if (sugar_mkdir(sugar_cached("images"), 0777, true)) {
         $filepath = sugar_cached("images/$filename");

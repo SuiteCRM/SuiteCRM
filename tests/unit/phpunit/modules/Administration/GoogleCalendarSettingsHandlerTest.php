@@ -68,7 +68,7 @@ class GoogleCalendarSettingsHandlerTest extends SuitePHPUnitFrameworkTestCase
         global $mod_strings;
         global $app_strings;
 
-        $tplPath = __DIR__ . '/GoogleCalendarSettings.tpl';
+        $tplPath = 'modules/Administration/GoogleCalendarSettings.tpl';
 
         $request = array('do' => 'save');
 
@@ -92,7 +92,7 @@ class GoogleCalendarSettingsHandlerTest extends SuitePHPUnitFrameworkTestCase
         global $mod_strings;
         global $app_strings;
 
-        $tplPath = __DIR__ . '/GoogleCalendarSettings.tpl';
+        $tplPath = 'modules/Administration/GoogleCalendarSettings.tpl';
 
         $request = array();
 
@@ -116,7 +116,7 @@ class GoogleCalendarSettingsHandlerTest extends SuitePHPUnitFrameworkTestCase
         global $mod_strings;
         global $app_strings;
 
-        $tplPath = __DIR__ . '/GoogleCalendarSettings.tpl';
+        $tplPath = 'modules/Administration/GoogleCalendarSettings.tpl';
 
         $request = array();
 

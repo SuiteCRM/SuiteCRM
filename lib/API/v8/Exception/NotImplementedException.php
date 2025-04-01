@@ -44,9 +44,10 @@ namespace SuiteCRM\API\v8\Exception;
  * Class NotImplementedException
  * @package SuiteCRM\API\v8\Exception
  */
+#[\AllowDynamicProperties]
 class NotImplementedException extends ApiException
 {
-    const MSG_PREFIX = '[NotImplementedException]';
-    const DEFAULT_CODE = 8035;
-    const HTTP_STATUS = 500;
+    public const MSG_PREFIX = '[NotImplementedException]';
+    public const DEFAULT_CODE = 8035;
+    public const HTTP_STATUS = 500;
 }

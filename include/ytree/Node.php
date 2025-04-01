@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * predefined properties for a node are  id, label, target and href. label is required property.
  * set the target and href property for cases where target is an iframe.
  */
+#[\AllowDynamicProperties]
 class Node
 {
     // predefined node properties.

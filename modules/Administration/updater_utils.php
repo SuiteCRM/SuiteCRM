@@ -71,7 +71,7 @@ function getSystemInfo($send_usage_info=true)
             $administration = BeanFactory::newBean('Administration');
         }
         $administration->retrieveSettings('system');
-        $info['system_name'] = (!empty($administration->settings['system_name']))?substr($administration->settings['system_name'], 0, 255):'';
+        $info['system_name'] = (!empty($administration->settings['system_name']))?substr((string) $administration->settings['system_name'], 0, 255):'';
 
 
         $result=$db->getOne("select count(*) count from users where status='Active' and deleted=0 and is_admin='1'", false, 'fetching admin count');
@@ -142,7 +142,7 @@ function getBaseSystemInfo($send_usage_info=true)
 
 function check_now($send_usage_info=true, $get_request_data=false, $response_data = false, $from_install=false)
 {
-    global $sugar_config, $timedate;
+    global $sugar_config, $timedate, $sugar_version;
     global $license;
     $db = DBManagerFactory::getInstance();
 
@@ -245,7 +245,7 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
         $license->saveSetting('license', 'latest_versions', '')	;
     }
 
-    if (count($resultData) == 1 && !empty($resultData['versions'][0]['version'])
+    if ((is_countable($resultData) ? count($resultData) : 0) == 1 && !empty($resultData['versions'][0]['version'])
         && compareVersions($sugar_version, $resultData['versions'][0]['version'])) {
         $resultData['versions'][0]['version'] = $sugar_version;
         $resultData['versions'][0]['description'] = "You have the latest version.";
@@ -276,7 +276,7 @@ function get_CheckUpdates_config_setting()
 
     $admin=BeanFactory::newBean('Administration');
     $admin=$admin->retrieveSettings('Update', true);
-    if (empty($admin->settings) or empty($admin->settings['Update_CheckUpdates'])) {
+    if (empty($admin->settings) || empty($admin->settings['Update_CheckUpdates'])) {
         $admin->saveSetting('Update', 'CheckUpdates', 'automatic');
     } else {
         $checkupdates=$admin->settings['Update_CheckUpdates'];
@@ -293,7 +293,7 @@ function get_last_check_version_config_setting()
 {
     $admin=BeanFactory::newBean('Administration');
     $admin=$admin->retrieveSettings('Update');
-    if (empty($admin->settings) or empty($admin->settings['Update_last_check_version'])) {
+    if (empty($admin->settings) || empty($admin->settings['Update_last_check_version'])) {
         return null;
     } else {
         return $admin->settings['Update_last_check_version'];
@@ -310,7 +310,7 @@ function get_last_check_date_config_setting()
 {
     $admin=BeanFactory::newBean('Administration');
     $admin=$admin->retrieveSettings('Update');
-    if (empty($admin->settings) or empty($admin->settings['Update_last_check_date'])) {
+    if (empty($admin->settings) || empty($admin->settings['Update_last_check_date'])) {
         return 0;
     } else {
         return $admin->settings['Update_last_check_date'];
@@ -359,7 +359,7 @@ function loadLicense($firstLogin=false)
 
 function loginLicense()
 {
-    global $current_user, $license;
+    global $current_user, $license, $sugar_version;
     loadLicense(true);
 
 
@@ -377,7 +377,7 @@ function loginLicense()
             include('sugar_version.php');
 
             $newVersion = '';
-            if (!empty($version) && count($version) == 1) {
+            if (!empty($version) && (is_countable($version) ? count($version) : 0) == 1) {
                 $newVersion = $version[0]['version'];
             }
 

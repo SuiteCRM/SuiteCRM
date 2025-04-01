@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
      *
      * Displays users subpanels in tabs
      */
+#[\AllowDynamicProperties]
 class SugarWidgetTabs
 {
     public $tabs;
@@ -62,7 +63,7 @@ class SugarWidgetTabs
     {
         $template = new Sugar_Smarty();
         $template->assign('subpanel_tabs', $this->tabs);
-        $template->assign('subpanel_tabs_count', count($this->tabs));
+        $template->assign('subpanel_tabs_count', is_countable($this->tabs) ? count($this->tabs) : 0);
         $template->assign('jscallback', $this->jscallback);
         $template->assign('subpanel_current_key', $this->current_key);
 

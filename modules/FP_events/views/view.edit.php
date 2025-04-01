@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class FP_eventsViewEdit extends ViewEdit
 {
     public function __construct()

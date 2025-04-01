@@ -52,11 +52,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/FP_events/FP_events.php');
 
+#[\AllowDynamicProperties]
 class FP_eventsDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/FP_events/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * formatting in the SugarCRM application.
  *
  */
+#[\AllowDynamicProperties]
 class Currency extends SugarBean
 {
     // Stored fields
@@ -405,13 +406,15 @@ function format_number($amount, $round = null, $decimals = null, $params = array
         $symbol = $locale->translateCharset($symbol, 'UTF-8', $locale->getExportCharset());
     }
 
+    $checkAmount = 0;
+
     if (empty($params['human'])) {
         $amount = number_format(round($amount, $round), $decimals, $dec_sep, $num_grp_sep);
         $amount = format_place_symbol($amount, $symbol, (empty($params['symbol_space']) ? false : true));
     } else {
         // If amount is more greater than a thousand(positive or negative)
-        if (strpos($amount, '.') > 0) {
-            $checkAmount = strlen(substr($amount, 0, strpos($amount, '.')));
+        if (strpos((string) $amount, '.') > 0) {
+            $checkAmount = strlen(substr((string) $amount, 0, strpos((string) $amount, '.')));
         }
 
         if ($checkAmount >= 1000 || $checkAmount <= -1000) {

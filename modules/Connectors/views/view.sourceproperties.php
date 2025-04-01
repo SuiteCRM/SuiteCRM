@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class ViewSourceProperties extends ViewList
 {
     public function __construct()
@@ -80,7 +81,7 @@ class ViewSourceProperties extends ViewList
             $connector_language['LBL_LICENSING_INFO'] = str_replace(
                 '{$SITE_URL}',
                 $siteUrl,
-                $connector_language['LBL_LICENSING_INFO']
+                (string) $connector_language['LBL_LICENSING_INFO']
             );
         }
 

@@ -40,6 +40,7 @@
 
 require_once('include/ytree/Tree.php');
 require_once('include/ytree/Node.php');
+#[\AllowDynamicProperties]
 class MBPackageTree
 {
     public function __construct()

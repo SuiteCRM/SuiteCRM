@@ -49,6 +49,7 @@ require_once __DIR__ . '/../../../../../include/SugarPHPMailer.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class SugarPHPMailerMock extends SugarPHPMailer
 {
     /**

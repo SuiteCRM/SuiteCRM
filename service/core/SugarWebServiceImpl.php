@@ -48,6 +48,7 @@ if (!defined('sugarEntry')) {
 require_once('service/core/SoapHelperWebService.php');
 SugarWebServiceImpl::$helperObject = new SoapHelperWebServices();
 
+#[\AllowDynamicProperties]
 class SugarWebServiceImpl
 {
     public static $helperObject = null;
@@ -414,7 +415,7 @@ class SugarWebServiceImpl
             $list = $result['rows'];
             $filterFields = $result['fields_set_on_rows'];
 
-            if (count($list) > 0) {
+            if ((is_countable($list) ? count($list) : 0) > 0) {
                 // get the related module name and instantiate a bean for that.
                 $submodulename = $mod->$link_field_name->getRelatedModuleName();
                 $submoduleclass = $beanList[$submodulename];
@@ -927,6 +928,7 @@ class SugarWebServiceImpl
             $sugar_config['list_max_entries_per_page'] = $max_results;
         }
 
+        $unified_search_modules = [];
         require_once('modules/Home/UnifiedSearchAdvanced.php');
         require_once 'include/utils.php';
         $usa = new UnifiedSearchAdvanced();
@@ -987,7 +989,7 @@ class SugarWebServiceImpl
                     $emailQuery = false;
 
                     $where = '';
-                    if (count($where_clauses) > 0) {
+                    if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
                         $where = '('. implode(' ) OR ( ', $where_clauses) . ')';
                     }
 
@@ -1008,7 +1010,7 @@ class SugarWebServiceImpl
                     $filterFields[] = 'id';
                 } // if
                     $ret_array = $seed->create_new_list_query('', $where, $filterFields, array(), 0, '', true, $seed, true);
-                    if (empty($params) or !is_array($params)) {
+                    if (empty($params) || !is_array($params)) {
                         $params = array();
                     }
                     if (!isset($params['custom_select'])) {
@@ -1124,7 +1126,7 @@ LEFT JOIN email_addresses ea ON (ea.id = eabl.email_address_id) ";
             $GLOBALS['log']->info('End: SugarWebServiceImpl->set_campaign_merge');
             return;
         } // if
-        if (empty($campaign_id) or !is_array($targets) or count($targets) == 0) {
+        if (empty($campaign_id) || !is_array($targets) || count($targets) == 0) {
             $error->set_error('invalid_set_campaign_merge_data');
             self::$helperObject->setFaultObject($error);
             $GLOBALS['log']->debug('set_campaign_merge: Merge action status will not be updated, because, campaign_id is null or no targets were selected.');

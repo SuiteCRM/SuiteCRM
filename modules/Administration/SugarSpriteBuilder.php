@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("include/SugarTheme/cssmin.php");
 
+#[\AllowDynamicProperties]
 class SugarSpriteBuilder
 {
     public $isAvailable = false;
@@ -143,7 +144,7 @@ class SugarSpriteBuilder
                         if ($info = $this->getFileInfo($dir, $file)) {
 
                             // skip excluded files
-                            if (isset($this->sprites_config[$dir]['exclude']) && array_search($file, $this->sprites_config[$dir]['exclude']) !== false) {
+                            if (isset($this->sprites_config[$dir]['exclude']) && array_search($file, $this->sprites_config[$dir]['exclude'], true) !== false) {
                                 global $mod_strings;
                                 $msg = string_format($mod_strings['LBL_SPRITES_EXCLUDING_FILE'], array("{$dir}/{$file}"));
                                 $GLOBALS['log']->debug($msg);
@@ -280,9 +281,9 @@ class SugarSpriteBuilder
             }
 
             // setup config for sprite placement algorithm
-            if (substr($name, 0, 6) == 'repeat') {
+            if (substr((string) $name, 0, 6) == 'repeat') {
                 $isRepeat = true;
-                $type = substr($name, 7, 10) == 'horizontal' ? 'horizontal' : 'vertical';
+                $type = substr((string) $name, 7, 10) == 'horizontal' ? 'horizontal' : 'vertical';
                 $config = array(
                     'type' => $type,
                 );
@@ -503,6 +504,7 @@ background-position: -{$offset_x}px -{$offset_y}px;
  * SpritePlacement
  *
  */
+#[\AllowDynamicProperties]
 class SpritePlacement
 {
 
@@ -594,7 +596,7 @@ class SpritePlacement
                 break;
 
             default:
-                $GLOBALS['log']->warn(__CLASS__.": Unknown sprite placement algorithm -> {$this->config['type']}");
+                $GLOBALS['log']->warn(self::class.": Unknown sprite placement algorithm -> {$this->config['type']}");
                 break;
         }
 

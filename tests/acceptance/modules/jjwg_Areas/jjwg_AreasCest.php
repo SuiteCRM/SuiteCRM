@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class jjwg_AreasCest
 {
     /**
@@ -38,7 +39,7 @@ class jjwg_AreasCest
         \Step\Acceptance\ListView $listView
     ) {
         $I->wantTo('View the mapsAreas module for testing');
-        
+
         $I->loginAsAdmin();
         // Navigate to mapsAreas list-view
         $I->visitPage('jjwg_Areas', 'index');

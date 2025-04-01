@@ -51,6 +51,7 @@ use SuiteCRM\Exception\Exception;
  * Class TestCaseAbstract
  * @package SuiteCRM
  */
+#[\AllowDynamicProperties]
 abstract class TestCaseAbstract extends TestCase
 {
     use DatabaseTransactions;

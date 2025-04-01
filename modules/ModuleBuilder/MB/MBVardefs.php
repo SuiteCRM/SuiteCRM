@@ -38,6 +38,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class MBVardefs
 {
     public $templates = array();
@@ -134,7 +135,7 @@ class MBVardefs
 
     public function addFieldVardef($vardef)
     {
-        if (!isset($vardef['default']) || strlen($vardef['default']) == 0) {
+        if (!isset($vardef['default']) || strlen((string) $vardef['default']) == 0) {
             unset($vardef['default']);
         }
         $this->vardef['fields'][$vardef['name']] = $vardef;

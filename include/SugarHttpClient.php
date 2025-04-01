@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Presently does only one op - POST to url.
  * If you need more complex stuff, use Zend_Http_Client
  */
+#[\AllowDynamicProperties]
 class SugarHttpClient
 {
     protected $last_error = '';

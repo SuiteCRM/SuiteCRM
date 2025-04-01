@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_PDF_TemplatesViewDetail extends ViewDetail
 {
     public function __construct()
@@ -22,8 +23,8 @@ class AOS_PDF_TemplatesViewDetail extends ViewDetail
 
     public function setDecodeHTML()
     {
-        $this->bean->pdfheader = html_entity_decode(str_replace('&nbsp;', ' ', $this->bean->pdfheader));
-        $this->bean->description = html_entity_decode(str_replace('&nbsp;', ' ', $this->bean->description));
-        $this->bean->pdffooter = html_entity_decode(str_replace('&nbsp;', ' ', $this->bean->pdffooter));
+        $this->bean->pdfheader = html_entity_decode(str_replace('&nbsp;', ' ', (string) $this->bean->pdfheader));
+        $this->bean->description = html_entity_decode(str_replace('&nbsp;', ' ', (string) $this->bean->description));
+        $this->bean->pdffooter = html_entity_decode(str_replace('&nbsp;', ' ', (string) $this->bean->pdffooter));
     }
 }

@@ -51,7 +51,7 @@ $supportedExtensions = array('jpg', 'png', 'jpeg');
 $json = getJSONobj();
 $rmdir=true;
 $returnArray = array();
-if ($json->decode(html_entity_decode($_REQUEST['forQuotes']))) {
+if ($json->decode(html_entity_decode((string) $_REQUEST['forQuotes']))) {
     $returnArray['forQuotes']="quotes";
 } else {
     $returnArray['forQuotes']="company";
@@ -70,7 +70,7 @@ if (isset($_FILES['file_1'])) {
             sugar_cleanup();
             exit();
         }
-        $file_name = $upload_dir . '/' . str_replace(' ', '_', $upload->get_stored_file_name());
+        $file_name = $upload_dir . '/' . str_replace(' ', '_', (string) $upload->get_stored_file_name());
         if ($upload->final_move($file_name)) {
             $upload_ok = true;
         }
@@ -83,7 +83,7 @@ if (!$upload_ok) {
     exit();
 }
 if (file_exists($file_name) && is_file($file_name)) {
-    $encoded_file_name = rawurlencode(str_replace(' ', '_', $upload->get_stored_file_name()));
+    $encoded_file_name = rawurlencode(str_replace(' ', '_', (string) $upload->get_stored_file_name()));
     $returnArray['path'] = $upload_path . '/' . $encoded_file_name;
     $returnArray['url']= 'cache/images/'.$encoded_file_name;
     if (!verify_uploaded_image($file_name, $returnArray['forQuotes'] == 'quotes')) {
@@ -110,7 +110,7 @@ if (file_exists($file_name) && is_file($file_name)) {
             }
         }
 
-        copy($file_name, sugar_cached('images/' . str_replace(' ', '_', $upload->get_stored_file_name())));
+        copy($file_name, sugar_cached('images/' . str_replace(' ', '_', (string) $upload->get_stored_file_name())));
     }
     if (!empty($returnArray['data'])) {
         echo $json->encode($returnArray);

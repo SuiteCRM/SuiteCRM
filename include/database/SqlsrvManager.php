@@ -315,7 +315,7 @@ class SqlsrvManager extends MssqlManager
     {
         if ((isset($fielddef2['dbType']) && $fielddef2['dbType'] == 'id') || preg_match(
             '/(_id$|^id$)/',
-            $fielddef2['name']
+            (string) $fielddef2['name']
         )
         ) {
             if (isset($fielddef1['type']) && isset($fielddef2['type'])) {
@@ -400,13 +400,13 @@ class SqlsrvManager extends MssqlManager
             } elseif (!in_array($row['TYPE_NAME'], array('datetime', 'text'))) {
                 $columns[$column_name]['len'] = strtolower($row['LENGTH']);
             }
-            if (stristr($row['TYPE_NAME'], 'identity')) {
+            if (stristr((string) $row['TYPE_NAME'], 'identity')) {
                 $columns[$column_name]['auto_increment'] = '1';
                 $columns[$column_name]['type'] = str_replace(' identity', '', strtolower($row['TYPE_NAME']));
             }
 
             if (!empty($row['IS_NULLABLE']) && $row['IS_NULLABLE'] == 'NO' && (empty($row['KEY']) || !stristr(
-                $row['KEY'],
+                (string) $row['KEY'],
                 'PRI'
             ))
             ) {
@@ -419,7 +419,7 @@ class SqlsrvManager extends MssqlManager
             }
             if ($column_def != 0 && ($row['COLUMN_DEF'] != null)) {    // NOTE Not using !empty as an empty string may be a viable default value.
                 $matches = array();
-                $row['COLUMN_DEF'] = html_entity_decode($row['COLUMN_DEF'], ENT_QUOTES);
+                $row['COLUMN_DEF'] = html_entity_decode((string) $row['COLUMN_DEF'], ENT_QUOTES);
                 if (preg_match('/\([\(|\'](.*)[\)|\']\)/i', $row['COLUMN_DEF'], $matches)) {
                     $columns[$column_name]['default'] = $matches[1];
                 } elseif (preg_match('/\(N\'(.*)\'\)/i', $row['COLUMN_DEF'], $matches)) {
@@ -519,9 +519,7 @@ EOSQL;
             return false;
         }
         global $app_strings;
-        if (empty($app_strings)
-            or !isset($app_strings['ERR_MSSQL_DB_CONTEXT'])
-            or !isset($app_strings['ERR_MSSQL_WARNING'])
+        if (empty($app_strings) || !isset($app_strings['ERR_MSSQL_DB_CONTEXT']) || !isset($app_strings['ERR_MSSQL_WARNING'])
         ) {
             //ignore the message from sql-server if $app_strings array is empty. This will happen
             //only if connection if made before languge is set.
@@ -530,14 +528,14 @@ EOSQL;
         $messages = array();
         foreach ($errors as $error) {
             $sqlmsg = $error['message'];
-            $sqlpos = strpos($sqlmsg, 'Changed database context to');
-            $sqlpos2 = strpos($sqlmsg, 'Warning:');
-            $sqlpos3 = strpos($sqlmsg, 'Checking identity information:');
+            $sqlpos = strpos((string) $sqlmsg, 'Changed database context to');
+            $sqlpos2 = strpos((string) $sqlmsg, 'Warning:');
+            $sqlpos3 = strpos((string) $sqlmsg, 'Checking identity information:');
             if ($sqlpos !== false || $sqlpos2 !== false || $sqlpos3 !== false) {
                 continue;
             }
-            $sqlpos = strpos($sqlmsg, $app_strings['ERR_MSSQL_DB_CONTEXT']);
-            $sqlpos2 = strpos($sqlmsg, $app_strings['ERR_MSSQL_WARNING']);
+            $sqlpos = strpos((string) $sqlmsg, (string) $app_strings['ERR_MSSQL_DB_CONTEXT']);
+            $sqlpos2 = strpos((string) $sqlmsg, (string) $app_strings['ERR_MSSQL_WARNING']);
             if ($sqlpos !== false || $sqlpos2 !== false) {
                 continue;
             }

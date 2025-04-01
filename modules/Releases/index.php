@@ -144,7 +144,7 @@ if ($is_edit) {
 
 
     if (empty($focus->list_order)) {
-        $xtpl->assign('LIST_ORDER', count($focus->get_releases(false, 'All'))+1);
+        $xtpl->assign('LIST_ORDER', (is_countable($focus->get_releases(false, 'All')) ? count($focus->get_releases(false, 'All')) : 0)+1);
     } else {
         $xtpl->assign('LIST_ORDER', $focus->list_order);
     }

@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/SearchForm/SearchForm2.php');
 
+#[\AllowDynamicProperties]
 class EmployeesSearchForm extends SearchForm
 {
     /**

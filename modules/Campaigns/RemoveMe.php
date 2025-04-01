@@ -88,7 +88,7 @@ if (!empty($_REQUEST['identifier'])) {
         $id = $db->quote($id);
 
         //no opt out for users.
-        if (preg_match('/^[0-9A-Za-z\-]*$/', $id) && $module != 'Users') {
+        if (preg_match('/^[0-9A-Za-z\-]*$/', (string) $id) && $module != 'Users') {
             //record this activity in the campaing log table..
             $query = "UPDATE email_addresses SET email_addresses.opt_out = 1 WHERE EXISTS(SELECT 1 FROM email_addr_bean_rel ear WHERE ear.bean_id = '$id' AND ear.deleted=0 AND email_addresses.id = ear.email_address_id)";
             $status=$db->query($query);

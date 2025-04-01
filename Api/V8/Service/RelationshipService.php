@@ -17,6 +17,7 @@ use Slim\Http\Request;
 use \SugarBean;
 use \DomainException;
 
+#[\AllowDynamicProperties]
 class RelationshipService
 {
     /**

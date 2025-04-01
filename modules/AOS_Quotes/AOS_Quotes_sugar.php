@@ -22,6 +22,7 @@
  * @author SalesAgility <info@salesagility.com>
  */
 
+#[\AllowDynamicProperties]
 class AOS_Quotes_sugar extends Basic
 {
     public $new_schema = true;

@@ -54,11 +54,12 @@ global $theme;
 
 
 
+#[\AllowDynamicProperties]
 class Popup_Picker
 {
-    
 
-    
+
+
     /*
      *
      */
@@ -68,13 +69,13 @@ class Popup_Picker
         if (isset($_REQUEST['query'])) {
             $where_clauses = array();
             append_where_clause($where_clauses, "name", "releases.name");
-        
+
             $where = generate_where_statement($where_clauses);
         }
-        
+
         return $where;
     }
-    
+
     /**
      *
      */
@@ -85,14 +86,14 @@ class Popup_Picker
         global $app_strings;
         global $currentModule;
         global $sugar_version, $sugar_config;
-        
+
         $output_html = '';
         $where = '';
-        
+
         $where = $this->_get_where_clause();
-        
-        
-        
+
+
+
         $name = empty($_REQUEST['name']) ? '' : $_REQUEST['name'];
         $request_data = empty($_REQUEST['request_data']) ? '' : $_REQUEST['request_data'];
         $hide_clear_button = empty($_REQUEST['hide_clear_button']) ? false : true;
@@ -121,12 +122,12 @@ class Popup_Picker
         insert_popup_header($theme);
         $output_html .= ob_get_contents();
         ob_end_clean();
-        
+
         $output_html .= get_form_header($mod_strings['LBL_SEARCH_FORM_TITLE'], '', false);
-        
+
         $form->parse('main.SearchHeader');
         $output_html .= $form->text('main.SearchHeader');
-        
+
         // Reset the sections that are already in the page so that they do not print again later.
         $form->reset('main.SearchHeader');
 
@@ -145,7 +146,7 @@ class Popup_Picker
         $ListView->processListView($seed_bean, 'main', 'RELEASE');
         $output_html .= ob_get_contents();
         ob_end_clean();
-                
+
         $output_html .= insert_popup_footer();
         return $output_html;
     }

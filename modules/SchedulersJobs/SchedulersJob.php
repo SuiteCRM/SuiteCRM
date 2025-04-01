@@ -46,16 +46,17 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Job queue job
  * @api
  */
+#[\AllowDynamicProperties]
 class SchedulersJob extends Basic
 {
-    const JOB_STATUS_QUEUED = 'queued';
-    const JOB_STATUS_RUNNING = 'running';
-    const JOB_STATUS_DONE = 'done';
+    public const JOB_STATUS_QUEUED = 'queued';
+    public const JOB_STATUS_RUNNING = 'running';
+    public const JOB_STATUS_DONE = 'done';
 
-    const JOB_PENDING = 'queued';
-    const JOB_PARTIAL = 'partial';
-    const JOB_SUCCESS = 'success';
-    const JOB_FAILURE = 'failure';
+    public const JOB_PENDING = 'queued';
+    public const JOB_PARTIAL = 'partial';
+    public const JOB_SUCCESS = 'success';
+    public const JOB_FAILURE = 'failure';
 
     // schema attributes
     public $id;
@@ -172,7 +173,7 @@ class SchedulersJob extends Basic
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);  // open brand new conn
         curl_setopt($ch, CURLOPT_HEADER, true); // do not return header info with result
         curl_setopt($ch, CURLOPT_NOPROGRESS, true); // do not have progress bar
-        $urlparts = parse_url($job);
+        $urlparts = parse_url((string) $job);
         if (empty($urlparts['port'])) {
             if (isset($urlparts['scheme']) && $urlparts['scheme'] == 'https') {
                 $urlparts['port'] = 443;

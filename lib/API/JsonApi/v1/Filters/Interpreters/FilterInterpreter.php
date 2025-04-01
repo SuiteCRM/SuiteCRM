@@ -56,6 +56,7 @@ use Psr\Container\ContainerInterface;
  * Class FilterInterpreter
  * @package SuiteCRM\API\JsonApi\v1\Filters\Interpreters
  */
+#[\AllowDynamicProperties]
 class FilterInterpreter
 {
     /**

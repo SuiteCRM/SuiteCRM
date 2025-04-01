@@ -45,6 +45,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
 class TemplateRange extends TemplateText
 {
 
+    public $enable_range_search;
+    /**
+     * @var string
+     */
+    public $options;
     /**
      * __construct
      *
@@ -68,6 +73,7 @@ class TemplateRange extends TemplateText
     public function populateFromPost()
     {
         parent::populateFromPost();
+        $searchFields = [];
         //If we are enabling range search, make sure we add the start and end range fields
         if (!empty($this->enable_range_search)) {
             //If range search is enabled, set the options attribute for the dropdown choice selections
@@ -78,11 +84,11 @@ class TemplateRange extends TemplateText
                 if (file_exists('modules/'.$module.'/metadata/SearchFields.php')) {
                     require('modules/'.$module.'/metadata/SearchFields.php');
                 }
-                
+
                 if (file_exists('custom/modules/'.$module.'/metadata/SearchFields.php')) {
                     require('custom/modules/'.$module.'/metadata/SearchFields.php');
                 }
-                
+
                 $field_name = $this->get_field_name($module, $_REQUEST['name']);
 
                 if (isset($searchFields[$module])) {
@@ -129,7 +135,7 @@ class TemplateRange extends TemplateText
                 if (file_exists('modules/'.$module.'/metadata/SearchFields.php')) {
                     require('modules/'.$module.'/metadata/SearchFields.php');
                 }
-                
+
                 if (file_exists('custom/modules/'.$module.'/metadata/SearchFields.php')) {
                     require('custom/modules/'.$module.'/metadata/SearchFields.php');
                 }

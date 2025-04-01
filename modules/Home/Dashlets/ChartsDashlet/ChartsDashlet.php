@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 
 
+#[\AllowDynamicProperties]
 class ChartsDashlet extends Dashlet
 {
     public $width = '400';

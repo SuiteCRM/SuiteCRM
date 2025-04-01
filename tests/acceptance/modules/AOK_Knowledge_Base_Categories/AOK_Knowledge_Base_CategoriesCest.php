@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class AOK_Knowledge_Base_CategoriesCest
 {
     /**

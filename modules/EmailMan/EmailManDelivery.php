@@ -264,9 +264,9 @@ do {
             if ($confirmOptInEnabled) {
                 $emailAddress = BeanFactory::newBean('EmailAddresses');
                 $emailAddress->email_address = $emailAddress->getAddressesByGUID($row['related_id'], $row['related_type']);
-                
+
                 $now = TimeDate::getInstance()->nowDb();
-                    
+
                 if (!$emailman->sendOptInEmail($emailAddress, $row['related_type'], $row['related_id'])) {
                     $GLOBALS['log']->fatal("Confirm Opt In Email delivery FAILURE:" . print_r($row, true));
                     $emailAddress->confirm_opt_in_fail_date = $now;
@@ -281,7 +281,7 @@ do {
                         $log->fatal('Incorrect Email Address');
                         return false;
                     }
-                    
+
                     $emailAddress->retrieve($emailAddressString);
                     $emailAddress->confirm_opt_in_sent_date = $now;
                     $emailAddress->save();
@@ -305,7 +305,7 @@ do {
     $send_all = $send_all ? !$no_items_in_queue : $send_all;
 } while ($send_all);
 
-if ($admin->settings['mail_sendtype'] == "SMTP") {
+if (isSmtp($admin->settings['mail_sendtype'] ?? '')) {
     $mail->SMTPClose();
 }
 if (isset($temp_user)) {

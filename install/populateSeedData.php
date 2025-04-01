@@ -61,11 +61,11 @@ if (file_exists("install/demoData.{$current_language}.php")) {
     require_once("install/demoData.en_us.php");
 }
 
-$last_name_count = count($sugar_demodata['last_name_array']);
-$first_name_count = count($sugar_demodata['first_name_array']);
-$company_name_count = count($sugar_demodata['company_name_array']);
-$street_address_count = count($sugar_demodata['street_address_array']);
-$city_array_count = count($sugar_demodata['city_array']);
+$last_name_count = is_countable($sugar_demodata['last_name_array']) ? count($sugar_demodata['last_name_array']) : 0;
+$first_name_count = is_countable($sugar_demodata['first_name_array']) ? count($sugar_demodata['first_name_array']) : 0;
+$company_name_count = is_countable($sugar_demodata['company_name_array']) ? count($sugar_demodata['company_name_array']) : 0;
+$street_address_count = is_countable($sugar_demodata['street_address_array']) ? count($sugar_demodata['street_address_array']) : 0;
+$city_array_count = is_countable($sugar_demodata['city_array']) ? count($sugar_demodata['city_array']) : 0;
 global $app_list_strings;
 global $sugar_config;
 $_REQUEST['useEmailWidget'] = "true";
@@ -88,7 +88,7 @@ if ($memory_limit != "" && $memory_limit != "-1") { // if memory_limit is set
     rtrim($memory_limit, 'M');
     $memory_limit_int = (int) $memory_limit;
     if ($memory_limit_int < $memory_needed) {
-        ini_set("memory_limit", (string)$memory_needed . "M");
+        ini_set("memory_limit", $memory_needed . "M");
     }
 }
 $large_scale_test = empty($sugar_config['large_scale_test']) ?
@@ -270,9 +270,9 @@ $first_name_max = $first_name_count - 1;
 $last_name_max = $last_name_count - 1;
 $street_address_max = $street_address_count - 1;
 $city_array_max = $city_array_count - 1;
-$lead_source_max = count($app_list_strings['lead_source_dom']) - 1;
-$lead_status_max = count($app_list_strings['lead_status_dom']) - 1;
-$title_max = count($titles) - 1;
+$lead_source_max = (is_countable($app_list_strings['lead_source_dom']) ? count($app_list_strings['lead_source_dom']) : 0) - 1;
+$lead_status_max = (is_countable($app_list_strings['lead_status_dom']) ? count($app_list_strings['lead_status_dom']) : 0) - 1;
+$title_max = (is_countable($titles) ? count($titles) : 0) - 1;
 ///////////////////////////////////////////////////////////////////////////////
 ////	DEMO CONTACTS
 for ($i=0; $i<$number_contacts; $i++) {

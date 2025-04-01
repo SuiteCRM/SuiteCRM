@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class OAuth2Clients
  */
+#[\AllowDynamicProperties]
 class OAuth2Clients extends SugarBean
 {
     /**
@@ -56,6 +57,11 @@ class OAuth2Clients extends SugarBean
      * @var string
      */
     public $redirect_uri;
+
+    /**
+     * @var string
+     */
+    public $allowed_grant_type;
 
     /**
      * @var string
@@ -94,7 +100,7 @@ class OAuth2Clients extends SugarBean
     public function save($check_notify = false)
     {
         if (!empty($_REQUEST['new_secret'])) {
-            $this->secret = hash('sha256', $_REQUEST['new_secret']);
+            $this->secret = hash('sha256', (string) $_REQUEST['new_secret']);
         }
         $this->setDurationValue();
         return parent::save();

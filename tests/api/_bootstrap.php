@@ -1,5 +1,6 @@
 <?php
 /* bootstrap composer's autoloader */
+chdir(__DIR__.'/../../');
 require_once __DIR__.'/../../vendor/autoload.php';
 global $sugar_config, $db;
 require_once __DIR__ .'/../../include/utils.php';

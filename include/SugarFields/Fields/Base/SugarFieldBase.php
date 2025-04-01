@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * to handle searching
  *
  */
+#[\AllowDynamicProperties]
 class SugarFieldBase
 {
     /**

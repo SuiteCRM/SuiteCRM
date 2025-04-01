@@ -150,7 +150,7 @@ if (empty($GLOBALS['sugar_config']['passwordsetting']['forgotpasswordON'])) {
 }
 
 $the_languages = get_languages();
-if (count($the_languages) > 1) {
+if ((is_countable($the_languages) ? count($the_languages) : 0) > 1 && ($sugar_config['login_language'] ?? false)) {
     $sugar_smarty->assign('SELECT_LANGUAGE', get_select_options_with_id($the_languages, $display_language));
 }
 $the_themes = SugarThemeRegistry::availableThemes();

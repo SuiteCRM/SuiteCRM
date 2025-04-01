@@ -242,13 +242,13 @@ class MetaParser
      * stripFlavorTags
      * This method accepts the file contents and uses the $GLOBALS['sugar_flavor'] value
      * to remove the flavor tags in the file contents if present.  If $GLOBALS['sugar_flavor']
-     * is not set, it defaults to PRO flavor
+     * is not set, it defaults to CE flavor
      * @param $contents The file contents as a String value
      * @param $result The file contents with non-matching flavor tags and their nested comments removed
      */
     public function stripFlavorTags($contents)
     {
-        $flavor = isset($GLOBALS['sugar_flavor']) ? $GLOBALS['sugar_flavor'] : 'PRO';
+        $flavor = isset($GLOBALS['sugar_flavor']) ? $GLOBALS['sugar_flavor'] : 'CE';
         $isPro = ($flavor == 'ENT' || $flavor == 'PRO') ? true : false;
         if ($isPro) {
             $contents = preg_replace('/<!-- BEGIN: open_source -->.*?<!-- END: open_source -->/', '', $contents);

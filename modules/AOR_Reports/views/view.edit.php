@@ -25,6 +25,7 @@
 
 require_once 'modules/AOW_WorkFlow/aow_utils.php';
 require_once 'modules/AOR_Reports/aor_utils.php';
+#[\AllowDynamicProperties]
 class AOR_ReportsViewEdit extends ViewEdit
 {
     public function __construct()
@@ -52,9 +53,9 @@ class AOR_ReportsViewEdit extends ViewEdit
         echo '<script src="cache/jsLanguage/AOR_Conditions/'. $GLOBALS['current_language'] . '.js"></script>';
 
         echo "<script>";
-        echo "sort_by_values = \"".trim(preg_replace('/\s+/', ' ', get_select_options_with_id($app_list_strings['aor_sort_operator'], '')))."\";";
-        echo "total_values = \"".trim(preg_replace('/\s+/', ' ', get_select_options_with_id($app_list_strings['aor_total_options'], '')))."\";";
-        echo "format_values = \"".trim(preg_replace('/\s+/', ' ', get_select_options_with_id($app_list_strings['aor_format_options'], '')))."\";";
+        echo "sort_by_values = \"".trim(preg_replace('/\s+/', ' ', (string) get_select_options_with_id($app_list_strings['aor_sort_operator'], '')))."\";";
+        echo "total_values = \"".trim(preg_replace('/\s+/', ' ', (string) get_select_options_with_id($app_list_strings['aor_total_options'], '')))."\";";
+        echo "format_values = \"".trim(preg_replace('/\s+/', ' ', (string) get_select_options_with_id($app_list_strings['aor_format_options'], '')))."\";";
         echo "</script>";
 
         $fields = $this->getFieldLines();

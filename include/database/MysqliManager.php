@@ -123,6 +123,7 @@ class MysqliManager extends MysqlManager
      */
     public function query($sql, $dieOnError = false, $msg = '', $suppress = false, $keepResult = false)
     {
+        $result = null;
         if (is_array($sql)) {
             return $this->queryArray($sql, $dieOnError, $msg, $suppress);
         }
@@ -136,7 +137,12 @@ class MysqliManager extends MysqlManager
         $this->lastsql = $sql;
         if (!empty($sql)) {
             if ($this->database instanceof mysqli) {
-                $result = $suppress ? @mysqli_query($this->database, $sql) : mysqli_query($this->database, $sql);
+                $result = false;
+                try {
+                    $result = mysqli_query($this->database, $sql);
+                } catch (Exception $e) {
+                }
+
                 if ($result === false && !$suppress) {
                     if (inDeveloperMode()) {
                         LoggerManager::getLogger()->debug('Mysqli_query failed, error was: ' . $this->lastDbError() . ', query was: ');

@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 // Opportunity is used to store customer information.
+#[\AllowDynamicProperties]
 class Opportunity extends SugarBean
 {
     public $field_name_map;
@@ -76,6 +77,7 @@ class Opportunity extends SugarBean
     public $meeting_id;
     public $call_id;
     public $email_id;
+    public $email1 = '';
     public $assigned_user_name;
 
     public $table_name = "opportunities";
@@ -230,7 +232,7 @@ class Opportunity extends SugarBean
         $this->account_name = '';
         $this->account_id = '';
         if (!empty($this->id)) {
-            $ret_values=Opportunity::get_account_detail($this->id);
+            $ret_values=(new Opportunity())->get_account_detail($this->id);
             if (!empty($ret_values)) {
                 $this->account_name=$ret_values['name'];
                 $this->account_id=$ret_values['id'];
@@ -265,7 +267,7 @@ class Opportunity extends SugarBean
         return $this->build_related_list2($query, $contact, $temp);
     }
 
-        
+
 
     public function update_currency_id($fromid, $toid)
     {
@@ -375,8 +377,7 @@ class Opportunity extends SugarBean
     {
         //if account_id was replaced unlink the previous account_id.
         //this rel_fields_before_value is populated by sugarbean during the retrieve call.
-        if (!empty($this->account_id) and !empty($this->rel_fields_before_value['account_id']) and
-                (trim($this->account_id) != trim($this->rel_fields_before_value['account_id']))) {
+        if (!empty($this->account_id) && !empty($this->rel_fields_before_value['account_id']) && trim($this->account_id) !== trim($this->rel_fields_before_value['account_id'])) {
             //unlink the old record.
             $this->load_relationship('accounts');
             $this->accounts->delete($this->id, $this->rel_fields_before_value['account_id']);

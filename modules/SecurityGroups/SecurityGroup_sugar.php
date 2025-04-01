@@ -1,6 +1,7 @@
 <?php
 
 
+#[\AllowDynamicProperties]
 class SecurityGroup_sugar extends Basic
 {
     public $new_schema = true;

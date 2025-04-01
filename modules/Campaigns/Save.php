@@ -77,7 +77,7 @@ if (!empty($_REQUEST['duplicateSave']) &&  !empty($_REQUEST['duplicateId'])) {
 
     $focus->load_relationship('prospectlists');
     $target_lists = $copyFromCompaign->prospectlists->get();
-    if (count($target_lists)>0) {
+    if ((is_countable($target_lists) ? count($target_lists) : 0)>0) {
         foreach ($target_lists as $prospect_list_id) {
             $focus->prospectlists->add($prospect_list_id);
         }
@@ -104,7 +104,7 @@ if ($focus->campaign_type =='NewsLetter') {
 
     $focus->load_relationship('prospectlists');
     $target_lists = $focus->prospectlists->get();
-    if (count($target_lists)<1) {
+    if ((is_countable($target_lists) ? count($target_lists) : 0)<1) {
         global $current_user;
         global $mod_strings;
         //if no prospect lists are attached, then lets create a subscription and unsubscription

@@ -53,22 +53,24 @@ require_once __DIR__ . '/GoogleSyncHelper.php';
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSync extends GoogleSyncBase
 {
-    
+
     /** @var array An array of user id's we are going to sync for */
     protected $users = array();
 
     /**
      * Gets the combined titles of a Meeting/Event pair for Logging
      *
-     * @param Meeting $meeting The CRM Meeting
-     * @param \Google\Service\Calendar\Event $event The Google Event
+     * @param Meeting|null $meeting The CRM Meeting
+     * @param \Google\Service\Calendar\Event|null $event The Google Event
      *
      * @return string The combined title
      */
     protected function getTitle(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
     {
+        $title = '';
         $meetingTitle = isset($meeting) ? $meeting->name : null;
         $eventTitle = isset($event) ? $event->getSummary() : null;
 
@@ -88,8 +90,8 @@ class GoogleSync extends GoogleSyncBase
      * Helper method for doSync
      *
      * @param string $action The action to take with the two events
-     * @param Meeting $meeting The CRM Meeting
-     * @param \Google\Service\Calendar\Event $event The Google Event
+     * @param Meeting|null $meeting The CRM Meeting
+     * @param \Google\Service\Calendar\Event|null $event The Google Event
      *
      * @return bool Success/Failure
      * @throws GoogleSyncException if $action is invalid.
@@ -247,12 +249,12 @@ class GoogleSync extends GoogleSyncBase
         while ($row = $this->db->fetchByAssoc($result)) {
             $tempData['founds']++;
             $tmp = [];
-            
+
             $user = BeanFactory::getBean('Users', $row['id']);
             if (!$user) {
                 throw new GoogleSyncException('Unable to get User bean. ID was: ' . $row['id'], GoogleSyncException::UNABLE_TO_RETRIEVE_USER);
             }
-                    
+
             if ($tmp['notEmpty'] = !empty($user->getPreference('GoogleApiToken', 'GoogleSync')) &&
                 $tmp['decoded'] = json_decode(base64_decode($user->getPreference('GoogleApiToken', 'GoogleSync'))) &&
                 $tmp['syncPref'] = $user->getPreference('syncGCal', 'GoogleSync')

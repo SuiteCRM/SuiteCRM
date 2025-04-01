@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 require_once('soap/SoapErrorDefinitions.php');
+#[\AllowDynamicProperties]
 class SoapError
 {
     public $name;

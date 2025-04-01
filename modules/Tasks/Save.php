@@ -60,7 +60,7 @@ if (!isset($prefix)) {
 global $timedate;
 $time_format = $timedate->get_user_time_format();
 $time_separator = ":";
-if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
     $time_separator = $match[1];
 }
 
@@ -91,13 +91,13 @@ if (!$focus->ACLAccess('Save')) {
 if (isCloseAndCreateNewPressed()) {
     $focus->status = 'Completed';
 }
-if (!isset($_POST['date_due_flag'])) {
-    $focus->date_due_flag = 0;
+if (isset($_POST['date_due'])) {
+    $focus->date_due_flag = 1;
 }
-if (!isset($_POST['date_start_flag'])) {
-    $focus->date_start_flag = 0;
+if (isset($_POST['date_start'])) {
+    $focus->date_start_flag = 1;
 }
-if ($focus->date_due_flag != 'off' && $focus->date_due_flag != 1) {
+if ($focus->date_due_flag !== 'off' && $focus->date_due_flag !== 1) {
     $focus->date_due = '';
     $focus->time_due = '';
 }

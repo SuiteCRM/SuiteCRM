@@ -47,6 +47,7 @@ require_once('modules/ModuleBuilder/parsers/ParserFactory.php') ;
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php') ;
 require_once 'modules/ModuleBuilder/parsers/constants.php' ;
 
+#[\AllowDynamicProperties]
 class ViewLayoutView extends SugarView
 {
     public function __construct()
@@ -252,7 +253,7 @@ class ViewLayoutView extends SugarView
         if (isset($labels [ strtolower($this->editLayout) ])) {
             $translatedViewType = translate($labels [ strtolower($this->editLayout) ], 'ModuleBuilder') ;
         } else {
-            if (isset($this->sm)) {
+            if (property_exists($this, 'sm') && $this->sm !== null) {
                 foreach ($this->sm->sources as $file => $def) {
                     if (!empty($def['view']) && $def['view'] == $this->editLayout && !empty($def['name'])) {
                         $translatedViewType = $def['name'];

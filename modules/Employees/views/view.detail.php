@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class EmployeesViewDetail extends ViewDetail
 {
     public function __construct()
@@ -66,10 +67,10 @@ class EmployeesViewDetail extends ViewDetail
 
         $theTitle = "<div class='moduleTitle'>\n";
 
-        $module = preg_replace("/ /", "", $this->module);
+        $module = preg_replace("/ /", "", (string) $this->module);
 
         $params = $this->_getModuleTitleParams();
-        $count = count($params);
+        $count = is_countable($params) ? count($params) : 0;
         $index = 0;
 
         if (SugarThemeRegistry::current()->directionality == "rtl") {

@@ -42,13 +42,14 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class EmailTemplateParser
 {
     /**
      * Official expression for variables, extended with underscore
      * @see http://php.net/manual/en/language.variables.basics.php
      */
-    const PATTERN = '/\$([a-zA-Z_\x7f-\xff]+_[a-zA-Z0-9_\x7f-\xff]*)/';
+    public const PATTERN = '/\$([a-zA-Z_\x7f-\xff]+_[a-zA-Z0-9_\x7f-\xff]*)/';
 
     /**
      * Allowed keys as result
@@ -196,6 +197,9 @@ class EmailTemplateParser
                 if (isset($app_list_strings[$enum][$this->module->$attribute])) {
                     $this->module->$attribute = $app_list_strings[$enum][$this->module->$attribute];
                 }
+            } else if (($this->module->field_name_map[$attribute]['type']) && (($this->module->field_name_map[$attribute]['type']) === 'decimal' || ($this->module->field_name_map[$attribute]['type']) === 'float')) {
+                $value = formatDecimalInConfigSettings($this->module->$attribute, false);
+                return $value;
             }
             return $this->module->$attribute;
         }

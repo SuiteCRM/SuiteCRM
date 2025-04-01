@@ -7,8 +7,24 @@ modules:
         - \SuiteCRM\Test\Driver\WebDriver
         - Filesystem
     config:
-      \SuiteCRM\Test\Driver\WebDriver:
-        url: "https://demo.suiteondemand.com/"
-        browser: chrome
-        restart: true
-        wait: 1
+        \SuiteCRM\Test\Driver\WebDriver:
+            url: '%INSTANCE_URL%'
+            browser: '%BROWSER%'
+            restart: true
+            wait: 1
+env:
+    chrome:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: chrome
+    firefox:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: firefox
+    edge:
+        modules:
+            config:
+                \SuiteCRM\Test\Driver\WebDriver:
+                    browser: MicrosoftEdge

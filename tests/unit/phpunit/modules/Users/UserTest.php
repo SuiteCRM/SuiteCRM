@@ -111,7 +111,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
 
         $expected = "<select onChange='setSigEditButtonVisibility();' id='signature_id' name='signature_id'>\n<OPTION selected value=''>--None--</OPTION>";
         $actual = $user->getSignatures();
-        self::assertSame(strpos($actual, $expected), 0);
+        self::assertSame(strpos((string) $actual, $expected), 0);
         self::assertMatchesRegularExpression('/\<\/select\>$/', $actual);
     }
 
@@ -145,7 +145,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
         }
 
         self::assertTrue(isset($result));
-        self::assertEquals(36, strlen($result));
+        self::assertEquals(36, strlen((string) $result));
     }
 
     public function testsetUserPrivGuid(): void
@@ -166,7 +166,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
         $result = $user->getPreference('userPrivGuid', 'global', $user);
 
         self::assertTrue(isset($result));
-        self::assertEquals(36, strlen($result));
+        self::assertEquals(36, strlen((string) $result));
     }
 
     public function testSetAndGetAndResetPreference(): void
@@ -332,7 +332,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($user->id));
-        self::assertEquals(36, strlen($user->id));
+        self::assertEquals(36, strlen((string) $user->id));
 
 
         //test retrieve method
@@ -490,7 +490,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
         $actual = $user->getPreferredEmail();
 
         self::assertEquals('firstn lastn', $actual['name']);
-        $preg = preg_match('/^one\d{0,}\@email\.com$/', $actual['email'], $matches);
+        $preg = preg_match('/^one\d{0,}\@email\.com$/', (string) $actual['email'], $matches);
         self::assertCount(1, $matches);
     }
 
@@ -518,7 +518,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
     {
         $result = BeanFactory::newBean('Users')->encrypt_password("test");
         self::assertTrue(isset($result));
-        self::assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
     }
 
     public function testgetPasswordHash(): void
@@ -526,7 +526,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
         $result = User::getPasswordHash("test");
 
         self::assertTrue(isset($result));
-        self::assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
     }
 
     public function testcheckPassword(): void
@@ -828,7 +828,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
     {
         $result = BeanFactory::newBean('Users')->getLocaleFormatDesc();
         self::assertTrue(isset($result));
-        self::assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
     }
 
     public function testisAdmin(): void
@@ -956,10 +956,10 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
         //generate apsswords and verify they are not same
 
         $password1 = User::generatePassword();
-        self::assertGreaterThan(0, strlen($password1));
+        self::assertGreaterThan(0, strlen((string) $password1));
 
         $password2 = User::generatePassword();
-        self::assertGreaterThan(0, strlen($password2));
+        self::assertGreaterThan(0, strlen((string) $password2));
 
         self::assertNotEquals($password1, $password2);
     }
@@ -1006,6 +1006,7 @@ class UserTest extends SuitePHPUnitFrameworkTestCase
 
     public function testError(): void
     {
+        $request = [];
         global $app_strings;
 
         // setup

@@ -51,8 +51,8 @@ class ElasticSearchInstallTest extends SearchTestAbstract
     {
         $default_hooks = (new LogicHook())->loadHooks('');
 
-        $afterSave = $default_hooks['after_save'];
-        $afterDelete = $default_hooks['after_delete'];
+        $afterSave = $default_hooks['after_save'] ?? [];
+        $afterDelete = $default_hooks['after_delete'] ?? [];
 
         $found = 0;
 

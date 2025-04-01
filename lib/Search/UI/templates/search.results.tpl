@@ -36,11 +36,11 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  *}
 <h2 class="moduleTitle">{$APP.LBL_SEARCH_REAULTS_TITLE}</h2>
-{if $total}{$APP.LBL_SEARCH_TOTAL}{$total}{/if}
-{if isset($error)}
+{if !empty($total)}{$APP.LBL_SEARCH_TOTAL}{$total}{/if}
+{if !empty($error)}
     <p class="error">{$APP.ERR_SEARCH_INVALID_QUERY}</p>
 {else}
-    
+
     {if $pagination}
         <ul class="nav nav-tabs">
             <li class="tab-inline-pagination">
@@ -106,12 +106,9 @@
             <tr class="{cycle values="oddListRowS1,evenListRowS1"}">
                 <td><a href="{$APP_CONFIG.site_url}/index.php?action=EditView&module={$module}&record={$bean->id}&offset=1"><span class="suitepicon suitepicon-action-edit"></span></a></td>
                 {foreach from=$headers[$module] item=header}
-                <td>{php} 
-                        // using php to access to a smarty template object 
-                        // variable field by a dynamic indexed array element 
-                        // because it's impossible only with smarty syntax 
-                        echo $this->get_template_vars('bean')->{$this->get_template_vars('header')['field']};
-                    {/php}</td>
+                {assign var="headerField" value=$header.field|default:''}
+                <td>{$bean->$headerField}
+                </td>
                 {/foreach}
             </tr>
             {/foreach}
@@ -121,7 +118,7 @@
     {foreachelse}
     <p class="error">{$APP.ERR_SEARCH_NO_RESULTS}</p>
     {/foreach}
-    
+
     {if !empty($results->getSearchTime())}
         <p class="text-muted text-right" id="search-time">
             {$APP.LBL_SEARCH_PERFORMED_IN} {$results->getSearchTime()*1000|string_format:"%.2f"} ms

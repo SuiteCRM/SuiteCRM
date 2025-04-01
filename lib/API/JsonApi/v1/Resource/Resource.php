@@ -76,11 +76,11 @@ class Resource extends ResourceIdentifier
         'related',
         'errors',
     );
-    const DATA_RELATIONSHIPS = '/data/relationships/';
-    const RELATIONSHIPS = 'relationships';
-    const LINKS = 'links';
-    const META = 'meta';
-    const ATTRIBUTES = 'attributes';
+    public const DATA_RELATIONSHIPS = '/data/relationships/';
+    public const RELATIONSHIPS = 'relationships';
+    public const LINKS = 'links';
+    public const META = 'meta';
+    public const ATTRIBUTES = 'attributes';
 
     /**
      * @var array $attributes

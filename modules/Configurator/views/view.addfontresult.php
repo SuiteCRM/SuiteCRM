@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 require_once('include/MVC/View/SugarView.php');
+#[\AllowDynamicProperties]
 class ConfiguratorViewAddFontResult extends SugarView
 {
     public $log="";
@@ -82,6 +83,7 @@ class ConfiguratorViewAddFontResult extends SugarView
      */
     private function addFont()
     {
+        $uploadFileNames = [];
         $this->log="";
         $error=false;
         $files = array("pdf_metric_file","pdf_font_file");
@@ -89,8 +91,8 @@ class ConfiguratorViewAddFontResult extends SugarView
             // handle uploaded file
             $uploadFile = new UploadFile($k);
             if (isset($_FILES[$k]) && $uploadFile->confirm_upload()) {
-                $uploadFile->final_move(basename($_FILES[$k]['name']));
-                $uploadFileNames[$k] = $uploadFile->get_upload_path(basename($_FILES[$k]['name']));
+                $uploadFile->final_move(basename((string) $_FILES[$k]['name']));
+                $uploadFileNames[$k] = $uploadFile->get_upload_path(basename((string) $_FILES[$k]['name']));
             } else {
                 $this->log = translate('ERR_PDF_NO_UPLOAD', "Configurator");
                 $error=true;
@@ -105,7 +107,7 @@ class ConfiguratorViewAddFontResult extends SugarView
                 $_REQUEST['pdf_embedded'],
                 $_REQUEST['pdf_encoding_table'],
                 array(),
-                htmlspecialchars_decode($_REQUEST['pdf_cidinfo'], ENT_QUOTES),
+                htmlspecialchars_decode((string) $_REQUEST['pdf_cidinfo'], ENT_QUOTES),
                 $_REQUEST['pdf_style_list']
             );
             $this->log .= $fontManager->log;

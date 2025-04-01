@@ -79,6 +79,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AM_ProjectTemplates/AM_ProjectTemplates_sugar.php');
+#[\AllowDynamicProperties]
 class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
 {
     public function __construct()
@@ -124,7 +125,7 @@ class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
 
                 ////	REMOVE RESOURCE RELATIONSHIPS
                 // Calculate which users to flag as deleted and which to add
-                
+
                 // Get all users for the project template
                 $focus->load_relationship('users');
                 $users = $focus->get_linked_beans('am_projecttemplates_users_1', 'User');
@@ -170,15 +171,15 @@ class AM_ProjectTemplates extends AM_ProjectTemplates_sugar
                     $focus->db->query($sql);
                     echo $sql;
                 }
-        
+
                 ////	END REMOVE
             }
-            
+
             $return_id = parent::save($check_notify);
             $focus->retrieve($return_id);
 
             ////	REBUILD INVITEE RELATIONSHIPS
-            
+
             // Process users
             $focus->load_relationship('users');
             $focus->get_linked_beans('am_projecttemplates_users_1', 'User');

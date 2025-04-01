@@ -51,6 +51,7 @@ use RecursiveFilterIterator;
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class StateCheckerDirectoryIterator extends RecursiveFilterIterator
 {
     public function __construct($path)

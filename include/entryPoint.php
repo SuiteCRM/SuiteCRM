@@ -45,7 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $GLOBALS['starttTime'] = microtime(true);
 
 set_include_path(
-    dirname(__FILE__).'/..'.PATH_SEPARATOR.
+    __DIR__.'/..'.PATH_SEPARATOR.
     get_include_path()
 );
 
@@ -141,7 +141,7 @@ UploadStream::register();
 ///////////////////////////////////////////////////////////////////////////////
 ////    Handle loading and instantiation of various Sugar* class
 if (!defined('SUGAR_PATH')) {
-    define('SUGAR_PATH', realpath(dirname(__FILE__).'/..'));
+    define('SUGAR_PATH', realpath(__DIR__.'/..'));
 }
 require_once 'include/SugarObjects/SugarRegistry.php';
 
@@ -206,3 +206,6 @@ if (empty($GLOBALS['installing'])) {
 
 ////	END SETTING DEFAULT VAR VALUES
 ///////////////////////////////////////////////////////////////////////////////
+
+//It does a check to see if the host is valid
+check_trusted_hosts();

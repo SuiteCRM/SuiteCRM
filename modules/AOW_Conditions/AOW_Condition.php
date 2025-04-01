@@ -38,6 +38,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class AOW_Condition extends Basic
 {
     public $new_schema = true;
@@ -102,7 +103,7 @@ class AOW_Condition extends Basic
             }
 
             if (isset($post_data[$key . 'deleted'][$i]) && $post_data[$key . 'deleted'][$i] == 1) {
-                $this->mark_deleted($post_data[$key . 'id'][$i]);
+                $this->mark_deleted($post_data[$key . 'id'][$i] ?? '');
             } else {
                 $condition = BeanFactory::newBean('AOW_Conditions');
                 foreach ($this->field_defs as $field_def) {

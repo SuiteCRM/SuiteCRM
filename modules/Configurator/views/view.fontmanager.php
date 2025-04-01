@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Sugarpdf/sugarpdf_config.php');
 require_once('include/MVC/View/SugarView.php');
 require_once('include/Sugarpdf/FontManager.php');
+#[\AllowDynamicProperties]
 class ConfiguratorViewFontManager extends SugarView
 {
    
@@ -209,7 +210,7 @@ BSOFR;
     {
         global $mod_strings;
         $return = "";
-        if (count($style) == 2) {
+        if ((is_countable($style) ? count($style) : 0) == 2) {
             $return .= "<b><i>".$mod_strings['LBL_FONT_BOLDITALIC']."</b></i>";
         } else {
             switch ($style[0]) {

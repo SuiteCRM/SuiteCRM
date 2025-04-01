@@ -97,7 +97,7 @@ class ViewClassicTest extends SuitePHPUnitFrameworkTestCase
         $ret = $view->display();
         $renderedContent = ob_get_contents();
         ob_end_clean();
-        self::assertGreaterThan(0, strlen($renderedContent));
+        self::assertGreaterThan(0, strlen((string) $renderedContent));
         self::assertTrue($ret);
 
 

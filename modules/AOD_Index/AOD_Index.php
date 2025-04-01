@@ -48,6 +48,7 @@ require_once('modules/AOD_Index/LuceneUtils.php');
  * @deprecated since v7.12.0
  * Class AOD_Index
  */
+#[\AllowDynamicProperties]
 class AOD_Index extends AOD_Index_sugar
 {
     /**
@@ -270,8 +271,9 @@ class AOD_Index extends AOD_Index_sugar
         $indexEvents = $indexEventBean->get_full_list('', "aod_indexevent.record_id = '".$beanId."' AND aod_indexevent.record_module = '".$module."'");
         if ($indexEvents) {
             $indexEvent = $indexEvents[0];
-            if (count($indexEvents) > 1) {
-                for ($x = 1; $x < count($indexEvents); $x++) {
+            if ((is_countable($indexEvents) ? count($indexEvents) : 0) > 1) {
+                $indexEventsCount = is_countable($indexEvents) ? count($indexEvents) : 0;
+                for ($x = 1; $x < $indexEventsCount; $x++) {
                     $duplicateIE = $indexEvents[$x];
                     $duplicateIE->mark_deleted($duplicateIE->id);
                 }

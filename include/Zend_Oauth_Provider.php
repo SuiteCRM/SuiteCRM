@@ -11,24 +11,25 @@ use Zend_Uri_Http;
  *
  * Basic OAuth provider class
  */
+#[\AllowDynamicProperties]
 class Zend_Oauth_Provider
 {
     /**
      * OAuth result statuses
      */
-    const OK = 0;
-    const BAD_NONCE = 1;
-    const BAD_TIMESTAMP = 2;
-    const CONSUMER_KEY_UNKNOWN = 3;
-    const CONSUMER_KEY_REFUSED = 4;
-    const INVALID_SIGNATURE = 5;
-    const TOKEN_USED = 6;
-    const TOKEN_EXPIRED = 7;
-    const TOKEN_REVOKED = 8;
-    const TOKEN_REJECTED = 9;
-    const PARAMETER_ABSENT = 10;
-    const SIGNATURE_METHOD_REJECTED = 11;
-    const OAUTH_VERIFIER_INVALID = 12;
+    public const OK = 0;
+    public const BAD_NONCE = 1;
+    public const BAD_TIMESTAMP = 2;
+    public const CONSUMER_KEY_UNKNOWN = 3;
+    public const CONSUMER_KEY_REFUSED = 4;
+    public const INVALID_SIGNATURE = 5;
+    public const TOKEN_USED = 6;
+    public const TOKEN_EXPIRED = 7;
+    public const TOKEN_REVOKED = 8;
+    public const TOKEN_REJECTED = 9;
+    public const PARAMETER_ABSENT = 10;
+    public const SIGNATURE_METHOD_REJECTED = 11;
+    public const OAUTH_VERIFIER_INVALID = 12;
 
     /**
      * Error names for error reporting
@@ -258,8 +259,8 @@ class Zend_Oauth_Provider
         }
 
         // import header data
-        if (!empty($auth) && substr($auth, 0,
-                6) == 'OAuth ' && preg_match_all('/(oauth_[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', $auth, $matches)) {
+        if (!empty($auth) && substr((string) $auth, 0,
+                6) == 'OAuth ' && preg_match_all('/(oauth_[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', (string) $auth, $matches)) {
             foreach ($matches[1] as $num => $header) {
                 if ($header == 'realm') {
                     continue;
@@ -300,7 +301,7 @@ class Zend_Oauth_Provider
 
     /**
      * Validate OAuth request
-     * @param Zend_Uri_Http $url Request URL, will use current if null
+     * @param Zend_Uri_Http|null $url Request URL, will use current if null
      * @param array $params Additional parameters
      * @return bool
      * @throws Zend_Oauth_Exception

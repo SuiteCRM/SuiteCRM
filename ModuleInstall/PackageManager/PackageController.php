@@ -40,6 +40,7 @@
 
  require_once('ModuleInstall/PackageManager/PackageManagerDisplay.php');
  require_once('ModuleInstall/PackageManager/PackageManager.php');
+ #[\AllowDynamicProperties]
  class PackageController
  {
      public $_pm;
@@ -242,7 +243,7 @@
          }
          //patches
          $filter = array(array('name' => 'type', 'value' => "'patch'"));
-         $releases = $pm->getReleases('', '', $filter);
+         $releases = PackageManager::getReleases('', '', $filter);
          if (!empty($releases['packages'])) {
              foreach ($releases['packages'] as $update) {
                  $update = PackageManager::fromNameValueList($update);
@@ -319,7 +320,7 @@
          if (!empty($username) && !empty($password)) {
              $password = md5($password);
              $result = PackageManager::authenticate($username, $password, $servername, $terms_checked);
-             if (!is_array($result) && $result == true) {
+             if (!is_array($result) && $result === true) {
                  $status  = 'success';
              } else {
                  $status  = $result['faultstring'];

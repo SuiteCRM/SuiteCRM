@@ -24,6 +24,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class ProjectViewResourceList extends SugarView
 {
     public function display()

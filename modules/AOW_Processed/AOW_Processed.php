@@ -23,6 +23,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class AOW_Processed extends Basic
 {
     public $new_schema = true;

@@ -115,7 +115,7 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
         $end_date_time = $now_date_time->get('tomorrow');
 
         $result = $vcal->create_sugar_freebusy($user_bean, $start_date_time, $end_date_time);
-        self::assertGreaterThanOrEqual(0, strlen($result));
+        self::assertGreaterThanOrEqual(0, strlen((string) $result));
     }
 
     public function testget_vcal_freebusy(): void

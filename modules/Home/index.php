@@ -261,7 +261,7 @@ foreach ($pages[$activePage]['columns'] as $colNum => $column) {
 
 
 $i = 0;
-    while ($i < count($pages)) {
+    while ($i < (is_countable($pages) ? count($pages) : 0)) {
         if ($i == 0) {
             $pageTabs[$i]['pageTitle'] = $GLOBALS['app_strings']['LBL_SUITE_DASHBOARD'];
 //            $pageTabs[$i]['active'] = 'current';

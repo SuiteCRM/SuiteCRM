@@ -41,7 +41,7 @@ class actionModifyRecord extends actionCreateRecord
     {
         require_once("modules/AOW_WorkFlow/aow_utils.php");
 
-        $modules = getModuleRelationships($bean->module_dir, 'EditView', $params['rel_type']);
+        $modules = getModuleRelationships($bean->module_dir, 'EditView', $params['rel_type'] ?? '');
 
         $html = "<input type='hidden' name='aow_actions_param[".$line."][record_type]' id='aow_actions_param_record_type".$line."' value='' />";
         $html .= "<table border='0' cellpadding='0' cellspacing='0' width='100%' data-workflow-action='modify-record'>";
@@ -77,21 +77,21 @@ class actionModifyRecord extends actionCreateRecord
 EOS;
 
 
-        $module = getRelatedModule($bean->module_name, $params['rel_type']);
+        $module = getRelatedModule($bean->module_name, $params['rel_type'] ?? '');
         $html .= "cr_module[" . $line . "] = \"" . $module . "\";";
         $html .= "cr_fields[" . $line . "] = \"" . trim(preg_replace(
             '/\s+/',
             ' ',
-            getModuleFields($module, 'EditView', '', array(), array('email1', 'email2'))
+            (string) getModuleFields($module, 'EditView', '', array(), array('email1', 'email2'))
         )) . "\";";
-        $html .= "cr_relationships[".$line."] = \"".trim(preg_replace('/\s+/', ' ', getModuleRelationships($module)))."\";";
+        $html .= "cr_relationships[".$line."] = \"".trim(preg_replace('/\s+/', ' ', (string) getModuleRelationships($module)))."\";";
         if ($params && array_key_exists('field', $params)) {
             foreach ($params['field'] as $key => $field) {
                 if (is_array($params['value'][$key])) {
                     $params['value'][$key] = json_encode($params['value'][$key]);
                 }
 
-                $html .= "load_crline('".$line."','".$field."','".str_replace(array("\r\n","\r","\n"), " ", $params['value'][$key])."','".$params['value_type'][$key]."');";
+                $html .= "load_crline('".$line."','".$field."','".str_replace(array("\r\n","\r","\n"), " ", (string) $params['value'][$key])."','".$params['value_type'][$key]."');";
             }
         }
         if (isset($params['rel'])) {

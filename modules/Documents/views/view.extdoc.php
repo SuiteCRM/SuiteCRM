@@ -47,6 +47,7 @@ require_once('include/Sugar_Smarty.php');
 require_once('include/externalAPI/ExternalAPIFactory.php');
 
 
+#[\AllowDynamicProperties]
 class DocumentsViewExtdoc extends SugarView
 {
     public $options = array('show_header' => false, 'show_title' => false, 'show_subpanels' => false, 'show_search' => true, 'show_footer' => false, 'show_javascript' => false, 'view_print' => false,);

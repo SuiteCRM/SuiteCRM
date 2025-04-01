@@ -4,6 +4,7 @@
 
 include_once('include/utils.php');
 
+#[\AllowDynamicProperties]
 class jjwg_MarkersController extends SugarController
 {
     public function action_marker_edit_map()

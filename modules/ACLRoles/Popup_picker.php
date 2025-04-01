@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class Popup_Picker
 {
 

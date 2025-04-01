@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'modules/Spots/SpotsListViewSmarty.php';
 
+#[\AllowDynamicProperties]
 class SpotsViewList extends ViewList
 {
     public function __construct()

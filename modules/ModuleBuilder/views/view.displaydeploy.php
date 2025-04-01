@@ -40,6 +40,7 @@
 
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 
+#[\AllowDynamicProperties]
 class ViewDisplaydeploy extends SugarView
 {
     public function __construct()

@@ -54,6 +54,7 @@ require_once __DIR__ . '/../../modules/Home/UnifiedSearchAdvanced.php';
 /**
  * Class SearchModules fetches the search modules.
  */
+#[\AllowDynamicProperties]
 class SearchModules
 {
     /**
@@ -251,7 +252,7 @@ class SearchModules
                 continue;
             }
 
-            $isCustomModule = preg_match('/^([a-z0-9]{1,5})_([a-z0-9_]+)$/i', $moduleName);
+            $isCustomModule = preg_match('/^([a-z0-9]{1,5})_([a-z0-9_]+)$/i', (string) $moduleName);
 
             // If the bean supports unified search or if it's a custom module bean and unified search is not defined
             if (!empty($dictionary[$beanName]['unified_search']) || $isCustomModule) {

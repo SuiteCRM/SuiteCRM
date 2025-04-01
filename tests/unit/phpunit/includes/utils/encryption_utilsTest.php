@@ -98,11 +98,11 @@ class encryption_utilsTest extends SuitePHPUnitFrameworkTestCase
 
         //test key
         $actual = blowfishGetKey('test');
-        self::assertGreaterThanOrEqual(36, strlen($actual));
+        self::assertGreaterThanOrEqual(36, strlen((string) $actual));
 
         //default key
         $actual = blowfishGetKey('rapelcg_svryq');
-        self::assertGreaterThanOrEqual(36, strlen($actual));
+        self::assertGreaterThanOrEqual(36, strlen((string) $actual));
     }
 
     public function testblowfishEncode(): void

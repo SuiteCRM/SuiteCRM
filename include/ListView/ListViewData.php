@@ -47,6 +47,7 @@ require_once('include/EditView/SugarVCR.php');
  * Data set for ListView
  * @api
  */
+#[\AllowDynamicProperties]
 class ListViewData
 {
     public $additionalDetails = true;
@@ -452,7 +453,7 @@ class ListViewData
                 if ($additionalDetailsAllow) {
                     if ($this->additionalDetailsAjax) {
                         LoggerManager::getLogger()->warn('Undefined data index ID for list view data.');
-                        $ar = $this->getAdditionalDetailsAjax(isset($data[$dataIndex]['ID']) ? $data[$dataIndex]['ID'] : null);
+                        $ar = $this->getAdditionalDetailsAjax($data[$dataIndex]['ID'] ?? null);
                     } else {
                         $additionalDetailsFile = 'modules/' . $this->seed->module_dir . '/metadata/additionalDetails.php';
                         if (file_exists('custom/modules/' . $this->seed->module_dir . '/metadata/additionalDetails.php')) {
@@ -465,6 +466,9 @@ class ListViewData
                             $additionalDetailsEdit
                         );
                     }
+                    $ar['string'] = $ar['string'] ?? '';
+                    $ar['fieldToAddTo'] = $ar['fieldToAddTo'] ?? '';
+
                     $pageData['additionalDetails'][$dataIndex] = $ar['string'];
                     $pageData['additionalDetails']['fieldToAddTo'] = $ar['fieldToAddTo'];
                 }

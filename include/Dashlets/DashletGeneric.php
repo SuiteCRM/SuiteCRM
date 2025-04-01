@@ -257,8 +257,8 @@ class DashletGeneric extends Dashlet
                 $currentSearchFields[$name]['label'] = !empty($params['label']) ? translate($params['label'], $this->seedBean->module_dir) : translate($widgetDef['vname'], $this->seedBean->module_dir);
                 $currentSearchFields[$name]['input'] = $this->layoutManager->widgetDisplayInput($widgetDef, true, (empty($this->filters[$name]) ? '' : $this->filters[$name]));
             } else { // ability to create spacers in input fields
-                $currentSearchFields['blank' + $count]['label'] = '';
-                $currentSearchFields['blank' + $count]['input'] = '';
+                $currentSearchFields['blank' . $count]['label'] = '';
+                $currentSearchFields['blank' . $count]['input'] = '';
                 $count++;
             }
         }
@@ -381,6 +381,7 @@ class DashletGeneric extends Dashlet
 
     protected function loadCustomMetadata()
     {
+        $dashletData = [];
         $customMetadata = 'custom/modules/'.$this->seedBean->module_dir.'/metadata/dashletviewdefs.php';
         if (file_exists($customMetadata)) {
             require($customMetadata);
@@ -472,7 +473,7 @@ class DashletGeneric extends Dashlet
                 $where = '(' . implode(') AND (', $whereArray) . ')';
             }
             $this->lvs->setup($this->seedBean, $this->displayTpl, $where, $lvsParams, 0, $this->displayRows/*, $filterFields*/, array(), 'id', $id);
-            if (in_array('CREATED_BY', array_keys($displayColumns))) { // handle the created by field
+            if (array_key_exists('CREATED_BY', $displayColumns)) { // handle the created by field
                 foreach ($this->lvs->data['data'] as $row => $data) {
                     $this->lvs->data['data'][$row]['CREATED_BY'] = get_assigned_user_name($data['CREATED_BY']);
                 }
@@ -481,9 +482,9 @@ class DashletGeneric extends Dashlet
             foreach ($this->lvs->data['pageData']['urls'] as $type => $url) {
                 // awu Replacing action=DisplayDashlet with action=DynamicAction&DynamicAction=DisplayDashlet
                 if ($type == 'orderBy') {
-                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', $url);
+                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', (string) $url);
                 } else {
-                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', $url) . '&sugar_body_only=1&id=' . $this->id;
+                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', (string) $url) . '&sugar_body_only=1&id=' . $this->id;
                 }
             }
 
@@ -541,7 +542,7 @@ class DashletGeneric extends Dashlet
             }
         }
         if (!empty($req['dashletTitle'])) {
-            $options['title'] = $req['dashletTitle'];
+            $options['title'] = htmlentities(html_entity_decode($req['dashletTitle']));
         }
 
         // Don't save the options for myItemsOnly if we're not even showing the options.

@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Import/CsvAutoDetect.php');
 require_once('modules/Import/sources/ImportDataSource.php');
 
+#[\AllowDynamicProperties]
 class ImportFile extends ImportDataSource
 {
     /**
@@ -98,7 +99,7 @@ class ImportFile extends ImportDataSource
      * Enclosure string we are using (i.e. ' or ")
      */
     private $_enclosure;
-    
+
     /**
      * File encoding, used to translate the data into UTF-8 for display and import
      */
@@ -225,7 +226,7 @@ class ImportFile extends ImportDataSource
                 return false;
             }
         }
-        
+
         global $locale;
         foreach ($this->_currentRow as $key => $value) {
             // If encoding is set, convert all values from it
@@ -233,12 +234,14 @@ class ImportFile extends ImportDataSource
                 // Convert all values to UTF-8 for display and import purposes
                 $this->_currentRow[$key] = $locale->translateCharset($value, $this->_encoding);
             }
-            
+
+            $this->_currentRow[$key] = securexss($value);
+
             // Convert all line endings to the same style as PHP_EOL
             // Use preg_replace instead of str_replace as str_replace may cause extra lines on Windows
-            $this->_currentRow[$key] = preg_replace("[\r\n|\n|\r]", PHP_EOL, $this->_currentRow[$key]);
+            $this->_currentRow[$key] = preg_replace("[\r\n|\n|\r]", PHP_EOL, (string) $this->_currentRow[$key]);
         }
-        
+
         $this->_rowsCount++;
 
         return $this->_currentRow;
@@ -251,7 +254,7 @@ class ImportFile extends ImportDataSource
      */
     public function getFieldCount()
     {
-        return count($this->_currentRow);
+        return is_countable($this->_currentRow) ? count($this->_currentRow) : 0;
     }
 
     /**
@@ -314,10 +317,10 @@ class ImportFile extends ImportDataSource
         if (!empty($this->_encoding)) {
             return $this->_encoding;
         }
-        
+
         // Move file pointer to start
         $this->setFpAfterBOM();
-        
+
         global $locale;
         $user_charset = $locale->getExportCharset();
         $system_charset = $locale->default_export_charset;
@@ -326,33 +329,33 @@ class ImportFile extends ImportDataSource
 
         // Bug 26824 - mb_detect_encoding() thinks CP1252 is IS0-8859-1, so use that instead in the encoding list passed to the function
         $detectable_charsets = str_replace('CP1252', 'ISO-8859-1', $detectable_charsets);
-        
+
         // If we are able to detect encoding
         if (function_exists('mb_detect_encoding')) {
             // Retrieve a sample of data set
             $text = '';
-            
+
             // Read 10 lines from the file and put them all together in a variable
             $i = 0;
             while ($i < 10 && $temp = fgets($this->_fp, 8192)) {
                 $text .= $temp;
                 $i++;
             }
-            
+
             // If we picked any text, try to detect charset
             if (strlen($text) > 0) {
                 $charset_for_import = mb_detect_encoding($text, $detectable_charsets);
             }
         }
-        
+
         // If we couldn't detect the charset, set it to default export/import charset
         if (empty($charset_for_import)) {
             $charset_for_import = $locale->getExportCharset();
         }
-        
+
         // Reset the fp to after the bom if applicable.
         $this->setFpAfterBOM();
-        
+
         return $charset_for_import;
     }
 
@@ -459,7 +462,7 @@ class ImportFile extends ImportDataSource
             $this->next();
         }
 
-        while ($this->valid() &&  $totalItems > count($this->_dataSet)) {
+        while ($this->valid() &&  $totalItems > (is_countable($this->_dataSet) ? count($this->_dataSet) : 0)) {
             if ($currentLine >= $this->_offset) {
                 $this->_dataSet[] = $this->_currentRow;
             }

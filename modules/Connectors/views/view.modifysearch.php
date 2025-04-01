@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/MVC/View/SugarView.php');
 require_once('include/connectors/sources/SourceFactory.php');
 
+#[\AllowDynamicProperties]
 class ViewModifySearch extends SugarView
 {
     /**

@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 use Api\Core\Config\ApiConfig;
 
+#[\AllowDynamicProperties]
 class RepairAndClear
 {
     public $module_list;
@@ -380,7 +381,7 @@ class RepairAndClear
         $search_dir=sugar_cached('');
         $src_file = $search_dir . 'modules/unified_search_modules.php';
         if (file_exists($src_file)) {
-            unlink((string)$src_file);
+            unlink($src_file);
         }
     }
     public function clearExternalAPICache()
@@ -442,7 +443,7 @@ class RepairAndClear
                 $focus->create_audit_table();
             } else {
                 if ($this->show_output) {
-                    $echo=str_replace('%1$', $focus->object_name, $mod_strings['LBL_REBUILD_AUDIT_SKIP']);
+                    $echo=str_replace('%1$', $focus->object_name, (string) $mod_strings['LBL_REBUILD_AUDIT_SKIP']);
                     echo $echo;
                 }
             }
@@ -477,7 +478,7 @@ class RepairAndClear
                 if ($children != "." && $children != "..") {
                     if (is_dir($thedir . "/" . $children)) {
                         $this->_clearCache($thedir . "/" . $children, $extension);
-                    } elseif (is_file($thedir . "/" . $children) && (substr_count($children, $extension))) {
+                    } elseif (is_file($thedir . "/" . $children) && (substr_count($children, (string) $extension))) {
                         unlink($thedir . "/" . $children);
                     }
                 }

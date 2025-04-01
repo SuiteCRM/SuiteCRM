@@ -48,12 +48,16 @@ array( 'table' => 'emailman', 'comment' => 'Email campaign queue', 'fields' => a
         'vname' => 'LBL_DATE_ENTERED',
         'type' => 'datetime',
         'comment' => 'Date record created',
+        'enable_range_search' => true,
+        'options' => 'date_range_search_dom',
     ),
     'date_modified' => array(
         'name' => 'date_modified',
         'vname' => 'LBL_DATE_MODIFIED',
         'type' => 'datetime',
         'comment' => 'Date record last modified',
+        'enable_range_search' => true,
+        'options' => 'date_range_search_dom',
     ),
     'user_id' => array(
         'name' => 'user_id',

@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class EntryPointConfirmOptInHandler
  */
+#[\AllowDynamicProperties]
 class EntryPointConfirmOptInHandler
 {
 

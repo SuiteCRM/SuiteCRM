@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * The UpgradeRemoval instance will be invoked from the unlinkUpgradeFiles method of uw_utils.php
  */
+#[\AllowDynamicProperties]
 class UpgradeRemoval
 {
 
@@ -113,8 +114,8 @@ class UpgradeRemoval
      */
     protected function backup($file)
     {
-        $basename = basename($file);
-        $basepath = str_replace($basename, '', $file);
+        $basename = basename((string) $file);
+        $basepath = str_replace($basename, '', (string) $file);
 
         if (!empty($basepath) && !file_exists('custom/backup/' . $basepath)) {
             mkdir_recursive('custom/backup/' . $basepath);

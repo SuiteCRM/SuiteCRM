@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/SugarObjects/forms/FormBase.php');
 
+#[\AllowDynamicProperties]
 class CallFormBase extends FormBase
 {
     public function getFormBody($prefix, $mod='', $formname='', $cal_date='', $cal_time='')
@@ -99,35 +100,35 @@ class CallFormBase extends FormBase
         $lbl_save_button_key = $app_strings['LBL_SAVE_BUTTON_KEY'];
         $lbl_save_button_label = $app_strings['LBL_SAVE_BUTTON_LABEL'];
         $form =	<<<EOQ
-			<form name="${formname}" onSubmit="return check_form('${formname}') "method="POST" action="index.php">
-			<input type="hidden" name="${prefix}module" value="Calls">
-			<input type="hidden" name="${prefix}action" value="Save">
-				<input type="hidden" name="${prefix}record" value="">
-			<input type="hidden"  name="${prefix}direction" value="Outbound">
-			<input type="hidden" name="${prefix}status" value="${default_status}">
-			<input type="hidden" name="${prefix}parent_type" value="${default_parent_type}">
-			<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
-			<input type="hidden" name="${prefix}duration_hours" value="1">
-			<input type="hidden" name="${prefix}duration_minutes" value="0">
-			<input type="hidden" name="${prefix}user_id" value="${user_id}">
+			<form name="{$formname}" onSubmit="return check_form('{$formname}') "method="POST" action="index.php">
+			<input type="hidden" name="{$prefix}module" value="Calls">
+			<input type="hidden" name="{$prefix}action" value="Save">
+				<input type="hidden" name="{$prefix}record" value="">
+			<input type="hidden"  name="{$prefix}direction" value="Outbound">
+			<input type="hidden" name="{$prefix}status" value="{$default_status}">
+			<input type="hidden" name="{$prefix}parent_type" value="{$default_parent_type}">
+			<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
+			<input type="hidden" name="{$prefix}duration_hours" value="1">
+			<input type="hidden" name="{$prefix}duration_minutes" value="0">
+			<input type="hidden" name="{$prefix}user_id" value="{$user_id}">
 
 		<table cellspacing="1" cellpadding="0" border="0">
 <tr>
-    <td colspan="2"><input type='radio' name='appointment' value='Call' class='radio' onchange='document.${formname}.module.value="Calls";' style='vertical-align: middle;' checked> <span scope="row">${mod_strings['LNK_NEW_CALL']}</span>
+    <td colspan="2"><input type='radio' name='appointment' value='Call' class='radio' onchange='document.{$formname}.module.value="Calls";' style='vertical-align: middle;' checked> <span scope="row">{$mod_strings['LNK_NEW_CALL']}</span>
 &nbsp;
 &nbsp;
-<input type='radio' name='appointment' value='Meeting' class='radio' onchange='document.${formname}.module.value="Meetings";'><span scope="row">${mod_strings['LNK_NEW_MEETING']}</span></td>
+<input type='radio' name='appointment' value='Meeting' class='radio' onchange='document.{$formname}.module.value="Meetings";'><span scope="row">{$mod_strings['LNK_NEW_MEETING']}</span></td>
 </tr>
 <tr>
     <td colspan="2"><span scope="row">$lbl_subject</span>&nbsp;<span class="required">$lbl_required_symbol</span></td>
 </tr>
-<tr><td valign=top><input name='${prefix}name' size='30' maxlength='255' type="text"></td>
-    <td><input name='${prefix}date_start' id='${formname}jscal_field' maxlength='10' type="hidden" value="${cal_date}"></td>
-    <td><input name='${prefix}time_start' type="hidden" maxlength='10' value="{$cal_time}"></td>
+<tr><td valign=top><input name='{$prefix}name' size='30' maxlength='255' type="text"></td>
+    <td><input name='{$prefix}date_start' id='{$formname}jscal_field' maxlength='10' type="hidden" value="{$cal_date}"></td>
+    <td><input name='{$prefix}time_start' type="hidden" maxlength='10' value="{$cal_time}"></td>
 
 			<script type="text/javascript">
 //		Calendar.setup ({
-//			inputField : "${formname}jscal_field", daFormat : "$cal_dateformat" ifFormat : "$cal_dateformat", showsTime : false, button : "${formname}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
+//			inputField : "{$formname}jscal_field", daFormat : "$cal_dateformat" ifFormat : "$cal_dateformat", showsTime : false, button : "{$formname}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
 //		});
 		</script>
 
@@ -169,9 +170,9 @@ EOQ;
             $the_form = get_left_form_header($mod_strings['LBL_NEW_FORM_TITLE']);
         }
         $the_form .= <<<EOQ
-		<form name="${prefix}CallSave" onSubmit="return check_form('${prefix}CallSave') "method="POST" action="index.php">
-			<input type="hidden" name="${prefix}module" value="Calls">
-			<input type="hidden" name="${prefix}action" value="Save">
+		<form name="{$prefix}CallSave" onSubmit="return check_form('{$prefix}CallSave') "method="POST" action="index.php">
+			<input type="hidden" name="{$prefix}module" value="Calls">
+			<input type="hidden" name="{$prefix}action" value="Save">
 
 EOQ;
         return $the_form;
@@ -197,7 +198,7 @@ EOQ;
             return '';
         }
         $the_form = $this->getFormHeader($prefix, $mod);
-        $the_form .= $this->getFormBody($prefix, $mod, "${prefix}CallSave");
+        $the_form .= $this->getFormBody($prefix, $mod, "{$prefix}CallSave");
         $the_form .= $this->getFormFooter($prefix, $mod);
 
         return $the_form;
@@ -221,7 +222,7 @@ EOQ;
         if ($useRequired && !checkRequired($prefix, array_keys($focus->required_fields))) {
             return null;
         }
-        if (!isset($_POST[$prefix.'reminder_checked']) or ($_POST[$prefix.'reminder_checked'] == 0)) {
+        if (!isset($_POST[$prefix.'reminder_checked']) || $_POST[$prefix.'reminder_checked'] == 0) {
             $GLOBALS['log']->debug(__FILE__.'('.__LINE__.'): No reminder checked, resetting the reminder_time');
             $_POST[$prefix.'reminder_time'] = -1;
         }
@@ -244,7 +245,7 @@ EOQ;
 
         $time_format = $timedate->get_user_time_format();
         $time_separator = ":";
-        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
             $time_separator = $match[1];
         }
 
@@ -256,7 +257,7 @@ EOQ;
             $_POST[$prefix.'time_start'] = $timedate->merge_time_meridiem($_POST[$prefix.'time_start'], $timedate->get_time_format(), $_POST[$prefix.'meridiem']);
         }
 
-        if (isset($_POST[$prefix.'time_start']) && strlen($_POST[$prefix.'date_start']) == 10) {
+        if (isset($_POST[$prefix.'time_start']) && strlen((string) $_POST[$prefix.'date_start']) == 10) {
             $_POST[$prefix.'date_start'] = $_POST[$prefix.'date_start'] . ' ' . $_POST[$prefix.'time_start'];
         }
 
@@ -272,21 +273,23 @@ EOQ;
             $newBean = false;
         }
 
+        $return_id = '';
+        $assignedUserId = $_POST['assigned_user_id'] ?? '';
         //add assigned user and current user if this is the first time bean is saved
         if (empty($focus->id) && !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] =='Calls' && !empty($_REQUEST['return_action']) && $_REQUEST['return_action'] =='DetailView') {
             //if return action is set to detail view and return module to call, then this is from the long form, do not add the assigned user (only the current user)
             //The current user is already added to UI and we want to give the current user the option of opting out of meeting.
-            if ($current_user->id != $_POST['assigned_user_id']) {
-                $_POST['user_invitees'] .= ','.$_POST['assigned_user_id'].', ';
+            if ($current_user->id != $assignedUserId) {
+                $_POST['user_invitees'] .= ','.$assignedUserId.', ';
                 $_POST['user_invitees'] = str_replace(',,', ',', $_POST['user_invitees']);
             }
         } else {
             //this is not from long form so add assigned and current user automatically as there is no invitee list UI.
             //This call could be through an ajax call from subpanels or shortcut bar
-            $_POST['user_invitees'] .= ','.$_POST['assigned_user_id'].', ';
+            $_POST['user_invitees'] .= ','.$assignedUserId.', ';
 
             //add current user if the assigned to user is different than current user.
-            if ($current_user->id != $_POST['assigned_user_id'] && $_REQUEST['module'] != "Calendar") {
+            if ($current_user->id != $assignedUserId && $_REQUEST['module'] != "Calendar") {
                 $_POST['user_invitees'] .= ','.$current_user->id.', ';
             }
 
@@ -500,7 +503,7 @@ EOQ;
 
                 // Bug #49195 : update vcal
                 vCal::cache_sugar_vcal($current_user);
-            
+
                 // CCL - Comment out call to set $current_user as invitee
                 //set organizer to auto-accept
                 if ($focus->assigned_user_id == $current_user->id && $newBean) {
@@ -572,14 +575,14 @@ EOQ;
         $default_time_start = $timedate->to_display_time($date, true);
         $time_ampm = $timedate->AMPMMenu($prefix, $default_time_start);
         $form =	<<<EOQ
-			<input type="hidden"  name="${prefix}direction" value="Outbound">
-			<input type="hidden" name="${prefix}record" value="">
-			<input type="hidden" name="${prefix}status" value="${default_status}">
-			<input type="hidden" name="${prefix}parent_type" value="${default_parent_type}">
-			<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
-			<input type="hidden" name="${prefix}duration_hours" value="1">
-			<input type="hidden" name="${prefix}duration_minutes" value="0">
-			<input type="hidden" name="${prefix}user_id" value="${user_id}">
+			<input type="hidden"  name="{$prefix}direction" value="Outbound">
+			<input type="hidden" name="{$prefix}record" value="">
+			<input type="hidden" name="{$prefix}status" value="{$default_status}">
+			<input type="hidden" name="{$prefix}parent_type" value="{$default_parent_type}">
+			<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
+			<input type="hidden" name="{$prefix}duration_hours" value="1">
+			<input type="hidden" name="{$prefix}duration_minutes" value="0">
+			<input type="hidden" name="{$prefix}user_id" value="{$user_id}">
 
 		<table cellspacing='0' cellpadding='0' border='0' width="100%">
 <tr>
@@ -587,23 +590,23 @@ EOQ;
 
         if ($wide) {
             $form .= <<<EOQ
-<td scope='row' width="20%"><input type='radio' name='appointment' value='Call' class='radio' checked> ${mod_strings['LNK_NEW_CALL']}</td>
-<td scope='row' width="80%">${mod_strings['LBL_DESCRIPTION']}</td>
+<td scope='row' width="20%"><input type='radio' name='appointment' value='Call' class='radio' checked> {$mod_strings['LNK_NEW_CALL']}</td>
+<td scope='row' width="80%">{$mod_strings['LBL_DESCRIPTION']}</td>
 </tr>
 
 <tr>
-<td scope='row'><input type='radio' name='appointment' value='Meeting' class='radio'> ${mod_strings['LNK_NEW_MEETING']}</td>
+<td scope='row'><input type='radio' name='appointment' value='Meeting' class='radio'> {$mod_strings['LNK_NEW_MEETING']}</td>
 
 <td rowspan='8' ><textarea name='Appointmentsdescription' cols='50' rows='5'></textarea></td>
 </tr>
 EOQ;
         } else {
             $form .= <<<EOQ
-<td scope='row' width="20%"><input type='radio' name='appointment' value='Call' class='radio' onchange='document.$formname.module.value="Calls";' checked> ${mod_strings['LNK_NEW_CALL']}</td>
+<td scope='row' width="20%"><input type='radio' name='appointment' value='Call' class='radio' onchange='document.$formname.module.value="Calls";' checked> {$mod_strings['LNK_NEW_CALL']}</td>
 </tr>
 
 <tr>
-<td scope='row'><input type='radio' name='appointment' value='Meeting' class='radio' onchange='document.$formname.module.value="Meetings";'> ${mod_strings['LNK_NEW_MEETING']}</td>
+<td scope='row'><input type='radio' name='appointment' value='Meeting' class='radio' onchange='document.$formname.module.value="Meetings";'> {$mod_strings['LNK_NEW_MEETING']}</td>
 </tr>
 EOQ;
         }
@@ -615,15 +618,15 @@ EOQ;
 </tr>
 
 <tr>
-<td ><input name='${prefix}name' maxlength='255' type="text"></td>
+<td ><input name='{$prefix}name' maxlength='255' type="text"></td>
 </tr>
 
 <tr>
 <td scope='row'>$lbl_date&nbsp;<span class="required">$lbl_required_symbol</span>&nbsp;<span class="dateFormat">$ntc_date_format</span></td>
 </tr>
 <tr>
-<td ><input onblur="parseDate(this, '$cal_dateformat');" name='${prefix}date_start' size="12" id='${prefix}jscal_field' maxlength='10' type="text" value="${default_date_start}"> <!--not_in_theme!-->
-<span class="suitepicon suitepicon-module-calendar" alt="{$app_strings['LBL_ENTER_DATE']}"  id="${prefix}jscal_trigger"></span>
+<td ><input onblur="parseDate(this, '$cal_dateformat');" name='{$prefix}date_start' size="12" id='{$prefix}jscal_field' maxlength='10' type="text" value="{$default_date_start}"> <!--not_in_theme!-->
+<span class="suitepicon suitepicon-module-calendar" alt="{$app_strings['LBL_ENTER_DATE']}"  id="{$prefix}jscal_trigger"></span>
 </td>
 </tr>
 
@@ -631,14 +634,14 @@ EOQ;
 <td scope='row'>$lbl_time&nbsp;<span class="required">$lbl_required_symbol</span>&nbsp;<span class="dateFormat">$ntc_time_format</span></td>
 </tr>
 <tr>
-<td ><input name='${prefix}time_start' size="12" type="text" maxlength='5' value="{$default_time_start}">$time_ampm</td>
+<td ><input name='{$prefix}time_start' size="12" type="text" maxlength='5' value="{$default_time_start}">$time_ampm</td>
 </tr>
 
 </table>
 
 		<script type="text/javascript">
 		Calendar.setup ({
-			inputField : "${prefix}jscal_field", daFormat : "$cal_dateformat", ifFormat : "$cal_dateformat", showsTime : false, button : "${prefix}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
+			inputField : "{$prefix}jscal_field", daFormat : "$cal_dateformat", ifFormat : "$cal_dateformat", showsTime : false, button : "{$prefix}jscal_trigger", singleClick : true, step : 1, weekNumbers:false
 		});
 		</script>
 EOQ;

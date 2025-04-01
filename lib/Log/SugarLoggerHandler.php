@@ -49,6 +49,7 @@ use Monolog\Handler\AbstractProcessingHandler;
 /**
  * Integrates Monolog with the LoggerManager.
  */
+#[\AllowDynamicProperties]
 class SugarLoggerHandler extends AbstractProcessingHandler
 {
 
@@ -79,7 +80,7 @@ class SugarLoggerHandler extends AbstractProcessingHandler
      */
     protected function psrToSugarLevel($level)
     {
-        $level = intval($level);
+        $level = (int) $level;
 
         switch ($level) {
             case 100:

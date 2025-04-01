@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Import/Forms.php');
 
+#[\AllowDynamicProperties]
 class UsersLastImport extends SugarBean
 {
     /**

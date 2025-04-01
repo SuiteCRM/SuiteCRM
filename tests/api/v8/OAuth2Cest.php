@@ -5,6 +5,7 @@
  * Tests Jwt Token Authentication
  * @see https://tools.ietf.org/html/rfc7519
  */
+#[\AllowDynamicProperties]
 class OAuth2Cest
 {
     /**

@@ -2,6 +2,7 @@
 
 require_once('include/ListView/ListViewSmarty.php');
 
+#[\AllowDynamicProperties]
 class CasesListViewSmarty extends ListViewSmarty
 {
     public function __construct()

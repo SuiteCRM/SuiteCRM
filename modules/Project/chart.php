@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class chart
 {
     private $start_date;
@@ -385,7 +386,7 @@ class chart
             foreach ($time_span as $year => $months) {
                 foreach ($months as $month => $weeks) {//count the number of days in each month
 
-                    echo '<td class="main_table weeks" colspan="' . count($weeks) . '">'.$month .'</td>';
+                    echo '<td class="main_table weeks" colspan="' . (is_countable($weeks) ? count($weeks) : 0) . '">'.$month .'</td>';
                 }
             }
 
@@ -397,7 +398,7 @@ class chart
                     {
                         $wcount++;
                     }*/
-                    $wcount+= count($weeks);
+                    $wcount+= is_countable($weeks) ? count($weeks) : 0;
                 }
                 $width = $wcount * 26; //used to set width on years row. width needed for css text clipping
                 echo '<td colspan="'.$wcount.'" class="main_table years"><div style="width: '.$width.'px;" class="year_div">' . $year.'</div></td>';
@@ -475,7 +476,7 @@ class chart
             foreach ($time_span as $year => $quarters) {
                 foreach ($quarters as $quarter => $months) {//count the number of days in each month
                     
-                    echo '<td class="main_table weeks" colspan="' . count($months) . '">'.$quarter .'</td>';
+                    echo '<td class="main_table weeks" colspan="' . (is_countable($months) ? count($months) : 0) . '">'.$quarter .'</td>';
                 }
             }
 
@@ -484,7 +485,7 @@ class chart
                 $qcount= 0;
                 foreach ($quarters as $quarter => $months) {//count the number of months in each quarter
                 
-                    $qcount+= count($months);
+                    $qcount+= is_countable($months) ? count($months) : 0;
                 }
                 $width = $qcount * 26; //used to set width on years row. width needed for css text clipping
                 echo '<td colspan="'.$qcount.'" class="main_table years"><div style="width: '.$width.'px;" class="year_div">' . $year.'</div></td>';
@@ -658,11 +659,11 @@ class chart
         $sdate->modify('+'.$day.' days');
         $edate->modify('+'.$x.' months');
 
-        if ($sdate->format('Y') != $edate->format('Y')) {
+        if ($sdate->format('Y') !== $edate->format('Y')) {
             return -1;
         }
 
-        if ($sdate->format('m') != $edate->format('m')) {
+        if ($sdate->format('m') !== $edate->format('m')) {
             return -1;
         }
         return 0;
@@ -733,15 +734,15 @@ class chart
         $now = $now->format('Y-m-d');
         // $GLOBALS['log']->fatal("date2 ".$now);
 
-        if ($date1->format('l') == 'Sunday' && $date == $now) {
+        if ($date1->format('l') == 'Sunday' && $date === $now) {
             return 'weekend-today';
-        } elseif ($date1->format('l') == 'Saturday' && $date == $now) {
+        } elseif ($date1->format('l') == 'Saturday' && $date === $now) {
             return 'weekend-today';
         } elseif ($date1->format('l') == 'Sunday') {
             return 'weekend';
         } elseif ($date1->format('l') == 'Saturday') {
             return 'weekend';
-        } elseif ($date == $now) {
+        } elseif ($date === $now) {
             return 'today';
         }
         return false;

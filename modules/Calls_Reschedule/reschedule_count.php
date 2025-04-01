@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class reschedule_count
 {
 

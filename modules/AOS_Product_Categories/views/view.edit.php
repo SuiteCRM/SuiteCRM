@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_Product_CategoriesViewEdit extends ViewEdit
 {
     public function __construct()

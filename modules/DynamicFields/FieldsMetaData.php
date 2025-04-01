@@ -53,6 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class FieldsMetaData extends SugarBean
 {
     // database table columns

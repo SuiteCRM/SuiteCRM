@@ -57,6 +57,7 @@ require_once dirname(__DIR__) . '/../include/database/DBManager.php';
  * @api
  * Instantiates and configures appropriate DB drivers
  */
+#[\AllowDynamicProperties]
 class DBManagerFactory
 {
     public static $instances = array();
@@ -105,7 +106,7 @@ class DBManagerFactory
         }
 
         // sanitize the name
-        $my_db_manager = preg_replace("/[^A-Za-z0-9_-]/", "", $my_db_manager);
+        $my_db_manager = preg_replace("/[^A-Za-z0-9_-]/", "", (string) $my_db_manager);
 
         if (!empty($config['db_manager_class'])) {
             $my_db_manager = $config['db_manager_class'];
@@ -251,7 +252,7 @@ class DBManagerFactory
             if (empty($tdrivers)) {
                 continue;
             }
-            if (count($tdrivers) > 1) {
+            if ((is_countable($tdrivers) ? count($tdrivers) : 0) > 1) {
                 usort($tdrivers, array(__CLASS__, "_compareDrivers"));
             }
             $result[$type] = $tdrivers[0];

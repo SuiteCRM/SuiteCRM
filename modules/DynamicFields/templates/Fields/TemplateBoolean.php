@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 require_once('modules/DynamicFields/templates/Fields/TemplateField.php');
+#[\AllowDynamicProperties]
 class TemplateBoolean extends TemplateField
 {
     public $default_value = '0';

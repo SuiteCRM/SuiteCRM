@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("modules/Calendar/CalendarUtils.php");
 
+#[\AllowDynamicProperties]
 class CalendarController extends SugarController
 {
 
@@ -60,14 +61,14 @@ class CalendarController extends SugarController
     protected function action_saveactivity()
     {
         $this->view = 'json';
-        
+
         if (!$this->retrieveCurrentBean('Save')) {
             return;
         }
-        
+
         $module = $this->currentBean->module_dir;
         $bean = $this->currentBean;
-        
+
         if (empty($_REQUEST['edit_all_recurrences'])) {
             $repeat_fields = array('type', 'interval', 'count', 'until', 'dow', 'parent_id');
             foreach ($repeat_fields as $suffix) {
@@ -81,10 +82,10 @@ class CalendarController extends SugarController
                     'until' => $_REQUEST['repeat_until'],
                     'dow' => $_REQUEST['repeat_dow'],
             );
-                
+
             $repeatArr = CalendarUtils::build_repeat_sequence($_REQUEST['date_start'], $params);
             $limit = SugarConfig::getInstance()->get('calendar.max_repeat_count', 1000);
-            
+
             if (count($repeatArr) > ($limit - 1)) {
                 ob_clean();
                 $jsonData = array(
@@ -96,24 +97,24 @@ class CalendarController extends SugarController
                 return;
             }
         }
-        
-        
-        
+
+
+
         $path = "modules/{$bean->module_dir}/{$bean->object_name}FormBase.php";
         if (!file_exists($path)) {
             $GLOBALS['log']->fatal("File {$bean->object_name}FormBase.php doesn't exist");
             sugar_cleanup(true);
         }
-               
+
         require_once($path);
-        
+
         $FBObjectName = "{$bean->object_name}FormBase";
-        
+
         if (!class_exists($FBObjectName)) {
             $GLOBALS['log']->fatal("Class {$bean->object_name}FormBase doesn't exist");
             sugar_cleanup(true);
         }
-        
+
         $formBase = new $FBObjectName();
         $bean = $formBase->handleSave('', false, false);
         unset($_REQUEST['send_invites'], $_POST['send_invites']); // prevent invites sending for recurring activities
@@ -127,14 +128,14 @@ class CalendarController extends SugarController
                     $repeatCreated = CalendarUtils::save_repeat_activities($bean, $repeatArr);
                 }
             }
-                    
+
             $bean->retrieve($record);
             $jsonData = CalendarUtils::get_sendback_array($bean);
-                    
+
             if (isset($repeatCreated) && is_array($repeatCreated)) {
                 $jsonData = array_merge($jsonData, array('repeat' => $repeatCreated));
             }
-            
+
             if (!empty($_REQUEST['edit_all_recurrences'])) {
                 $jsonData['edit_all_recurrences'] = 'true';
             }
@@ -149,15 +150,15 @@ class CalendarController extends SugarController
 
         $this->view_object_map['jsonData'] = $jsonData;
     }
-    
-    
+
+
     /**
      * Action QuickEdit
      */
     protected function action_quickedit()
     {
         $this->view = 'quickedit';
-        
+
         if (!$this->retrieveCurrentBean('Detail')) {
             return;
         }
@@ -179,15 +180,15 @@ class CalendarController extends SugarController
     protected function action_reschedule()
     {
         $this->view = 'json';
-        
+
         $commit = true;
-        
+
         if (!$this->retrieveCurrentBean('Save')) {
             return;
         }
-        
+
         $_REQUEST['parent_name'] = $this->currentBean->parent_name;
-        
+
         $dateField = "date_start";
         if ($this->currentBean->module_dir == "Tasks") {
             $dateField = "date_due";
@@ -206,7 +207,7 @@ class CalendarController extends SugarController
             $_POST['datetime'] = $date . " " . $tmp;
         }
         $_POST[$dateField] = $_REQUEST['datetime'];
-        
+
         if ($this->currentBean->module_dir == "Tasks" && !empty($this->currentBean->date_start)) {
             if ($GLOBALS['timedate']->fromUser($_POST['date_due'])->ts < $GLOBALS['timedate']->fromUser($this->currentBean->date_start)->ts) {
                 $this->view_object_map['jsonData'] = array(
@@ -216,28 +217,28 @@ class CalendarController extends SugarController
                 $commit = false;
             }
         }
-        
+
         if ($commit) {
             require_once('include/formbase.php');
             $this->currentBean = populateFromPost("", $this->currentBean);
             $this->currentBean->save();
             $this->currentBean->retrieve($_REQUEST['record']);
-                
+
             $this->view_object_map['jsonData'] = CalendarUtils::get_sendback_array($this->currentBean);
         }
     }
-    
+
     /**
      * Action Remove
      */
     protected function action_remove()
     {
         $this->view = 'json';
-        
+
         if (!$this->retrieveCurrentBean('Delete')) {
             return;
         }
-                
+
         if ($this->currentBean->module_dir == "Meetings" || $this->currentBean->module_dir == "Calls") {
             if (!empty($_REQUEST['remove_all_recurrences']) && $_REQUEST['remove_all_recurrences']) {
                 CalendarUtils::markRepeatDeleted($this->currentBean);
@@ -250,7 +251,7 @@ class CalendarController extends SugarController
             'access' => 'yes',
         );
     }
-    
+
     /**
      * Action Resize
      * Used for drag & drop resizing
@@ -258,21 +259,21 @@ class CalendarController extends SugarController
     protected function action_resize()
     {
         $this->view = 'json';
-        
+
         if (!$this->retrieveCurrentBean('Save')) {
             return;
         }
-        
+
         require_once('include/formbase.php');
         $this->currentBean = populateFromPost("", $this->currentBean);
         $this->currentBean->save();
-        
+
         $this->view_object_map['jsonData'] = array(
             'access' => 'yes',
         );
     }
-    
-    
+
+
     /**
      * Retrieves current activity bean and checks access to action
      *
@@ -286,7 +287,7 @@ class CalendarController extends SugarController
         if (!empty($_REQUEST['record'])) {
             $record = $_REQUEST['record'];
         }
-        
+
         require_once("data/BeanFactory.php");
         $this->currentBean = BeanFactory::getBean($module, $record);
 
@@ -300,21 +301,21 @@ class CalendarController extends SugarController
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     protected function action_getActivities()
     {
         $this->view = 'json';
-        
+
         if (!ACLController::checkAccess('Calendar', 'list', true)) {
             ACLController::displayNoAccess(true);
         }
-    
+
         require_once('modules/Calendar/Calendar.php');
         $cal = new Calendar($_REQUEST['view']);
-        
+
         if (in_array($cal->view, array('day', 'week', 'month'))) {
             $cal->add_activities($GLOBALS['current_user']);
         } elseif ($cal->view == 'shared') {

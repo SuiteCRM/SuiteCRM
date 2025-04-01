@@ -94,7 +94,7 @@ foreach ($admin_group_header as $key=>$values) {
             $colnum=0;
             $i=0;
             $fix = array_keys($values[3]);
-            if (count($values[3])>1) {
+            if ((is_countable($values[3]) ? count($values[3]) : 0)>1) {
 
                 //////////////////
                 $tmp_array = $values[3];

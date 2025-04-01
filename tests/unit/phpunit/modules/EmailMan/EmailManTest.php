@@ -148,7 +148,7 @@ class EmailManTest extends SuitePHPUnitFrameworkTestCase
         $result = BeanFactory::newBean('EmailMan')->create_indiv_email(BeanFactory::newBean('Contacts'), BeanFactory::newBean('Emails'));
 
         //test for record ID to verify that record is saved
-        self::assertEquals(36, strlen($result));
+        self::assertEquals(36, strlen((string) $result));
 
         $email = BeanFactory::newBean('Emails');
         $email->mark_deleted($result);
@@ -243,7 +243,7 @@ class EmailManTest extends SuitePHPUnitFrameworkTestCase
         );
 
         //test for email id returned and mark delete for cleanup
-        self::assertEquals(36, strlen($result));
+        self::assertEquals(36, strlen((string) $result));
         $email = BeanFactory::newBean('Emails');
         $email->mark_deleted($result);
     }

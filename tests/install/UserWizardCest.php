@@ -3,6 +3,7 @@
  * Class UserWizardCest
  * As an administrative user, I want to use the install wizard (web based) to install SuiteCRM.
  */
+#[\AllowDynamicProperties]
 class UserWizardCest
 {
 
@@ -48,9 +49,9 @@ class UserWizardCest
         $I->seeValidSystemEnvironment();
         $I->configureInstaller($webDriverHelper);
         $I->waitForInstallerToFinish();
-        
+
         // ---------- Email Settings ---------------
-        
+
         $I2->wantTo('Save an outgoing email configuration');
         // Navigate to email configuration and save settings
         $I2->loginAsAdmin();

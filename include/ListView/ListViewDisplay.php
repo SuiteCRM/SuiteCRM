@@ -228,15 +228,16 @@ class ListViewDisplay
     {
         if (!is_array($data)) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data) . ' given.');
+            $data = [];
         } else if (is_array($data) && !is_array($data['data'])) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data['data']) . ' given and converting to an array.');
         }
-        $this->rowCount = count((array)$data['data']);
+        $this->rowCount = count((array)($data['data'] ?? []));
         if (!isset($data['pageData']['bean'])) {
             $GLOBALS['log']->warn("List view process error: Invalid data, bean is not set");
             return false;
         }
-        $this->moduleString = $data['pageData']['bean']['moduleDir'] . '2_' . strtoupper($htmlVar) . '_offset';
+        $this->moduleString = ($data['pageData']['bean']['moduleDir'] ?? '') . '2_' . strtoupper($htmlVar) . '_offset';
         return true;
     }
 

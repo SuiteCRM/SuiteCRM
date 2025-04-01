@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class EmailMarketing extends SugarBean
 {
     public $field_name_map;
@@ -149,7 +150,7 @@ class EmailMarketing extends SugarBean
 
 
         //mode is set by schedule.php from campaigns module.
-        if (!isset($this->mode) or empty($this->mode) or $this->mode!='test') {
+        if (!isset($this->mode) || empty($this->mode) || $this->mode!='test') {
             $this->mode='rest';
         }
 

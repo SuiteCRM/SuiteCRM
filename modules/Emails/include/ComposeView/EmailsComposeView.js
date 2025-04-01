@@ -349,22 +349,34 @@
     };
 
 
-    $.fn.EmailsComposeView.updateSignature = self.updateSignature = function () {
-      var inboundId = $('#from_addr_name').find('option:selected').attr('inboundId');
-      if (inboundId === undefined) {
-        console.warn('Unable to retrieve selected inbound id in the "From" field.');
+    $.fn.EmailsComposeView.updateSignature = self.updateSignature = function ($selected) {
+      if(!$selected) {
+        $selected = $('#from_addr_name').find('option:selected');
+      }
+
+      var signatureId = $selected.attr('data-email-signature-id');
+      if (signatureId === undefined) {
+        console.warn('Unable to retrieve signature id');
         return false;
       }
 
+      var body = tinymce.activeEditor.getContent();
+      if (body !== '' && $(body).hasClass('email-signature-element')) {
+        var $body = $(body);
+        var $existingSignature = $body.find('.email-signature-element');
+        $existingSignature.remove();
+        tinymce.activeEditor.setContent($body.html(), {format: 'html'});
+      }
+
       var signatureElement = $('<div></div>')
-        .addClass('email-signature');
+        .addClass('email-signature-element');
       var signatures = $(self).find('.email-signature');
       var htmlSignature = null;
       var plainTextSignature = null;
 
       // Find signature
       $.each(signatures, function (index, value) {
-        if ($(value).attr('data-inbound-email-id') === inboundId) {
+        if ($(value).attr('data-email-signature-id') === signatureId) {
 
           if ($(value).hasClass('html')) {
             htmlSignature = $(value).val();
@@ -397,37 +409,103 @@
         return false;
       }
 
-      var body = tinymce.activeEditor.getContent();
+      body = tinymce.activeEditor.getContent();
       if (body === '') {
-        tinymce.activeEditor.setContent('<p></p>' + signatureElement[0].outerHTML, {format: 'html'});
-      } else if ($(body).hasClass('email-signature')) {
+        tinymce.activeEditor.setContent('<p></p><p></p>' + signatureElement[0].outerHTML, {format: 'html'});
+      } else if ($(body).hasClass('email-signature-element')) {
         var newBody = $('<div></div>');
         $(body).appendTo(newBody);
-        $(newBody).find('.email-signature').replaceWith(signatureElement[0].outerHTML);
+        $(newBody).find('.email-signature-element').replaceWith(signatureElement[0].outerHTML);
         tinymce.activeEditor.setContent(newBody.html(), {format: 'html'});
       } else {
         // reply to / forward
         if (self.prependSignature === true) {
-          tinymce.activeEditor.setContent('<p></p>' + signatureElement[0].outerHTML + body, {format: 'html'});
+          tinymce.activeEditor.setContent('<p></p><p></p>' + signatureElement[0].outerHTML + body, {format: 'html'});
         } else {
           tinymce.activeEditor.setContent(body + signatureElement[0].outerHTML, {format: 'html'});
         }
       }
     };
-    
-    self.updateFromInfos = function () {
-      var infos = $('#from_addr_name').find('option:selected').attr('infos');
+
+    self.updateFromInfos = function ($selected) {
+      if (!$selected) {
+        $selected = $('#from_addr_name').find('option:selected');
+      }
+      var infos = $selected.attr('infos');
       if(infos === undefined) {
         console.warn('Unable to retrieve selected infos in the "From" field.');
         return false;
-      } 
-      
+      }
+
       if(!$('#from_addr_name_infos').length) {
           $('#from_addr_name').parent().append('<span id="from_addr_name_infos"></span>');
       }
-      
+
       $('#from_addr_name_infos').html(infos);
-      
+
+    };
+
+    self.updateFromAddressName = function (selectFrom) {
+      var newlySelected = selectFrom.find('option:selected');
+      var newlySelectedFromName = newlySelected.attr('data-from-name');
+      $('#from_addr_name_hidden').val(newlySelectedFromName);
+    };
+
+    self.updateOutboundEmailId = function (selectFrom, newlySelected) {
+      if(!newlySelected) {
+        newlySelected = selectFrom.find('option:selected');
+      }
+
+      var entryType = newlySelected.attr('data-type') || '';
+      $('#outbound_email_id').val('');
+
+      if (entryType === 'OutboundEmailAccount' || entryType === 'system') {
+        var outboundId = newlySelected.attr('data-outbound-email-id');
+        $('#outbound_email_id').val(outboundId);
+      }
+    };
+
+    self.onFromSelect = function (selectFrom, ui) {
+      var newlySelected = ui.item.element;
+      var entryType = newlySelected.attr('data-type') || '';
+
+      $('#outbound_email_id').val('');
+      if (entryType === 'OutboundEmailAccount' || entryType === 'system') {
+        self.updateOutboundEmailId(selectFrom, newlySelected);
+      } else {
+        $(self).find('[name=inbound_email_id]').val(newlySelected.attr('inboundId'));
+      }
+
+      self.updateSignature(newlySelected);
+    };
+
+    self.getFromEntryLabel = function (entry) {
+      if (!entry) {
+        return '';
+      }
+
+      var entryValue = '';
+      if(entry.attributes.from && (typeof entry.attributes.from === 'string' || entry.attributes.from instanceof String)) {
+        entryValue = entry.attributes.from;
+      }
+
+      var entryLabel = '';
+      if(entry.attributes.name && (typeof entry.attributes.name === 'string' || entry.attributes.name instanceof String)) {
+        entryLabel = entry.attributes.name;
+        if (entryValue && entryValue !== entryLabel) {
+          entryLabel = entryLabel + ' (' + entryValue + ')';
+        }
+      } else if (entryValue) {
+        entryLabel = entryValue;
+      }
+
+
+
+      if (entryLabel.length > 40) {
+        entryLabel = entryLabel.substring(0, 40) + '...';
+      }
+
+      return entryLabel;
     };
 
     /**
@@ -1069,26 +1147,71 @@
         var from_addr = $(self).find('#from_addr_name');
         from_addr.replaceWith(selectFrom);
 
+        var hiddenOutboundEmailId = $('<input type="hidden" name="outbound_email_id" id="outbound_email_id" value="">');
+        selectFrom.parent().append(hiddenOutboundEmailId);
+
+
+
         $.ajax({
           "url": 'index.php?module=Emails&action=getFromFields'
         }).done(function (response) {
           var json = JSON.parse(response);
           if (typeof json.data !== "undefined") {
+            var optionGroups = {
+              InboundEmail: {
+                label: 'LBL_INBOUND_ACCOUNT',
+                options: []
+              },
+              OutboundEmailAccount: {
+                label: 'LBL_OUTBOUND_ACCOUNT',
+                options: []
+              },
+              system: {
+                label: 'LBL_SYSTEM_ACCOUNT',
+                options: []
+              },
+              personal: {
+                label: 'LBL_FROM_SYSTEM',
+                options: []
+              },
+            };
+
             $(json.data).each(function (i, v) {
               var selectOption = $('<option></option>');
               selectOption.attr('value', v.attributes.from);
-              selectOption.attr('inboundId', v.id);
-              selectOption.attr('infos', '(<b>Reply-to:</b> ' + v.attributes.reply_to + ', <b>From:</b> ' + v.attributes.from + ')');
-              selectOption.html(v.attributes.name);
-              selectOption.appendTo(selectFrom);
 
+              var entryType = v.type || '';
+              var entryLabel = self.getFromEntryLabel(v);
+
+              if (entryType === 'OutboundEmailAccount' || entryType === 'system') {
+                selectOption.attr('data-outbound-email-id', v.id);
+              } else {
+                selectOption.attr('inboundId', v.id);
+              }
+
+              var fromName = v.attributes.name;
+              if (!fromName) {
+                fromName = v.attributes.from;
+              }
+
+              selectOption.attr('infos', '(<b>Reply-to:</b> ' + v.attributes.reply_to + ' , <b>Reply-to Name:</b> ' + v.attributes.reply_to_name + ' , <b>From:</b> ' + v.attributes.from + ', <b>From Name:</b> ' + v.attributes.name + ')');
+              selectOption.attr('data-from-name', fromName);
+              selectOption.attr('data-from-address', v.attributes.from);
+              selectOption.attr('data-reply-to-name', v.attributes.reply_to_name);
+              selectOption.attr('data-reply-to-address', v.attributes.reply_to);
+              selectOption.attr('data-type', v.type);
+              selectOption.attr('label', entryLabel);
+              selectOption.html(entryLabel);
+              optionGroups[entryType].options.push(selectOption);
+
+              selectOption.attr('data-email-signature-id', v.id);
               // include signature for account
               $('<textarea></textarea>')
                 .val(v.emailSignatures.html)
                 .addClass('email-signature')
                 .addClass('html')
                 .addClass('hidden')
-                .attr('data-inbound-email-id', v.id)
+                .attr('data-email-signature-id', v.id)
                 .appendTo(self);
 
               $('<textarea></textarea>')
@@ -1096,14 +1219,32 @@
                 .addClass('email-signature')
                 .addClass('plain')
                 .addClass('hidden')
-                .attr('data-inbound-email-id', v.id)
+                .attr('data-email-signature-id', v.id)
                 .appendTo(self);
 
               if (typeof v.prepend !== "undefined" && v.prepend === true) {
                 self.prependSignature = true;
               }
-              self.updateSignature();
+
             });
+
+            Object.keys(optionGroups).forEach(function (type) {
+              var optionGroup = optionGroups[type];
+
+              if (!optionGroup || !optionGroup.options || !optionGroup.options.length) {
+                return;
+              }
+
+              var $optionGroup = $('<optgroup>', {
+                label: SUGAR.language.translate('', optionGroup.label)
+              });
+
+              optionGroup.options.forEach(function (option) {
+                selectFrom.append(option);
+              });
+            });
+
+            self.updateOutboundEmailId(selectFrom);
 
             var selectedInboundEmail = $(self).find('[name=inbound_email_id]').val();
             var selectInboundEmailOption = $(selectFrom).find('[inboundid="' + selectedInboundEmail + '"]');
@@ -1111,16 +1252,62 @@
               $(selectFrom).val(selectInboundEmailOption.val());
             }
 
+
+            $.widget( "custom.emailselectmenu", $.ui.selectmenu, {
+              _renderItem: function( ul, item ) {
+
+                var $option = item.element;
+                var fromName = $option.attr('data-from-name');
+                var fromAddress = $option.attr('data-from-address');
+
+                var $info = $('<div>', {
+                  class: 'compose-from-email-account'
+                });
+                $info.append("<div class='compose-from-email-address-name'><span>" + fromName + "</span></div>");
+                $info.append("<div class='compose-from-email-address-from'><span class='small'>&lt;" + fromAddress + "&gt;</span></div>");
+
+                return $( "<li>" )
+                  .append($info)
+                  .appendTo( ul );
+              }
+            });
+
+            $( selectFrom ).emailselectmenu({
+              change: function( event, ui ) {
+                self.onFromSelect(selectFrom, ui);
+              },
+              select: function( event, ui ) {
+                self.onFromSelect(selectFrom, ui);
+              },
+              appendTo: selectFrom.parent(),
+              'max-width': '200px'
+            });
+
             $(selectFrom).change(function (e) {
-              $(self).find('[name=inbound_email_id]').val($(this).find('option:selected').attr('inboundId'));
+
+              var newlySelected = selectFrom.find('option:selected');
+              var entryType = newlySelected.attr('data-type') || '';
+
+              $('#outbound_email_id').val('');
+              if (entryType === 'OutboundEmailAccount' || entryType === 'system') {
+                self.updateOutboundEmailId(selectFrom);
+              } else {
+                $(self).find('[name=inbound_email_id]').val($(this).find('option:selected').attr('inboundId'));
+              }
+
               self.updateSignature();
-              self.updateFromInfos();
             });
 
             $(self).trigger('emailComposeViewGetFromFields');
-            
-            self.updateFromInfos();
 
+
+            if (tinymce.initialized === true) {
+              self.updateSignature();
+            } else if(tinymce.EditorManager && tinymce.EditorManager.activeEditor) {
+              tinymce.EditorManager.activeEditor.on('init', function(e) {
+                self.updateSignature();
+              });
+            }
           }
 
           if ($(self).find('#is_only_plain_text').length === 1) {

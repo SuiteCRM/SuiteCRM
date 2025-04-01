@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class MailMerge
 {
     public $mm_data_dir;
@@ -66,8 +67,8 @@ class MailMerge
     public function Execute()
     {
         $this->Initialize();
-        if (count($this->list) > 0) {
-            if (isset($this->template)) {
+        if ((is_countable($this->list) ? count($this->list) : 0) > 0) {
+            if ($this->template !== null) {
                 $this->CreateHeaderFile();
                 $this->CreateDataSource();
                 $file = $this->CreateDocument($this->template);
@@ -143,9 +144,9 @@ class MailMerge
 
     public function Initialize()
     {
-        $this->rowcnt = count($this->list);
-        $this->fieldcnt = count($this->fieldList);
-        $this->obj = new COM("word.application") or die("Unable to instanciate Word");
+        $this->rowcnt = is_countable($this->list) ? count($this->list) : 0;
+        $this->fieldcnt = is_countable($this->fieldList) ? count($this->fieldList) : 0;
+        ($this->obj = new COM("word.application")) || die("Unable to instanciate Word");
         $this->obj->Visible = $this->visible;
 
         //try to make the temp dir

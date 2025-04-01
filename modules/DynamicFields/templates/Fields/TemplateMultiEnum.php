@@ -45,6 +45,8 @@ require_once('modules/DynamicFields/templates/Fields/TemplateEnum.php');
 require_once('include/utils/array_utils.php');
 class TemplateMultiEnum extends TemplateEnum
 {
+    public $options;
+    public $no_default;
     public $type = 'text';
 
     public function get_html_edit()
@@ -57,6 +59,9 @@ class TemplateMultiEnum extends TemplateEnum
 
     public function get_xtpl_edit()
     {
+        global $app_list_strings;
+
+        $returnXTPL = [];
         $name = $this->name;
         $value = '';
         if (isset($this->bean->$name)) {
@@ -70,10 +75,7 @@ class TemplateMultiEnum extends TemplateEnum
             $returnXTPL[strtoupper($this->name . '_help')] = translate($this->help, $this->bean->module_dir);
         }
 
-        global $app_list_strings;
-        $returnXTPL = array();
-
-        $returnXTPL[strtoupper($this->name)] = str_replace('^,^', ',', $value);
+        $returnXTPL[strtoupper($this->name)] = str_replace('^,^', ',', (string) $value);
         if (empty($this->ext1)) {
             $this->ext1 = $this->options;
         }
@@ -161,10 +163,10 @@ class TemplateMultiEnum extends TemplateEnum
             if (is_array($this->default)) {
                 $this->default = encodeMultienumValue($this->default);
             }
-            $this->ext4 = (isset($this->dependency)) ? serialize(array( 'default' => $this->default , 'dependency' => html_entity_decode($this->dependency) ))  : $this->default ;
+            $this->ext4 = (isset($this->dependency)) ? serialize(array( 'default' => $this->default , 'dependency' => html_entity_decode((string) $this->dependency) ))  : $this->default ;
         } else {
             if (isset($this->dependency)) {
-                $this->ext4 = serialize(array( 'dependency' => html_entity_decode($this->dependency) )) ;
+                $this->ext4 = serialize(array( 'dependency' => html_entity_decode((string) $this->dependency) )) ;
             }
         }
         parent::save($df);

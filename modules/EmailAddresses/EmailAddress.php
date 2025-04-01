@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Stub class, exists only to allow Link class easily use the SugarEmailAddress class
  */
+#[\AllowDynamicProperties]
 class EmailAddress extends SugarEmailAddress
 {
     /**

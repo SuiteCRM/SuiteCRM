@@ -46,6 +46,7 @@ require_once('include/connectors/sources/SourceFactory.php');
 require_once('include/connectors/ConnectorFactory.php');
 require_once('include/MVC/Controller/SugarController.php');
 
+#[\AllowDynamicProperties]
 class ConnectorsController extends SugarController
 {
     public $admin_actions = array('ConnectorSettings', 'DisplayProperties', 'MappingProperties', 'ModifyMapping', 'ModifyDisplay', 'ModifyProperties',
@@ -85,6 +86,10 @@ class ConnectorsController extends SugarController
 
         $search_source = $_REQUEST['source_id'];
         $source_instance = ConnectorFactory::getInstance($search_source);
+
+        if ($source_instance === null) {
+            return;
+        }
         $source_map = $source_instance->getModuleMapping($merge_module);
         $module_fields = array();
         foreach ($_REQUEST as $search_term => $val) {
@@ -114,6 +119,7 @@ class ConnectorsController extends SugarController
      */
     public function action_RetrieveSourceDetails()
     {
+        $results = [];
         $this->view = 'ajax';
         $source_id = $_REQUEST['source_id'];
         $record_id = $_REQUEST['record_id'];
@@ -141,8 +147,8 @@ class ConnectorsController extends SugarController
 
             $val = $result->$field;
             if (!empty($val)) {
-                if (strlen($val) > 50) {
-                    $val = substr($val, 0, 47) . '...';
+                if (strlen((string) $val) > 50) {
+                    $val = substr((string) $val, 0, 47) . '...';
                 }
                 $str .= $label . ': ' .  $val.'<br/>';
             }
@@ -267,32 +273,6 @@ class ConnectorsController extends SugarController
     public function action_CallRest()
     {
         $this->view = 'ajax';
-
-        $url = $_REQUEST['url'];
-
-        if (!preg_match('/^http[s]{0,1}\:\/\//', $url)) {
-            throw new RuntimeException('Illegal request');
-        }
-
-        if (!$this->remoteFileExists($url)) {
-            throw new RuntimeException('Requested URL is not exists.');
-        }
-
-
-        if (false === ($result = @file_get_contents($_REQUEST['url']))) {
-            echo '';
-        } else {
-            if (!empty($_REQUEST['xml'])) {
-                $values = array();
-                $p = xml_parser_create();
-                xml_parse_into_struct($p, $result, $values);
-                xml_parser_free($p);
-                $json = getJSONobj();
-                echo $json->encode($values);
-            } else {
-                echo $result;
-            }
-        }
     }
 
     public function action_CallSoap()
@@ -520,7 +500,7 @@ class ConnectorsController extends SugarController
             if (empty($sources_modules[$source])) {
                 //Now write the new mapping entry to the custom folder
                 $dir = $connectors[$id]['directory'];
-                if (!preg_match('/^custom\//', $dir)) {
+                if (!preg_match('/^custom\//', (string) $dir)) {
                     $dir = 'custom/' . $dir;
                 }
 
@@ -591,7 +571,7 @@ class ConnectorsController extends SugarController
 
             //Now write the new mapping entry to the custom folder
             $dir = $connectors[$id]['directory'];
-            if (!preg_match('/^custom\//', $dir)) {
+            if (!preg_match('/^custom\//', (string) $dir)) {
                 $dir = 'custom/' . $dir;
             }
 
@@ -673,7 +653,7 @@ class ConnectorsController extends SugarController
 
             //Now write the new mapping entry to the custom folder
             $dir = $source_entries[$id]['directory'];
-            if (!preg_match('/^custom\//', $dir)) {
+            if (!preg_match('/^custom\//', (string) $dir)) {
                 $dir = 'custom/' . $dir;
             }
 
@@ -770,6 +750,7 @@ class ConnectorsController extends SugarController
                 )
         );
 
+        $layout = [];
         $layout[$module] = $field_name;
 
         require_once('ModuleInstall/ModuleInstaller.php');

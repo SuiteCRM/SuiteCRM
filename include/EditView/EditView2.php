@@ -50,6 +50,7 @@ require_once('include/EditView/SugarVCR.php');
  * New EditView
  * @api
  */
+#[\AllowDynamicProperties]
 class EditView
 {
     /**
@@ -274,7 +275,7 @@ class EditView
                 $error = str_replace(
                     '[file]',
                     "modules/$this->module/metadata/$metadataFileName.php",
-                    $app_strings['ERR_CANNOT_CREATE_METADATA_FILE']
+                    (string) $app_strings['ERR_CANNOT_CREATE_METADATA_FILE']
                 );
                 $GLOBALS['log']->fatal($error);
                 echo $error;
@@ -403,7 +404,7 @@ class EditView
 
         $this->sectionPanels = array();
         $this->sectionLabels = array();
-        if (!empty($this->defs['panels']) && count($this->defs['panels']) > 0) {
+        if (!empty($this->defs['panels']) && (is_countable($this->defs['panels']) ? count($this->defs['panels']) : 0) > 0) {
             $keys = array_keys($this->defs['panels']);
             if (is_numeric($keys[0])) {
                 $defaultPanel = $this->defs['panels'];
@@ -428,7 +429,7 @@ class EditView
                 $this->sectionPanels[strtoupper($key)] = $p;
             } else {
                 foreach ($p as $row => $rowDef) {
-                    $columnsInRows = count($rowDef);
+                    $columnsInRows = is_countable($rowDef) ? count($rowDef) : 0;
                     $columnsUsed = 0;
                     foreach ($rowDef as $col => $colDef) {
                         $panel[$row][$col] = is_array($p[$row][$col])
@@ -481,7 +482,7 @@ class EditView
     {
         $addFiller = true;
         foreach ($panel as $row) {
-            if (count($row) == $this->defs['templateMeta']['maxColumns']
+            if ((is_countable($row) ? count($row) : 0) == $this->defs['templateMeta']['maxColumns']
                 || 1 == count($panel)
             ) {
                 $addFiller = false;
@@ -491,7 +492,7 @@ class EditView
 
         if ($addFiller) {
             $rowCount = count($panel);
-            $filler = count($panel[$rowCount - 1]);
+            $filler = is_countable($panel[$rowCount - 1]) ? count($panel[$rowCount - 1]) : 0;
             while ($filler < $this->defs['templateMeta']['maxColumns']) {
                 $panel[$rowCount - 1][$filler++] = array('field' => array('name' => ''));
             }
@@ -523,7 +524,7 @@ class EditView
         }
 
         if (isset($_REQUEST['offset'])) {
-            $this->offset = $_REQUEST['offset'] - 1;
+            $this->offset = (int)$_REQUEST['offset'] - 1;
         }
 
         if ($this->showVCRControl) {
@@ -589,7 +590,7 @@ class EditView
                 foreach (array("formula", "default", "comments", "help") as $toEscape) {
                     if (!empty($this->fieldDefs[$name][$toEscape])) {
                         $this->fieldDefs[$name][$toEscape] = htmlentities(
-                            $this->fieldDefs[$name][$toEscape],
+                            (string) $this->fieldDefs[$name][$toEscape],
                             ENT_QUOTES,
                             'UTF-8'
                         );
@@ -886,12 +887,12 @@ class EditView
 
         $date_format = $timedate->get_cal_date_format();
         $time_separator = ':';
-        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
             $time_separator = $match[1];
         }
 
         // Create Smarty variables for the Calendar picker widget
-        $t23 = strpos($time_format, '23') !== false ? '%H' : '%I';
+        $t23 = strpos((string) $time_format, '23') !== false ? '%H' : '%I';
         if (!isset($match[2]) || empty($match[2])) {
             $this->th->ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . '%M');
         } else {
@@ -933,11 +934,11 @@ class EditView
             $ajaxSave,
             $this->defs
         );
-        /* BEGIN - SECURITY GROUPS */ 
+        /* BEGIN - SECURITY GROUPS */
         //if popup select add panel if user is a member of multiple groups to metadataFile
         global $sugar_config;
         if(isset($sugar_config['securitysuite_popup_select']) && $sugar_config['securitysuite_popup_select'] == true
-            && (empty($this->focus->fetched_row['id']) || $_REQUEST['isDuplicate'] == true) && $this->focus->module_dir != "Users" && $this->focus->module_dir != "SugarFeed") {
+            && (empty($this->focus->fetched_row['id']) || ($_REQUEST['isDuplicate'] ?? false) === true) && $this->focus->module_dir != "Users" && $this->focus->module_dir != "SugarFeed") {
 
             //there are cases such as uploading an attachment to an email template where the request module may
             //not be the same as the current bean module. If that happens we can just skip it
@@ -946,7 +947,7 @@ class EditView
 
             require_once('modules/SecurityGroups/SecurityGroup.php');
             $security_modules = SecurityGroup::getSecurityModules();
-            if(in_array($this->focus->module_dir,array_keys($security_modules))) {
+            if(array_key_exists($this->focus->module_dir,$security_modules)) {
                 global $current_user;
 
                 $group_count = SecurityGroup::getMembershipCount($current_user->id);
@@ -964,8 +965,8 @@ class EditView
                     }
                     //multilingual support
                     global $current_language;
-                    $ss_mod_strings = return_module_language($current_language, 'SecurityGroups');  
-                    
+                    $ss_mod_strings = return_module_language($current_language, 'SecurityGroups');
+
                     $lbl_securitygroups_select = $ss_mod_strings['LBL_GROUP_SELECT'];
                     $lbl_securitygroups = $ss_mod_strings['LBL_LIST_FORM_TITLE'];
 
@@ -975,10 +976,10 @@ class EditView
                     $smarty->assign('SECURITY_GROUP_OPTIONS', $group_options);
                     $smarty->assign('SECURITY_GROUP_COUNT', $group_count);
                     $group_panel = $smarty->fetch('include/EditView/SecurityGroups.tpl');
-                    $group_panel = preg_replace("/[\r\n]+/", '', $group_panel);
+                    $group_panel = preg_replace("/[\r\n]+/", '', (string) $group_panel);
                     $group_panel_append = <<<EOQ
     <script>
-        $('#${form_name}_tabs .panel-content').append($('${group_panel}'));
+        $('#{$form_name}_tabs .panel-content').append($('{$group_panel}'));
     </script>
 EOQ;
                     $str .= $group_panel_append;

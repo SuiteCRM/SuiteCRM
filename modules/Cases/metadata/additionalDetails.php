@@ -56,15 +56,15 @@ function additionalDetailsaCase($fields)
     $overlib_string = '';
         
     if (!empty($fields['DESCRIPTION'])) {
-        $overlib_string .= '<b>'. $mod_strings['LBL_DESCRIPTION'] . '</b> ' . substr($fields['DESCRIPTION'], 0, 300);
-        if (strlen($fields['DESCRIPTION']) > 300) {
+        $overlib_string .= '<b>'. $mod_strings['LBL_DESCRIPTION'] . '</b> ' . substr((string) $fields['DESCRIPTION'], 0, 300);
+        if (strlen((string) $fields['DESCRIPTION']) > 300) {
             $overlib_string .= '...';
         }
         $overlib_string .= '<br>';
     }
     if (!empty($fields['RESOLUTION'])) {
-        $overlib_string .= '<b>'. $mod_strings['LBL_RESOLUTION'] . '</b> ' . substr($fields['RESOLUTION'], 0, 300);
-        if (strlen($fields['RESOLUTION']) > 300) {
+        $overlib_string .= '<b>'. $mod_strings['LBL_RESOLUTION'] . '</b> ' . substr((string) $fields['RESOLUTION'], 0, 300);
+        if (strlen((string) $fields['RESOLUTION']) > 300) {
             $overlib_string .= '...';
         }
     }

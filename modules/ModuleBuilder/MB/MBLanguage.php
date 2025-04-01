@@ -38,6 +38,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class MBLanguage
 {
     public $iTemplates = array();
@@ -58,6 +59,8 @@ class MBLanguage
 
     public function loadStrings($file)
     {
+        global $mod_strings;
+        $mod_strings = $mod_strings ?? [];
         $module = strtoupper($this->name);
         $object_name = strtoupper($this->key_name);
         $_object_name = strtolower($this->name);
@@ -80,6 +83,8 @@ class MBLanguage
 
     public function loadAppListStrings($file)
     {
+        global $app_list_strings;
+        $app_list_strings = $app_list_strings ?? [];
         if (!file_exists($file)) {
             return;
         }
@@ -104,6 +109,7 @@ class MBLanguage
     {
         $this->strings = array();
         $this->loadTemplates();
+        $current_mod_strings = $GLOBALS['mod_strings'];
 
         foreach ($this->iTemplates as $template=>$val) {
             $file = MB_IMPLEMENTS . '/' . $template . '/language';
@@ -114,6 +120,9 @@ class MBLanguage
             $this->loadStrings($file);
         }
         $this->loadStrings($this->path . '/language');
+
+        //reset global mod_string to prevent conflicts with Module Builder modules 
+        $GLOBALS['mod_strings'] = $current_mod_strings;
     }
 
     public function getModStrings($language='en_us')
@@ -168,7 +177,7 @@ class MBLanguage
         foreach ($this->strings as $lang=>$values) {
             //Check if the module Label has changed.
             $renameLang = $rename || empty($values) || (isset($values['LBL_MODULE_NAME']) && $this->label != $values['LBL_MODULE_NAME']);
-            $mod_strings = return_module_language(str_replace('.lang.php', '', $lang), 'ModuleBuilder');
+            $mod_strings = return_module_language(str_replace('.lang.php', '', (string) $lang), 'ModuleBuilder');
             $required = array(
                 'LBL_LIST_FORM_TITLE'=>$this->label . " " . $mod_strings['LBL_LIST'],
                 'LBL_MODULE_NAME'=>$this->label,
@@ -223,10 +232,10 @@ class MBLanguage
                 }
                 $okey = $key;
                 if ($key_changed) {
-                    $key = str_replace($this->key_name, $key_name, $key);
+                    $key = str_replace($this->key_name, $key_name, (string) $key);
                 }
                 if ($key_changed) {
-                    $key = str_replace(strtolower($this->key_name), strtolower($key_name), $key);
+                    $key = str_replace(strtolower($this->key_name), strtolower($key_name), (string) $key);
                 }
                 // if we aren't duplicating or the key has changed let's add it
                 if (!$duplicate || $okey != $key) {
@@ -267,6 +276,7 @@ class MBLanguage
     {
         if (empty($this->templates)) {
             if (file_exists("$this->path/config.php")) {
+                $config = [];
                 include "$this->path/config.php";
                 $this->templates = $config['templates'];
                 $this->iTemplates = array();

@@ -40,6 +40,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class ACLRolesViewList extends ViewList
 {
     public function preDisplay()

@@ -97,7 +97,7 @@ function to_html($string, $encode=true)
 
     if ($encode && is_string($string)) {
         if (is_array($toHTML)) {
-            $string = str_ireplace($GLOBALS['toHTML_keys'], $GLOBALS['toHTML_values'], $string);
+            $string = str_ireplace($GLOBALS['toHTML_keys'], $GLOBALS['toHTML_values'] ?? [], $string);
         } else {
             $string = htmlentities($string, ENT_HTML401|ENT_QUOTES, 'UTF-8');
         }
@@ -115,6 +115,10 @@ function to_html($string, $encode=true)
  */
 function from_html($string, $encode=true)
 {
+    if ($string === null || is_array($string)){
+        return '';
+    }
+
     if (!is_string($string) || !$encode) {
         return $string;
     }
@@ -129,12 +133,12 @@ function from_html($string, $encode=true)
     }
 
     // Bug 36261 - Decode &amp; so we can handle double encoded entities
-    $string = html_entity_decode($string, ENT_HTML401|ENT_QUOTES, 'UTF-8');
+    $string = html_entity_decode($string, ENT_HTML401|ENT_QUOTES, 'UTF-8') ?? '';
 
     if (!isset($cache[$string])) {
-        $cache[$string] = str_ireplace($toHTML_values, $toHTML_keys, $string);
+        $cache[$string] = str_ireplace($toHTML_values ?? '', $toHTML_keys ?? '', $string);
     }
-    return $cache[$string];
+    return $cache[$string] ?? '';
 }
 
 /*

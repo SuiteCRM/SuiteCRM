@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'modules/SchedulersJobs/SchedulersJob.php';
 
+#[\AllowDynamicProperties]
 class Scheduler extends SugarBean
 {
     // table columns
@@ -194,7 +195,7 @@ class Scheduler extends SugarBean
     {
         $allSchedulers = $this->get_full_list('', "schedulers.status='Active' AND NOT EXISTS(SELECT id FROM {$this->job_queue_table} WHERE scheduler_id=schedulers.id AND status!='" . SchedulersJob::JOB_STATUS_DONE . "')");
 
-        $GLOBALS['log']->info('-----> Scheduler found [ ' . count($allSchedulers) . ' ] ACTIVE jobs');
+        $GLOBALS['log']->info('-----> Scheduler found [ ' . (is_countable($allSchedulers) ? count($allSchedulers) : 0) . ' ] ACTIVE jobs');
 
         if (!empty($allSchedulers)) {
             foreach ($allSchedulers as $focus) {
@@ -225,7 +226,7 @@ class Scheduler extends SugarBean
         $GLOBALS['log']->debug('----->Schedulers->deriveDBDateTimes() got an object of type: ' . $focus->object_name);
         /* [min][hr][dates][mon][days] */
         $dateTimes = array();
-        $ints    = explode('::', str_replace(' ', '', $focus->job_interval));
+        $ints    = explode('::', str_replace(' ', '', (string) $focus->job_interval));
         $days    = $ints[4];
         $mons    = $ints[3];
         $dates   = $ints[2];
@@ -552,13 +553,13 @@ class Scheduler extends SugarBean
                 if ($value == '0') {
                     //return;
                     return trim($mod_strings['LBL_ON_THE']) . $mod_strings['LBL_HOUR_SING'];
-                } elseif (!preg_match('/[^0-9]/', $hours) && !preg_match('/[^0-9]/', $value)) {
+                } elseif (!preg_match('/[^0-9]/', (string) $hours) && !preg_match('/[^0-9]/', (string) $value)) {
                     return;
-                } elseif (preg_match('/\*\//', $value)) {
-                    $value = str_replace('*/', '', $value);
+                } elseif (preg_match('/\*\//', (string) $value)) {
+                    $value = str_replace('*/', '', (string) $value);
 
                     return $value . $mod_strings['LBL_MINUTES'];
-                } elseif (!preg_match('[^0-9]', $value)) {
+                } elseif (!preg_match('[^0-9]', (string) $value)) {
                     return $mod_strings['LBL_ON_THE'] . $value . $mod_strings['LBL_MIN_MARK'];
                 }
 
@@ -566,13 +567,13 @@ class Scheduler extends SugarBean
 
             case 1: // hours
                 global $current_user;
-                if (preg_match('/\*\//', $value)) { // every [SOME INTERVAL] hours
-                    $value = str_replace('*/', '', $value);
+                if (preg_match('/\*\//', (string) $value)) { // every [SOME INTERVAL] hours
+                    $value = str_replace('*/', '', (string) $value);
 
                     return $value . $mod_strings['LBL_HOUR'];
                 } elseif (preg_match(
                     '/[^0-9]/',
-                    $mins
+                    (string) $mins
                 )) { // got a range, or multiple of mins, so we return an 'Hours' label
                     return $value;
                 }    // got a "minutes" setting, so it will be at some o'clock.
@@ -581,7 +582,7 @@ class Scheduler extends SugarBean
                 return date($datef['time'], strtotime($value . ':' . str_pad($mins, 2, '0', STR_PAD_LEFT)));
 
             case 2: // day of month
-                if (preg_match('/\*/', $value)) {
+                if (preg_match('/\*/', (string) $value)) {
                     return $value;
                 }
 
@@ -610,13 +611,13 @@ class Scheduler extends SugarBean
         $iteration = '';
 
         foreach ($ints['raw'] as $key => $interval) {
-            if ($tempInt != $iteration) {
+            if ($tempInt !== $iteration) {
                 $tempInt .= '; ';
             }
             $iteration = $tempInt;
 
             if ($interval != '*' && $interval != '*/1') {
-                if (false !== strpos($interval, ',')) {
+                if (false !== strpos((string) $interval, ',')) {
                     $exIndiv = explode(',', $interval);
                     foreach ($exIndiv as $val) {
                         if (false !== strpos($val, '-')) {
@@ -627,25 +628,25 @@ class Scheduler extends SugarBean
                                 }
                                 $tempInt .= $this->handleIntervalType($key, $valRange, $ints['raw'][0], $ints['raw'][1]);
                             }
-                        } elseif ($tempInt != $iteration) {
+                        } elseif ($tempInt !== $iteration) {
                             $tempInt .= $mod_strings['LBL_AND'];
                         }
                         $tempInt .= $this->handleIntervalType($key, $val, $ints['raw'][0], $ints['raw'][1]);
                     }
-                } elseif (false !== strpos($interval, '-')) {
+                } elseif (false !== strpos((string) $interval, '-')) {
                     $exRange = explode('-', $interval);
                     $tempInt .= $mod_strings['LBL_FROM'];
                     $check = $tempInt;
 
                     foreach ($exRange as $val) {
-                        if ($tempInt == $check) {
+                        if ($tempInt === $check) {
                             $tempInt .= $this->handleIntervalType($key, $val, $ints['raw'][0], $ints['raw'][1]);
                             $tempInt .= $mod_strings['LBL_RANGE'];
                         } else {
                             $tempInt .= $this->handleIntervalType($key, $val, $ints['raw'][0], $ints['raw'][1]);
                         }
                     }
-                } elseif (false !== strpos($interval, '*/')) {
+                } elseif (false !== strpos((string) $interval, '*/')) {
                     $tempInt .= $mod_strings['LBL_EVERY'];
                     $tempInt .= $this->handleIntervalType($key, $interval, $ints['raw'][0], $ints['raw'][1]);
                 } else {
@@ -752,13 +753,13 @@ class Scheduler extends SugarBean
         }
         if (is_windows()) {
             if (isset($_SERVER['Path']) && !empty($_SERVER['Path'])) { // IIS IUSR_xxx may not have access to Path or it is not set
-                if (!strpos($_SERVER['Path'], 'php')) {
+                if (!strpos((string) $_SERVER['Path'], 'php')) {
                     // $error = '<em>'.$mod_strings['LBL_NO_PHP_CLI'].'</em>';
                 }
             }
         } else {
             if (isset($_SERVER['Path']) && !empty($_SERVER['Path'])) { // some Linux servers do not make this available
-                if (!strpos($_SERVER['PATH'], 'php')) {
+                if (!strpos((string) $_SERVER['PATH'], 'php')) {
                     // $error = '<em>'.$mod_strings['LBL_NO_PHP_CLI'].'</em>';
                 }
             }
@@ -987,6 +988,18 @@ class Scheduler extends SugarBean
         $sched16->modified_user_id = '1';
         $sched16->catch_up = '0';
         $sched16->save();
+
+        $sched17 = new Scheduler;
+        $sched17->name = $mod_strings['LBL_OOTB_ELASTIC_INDEX'];
+        $sched17->job = 'function::runElasticSearchIndexerScheduler';
+        $sched17->date_time_start = create_date(2015, 1, 1) . ' ' . create_time(0, 0, 1);
+        $sched17->date_time_end = null;
+        $sched17->job_interval = '30::4::*::*::*';
+        $sched17->status = 'Active';
+        $sched17->created_by = '1';
+        $sched17->modified_user_id = '1';
+        $sched17->catch_up = '0';
+        $sched17->save();
     }
 
     ////	END SCHEDULER HELPER FUNCTIONS

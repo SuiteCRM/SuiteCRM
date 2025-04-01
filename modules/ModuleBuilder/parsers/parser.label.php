@@ -48,6 +48,7 @@ require_once 'modules/ModuleBuilder/parsers/ModuleBuilderParser.php';
 /**
  * Class ParserLabel
  */
+#[\AllowDynamicProperties]
 class ParserLabel
 {
     /**
@@ -126,6 +127,7 @@ class ParserLabel
      */
     public static function removeLabel($language, $label, $labelvalue, $moduleName, $basepath = null, $forRelationshipLabel = false)
     {
+        $deployedModule = false;
         static::setLogger();
 
         static::$logger->debug("ParserLabel::removeLabels($language, \$label, \$labelvalue, $moduleName, $basepath );");
@@ -230,7 +232,7 @@ class ParserLabel
                 include $filename;
             } elseif ($forRelationshipLabel) {
                 $fh = fopen($filename, 'ab');
-                fclose($fh);
+                sugar_fclose($fh);
             }
         } else {
             return false;
@@ -310,7 +312,7 @@ class ParserLabel
                 try {
                     $file_contents = fopen($extension_filename, 'wb');
                     fwrite($file_contents, $out, strlen($out));
-                    fclose($file_contents);
+                    sugar_fclose($file_contents);
                 } catch (Exception $e) {
                     static::$logger->fatal("Could not write $filename");
                     static::$logger->fatal('Exception '.$e->getMessage());
@@ -357,7 +359,7 @@ class ParserLabel
                 try {
                     $file_contents = fopen($relationships_filename, 'wb');
                     fwrite($file_contents, $out, strlen($out));
-                    fclose($file_contents);
+                    sugar_fclose($file_contents);
                 } catch (Exception $e) {
                     static::$logger->fatal("Could not write $filename");
                     static::$logger->fatal('Exception '.$e->getMessage());

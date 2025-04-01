@@ -38,6 +38,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class SugarAutoLoader
 {
     public static $map = array(
@@ -105,14 +106,14 @@ class SugarAutoLoader
     protected static function getFilenameForViewClass($class)
     {
         $module = false;
-        if (!empty($_REQUEST['module']) && substr($class, 0, strlen($_REQUEST['module'])) == $_REQUEST['module']) {
+        if (!empty($_REQUEST['module']) && substr((string) $class, 0, strlen((string) $_REQUEST['module'])) == $_REQUEST['module']) {
             //This is a module view
             $module = $_REQUEST['module'];
-            $class = substr($class, strlen($module));
+            $class = substr((string) $class, strlen((string) $module));
         }
 
-        if (substr($class, 0, 4) == 'View') {
-            $view = strtolower(substr($class, 4));
+        if (substr((string) $class, 0, 4) == 'View') {
+            $view = strtolower(substr((string) $class, 4));
             if ($module) {
                 $modulepath = "modules/$module/views/view.$view.php";
                 if (file_exists("custom/$modulepath")) {
@@ -150,10 +151,10 @@ class SugarAutoLoader
     protected static function getFilenameForSugarWidget($class)
     {
         //Only bother to check if the class name starts with SugarWidget
-        if (strpos($class, 'SugarWidget') !== false) {
-            if (strpos($class, 'SugarWidgetField') !== false) {
+        if (strpos((string) $class, 'SugarWidget') !== false) {
+            if (strpos((string) $class, 'SugarWidgetField') !== false) {
                 //We need to lowercase the portion after SugarWidgetField
-                $name = substr($class, 16);
+                $name = substr((string) $class, 16);
                 if (!empty($name)) {
                     $class = 'SugarWidgetField'.strtolower($name);
                 }

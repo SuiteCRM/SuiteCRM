@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Import/views/ImportView.php');
         
+#[\AllowDynamicProperties]
 class ImportViewUndo extends ImportView
 {
     protected $pageTitleKey = 'LBL_UNDO_LAST_IMPORT';

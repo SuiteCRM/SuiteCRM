@@ -48,6 +48,7 @@ use SuiteCRM\Exception\Exception;
  * Class ByIdFilter
  * @package SuiteCRM\API\JsonApi\v1\Filters\Interpreters\ByIdFilters
  */
+#[\AllowDynamicProperties]
 class ByIdFilter implements ByIdFilterInterpreter
 {
     /** @var ContainerInterface $containers */

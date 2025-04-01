@@ -44,6 +44,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $id = '', $alt_type = '', $currency_id = '')
 {
+    $focus = null;
+    $vardefFields = [];
+    $parentfieldlist = [];
+    $displayParams = [];
+    $rel_value = '';
+
     global $current_language, $app_strings, $app_list_strings, $current_user, $beanFiles, $beanList;
 
     $bean = BeanFactory::getBean($module, $id);
@@ -133,7 +139,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
         }
 
         if (isset($vardef['help'])) {
-            $vardef['help'] = htmlspecialchars($vardef['help'],ENT_QUOTES);
+            $vardef['help'] = htmlspecialchars((string) $vardef['help'],ENT_QUOTES);
         }
 
         // load SugarFieldHandler to render the field tpl file
@@ -147,7 +153,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
         $contents = $sfh->displaySmarty('fields', $vardef, $view, $displayParams);
 
         // Remove all the copyright comments
-        $contents = preg_replace('/\{\*[^\}]*?\*\}/', '', $contents);
+        $contents = preg_replace('/\{\*[^\}]*?\*\}/', '', (string) $contents);
         // remove extra wrong javascript which breaks auto complete on flexi relationship parent fields
         $contents = preg_replace("/<script language=\"javascript\">if\(typeof sqs_objects == \'undefined\'\){var sqs_objects = new Array;}sqs_objects\[\'EditView_parent_name\'\].*?<\/script>/", "", $contents);
 
@@ -186,10 +192,10 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
     $ss->assign('TIME_FORMAT', $time_format);
     $time_separator = ":";
     $match = array();
-    if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+    if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
         $time_separator = $match[1];
     }
-    $t23 = strpos($time_format, '23') !== false ? '%H' : '%I';
+    $t23 = strpos((string) $time_format, '23') !== false ? '%H' : '%I';
     if (!isset($match[2]) || $match[2] == '') {
         $ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . "%M");
     } else {
@@ -232,7 +238,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
             $_REQUEST[$fieldname] = $value;
             $value = $function($focus, $fieldname, $value, $view);
 
-            $value = str_ireplace($fieldname, $aow_field, $value);
+            $value = str_ireplace((string) $fieldname, (string) $aow_field, (string) $value);
         }
     }
 
@@ -256,6 +262,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
     }
 
     if (isset($fieldlist[$fieldname]['id_name']) && $fieldlist[$fieldname]['id_name'] != '' && $fieldlist[$fieldname]['id_name'] != $fieldlist[$fieldname]['name']) {
+        $rel_value = '';
         if ($value) {
             $relateIdField = $fieldlist[$fieldname]['id_name'];
             $rel_value =  $bean->$relateIdField;
@@ -291,7 +298,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
             $sfh = new SugarFieldHandler();
         }
 
-        if ($currency_id != '' && !stripos($fieldname, '_USD')) {
+        if ($currency_id != '' && !stripos((string) $fieldname, '_USD')) {
             $userCurrencyId = $current_user->getPreference('currency');
             if ($currency_id != $userCurrencyId) {
                 $currency = BeanFactory::newBean('Currencies');
@@ -340,8 +347,8 @@ function saveField($field, $id, $module, $value)
                 $bean->fill_in_additional_parent_fields(); // get up to date parent info as need it to display name
             }
         } elseif ($bean->field_defs[$field]['type'] == "currency") {
-            if (stripos($field, 'usdollar')) {
-                $newfield = str_replace("_usdollar", "", $field);
+            if (stripos((string) $field, 'usdollar')) {
+                $newfield = str_replace("_usdollar", "", (string) $field);
                 $bean->$newfield = $value;
             } else {
                 $bean->$field = $value;
@@ -351,7 +358,7 @@ function saveField($field, $id, $module, $value)
             $bean->$field = $value;
             $bean->account_id = LeadFormBase::handleLeadAccountName($bean);
         // Fix #9408 Allow deleting an email address from inline Edit
-        } else if($bean->field_defs[$field]['function']['name']=='getEmailAddressWidget'){
+        } else if(($bean->field_defs[$field]['function']['name'] ?? '') == 'getEmailAddressWidget'){
             $bean->$field = empty($value) ? ' ' : $value;
         } else {
             $bean->$field = $value;
@@ -392,6 +399,8 @@ function saveField($field, $id, $module, $value)
 
 function getDisplayValue($bean, $field, $method = "save")
 {
+    $fieldlist = [];
+    $listViewDefs = [];
     global $log;
 
     if (file_exists("custom/modules/Accounts/metadata/listviewdefs.php")) {
@@ -425,6 +434,7 @@ function getDisplayValue($bean, $field, $method = "save")
 
 function formatDisplayValue($bean, $value, $vardef, $method = "save")
 {
+    $name = '';
     global $app_list_strings, $timedate, $current_user;
 
     //Fake the params so we can pass the values through the sugarwidgets to get the correct display html.
@@ -433,6 +443,7 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
     $_REQUEST['record'] = $bean->id;
     $vardef['fields']['ID'] = $bean->id;
     $vardef['fields'][strtoupper($vardef['name'])] = $value;
+    $vardef['ext2'] = '';
 
     // If field is of type email.
     if ($vardef['name'] == "email1" && $vardef['group'] == "email1") {
@@ -457,7 +468,7 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
         }
         if ($vardef['type'] == 'datetime' || $vardef['type'] == 'datetimecombo') {
             $datetime_format = $timedate->get_date_time_format($current_user);
-        } elseif ($vardef['type'] == 'date') {
+        } elseif ($vardef['type'] === 'date') {
             $datetime_format = $timedate->get_date_format($current_user);
         }
         // create utc date (as it's utc in db)
@@ -480,7 +491,7 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
 
     //if field is of type multienum.
     if ($vardef['type'] == "multienum") {
-        $value = str_replace("^", "", $value);
+        $value = str_replace("^", "", (string) $value);
 
         $array_values = explode(",", $value);
 
@@ -498,7 +509,7 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
     //if field is of type relate.
     if ($vardef['type'] == "relate" || $vardef['type'] == "parent") {
         if ($vardef['source'] == "non-db") {
-            if ($vardef['module'] == "Employees") {
+            if (($vardef['module'] ?? '') == "Employees") {
                 $vardef['ext2'] = "Users";
                 $vardef['rname'] = "full_name";
             }
@@ -519,12 +530,16 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
 
         //To fix github bug 880 (the rname was null and was causing a 500 error in the getFieldValueFromModule call to $fieldname
         $fieldName = 'name';//$vardef['name'];
-        if (!is_null($vardef['rname'])) {
+
+
+        if (!is_null($vardef['rname'] ?? null)) {
             $fieldName = $vardef['rname'];
         }
 
-        if ($vardef['ext2']) {
-            $value .= getFieldValueFromModule($fieldName, $vardef['ext2'], $record);
+        $ext2 = $vardef['ext2'] ?? '';
+
+        if (!empty($ext2)) {
+            $value .= getFieldValueFromModule($fieldName, $ext2, $record);
         } elseif (!empty($vardef['rname']) || $vardef['name'] == "related_doc_name") {
             $value .= getFieldValueFromModule($fieldName, $vardef['module'], $record);
         } else {
@@ -536,7 +551,7 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
         }
     }
     if ($vardef['type'] == "url") {
-        $link = (substr($value, 0, 7) == 'http://' || substr($value, 0, 8) == 'https://' ?
+        $link = (substr((string) $value, 0, 7) == 'http://' || substr((string) $value, 0, 8) == 'https://' ?
             $value : 'http://' . $value);
         $value = '<a href=' . $link . ' target="_blank">' . $value . '</a>';
     }

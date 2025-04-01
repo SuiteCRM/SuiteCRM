@@ -71,7 +71,7 @@ foreach ($_FILES as $k => $file) {
         $upload_file = new UploadFile($k);
         // check the file
         if ($upload_file->confirm_upload()) {
-            $dest = $cachedir.basename($upload_file->get_stored_file_name()); // target name
+            $dest = $cachedir.basename((string) $upload_file->get_stored_file_name()); // target name
             $guid = create_guid();
             if ($upload_file->final_move($guid)) { // move to uploads
                 $path = $upload_file->get_upload_path($guid);

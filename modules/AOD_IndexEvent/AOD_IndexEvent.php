@@ -47,6 +47,7 @@ require_once('modules/AOD_IndexEvent/AOD_IndexEvent_sugar.php');
  * @deprecated since v7.12.0
  * Class AOD_IndexEvent
  */
+#[\AllowDynamicProperties]
 class AOD_IndexEvent extends AOD_IndexEvent_sugar
 {
     /**

@@ -41,6 +41,7 @@ namespace SuiteCRM\Robo\Plugin\Commands;
 
 use Symfony\Component\Console\Input\InputOption;
 
+#[\AllowDynamicProperties]
 class TestRunCommands extends \Robo\Tasks
 {
     use \SuiteCRM\Robo\Traits\RoboTrait;

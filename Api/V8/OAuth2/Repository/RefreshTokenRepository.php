@@ -6,6 +6,7 @@ use Api\V8\OAuth2\Entity\RefreshTokenEntity;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
+#[\AllowDynamicProperties]
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
     /**

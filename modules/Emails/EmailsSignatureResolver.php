@@ -46,12 +46,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class EmailsSignatureResolver
 {
-    const ERR_HTML_AMBIGUOUS = 301;
-    const ERR_HTML_NONE = 302;
-    const ERR_PLAINTEXT_AMBIGUOUS = 303;
-    const ERR_PLAINTEXT_NONE = 304;
+    public const ERR_HTML_AMBIGUOUS = 301;
+    public const ERR_HTML_NONE = 302;
+    public const ERR_PLAINTEXT_AMBIGUOUS = 303;
+    public const ERR_PLAINTEXT_NONE = 304;
     
     /**
      *

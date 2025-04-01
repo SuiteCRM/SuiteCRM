@@ -45,6 +45,7 @@ use Psr\Log\LogLevel;
 use SuiteCRM\Enumerator\ExceptionCode;
 use \SuiteCRM\Exception\Exception;
 
+#[\AllowDynamicProperties]
 class OAuth2 extends Exception
 {
     /**

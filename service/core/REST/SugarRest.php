@@ -45,6 +45,7 @@ if (!defined('sugarEntry')) {
  * This class is a base class implementation of REST protocol
  * @api
  */
+ #[\AllowDynamicProperties]
  class SugarRest
  {
 

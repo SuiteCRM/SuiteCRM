@@ -70,7 +70,7 @@ if (empty($_REQUEST['track'])) {
 }
 $track = $db->quote($track);
 
-if (preg_match('/^[0-9A-Za-z\-]*$/', $track)) {
+if (preg_match('/^[0-9A-Za-z\-]*$/', (string) $track)) {
     $query = "SELECT refer_url FROM campaigns WHERE tracker_key='$track'";
     $res = $db->query($query);
 

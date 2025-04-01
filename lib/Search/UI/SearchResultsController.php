@@ -98,6 +98,7 @@ class SearchResultsController extends Controller
 
     public function display(): void
     {
+        global $app_strings;
         $headers = [];
 
         try {
@@ -138,6 +139,7 @@ class SearchResultsController extends Controller
         $smarty->assign('total', $total);
         $smarty->assign('headers', $headers);
         $smarty->assign('results', $this->results);
+        $smarty->assign('APP', $app_strings);
         try {
             $smarty->assign('resultsAsBean', $this->results->getHitsAsBeans());
         } catch (\SuiteCRM\Exception\Exception $e) {

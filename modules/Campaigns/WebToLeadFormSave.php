@@ -53,7 +53,7 @@ global $app_strings;
 
 //-----------begin replacing text input tags that have been marked with text area tags
 //get array of text areas strings to process
-$bodyHTML = html_entity_decode($_REQUEST['body_html'], ENT_QUOTES);
+$bodyHTML = html_entity_decode((string) $_REQUEST['body_html'], ENT_QUOTES);
 
 while (strpos($bodyHTML, "ta_replace") !== false) {
 
@@ -88,15 +88,15 @@ $SugarTiny =  new SugarTinyMCE();
 $html = $SugarTiny->cleanEncodedMCEHtml($bodyHTML);
 
 //Check to ensure we have <html> tags in the form. Without them, IE8 will attempt to display the page as XML.
-if (stripos($html, "<html") === false) {
+if (stripos((string) $html, "<html") === false) {
     $langHeader = get_language_header();
     $html = "<html {$langHeader}><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>" . $html . "</body></html>";
 }
 
-if (!mb_detect_encoding($str, 'UTF-8')) {
-    $html = utf8_encode($html);
+if (!mb_detect_encoding($html, 'UTF-8')) {
+    $html = mb_convert_encoding($html, 'UTF-8', 'ISO-8859-1');
 }
-$html = str_replace('Â', ' ', $html);
+$html = str_replace('Â', ' ', (string) $html);
 file_put_contents($form_file, $html);
 $html = htmlspecialchars($html, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 

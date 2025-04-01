@@ -41,6 +41,7 @@
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 require_once('modules/ModuleBuilder/MB/ModuleBuilder.php');
 
+#[\AllowDynamicProperties]
 class Viewdeletepackage extends SugarView
 {
     /**
@@ -64,7 +65,7 @@ class Viewdeletepackage extends SugarView
         $ajax->addSection(
             'center',
             $mod_strings['LBL_PACKAGE_DELETED'],
-            str_replace('[[package]]', $_REQUEST['package'], $mod_strings['LBL_PACKAGE_WAS_DELETED'])
+            str_replace('[[package]]', $_REQUEST['package'], (string) $mod_strings['LBL_PACKAGE_WAS_DELETED'])
         );
         echo $ajax->getJavascript();
     }

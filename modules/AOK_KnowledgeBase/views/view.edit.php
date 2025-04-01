@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class AOK_KnowledgeBaseViewEdit extends ViewEdit
 {
     public function __construct()

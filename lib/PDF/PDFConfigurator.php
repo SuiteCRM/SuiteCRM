@@ -52,6 +52,7 @@ require_once __DIR__ . '/../../modules/Configurator/Configurator.php';
  * Class PDFConfigurator
  * @package SuiteCRM\PDF
  */
+#[\AllowDynamicProperties]
 class PDFConfigurator
 {
     /** @var Configurator */

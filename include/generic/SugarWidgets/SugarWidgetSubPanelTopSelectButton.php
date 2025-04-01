@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/generic/SugarWidgets/SugarWidgetSubPanelTopButton.php');
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
 {
     //button_properties is a collection of properties associated with the widget_class definition. layoutmanager
@@ -119,7 +120,7 @@ class SugarWidgetSubPanelTopSelectButton extends SugarWidgetSubPanelTopButton
         if (isset($widget_data['initial_filter_fields'])) {
             if (is_array($widget_data['initial_filter_fields'])) {
                 foreach ($widget_data['initial_filter_fields'] as $value=>$alias) {
-                    if (isset($focus->$value) and !empty($focus->$value)) {
+                    if (isset($focus->$value) && !empty($focus->$value)) {
                         $initial_filter.="&".$alias . '='.urlencode($focus->$value);
                     }
                 }

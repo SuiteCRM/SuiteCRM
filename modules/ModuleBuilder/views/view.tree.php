@@ -44,6 +44,7 @@ require_once('modules/ModuleBuilder/Module/StudioModule.php');
 require_once('modules/ModuleBuilder/Module/StudioBrowser.php') ;
 require_once('include/ytree/ExtNode.php') ;
 
+#[\AllowDynamicProperties]
 class ViewHistory extends SugarView
 {
     /**

@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author Vittorio Iocolano
  */
+#[\AllowDynamicProperties]
 class SearchResults
 {
     /** @var array Contains the results ids */
@@ -95,7 +96,7 @@ class SearchResults
         $this->searchTime = $searchTime;
         $this->total = $total;
 
-        if ($this->scores !== null && count($hits) !== count($scores)) {
+        if ($this->scores !== null && count($hits) !== count((array) $scores)) {
             throw new InvalidArgumentException('The sizes of $hits and $scores must match.');
         }
     }
@@ -203,13 +204,18 @@ class SearchResults
      * @param SugarBean $obj
      * @param string $idName
      * @param string $link
-     * @return null|string
+     * @return string
      */
-    protected function getRelatedId(SugarBean $obj, string $idName, string $link): string
+    protected function getRelatedId(SugarBean $obj, string $idName, string $link): ?string
     {
         $relField = $idName;
         if (isset($obj->$link)) {
-            $relId = $obj->$link->getFocus()->$relField;
+            $linkedBeans = $obj->$link->getBeans();
+            if(count($linkedBeans) === 1){
+                $relId = array_keys($linkedBeans)[0];
+            } else {
+                $relId = $obj->$link->getFocus()->$relField;
+            }
             if (is_object($relId)) {
                 if (method_exists($relId, "getFocus")) {
                     $relId = $relId->getFocus()->id;
@@ -224,6 +230,9 @@ class SearchResults
             LoggerManager::getLogger()->warn('Unresolved related ID for field: ' . $relField);
         }
 
+        if (!$relId) {
+            $relId = '';
+        }
         return $relId;
     }
 
@@ -246,7 +255,7 @@ class SearchResults
     /**
      * Returns an arbitrary scores defining how much related a hit is to the query.
      *
-     * @return array
+     * @return mixed[]|null
      */
     public function getScores(): ?array
     {
@@ -256,7 +265,7 @@ class SearchResults
     /**
      * Returns the total number of hits (without pagination).
      *
-     * @return int
+     * @return int|null
      */
     public function getTotal(): ?int
     {
@@ -264,7 +273,7 @@ class SearchResults
     }
 
     /**
-     * @return array
+     * @return mixed[]|null
      */
     public function getOptions(): ?array
     {
@@ -284,7 +293,7 @@ class SearchResults
     /**
      * Time in seconds it took to perform the search.
      *
-     * @return float
+     * @return float|null
      */
     public function getSearchTime(): ?float
     {
