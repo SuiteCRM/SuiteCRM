@@ -1320,6 +1320,10 @@ function create_default_users()
     $user->employee_status = 'Active';
     $user->user_hash = User::getPasswordHash($setup_site_admin_password);
 
+    if (isTrue($_SESSION['cli'] ?? false)) {
+        setTimeZoneForDefaultAdmin($_SESSION['timezone'] ?? null, $user);
+    }
+
     $GLOBALS['current_user'] = $user;
     $GLOBALS['current_user']->save();
 
@@ -1678,7 +1682,7 @@ function pullSilentInstallVarsIntoSession()
         'default_currency_symbol',  'default_date_format', 'default_time_format', 'default_decimal_seperator',
         'default_export_charset', 'default_language', 'default_locale_name_format', 'default_number_grouping_seperator',
         'export_delimiter', 'cache_dir', 'setup_db_options',
-        'setup_fts_type', 'setup_fts_host', 'setup_fts_port', 'setup_fts_index_settings'. 'setup_fts_transport');
+        'setup_fts_type', 'setup_fts_host', 'setup_fts_port', 'setup_fts_index_settings'. 'setup_fts_transport', 'timezone');
     copyFromArray($sugar_config_si, $needles, $derived);
     $all_config_vars = array_merge($config_subset, $sugar_config_si, $derived);
 
@@ -2317,4 +2321,16 @@ function enableInsideViewConnector()
 
     // $mapping is brought in from the mapping.php file above
     $source->saveMappingHook($mapping);
+}
+
+function setTimeZoneForDefaultAdmin(?string $timezone, SugarBean $user): void
+{
+    $preference = 'timezone';
+    $timezones = TimeDate::getTimezoneList();
+        
+    if ($timezone !== null && array_key_exists($timezone, $timezones)) {
+        $user->setPreference($preference, $timezone, 0, 'global');
+    } else {
+        $user->setPreference($preference, 'UTC', 0, 'global');
+    }
 }
