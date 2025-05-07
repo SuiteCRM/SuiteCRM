@@ -115,7 +115,7 @@ class ElasticSearchEngine extends SearchEngine
         // Override frontend wildcard character
         if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
             $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
-            if ($wildcardFe !== $wildcardBe && strlen($wildcardFe) === 1) {
+            if ($wildcardFe !== $wildcardBe && strlen((string) $wildcardFe) === 1) {
                 $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
             }
         }
