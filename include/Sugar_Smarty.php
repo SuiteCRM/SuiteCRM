@@ -75,12 +75,25 @@ class Sugar_Smarty extends Smarty
             mkdir_recursive(SUGAR_SMARTY_DIR . 'cache', true);
         }
 
-        $this->template_dir = '.';
-        $this->compile_dir = SUGAR_SMARTY_DIR . 'templates_c';
-        $this->config_dir = SUGAR_SMARTY_DIR . 'configs';
-        $this->cache_dir = SUGAR_SMARTY_DIR . 'cache';
-        //$this->request_use_auto_globals = true; // to disable Smarty from using long arrays
+        $this->setTemplateDir('.');
+        $this->setCompileDir(SUGAR_SMARTY_DIR . 'templates_c');
+        $this->setCacheDir(SUGAR_SMARTY_DIR . 'cache');
+        $this->setConfigDir(SUGAR_SMARTY_DIR . 'configs');
 
+        $this->registerPHPFunctions([
+            'count',
+            'intval',
+            'is_string',
+            'key',
+            'preg_match',
+            'substr',
+            'strpos',
+            'strstr',
+            'strtoupper',
+            'strval',
+            'url2html'
+        ]);
+        
         //TODO fix literals
         $this->auto_literal = false;
 
@@ -94,7 +107,16 @@ class Sugar_Smarty extends Smarty
         $this->assign("VERSION_MARK", getVersionedPath(''));
     }
 
-
+    public function registerPHPFunctions(array $functions): void
+    {
+        foreach ($functions as $function) {
+            try {
+                $this->registerPlugin(Smarty::PLUGIN_MODIFIER, $function, $function);
+            } catch (SmartyException $e) {
+                $GLOBALS['log']->fatal('Smarty: Failed to register PHP function' . $function . ': ' . $e->getMessage());
+            }
+        }
+    }
 
     /**
      * Override default _unlink method call to fix Bug 53010
