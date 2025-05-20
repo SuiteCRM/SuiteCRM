@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -78,6 +78,7 @@ class MetaService
         'precision',
         'comments',
         'required',
+        'options',
     ];
 
     /**
@@ -164,6 +165,10 @@ class MetaService
         $fieldList = [];
         foreach ($bean->field_defs as $fieldName => $fieldDef) {
             $fieldList[$fieldName] = $this->pruneVardef($fieldDef);
+
+            if ($this->checkIfFieldHasEnumType($fieldList[$fieldName])) {
+                $this->setDropdownData($fieldList[$fieldName]);
+            }
         }
 
         return $fieldList;
@@ -191,6 +196,25 @@ class MetaService
         }
 
         return $pruned;
+    }
+
+    /**
+     * @param array $def
+     * @return bool
+     */
+    private function checkIfFieldHasEnumType(array $def): bool
+    {
+        return $def['type'] === 'enum' || $def['type'] === 'multienum';
+    }
+
+    /**
+     * @param array $def
+     */
+    private function setDropdownData(array &$def): void
+    {
+        global $app_list_strings;
+
+        $def['option_items'] = $app_list_strings[$def['options']];
     }
 
     /**
