@@ -232,7 +232,7 @@ class GoogleSyncBase
             if (!empty($refreshToken)) {
                 $client->fetchAccessTokenWithRefreshToken($refreshToken);
                 // Save new token to user preference
-                $this->workingUser->setPreference('GoogleApiToken', base64_encode(json_encode($client->getAccessToken())), 'GoogleSync');
+                $this->workingUser->setPreference('GoogleApiToken', base64_encode(json_encode($client->getAccessToken())), 0, 'GoogleSync');
                 $this->workingUser->savePreferencesToDB();
             } elseif (empty($refreshToken)) {
                 throw new GoogleSyncException('Refresh token is missing', GoogleSyncException::NO_REFRESH_TOKEN);
