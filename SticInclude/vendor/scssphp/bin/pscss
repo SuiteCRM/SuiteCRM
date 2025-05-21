@@ -13,8 +13,8 @@
 
 error_reporting(E_ALL);
 
-if (version_compare(PHP_VERSION, '7.2') < 0) {
-    die('Requires PHP 7.2 or above');
+if (version_compare(PHP_VERSION, '5.6') < 0) {
+    die('Requires PHP 5.6 or above');
 }
 
 include __DIR__ . '/../scss.inc.php';
@@ -22,6 +22,7 @@ include __DIR__ . '/../scss.inc.php';
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\OutputStyle;
+use ScssPhp\ScssPhp\Parser;
 use ScssPhp\ScssPhp\Version;
 
 $style = null;
@@ -73,7 +74,13 @@ Usage: $exe [options] [input-file] [output-file]
 Options include:
 
     --help              Show this message [-h, -?]
+    --continue-on-error [deprecated] Ignored
+    --debug-info        [deprecated] Ignored [-g]
+    --dump-tree         [deprecated] Dump formatted parse tree [-T]
+    --iso8859-1         Use iso8859-1 encoding instead of default utf-8
+    --line-numbers      [deprecated] Ignored [--line-comments]
     --load-path=PATH    Set import path [-I]
+    --precision=N       [deprecated] Ignored. (default 10) [-p]
     --sourcemap         Create source map file
     --embed-sources     Embed source file contents in source maps
     --embed-source-map  Embed the source map contents in CSS (default if writing to stdout)
@@ -86,6 +93,29 @@ EOT;
 
     if ($argv[$i] === '-v' || $argv[$i] === '--version') {
         exit(Version::VERSION . "\n");
+    }
+
+    // Keep parsing --continue-on-error to avoid BC breaks for scripts using it
+    if ($argv[$i] === '--continue-on-error') {
+        // TODO report it as a warning ?
+        continue;
+    }
+
+    // Keep parsing it to avoid BC breaks for scripts using it
+    if ($argv[$i] === '-g' || $argv[$i] === '--debug-info') {
+        // TODO report it as a warning ?
+        continue;
+    }
+
+    if ($argv[$i] === '--iso8859-1') {
+        $encoding = 'iso8859-1';
+        continue;
+    }
+
+    // Keep parsing it to avoid BC breaks for scripts using it
+    if ($argv[$i] === '--line-numbers' || $argv[$i] === '--line-comments') {
+        // TODO report it as a warning ?
+        continue;
     }
 
     if ($argv[$i] === '--sourcemap') {
@@ -103,6 +133,11 @@ EOT;
         continue;
     }
 
+    if ($argv[$i] === '-T' || $argv[$i] === '--dump-tree') {
+        $dumpTree = true;
+        continue;
+    }
+
     $value = parseArgument($i, array('-t', '-s', '--style'));
 
     if (isset($value)) {
@@ -117,9 +152,12 @@ EOT;
         continue;
     }
 
-    if ($argv[$i] && $argv[$i][0] === '-') {
-        fwrite(STDERR, "Error: The option {$argv[$i]} is invalid.");
-        exit(1);
+    // Keep parsing --precision to avoid BC breaks for scripts using it
+    $value = parseArgument($i, array('-p', '--precision'));
+
+    if (isset($value)) {
+        // TODO report it as a warning ?
+        continue;
     }
 
     $arguments[] = $argv[$i];
@@ -137,6 +175,16 @@ if (isset($arguments[0]) && file_exists($arguments[0])) {
     }
 }
 
+if ($dumpTree) {
+    $parser = new Parser($inputFile);
+
+    print_r(json_decode(json_encode($parser->parse($data)), true));
+
+    fwrite(STDERR, 'Warning: the --dump-tree option is deprecated. Use proper debugging tools instead.');
+
+    exit();
+}
+
 $scss = new Compiler();
 
 if ($loadPaths) {
@@ -147,8 +195,8 @@ if ($style) {
     if ($style === OutputStyle::COMPRESSED || $style === OutputStyle::EXPANDED) {
         $scss->setOutputStyle($style);
     } else {
-        fwrite(STDERR, "Error: the $style style is invalid.\n");
-        exit(1);
+        fwrite(STDERR, "WARNING: the $style style is deprecated.\n");
+        $scss->setFormatter('ScssPhp\\ScssPhp\\Formatter\\' . ucfirst($style));
     }
 }
 
@@ -172,6 +220,10 @@ if ($sourceMap) {
     }
 
     $scss->setSourceMapOptions($sourceMapOptions);
+}
+
+if ($encoding) {
+    $scss->setEncoding($encoding);
 }
 
 try {

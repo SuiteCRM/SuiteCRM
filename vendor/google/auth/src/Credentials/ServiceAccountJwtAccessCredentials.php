@@ -41,6 +41,13 @@ class ServiceAccountJwtAccessCredentials extends CredentialsLoader implements
     use ServiceAccountSignerTrait;
 
     /**
+     * Used in observability metric headers
+     *
+     * @var string
+     */
+    private const CRED_TYPE = 'jwt';
+
+    /**
      * The OAuth2 instance used to conduct authorization.
      *
      * @var OAuth2
@@ -99,9 +106,7 @@ class ServiceAccountJwtAccessCredentials extends CredentialsLoader implements
             'scope' => $scope,
         ]);
 
-        $this->projectId = isset($jsonKey['project_id'])
-            ? $jsonKey['project_id']
-            : null;
+        $this->projectId = $jsonKey['project_id'] ?? null;
     }
 
     /**
@@ -153,15 +158,29 @@ class ServiceAccountJwtAccessCredentials extends CredentialsLoader implements
         // Set the self-signed access token in OAuth2 for getLastReceivedToken
         $this->auth->setAccessToken($access_token);
 
-        return ['access_token' => $access_token];
+        return [
+            'access_token' => $access_token,
+            'expires_in' => $this->auth->getExpiry(),
+            'token_type' => 'Bearer'
+        ];
     }
 
     /**
+     * Return the cache key for the credentials.
+     * The format for the Cache Key one of the following:
+     * ClientEmail.Scope
+     * ClientEmail.Audience
+     *
      * @return string
      */
     public function getCacheKey()
     {
-        return $this->auth->getCacheKey();
+        $scopeOrAudience = $this->auth->getScope();
+        if (!$scopeOrAudience) {
+            $scopeOrAudience = $this->auth->getAudience();
+        }
+
+        return $this->auth->getIssuer() . '.' . $scopeOrAudience;
     }
 
     /**
@@ -199,6 +218,18 @@ class ServiceAccountJwtAccessCredentials extends CredentialsLoader implements
     }
 
     /**
+     * Get the private key from the keyfile.
+     *
+     * In this case, it returns the keyfile's private_key key, needed for JWT signing.
+     *
+     * @return string
+     */
+    public function getPrivateKey()
+    {
+        return $this->auth->getSigningKey();
+    }
+
+    /**
      * Get the quota project used for this API request
      *
      * @return string|null
@@ -206,5 +237,10 @@ class ServiceAccountJwtAccessCredentials extends CredentialsLoader implements
     public function getQuotaProject()
     {
         return $this->quotaProject;
+    }
+
+    protected function getCredType(): string
+    {
+        return self::CRED_TYPE;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 use Faker\Generator;
 
+#[\AllowDynamicProperties]
 class EmailManCest
 {
     /**

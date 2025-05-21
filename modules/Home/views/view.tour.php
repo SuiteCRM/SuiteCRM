@@ -40,6 +40,7 @@
 
 require_once('include/MVC/View/SugarView.php');
 
+#[\AllowDynamicProperties]
 class HomeViewTour extends SugarView
 {
     public function display()
@@ -53,7 +54,7 @@ class HomeViewTour extends SugarView
         //check the upgrade history to see if this instance has been upgraded, if so then present the calendar url message
         //if no upgrade history exists then we can assume this is an install and we do not show the calendar message
         $uh = new UpgradeHistory();
-        $upgrade = count($uh->getAll())>0 ? true : false;
+        $upgrade = (is_countable($uh->getAll()) ? count($uh->getAll()) : 0)>0 ? true : false;
         if ($upgrade) {
             //create the url with the user id and scrolltocal flag.  This will be passed into language string
             $urlForString = $mod_strings['LBL_TOUR_CALENDAR_URL_1'];

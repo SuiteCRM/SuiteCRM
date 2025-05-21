@@ -31,21 +31,20 @@ class StabilityFlags
     protected $minimumStability;
 
     /**
-     * @var string Regex to extract an explict stability flag (eg '@dev')
+     * @var string Regex to extract an explicit stability flag (eg '@dev')
      */
     protected $explicitStabilityRe;
 
-
     /**
      * @param array $stabilityFlags Current package name => stability mappings
-     * @param int $minimumStability Current default minimum stability
+     * @param int|string $minimumStability Current default minimum stability
      */
     public function __construct(
-        array $stabilityFlags = array(),
+        array $stabilityFlags = [],
         $minimumStability = BasePackage::STABILITY_STABLE
     ) {
         $this->stabilityFlags = $stabilityFlags;
-        $this->minimumStability = $this->getStabilityInt($minimumStability);
+        $this->minimumStability = $this->getStabilityInt((string)$minimumStability);
         $this->explicitStabilityRe = '/^[^@]*?@(' .
             implode('|', array_keys(BasePackage::$stabilities)) .
             ')$/i';
@@ -60,9 +59,7 @@ class StabilityFlags
     protected function getStabilityInt($name)
     {
         $name = VersionParser::normalizeStability($name);
-        return isset(BasePackage::$stabilities[$name]) ?
-            BasePackage::$stabilities[$name] :
-            BasePackage::STABILITY_STABLE;
+        return BasePackage::$stabilities[$name] ?? BasePackage::STABILITY_STABLE;
     }
 
     /**
@@ -74,7 +71,7 @@ class StabilityFlags
      */
     public function extractAll(array $requires)
     {
-        $flags = array();
+        $flags = [];
 
         foreach ($requires as $name => $link) {
             $name = strtolower($name);
@@ -94,7 +91,6 @@ class StabilityFlags
             return $v !== null;
         });
     }
-
 
     /**
      * Extract the most unstable explicit stability (eg '@dev') from a version
@@ -116,7 +112,6 @@ class StabilityFlags
         return $found;
     }
 
-
     /**
      * Split a version specification into a list of version constraints.
      *
@@ -125,7 +120,7 @@ class StabilityFlags
      */
     protected function splitConstraints($version)
     {
-        $found = array();
+        $found = [];
         $orConstraints = preg_split('/\s*\|\|?\s*/', trim($version));
         foreach ($orConstraints as $constraints) {
             $andConstraints = preg_split(
@@ -138,7 +133,6 @@ class StabilityFlags
         }
         return $found;
     }
-
 
     /**
      * Get the stability of a version
@@ -165,7 +159,6 @@ class StabilityFlags
         return $stability;
     }
 
-
     /**
      * Get the current stability of a given package.
      *
@@ -174,8 +167,7 @@ class StabilityFlags
      */
     protected function getCurrentStability($name)
     {
-        return isset($this->stabilityFlags[$name]) ?
-            $this->stabilityFlags[$name] : null;
+        return $this->stabilityFlags[$name] ?? null;
     }
 }
 // vim:sw=4:ts=4:sts=4:et:

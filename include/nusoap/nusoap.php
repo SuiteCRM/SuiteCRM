@@ -320,6 +320,10 @@ $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'] = 0;
 
 * @access   public
 */
+// STIC Custom 20250303 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class nusoap_base
 {
     /**
@@ -2568,6 +2572,10 @@ class nusoap_xmlschema extends nusoap_base
     */
     public function serializeTypeDef($type)
     {
+        // STIC Custom 20250303 JBL - Avoid undefined variable
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        $str = '';
+        // END STIC Custom
         //print "in sTD() for type $type<br>";
         if ($typeDef = $this->getTypeDef($type)) {
             $str .= '<'.$type;
@@ -2605,6 +2613,10 @@ class nusoap_xmlschema extends nusoap_base
     */
     public function typeToForm($name, $type)
     {
+        // STIC Custom 20250303 JBL - Avoid undefined variable
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        $buffer = '';
+        // END STIC Custom
         // get typedef
         if ($typeDef = $this->getTypeDef($type)) {
             // if struct
@@ -3722,7 +3734,11 @@ class soap_transport_http extends nusoap_base
     * @access   public
     * @deprecated
     */
-    public function sendHTTPS($data, $timeout=0, $response_timeout=30, $cookies)
+    // STIC Custom 20250313 JBL - Avoid optional parameters declared before required
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function sendHTTPS($data, $timeout=0, $response_timeout=30, $cookies)
+    public function sendHTTPS($data, $timeout=0, $response_timeout=30, $cookies = null)
+    // END STIC Custom
     {
         return $this->send($data, $timeout, $response_timeout, $cookies);
     }
@@ -4967,14 +4983,26 @@ class nusoap_server extends nusoap_base
         parent::__construct();
         // turn on debugging?
         global $debug;
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if (isset($_SERVER)) {
             $this->debug("_SERVER is defined:");
             $this->appendDebug($this->varDump($_SERVER));
-        } elseif (isset($HTTP_SERVER_VARS)) {
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS)) {
+        } elseif (isset($_SERVER)) {
+        // End STIC Custom
             $this->debug("HTTP_SERVER_VARS is defined:");
-            $this->appendDebug($this->varDump($HTTP_SERVER_VARS));
+            // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $this->appendDebug($this->varDump($HTTP_SERVER_VARS));
+            $this->appendDebug($this->varDump($_SERVER));
+            // End STIC Custom
         } else {
             $this->debug("Neither _SERVER nor HTTP_SERVER_VARS is defined.");
         }
@@ -4990,8 +5018,13 @@ class nusoap_server extends nusoap_base
                     $this->debug_flag = substr($v, 6);
                 }
             }
-        } elseif (isset($HTTP_SERVER_VARS['QUERY_STRING'])) {
-            $qs = explode('&', $HTTP_SERVER_VARS['QUERY_STRING']);
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS['QUERY_STRING'])) {
+        //     $qs = explode('&', $HTTP_SERVER_VARS['QUERY_STRING']);
+        } elseif (isset($_SERVER['QUERY_STRING'])) {
+            $qs = explode('&', $_SERVER['QUERY_STRING']);
+        // End STIC Custom
             foreach ($qs as $v) {
                 if (substr($v, 0, 6) == 'debug=') {
                     $this->debug("In nusoap_server, set debug_flag=" . substr($v, 6) . " based on query string #2");
@@ -5028,20 +5061,34 @@ class nusoap_server extends nusoap_base
     */
     public function service($data)
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if (isset($_SERVER['REQUEST_METHOD'])) {
             $rm = $_SERVER['REQUEST_METHOD'];
-        } elseif (isset($HTTP_SERVER_VARS['REQUEST_METHOD'])) {
-            $rm = $HTTP_SERVER_VARS['REQUEST_METHOD'];
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS['REQUEST_METHOD'])) {
+        //     $rm = $HTTP_SERVER_VARS['REQUEST_METHOD'];
+        } elseif (isset($_SERVER['REQUEST_METHOD'])) {
+            $rm = $_SERVER['REQUEST_METHOD'];
+        // End STIC Custom
         } else {
             $rm = '';
         }
 
         if (isset($_SERVER['QUERY_STRING'])) {
             $qs = $_SERVER['QUERY_STRING'];
-        } elseif (isset($HTTP_SERVER_VARS['QUERY_STRING'])) {
-            $qs = $HTTP_SERVER_VARS['QUERY_STRING'];
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS['QUERY_STRING'])) {
+        //     $qs = $HTTP_SERVER_VARS['QUERY_STRING'];
+        } elseif (isset($_SERVER['QUERY_STRING'])) {
+            $qs = $_SERVER['QUERY_STRING'];
+        // End STIC Custom
         } else {
             $qs = '';
         }
@@ -5113,7 +5160,11 @@ class nusoap_server extends nusoap_base
     */
     public function parse_http_headers()
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         $this->request = '';
         $this->SOAPAction = '';
@@ -5176,9 +5227,17 @@ class nusoap_server extends nusoap_base
                 $this->request .= "$k: $v\r\n";
                 $this->debug("$k: $v");
             }
-        } elseif (is_array($HTTP_SERVER_VARS)) {
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (is_array($HTTP_SERVER_VARS)) {
+        } elseif (is_array($_SERVER)) {
+        // End STIC Custom
             $this->debug("In parse_http_headers, use HTTP_SERVER_VARS");
-            foreach ($HTTP_SERVER_VARS as $k => $v) {
+            // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // foreach ($HTTP_SERVER_VARS as $k => $v) {
+            foreach ($_SERVER as $k => $v) {
+            // End STIC Custom
                 if (substr($k, 0, 5) == 'HTTP_') {
                     $k = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($k, 5))));
                     $k = strtolower(substr($k, 5));
@@ -5779,7 +5838,11 @@ class nusoap_server extends nusoap_base
     */
     public function register($name, $in=array(), $out=array(), $namespace=false, $soapaction=false, $style=false, $use=false, $documentation='', $encodingStyle='')
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if ($this->externalWSDLURL) {
             die('You cannot bind to an external WSDL file, and register methods outside of it! Please choose either WSDL or no WSDL.');
@@ -5799,11 +5862,19 @@ class nusoap_server extends nusoap_base
             if (isset($_SERVER)) {
                 $SERVER_NAME = $_SERVER['SERVER_NAME'];
                 $SCRIPT_NAME = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-                $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off');
-            } elseif (isset($HTTP_SERVER_VARS)) {
-                $SERVER_NAME = $HTTP_SERVER_VARS['SERVER_NAME'];
-                $SCRIPT_NAME = isset($HTTP_SERVER_VARS['PHP_SELF']) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_SERVER_VARS['SCRIPT_NAME'];
-                $HTTPS = isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off';
+            // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            //     $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off');
+            // } elseif (isset($HTTP_SERVER_VARS)) {
+            //     $SERVER_NAME = $HTTP_SERVER_VARS['SERVER_NAME'];
+            //     $SCRIPT_NAME = isset($HTTP_SERVER_VARS['PHP_SELF']) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_SERVER_VARS['SCRIPT_NAME'];
+            //     $HTTPS = isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off';
+                $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : 'off');
+            } elseif (isset($_SERVER)) {
+                $SERVER_NAME = $_SERVER['SERVER_NAME'];
+                $SCRIPT_NAME = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+                $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : 'off';
+            // End STIC Custom
             } else {
                 $this->setError("Neither _SERVER nor HTTP_SERVER_VARS is available");
             }
@@ -5869,18 +5940,31 @@ class nusoap_server extends nusoap_base
     */
     public function configureWSDL($serviceName, $namespace = false, $endpoint = false, $style='rpc', $transport = 'http://schemas.xmlsoap.org/soap/http', $schemaTargetNamespace = false)
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if (isset($_SERVER)) {
             $SERVER_NAME = $_SERVER['SERVER_NAME'];
             $SERVER_PORT = $_SERVER['SERVER_PORT'];
             $SCRIPT_NAME = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-            $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off');
-        } elseif (isset($HTTP_SERVER_VARS)) {
-            $SERVER_NAME = $HTTP_SERVER_VARS['SERVER_NAME'];
-            $SERVER_PORT = $HTTP_SERVER_VARS['SERVER_PORT'];
-            $SCRIPT_NAME = isset($HTTP_SERVER_VARS['PHP_SELF']) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_SERVER_VARS['SCRIPT_NAME'];
-            $HTTPS = isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off';
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        //     $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off');
+        // } elseif (isset($HTTP_SERVER_VARS)) {
+        //     $SERVER_NAME = $HTTP_SERVER_VARS['SERVER_NAME'];
+        //     $SERVER_PORT = $HTTP_SERVER_VARS['SERVER_PORT'];
+        //     $SCRIPT_NAME = isset($HTTP_SERVER_VARS['PHP_SELF']) ? $HTTP_SERVER_VARS['PHP_SELF'] : $HTTP_SERVER_VARS['SCRIPT_NAME'];
+        //     $HTTPS = isset($HTTP_SERVER_VARS['HTTPS']) ? $HTTP_SERVER_VARS['HTTPS'] : 'off';
+            $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : (isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : 'off');
+        } elseif (isset($_SERVER)) {
+            $SERVER_NAME = $_SERVER['SERVER_NAME'];
+            $SERVER_PORT = $_SERVER['SERVER_PORT'];
+            $SCRIPT_NAME = isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+            $HTTPS = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : 'off';
+        // End STIC Custom
         } else {
             $this->setError("Neither _SERVER nor HTTP_SERVER_VARS is available");
         }
@@ -6913,12 +6997,21 @@ class wsdl extends nusoap_base
     */
     public function webDescription()
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if (isset($_SERVER)) {
             $PHP_SELF = $_SERVER['PHP_SELF'];
-        } elseif (isset($HTTP_SERVER_VARS)) {
-            $PHP_SELF = $HTTP_SERVER_VARS['PHP_SELF'];
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS)) {
+        //     $PHP_SELF = $HTTP_SERVER_VARS['PHP_SELF'];
+        } elseif (isset($_SERVER)) {
+            $PHP_SELF = $_SERVER['PHP_SELF'];
+        // End STIC Custom
         } else {
             $this->setError("Neither _SERVER nor HTTP_SERVER_VARS is available");
         }
@@ -8723,7 +8816,11 @@ class nusoap_parser extends nusoap_base
             // raw UTF-8 that, e.g., might not map to iso-8859-1
             // TODO: this can also be handled with xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1");
             if ($this->decode_utf8) {
-                $data = utf8_decode($data);
+                // STIC Custom 20250314 JBL - utf8_decode is deprecated
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $data = utf8_decode($data);
+                $data = mb_convert_encoding($data, 'ISO-8859-1', 'UTF-8');
+                // END STIC Custom
             }
         }
         $this->message[$pos]['cdata'] .= $data;

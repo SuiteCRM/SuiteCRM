@@ -27,10 +27,10 @@
 class WebFormDataBO
 {
     // Results constants of the contact's management
-    const CONTACT_ERROR = 0;
-    const CONTACT_UNIQUE = 1;
-    const CONTACT_MULTIPLE = 2;
-    const CONTACT_NEW = 3;
+    public const CONTACT_ERROR = 0;
+    public const CONTACT_UNIQUE = 1;
+    public const CONTACT_MULTIPLE = 2;
+    public const CONTACT_NEW = 3;
 
     /**
      * Identifier arrays for value recovery
@@ -81,6 +81,7 @@ class WebFormDataBO
             $this->lang = $_REQUEST['language'];
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Indicating language [{$this->lang}] from form.");
         } else {
+            $_SERVER["HTTP_ACCEPT_LANGUAGE"] =  $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? '';
             $http_lang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
             switch ($http_lang) {
                 case 'es':
@@ -282,7 +283,7 @@ class WebFormDataBO
         foreach ($this->formParams as $name => $value) {
 
             // If the field name has a prefix, remove it
-            if (!empty($prefix) && (strpos($name, $prefix) === 0)) {
+            if (!empty($prefix) && (strpos($name, (string) $prefix) === 0)) {
                 $fieldName = preg_replace("/{$prefix}/Au", '', $name);
             } else if (!$prefix) {
                 $fieldName = $name;

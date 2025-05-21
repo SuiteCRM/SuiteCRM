@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class GroupedTabStructure
 {
     /**
@@ -104,11 +105,22 @@ class GroupedTabStructure
         /* Only return modules which exists in the modList */
         foreach ($tabStructure as $mainTab => $subModules) {
             //Ensure even empty groups are returned
+            // STIC Custom 20250314 JBL - In PHP8+ arrays are not created automatically
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // if ($labelAsKey) {
+            //     $retStruct[$subModules['label']]['modules'] = array();
+            // } else {
+            //     $retStruct[$app_strings[$subModules['label']]]['modules']= array();
+            // }
             if ($labelAsKey) {
-                $retStruct[$subModules['label']]['modules'] = array();
+                $retStruct[$subModules['label']] ??= [];
+                $retStruct[$subModules['label']]['modules'] ??= [];
             } else {
-                $retStruct[$app_strings[$subModules['label']]]['modules']= array();
+                $tabKey = $app_strings[$subModules['label']] ?? ''; // Same behavior as PHP 7
+                $retStruct[$tabKey] ??= [];
+                $retStruct[$tabKey]['modules'] ??= [];
             }
+            // END STIC Custom
 
             foreach ($subModules['modules'] as $key => $subModule) {
                 /* Perform a case-insensitive in_array check
@@ -119,7 +131,12 @@ class GroupedTabStructure
                         if ($labelAsKey) {
                             $retStruct[$subModules['label']]['modules'][$module] = $app_list_strings['moduleList'][$module];
                         } else {
-                            $retStruct[$app_strings[$subModules['label']]]['modules'][$module] = $app_list_strings['moduleList'][$module];
+                            // STIC Custom 20250317 JBL - Avoid Warning Undefined array key
+                            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                            // $retStruct[$app_strings[$subModules['label']]]['modules'][$module] = $app_list_strings['moduleList'][$module];
+                            $tabKey = $app_strings[$subModules['label']] ?? '';
+                            $retStruct[$tabKey]['modules'][$module] = $app_list_strings['moduleList'][$module];
+                            // END STIC Custom
                         }
                         $mlhUsed[$module] = true;
                         break;
@@ -132,9 +149,16 @@ class GroupedTabStructure
                     unset($retStruct[$subModules['label']]);
                 }
             } else {
-                if (empty($retStruct[$app_strings[$subModules['label']]]['modules'])) {
-                    unset($retStruct[$app_strings[$subModules['label']]]);
+                // STIC Custom 20250317 JBL - Avoid Warning Undefined array key
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // if (empty($retStruct[$app_strings[$subModules['label']]]['modules'])) {
+                //     unset($retStruct[$app_strings[$subModules['label']]]);
+                // }
+                $tabKey = $app_strings[$subModules['label']] ?? '';
+                if (empty($retStruct[$tabKey]['modules'])) {
+                    unset($retStruct[$tabKey]);
                 }
+                // END STIC Custom
             }
         }
 

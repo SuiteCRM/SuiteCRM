@@ -46,6 +46,7 @@ include_once __DIR__ . '/../../../../../modules/Users/GoogleApiKeySaverEntryPoin
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class GoogleApiKeySaverEntryPointMock extends GoogleApiKeySaverEntryPoint
 {
 

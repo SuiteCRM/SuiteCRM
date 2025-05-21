@@ -67,17 +67,17 @@ while ($row = $db->fetchByAssoc($result)) {
     if (isset($_POST[$row['id'].'adjust'])) {
         $adjustment = $_POST[$row['id'].'adjust'];
     }
-    
+
     $string = "Preview";
     if ($execute) {
         $string = "Updating";
     }
     echo "<tr><td> $string timezone preferences for user <b>{$row['user_name']}</b>...</td><td>";
-        
-        
+
+
     $prefs = array();
     $newprefs = array();
-    
+
     $prefs = unserialize(base64_decode($row['user_preferences']));
     $setTo = '';
     $alreadySet = '';
@@ -90,7 +90,7 @@ while ($row = $db->fetchByAssoc($result)) {
                         $hourAdjust = 0;
                     }
                     $selectedZone = lookupTimezone($prefs['timez'] + $hourAdjust);
-                        
+
                     if (!empty($selectedZone)) {
                         $newprefs['timezone'] = $selectedZone;
                         $newprefs['timez']  = $val;
@@ -144,7 +144,7 @@ while ($row = $db->fetchByAssoc($result)) {
             }
         } else {
             echo "<select name='{$row['id']}adjust'>";
-            
+
             echo get_select_options_with_id(array('-1'=>'-1', 'none'=>'0', '1'=>'+1'), $adjustment.'');
             echo '</select>';
         }

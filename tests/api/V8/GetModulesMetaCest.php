@@ -8,6 +8,7 @@ use Codeception\Example;
 use Codeception\Exception\ModuleException;
 use Exception;
 
+#[\AllowDynamicProperties]
 class GetModulesMetaCest
 {
     /**

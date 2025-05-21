@@ -18,6 +18,7 @@ namespace phpseclib3\Crypt\Common\Formats\Keys;
 use phpseclib3\Common\Functions\Strings;
 use phpseclib3\Crypt\AES;
 use phpseclib3\Crypt\Random;
+use phpseclib3\Exception\BadDecryptionException;
 
 /**
  * OpenSSH Formatted RSA Key Handler
@@ -96,7 +97,7 @@ abstract class OpenSSH
                     $crypto->setPassword($password, 'bcrypt', $salt, $rounds, 32);
                     break;
                 default:
-                    throw new \RuntimeException('The only supported cipherse are: none, aes256-ctr (' . $ciphername . ' is being used)');
+                    throw new \RuntimeException('The only supported ciphers are: none, aes256-ctr (' . $ciphername . ' is being used)');
             }
 
             list($publicKey, $paddedKey) = Strings::unpackSSH2('ss', $key);
@@ -107,7 +108,10 @@ abstract class OpenSSH
             list($checkint1, $checkint2) = Strings::unpackSSH2('NN', $paddedKey);
             // any leftover bytes in $paddedKey are for padding? but they should be sequential bytes. eg. 1, 2, 3, etc.
             if ($checkint1 != $checkint2) {
-                throw new \RuntimeException('The two checkints do not match');
+                if (isset($crypto)) {
+                    throw new BadDecryptionException('Unable to decrypt key - please verify the password you are using');
+                }
+                throw new \RuntimeException("The two checkints do not match ($checkint1 vs. $checkint2)");
             }
             self::checkType($type);
 

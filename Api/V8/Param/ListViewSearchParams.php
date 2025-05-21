@@ -52,6 +52,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class ListViewSearchParams extends BaseParam
 {
     

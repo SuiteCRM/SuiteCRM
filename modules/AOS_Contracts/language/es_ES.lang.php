@@ -87,6 +87,7 @@ $mod_strings = array(
     'LBL_STATUS' => 'Estado',
     'LBL_CUSTOMER_SIGNED_DATE' => 'Fecha de Firma del Cliente',
     'LBL_COMPANY_SIGNED_DATE' => 'Fecha de Firma de la Compañía',
+    'LBL_RENEWAL_REMINDER' => 'Recordatorio de Renovación de Contrato',
     'LBL_RENEWAL_REMINDER_DATE' => 'Fecha de Recordatorio de Renovación',
     'LBL_CONTRACT_TYPE' => 'Tipo',
     'LBL_CONTACT' => 'Contacto',

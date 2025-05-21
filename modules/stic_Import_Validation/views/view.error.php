@@ -26,6 +26,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/MVC/View/SugarView.php');
         
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewError extends SugarView
 {
     /**
@@ -74,6 +75,16 @@ class stic_Import_ValidationViewError extends SugarView
      */
     public function display()
     {
+        $module = $_REQUEST['import_module'] ?? '';
+        if (!empty($module) && !isAllowedModuleName($module)) {
+            throw new InvalidArgumentException('Invalid target_module');
+        }
+
+        $source = $_REQUEST['source'] ?? '';
+        $result = preg_match("/^[\w\-\_\.\:]+$/", $source);
+        if (!empty($source) && empty($result)) {
+            throw new InvalidArgumentException('Invalid source');
+        }
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $this->ss->assign("ACTION", 'Step1');
         $this->ss->assign("MESSAGE", $_REQUEST['message']);
@@ -81,7 +92,7 @@ class stic_Import_ValidationViewError extends SugarView
         if (isset($_REQUEST['source'])) {
             $this->ss->assign("SOURCE", $_REQUEST['source']);
         }
-        
+
         $this->ss->display('modules/stic_Import_Validation/tpls/error.tpl');
     }
 }

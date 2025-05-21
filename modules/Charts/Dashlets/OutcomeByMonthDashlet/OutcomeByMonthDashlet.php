@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGenericChart.php');
 
 
+#[\AllowDynamicProperties]
 class OutcomeByMonthDashlet extends DashletGenericChart
 {
     public $obm_ids = array();
@@ -64,7 +65,11 @@ class OutcomeByMonthDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // array $options = null
+        ?array $options = null
+        // END STIC Custom
     ) {
         global $timedate;
 
@@ -222,7 +227,7 @@ class OutcomeByMonthDashlet extends DashletGenericChart
             id: '$canvasId',
             x: 10,
             y: 20,
-            text: 'Opportunity size in ${currency_symbol}1$thousands_symbol',
+            text: 'Opportunity size in {$currency_symbol}1$thousands_symbol',
             options: {
                 font: 'Arial',
                 bold: true,
@@ -261,6 +266,7 @@ EOD;
 
     protected function prepareChartData($data, $currency_symbol, $thousands_symbol)
     {
+        $chart = [];
         //Use the  lead_source to categorise the data for the charts
         $chart['labels'] = array();
         $chart['data'] = array();

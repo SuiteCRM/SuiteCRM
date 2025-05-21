@@ -49,8 +49,8 @@ abstract class Raw
     /**
      * Returns a signature in the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $r
-     * @param \phpseclib3\Math\BigInteger $s
+     * @param BigInteger $r
+     * @param BigInteger $s
      * @return string
      */
     public static function save(BigInteger $r, BigInteger $s)

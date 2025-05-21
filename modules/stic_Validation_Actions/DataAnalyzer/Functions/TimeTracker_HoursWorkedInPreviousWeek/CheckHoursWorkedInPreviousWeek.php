@@ -87,7 +87,6 @@ class CheckHoursWorkedInPreviousWeek extends DataCheckFunction
             GROUP BY swc.assigned_user_id) AS wc 
         ON tt.assigned_user_id = wc.assigned_user_id;";
 
-        $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': SQL: ' . $sql);
         return $sql;
     }
 

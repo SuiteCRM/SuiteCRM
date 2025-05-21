@@ -83,10 +83,10 @@ class ViewDonationstep3 extends stic_Web_FormsAssistantView
         $javascript->addFieldGeneric('campaign_name', '', javascript_escape($mod_strings['LBL_RELATED_CAMPAIGN']), 'true');
         $javascript->addFieldGeneric('assigned_user_name', '', javascript_escape($app_strings['LBL_ASSIGNED_TO']), 'true');
         $javascript->addFieldGeneric('email_template_name', '', javascript_escape($mod_strings['LBL_NOTIFICATION_EMAIL_TEMPLATE']), 'false');
-        $javascript->addFieldGeneric('validate_identification_number', '', javascript_escape($app_strings['LBL_CHECK_IDENTIFICATION_NUMBER']), 'true');
-        $javascript->addFieldGeneric('allow_card_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_CARD_RECURRING_PAYMENTS']), 'true');
-        $javascript->addFieldGeneric('allow_paypal_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_PAYPAL_RECURRING_PAYMENTS']), 'true');
-        $javascript->addFieldGeneric('allow_stripe_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_STRIPE_RECURRING_PAYMENTS']), 'true');
+        $javascript->addFieldGeneric('validate_identification_number', '', javascript_escape($app_strings['LBL_CHECK_IDENTIFICATION_NUMBER'] ?? ''), 'true');
+        $javascript->addFieldGeneric('allow_card_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_CARD_RECURRING_PAYMENTS'] ?? ''), 'true');
+        $javascript->addFieldGeneric('allow_paypal_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_PAYPAL_RECURRING_PAYMENTS'] ?? ''), 'true');
+        $javascript->addFieldGeneric('allow_stripe_recurring_payments', '', javascript_escape($app_strings['LBL_ALLOW_STRIPE_RECURRING_PAYMENTS'] ?? ''), 'true');
         $javascript->addFieldGeneric('redirect_ok_url', '', javascript_escape($mod_strings['LBL_WEBFORMS_REDIRECT_OK_URL']), 'true');
         $javascript->addFieldGeneric('redirect_ko_url', '', javascript_escape($mod_strings['LBL_WEBFORMS_REDIRECT_KO_URL']), 'true');
         $javascript->addFieldGeneric('payment_type', '', javascript_escape($mod_strings['LBL_WEBFORMS_PAYMENT_TYPE']), 'true');

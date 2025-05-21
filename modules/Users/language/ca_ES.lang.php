@@ -84,6 +84,7 @@ $mod_strings = array(
     'ERR_RECIPIENT_EMAIL' => 'Correu electrònic del destinatari',
     'ERR_SERVER_STATUS' => 'Estat del  servidor',
     'ERR_SERVER_SMTP_EMPTY' => "El sistema no pot enviar un correu electrònic a l'usuari. Comproveu la configuració del correu de sortida a la <a href='index.php?module=EmailMan&action=config'>Configuració de correu</a>.",
+    'ERR_DELETE_USER' => "No es permet eliminar l'usuari actual.",
     'LBL_ADDRESS_CITY' => 'Ciutat',
     'LBL_ADDRESS_COUNTRY' => 'País',
     'LBL_ADDRESS_INFORMATION' => "Informació d'adreça",
@@ -121,6 +122,7 @@ $mod_strings = array(
     'LBL_NUMBER_GROUPING_SEP_TEXT' => 'Caràcter separador de milers',
     'LBL_DECIMAL_SEP' => 'Separador de decimals',
     'LBL_DECIMAL_SEP_TEXT' => 'Caràcter separador de decimals',
+    'LBL_USER_LANGUAGE' => "Idioma de l'usuari",
     'LBL_FDOW' => 'Primer dia de la setmana',
     'LBL_FDOW_TEXT' => 'Primer dia a mostrar en les vistes de setmana, mes i any.',
     'LBL_DATE_FORMAT_TEXT' => 'Estableix el format de text per a la data',
@@ -702,5 +704,9 @@ $mod_strings = array(
     'LBL_GOOGLE_API_TOKEN_BTN_AUTHORIZE' => 'Autoritzar', // PR 6841
     'LBL_GOOGLE_API_TOKEN_TEXT' => "El Token actual de l'API és", // PR 6841
     // END Google Token/Synchronization settings
+
+    'LNK_LIST_OUTBOUND_EMAIL_ACCOUNTS' => 'Comptes de Correu Electrònic Sortint',
+    'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Comptes de Correu Electrònic Entrant',
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Connexions OAuth Externes',
 
 ); // END STRINGS DEFS

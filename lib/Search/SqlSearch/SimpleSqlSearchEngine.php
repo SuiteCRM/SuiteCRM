@@ -94,11 +94,11 @@ class SimpleSqlSearchEngine extends SearchEngine
         $filteredFields = [];
 
         foreach ($fields as $name => $type) {
-            if (strpos($type, 'varchar') === 0) {
+            if (strpos((string) $type, 'varchar') === 0) {
                 $filteredFields[$name] = 'varchar';
             }
 
-            if (strpos($type, 'text') === 0) {
+            if (strpos((string) $type, 'text') === 0) {
                 $filteredFields[$name] = 'text';
             }
         }

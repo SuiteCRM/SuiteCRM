@@ -72,7 +72,7 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
 } else {
     if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'addtoprospectlist') {
         $GLOBALS['log']->debug(print_r($_REQUEST, true));
-        if (!empty($_REQUEST['prospect_list_id']) and !empty($_REQUEST['prospect_ids'])) {
+        if (!empty($_REQUEST['prospect_list_id']) && !empty($_REQUEST['prospect_ids'])) {
             add_prospects_to_prospect_list(
             $_REQUEST['prospect_list_id'],
             $_REQUEST['prospect_ids']
@@ -128,7 +128,7 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
             if (!empty($_REQUEST['select_entire_list']) &&  $_REQUEST['select_entire_list'] != 'undefined' && isset($_REQUEST['current_query_by_page'])) {
                 $order_by = '';
                 $current_query_by_page = $_REQUEST['current_query_by_page'];
-                $current_query_by_page_array = json_decode(html_entity_decode($current_query_by_page), true);
+                $current_query_by_page_array = json_decode(html_entity_decode((string) $current_query_by_page), true, 512, JSON_THROW_ON_ERROR);
 
                 $module = $current_query_by_page_array['module'];
                 $seed = BeanFactory::getBean($module);
@@ -162,7 +162,7 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
                     $searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl');
                     $searchForm->populateFromArray($current_query_by_page_array, 'advanced');
                     $where_clauses_arr = $searchForm->generateSearchWhere(true, $module);
-                    if (count($where_clauses_arr) > 0) {
+                    if ((is_countable($where_clauses_arr) ? count($where_clauses_arr) : 0) > 0) {
                         $where_clauses = '('. implode(' ) AND ( ', $where_clauses_arr) . ')';
                     }
                 }
@@ -195,10 +195,21 @@ if (isset($_REQUEST['return_type'])  && $_REQUEST['return_type'] == 'report') {
                         $add_values[substr($key, 14)]=$value;
                     }
                 }
-                $relName = $_REQUEST['subpanel_field_name'];
-                $focus->load_relationship($relName);
-                $focus->$relName->add($_REQUEST['subpanel_id'], $add_values);
-                $focus->save();
+                // STIC Custom 20250401 PCS - Fix Access to undefined array key
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $relName = $_REQUEST['subpanel_field_name'];
+                // $focus->load_relationship($relName);
+                // $focus->$relName->add($_REQUEST['subpanel_id'], $add_values);
+                // $focus->save();
+                if (!empty($_REQUEST['subpanel_field_name']) && !empty($_REQUEST['subpanel_id'])) {
+                    $relName = $_REQUEST['subpanel_field_name'];
+
+                    if ($focus->load_relationship($relName)) {
+                        $focus->$relName->add($_REQUEST['subpanel_id'], $add_values);
+                        $focus->save();
+                    }
+                }
+                // END STIC Custom
             }
         }
     }

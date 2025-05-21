@@ -16,7 +16,7 @@ use React\Promise\Deferred;
  *
  * @property resource $_mh Internal use only. Lazy loaded multi-handle.
  */
-#[AllowDynamicProperties]
+#[\AllowDynamicProperties]
 class CurlMultiHandler
 {
     /** @var callable */

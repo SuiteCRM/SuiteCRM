@@ -2,6 +2,7 @@
 
 namespace Step\Acceptance;
 
+#[\AllowDynamicProperties]
 class Repair extends Administration
 {
     public function clickQuickRepairAndRebuild()

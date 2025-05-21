@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Form layout manager
  * @api
  */
+#[\AllowDynamicProperties]
 class LayoutManager
 {
     public $defs = array();
@@ -348,7 +349,11 @@ class LayoutManager
         //#27426
         $fieldDef = $this->getFieldDef($widget_def);
         if (!empty($fieldDef) &&  !empty($fieldDef['type']) && strtolower(trim($fieldDef['type'])) == 'multienum') {
-            $widget_def['fields']  = sugarArrayMerge($widget_def['fields'], $fieldDef);
+            // STIC Custom 20250205 JBL - Remove warning when $widget_def['fields'] is not defined
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $widget_def['fields']  = sugarArrayMerge($widget_def['fields'], $fieldDef);
+            $widget_def['fields']  = sugarArrayMerge($widget_def['fields'] ?? [], $fieldDef);
+            // End STIC Custom
             $widget_def['fields']['module']  = $label;
         }
         //end

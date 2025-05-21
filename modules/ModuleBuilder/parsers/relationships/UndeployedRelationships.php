@@ -46,13 +46,16 @@ require_once 'modules/ModuleBuilder/parsers/relationships/AbstractRelationships.
 require_once 'modules/ModuleBuilder/parsers/relationships/RelationshipsInterface.php' ;
 require_once 'modules/ModuleBuilder/parsers/relationships/RelationshipFactory.php' ;
 
+#[\AllowDynamicProperties]
 class UndeployedRelationships extends AbstractRelationships implements RelationshipsInterface
 {
+    public $packageKey;
+    public $installDefs;
     protected $basepath ; // Base directory for the lhs_module
     protected $packageName ;
     private $activitiesToAdd ; // if we need to add in the composite Activities and History subpanels to the module during the build
 
-    
+
     /*
      * Constructor
      * Automatically loads in any saved relationships
@@ -62,12 +65,12 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     {
         $this->basepath = $path ;
         // pull the module and package names out of the path
-        $this->moduleName = basename($path, "/") ; // just in case there are any trailing /
-        $this->packageName = basename(dirname(dirname($path))) ; // simpler than explode :)
+        $this->moduleName = basename((string) $path, "/") ; // just in case there are any trailing /
+        $this->packageName = basename(dirname((string) $path, 2)) ; // simpler than explode :)
         require_once 'modules/ModuleBuilder/MB/ModuleBuilder.php' ;
         $mb = new ModuleBuilder() ;
         $this->packageKey = $mb->getPackageKey($this->packageName) ;
-        
+
         $this->load() ;
     }
 
@@ -79,7 +82,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     {
         // first find all deployed modules that we might participate in a relationship
         $relatableModules = parent::findRelatableModules($includeActivitiesSubmodules) ;
-        
+
         // now add in the undeployed modules - those in custom/modulebuilder
         // note that if a module exists in both deployed and undeployed forms, the subpanels from the undeployed form are used...
 
@@ -92,7 +95,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
                 $relatableModules [ $package->key . "_" . $module->name ] = $module->getProvidedSubpanels() ;
             }
         }
-        
+
         return $relatableModules ;
     }
 
@@ -168,7 +171,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     {
         // start with the set of relationships known to this module plus those already deployed
         $allRelationships = array_merge($this->relationships, parent::getDeployedRelationships()) ;
-        
+
         // add in the relationships known to ModuleBuilder
         require_once 'modules/ModuleBuilder/MB/ModuleBuilder.php' ;
         $mb = new ModuleBuilder() ;
@@ -182,7 +185,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
                 }
             }
         }
-        
+
         return $allRelationships ;
     }
 
@@ -206,19 +209,19 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     /*
      * BUILD FUNCTIONS
      */
-    
+
     /*
      * Translate the set of relationship objects into files that the Module Loader can work with
      * @param $basepath string Pathname of the directory to contain the build
      */
     public function build($basepath = null, $installDefPrefix = null, $relationships = null)
     {
-        
+
         // first expand out any reference to Activities to its submodules
         // we do this here rather than in the subcomponents of the build as most of those subcomponents make use of elements of the definition, such
         // as the relationship name, that must be unique
         // the only special case is the subpanel for Activities, which is a composite, and is applied only once for all the submodules - this is handled in saveSubpanelDefinitions() for Undeployed modules
-        
+
         $relationships = array( ) ;
         $this->activitiesToAdd = false ;
         foreach ($this->relationships as $relationshipName => $relationship) {
@@ -237,7 +240,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
                 $relationships [ $definition [ 'relationship_name' ] ] = $relationship ;
             }
         }
-        
+
         require_once 'modules/ModuleBuilder/MB/ModuleBuilder.php' ;
         $mb = new ModuleBuilder() ;
         $module = $mb->getPackageModule($this->packageName, $this->moduleName) ;
@@ -260,7 +263,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
             $module->save() ;
             //Bug42170================================
         }
-        
+
         // use an installDefPrefix of <basepath>/SugarModules for compatibility with the rest of ModuleBuilder
         $this->installDefs = parent::build($basepath, "<basepath>/SugarModules", $relationships) ;
     }
@@ -320,15 +323,15 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
      */
     private function updateUndeployedLayout($relationship, $actionAdd = true)
     {
-        
+
         // many-to-many relationships don't have fields so if we have a many-to-many we can just skip this...
         if ($relationship->getType() == MB_MANYTOMANY) {
             return false ;
         }
-        
+
         $successful = true ;
         $layoutAdditions = $relationship->buildFieldsToLayouts() ;
-        
+
         require_once 'modules/ModuleBuilder/parsers/views/GridLayoutMetaDataParser.php' ;
         foreach ($layoutAdditions as $deployedModuleName => $fieldName) {
             foreach (array( MB_EDITVIEW , MB_DETAILVIEW ) as $view) {
@@ -336,7 +339,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
                 if (isset($parsedName [ 'packageName' ])) {
                     $GLOBALS [ 'log' ]->debug(get_class($this) . ": " . (($actionAdd) ? "adding" : "removing") . " $fieldName on $view layout for undeployed module {$parsedName [ 'moduleName' ]} in package {$parsedName [ 'packageName' ]}") ;
                     $parser = new GridLayoutMetaDataParser($view, $parsedName [ 'moduleName' ], $parsedName [ 'packageName' ]) ;
-                    
+
                     if (($actionAdd) ? $parser->addField(array( 'name' => $fieldName )) : $parser->removeField($fieldName)) {
                         $parser->handleSave(false) ;
                     } else {
@@ -346,7 +349,7 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
                 }
             }
         }
-        
+
         return $successful ;
     }
 
@@ -361,11 +364,11 @@ class UndeployedRelationships extends AbstractRelationships implements Relations
     protected function saveFieldsToLayouts($basepath, $dummy, $relationshipName, $layoutAdditions)
     {
         require_once 'modules/ModuleBuilder/parsers/views/GridLayoutMetaDataParser.php' ;
-        
+
         // these modules either lack editviews/detailviews or use custom mechanisms for the editview/detailview. In either case, we don't want to attempt to add a relate field to them
         // would be better if GridLayoutMetaDataParser could handle this gracefully, so we don't have to maintain this list here
         $invalidModules = array( 'emails' , 'kbdocuments' ) ;
-        
+
         $fieldsToAdd = array();
         foreach ($layoutAdditions as $deployedModuleName => $fieldName) {
             if (! in_array(strtolower($deployedModuleName), $invalidModules)) {

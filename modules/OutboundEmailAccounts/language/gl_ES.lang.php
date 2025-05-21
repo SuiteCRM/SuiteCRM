@@ -64,7 +64,13 @@ $mod_strings = array(
     'LBL_MODULE_TITLE' => 'Contas de correo electrónico saínte',
     'LBL_HOMEPAGE_TITLE' => 'As miñas Contas de correo electrónico saínte',
     'LNK_NEW_RECORD' => 'Crear contas de correo electrónico saínte',
-    'LNK_LIST' => 'Ver contas de correo electrónico saínte',
+
+    'LNK_LIST_CREATE_NEW_PERSONAL' => 'Nueva Cuenta de Correo Electrónico Saliente Personal',
+    'LNK_LIST_CREATE_NEW_GROUP' => 'Nueva Cuenta de Correo Electrónico Saliente de Grupo',
+    'LNK_LIST_CREATE_SYSTEM_OVERRIDE_GROUP' => 'Nueva Cuenta de Correo Electrónico Saliente con Sobrecarga del Sistema',
+
+    'LNK_LIST' => 'Cuentas de Correo Electrónico Saliente',
+    'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Cuentas de Correo Electrónico Entrante',
     'LBL_SEARCH_FORM_TITLE' => 'Buscar contas de correo electrónico saínte',
     'LBL_HISTORY_SUBPANEL_TITLE' => 'Ver Historial',
     'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Actividades',
@@ -76,16 +82,18 @@ $mod_strings = array(
     'LBL_SMTP_PORT' => 'Porto SMTP',
     'LBL_SMTP_PROTOCOL' => 'Protocolo SMTP',
     'LBL_EDITVIEW_PANEL1' => 'Configuración de conta',
+    'LBL_OUTBOUND_CONFIGURATION' => 'Configuración de Salida',
+    'LBL_CONNECTION_CONFIGURATION' => 'Configuración del Servidor',
     'LBL_CHANGE_PASSWORD' => 'Cambiar contrasinal',
     'LBL_SEND_TEST_EMAIL' => 'Enviar Correo de Proba',
 
     // for outbound email dialog
     'LBL_MISSING_DEFAULT_OUTBOUND_SMTP_SETTINGS' => 'O administrador aínda non configurou a conta saínte por defecto. Non é posible enviar un correo de proba.',
     'LBL_MAIL_SMTPAUTH_REQ' => '¿Utilizar Autenticación SMTP?',
-    'LBL_MAIL_SMTPPASS' => 'Contrasinal SMTP:',
-    'LBL_MAIL_SMTPPORT' => 'Porto SMTP:',
-    'LBL_MAIL_SMTPSERVER' => 'Servidor SMTP:',
-    'LBL_MAIL_SMTPUSER' => 'Nome de Usuario SMTP:',
+    'LBL_MAIL_SMTPPASS' => 'Contrasinal',
+    'LBL_MAIL_SMTPPORT' => 'Porto',
+    'LBL_MAIL_SMTPSERVER' => 'Servidor',
+    'LBL_MAIL_SMTPUSER' => 'Nome de Usuario',
     'LBL_MAIL_SMTP_SETTINGS' => 'Especificación de Servidor SMTP',
     'LBL_CHOOSE_EMAIL_PROVIDER' => 'Escolla o seu proveedor de Email:',
     'LBL_YAHOOMAIL_SMTPPASS' => 'Contrasinal de Yahoo! Mail:',
@@ -102,4 +110,13 @@ $mod_strings = array(
     'LBL_MAIL_SMTPSSL' => 'Mail SMTP/SSL',
     'LBL_SMTP_FROM_NAME' => 'Nome do remitente',
     'LBL_SMTP_FROM_ADDR' => 'Enderezo do Remitente',
+    'LBL_REPLY_TO_NAME' => 'Nombre de "Responder a"',
+    'LBL_REPLY_TO_ADDR' => 'Dirección de "Responder a"',
+
+    'LBL_SECURITYGROUPS_SUBPANEL_TITLE' => 'Grupos de Seguridad',
+
+    'LBL_OWNER' => 'Propietario',
+    'LBL_OWNER_NAME' => 'Propietario',
+
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Conexiones OAuth Externas',
 );

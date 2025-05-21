@@ -128,7 +128,7 @@ class CustomAdministrationController extends AdministrationController
         global $current_user, $mod_strings;
         if (is_admin($current_user)) {
             require_once 'SticInclude/SinergiaDARebuild.php';
-            $res = SinergiaDARebuild::rebuild(true, $_REQUEST['rebuild_filter']);
+            $res = SinergiaDARebuild::rebuild(true, $_REQUEST['rebuild_filter'] ?? 'all');
 
             if ($res != 'ok') {
                 $tx = "<script>$(window).on('load', function() {

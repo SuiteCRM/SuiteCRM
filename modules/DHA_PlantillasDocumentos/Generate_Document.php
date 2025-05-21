@@ -30,6 +30,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 
 //////////////////////////////////////////////////////////////////////////////
+#[\AllowDynamicProperties]
 class Generate_Document {
 
    public $modulo = ''; 
@@ -140,7 +141,7 @@ class Generate_Document {
       $this->userTZ = $current_user->getPreference("timezone");
       $this->userTZlabel = $this->userTZ." ".$this->userDateTimePrefs["userGmt"];
 
-      $seps = get_number_seperators();
+      $seps = get_number_separators();
       $this->thousands_sep = $seps[0];
       $this->decimal_point = $seps[1];
       $this->decimals = $locale->getPrecision();
@@ -456,17 +457,17 @@ class Generate_Document {
    ///////////////////////////////////////////////////////////////////////////
    function GenerarInforme () {
       global $mod_strings, $sugar_config;
-      
+
       // Merge data
       $this->CalculatedFieldsClass->BeforeMergeBlock();  // Evento
       $this->TBS->MergeBlock('a', $this->datos);
       $this->CalculatedFieldsClass->AfterMergeBlock();   // Evento
-      
+
       // delete comments
       $this->TBS->PlugIn(OPENTBS_DELETE_COMMENTS);
 
       if ($this->enPDF){
-      
+
          // Issue found by Bob Caverly with LibreOffice working output dir
          if (!is_windows() && isset($sugar_config['DHA_OpenOffice_HOME']) && $sugar_config['DHA_OpenOffice_HOME']) {   
             $HOME = getenv('HOME');
@@ -477,19 +478,22 @@ class Generate_Document {
                putenv("HOME={$new_HOME}");
             }
          }      
-      
+
          if (isset($sugar_config['DHA_OpenOffice_exe']) && $sugar_config['DHA_OpenOffice_exe'] && file_exists($sugar_config['DHA_OpenOffice_exe']) && is_readable($sugar_config['DHA_OpenOffice_exe'])){
-            
+
             $file_name = $this->GetTempFileName('', $this->template_file_ext, '');
             $info = pathinfo($file_name);
             $out_dir = $info['dirname'];
             $file_name_pdf = $this->GetTempFileName($info['filename'], 'pdf', $info['dirname']);                   
-            
+
             $this->TBS->Show(OPENTBS_FILE, $file_name);   
-                 
+
             $pdf_command = '"'.$sugar_config['DHA_OpenOffice_exe'].'" --headless --nologo --nofirststartwizard --convert-to pdf "'.$file_name.'" --outdir "'.$out_dir.'"';
-            exec($pdf_command, $return_output, $return_var);
-            
+            // Run exec only if is allowed
+            if (function_exists('exec') && !in_array('exec', explode(',', ini_get('disable_functions')))) {
+               exec($pdf_command, $return_output, $return_var);
+            }
+
             if ($this->Download) {
                $this->DescargarInforme ($file_name_pdf);
             }
@@ -497,35 +501,35 @@ class Generate_Document {
                $this->Download_filename = $file_name_pdf;
                $this->Download_mimetype = $this->GetMimeTypeFromFileName($this->Download_filename);
             }            
-            
+
             if (!is_windows() && isset($old_HOME) && $old_HOME) {   
                putenv("HOME={$old_HOME}");
             }            
          }
          elseif (!is_windows() && isset($sugar_config['DHA_OpenOffice_cde']) && $sugar_config['DHA_OpenOffice_cde'] && file_exists($sugar_config['DHA_OpenOffice_cde']) && is_readable($sugar_config['DHA_OpenOffice_cde'])){            
-            
+
             // Recordar que el cde se ejecutara dentro de un sandbox, con lo cual el /home que se le pasa al comando no es el del sistema, sino el del paquete cde del libreoffice
             // En cambio, si se decidiera poner la salida en /tmp, este directorio si que seria el del sistema y no el del paquete (ver en options del paquete cde "ignore_prefix=/tmp/" y "ignore_exact=/tmp" )
-            
+
             // De momento se desactiva la generacion de pdf con el cde para Hojas de calculo. Habría que ampliar el paquete cde para permitirlo (ahora mismo no funciona, y no se considera necesario que funcione).
             if ($this->is_SpreadSheet) {
                if (!is_windows() && isset($old_HOME) && $old_HOME) {   
                   putenv("HOME={$old_HOME}");
                }
-               
+
                dha_die ('Can not export Spreadsheets to PDF with cde package');
             }
 
             $info = pathinfo($sugar_config['DHA_OpenOffice_cde']);
             $out_dir = $info['dirname'] . '/cde-root/home';
-            
+
             $file_name = $this->GetTempFileName('', $this->template_file_ext, $out_dir);
             $info = pathinfo($file_name);
             $file_name_sandbox = $info['basename'];
             $file_name_pdf = $this->GetTempFileName($info['filename'], 'pdf', $out_dir);
-            
+
             $this->TBS->Show(OPENTBS_FILE, $file_name);
-            
+
             $GLOBALS['log']->debug('PDF - Path env before: ' . getenv("PATH") ); 
             $env_path = $_ENV["PATH"];
             $env_path_parts = explode(':', $env_path);
@@ -543,17 +547,20 @@ class Generate_Document {
                $env_path .= ':/usr/bin';
             putenv("PATH=" .$env_path);
             $GLOBALS['log']->debug('PDF - Path env after: ' . getenv("PATH") );             
-                 
+
             $pdf_command = $sugar_config['DHA_OpenOffice_cde'].' --headless --nologo --nofirststartwizard --convert-to pdf /home/'.$file_name_sandbox.' --outdir /home';
-            exec($pdf_command, $return_output, $return_var);
-            
+            // Run exec only if is allowed
+            if (function_exists('exec') && !in_array('exec', explode(',', ini_get('disable_functions')))) {
+               exec($pdf_command, $return_output, $return_var);
+            }
+
             $GLOBALS['log']->debug('PDF - file_name: ' . $file_name );              
             $GLOBALS['log']->debug('PDF - file_name_sandbox: ' . $file_name_sandbox );         
             $GLOBALS['log']->debug('PDF - file_name_pdf: ' . $file_name_pdf );         
             $GLOBALS['log']->debug('PDF - pdf_command: ' . $pdf_command );              
             $GLOBALS['log']->debug('PDF - pdf_command - return_output: ' . print_r($return_output, true) );   
             $GLOBALS['log']->debug('PDF - pdf_command - return_var: ' . $return_var );            
-            
+
             if ($this->Download) {
                $this->DescargarInforme ($file_name_pdf);
             }
@@ -561,7 +568,7 @@ class Generate_Document {
                $this->Download_filename = $file_name_pdf;
                $this->Download_mimetype = $this->GetMimeTypeFromFileName($this->Download_filename);
             }            
-            
+
             if (!is_windows() && isset($old_HOME) && $old_HOME) {   
                putenv("HOME={$old_HOME}");
             }            
@@ -570,7 +577,7 @@ class Generate_Document {
             if (!is_windows() && isset($old_HOME) && $old_HOME) {   
                putenv("HOME={$old_HOME}");
             }
-            
+
             sugar_die($mod_strings['MSG_ERROR_NO_SE_ENCUENTRA_EXE_OPENOFFICE']);
          }
       }
@@ -585,7 +592,7 @@ class Generate_Document {
             $this->Download_mimetype = $this->GetMimeTypeFromFileName($this->Download_filename);
          }         
       }
-      
+
       $this->CalculatedFieldsClass->AfterShow();  // Evento
    }
 
@@ -1801,7 +1808,7 @@ EOJS;
                if (isset($this->bean_datos->$nombre_campo)){
                   $this->datos[$cuenta][$nombre_campo] = $this->FormateaCampo($this->bean_datos->$nombre_campo, $campo, true);
                }
-               
+
                // $etiqueta = $nombre_campo;
                // if (isset($campo['vname']))
                   // $etiqueta = $this->translate ($campo['vname'], $this->modulo);                  
@@ -1892,7 +1899,7 @@ EOJS;
                         if (isset($related_bean->$nombre_campo)){
                            $this->datos[$cuenta][$nombre_campo_TBS] = $this->FormateaCampo($related_bean->$nombre_campo, $campo, false);
                         }
-                        
+
                         // if (isset($campo['vname']))
                            // $etiqueta = $this->translate ($campo['vname'], $modulo_relacionado);
                         // else
@@ -1982,7 +1989,7 @@ EOJS;
                         if (isset($related_bean->$nombre_campo)){
                            $datos_relacionados[$nombre_campo] = $this->FormateaCampo($related_bean->$nombre_campo, $campo, false);
                         }
-                        
+
                         // if (isset($campo['vname']))
                            // $etiqueta = $this->translate ($campo['vname'], $modulo_relacionado);
                         // else
@@ -2109,7 +2116,7 @@ EOJS;
       $Campos = array();
       $cuenta_relaciones = 1;
       foreach ($CamposTemp as $Campo) {
-         if (strpos($Campo, $this->separador_campo_relacion) === false) {
+         if (strpos($Campo, (string) $this->separador_campo_relacion) === false) {
             $Campos[] = $Campo;
          }
          else {
@@ -2118,7 +2125,7 @@ EOJS;
             $nombre_modulo = $temp[1];
             $nombre_campo = $temp[2];
             
-            if (strpos($nombre_campo, $this->separador_campo_related) === false) {
+            if (strpos($nombre_campo, (string) $this->separador_campo_related) === false) {
                $CamposDeRelacion[$nombre_campo_relacion][] = $nombre_campo;
                if (!in_array($nombre_campo_relacion, $Relaciones)) {
                   $Relaciones['sub'.$cuenta_relaciones] = $nombre_campo_relacion;
@@ -2191,7 +2198,7 @@ EOJS;
       $cuenta = 0;
       foreach ($Campos as $Campo) {
          $SpreadSheetFieldType = '';
-         if (strpos($Campo, $this->separador_campo_related) === false) {
+         if (strpos($Campo, (string) $this->separador_campo_related) === false) {
             $etiqueta = $Campo;
             if (isset($this->bean_datos->field_defs[$Campo]['vname'])) {
                $etiqueta = $this->translate ($this->bean_datos->field_defs[$Campo]['vname'], $this->modulo);

@@ -41,10 +41,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class UpgradeSavedSearch
 {
     public function __construct()
     {
+        $searchdefs = [];
+        $searchFields = [];
         $result = DBManagerFactory::getInstance()->query("SELECT id FROM saved_search");
         while ($row = DBManagerFactory::getInstance()->fetchByAssoc($result)) {
             $focus = BeanFactory::newBean('SavedSearch');

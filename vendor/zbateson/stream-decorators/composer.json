@@ -9,12 +9,14 @@
         }
     ],
     "require": {
-        "php": ">=5.4",
-        "guzzlehttp/psr7": "^1.7.0|^2.0",
+        "php": ">=7.2",
+        "guzzlehttp/psr7": "^1.9 | ^2.0",
         "zbateson/mb-wrapper": "^1.0.0"
     },
     "require-dev": {
-        "sanmai/phpunit-legacy-adapter": "^6.3 || ^8"
+        "phpunit/phpunit": "<10.0",
+        "friendsofphp/php-cs-fixer": "*",
+        "phpstan/phpstan": "*"
     },
     "autoload": {
         "psr-4": {

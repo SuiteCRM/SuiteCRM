@@ -111,7 +111,7 @@ Check out the branch you want to release:
 git checkout <branchname>
 ```
 
-Check that the version number in composer.json is correct:
+Check that the version number in composer.json is correct (or not specified so that it gets picked up from the git tag):
 
 ```
 cat composer.json
@@ -141,7 +141,7 @@ Test the `.phar`:
 
 ```
 cd ../
-./test.sh dist/defuse-crypto.phar
+./test.sh dist/phar-testing-autoload.php
 ```
 
 Sign the `.phar`:

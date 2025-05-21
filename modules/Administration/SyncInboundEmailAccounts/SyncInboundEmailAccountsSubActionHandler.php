@@ -50,13 +50,14 @@ use SuiteCRM\Utility\SuiteValidator;
  * Separated methods specially for SyncInboundEmailAccounts sub-actions handling
  *
  */
+#[\AllowDynamicProperties]
 class SyncInboundEmailAccountsSubActionHandler
 {
 
     /**
      * @const string
      */
-    const PROCESS_OUTPUT_FILE = "modules/Administration/SyncInboundEmailAccounts/sync_output.html";
+    public const PROCESS_OUTPUT_FILE = "modules/Administration/SyncInboundEmailAccounts/sync_output.html";
 
     /**
      * @var SyncInboundEmailAccountsPage
@@ -69,26 +70,18 @@ class SyncInboundEmailAccountsSubActionHandler
     protected $db;
 
     /**
-     *
-     * @var ImapHandlerInterface
-     */
-    protected $imap;
-
-    /**
      * SyncInboundEmailAccountsSubActionHandler constructor.
      *
      * Handle sub-action for Sync Inbound Email Accounts
      *
      * @param SyncInboundEmailAccountsPage $sync
-     * @param ImapHandlerInterface $imap
      * @throws SyncInboundEmailAccountsException
      * @throws SyncInboundEmailAccountsNoMethodException
      */
-    public function __construct(SyncInboundEmailAccountsPage $sync, ImapHandlerInterface $imap)
+    public function __construct(SyncInboundEmailAccountsPage $sync)
     {
         global $mod_strings;
 
-        $this->imap = $imap;
         $this->sync = $sync;
 
         try {
@@ -244,7 +237,7 @@ class SyncInboundEmailAccountsSubActionHandler
                     foreach ($emailIds as $emailId => $emailData) {
                         $e = $this->getEmailBean($emailId);
                         if ($e !== false) {
-                            $e->orphaned = $this->isOrphanedEmail($e, $ie, $IMAPHeaders);
+                            $e->orphaned = $this->isOrphanedEmail($e, $IMAPHeaders);
                             if ($e->uid = $this->getIMAPUID($e->message_id, $IMAPHeaders)) {
                                 if ($e->save()) {
                                     $updated++;
@@ -262,14 +255,14 @@ class SyncInboundEmailAccountsSubActionHandler
                 } catch (SyncInboundEmailAccountsEmptyException $e) {
                     $this->output($mod_strings['LBL_SYNC_NO_EMAIL']);
                 }
+
+                $this->handleIMAPErrors($ie);
             } else {
                 $this->output($mod_strings['LBL_IE_NOT_FOUND']);
                 $GLOBALS['log']->debug("Inbound Email Account record not found, please check the record still exists and non-deleted: " . $ieId);
             }
         }
         $this->output($mod_strings['LBL_SYNC_DONE']);
-
-        $this->handleIMAPErrors();
 
         $output = file_get_contents(self::PROCESS_OUTPUT_FILE);
 
@@ -282,11 +275,10 @@ class SyncInboundEmailAccountsSubActionHandler
     /**
      * @throws SyncInboundEmailAccountsException
      */
-    protected function handleIMAPErrors()
+    protected function handleIMAPErrors(InboundEmail $ie)
     {
         global $mod_strings;
-
-        $errs = $this->imap->getErrors();
+        $errs = $ie->getImap()->getErrors();
         if ($errs) {
             foreach ($errs as $err) {
                 $GLOBALS['log']->error("IMAP error detected: " . $err);
@@ -294,7 +286,7 @@ class SyncInboundEmailAccountsSubActionHandler
             $this->output($mod_strings['LBL_SYNC_ERROR_FOUND']);
         }
 
-        $warns = $this->imap->getAlerts();
+        $warns = $ie->getImap()->getAlerts();
         if ($warns) {
             foreach ($warns as $warn) {
                 $GLOBALS['log']->warn("IMAP error detected: " . $warn);
@@ -422,11 +414,11 @@ class SyncInboundEmailAccountsSubActionHandler
 
         // ------------- READ IMAP EMAIL-HEADERS AND CALCULATE MD5 BASED MESSAGE_IDs ----------------
 
-        $imap_uids = $this->imap->sort(SORTDATE, 0, SE_UID);
+        $imap_uids = $ie->getImap()->sort(SORTDATE, 0, SE_UID);
         $headers = array();
         foreach ($imap_uids as $imap_uid) {
-            $msgNo = $this->imap->getMessageNo((int)$imap_uid);
-            $headers[$imap_uid] = $this->imap->getHeaderInfo($msgNo);
+            $msgNo = $ie->getImap()->getMessageNo((int)$imap_uid);
+            $headers[$imap_uid] = $ie->getImap()->getHeaderInfo($msgNo);
             $headers[$imap_uid]->imap_uid = $imap_uid;
             $headers[$imap_uid]->imap_msgid_int = (int)$msgNo;
         }
@@ -439,7 +431,7 @@ class SyncInboundEmailAccountsSubActionHandler
 
         // ------------ IMAP CLOSE -------------
 
-        $this->imap->close();
+        $ie->getImap()->close();
 
 
         return $headers;
@@ -454,16 +446,16 @@ class SyncInboundEmailAccountsSubActionHandler
      */
     protected function getCompoundMessageIdMD5(InboundEmail $ie, $uid, $msgNo = null)
     {
-        if (empty($msgNo) and !empty($uid)) {
-            $msgNo = $this->imap->getMessageNo((int)$uid);
+        if (empty($msgNo) && !empty($uid)) {
+            $msgNo = $ie->getImap()->getMessageNo((int)$uid);
         }
 
-        $header = $this->imap->getHeaderInfo($msgNo);
-        $fullHeader = $this->imap->fetchHeader($msgNo);
+        $header = $ie->getImap()->getHeaderInfo($msgNo);
+        $fullHeader = $ie->getImap()->fetchHeader($msgNo);
         $message_id = $header->message_id;
         $deliveredTo = $ie->id;
         $matches = array();
-        preg_match('/(delivered-to:|x-real-to:){1}\s*(\S+)\s*\n{1}/im', $fullHeader, $matches);
+        preg_match('/(delivered-to:|x-real-to:){1}\s*(\S+)\s*\n{1}/im', (string) $fullHeader, $matches);
         if (count($matches)) {
             $deliveredTo = $matches[2];
         }

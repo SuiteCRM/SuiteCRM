@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Administration/Common.php');
 require_once('modules/Administration/QuickRepairAndRebuild.php');
+#[\AllowDynamicProperties]
 class DropDownHelper
 {
     public $modules = array();
@@ -137,7 +138,7 @@ class DropDownHelper
 
 
         //get rid of closing tags they are not needed and are just trouble
-        $contents = str_replace("?>", '', $contents);
+        $contents = str_replace("?>", '', (string) $contents);
         if (empty($contents)) {
             $contents = "<?php";
         }
@@ -148,7 +149,7 @@ class DropDownHelper
                 //only if the value has changed or does not exist do we want to add it this way
                 if (!isset($my_list_strings[$dropdown_name][$key]) || strcmp($my_list_strings[$dropdown_name][$key], $value) != 0) {
                     //clear out the old value
-                    $contents = preg_replace(self::getPatternMatchGlobal($dropdown_name), "\n", $contents);
+                    $contents = preg_replace(self::getPatternMatchGlobal($dropdown_name), "\n", (string) $contents);
                     $contents = preg_replace(self::getPatternMatch($dropdown_name), "\n", $contents);
                     //add the new ones
                     $contents .= "\n\$app_list_strings['$dropdown_name']['$key']=" . var_export_helper($value) . ";";

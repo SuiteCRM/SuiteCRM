@@ -2,6 +2,7 @@
 
 namespace Step\Acceptance;
 
+#[\AllowDynamicProperties]
 class Events extends \AcceptanceTester
 {
     /**
@@ -24,7 +25,13 @@ class Events extends \AcceptanceTester
         $I->fillField('#description', $faker->text());
         $I->fillField('#budget', $faker->randomDigit());
 
-        $I->selectOption('#duration', '15 minutes');
+        $I->fillField('#date_start_date', '01/01/2000');
+        $I->selectOption('#date_start_time_section #date_start_hours', '12');
+        $I->selectOption('#date_start_time_section #date_start_minutes', '45');
+
+        $I->fillField('#date_end_date', '01/01/2000');
+        $I->selectOption('#date_end_time_section #date_end_hours', '01');
+        $I->selectOption('#date_end_time_section #date_end_minutes', '45');
 
         $I->seeElement('#assigned_user_name');
         $I->seeElement('#date_start_date');

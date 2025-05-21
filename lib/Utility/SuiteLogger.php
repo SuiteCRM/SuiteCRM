@@ -51,6 +51,7 @@ use Psr\Log\LogLevel;
  * @package SuiteCRM\Utility
  * @see http://www.php-fig.org/psr/psr-3/
  */
+#[\AllowDynamicProperties]
 class SuiteLogger extends AbstractLogger
 {
     /**

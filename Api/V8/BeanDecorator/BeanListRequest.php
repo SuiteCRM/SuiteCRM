@@ -1,6 +1,7 @@
 <?php
 namespace Api\V8\BeanDecorator;
 
+#[\AllowDynamicProperties]
 class BeanListRequest
 {
     /**

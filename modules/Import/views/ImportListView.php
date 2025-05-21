@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewSmarty.php');
 
 
+#[\AllowDynamicProperties]
 class ImportListView
 {
     /**
@@ -127,7 +128,11 @@ class ImportListView
         $this->ss->assign('navStrings', $navStrings);
         $this->ss->assign('pageData', $this->generatePaginationData());
         $this->ss->assign('tableID', $this->tableID);
-        $this->ss->assign('colCount', count($this->headerColumns));
+        // STIC Custom 20250403 JBL - Fix TypeError when headerColumns is false
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $this->ss->assign('colCount', count($this->headerColumns));
+        $this->ss->assign('colCount', is_array($this->headerColumns) ? count($this->headerColumns) : 0);
+        // END STIC Custom
         $this->ss->assign('APP', $app_strings);
         $this->ss->assign('rowColor', array('oddListRow', 'evenListRow'));
         $this->ss->assign('displayColumns', $this->headerColumns);
@@ -151,8 +156,8 @@ class ImportListView
     {
         $maxColumns = 0;
         foreach ($this->data as $data) {
-            if (count($data) > $maxColumns) {
-                $maxColumns = count($data);
+            if ((is_countable($data) ? count($data) : 0) > $maxColumns) {
+                $maxColumns = is_countable($data) ? count($data) : 0;
             }
         }
         return $maxColumns;

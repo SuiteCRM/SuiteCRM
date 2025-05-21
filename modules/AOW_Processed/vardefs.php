@@ -97,8 +97,8 @@ $dictionary['AOW_Processed'] = array(
   array(
     'name'=> 'parent_name',
     'parent_type'=>'record_type_display' ,
-    'type_name'=>'bean_module',
-    'id_name'=>'bean_id',
+    'type_name'=>'parent_type',
+    'id_name'=>'parent_id',
     'vname'=>'LBL_BEAN',
     'type'=>'parent',
     'group'=>'parent_name',

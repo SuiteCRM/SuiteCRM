@@ -46,16 +46,17 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Job queue job
  * @api
  */
+#[\AllowDynamicProperties]
 class SchedulersJob extends Basic
 {
-    const JOB_STATUS_QUEUED = 'queued';
-    const JOB_STATUS_RUNNING = 'running';
-    const JOB_STATUS_DONE = 'done';
+    public const JOB_STATUS_QUEUED = 'queued';
+    public const JOB_STATUS_RUNNING = 'running';
+    public const JOB_STATUS_DONE = 'done';
 
-    const JOB_PENDING = 'queued';
-    const JOB_PARTIAL = 'partial';
-    const JOB_SUCCESS = 'success';
-    const JOB_FAILURE = 'failure';
+    public const JOB_PENDING = 'queued';
+    public const JOB_PARTIAL = 'partial';
+    public const JOB_SUCCESS = 'success';
+    public const JOB_FAILURE = 'failure';
 
     // schema attributes
     public $id;
@@ -172,7 +173,7 @@ class SchedulersJob extends Basic
         curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);  // open brand new conn
         curl_setopt($ch, CURLOPT_HEADER, true); // do not return header info with result
         curl_setopt($ch, CURLOPT_NOPROGRESS, true); // do not have progress bar
-        $urlparts = parse_url($job);
+        $urlparts = parse_url((string) $job);
         if (empty($urlparts['port'])) {
             if (isset($urlparts['scheme']) && $urlparts['scheme'] == 'https') {
                 $urlparts['port'] = 443;
@@ -284,7 +285,11 @@ class SchedulersJob extends Basic
     {
         $GLOBALS['log']->info("Resolving job {$this->id} as $resolution: $message");
         if ($resolution == self::JOB_FAILURE) {
-            $this->failure_count++;
+            // STIC Custom 20250315 JBL - Fix deprecated Warning: increment non-alphanumeric string
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $this->failure_count++;
+            $this->failure_count = (int)$this->failure_count + 1;
+            // END STIC Custom
             if ($this->requeue && $this->retry_count > 0) {
                 // retry failed job
                 $this->status = self::JOB_STATUS_QUEUED;
@@ -517,7 +522,12 @@ class SchedulersJob extends Basic
             }
             $func = $exJob[1];
             $GLOBALS['log']->debug("----->SchedulersJob calling function: $func");
-            set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+            // STIC Custom 20250221 JBL - Avoid Deprecated Warning: Constant E_STRICT is deprecated
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+            // In PHP8+ old E_STRICT are E_WARNING, E_DEPRECATED or errors
+            set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE);
+            // END STIC Custom
             if (!is_callable($func)) {
                 $this->resolveJob(self::JOB_FAILURE, sprintf(translate('ERR_CALL', 'SchedulersJobs'), $func));
             }
@@ -543,7 +553,12 @@ class SchedulersJob extends Basic
         } elseif ($exJob[0] == 'url') {
             if (function_exists('curl_init')) {
                 $GLOBALS['log']->debug('----->SchedulersJob firing URL job: '.$exJob[1]);
-                set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+                // STIC Custom 20250303 JBL - Avoid Deprecated Warning: Constant E_STRICT is deprecated
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+                // In PHP8+ old E_STRICT are E_WARNING, E_DEPRECATED or errors
+                set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE);
+                // END STIC Custom
                 if ($this->fireUrl($exJob[1])) {
                     restore_error_handler();
                     $this->resolveJob(self::JOB_SUCCESS);

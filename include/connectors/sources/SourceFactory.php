@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * with the name ext_soap_hoovers would be ext/soap/hoovers.php
  * @api
  */
+#[\AllowDynamicProperties]
 class SourceFactory
 {
 
@@ -57,7 +58,12 @@ class SourceFactory
      */
     public static function getSource($class, $call_init = true)
     {
-        $dir = str_replace('_', '/', $class);
+        $dir = str_replace('_', '/', (string) $class);
+
+        if (strpos($dir, '..') !== false) {
+            return null;
+        }
+
         $parts = explode("/", $dir);
         $file = $parts[count($parts)-1];
         $pos = strrpos($file, '/');

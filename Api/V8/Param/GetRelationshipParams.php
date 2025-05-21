@@ -5,6 +5,7 @@ use Api\V8\Param\Options as ParamOption;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+#[\AllowDynamicProperties]
 class GetRelationshipParams extends BaseParam
 {
     /**

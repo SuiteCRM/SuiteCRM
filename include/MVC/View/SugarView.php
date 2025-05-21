@@ -4,7 +4,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
  * Copyright (C) 2013 - 2023 SinergiaTIC Association
@@ -266,7 +266,7 @@ class SugarView
             $content = ob_get_clean();
             $module = $this->module;
             $ajax_ret = array(
-                'content' => mb_detect_encoding($content) == "UTF-8" ? $content : utf8_encode($content),
+                'content' => mb_detect_encoding($content) == "UTF-8" ? $content : mb_convert_encoding($content, 'ISO-8859-1', 'UTF-8'),
                 'menu' => array(
                     'module' => $module,
                     'label' => translate($module),
@@ -816,6 +816,23 @@ class SugarView
             $ss->clear_compiled_tpl($headerTpl);
         }
 
+        // STIC Custom 20250313 JBL - Show STIC - Update Alert when required
+        // With Core Update $retModTabs is false in most cases
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // Set vars for show Update alert
+        $sticVersionCookie = isset($_COOKIE['SticVersion']) ? $_COOKIE['SticVersion'] : null;
+        $lastSticVersion = null;
+        $showUpdateAlert = false;
+
+        if (isset($sugar_config['sinergiacrm_version']) && !empty($sticVersionCookie) && 
+            $sugar_config['sinergiacrm_version'] != $sticVersionCookie) {
+
+            $lastSticVersion = $sugar_config['sinergiacrm_version'];
+            $showUpdateAlert = $sugar_config['stic_show_update_alert'];
+        }
+        $ss->assign('lastSticVersion', $lastSticVersion);
+        $ss->assign('showUpdateAlert', $showUpdateAlert);
+        // END STIC Custom
         if ($retModTabs) {
             return $ss->fetch($themeObject->getTemplate('_headerModuleList.tpl'));
         } else {
@@ -1053,6 +1070,7 @@ EOHTML;
 
         $ss = new Sugar_Smarty();
         $ss->assign("AUTHENTICATED", isset($_SESSION["authenticated_user_id"]));
+        $ss->assign("APP", $app_strings);
         $ss->assign('MOD', return_module_language($GLOBALS['current_language'], 'Users'));
 
         $bottomLinkList = array();
@@ -1290,7 +1308,11 @@ EOHTML;
     private function _calculateFooterMetrics()
     {
         $endTime = microtime(true);
-        $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : null);
+        // STIC Custom 20250206 JBL - Avoid Uncaught TypeError: Unsupported operand types: float - null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : null);
+        $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : 0);
+        // End STIC Custom
         $this->responseTime = number_format(round($deltaTime, 2), 2);
         // Print out the resources used in constructing the page.
         $this->fileResources = count(get_included_files());
@@ -1302,7 +1324,11 @@ EOHTML;
     private function _getStatistics()
     {
         $endTime = microtime(true);
-        $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : null);
+        // STIC Custom 20250206 JBL - Avoid Uncaught TypeError: Unsupported operand types: float - null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : null);
+        $deltaTime = $endTime - (isset($GLOBALS['startTime']) ? $GLOBALS['startTime'] : 0);
+        // End STIC Custom
         $response_time_string =
             $GLOBALS['app_strings']['LBL_SERVER_RESPONSE_TIME'] .
             ' ' .
@@ -1534,14 +1560,14 @@ EOHTML;
         if (!empty($paramString)) {
             $theTitle .= "<h2 class='module-title-text'> $paramString </h2>";
 
-            if ($this->type == "detail") {
+            if ($this->type === "detail") {
                 $theTitle .= "<div class='favorite' record_id='" .
                     $this->bean->id .
                     "' module='" .
                     $this->bean->module_dir .
-                    "'><div class='favorite_icon_outline'>" .
+                    "'><div class='favorite_icon_outline' title='" . translate('LBL_MARK_FAVORITE', 'Favorites') . "'>" .
                     "<span class='suitepicon suitepicon-favorite-star-outline'></span></div>
-                                                    <div class='favorite_icon_fill' 'title=\"' . translate('LBL_DASHLET_EDIT', 'Home') . '\" border=\"0\"  align=\"absmiddle\"'>" .
+                                                    <div class='favorite_icon_fill' title='" . translate('LBL_UNMARK_FAVORITE', 'Favorites') . "' border=\"0\"  align=\"absmiddle\">" .
 
                     "<span class='suitepicon suitepicon-favorite-star'></span></div></div>";
             }
@@ -1638,7 +1664,11 @@ EOHTML;
                     }
                     break;
                 case 'DetailView':
-                    $beanName = $this->bean->get_summary_text();
+                    // STIC Custom 20250316 JBL - Fix Uncaught Error: Call to a member function get_summary_text() on null
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // $beanName = $this->bean->get_summary_text();
+                    $beanName = $this->bean?->get_summary_text() ?? '';
+                    // END STIC Custom
                     $params[] = $beanName;
                     break;
             }

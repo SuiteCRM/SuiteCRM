@@ -71,6 +71,7 @@ define('OPENTBS_EVEN',128);
  * Main class which is a TinyButStrong plug-in.
  * It is also a extension of clsTbsZip so it can directly manage the archive underlying the template.
  */
+#[\AllowDynamicProperties]
 class clsOpenTBS extends clsTbsZip {
 
 	function OnInstall() {
@@ -868,7 +869,7 @@ class clsOpenTBS extends clsTbsZip {
 			$idx = $this->FileGetIdx($FileName);
 			if ( (!isset($this->TbsStoreLst[$idx])) && (!isset($this->TbsNoField[$idx])) ) {
 				$txt = $this->FileRead($idx, true);
-				if (strpos($txt, $TBS->_ChrOpen)!==false) {
+				if (strpos($txt, (string) $TBS->_ChrOpen)!==false) {
 					// merge
 					$nbr++;
 					if ($nbr==1) {
@@ -964,7 +965,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 
 	}
 
-	function TbsDebug_Merge($XmlFormat = true, $Current) {
+	function TbsDebug_Merge($XmlFormat , $Current) {
 	// display modified and added files
 
 		$this->TbsDebug_Init($nl, $sep, $bull, ($Current ? 'OPENTBS_DEBUG_XML_CURRENT' :'OPENTBS_DEBUG_XML_SHOW'));
@@ -1035,7 +1036,9 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 
 	function ConvXmlUtf8($Txt, $ConvBr) {
 	// Used by TBS to convert special chars and new lines.
-		$x = htmlspecialchars(utf8_encode($Txt));
+		// Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+		// $x = htmlspecialchars(utf8_encode($Txt));
+		$x = htmlspecialchars(mb_convert_encoding($Txt, 'UTF-8', 'ISO-8859-1'));
 		if ($ConvBr) $this->ConvBr($x);
 		return $x;
 	}
@@ -1275,14 +1278,14 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 
 			$x = substr($Txt, $p, $pe -$p);
 
-			if ( ($IgnoreIfAtt===false) || (strpos($x, $IgnoreIfAtt)===false) ) {
+			if ( ($IgnoreIfAtt===false) || (strpos($x, (string) $IgnoreIfAtt)===false) ) {
 
 				$att_lst = array('w'=>$AttW, 'h'=>$AttH);
 				$res_lst = array();
 
 				foreach ($att_lst as $i=>$att) {
 						$l = strlen($att);
-						$b = strpos($x, $att);
+						$b = strpos($x, (string) $att);
 						if ($b===false) return false;
 						$b = $b + $l;
 						$e = strpos($x, '"', $b);
@@ -1556,7 +1559,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		// Search in the current sub-file
 		if ( ($this->TbsCurrIdx!==false) && isset($idx_keys[$this->TbsCurrIdx]) ) {
 			$key = $idx_keys[$this->TbsCurrIdx];
-			$p = strpos($this->TBS->Source, $str);
+			$p = strpos($this->TBS->Source, (string) $str);
 			if ($p!==false) {
 				$keys_ok[] = array('key' => $key, 'idx' => $this->TbsCurrIdx, 'src' => &$this->TBS->Source, 'pos' => $p, 'curr'=>true);
 				if ($returnFirstFound) return $keys_ok[0];
@@ -1568,7 +1571,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		foreach($this->TbsStoreLst as $idx => $s) {
 			if ( ($idx!==$this->TbsCurrIdx) && isset($idx_keys[$idx]) ) {
 				$key = $idx_keys[$idx];
-				$p = strpos($s['src'], $str);
+				$p = strpos($s['src'], (string) $str);
 				if ($p!==false) {
 					$keys_ok[] = array('key' => $key, 'idx' => $idx, 'src' => &$s['src'], 'pos' => $p, 'curr'=>false);
 					if ($returnFirstFound) return $keys_ok[0];
@@ -1580,7 +1583,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		// Search in other sub-files (never opened)
 		foreach ($keys_todo as $key => $idx) {
 			$txt = $this->FileRead($idx);
-			$p = strpos($txt, $str);
+			$p = strpos($txt, (string) $str);
 			if ($p!==false) {
 				$keys_ok[] = array('key' => $key, 'idx' => $idx, 'src' => $txt, 'pos' => $p, 'curr'=>false);
 				if ($returnFirstFound) return $keys_ok[0];
@@ -1983,7 +1986,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		$len = strlen($Tag);
 		$p = $PosBeg;
 		while ($p!==false) {
-			$p = strpos($Txt, $Tag, $p);
+			$p = strpos($Txt, (string) $Tag, $p);
 			if ($p===false) return false;
 			$x = substr($Txt, $p+$len, 1);
 			if (($x===' ') || ($x==='/') || ($x==='>') ) {
@@ -3308,15 +3311,15 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		static $v2_len = 4;
 
 		// found position of the <c> element, and extract its contents
-		$p_close = strpos($Txt, $c, $PosEnd);
+		$p_close = strpos($Txt, (string) $c, $PosEnd);
 		if ($p_close===false) return;
 		$x_len = $p_close - $p;
 		$x = substr($Txt, $p, $x_len); // [<c ...> ... ]</c>
 
 		// found position of the <v> element, and extract its contents
-		$v1_p = strpos($x, $v1);
+		$v1_p = strpos($x, (string) $v1);
 		if ($v1_p==false) return false;
-		$v2_p = strpos($x, $v2, $v1_p);
+		$v2_p = strpos($x, (string) $v2, $v1_p);
 		if ($v2_p==false) return false;
 		$vt = substr($x, $v1_p+$v1_len, $v2_p - $v1_p - $v1_len);
 
@@ -3327,7 +3330,7 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
 		$s = $this->OpenXML_SharedStrings_GetVal($v);
 
 		// if the SharedSring has no TBS field, then we save the id in a list of known id, and we leave the function
-		if (strpos($s, $this->TBS->_ChrOpen)===false) {
+		if (strpos($s, (string) $this->TBS->_ChrOpen)===false) {
 			$this->MsExcel_NoTBS[$v] = true;
 			return true;
 		}
@@ -5154,24 +5157,25 @@ If they are blank spaces, line beaks, or other unexpected characters, then you h
  * The object represents only the opening tag until method FindEndTag() is called.
  * Then is represents the complete entity.
  */
+#[\AllowDynamicProperties]
 class clsTbsXmlLoc {
 
-	var $PosBeg;
-	var $PosEnd;
-	var $SelfClosing;
-	var $Txt;
-	var $Name = ''; 
+	public $PosBeg;
+	public $PosEnd;
+	public $SelfClosing;
+	public $Txt;
+	public $Name = ''; 
 
-	var $pST_PosEnd = false; // start tag: position of the end
-	var $pST_Src = false;    // start tag: source
-	var $pET_PosBeg = false; // end tag: position of the begining
+	public $pST_PosEnd = false; // start tag: position of the end
+	public $pST_Src = false;    // start tag: source
+	public $pET_PosBeg = false; // end tag: position of the begining
 
-	var $Parent = false; // parent object
+	public $Parent = false; // parent object
 
 	// For relative mode
-	var $rel_Txt = false;
-	var $rel_PosBeg = false;
-	var $rel_Len = false;
+	public $rel_Txt = false;
+	public $rel_PosBeg = false;
+	public $rel_Len = false;
 	
 	// Create an instance with the given parameters
 	function __construct(&$Txt, $Name, $PosBeg, $SelfClosing = null, $Parent=false) {
@@ -5532,6 +5536,7 @@ define('TBSZIP_NOHEADER',4);   // option to use with DOWNLOAD: no header is sent
 define('TBSZIP_FILE',8);       // output to file  , or add from file
 define('TBSZIP_STRING',32);    // output to string, or add from string
 
+#[\AllowDynamicProperties]
 class clsTbsZip {
 
 	function __construct() {
@@ -6331,7 +6336,7 @@ class clsTbsZip {
 			}
 			$this->_MoveTo($pos);
 			$x = $this->_ReadData(256);
-			$p = strpos($x, $cd_info);
+			$p = strpos($x, (string) $cd_info);
 			if ($p===false) {
 				$nbr++;
 				$pos = $pos - 256 - 256;

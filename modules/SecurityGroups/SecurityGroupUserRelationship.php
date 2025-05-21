@@ -7,6 +7,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('data/SugarBean.php');
 
 // Contact is used to store customer information.
+#[\AllowDynamicProperties]
 class SecurityGroupUserRelationship extends SugarBean
 {
     // Stored fields

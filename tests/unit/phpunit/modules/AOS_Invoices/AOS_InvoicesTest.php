@@ -38,7 +38,7 @@ class AOS_InvoicesTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aosInvoices->id));
-        self::assertEquals(36, strlen($aosInvoices->id));
+        self::assertEquals(36, strlen((string) $aosInvoices->id));
         self::assertGreaterThan(0, $aosInvoices->number);
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.

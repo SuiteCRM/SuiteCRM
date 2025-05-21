@@ -125,13 +125,15 @@ $groupFocus = BeanFactory::newBean('SecurityGroups');
 $defaultGroups = SecurityGroup::retrieveDefaultGroups();
 $defaultGroup_string = "";
 foreach ($defaultGroups as $default_id => $defaultGroup) {
+    $defGroup = $defaultGroup['group'] ?? '';
+    $defModule = $app_list_strings['moduleList'][$defaultGroup['module'] ?? ''] ?? '';
     $defaultGroup_string .= "
 	<tr>
 	<td class='dataLabel' width='30%'>
-		".$mod_strings['LBL_GROUP']." ".$defaultGroup['group']."
+		".$mod_strings['LBL_GROUP']." ".$defGroup."
 	</td>
 	<td class='dataField' width='30%'>
-		".$mod_strings['LBL_MODULE']." ".$app_list_strings['moduleList'][$defaultGroup['module']]."
+		".$mod_strings['LBL_MODULE']." ".$defModule."
 	</td>
 	<td class='dataLabel' width='40%'>
 		<input type='submit' tabindex='1' class='button' onclick=\"this.form.remove_default_id.value='".$default_id."'; this.form.action.value='SaveConfig'; this.form.return_module.value='SecurityGroups'; this.form.return_action.value='config';\" value='".$mod_strings['LBL_REMOVE_BUTTON_LABEL']."'/>

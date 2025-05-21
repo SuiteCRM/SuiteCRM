@@ -39,8 +39,8 @@ trait BaseFutureTrait
      */
     public function __construct(
         PromiseInterface $promise,
-        callable $wait = null,
-        callable $cancel = null
+        ?callable $wait = null,
+        ?callable $cancel = null
     ) {
         $this->wrappedPromise = $promise;
         $this->waitfn = $wait;
@@ -81,14 +81,14 @@ trait BaseFutureTrait
      * @return PromiseInterface
      */
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null,
-        callable $onProgress = null
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null,
+        ?callable $onProgress = null
     ) {
         return $this->wrappedPromise->then($onFulfilled, $onRejected, $onProgress);
     }
 
-    public function cancel()
+    public function cancel(): void
     {
         if (!$this->isRealized) {
             $cancelfn = $this->cancelfn;

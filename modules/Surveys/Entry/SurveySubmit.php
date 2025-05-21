@@ -63,6 +63,7 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
     $response->campaign_id = $campaignId;
     $response->happiness = -1;
     $response->happiness_text = '';
+    $response->assigned_user_id = $survey->assigned_user_id;
 
     // STIC-Custom 20230116 AAM - Adding assigned user to response
     // STIC#970
@@ -70,7 +71,11 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
     // END STIC-Custom
 
     foreach ($survey->get_linked_beans('surveys_surveyquestions', 'SurveyQuestions', 'sort_order') as $question) {
-        $userResponse = $request['question'][$question->id];
+        // STIC Custom 20250217 JBL - Avoid Undefined array key Warning
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $userResponse = $request['question'][$question->id];
+        $userResponse = $request['question'][$question->id] ?? null;
+        // End STIC Custom
         switch ($question->type) {
             case "Checkbox":
                 $qr = BeanFactory::newBean('SurveyQuestionResponses');
@@ -89,7 +94,11 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
                 $qr->surveyquestionoptions_surveyquestionresponses->add($userResponse);
                 break;
             case "Multiselect":
-                foreach ($userResponse as $selected) {
+                // STIC Custom 20250217 JBL - Fix iterator for empty responses
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // foreach ($userResponse as $selected) {
+                foreach ($userResponse ?? [] as $selected) {
+                // End STIC Custom
                     $qr = BeanFactory::newBean('SurveyQuestionResponses');
                     $qr->surveyresponse_id = $response->id;
                     $qr->surveyquestion_id = $question->id;
@@ -99,7 +108,11 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
                 }
                 break;
             case "Matrix":
-                foreach ($userResponse as $key => $val) {
+                // STIC Custom 20250217 JBL - Fix iterator for empty responses
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // foreach ($userResponse as $key => $val) {
+                foreach ($userResponse ?? [] as $key => $val) {
+                // End STIC Custom
                     $qo = BeanFactory::getBean('SurveyQuestionOptions', $key);
                     $qr = BeanFactory::newBean('SurveyQuestionResponses');
                     $qr->surveyresponse_id = $response->id;

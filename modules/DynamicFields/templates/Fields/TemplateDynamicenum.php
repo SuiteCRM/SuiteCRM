@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/DynamicFields/templates/Fields/TemplateEnum.php');
 
+#[\AllowDynamicProperties]
 class TemplateDynamicenum extends TemplateEnum
 {
     public $type = 'dynamicenum';
@@ -67,8 +68,12 @@ class TemplateDynamicenum extends TemplateEnum
 
     public function get_xtpl_edit()
     {
+        global $app_list_strings;
+
+        $returnXTPL = [];
         $name = $this->name;
         $value = '';
+
         if (isset($this->bean->$name)) {
             $value = $this->bean->$name;
         } else {
@@ -80,8 +85,6 @@ class TemplateDynamicenum extends TemplateEnum
             $returnXTPL[strtoupper($this->name . '_help')] = translate($this->help, $this->bean->module_dir);
         }
 
-        global $app_list_strings;
-        $returnXTPL = array();
         $returnXTPL[strtoupper($this->name)] = $value;
         if (empty($this->ext1)) {
             $this->ext1 = $this->options;

@@ -82,7 +82,7 @@ function create_module_lang_dir($module)
 function &create_field_lang_pak_contents($old_contents, $key, $value, $language, $module)
 {
     if (!empty($old_contents)) {
-        $old_contents = preg_replace("'[^\[\n\r]+\[\'{$key}\'\][^\;]+;[\ \r\n]*'i", '', $old_contents);
+        $old_contents = preg_replace("'[^\[\n\r]+\[\'{$key}\'\][^\;]+;[\ \r\n]*'i", '', (string) $old_contents);
         $contents = str_replace("\n?>", "\n\$mod_strings['{$key}'] = '$value';\n?>", $old_contents);
     } else {
         $contents = "<?php\n"
@@ -319,7 +319,7 @@ function create_dropdown_type($dropdown_name, $language)
         if ($contents == '') {
             $new_contents = "<?php\n\$app_list_strings['$dropdown_name'] = array(''=>'');\n?>";
         } else {
-            $new_contents = str_replace('?>', "\$app_list_strings['$dropdown_name'] = array(''=>'');\n?>", $contents);
+            $new_contents = str_replace('?>', "\$app_list_strings['$dropdown_name'] = array(''=>'');\n?>", (string) $contents);
         }
 
         // save the new contents to file
@@ -383,7 +383,7 @@ function dropdown_item_move_up($dropdown_type, $language, $index)
     $app_list_strings_to_edit = return_app_list_strings_language($language);
     $dropdown_array =$app_list_strings_to_edit[$dropdown_type];
 
-    if ($index > 0 && $index < count($dropdown_array)) {
+    if ($index > 0 && $index < (is_countable($dropdown_array) ? count($dropdown_array) : 0)) {
         $key = '';
         $value = '';
         $i = 0;
@@ -419,7 +419,7 @@ function dropdown_item_move_down($dropdown_type, $language, $index)
     $app_list_strings_to_edit = return_app_list_strings_language($language);
     $dropdown_array =$app_list_strings_to_edit[$dropdown_type];
 
-    if ($index >= 0 && $index < count($dropdown_array) - 1) {
+    if ($index >= 0 && $index < (is_countable($dropdown_array) ? count($dropdown_array) : 0) - 1) {
         $key = '';
         $value = '';
         $i = 0;
@@ -473,7 +473,7 @@ function helper_dropdown_item_insert(&$dropdown_array, $index, $key, $value)
     if ($index <= 0) {
         $dropdown_array = array_merge($pair, $dropdown_array);
     }
-    if ($index >= count($dropdown_array)) {
+    if ($index >= (is_countable($dropdown_array) ? count($dropdown_array) : 0)) {
         $dropdown_array = array_merge($dropdown_array, $pair);
     } else {
         $sliced_off_array = array_splice($dropdown_array, $index);
@@ -528,7 +528,7 @@ function replace_or_add_dropdown_type(
 
         if ($new_contents == $file_contents) {
             // replace failed, append to end of file
-            $new_contents = str_replace("?>", '', $file_contents);
+            $new_contents = str_replace("?>", '', (string) $file_contents);
             $new_contents .= "\n$new_entry\n?>";
         }
     }
@@ -563,7 +563,7 @@ function replace_or_add_app_string(
 
         if ($new_contents == $file_contents) {
             // replace failed, append to end of file
-            $new_contents = str_replace("?>", '', $file_contents);
+            $new_contents = str_replace("?>", '', (string) $file_contents);
             $new_contents .= "\n$new_entry\n?>";
         }
     }
@@ -580,11 +580,11 @@ function dropdown_duplicate_check($dropdown_type, &$file_contents)
             '\'\][\ ]*=[\ ]*array[\ ]*\([^\)]*\)[\ ]*;/';
 
         $result = array();
-        preg_match_all($pattern, $file_contents, $result);
+        preg_match_all($pattern, (string) $file_contents, $result);
 
-        if (count($result[0]) > 1) {
+        if ((is_countable($result[0]) ? count($result[0]) : 0) > 1) {
             $new_entry = $result[0][0];
-            $new_contents = preg_replace($pattern, '', $file_contents);
+            $new_contents = preg_replace($pattern, '', (string) $file_contents);
 
             // Append the new entry.
             $new_contents = str_replace("?>", '', $new_contents);
@@ -615,7 +615,7 @@ function replace_dropdown_type(
             $dropdown_type,
             $dropdown_array
         );
-        $new_contents = preg_replace($pattern, $replacement, $file_contents, 1);
+        $new_contents = preg_replace($pattern, $replacement, (string) $file_contents, 1);
     }
 
     return $new_contents;
@@ -637,7 +637,7 @@ function replace_app_string(
             $name,
             $value
         );
-        $new_contents = preg_replace($pattern, $replacement, $file_contents, 1);
+        $new_contents = preg_replace($pattern, $replacement, (string) $file_contents, 1);
     }
 
     return $new_contents;
@@ -650,11 +650,11 @@ function app_string_duplicate_check($name, &$file_contents)
         $pattern = '/\$app_strings\[\''. $name .'\'\][\ ]*=[\ ]*\'[^\']*\'[\ ]*;/';
 
         $result = array();
-        preg_match_all($pattern, $file_contents, $result);
+        preg_match_all($pattern, (string) $file_contents, $result);
 
-        if (count($result[0]) > 1) {
+        if ((is_countable($result[0]) ? count($result[0]) : 0) > 1) {
             $new_entry = $result[0][0];
-            $new_contents = preg_replace($pattern, '', $file_contents);
+            $new_contents = preg_replace($pattern, '', (string) $file_contents);
 
             // Append the new entry.
             $new_contents = str_replace("?>", '', $new_contents);

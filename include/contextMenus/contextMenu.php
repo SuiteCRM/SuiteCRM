@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class contextMenu
 {
     public $menuItems;

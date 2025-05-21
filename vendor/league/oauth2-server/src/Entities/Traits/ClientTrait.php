@@ -22,9 +22,15 @@ trait ClientTrait
     protected $redirectUri;
 
     /**
+     * @var bool
+     */
+    protected $isConfidential = false;
+
+    /**
      * Get the client's name.
      *
      * @return string
+     *
      * @codeCoverageIgnore
      */
     public function getName()
@@ -42,5 +48,15 @@ trait ClientTrait
     public function getRedirectUri()
     {
         return $this->redirectUri;
+    }
+
+    /**
+     * Returns true if the client is confidential.
+     *
+     * @return bool
+     */
+    public function isConfidential()
+    {
+        return $this->isConfidential;
     }
 }

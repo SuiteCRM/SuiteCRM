@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2023 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Users/UserViewHelper.php');
 
+#[\AllowDynamicProperties]
 class UsersViewDetail extends ViewDetail
 {
     public function __construct()
@@ -101,6 +102,8 @@ class UsersViewDetail extends ViewDetail
         );
         $buttons = array();
 
+        $this->ss->assign("CURRENT_USER_ID", $GLOBALS['current_user']->id);
+
         if ((
             is_admin($current_user) || $_REQUEST['record'] == $current_user->id
             )
@@ -118,9 +121,7 @@ class UsersViewDetail extends ViewDetail
                 if (!$current_user->is_group) {
                     $this->dv->defs['templateMeta']['form']['buttons'][] = array('customCode' => "<input id='duplicate_button' title='" . $app_strings['LBL_DUPLICATE_BUTTON_TITLE'] . "' accessKey='" . $app_strings['LBL_DUPLICATE_BUTTON_KEY'] . "' class='button' onclick=\"this.form.return_module.value='Users'; this.form.return_action.value='DetailView'; this.form.isDuplicate.value=true; this.form.action.value='EditView'\" type='submit' name='Duplicate' value='" . $app_strings['LBL_DUPLICATE_BUTTON_LABEL'] . "'>");
 
-                    if ($this->bean->id != $current_user->id) {
-                        $this->dv->defs['templateMeta']['form']['buttons'][] = array('customCode' => "<input id='delete_button' title='" . $app_strings['LBL_DELETE_BUTTON_LABEL'] . "' type='button' class='button' onclick='confirmDelete();' value='" . $app_strings['LBL_DELETE_BUTTON_LABEL'] . "' />");
-                    }
+                    $this->dv->defs['templateMeta']['form']['buttons'][] = array('customCode' => "<input name='delete' id='delete_button' title='" . $app_strings['LBL_DELETE_BUTTON_LABEL'] . "' type='button' class='button' onclick='confirmDelete();' value='" . $app_strings['LBL_DELETE_BUTTON_LABEL'] . "'>");
 
                     if (!$this->bean->portal_only && !$this->bean->is_group && !$this->bean->external_auth_only
                         && isset($sugar_config['passwordsetting']['SystemGeneratedPasswordON']) && $sugar_config['passwordsetting']['SystemGeneratedPasswordON']) {

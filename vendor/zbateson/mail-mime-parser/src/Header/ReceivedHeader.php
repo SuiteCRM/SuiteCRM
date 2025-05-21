@@ -4,28 +4,30 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header;
 
-use ZBateson\MailMimeParser\Header\Consumer\ConsumerService;
+use DateTime;
 use ZBateson\MailMimeParser\Header\Consumer\AbstractConsumer;
+use ZBateson\MailMimeParser\Header\Consumer\ConsumerService;
 use ZBateson\MailMimeParser\Header\Part\CommentPart;
 use ZBateson\MailMimeParser\Header\Part\DatePart;
 
 /**
  * Represents a Received header.
- * 
+ *
  * The returned header value (as returned by a call to {@see
  * ReceivedHeader::getValue()}) for a
  * ReceivedHeader is the same as the raw value (as returned by a call to
  * {@see ReceivedHeader::getRawValue()}) since the header doesn't have a single
- * 'value' to extract.
+ * 'value' to consider 'the value'.
  *
  * The parsed parts of a Received header can be accessed as parameters.  To
  * check if a part exists, call {@see ReceivedHeader::hasParameter()} with the
- * name of the part, for example: ``` $header->hasParameter('from') ``` or
- * ``` $header->hasParameter('id') ```.  The value of the part can be obtained
+ * name of the part, for example: ```php $header->hasParameter('from') ``` or
+ * ```php $header->hasParameter('id') ```.  The value of the part can be obtained
  * by calling {@see ReceivedHeader::getValueFor()}, for example
- * ``` $header->getValueFor('with'); ```.
+ * ```php $header->getValueFor('with'); ```.
  *
  * Additional parsing is performed on the "FROM" and "BY" parts of a received
  * header in an attempt to extract the self-identified name of the server, its
@@ -86,24 +88,23 @@ class ReceivedHeader extends ParameterHeader
     /**
      * @var DateTime the date/time stamp in the header.
      */
-    protected $date;
+    protected $date = null;
 
     /**
      * Returns a ReceivedConsumer.
-     * 
-     * @param ConsumerService $consumerService
-     * @return \ZBateson\MailMimeParser\Header\Consumer\AbstractConsumer
+     *
+     * @return Consumer\AbstractConsumer
      */
     protected function getConsumer(ConsumerService $consumerService)
     {
         return $consumerService->getReceivedConsumer();
     }
-    
+
     /**
      * Overridden to assign comments to $this->comments, and the DateTime to
      * $this->date.
-     * 
-     * @param AbstractConsumer $consumer
+     *
+     * @return static
      */
     protected function setParseHeaderValue(AbstractConsumer $consumer)
     {
@@ -115,28 +116,28 @@ class ReceivedHeader extends ParameterHeader
                 $this->date = $part->getDateTime();
             }
         }
+        return $this;
     }
 
     /**
      * Returns the raw, unparsed header value, same as {@see
      * ReceivedHeader::getRawValue()}.
-     *
-     * @return string
      */
-    public function getValue()
+    public function getValue() : ?string
     {
         return $this->rawValue;
     }
 
     /**
-     * Returns the name identified in the FROM part of the header.
+     * Returns the name identified in the FROM part of the header or null if not
+     * defined or the format wasn't parsed.
      *
      * The returned value may either be a name or an address in the form
      * "[1.2.3.4]".  Validation is not performed on this value, and so whatever
      * exists in this position is returned -- be it contains spaces, or invalid
      * characters, etc...
      *
-     * @return string
+     * @return string|null The 'FROM' name.
      */
     public function getFromName()
     {
@@ -145,14 +146,15 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the hostname part of a parenthesized FROM part.
+     * Returns the hostname part of a parenthesized FROM part or null if not
+     * defined or the format wasn't parsed.
      *
      * For example, "FROM name (host.name)" would return the string "host.name".
      * Validation of the hostname is not performed, and the returned value may
      * not be valid.  More details on how the value is parsed and extracted can
      * be found in the class description for {@see ReceivedHeader}.
      *
-     * @return string
+     * @return string|null The 'FROM' hostname.
      */
     public function getFromHostname()
     {
@@ -161,14 +163,15 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the address part of a parenthesized FROM part.
+     * Returns the address part of a parenthesized FROM part or null if not
+     * defined or the format wasn't parsed.
      *
      * For example, "FROM name ([1.2.3.4])" would return the string "1.2.3.4".
      * Validation of the address is not performed, and the returned value may
      * not be valid.  More details on how the value is parsed and extracted can
      * be found in the class description for {@see ReceivedHeader}.
      *
-     * @return string
+     * @return string|null The 'FROM' address.
      */
     public function getFromAddress()
     {
@@ -177,14 +180,15 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the name identified in the BY part of the header.
+     * Returns the name identified in the BY part of the header or null if not
+     * defined or the format wasn't parsed.
      *
      * The returned value may either be a name or an address in the form
      * "[1.2.3.4]".  Validation is not performed on this value, and so whatever
      * exists in this position is returned -- be it contains spaces, or invalid
      * characters, etc...
      *
-     * @return string
+     * @return string|null The 'BY' name.
      */
     public function getByName()
     {
@@ -193,14 +197,15 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the hostname part of a parenthesized BY part.
+     * Returns the hostname part of a parenthesized BY part or null if not
+     * defined or the format wasn't parsed.
      *
      * For example, "BY name (host.name)" would return the string "host.name".
      * Validation of the hostname is not performed, and the returned value may
      * not be valid.  More details on how the value is parsed and extracted can
      * be found in the class description for {@see ReceivedHeader}.
      *
-     * @return string
+     * @return string|null The 'BY' hostname.
      */
     public function getByHostname()
     {
@@ -209,14 +214,15 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the address part of a parenthesized BY part.
+     * Returns the address part of a parenthesized BY part or null if not
+     * defined or the format wasn't parsed.
      *
      * For example, "BY name ([1.2.3.4])" would return the string "1.2.3.4".
      * Validation of the address is not performed, and the returned value may
      * not be valid.  More details on how the value is parsed and extracted can
      * be found in the class description for {@see ReceivedHeader}.
      *
-     * @return string
+     * @return string|null The 'BY' address.
      */
     public function getByAddress()
     {
@@ -236,9 +242,10 @@ class ReceivedHeader extends ParameterHeader
     }
 
     /**
-     * Returns the date/time stamp for the received header.
+     * Returns the date/time stamp for the received header if set, or null
+     * otherwise.
      *
-     * @return \DateTime
+     * @return \DateTime|null
      */
     public function getDateTime()
     {

@@ -46,7 +46,7 @@
 		</form>		
 		<script type="text/javascript">
 			{foreach from=$MAP.LANG_VARS key=KEY item=TEXT}
-				var {$KEY} = "{$TEXT|escape 'javascript'}";
+				var {$KEY} = "{$TEXT|escape:'javascript'}";
 			{/foreach}
 			{$MAP.EMBEDDED_JS}
 		</script>

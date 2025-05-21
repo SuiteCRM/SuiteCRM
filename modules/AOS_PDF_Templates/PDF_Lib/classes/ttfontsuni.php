@@ -83,7 +83,7 @@ class TTFontFile
     public $maxUniChar;
     public $kerninfo;
 
-    public function TTFontFile()
+    public function __construct()
     {
         $this->maxStrLenRead = 200000;	// Maximum size of glyf table to read in as string (otherwise reads each glyph from file)
     }
@@ -523,8 +523,8 @@ class TTFontFile
             for ($i=0;$i<count($psName);$i++) {
                 $c = $psName[$i];
                 $oc = ord($c);
-                if ($oc>126 || strpos(' [](){}<>/%', $c)!==false) {
-                    die("psName=".$psName." contains invalid character ".$c." ie U+".ord(c));
+                if ($oc>126 || strpos(' [](){}<>/%', (string) $c)!==false) {
+                    die("psName=".$psName." contains invalid character ".$c." ie U+".ord(\C));
                 }
             }
         }

@@ -27,6 +27,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/MVC/View/SugarView.php');
 require_once('modules/stic_Import_Validation/Importer.php');
 
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewStep4 extends SugarView
 {
     private $currentStep;
@@ -45,13 +46,13 @@ class stic_Import_ValidationViewStep4 extends SugarView
         global $mod_strings, $sugar_config;
 
         // Check to be sure we are getting an import file that is in the right place
-        $uploadFile = "upload://".basename($_REQUEST['tmp_file']);
+        $uploadFile = "upload://".basename((string) $_REQUEST['tmp_file']);
         if (!file_exists($uploadFile)) {
             trigger_error($mod_strings['LBL_CANNOT_OPEN'], E_USER_ERROR);
         }
 
         // Open the import file
-        $importSource = new ImportFile($uploadFile, $_REQUEST['custom_delimiter'], html_entity_decode($_REQUEST['custom_enclosure'], ENT_QUOTES));
+        $importSource = new ImportFile($uploadFile, $_REQUEST['custom_delimiter'], html_entity_decode((string) $_REQUEST['custom_enclosure'], ENT_QUOTES));
 
         //Ensure we have a valid file.
         if (!$importSource->fileExists()) {

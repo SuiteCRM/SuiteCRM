@@ -45,13 +45,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
 interface RelationshipsInterface
 {
     public static function findRelatableModules() ;
-    
+
     public function load() ;
 
     //  public function build () ;
-    
+
     public function getRelationshipList();
-    
+
     public function get($relationshipName) ;
 
     public function add($relationship) ;

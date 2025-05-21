@@ -102,7 +102,7 @@ class KReportsController extends SugarController {
       include('modules/KReports/config/KReportWhereOperators.php');
 
       //2013-01-18 take in account the users language
-      $mod_strings = return_module_language($_SESSION['authenticated_user_language'], 'KReports');
+      $mod_strings = return_module_language($_SESSION['authenticated_user_language'] ?? '', 'KReports');
 
       $retarray[] = array(
           'operator' => 'ignore',
@@ -811,7 +811,7 @@ class KReportsController extends SugarController {
          $thisReport->whereOverride = json_decode_kinamu(html_entity_decode($_REQUEST['whereConditions']));
       }
 
-      echo $thisReport->getSelectionResults(array('start' => $_REQUEST['start'], 'limit' => $_REQUEST['limit']), isset($_REQUEST['snapshotid']) ? $_REQUEST['snapshotid'] : '0', true);
+      echo $thisReport->getSelectionResults(array('start' => ($_REQUEST['start'] ?? null), 'limit' => ($_REQUEST['limit'] ?? null)), isset($_REQUEST['snapshotid']) ? $_REQUEST['snapshotid'] : '0', true);
    }
 
    function action_get_nodes() {

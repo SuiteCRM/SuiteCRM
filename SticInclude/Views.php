@@ -5,6 +5,7 @@
  * used in the view.xxx.php files that exist in the custom/modules/<moduleName>/view.xxxx.php or modules/<moduleName>/view.xxxx.php
  * depending on whether they are SuiteCRM base modules or SinergiaTIC's own modules
  */
+#[\AllowDynamicProperties]
 class SticViews {
     /**
      * Add the SinergiaCRM functionality in the view(s) display method
@@ -25,7 +26,7 @@ class SticViews {
         foreach ($view->bean as $key => $value) {
             if (is_string($value)) {
                 // We separate the TextArea fields because they can contain line breaks. These produce an error when encoding them to JSON from PHP and decoding them from javascript. 
-                if ($view->bean->field_name_map[$key]["type"] == 'text') {
+                if (isset($view->bean->field_name_map[$key]["type"]) && $view->bean->field_name_map[$key]["type"] == 'text') {
                     $parsedValuesTextToJS[$key] = $value;
                 } else {
                     $parsedValuesToJS[$key] = $value;

@@ -5,7 +5,56 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 2.7.0 - 2024-07-18
+
+### Added
+
+- Add `Utils::redactUserInfo()` method
+- Add ability to encode bools as ints in `Query::build`
+
+## 2.6.3 - 2024-07-18
+
+### Fixed
+
+- Make `StreamWrapper::stream_stat()` return `false` if inner stream's size is `null` 
+
+### Changed
+
+- PHP 8.4 support
+
+## 2.6.2 - 2023-12-03
+
+### Fixed
+
+- Fixed another issue with the fact that PHP transforms numeric strings in array keys to ints
+
+### Changed
+
+- Updated links in docs to their canonical versions
+- Replaced `call_user_func*` with native calls
+
+## 2.6.1 - 2023-08-27
+
+### Fixed
+
+- Properly handle the fact that PHP transforms numeric strings in array keys to ints
+
+## 2.6.0 - 2023-08-03
+
+### Changed
+
+- Updated the mime type map to add some new entries, fix a couple of invalid entries, and remove an invalid entry
+- Fallback to `application/octet-stream` if we are unable to guess the content type for a multipart file upload
+
+## 2.5.1 - 2023-08-03
+
+### Fixed
+
+- Corrected mime type for `.acc` files to `audio/aac`
+
+### Changed
+
+- PHP 8.3 support
 
 ## 2.5.0 - 2023-04-17
 

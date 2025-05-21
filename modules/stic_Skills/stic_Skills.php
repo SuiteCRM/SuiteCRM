@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Skills extends Basic
 {
     public $new_schema = true;

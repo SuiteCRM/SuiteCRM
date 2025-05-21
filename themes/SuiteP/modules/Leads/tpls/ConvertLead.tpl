@@ -192,14 +192,12 @@
                 {{/foreach}}
                 {{elseif !empty($colData.field.customCode)}}
                 {counter name="panelFieldCount" print=false}
-                {{php}}$this->_tpl_vars['colData']['field']['displayParams']['idName'] = $this->_tpl_vars['module'] .
-                $this->_tpl_vars['colData']['field']['name'];{{/php}}
+                {{$colData.field.displayParams.idName=$module|cat:$colData.field.name}}
                 {{sugar_evalcolumn var=$colData.field.customCode colData=$colData tabindex=$colData.field.tabindex}}
                 {{elseif $fields[$colData.field.name]}}
                 {counter name="panelFieldCount" print=false}
                 {{$colData.displayParams}}
-                {{php}}$this->_tpl_vars['colData']['field']['displayParams']['idName'] = $this->_tpl_vars['module'] .
-                $this->_tpl_vars['colData']['field']['name'];{{/php}}
+                {{$colData.field.displayParams.idName=$module|cat:$colData.field.name}}
                 {{sugar_field parentFieldArray='fields' tabindex=$colData.field.tabindex vardef=$fields[$colData.field.name] displayType='EditView' displayParams=$colData.field.displayParams typeOverride=$colData.field.type formName=$form_name}}
                 {{/if}}
             </div>

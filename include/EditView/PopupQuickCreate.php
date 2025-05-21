@@ -46,6 +46,7 @@ require_once('include/EditView/SubpanelQuickCreate.php');
  * Quick create form as a pop-up window
  * @api
  */
+#[\AllowDynamicProperties]
 class PopupQuickCreate extends SubpanelQuickCreate
 {
     public function __construct($module, $view='QuickCreate')

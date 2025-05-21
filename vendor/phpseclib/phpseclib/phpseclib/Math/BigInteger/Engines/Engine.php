@@ -619,7 +619,7 @@ abstract class Engine implements \JsonSerializable
      */
     public function getLengthInBytes()
     {
-        return strlen($this->toBytes());
+        return (int) ceil($this->getLength() / 8);
     }
 
     /**
@@ -642,6 +642,11 @@ abstract class Engine implements \JsonSerializable
             }
 
             return $this->normalize($temp->powModInner($e, $n));
+        }
+
+        if ($this->compare($n) > 0) {
+            list(, $temp) = $this->divide($n);
+            return $temp->powModInner($e, $n);
         }
 
         return $this->powModInner($e, $n);
@@ -779,6 +784,11 @@ abstract class Engine implements \JsonSerializable
             $temp = $max;
             $max = $min;
             $min = $temp;
+        }
+
+        $length = $max->getLength();
+        if ($length > 8196) {
+            throw new \RuntimeException("Generation of random prime numbers larger than 8196 has been disabled ($length)");
         }
 
         $x = static::randomRange($min, $max);
@@ -985,6 +995,15 @@ abstract class Engine implements \JsonSerializable
      */
     public function isPrime($t = false)
     {
+        // OpenSSL limits RSA keys to 16384 bits. The length of an RSA key is equal to the length of the modulo, which is
+        // produced by multiplying the primes p and q by one another. The largest number two 8196 bit primes can produce is
+        // a 16384 bit number so, basically, 8196 bit primes are the largest OpenSSL will generate and if that's the largest
+        // that it'll generate it also stands to reason that that's the largest you'll be able to test primality on
+        $length = $this->getLength();
+        if ($length > 8196) {
+            throw new \RuntimeException("Primality testing is not supported for numbers larger than 8196 bits ($length)");
+        }
+
         if (!$t) {
             $t = $this->setupIsPrime();
         }

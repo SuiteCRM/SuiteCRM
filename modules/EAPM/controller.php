@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class EAPMController extends SugarController
 {
     /**

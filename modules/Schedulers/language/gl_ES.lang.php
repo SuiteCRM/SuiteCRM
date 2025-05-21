@@ -58,6 +58,7 @@ $mod_strings = array(
     'LBL_OOTB_CLEANUP_QUEUE' => 'Limpar Cola de Traballos',
     'LBL_OOTB_REMOVE_DOCUMENTS_FROM_FS' => 'Extracción de documentos do sistema de arquivos',
     'LBL_OOTB_GOOGLE_CAL_SYNC' => 'Sincronización de Google Calendar',
+    'LBL_OOTB_ELASTIC_INDEX' => 'Realizar Indexación de Elasticsearch',
 
 // List Labels
     'LBL_LIST_JOB_INTERVAL' => 'Intervalo:',

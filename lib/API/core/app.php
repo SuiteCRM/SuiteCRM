@@ -43,7 +43,12 @@ include_once __DIR__ . '/../../../vendor/autoload.php';
 // Prevent errors from being echoed out to the client
 // We MUST use the exceptions instead to pass the errors object
 // back to the client
-ini_set('error_reporting', ~E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+// STIC Custom 20250303 JBL - Avoid Deprecated Warning: Constant E_STRICT is deprecated
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+// ini_set('error_reporting', ~E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+// In PHP8+ old E_STRICT are E_WARNING, E_DEPRECATED or errors
+ini_set('error_reporting', ~E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+// END STIC Custom
 
 chdir(__DIR__.'/../../../');
 
@@ -61,7 +66,7 @@ global $sugar_config;
 global $version;
 global $container;
 
-preg_match("/\/api\/(.*?)\//", $_SERVER['REQUEST_URI'], $matches);
+preg_match("/\/api\/(.*?)\//", (string) $_SERVER['REQUEST_URI'], $matches);
 
 $GLOBALS['app_list_strings'] = return_app_list_strings_language($GLOBALS['current_language']);
 

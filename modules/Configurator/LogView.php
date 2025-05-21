@@ -90,7 +90,7 @@ $log_dir = $log_dir . (empty($log_dir)?'':'/');
 $file_suffix = $config->get('logger.file.suffix');
 $date_suffix = "";
 if (!empty($file_suffix)) {
-    $date_suffix = "_" . date(str_replace("%", "", $file_suffix));
+    $date_suffix = "_" . date(str_replace("%", "", (string) $file_suffix));
 }
 
 $logFile = $log_dir . $logfile . $date_suffix . $ext;
@@ -142,7 +142,12 @@ if (!empty($_REQUEST['display'])) {
     if ($_SESSION['log_file_size'] == $cur_size) {
         echo $mod_strings['LBL_LOG_NOT_CHANGED'].'<br>';
     } else {
-        $fp = sugar_fopen($logFile, 'r');
+        // STIC Custom 20250313 JBL - auto_detect_line_endings removed do not work in PHP8.4
+        // Ensure compatibility Windows/Linux
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $fp = sugar_fopen($logFile, 'r');
+        $fp = sugar_fopen($logFile, 'rb');
+        // END STIC Custom        
         fseek($fp, $pos, SEEK_END);
         echo '<pre>';
         while ($line = fgets($fp)) {
@@ -157,7 +162,7 @@ if (!empty($_REQUEST['display'])) {
                 $lastMatch = false;
                 if (empty($result) || ($ignore_self &&$result[LOG_NAME] == $_SERVER['REMOTE_ADDR'])) {
                 } else {
-                    if (empty($filter) || (!$reg_ex && substr_count($line, $filter) > 0) || ($reg_ex && preg_match($filter, $line))) {
+                    if (empty($filter) || (!$reg_ex && substr_count($line, (string) $filter) > 0) || ($reg_ex && preg_match($filter, $line))) {
                         $lastMatch = true;
                         echo $line;
                     }

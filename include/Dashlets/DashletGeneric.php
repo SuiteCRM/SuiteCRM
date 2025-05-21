@@ -257,8 +257,8 @@ class DashletGeneric extends Dashlet
                 $currentSearchFields[$name]['label'] = !empty($params['label']) ? translate($params['label'], $this->seedBean->module_dir) : translate($widgetDef['vname'], $this->seedBean->module_dir);
                 $currentSearchFields[$name]['input'] = $this->layoutManager->widgetDisplayInput($widgetDef, true, (empty($this->filters[$name]) ? '' : $this->filters[$name]));
             } else { // ability to create spacers in input fields
-                $currentSearchFields['blank' + $count]['label'] = '';
-                $currentSearchFields['blank' + $count]['input'] = '';
+                $currentSearchFields['blank' . $count]['label'] = '';
+                $currentSearchFields['blank' . $count]['input'] = '';
                 $count++;
             }
         }
@@ -312,14 +312,28 @@ class DashletGeneric extends Dashlet
         if (!is_array($this->filters)) {
             // use defaults
             $this->filters = array();
-            foreach ($this->searchFields as $name => $params) {
-                if (!empty($params['default'])) {
-                    $this->filters[$name] = $params['default'];
+            // STIC Custom 20250311 JBL - Avoid foreach over null
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // foreach ($this->searchFields as $name => $params) {
+            //     if (!empty($params['default'])) {
+            //         $this->filters[$name] = $params['default'];
+            //     }
+            // }
+            if (is_array($this->searchFields)) {
+                foreach ($this->searchFields as $name => $params) {
+                    if (!empty($params['default'])) {
+                        $this->filters[$name] = $params['default'];
+                    }
                 }
             }
+            // END STIC Custom
         }
         foreach ($this->filters as $name=>$params) {
-            if (!empty($params)) {
+            // STIC Custom 20250311 JBL - Avoid attempt to read property on null
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // if (!empty($params)) {
+            if (!empty($params) && $this->seedBean != null) {
+            // END STIC Custom
                 if ($name == 'assigned_user_id' && $this->myItemsOnly) {
                     continue;
                 } // don't handle assigned user filter if filtering my items only
@@ -373,7 +387,11 @@ class DashletGeneric extends Dashlet
         }
 
         if ($this->myItemsOnly) {
-            array_push($returnArray, $this->seedBean->table_name . '.' . "assigned_user_id = '" . $current_user->id . "'");
+            // STIC Custom 20250311 JBL - Avoid attempt to read property on null
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // array_push($returnArray, $this->seedBean->table_name . '.' . "assigned_user_id = '" . $current_user->id . "'");
+            array_push($returnArray, ($this->seedBean?->table_name ?? "") . '.' . "assigned_user_id = '" . $current_user->id . "'");
+            // END STIC Custom            
         }
 
         return $returnArray;
@@ -381,6 +399,13 @@ class DashletGeneric extends Dashlet
 
     protected function loadCustomMetadata()
     {
+        // STIC Custom 20250304 JBL - Avoid Error when $this->seedBean is null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if ($this->seedBean == null) {
+            return;
+        }
+        // END STIC Custom
+        $dashletData = [];
         $customMetadata = 'custom/modules/'.$this->seedBean->module_dir.'/metadata/dashletviewdefs.php';
         if (file_exists($customMetadata)) {
             require($customMetadata);
@@ -438,7 +463,11 @@ class DashletGeneric extends Dashlet
         $this->lvs->displayColumns = $displayColumns;
 
 
-        $this->lvs->lvd->setVariableName($this->seedBean->object_name, array());
+        // STIC Custom 20250311 JBL - Avoid attempt to read property on null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $this->lvs->lvd->setVariableName($this->seedBean->object_name, array());
+        $this->lvs->lvd->setVariableName($this->seedBean?->object_name, array());
+        // END STIC Custom
         $lvdOrderBy = $this->lvs->lvd->getOrderBy(); // has this list been ordered, if not use default
 
         $nameRelatedFields = array();
@@ -472,18 +501,26 @@ class DashletGeneric extends Dashlet
                 $where = '(' . implode(') AND (', $whereArray) . ')';
             }
             $this->lvs->setup($this->seedBean, $this->displayTpl, $where, $lvsParams, 0, $this->displayRows/*, $filterFields*/, array(), 'id', $id);
-            if (in_array('CREATED_BY', array_keys($displayColumns))) { // handle the created by field
+            if (array_key_exists('CREATED_BY', $displayColumns)) { // handle the created by field
                 foreach ($this->lvs->data['data'] as $row => $data) {
                     $this->lvs->data['data'][$row]['CREATED_BY'] = get_assigned_user_name($data['CREATED_BY']);
                 }
             }
             // assign a baseURL w/ the action set as DisplayDashlet
-            foreach ($this->lvs->data['pageData']['urls'] as $type => $url) {
+            // STIC Custom 20250313 JBL - Avoid array offset on null and iterate over null
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // foreach ($this->lvs->data['pageData']['urls'] as $type => $url) {
+            $urls = $this->lvs?->data['pageData']['urls'] ?? [];
+            if (!is_array($urls)) {
+                $urls = [];
+            }
+            foreach ($urls as $type => $url) {
+            // END STIC Custom            
                 // awu Replacing action=DisplayDashlet with action=DynamicAction&DynamicAction=DisplayDashlet
                 if ($type == 'orderBy') {
-                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', $url);
+                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', (string) $url);
                 } else {
-                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', $url) . '&sugar_body_only=1&id=' . $this->id;
+                    $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', (string) $url) . '&sugar_body_only=1&id=' . $this->id;
                 }
             }
 
@@ -541,7 +578,7 @@ class DashletGeneric extends Dashlet
             }
         }
         if (!empty($req['dashletTitle'])) {
-            $options['title'] = $req['dashletTitle'];
+            $options['title'] = htmlentities(html_entity_decode($req['dashletTitle']));
         }
 
         // Don't save the options for myItemsOnly if we're not even showing the options.
@@ -567,6 +604,12 @@ class DashletGeneric extends Dashlet
      */
     public function addCustomFields()
     {
+        // STIC Custom 20250304 JBL - Avoid Error when $this->seedBean is null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if ($this->seedBean == null) {
+            return;
+        }
+        // END STIC Custom
         foreach ($this->seedBean->field_defs as $fieldName => $def) {
             if (!empty($def['type']) && $def['type'] == 'html') {
                 continue;

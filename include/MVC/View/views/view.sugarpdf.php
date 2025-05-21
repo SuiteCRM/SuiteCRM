@@ -87,7 +87,7 @@ class ViewSugarpdf extends SugarView
     public function preDisplay()
     {
         $this->sugarpdfBean = SugarpdfFactory::loadSugarpdf($this->sugarpdf, $this->module, $this->bean, $this->view_object_map);
-
+        
         // ACL control
         if (!empty($this->bean) && !$this->bean->ACLAccess($this->sugarpdfBean->aclAction)) {
             ACLController::displayNoAccess(true);

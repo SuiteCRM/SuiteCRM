@@ -58,7 +58,7 @@ $focus = BeanFactory::newBean('EmailTemplates');
 
 $detailView = new DetailView();
 $offset=0;
-if (isset($_REQUEST['offset']) or isset($_REQUEST['record'])) {
+if (isset($_REQUEST['offset']) || isset($_REQUEST['record'])) {
     $result = $detailView->processSugarBean("EMAIL_TEMPLATE", $focus, $offset);
     if ($result == null) {
         sugar_die($app_strings['ERROR_NO_RECORD']);
@@ -182,7 +182,8 @@ if (! isset($notes_list)) {
 }
 
 $attachments = '';
-for ($i=0; $i<count($notes_list); $i++) {
+$notes_listCount = count($notes_list);
+for ($i=0; $i<$notes_listCount; $i++) {
     $the_note = $notes_list[$i];
     $attachments .= "<a href=\"index.php?entryPoint=download&id={$the_note->id}&type=Notes\">".$the_note->name."</a><br />";
 }

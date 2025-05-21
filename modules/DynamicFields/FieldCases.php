@@ -70,6 +70,10 @@ require_once('modules/DynamicFields/templates/Fields/TemplateImage.php');
 require_once('modules/DynamicFields/templates/Fields/TemplateDecimal.php');
 function get_widget($type)
 {
+    // STIC Custom 20250206 JBL - Avoid Uncaught TypeError with string operations
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    $type = (string) $type;
+    // END STIC Custom
     $local_temp = null;
     switch (strtolower($type)) {
             case 'char':

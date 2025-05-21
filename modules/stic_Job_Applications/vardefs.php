@@ -425,7 +425,7 @@ $dictionary['stic_Job_Applications'] = array(
     'relationships' => array(),
     'optimistic_locking' => true,
     'unified_search' => true,
-    'unified_search_default_enabled' => false,
+    'unified_search_default_enabled' => true,
 );
 if (!class_exists('VardefManager')) {
     require_once('include/SugarObjects/VardefManager.php');

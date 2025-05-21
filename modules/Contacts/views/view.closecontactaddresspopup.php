@@ -40,6 +40,7 @@
 
  
 
+#[\AllowDynamicProperties]
 class ContactsViewCloseContactAddressPopup extends ViewList
 {
     public function CloseContactAddressPopup()

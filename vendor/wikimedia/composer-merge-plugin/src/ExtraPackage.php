@@ -60,7 +60,7 @@ class ExtraPackage
     /**
      * @var array<string, bool> $mergedRequirements
      */
-    protected $mergedRequirements = array();
+    protected $mergedRequirements = [];
 
     /**
      * @var VersionParser $versionParser
@@ -90,7 +90,7 @@ class ExtraPackage
     public function getIncludes()
     {
         return isset($this->json['extra']['merge-plugin']['include']) ?
-            $this->json['extra']['merge-plugin']['include'] : array();
+            $this->fixRelativePaths($this->json['extra']['merge-plugin']['include']) : [];
     }
 
     /**
@@ -101,7 +101,7 @@ class ExtraPackage
     public function getRequires()
     {
         return isset($this->json['extra']['merge-plugin']['require']) ?
-            $this->json['extra']['merge-plugin']['require'] : array();
+            $this->fixRelativePaths($this->json['extra']['merge-plugin']['require']) : [];
     }
 
     /**
@@ -171,7 +171,11 @@ class ExtraPackage
         $this->mergeRequires('require', $root, $state);
 
         $this->mergePackageLinks('conflict', $root);
-        $this->mergePackageLinks('replace', $root);
+
+        if ($state->shouldMergeReplace()) {
+            $this->mergePackageLinks('replace', $root);
+        }
+
         $this->mergePackageLinks('provide', $root);
 
         $this->mergeSuggests($root);
@@ -186,6 +190,7 @@ class ExtraPackage
             $this->mergeDevInto($root, $state);
         } else {
             $this->mergeReferences($root);
+            $this->mergeAliases($root);
         }
     }
 
@@ -200,6 +205,7 @@ class ExtraPackage
         $this->mergeRequires('require-dev', $root, $state);
         $this->mergeAutoload('devAutoload', $root);
         $this->mergeReferences($root);
+        $this->mergeAliases($root);
     }
 
     /**
@@ -214,11 +220,14 @@ class ExtraPackage
             return;
         }
         $repoManager = $this->composer->getRepositoryManager();
-        $newRepos = array();
+        $newRepos = [];
 
         foreach ($this->json['repositories'] as $repoJson) {
             if (!isset($repoJson['type'])) {
                 continue;
+            }
+            if ($repoJson['type'] === 'path' && isset($repoJson['url'])) {
+                $repoJson['url'] = $this->fixRelativePaths(array($repoJson['url']))[0];
             }
             $this->logger->info("Prepending {$repoJson['type']} repository");
             $repo = $repoManager->createRepository(
@@ -330,14 +339,12 @@ class ExtraPackage
      * Adapted from Composer's UpdateCommand::appendConstraintToLink
      *
      * @param Link $origin The base package link.
-     * @param Link $merge  The related package link to merge.
+     * @param Link $merge The related package link to merge.
      * @param PluginState $state
      * @return Link Merged link.
      */
     protected function mergeConstraints(Link $origin, Link $merge, PluginState $state)
     {
-        $parser = $this->versionParser;
-
         $oldPrettyString = $origin->getConstraint()->getPrettyString();
         $newPrettyString = $merge->getConstraint()->getPrettyString();
 
@@ -355,10 +362,10 @@ class ExtraPackage
             }
         }
 
-        $newConstraint = $constraintClass::create(array(
+        $newConstraint = $constraintClass::create([
             $origin->getConstraint(),
             $merge->getConstraint()
-        ), true);
+        ], true);
         $newConstraint->setPrettyString($oldPrettyString.', '.$newPrettyString);
 
         return new Link(
@@ -436,7 +443,7 @@ class ExtraPackage
     }
 
     /**
-     * Merge package links of the given type  into a RootPackageInterface
+     * Merge package links of the given type into a RootPackageInterface
      *
      * @param string $type 'conflict', 'replace' or 'provide'
      * @param RootPackageInterface $root
@@ -588,7 +595,7 @@ class ExtraPackage
         $packages = $root->$method();
 
         return array_map(
-            function ($link) use ($linkType, $version, $prettyVersion, $vp, $packages) {
+            static function ($link) use ($linkType, $version, $prettyVersion, $vp, $packages) {
                 if ('self.version' === $link->getPrettyConstraint()) {
                     if (isset($packages[$link->getSource()])) {
                         /** @var Link $package */
@@ -648,6 +655,51 @@ class ExtraPackage
         return $root;
     }
 
+    protected function mergeAliases(RootPackageInterface $root)
+    {
+        $aliases = [];
+        $unwrapped = self::unwrapIfNeeded($root, 'setAliases');
+        foreach (array('require', 'require-dev') as $linkType) {
+            $linkInfo = BasePackage::$supportedLinkTypes[$linkType];
+            $method = 'get'.ucfirst($linkInfo['method']);
+            $links = [];
+            foreach ($unwrapped->$method() as $link) {
+                $links[$link->getTarget()] = $link->getConstraint()->getPrettyString();
+            }
+            $aliases = $this->extractAliases($links, $aliases);
+        }
+        $unwrapped->setAliases($aliases);
+    }
+
+    /**
+     * Extract aliases from version constraints (dev-branch as 1.0.0).
+     *
+     * @param array $requires
+     * @param array $aliases
+     * @return array
+     * @see RootPackageLoader::extractAliases()
+     */
+    protected function extractAliases(array $requires, array $aliases)
+    {
+        foreach ($requires as $reqName => $reqVersion) {
+            if (preg_match('{^([^,\s#]+)(?:#[^ ]+)? +as +([^,\s]+)$}', $reqVersion, $match)) {
+                $aliases[] = [
+                    'package' => strtolower($reqName),
+                    'version' => $this->versionParser->normalize($match[1], $reqVersion),
+                    'alias' => $match[2],
+                    'alias_normalized' => $this->versionParser->normalize($match[2], $reqVersion),
+                ];
+            } elseif (strpos($reqVersion, ' as ') !== false) {
+                throw new UnexpectedValueException(
+                    'Invalid alias definition in "'.$reqName.'": "'.$reqVersion.'". '
+                    . 'Aliases should be in the form "exact-version as other-exact-version".'
+                );
+            }
+        }
+
+        return $aliases;
+    }
+
     /**
      * Update the root packages reference information.
      *
@@ -657,12 +709,12 @@ class ExtraPackage
     {
         // Merge source reference information for merged packages.
         // @see RootPackageLoader::load
-        $references = array();
-        $unwrapped = $this->unwrapIfNeeded($root, 'setReferences');
-        foreach (array('require', 'require-dev') as $linkType) {
+        $references = [];
+        $unwrapped = self::unwrapIfNeeded($root, 'setReferences');
+        foreach (['require', 'require-dev'] as $linkType) {
             $linkInfo = BasePackage::$supportedLinkTypes[$linkType];
             $method = 'get'.ucfirst($linkInfo['method']);
-            $links = array();
+            $links = [];
             foreach ($unwrapped->$method() as $link) {
                 $links[$link->getTarget()] = $link->getConstraint()->getPrettyString();
             }
@@ -684,8 +736,8 @@ class ExtraPackage
         foreach ($requires as $reqName => $reqVersion) {
             $reqVersion = preg_replace('{^([^,\s@]+) as .+$}', '$1', $reqVersion);
             $stabilityName = VersionParser::parseStability($reqVersion);
-            if (preg_match('{^[^,\s@]+?#([a-f0-9]+)$}', $reqVersion, $match) &&
-                $stabilityName === 'dev'
+            if ($stabilityName === 'dev' &&
+                preg_match('{^[^,\s@]+?#([a-f0-9]+)$}', $reqVersion, $match)
             ) {
                 $name = strtolower($reqName);
                 $references[$name] = $match[1];

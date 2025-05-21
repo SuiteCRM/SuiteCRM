@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/DetailView/DetailView2.php');
 
+#[\AllowDynamicProperties]
 class EmailsDetailView extends DetailView2
 {
     /**
@@ -93,6 +94,10 @@ class EmailsDetailView extends DetailView2
      */
     public function populateFields()
     {
+        if (empty($this->focus)) {
+            return;
+        }
+
         if (empty($this->focus->from_addr_name)) {
             $this->focus->from_addr_name = $this->focus->from_addr;
         }

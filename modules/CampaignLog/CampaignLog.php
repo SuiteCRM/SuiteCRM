@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class CampaignLog extends SugarBean
 {
     public $table_name = 'campaign_log';

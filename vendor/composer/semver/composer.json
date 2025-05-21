@@ -27,15 +27,15 @@
         }
     ],
     "support": {
-        "irc": "irc://irc.freenode.org/composer",
+        "irc": "ircs://irc.libera.chat:6697/composer",
         "issues": "https://github.com/composer/semver/issues"
     },
     "require": {
         "php": "^5.3.2 || ^7.0 || ^8.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.2 || ^5",
-        "phpstan/phpstan": "^1.4"
+        "symfony/phpunit-bridge": "^3 || ^7",
+        "phpstan/phpstan": "^1.11"
     },
     "autoload": {
         "psr-4": {

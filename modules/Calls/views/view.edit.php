@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/json_config.php');
 
+#[\AllowDynamicProperties]
 class CallsViewEdit extends ViewEdit
 {
     /**

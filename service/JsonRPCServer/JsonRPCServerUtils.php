@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class JsonRPCServerUtils
 {
     /**
@@ -96,7 +97,8 @@ class JsonRPCServerUtils
         if ($table === 'users.') {
             $cond_arr[] = $table . "status='Active'";
         }
-        $group = strtolower(trim($query_obj['group']));
+        $queryObject = $query_obj['group'] ?? '';
+        $group = strtolower(trim($queryObject));
         if ($group !== 'and' && $group !== 'or') {
             $group = 'and';
         }

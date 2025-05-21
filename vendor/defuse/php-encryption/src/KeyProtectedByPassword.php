@@ -22,7 +22,10 @@ final class KeyProtectedByPassword
      *
      * @return KeyProtectedByPassword
      */
-    public static function createRandomPasswordProtectedKey($password)
+    public static function createRandomPasswordProtectedKey(
+        #[\SensitiveParameter]
+        $password
+    )
     {
         $inner_key = Key::createNewRandomKey();
         /* The password is hashed as a form of poor-man's domain separation
@@ -47,7 +50,10 @@ final class KeyProtectedByPassword
      *
      * @return KeyProtectedByPassword
      */
-    public static function loadFromAsciiSafeString($saved_key_string)
+    public static function loadFromAsciiSafeString(
+        #[\SensitiveParameter]
+        $saved_key_string
+    )
     {
         $encrypted_key = Encoding::loadBytesFromChecksummedAsciiSafeString(
             self::PASSWORD_KEY_CURRENT_VERSION,
@@ -82,7 +88,10 @@ final class KeyProtectedByPassword
      * @param string $password
      * @return Key
      */
-    public function unlockKey($password)
+    public function unlockKey(
+        #[\SensitiveParameter]
+        $password
+    )
     {
         try {
             $inner_key_encoded = Crypto::decryptWithPassword(
@@ -115,7 +124,12 @@ final class KeyProtectedByPassword
      *
      * @return KeyProtectedByPassword
      */
-    public function changePassword($current_password, $new_password)
+    public function changePassword(
+        #[\SensitiveParameter]
+        $current_password,
+        #[\SensitiveParameter]
+        $new_password
+    )
     {
         $inner_key = $this->unlockKey($current_password);
         /* The password is hashed as a form of poor-man's domain separation

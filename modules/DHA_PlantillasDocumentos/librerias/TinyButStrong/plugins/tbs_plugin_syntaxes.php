@@ -21,6 +21,7 @@ define('TBS_THIS_COMMAND2','clsTbsThisPlugIn.command1');
 // Example :
 // $GLOBALS['_TBS_AutoInstallPlugIns'][] = TBS_THIS_PLUGIN;
 
+#[\AllowDynamicProperties]
 class clsTbsThisPlugIn {
 
 	// Property $this->TBS is automatically set by TinyButStrong when the Plug-In is installed.

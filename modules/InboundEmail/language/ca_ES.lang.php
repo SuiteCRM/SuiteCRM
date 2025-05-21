@@ -52,6 +52,7 @@ $mod_strings = array(
     'ERR_NO_IMAP' => 'No s\'han trobat les llibreries d\'IMAP. Si us plau, resolgui això abans de continuar amb la configuració de correu electrònic entrant',
     'ERR_NO_OPTS_SAVED' => 'No s\'han guardat valors òptims amb el seu compte de correu electrònic entrant. Si us plau, revisi la configuració',
     'ERR_TEST_MAILBOX' => 'Si us plau, comprovi la seva configuració i intenti-ho de nou.',
+    'ERR_INVALID_PORT' => 'Port Invàlid',
 
     'LBL_ASSIGN_TO_USER' => 'Assignar a Usuari',
     'LBL_AUTOREPLY' => 'Plantilla de Resposta Automàtica',
@@ -79,9 +80,11 @@ $mod_strings = array(
     'LBL_LIST_NAME' => 'Nom:',
     'LBL_LIST_GLOBAL_PERSONAL' => 'Grupo/Personal',
     'LBL_LIST_SERVER_URL' => 'Servidor de correu',
+    'LBL_SERVER_ADDRESS' => 'Direcció del servidor',
     'LBL_LIST_STATUS' => 'Estat:',
     'LBL_LOGIN' => 'Nom d\'Usuari',
     'LBL_MAILBOX_DEFAULT' => 'SAFATA D\'ENTRADA',
+    'LBL_USERNAME' => "Nombre d'usuari",
     'LBL_MAILBOX_SSL' => 'Usar SSL',
     'LBL_MAILBOX_TYPE' => 'Accions Possibles',
     'LBL_DISTRIBUTION_METHOD' => 'Mètode de Distribució',
@@ -107,6 +110,7 @@ $mod_strings = array(
     'LBL_ONLY_SINCE_NO' => 'No. Comprovar contra tots els correus electrònics al servidor de correu.',
     'LBL_ONLY_SINCE_YES' => 'Si.',
     'LBL_PASSWORD' => 'Clau de pas',
+    'LBL_EMAIL_PASSWORD' => 'Contrassenya',
     'LBL_POP3_SUCCESS' => 'La seva prova de connexió de POP3 va tenir èxit.',
     'LBL_POPUP_TITLE' => 'Comprovar Configuració',
     'LBL_SELECT_SUBSCRIBED_FOLDERS' => 'Seleccionar Carpetes Subscrites',
@@ -119,23 +123,29 @@ $mod_strings = array(
     'LBL_SAME_AS_ABOVE' => 'Fes servir els mateixos nom i adreça',
     'LBL_SERVER_OPTIONS' => 'Configuració avançada',
     'LBL_SERVER_TYPE' => 'Protocol del Servidor de Correu',
+    'LBL_SERVER_PORT' => 'Puerto del servidor de correo',
     'LBL_SERVER_URL' => 'Adreça del servidor de correu electrònic',
     'LBL_SSL_DESC' => 'Si el seu servidor de correu suporta connexions segures de sockets (SSL), habilitar aquesta opció forçarà connexions SSL en importar el correu.',
     'LBL_ASSIGN_TO_TEAM_DESC' => 'L\'equip seleccionat té accés al compte de correu. Si ha seleccionat una Carpeta de Grup, l\'equip assignat a la Carpeta de Grup reemplaçarà l\'equip seleccionat.',
     'LBL_SSL' => 'Usar SSL',
     'LBL_STATUS' => 'Estat',
     'LBL_SYSTEM_DEFAULT' => 'Per Defecte en el Sistema',
+    'LBL_EMAIL_BODY_FILTERING' => 'Tipo de filtre de cos de correu electrònic',    
     'LBL_TEST_BUTTON_TITLE' => 'Provar',
     'LBL_TEST_SETTINGS' => 'Provar Configuració',
+    'LBL_TEST_CONNECTION_SETTINGS' => 'Probar la configuració de connexió',
     'LBL_TEST_SUCCESSFUL' => 'Conexió completada amb éxit.',
     'LBL_TEST_WAIT_MESSAGE' => 'Un moment, si us plau...',
     'LBL_WARN_IMAP_TITLE' => 'Correu electrònic entrant deshabilitat',
     'LBL_WARN_IMAP' => 'Avís:',
     'LBL_WARN_NO_IMAP' => 'El correu electrònic entrant <b>no pot</b> funcionar sense les llibreríes de C del cliente de IMAP habilitades/compiladas en el mòdul de PHP.  Si us plau, contacti amb el seu administrador per resoldre el problema.',
 
+    'LNK_LIST_CREATE_NEW_PERSONAL' => 'Nueva Cuenta de Correo Personal',
     'LNK_LIST_CREATE_NEW_GROUP' => 'Nou compte de correu de grup',
+    'LNK_LIST_CREATE_NEW_CASES_TYPE' => 'Nueva Cuenta de Correo para el manejo de casos',
     'LNK_LIST_CREATE_NEW_BOUNCE' => 'nou compte de gestió de rebots',
     'LNK_LIST_MAILBOXES' => 'Tots els comptes de correu electrònic',
+    'LNK_LIST_OUTBOUND_EMAILS' => 'Cuentas de correo electrónico salientes',
     'LNK_LIST_SCHEDULER' => 'Planificacions',
     'LNK_SEED_QUEUES' => 'Crear Cap de sèrie per a Cues d\'Equips',
     'LBL_GROUPFOLDER_ID' => 'Id de Carpeta de Grup',
@@ -159,21 +169,55 @@ $mod_strings = array(
     'LNK_QUICK_REPLY' => 'Contestar',
     'LNK_SENT_EMAIL_LIST' => 'Correus electrònics enviats',
     'LBL_EDIT_LAYOUT' => 'Editar Diseny' /*for 508 compliance fix*/,
+    'LBL_TYPE_DIFFERENT' => 'El tipus de connexió OAuth externa ha de ser el MATEIX que el tipus del compte de correu electrònic entrant',
 
     'LBL_MODIFIED_BY' => 'Modificat Per',
     'LBL_SERVICE' => 'Servei',
     'LBL_STORED_OPTIONS' => 'Opcions emmagatzemades',
     'LBL_GROUP_ID' => 'Grup id',
-    'LBL_REPLY_ASSIGNING_BEHAVIOR' => 'Assignar respostes a', // PR 6009
-    'LBL_REPLY_ASSIGNING_BEHAVIOR_HELP' => 'Quan un correu electrònic entrant és una resposta enviada des de SuiteCRM, a qui si li assigna la resposta:<br><br><b>No fer res:</b> el comportament per defecte. El correu electrònic no està assignat a ningú.<br><br><b> Va respondre al propietari del correu electrònic:</b> el correu electrònic s\'assigna al propietari del correu electrònic contestat, o el últim correu electrònic enviat des de SuiteCRM en el fil. <br><br><b> Propietari de registres associats:</b> el correu electrònic s\'assigna al propietari del registre que va respondre al correu electrònic, o el últim correu electrònic enviat des de SuiteCRM en el fil, està relacionat amb.', // PR 6009
-
-    'LBL_CREATE_CONTACT' => 'Crear contacte a partir del correu', // PR 5721
-    'LBL_CREATE_CONTACT_HELP' => 'Seleccioni per crear automàticament un contacte en SuiteCRM de cada correu entrant.', // PR 5721
-    'LBL_CONTACT_DEFAULT_LANGUAGE' => 'Idioma de contacte per defecte', // PR 5721
-    'LBL_FILL_CONTACT_NAME' => 'Ompliu el Nom del Contacte', // PR 5721 - Escaped required
-    'LBL_FILL_CONTACT_NAME_HELP' => 'Seleccioni per omplir automàticament amb el nom i cognom al nou contacte creat a partir dels coreus entrants.', // PR 5721
-    'LBL_CONTACT_DEFAULT_SOURCE' => 'Nova font de Contacte', // PR 5721
-    'LBL_NEW_CASE_STATUS' => 'Estat el cas', // PR 5721
-    'LBL_NEW_CASE_PRIORITY' => 'Prioritat del cas', // PR 5721
-    'LBL_NEW_CASE_TYPE' => 'Tipus de cas', // PR 5721
+    'LBL_OUTBOUND_CONFIGURATION' => 'Configuració de sortida',
+    'LBL_CONNECTION_CONFIGURATION' => 'Configuració del servidor',
+    'LBL_AUTO_REPLY_CONFIGURATION' => 'Configuració de resposta automàtica',
+    'LBL_CASE_CONFIGURATION' => 'Configuració del cas',
+    'LBL_GROUP_CONFIGURATION' => 'Configuració del grup',
+   
+    'LBL_SECURITYGROUPS_SUBPANEL_TITLE' => 'Grups de seguretat',
+   
+   
+    'LBL_OUTBOUND_EMAIL_ACCOUNT' => 'Compte de correu electrònic de sortida',
+    'LBL_OUTBOUND_EMAIL_ACCOUNT_ID' => 'Identificador del compte de correu electrònic de sortida',
+    'LBL_OUTBOUND_EMAIL_ACCOUNT_NAME' => 'Compte de correu electrònic de sortida',
+   
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE' => 'Plantilla de correu electrònic de resposta automàtica',
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE_ID' => 'Identificador de plantilla de correu electrònic de resposta automàtica',
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE_NAME' => 'Plantilla de correu electrònic de resposta automàtica',
+   
+    'LBL_CASE_EMAIL_TEMPLATE' => 'Plantilla de correu electrònic de cas',
+    'LBL_CASE_EMAIL_TEMPLATE_ID' => 'Identificador de plantilla de correu electrònic de cas',
+    'LBL_CASE_EMAIL_TEMPLATE_NAME' => 'Plantilla de correu electrònic de cas',
+   
+    'LBL_PROTOCOL' => 'Protocol',
+    'LBL_CONNECTION_STRING' => 'Cadena de connexió',
+    'LBL_DISTRIB_METHOD' => 'Mètode de distribució',
+    'LBL_DISTRIB_OPTIONS' => 'Opcions de distribució',
+   
+    'LBL_DISTRIBUTION_USER' => 'Usuari de distribució',
+    'LBL_DISTRIBUTION_USER_ID' => "Identificador d'usuari de distribució",
+    'LBL_DISTRIBUTION_USER_NAME' => 'Usuari de distribució',
+   
+    'LBL_EXTERNAL_OAUTH_CONNECTION' => 'Connexió OAuth externa',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_ID' => 'Identificador de connexió OAuth extern',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_NAME' => 'Connexió OAuth externa',
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Connexions OAuth externes',
+   
+    'LBL_TYPE' => 'Tipus',
+    'LBL_AUTH_TYPE' => "Tipus d'autenticació",
+    'LBL_IS_DEFAULT' => 'Per defecte',
+    'LBL_SIGNATURE' => 'Firma',
+   
+    'LBL_OWNER_NAME' => 'Propietari',
+   
+    'LBL_SET_AS_DEFAULT_BUTTON' => 'Estableix com a predeterminat',
+   
+    'LBL_MOVE_MESSAGES_TO_TRASH_AFTER_IMPORT' => 'Mou els missatges a la paperera després de la importació?',
 );

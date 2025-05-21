@@ -66,6 +66,13 @@ class ServiceAccountCredentials extends CredentialsLoader implements
     use ServiceAccountSignerTrait;
 
     /**
+     * Used in observability metric headers
+     *
+     * @var string
+     */
+    private const CRED_TYPE = 'sa';
+
+    /**
      * The OAuth2 instance used to conduct authorization.
      *
      * @var OAuth2
@@ -98,6 +105,11 @@ class ServiceAccountCredentials extends CredentialsLoader implements
      * @var ServiceAccountJwtAccessCredentials|null
      */
     private $jwtAccessCredentials;
+
+    /**
+     * @var string
+     */
+    private string $universeDomain;
 
     /**
      * Create a new ServiceAccountCredentials.
@@ -158,9 +170,8 @@ class ServiceAccountCredentials extends CredentialsLoader implements
             'additionalClaims' => $additionalClaims,
         ]);
 
-        $this->projectId = isset($jsonKey['project_id'])
-            ? $jsonKey['project_id']
-            : null;
+        $this->projectId = $jsonKey['project_id'] ?? null;
+        $this->universeDomain = $jsonKey['universe_domain'] ?? self::DEFAULT_UNIVERSE_DOMAIN;
     }
 
     /**
@@ -202,17 +213,29 @@ class ServiceAccountCredentials extends CredentialsLoader implements
 
             return $accessToken;
         }
-        return $this->auth->fetchAuthToken($httpHandler);
+        $authRequestType = empty($this->auth->getAdditionalClaims()['target_audience'])
+            ? 'at' : 'it';
+        return $this->auth->fetchAuthToken($httpHandler, $this->applyTokenEndpointMetrics([], $authRequestType));
     }
 
     /**
+     * Return the Cache Key for the credentials.
+     * For the cache key format is one of the following:
+     * ClientEmail.Scope[.Sub]
+     * ClientEmail.Audience[.Sub]
+     *
      * @return string
      */
     public function getCacheKey()
     {
-        $key = $this->auth->getIssuer() . ':' . $this->auth->getCacheKey();
+        $scopeOrAudience = $this->auth->getScope();
+        if (!$scopeOrAudience) {
+            $scopeOrAudience = $this->auth->getAudience();
+        }
+
+        $key = $this->auth->getIssuer() . '.' . $scopeOrAudience;
         if ($sub = $this->auth->getSub()) {
-            $key .= ':' . $sub;
+            $key .= '.' . $sub;
         }
 
         return $key;
@@ -321,6 +344,18 @@ class ServiceAccountCredentials extends CredentialsLoader implements
     }
 
     /**
+     * Get the private key from the keyfile.
+     *
+     * In this case, it returns the keyfile's private_key key, needed for JWT signing.
+     *
+     * @return string
+     */
+    public function getPrivateKey()
+    {
+        return $this->auth->getSigningKey();
+    }
+
+    /**
      * Get the quota project used for this API request
      *
      * @return string|null
@@ -331,10 +366,39 @@ class ServiceAccountCredentials extends CredentialsLoader implements
     }
 
     /**
+     * Get the universe domain configured in the JSON credential.
+     *
+     * @return string
+     */
+    public function getUniverseDomain(): string
+    {
+        return $this->universeDomain;
+    }
+
+    protected function getCredType(): string
+    {
+        return self::CRED_TYPE;
+    }
+
+    /**
      * @return bool
      */
     private function useSelfSignedJwt()
     {
+        // When a sub is supplied, the user is using domain-wide delegation, which not available
+        // with self-signed JWTs
+        if (null !== $this->auth->getSub()) {
+            // If we are outside the GDU, we can't use domain-wide delegation
+            if ($this->getUniverseDomain() !== self::DEFAULT_UNIVERSE_DOMAIN) {
+                throw new \LogicException(sprintf(
+                    'Service Account subject is configured for the credential. Domain-wide ' .
+                    'delegation is not supported in universes other than %s.',
+                    self::DEFAULT_UNIVERSE_DOMAIN
+                ));
+            }
+            return false;
+        }
+
         // If claims are set, this call is for "id_tokens"
         if ($this->auth->getAdditionalClaims()) {
             return false;
@@ -344,6 +408,12 @@ class ServiceAccountCredentials extends CredentialsLoader implements
         if ($this->useJwtAccessWithScope) {
             return true;
         }
+
+        // If the universe domain is outside the GDU, use JwtAccess for access tokens
+        if ($this->getUniverseDomain() !== self::DEFAULT_UNIVERSE_DOMAIN) {
+            return true;
+        }
+
         return is_null($this->auth->getScope());
     }
 }

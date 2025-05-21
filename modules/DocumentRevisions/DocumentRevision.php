@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/upload_file.php');
 
 // User is used to store Forecast information.
+#[\AllowDynamicProperties]
 class DocumentRevision extends SugarBean
 {
     public $id;
@@ -187,7 +188,8 @@ class DocumentRevision extends SugarBean
             $this->latest_revision_id = $row['document_revision_id'];
 
             if (empty($this->revision)) {
-                $this->revision = $this->latest_revision + 1;
+                $latestRevision = $this->latest_revision;
+                $this->revision = is_numeric($latestRevision) ? $latestRevision + 1 : '';
             }
         }
     }
@@ -228,15 +230,15 @@ class DocumentRevision extends SugarBean
 
         // get extension
         $realFilename = $tempDoc->filename;
-        $fileExtension_beg = strrpos($realFilename, ".");
+        $fileExtension_beg = strrpos((string) $realFilename, ".");
         $fileExtension = "";
 
         if ($fileExtension_beg > 0) {
-            $fileExtension = substr($realFilename, $fileExtension_beg + 1);
+            $fileExtension = substr((string) $realFilename, $fileExtension_beg + 1);
         }
         //check to see if this is a file with extension located in "badext"
         foreach ($sugar_config['upload_badext'] as $badExt) {
-            if (strtolower($fileExtension) == strtolower($badExt)) {
+            if (strtolower($fileExtension) === strtolower($badExt)) {
                 //if found, then append with .txt to filename and break out of lookup
                 //this will make sure that the file goes out with right extension, but is stored
                 //as a text in db.
@@ -277,9 +279,12 @@ class DocumentRevision extends SugarBean
 
     public function get_list_view_data()
     {
+
         $revision_fields = $this->get_list_view_array();
 
+        $forecast_fields = [];
         $forecast_fields['FILE_URL'] = $this->file_url;
+
         return $revision_fields;
     }
 

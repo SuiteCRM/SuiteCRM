@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/SubPanel/SubPanelDefinitions.php');
 
+#[\AllowDynamicProperties]
 class ConfiguratorViewHistoryContactsEmails extends SugarView
 {
     public function preDisplay()

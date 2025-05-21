@@ -50,10 +50,10 @@ class stic_Payment_CommitmentsLogicHooks
         // Set pending_annualized_fee if any of the fields involved in the calculation changes, 
         // or if the payment commitment is active, and either expected_payments_detail 
         // or pending_annualized_fee fields are empty.
-        if ($bean->fetched_row['first_payment_date'] != $bean->first_payment_date
-            || $bean->fetched_row['end_date'] != $bean->end_date
-            || $bean->fetched_row['amount'] != $bean->amount
-            || $bean->fetched_row['periodicity'] != $bean->periodicity
+        if ($bean->fetched_row['first_payment_date'] ?? null != $bean->first_payment_date
+            || $bean->fetched_row['end_date'] ?? null != $bean->end_date
+            || $bean->fetched_row['amount'] ?? null != $bean->amount
+            || $bean->fetched_row['periodicity'] ?? null != $bean->periodicity
             || ($bean->active == 1 && (empty($bean->expected_payments_detail) || empty($bean->pending_annualized_fee)))
         ) {
             $res = stic_Payment_CommitmentsUtils::getPendingPayments($bean);
@@ -73,9 +73,9 @@ class stic_Payment_CommitmentsLogicHooks
             }
 
             // In case the account number or mandate has changed and there is an account number
-            if (!empty($bean->bank_account) && ($bean->bank_account != $bean->fetched_row['bank_account'] || ($bean->mandate != $bean->fetched_row['mandate'] && !empty($bean->mandate)))) {
+            if (!empty($bean->bank_account) && ($bean->bank_account != ($bean->fetched_row['bank_account'] ?? null) || ($bean->mandate != $bean->fetched_row['mandate'] && !empty($bean->mandate)))) {
                 // If mandate is empty or has not been modified by the user, we generate it
-                if (empty($bean->mandate) || ($bean->mandate == $bean->fetched_row['mandate'])) {
+                if (empty($bean->mandate) || ($bean->mandate == ($bean->fetched_row['mandate'] ?? null))) {
                     $bean->mandate = substr(mt_rand(100000000, 999999999), 0, 8);
                 }
                 // The signature date is updated in all cases where the mandate or account number has changed
@@ -99,7 +99,7 @@ class stic_Payment_CommitmentsLogicHooks
     {
 
         // Create initial payments, only if it is a new record (and not modified)
-        if ($bean->fetched_row == false) {
+        if (empty($bean->fetched_row)) {
             stic_Payment_CommitmentsUtils::createInitialPayments($bean);
         }
 

@@ -47,7 +47,7 @@
 
 <div class="layer">
     <span>{$MOD.LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_PROCESSED} = {$DATA.totalRecordsProcessed}</span>
-    <br /><span style='color:green'>{$MOD.LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_CREATED} = {$DATA.totalRecordsCreated ?? 0}</span>
+    <br /><span style='color:green'>{$MOD.LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_CREATED} = {$DATA.totalRecordsCreated|default:0}</span>
     <br /><span style='color:red'>{$MOD.LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_NOT_CREATED} = {$DATA.totalRecordsNotCreated}</span>
 </div>
 <br />

@@ -702,7 +702,11 @@ class JsChart extends SugarChart
     public function getXMLChartProperties($xmlStr)
     {
         $props = array();
-        $xml = new SimpleXMLElement($xmlstr);
+        // STIC Custom 20250210 JBL - Fix Undefined variable
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $xml = new SimpleXMLElement($xmlstr);
+        $xml = new SimpleXMLElement($xmlStr);
+        // END STIC Custom
         foreach ($xml->properties->children() as $properties) {
             $props[$properties->getName()] = $properties;
         }

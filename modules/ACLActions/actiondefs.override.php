@@ -89,14 +89,14 @@ $GLOBALS['ACLActions'] = array(
                                     'label'=>'LBL_ACTION_ACCESS',
                                     'default'=>ACL_ALLOW_ENABLED,
                                 ),
-                            
+
                         'view'=>
                                 array(
                                     'aclaccess'=>array(ACL_ALLOW_ALL,ACL_ALLOW_GROUP,ACL_ALLOW_OWNER,ACL_ALLOW_DEFAULT, ACL_ALLOW_NONE),
                                     'label'=>'LBL_ACTION_VIEW',
                                     'default'=>ACL_ALLOW_ALL,
                                 ),
-                    
+
                         'list'=>
                                 array(
                                     'aclaccess'=>array(ACL_ALLOW_ALL,ACL_ALLOW_GROUP,ACL_ALLOW_OWNER,ACL_ALLOW_DEFAULT, ACL_ALLOW_NONE),
@@ -108,14 +108,14 @@ $GLOBALS['ACLActions'] = array(
                                     'aclaccess'=>array(ACL_ALLOW_ALL,ACL_ALLOW_GROUP,ACL_ALLOW_OWNER,ACL_ALLOW_DEFAULT, ACL_ALLOW_NONE),
                                     'label'=>'LBL_ACTION_EDIT',
                                     'default'=>ACL_ALLOW_ALL,
-                                    
+
                                 ),
                         'delete'=>
                             array(
                                     'aclaccess'=>array(ACL_ALLOW_ALL,ACL_ALLOW_GROUP,ACL_ALLOW_OWNER,ACL_ALLOW_DEFAULT, ACL_ALLOW_NONE),
                                     'label'=>'LBL_ACTION_DELETE',
                                     'default'=>ACL_ALLOW_ALL,
-                                    
+
                                 ),
                         'import'=>
                             array(
@@ -135,8 +135,8 @@ $GLOBALS['ACLActions'] = array(
                                     'label'=>'LBL_ACTION_MASSUPDATE',
                                     'default'=>ACL_ALLOW_ALL,
                                 ),
-                        
-                    
+
+
                 ),),
 );
 /* END - SECURITY GROUPS */

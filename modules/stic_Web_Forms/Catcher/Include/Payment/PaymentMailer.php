@@ -37,7 +37,7 @@ class PaymentMailer extends WebFormMailer
         }
         $html .= '<table>';
         foreach ($fieldsToShow as $key) {
-            $label = $this->translate($payment->field_defs[$key]['vname'], $payment->module_name);
+            $label = isset($payment->field_defs[$key]['vname']) ? $this->translate($payment->field_defs[$key]['vname'], $payment->module_name) : '';
             if ($key == 'name') {
                 // If the field is the name, create a link to directly access the record
                 $value = '<a href="' . self::createLinkToDetailView($payment->module_name, $payment->id) . '">' . $payment->name . '</a>';

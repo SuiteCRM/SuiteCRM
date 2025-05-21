@@ -39,6 +39,18 @@
  */
 
 *}
-<input type='password' id='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}' 
-name='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}' 
-size='{{$displayParams.size|default:30}}' value='{{sugarvar key='value'}}' title='{{$vardef.help}}' tabindex='{{$tabindex}}'	{{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}} >
+<input type='password'
+       id='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}'
+       name='{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}'
+       size='{{$displayParams.size|default:35}}'
+       placeholder="{{if isset($vardef.display) && $vardef.display == 'writeonly'}}{if !empty({{sugarvar key='value' string=true}})}{sugar_translate label='LBL_PASSWORD_SET_NEW_VALUE_TO_RESET'}{/if}{{/if}}"
+       data-is-value-set="{if !empty({{sugarvar key='value' string=true}})}true{else}false{/if}"
+       value='{{if isset($vardef.display) && $vardef.display == 'writeonly'}}{{else}}{{sugarvar key='value'}}{{/if}}'
+       title='{{$vardef.help}}'
+       tabindex='{{$tabindex}}'
+       {* STIC-Custom - MHP - 20241112 - Prevent automatic filling of passwords with the one stored in the browser
+          https://github.com/SinergiaTIC/SinergiaCRM/pull/315/
+          Related with https://github.com/SinergiaTIC/SinergiaCRM/pull/85 *}
+       autocomplete='new-password'
+       {* END STIC-Custom *}
+       {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}>

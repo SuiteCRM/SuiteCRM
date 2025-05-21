@@ -41,7 +41,7 @@ class stic_Contacts_RelationshipsLogicHooks
     public function after_save(&$bean, $event, $arguments)
     {
         // Update active relationship types in Contacts in case of date or relationship type changes
-        if ($bean->start_date != $bean->fetched_row['start_date']
+        if (empty($bean->fetched_row) || $bean->start_date != $bean->fetched_row['start_date']
             || $bean->end_date != $bean->fetched_row['end_date']
             || $bean->relationship_type != $bean->fetched_row['relationship_type']
         ) {
@@ -67,10 +67,12 @@ class stic_Contacts_RelationshipsLogicHooks
                 case 'after_relationship_add':
                     if ($arguments['related_id']) {
                         $contactBean = BeanFactory::getBean('Contacts', $arguments['related_id']);
-                        include_once 'modules/stic_Contacts_Relationships/Utils.php';
-                        stic_Contacts_RelationshipsUtils::setRelationshipType($contactBean->id);
-                        // Related with STIC#744 
-                        $contactBean->retrieve();                        
+                        if ($contactBean !== false) {
+                            include_once 'modules/stic_Contacts_Relationships/Utils.php';
+                            stic_Contacts_RelationshipsUtils::setRelationshipType($contactBean->id);
+                            // Related with STIC#744 
+                            $contactBean->retrieve();
+                        }                    
                     }
                     else {
                         $GLOBALS['log']->error('Line '.__LINE__.': '.__METHOD__.': ' . 'The related Contact Id is empty');

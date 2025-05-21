@@ -8,13 +8,13 @@
     {{foreach from=$form.buttons key=val item=button}}
     {{if !is_array($button) && in_array($button, $built_in_buttons)}}
     {{counter print=false}}
-    <li>{{sugar_button module="$module" id="$button" view="EditView" form_id="formDetailView"}}</li>
+    <li>{{sugar_button module="$module" id=$button view="EditView" form_id="formDetailView"}}</li>
     {{/if}}
     {{/foreach}}
     {{if count($form.buttons) > $num_buttons}}
     {{foreach from=$form.buttons key=val item=button}}
     {{if is_array($button) && $button.customCode}}
-    <li>{{sugar_button module="$module" id="$button" view="EditView" form_id="formDetailView"}}</li>
+    <li>{{sugar_button module="$module" id=$button view="EditView" form_id="formDetailView"}}</li>
     {{/if}}
     {{/foreach}}
     {{/if}}

@@ -59,6 +59,7 @@ if (!isset($_REQUEST['module_name'])) {
     $focus = new $bean;
 }
 
+#[\AllowDynamicProperties]
 class Popup_Picker
 {
 
@@ -100,23 +101,23 @@ class Popup_Picker
 
         //output header
         echo "<table width='100%' cellpadding='0' cellspacing='0'><tr><td>";
-        
+
         if (!isset($focus->module_dir)) {
             LoggerManager::getLogger()->fatal("Popup picker needs module dir from focus bean but global focus is none.");
             throw new Exception('There is not selected focus bean for popup picker process page.');
         }
-          
+
         $mod_strings = return_module_language($current_language, $focus->module_dir);
 
         $printImageURL = SugarThemeRegistry::current()->getImageURL('print.gif');
-                
+
         $requestString = '';
         if (!isset($GLOBALS['request_string'])) {
             LoggerManager::getLogger()->warn("Popup picker needs focus bean but \$GLOBALS['request_string'] is not set.");
         } else {
             $requestString = $GLOBALS['request_string'];
         }
-                
+
         $titleExtra = <<<EOHTML
 <a href="javascript:void window.open('index.php?{$requestString}','printwin','menubar=1,status=0,resizable=1,scrollbars=1,toolbar=0,location=1')" class='utilsLink'>
 <!--not_in_theme!--><img src="{$printImageURL}" alt="{$GLOBALS['app_strings']['LNK_PRINT']}"></a>
@@ -129,13 +130,13 @@ EOHTML;
         $params[] = translate('LBL_MODULE_NAME', $focus->module_dir);
         $params[] = $focus->get_summary_text();
         $params[] = translate('LBL_CHANGE_LOG', 'Audit');
-        echo str_replace('</div>', "<span class='utils'>$titleExtra</span></div>", getClassicModuleTitle($focus->module_dir, $params, false));
+        echo str_replace('</div>', "<span class='utils'>$titleExtra</span></div>", (string) getClassicModuleTitle($focus->module_dir, $params, false));
 
         $oddRow = true;
         $audited_fields = $focus->getAuditEnabledFieldDefinitions();
         asort($audited_fields);
         $fields = '';
-        $field_count = count($audited_fields);
+        $field_count = is_countable($audited_fields) ? count($audited_fields) : 0;
         $start_tag = "<table><tr><td >";
         $end_tag = "</td></tr></table>";
 
@@ -149,7 +150,7 @@ EOHTML;
                 } elseif (isset($value['label'])) {
                     $vname = $value['label'];
                 }
-                $fields .= str_replace(':', '', translate($vname, $focus->module_dir));
+                $fields .= str_replace(':', '', (string) translate($vname, $focus->module_dir));
 
                 if ($index < $field_count) {
                     $fields .= ", ";
@@ -163,11 +164,11 @@ EOHTML;
 
         foreach ($audit_list as $audit) {
             if (empty($audit['before_value_string']) && empty($audit['after_value_string'])) {
-                $before_value = $audit['before_value_text'];
-                $after_value = $audit['after_value_text'];
+                $before_value = $audit['before_value_text'] ?? '';
+                $after_value = $audit['after_value_text'] ?? '';
             } else {
-                $before_value = $audit['before_value_string'];
-                $after_value = $audit['after_value_string'];
+                $before_value = $audit['before_value_string'] ?? '';
+                $after_value = $audit['after_value_string'] ?? '';
             }
 
             // Let's run the audit data through the sugar field system

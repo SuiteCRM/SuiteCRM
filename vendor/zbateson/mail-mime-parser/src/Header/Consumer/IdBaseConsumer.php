@@ -4,13 +4,14 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header\Consumer;
 
 use ZBateson\MailMimeParser\Header\Part\CommentPart;
 
 /**
  * Serves as a base-consumer for ID headers (like Message-ID and Content-ID).
- * 
+ *
  * IdBaseConsumer handles invalidly-formatted IDs not within '<' and '>'
  * characters.  Processing for validly-formatted IDs are passed on to its
  * sub-consumer, IdConsumer.
@@ -21,13 +22,13 @@ class IdBaseConsumer extends AbstractConsumer
 {
     /**
      * Returns the following as sub-consumers:
-     *  - \ZBateson\MailMimeParser\Header\Consumer\CommentConsumer
-     *  - \ZBateson\MailMimeParser\Header\Consumer\QuotedStringConsumer
-     *  - \ZBateson\MailMimeParser\Header\Consumer\IdConsumer
+     *  - {@see CommentConsumer}
+     *  - {@see QuotedStringConsumer}
+     *  - {@see IdConsumer}
      *
      * @return AbstractConsumer[] the sub-consumers
      */
-    protected function getSubConsumers()
+    protected function getSubConsumers() : array
     {
         return [
             $this->consumerService->getCommentConsumer(),
@@ -35,13 +36,13 @@ class IdBaseConsumer extends AbstractConsumer
             $this->consumerService->getIdConsumer()
         ];
     }
-    
+
     /**
      * Returns '\s+' as a whitespace separator.
-     * 
-     * @return string[] an array of regex pattern matchers
+     *
+     * @return string[] an array of regex pattern matchers.
      */
-    protected function getTokenSeparators()
+    protected function getTokenSeparators() : array
     {
         return ['\s+'];
     }
@@ -49,40 +50,35 @@ class IdBaseConsumer extends AbstractConsumer
     /**
      * IdBaseConsumer doesn't have start/end tokens, and so always returns
      * false.
-     * 
-     * @param string $token
-     * @return boolean false
      */
-    protected function isEndToken($token)
+    protected function isEndToken(string $token) : bool
     {
         return false;
     }
-    
+
     /**
      * IdBaseConsumer doesn't have start/end tokens, and so always returns
      * false.
-     * 
+     *
      * @codeCoverageIgnore
-     * @param string $token
-     * @return boolean false
      */
-    protected function isStartToken($token)
+    protected function isStartToken(string $token) : bool
     {
         return false;
     }
-    
+
     /**
      * Returns null for whitespace, and LiteralPart for anything else.
-     * 
+     *
      * @param string $token the token
      * @param bool $isLiteral set to true if the token represents a literal -
      *        e.g. an escaped token
-     * @return \ZBateson\MailMimeParser\Header\Part\HeaderPart|null the
-     *         constructed header part or null if the token should be ignored
+     * @return \ZBateson\MailMimeParser\Header\IHeaderPart|null the constructed
+     *         header part or null if the token should be ignored
      */
-    protected function getPartForToken($token, $isLiteral)
+    protected function getPartForToken(string $token, bool $isLiteral)
     {
-        if (preg_match('/^\s+$/', $token)) {
+        if (\preg_match('/^\s+$/', $token)) {
             return null;
         }
         return $this->partFactory->newLiteralPart($token);
@@ -91,16 +87,13 @@ class IdBaseConsumer extends AbstractConsumer
     /**
      * Overridden to filter out any found CommentPart objects.
      *
-     * @param \ZBateson\MailMimeParser\Header\Part\HeaderPart[] $parts
-     * @return \ZBateson\MailMimeParser\Header\Part\HeaderPart[]
+     * @param \ZBateson\MailMimeParser\Header\IHeaderPart[] $parts
+     * @return \ZBateson\MailMimeParser\Header\IHeaderPart[]
      */
-    protected function processParts(array $parts)
+    protected function processParts(array $parts) : array
     {
-        return array_values(array_filter($parts, function ($part) {
-            if (empty($part) || $part instanceof CommentPart) {
-                return false;
-            }
-            return true;
+        return \array_values(\array_filter($parts, function($part) {
+            return !(empty($part) || $part instanceof CommentPart);
         }));
     }
 }

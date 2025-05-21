@@ -40,6 +40,7 @@
 
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 
+#[\AllowDynamicProperties]
 class ViewDropdown extends SugarView
 {
     /**
@@ -79,6 +80,7 @@ class ViewDropdown extends SugarView
     
     public function generateSmarty()
     {
+        $module = null;
         //get the selected language
         $selected_lang = (!empty($_REQUEST['dropdown_lang'])?$_REQUEST['dropdown_lang']:$_SESSION['authenticated_user_language']);
         $vardef = array();

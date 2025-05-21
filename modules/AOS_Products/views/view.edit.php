@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_ProductsViewEdit extends ViewEdit
 {
     public function __construct()
@@ -21,7 +22,7 @@ class AOS_ProductsViewEdit extends ViewEdit
         isset($this->bean->product_image) ? $image = $this->bean->product_image : $image = '';
 
 
-        $temp = str_replace($sugar_config['site_url'].'/'.$sugar_config['upload_dir'], "", $image);
+        $temp = str_replace($sugar_config['site_url'].'/'.$sugar_config['upload_dir'], "", (string) $image);
         $html = '<span id=\'new_attachment\' style=\'display:';
         if (!empty($this->bean->product_image)) {
             $html .= 'none';

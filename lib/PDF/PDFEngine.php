@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class PDFEngine
  * @package SuiteCRM\PDF
  */
+#[\AllowDynamicProperties]
 abstract class PDFEngine
 {
     /**
@@ -77,7 +78,7 @@ abstract class PDFEngine
      * @return void
      */
     abstract public function addCSS(string $css): void;
-    
+
     /**
      * @return void
      */

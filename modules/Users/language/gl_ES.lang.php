@@ -84,6 +84,7 @@ $mod_strings = array(
     'ERR_RECIPIENT_EMAIL' => 'Correo electrónico do Destinatario',
     'ERR_SERVER_STATUS' => 'O estado do seu servidor',
     'ERR_SERVER_SMTP_EMPTY' => 'O sistema non pode enviar correo ao usuario. Por favor, comprobe a Configuración de Correo Saínte na <a href="index.php?module=EmailMan&action=config">Configuración de Correo</a>.',
+    'ERR_DELETE_USER' => 'No se permite eliminar al usuario conectado.',
     'LBL_ADDRESS_CITY' => 'Cidade de enderezo',
     'LBL_ADDRESS_COUNTRY' => 'País de enderezo',
     'LBL_ADDRESS_INFORMATION' => 'Información de Enderezo',
@@ -121,6 +122,7 @@ $mod_strings = array(
     'LBL_NUMBER_GROUPING_SEP_TEXT' => 'Carácter utilizado para separar as unidades de millar',
     'LBL_DECIMAL_SEP' => 'Símbolo Decimal',
     'LBL_DECIMAL_SEP_TEXT' => 'Carácter utilizado como separador de decimais',
+    'LBL_USER_LANGUAGE' => 'Idioma del usuario',
     'LBL_FDOW' => 'Primeiro Día da Semana',
     'LBL_FDOW_TEXT' => 'Primeiro Día a mostrar nas vistas de Semana, Mes e Ano.',
     'LBL_DATE_FORMAT_TEXT' => 'Establece o formato de texto para a data',
@@ -699,5 +701,9 @@ $mod_strings = array(
     'LBL_GOOGLE_API_TOKEN_BTN_AUTHORIZE' => 'Autorizar', // PR 6841
     'LBL_GOOGLE_API_TOKEN_TEXT' => 'Token actual do API é', // PR 6841
     // END Google Token/Synchronization settings
+
+    'LNK_LIST_OUTBOUND_EMAIL_ACCOUNTS' => 'Cuentas de Correo Electrónico Saliente',
+    'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Cuentas de Correo Electrónico Entrante',
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Conexiones OAuth Externas',
 
 ); // END STRINGS DEFS

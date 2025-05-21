@@ -61,7 +61,7 @@ class SuiteEditorConnector
 {
     public static function getSuiteSettings($html, $width)
     {
-        return array(
+        $settings = [
             'contents' => $html,
             'textareaId' => 'body_text',
             'elementId' => 'email_template_editor',
@@ -69,7 +69,27 @@ class SuiteEditorConnector
             'clickHandler' => "function(e){
                 onClickTemplateBody();
             }",
-            'tinyMCESetup' => "{
+        ];
+
+        if($_REQUEST["module"] == "Campaigns"){
+            //use loadtemplate() to populate template body on TinyMCE initialisation rather than page load for campaigns
+                $settings['tinyMCESetup'] = "{
+                setup: function(editor) {
+                    editor.on('focus', function(e){
+                        onClickTemplateBody();
+                    });
+                    editor.on('init', function(e){
+                        loadtemplate();
+                    });
+                },
+                height : '480',
+                plugins: ['code', 'table', 'link', 'image'],
+                toolbar: ['fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image'],
+                convert_urls: false,
+            }";
+        }else{
+            //default TinyMCESetup settings
+            $settings['tinyMCESetup'] = "{
                 setup: function(editor) {
                     editor.on('focus', function(e){
                         onClickTemplateBody();
@@ -79,8 +99,12 @@ class SuiteEditorConnector
                 plugins: ['code', 'table', 'link', 'image'],
                 toolbar: ['fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image'],
                 convert_urls: false,
-            }"
-        );
+            }";
+        }
+
+
+
+        return $settings;
     }
 
     /**

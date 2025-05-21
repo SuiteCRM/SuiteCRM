@@ -56,6 +56,7 @@ use SuiteCRM\Utility\BeanJsonSerializer;
  *
  * @package SuiteCRM\Robo\Plugin\Commands
  */
+#[\AllowDynamicProperties]
 class ElasticSearchCommands extends Tasks
 {
     use RoboTrait;

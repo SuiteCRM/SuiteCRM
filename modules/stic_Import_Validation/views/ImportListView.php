@@ -25,7 +25,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 require_once('include/ListView/ListViewSmarty.php');
 
-class stic_Import_ValidationListView
+
+#[\AllowDynamicProperties]
+class ImportListView
 {
     /**
      * @var array
@@ -130,8 +132,8 @@ class stic_Import_ValidationListView
     {
         $maxColumns = 0;
         foreach ($this->data as $data) {
-            if (count($data) > $maxColumns) {
-                $maxColumns = count($data);
+            if ((is_countable($data) ? count($data) : 0) > $maxColumns) {
+                $maxColumns = is_countable($data) ? count($data) : 0;
             }
         }
         return $maxColumns;

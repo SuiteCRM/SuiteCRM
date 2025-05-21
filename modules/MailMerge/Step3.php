@@ -86,7 +86,7 @@ if (!empty($_POST['selected_objects'])) {
     $selObjs = $_SESSION['SELECTED_OBJECTS_DEF'];
 }
 $sel_obj = array();
-parse_str(html_entity_decode($selObjs, ENT_QUOTES), $sel_obj);
+parse_str(html_entity_decode((string) $selObjs, ENT_QUOTES), $sel_obj);
 $step_num = 3;
 $xtpl->assign("PREV_STEP", '2');
 $xtpl->assign("STEP_NUM", "Step 3:");

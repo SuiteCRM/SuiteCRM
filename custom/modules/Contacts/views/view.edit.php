@@ -54,7 +54,7 @@ class CustomContactsViewEdit extends ContactsViewEdit
 
         // We need to add manually to the frontend the required Incorpora fields
         require_once('modules/stic_Incorpora/utils/FieldsDef.php');
-        $incorporaRequiredFieldsArray = json_encode(array_filter($contactDef, function ($var) { return $var['required']; }));
+        $incorporaRequiredFieldsArray = json_encode(array_filter($contactDef, function ($var) { return $var['required'] ?? false; }));
         echo <<<SCRIPT
         <script>STIC.incorporaRequiredFieldsArray = $incorporaRequiredFieldsArray;</script>
     SCRIPT;

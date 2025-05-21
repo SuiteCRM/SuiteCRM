@@ -24,6 +24,7 @@
 require_once 'modules/DHA_PlantillasDocumentos/views/view.detail.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomDHA_PlantillasDocumentosViewDetail extends DHA_PlantillasDocumentosViewDetail
 {
     protected function _displayJavascript() {  

@@ -47,7 +47,7 @@ class SchedulersJobTest extends SuitePHPUnitFrameworkTestCase
 
         //test with default params
         $result = $schedulersJob->handleDateFormat();
-        self::assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
 
         //test with a valid date param
         $result = $schedulersJob->handleDateFormat('2015-01-01');
@@ -109,7 +109,7 @@ class SchedulersJobTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($schedulersJob->id));
-        self::assertEquals(36, strlen($schedulersJob->id));
+        self::assertEquals(36, strlen((string) $schedulersJob->id));
 
         self::assertEquals(SchedulersJob::JOB_STATUS_DONE, $schedulersJob->status);
         self::assertEquals(SchedulersJob::JOB_FAILURE, $schedulersJob->resolution);
@@ -126,7 +126,7 @@ class SchedulersJobTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($schedulersJob->id));
-        self::assertEquals(36, strlen($schedulersJob->id));
+        self::assertEquals(36, strlen((string) $schedulersJob->id));
 
         self::assertEquals(SchedulersJob::JOB_STATUS_DONE, $schedulersJob->status);
         self::assertEquals(SchedulersJob::JOB_SUCCESS, $schedulersJob->resolution);
@@ -174,7 +174,7 @@ class SchedulersJobTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($schedulersJob->id));
-        self::assertEquals(36, strlen($schedulersJob->id));
+        self::assertEquals(36, strlen((string) $schedulersJob->id));
 
         self::assertEquals(SchedulersJob::JOB_STATUS_DONE, $schedulersJob->status);
         self::assertEquals(SchedulersJob::JOB_FAILURE, $schedulersJob->resolution);
@@ -198,7 +198,7 @@ class SchedulersJobTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($schedulersJob->id));
-        self::assertEquals(36, strlen($schedulersJob->id));
+        self::assertEquals(36, strlen((string) $schedulersJob->id));
 
         //verify the related attributes
         self::assertEquals(SchedulersJob::JOB_STATUS_QUEUED, $schedulersJob->status);

@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 
+#[\AllowDynamicProperties]
 class UserPreference extends SugarBean
 {
     public $db;
@@ -78,7 +79,11 @@ class UserPreference extends SugarBean
 
     // Do not actually declare, use the functions statically
     public function __construct(
-        User $user = null
+        // STIC Custom 20250303 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // User $user = null
+        ?User $user = null
+        // END STIC Custom
         ) {
         parent::__construct();
 
@@ -97,9 +102,14 @@ class UserPreference extends SugarBean
         $name,
         $category = 'global'
         ) {
-        global $sugar_config;
+        global $sugar_config, $current_user;
 
         $user = $this->_userFocus;
+
+        if ($user->user_name !== $current_user->user_name){
+            $this->loadPreferences($category);
+            return $user->user_preferences[$category][$name] ?? $this->getDefaultPreference($name, $category);
+        }
 
         // if the unique key in session doesn't match the app or prefereces are empty
         if (!isset($_SESSION[$user->user_name.'_PREFERENCES'][$category]) || (!empty($_SESSION['unique_key']) && $_SESSION['unique_key'] != $sugar_config['unique_key'])) {
@@ -202,13 +212,22 @@ class UserPreference extends SugarBean
     public function loadPreferences(
         $category = 'global'
         ) {
-        global $sugar_config;
+        global $sugar_config, $current_user;
 
         $user = $this->_userFocus;
 
         if ($user->object_name != 'User') {
             return;
         }
+
+        // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // if ($user->user_name !== $current_user->user_name){
+        if (!$current_user->id || $user->user_name !== $current_user->user_name){
+        // END STIC Custom
+            return $this->reloadPreferences($category);
+        }
+
         if (!empty($user->id) && (!isset($_SESSION[$user->user_name . '_PREFERENCES'][$category]) || (!empty($_SESSION['unique_key']) && $_SESSION['unique_key'] != $sugar_config['unique_key']))) {
             // cn: moving this to only log when valid - throwing errors on install
             return $this->reloadPreferences($category);
@@ -229,9 +248,19 @@ class UserPreference extends SugarBean
             return false;
         }
         $GLOBALS['log']->debug('Loading Preferences DB ' . $user->user_name);
-        if (!isset($_SESSION[$user->user_name . '_PREFERENCES'])) {
-            $_SESSION[$user->user_name . '_PREFERENCES'] = array();
+        // STIC-Custom AAM 20250303 - Undoing changes of https://github.com/salesagility/SuiteCRM/commit/ea756b13f0ae606997c0ccb4382e1a72902a9207
+        // Fix reset preferences for users https://github.com/salesagility/SuiteCRM/issues/10637
+        // if ($GLOBALS['current_user']->user_name === $user->user_name){
+        //    if (!isset($_SESSION[$user->user_name . '_PREFERENCES'])) {
+        //        $_SESSION[$user->user_name . '_PREFERENCES'] = array();
+        //    }
+        // }
+        if ( !$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
+            if (!isset($_SESSION[$user->user_name . '_PREFERENCES'])) {
+                $_SESSION[$user->user_name . '_PREFERENCES'] = array();
+            }
         }
+        // END STIC-Custom
         if (!isset($user->user_preferences) || !is_array($user->user_preferences)) {
             $user->user_preferences = array();
         }
@@ -239,11 +268,27 @@ class UserPreference extends SugarBean
         $result = $db->query("SELECT contents FROM user_preferences WHERE assigned_user_id='$user->id' AND category = '" . $category . "' AND deleted = 0", false, 'Failed to load user preferences');
         $row = $db->fetchByAssoc($result);
         if ($row) {
-            $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']));
+            // STIC-Custom AAM 20250303 - Undoing changes of https://github.com/salesagility/SuiteCRM/commit/ea756b13f0ae606997c0ccb4382e1a72902a9207
+            // Fix reset preferences for users https://github.com/salesagility/SuiteCRM/issues/10637
+            // if ($GLOBALS['current_user']->user_name === $user->user_name){
+            //    $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']));
+            // }
+            if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
+                $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']));
+            }
+            // END STIC-Custom
             $user->user_preferences[$category] = unserialize(base64_decode($row['contents']));
             return true;
         } else {
-            $_SESSION[$user->user_name . '_PREFERENCES'][$category] = array();
+            // STIC-Custom AAM 20250303 - Undoing changes of https://github.com/salesagility/SuiteCRM/commit/ea756b13f0ae606997c0ccb4382e1a72902a9207
+            // Fix reset preferences for users https://github.com/salesagility/SuiteCRM/issues/10637
+            // if ($GLOBALS['current_user']->user_name === $user->user_name){
+            //    $_SESSION[$user->user_name . '_PREFERENCES'][$category] = array();
+            // }
+            if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
+                $_SESSION[$user->user_name . '_PREFERENCES'][$category] = array();
+            }
+            // END STIC-Custom
             $user->user_preferences[$category] = array();
         }
         return false;

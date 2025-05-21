@@ -27,6 +27,7 @@
 
 use SuiteCRM\Utility\SuiteValidator as SuiteValidator;
 
+#[\AllowDynamicProperties]
 class templateParser
 {
     public static function parse_template($string, $bean_arr)
@@ -58,7 +59,7 @@ class templateParser
      */
     public static function parse_template_bean($string, $key, &$focus)
     {
-        global $app_strings, $sugar_config;
+        global $app_strings, $sugar_config, $locale, $current_user;
         $repl_arr = array();
         $isValidator = new SuiteValidator();
 
@@ -69,7 +70,7 @@ class templateParser
                 // STIC Custom - JCH - 202210006 - Check if field is really empty
                 // STIC#880
                 // if (empty($focus->$fieldName)) {
-                if (empty($focus->$fieldName) && $focus->$fieldName == '' ) {
+                if (!isset($focus->$fieldName) || $focus->$fieldName == '' ) {
                 // END STIC-Custom
                     $repl_arr[$key . '_' . $fieldName] = '';
                     continue;
@@ -84,7 +85,15 @@ class templateParser
                     $translatedVals = array();
 
                     foreach ($mVals as $mVal) {
-                        $translatedVals[] = translate($field_def['options'], $focus->module_dir, $mVal);
+                        // STIC Custom 20250312 JBL - Avoid Warning: Array to string conversion
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                        // $translatedVals[] = translate($field_def['options'], $focus->module_dir, $mVal);
+                        $translated = translate($field_def['options'], $focus->module_dir, $mVal);
+                        if (is_array($translated)) {
+                            $translated = implode(", ", $translated);
+                        }
+                        $translatedVals[] = $translated;
+                        // END STIC Custom
                     }
 
                     $repl_arr[$key . "_" . $fieldName] = implode(", ", $translatedVals);
@@ -111,7 +120,7 @@ class templateParser
                     if (!file_exists('public')) {
                         sugar_mkdir('public', 0777);
                     }
-                    if (!copy($file_location, "public/{$focus->id}".  '_' . (string)$fieldName)) {
+                    if (!copy($file_location, "public/{$focus->id}".  '_' . $fieldName)) {
                         $secureLink = $sugar_config['site_url'] . '/'. $file_location;
                     }
 
@@ -122,25 +131,44 @@ class templateParser
                         $repl_arr[$key . "_" . $fieldName] = '<img src="' . $link . '" width="' . $field_def['width'] . '" height="' . $field_def['height'] . '"/>';
                     }
                 } elseif ($field_def['type'] == 'wysiwyg') {
-                    $repl_arr[$key . "_" . $field_def['name']] = html_entity_decode($focus->$field_def['name'],
+                    $repl_arr[$key . "_" . $field_def['name']] = html_entity_decode((string) $focus->$field_def['name'],
                         ENT_COMPAT, 'UTF-8');
-                    $repl_arr[$key . "_" . $fieldName] = html_entity_decode($focus->{$fieldName},
+                    $repl_arr[$key . "_" . $fieldName] = html_entity_decode((string) $focus->{$fieldName},
                         ENT_COMPAT, 'UTF-8');
-                // STIC-custom 20210922 - Parse decimal symbol in templates according to configuration
-                // STIC#390
-                // https://github.com/SinergiaTIC/SinergiaCRM/pull/338
                 } elseif ($field_def['type'] == 'decimal' || $field_def['type'] == 'float') {
-                    require_once('SticInclude/Utils.php');
-                    if ($_REQUEST['entryPoint'] == 'formLetter') { // If generating a PDF...
-                        $value = SticUtils::formatDecimalInConfigSettings($focus->$fieldName, true); // ...get user config
-                    } else { // If sending a workflow email...
-                        $value = SticUtils::formatDecimalInConfigSettings($focus->$fieldName, false); // ...get system config
+                    // STIC Custom 20250414 ART - SticUtils function for UserPreferences decimals formatting
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                    require_once 'SticInclude/Utils.php';
+                    // END STIC Custom
+
+                    // STIC Custom 20250215 JBL - Remove Warning: Undefined array key access
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // if ($_REQUEST['entryPoint'] == 'formLetter') {
+                    if (!empty($_REQUEST['entryPoint']) && $_REQUEST['entryPoint'] == 'formLetter') {
+                    // END STIC Custom
+                    
+                    // STIC Custom 20250414 ART - SticUtils function for UserPreferences decimals formatting
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                    //     $value = formatDecimalInConfigSettings($focus->$fieldName, true);
+                    // } else {
+                    //     $value = formatDecimalInConfigSettings($focus->$fieldName, false);
+                    // }
+                        $value = SticUtils::formatDecimalInConfigSettings($focus->$fieldName, true);
+                    } else {
+                        $value = SticUtils::formatDecimalInConfigSettings($focus->$fieldName, false);
                     }
-                    $repl_arr[$key . "_" . $fieldName] = $value; 
-                // END STIC-custom
+                    // END STIC Custom
+                    $repl_arr[$key . "_" . $fieldName] = $value;
+                // STIC Custom 20250424 JBL - Añadimos funcionalidad Addon campo de Firma
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                } elseif ($field_def['type'] == 'Signature') {
+                    $repl_arr[$key . "_" . $fieldName] = '<img src="' . $focus->$fieldName . '" width="'.$field_def['width'].'" height="'.$field_def['height'].'">';
+                // END STIC Custom
                 // STIC-Custom 20221013 AAM - Parsing date/datetime fields when the bean is being modified
                 // STIC#883
-                } elseif ($field_def['dbType'] == 'date' || $field_def['dbType'] == 'datetime' || (!isset($field_def['dbType']) && ($field_def['type'] == 'date' || $field_def['type'] == 'datetime') )) {
+                } elseif ((isset($field_def['dbType']) && $field_def['dbType'] == 'date') || 
+                          (isset($field_def['dbType']) && $field_def['dbType'] == 'datetime') || 
+                          (!isset($field_def['dbType']) && isset($field_def['type']) &&  ($field_def['type'] == 'date' || $field_def['type'] == 'datetime'))) {                    
                     global $disable_date_format;
                     if($focus->$fieldName && ($focus->fetched_row || $disable_date_format)) {
                         $oldValueDisableDateFormat = $disable_date_format;
@@ -162,7 +190,7 @@ class templateParser
         reset($repl_arr);
 
         foreach ($repl_arr as $name => $value) {
-            if (strpos($name, 'product_discount') !== false || strpos($name, 'quotes_discount') !== false) {
+            if ((strpos($name, 'product_discount') !== false || strpos($name, 'quotes_discount') !== false) && strpos($name, '_amount') === false) {
                 if ($value !== '' && isset($repl_arr['aos_products_quotes_discount'])) {
                     if ($isValidator->isPercentageField($repl_arr['aos_products_quotes_discount'])) {
                         $sep = get_number_separators();
@@ -188,13 +216,28 @@ class templateParser
                 // First, standarizing decimal separator
                 $value = str_replace(',', '.', $value); 
                 // Making sure there are two decimals in the value
-                $value = number_format($value, 2, $sep[1], $sep[0]);
+
+                // STIC Custom 20250206 JBL - Avoid Uncaught TypeError in number_format
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $value = number_format($value, 2, $sep[1], $sep[0]);
+                $value = number_format((float) $value, 2, $sep[1], $sep[0]);
+                // End STIC Custom
                 // END STIC-Custom
             }
 
             if ($isValidator->isPercentageField($name)) {
                 $sep = get_number_separators();
-                $value = rtrim(rtrim(format_number($value), '0'), $sep[1]) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+
+                $precision = $locale->getPrecision($current_user);
+
+                if ($precision === '0') {
+                    $params = [
+                        'percentage' => true,
+                    ];
+                    $value = format_number($value, $precision, $precision, $params);
+                } else {
+                    $value = rtrim(rtrim(format_number($value), '0'), $sep[1]) . $app_strings['LBL_PERCENTAGE_SYMBOL'];
+                }
             }
             if (!empty($focus->field_defs[$name]['dbType'])
                 && $focus->field_defs[$name]['dbType'] === 'datetime'
@@ -211,13 +254,13 @@ class templateParser
                 }
             }
             if ($value != '' && is_string($value)) {
-                $string = str_replace("\$$name", $value, $string);
+                $string = str_replace("\$$name", $value, (string) $string);
             } elseif (strpos($name, 'address') > 0) {
-                $string = str_replace("\$$name<br />", '', $string);
+                $string = str_replace("\$$name<br />", '', (string) $string);
                 $string = str_replace("\$$name <br />", '', $string);
                 $string = str_replace("\$$name", '', $string);
             } else {
-                $string = str_replace("\$$name", '&nbsp;', $string);
+                $string = str_replace("\$$name", '&nbsp;', (string) $string);
             }
         }
 

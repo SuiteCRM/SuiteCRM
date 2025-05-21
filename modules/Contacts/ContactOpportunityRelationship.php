@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 // Contact is used to store customer information.
+#[\AllowDynamicProperties]
 class ContactOpportunityRelationship extends SugarBean
 {
     // Stored fields

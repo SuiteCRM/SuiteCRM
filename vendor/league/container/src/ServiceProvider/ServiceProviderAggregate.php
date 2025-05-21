@@ -28,9 +28,7 @@ class ServiceProviderAggregate implements ServiceProviderAggregateInterface
             return $this;
         }
 
-        if ($provider instanceof ContainerAwareInterface) {
-            $provider->setContainer($this->getContainer());
-        }
+        $provider->setContainer($this->getContainer());
 
         if ($provider instanceof BootableServiceProviderInterface) {
             $provider->boot();

@@ -74,7 +74,7 @@ $maxExecutionTime = ini_get('max_execution_time');
 set_time_limit(600);
 $dataDir = create_cache_directory("MergedDocuments/");
 $fileName = UploadFile::realpath("upload://$document->document_revision_id");
-$outfile = pathinfo($document->filename, PATHINFO_FILENAME);
+$outfile = pathinfo((string) $document->filename, PATHINFO_FILENAME);
 
 $mm = new MailMerge(null, null, $dataDir);
 $mm->SetDataList($items);

@@ -1,17 +1,20 @@
-# Smarty 2 template engine
-## Distribution repository
-Starting with Smarty 2.6.23 Composer has been configured to load the packages from github.
- 
-**NOTE: Because of this change you must clear your local composer cache with the "composer clearcache" command**
+# Smarty template engine
+Smarty is a template engine for PHP, facilitating the separation of presentation (HTML/CSS) from application logic. 
 
-To get the latest v2.6 release use
+![CI](https://github.com/smarty-php/smarty/workflows/CI/badge.svg)
 
-	"require": {
-	   "smarty/smarty": "~2.6"
-	}
+## Documentation
+Read the [documentation](https://smarty-php.github.io/smarty/) to find out how to use it. 
 
-in your composer.json file.
- 
-The "smarty/smarty" package will start at libs/....   subfolder.
+## Requirements
+Smarty can be run with PHP 7.1 to PHP 8.4.
 
+## Installation
+Smarty versions 3.1.11 or later can be installed with [Composer](https://getcomposer.org/).
 
+To get the latest stable version of Smarty use:
+```bash
+composer require smarty/smarty
+````
+
+More in the [Getting Started](./docs/getting-started.md) section of the docs.

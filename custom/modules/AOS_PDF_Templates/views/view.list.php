@@ -26,6 +26,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'include/MVC/View/views/view.list.php';
 require_once 'SticInclude/Views.php';
+
+#[\AllowDynamicProperties]
 class CustomAOS_PDF_TemplatesViewList extends ViewList
 {
     public function __construct()

@@ -78,7 +78,7 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
 {
 
     /**
-     * Offical package name
+     * Official package name
      */
     public const PACKAGE_NAME = 'wikimedia/composer-merge-plugin';
 
@@ -107,21 +107,21 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
      *
      * @var array<string, bool> $loaded
      */
-    protected $loaded = array();
+    protected $loaded = [];
 
     /**
      * Files that have already been partially processed
      *
      * @var array<string, bool> $loadedNoDev
      */
-    protected $loadedNoDev = array();
+    protected $loadedNoDev = [];
 
     /**
      * Nested packages to restrict update operations.
      *
      * @var array<string, bool> $updateAllowList
      */
-    protected $updateAllowList = array();
+    protected $updateAllowList = [];
 
     /**
      * {@inheritdoc}
@@ -152,22 +152,22 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             PluginEvents::INIT =>
-                array('onInit', self::CALLBACK_PRIORITY),
+                ['onInit', self::CALLBACK_PRIORITY],
             PackageEvents::POST_PACKAGE_INSTALL =>
-                array('onPostPackageInstall', self::CALLBACK_PRIORITY),
+                ['onPostPackageInstall', self::CALLBACK_PRIORITY],
             ScriptEvents::POST_INSTALL_CMD =>
-                array('onPostInstallOrUpdate', self::CALLBACK_PRIORITY),
+                ['onPostInstallOrUpdate', self::CALLBACK_PRIORITY],
             ScriptEvents::POST_UPDATE_CMD =>
-                array('onPostInstallOrUpdate', self::CALLBACK_PRIORITY),
+                ['onPostInstallOrUpdate', self::CALLBACK_PRIORITY],
             ScriptEvents::PRE_AUTOLOAD_DUMP =>
-                array('onInstallUpdateOrDump', self::CALLBACK_PRIORITY),
+                ['onInstallUpdateOrDump', self::CALLBACK_PRIORITY],
             ScriptEvents::PRE_INSTALL_CMD =>
-                array('onInstallUpdateOrDump', self::CALLBACK_PRIORITY),
+                ['onInstallUpdateOrDump', self::CALLBACK_PRIORITY],
             ScriptEvents::PRE_UPDATE_CMD =>
-                array('onInstallUpdateOrDump', self::CALLBACK_PRIORITY),
-        );
+                ['onInstallUpdateOrDump', self::CALLBACK_PRIORITY],
+        ];
     }
 
     /**
@@ -184,7 +184,7 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
     /**
      * Handle an event callback for initialization.
      *
-     * @param \Composer\EventDispatcher\Event $event
+     * @param BaseEvent $event
      */
     public function onInit(BaseEvent $event)
     {
@@ -234,7 +234,7 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
         $root = $this->composer->getPackage();
 
         $files = array_map(
-            function ($files, $pattern) use ($required) {
+            static function ($files, $pattern) use ($required) {
                 if ($required && !$files) {
                     throw new MissingFileException(
                         "merge-plugin: No files matched required '{$pattern}'"
@@ -246,7 +246,7 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
             $patterns
         );
 
-        foreach (array_reduce($files, 'array_merge', array()) as $path) {
+        foreach (array_reduce($files, 'array_merge', []) as $path) {
             $this->mergeFile($root, $path);
         }
     }
@@ -341,15 +341,19 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
 
             $this->logger->log("\n".'<info>Running composer update to apply merge settings</info>');
 
+            $lockBackup = null;
+            $lock = null;
             if (!$this->state->isComposer1()) {
                 $file = Factory::getComposerFile();
                 $lock = Factory::getLockFile($file);
-                $lockBackup = file_exists($lock) ? file_get_contents($lock) : null;
+                if (file_exists($lock)) {
+                    $lockBackup = file_get_contents($lock);
+                }
             }
 
             $config = $this->composer->getConfig();
-            $preferSource = $config->get('preferred-install') == 'source';
-            $preferDist = $config->get('preferred-install') == 'dist';
+            $preferSource = $config->get('preferred-install') === 'source';
+            $preferDist = $config->get('preferred-install') === 'dist';
 
             $installer = Installer::create(
                 $event->getIO(),
@@ -369,21 +373,21 @@ class MergePlugin implements PluginInterface, EventSubscriberInterface
             $installer->setUpdate(true);
 
             if ($this->state->isComposer1()) {
+                // setUpdateWhitelist() only exists in composer 1.x. Configure as to run phan against composer 2.x
+                // @phan-suppress-next-line PhanUndeclaredMethod
                 $installer->setUpdateWhitelist($requirements);
             } else {
                 $installer->setUpdateAllowList($requirements);
             }
 
             $status = $installer->run();
-            if ($status !== 0) {
-                if (!$this->state->isComposer1() && $lockBackup) {
-                    $this->logger->log(
-                        "\n".'<error>'.
-                        'Update to apply merge settings failed, reverting '.$lock.' to its original content.'.
-                        '</error>'
-                    );
-                    file_put_contents($lock, $lockBackup);
-                }
+            if (( $status !== 0 ) && $lockBackup && $lock && !$this->state->isComposer1()) {
+                $this->logger->log(
+                    "\n".'<error>'.
+                    'Update to apply merge settings failed, reverting '.$lock.' to its original content.'.
+                    '</error>'
+                );
+                file_put_contents($lock, $lockBackup);
             }
         }
         // @codeCoverageIgnoreEnd

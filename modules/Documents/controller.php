@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class DocumentsController extends SugarController
 {
     public function action_Popup()

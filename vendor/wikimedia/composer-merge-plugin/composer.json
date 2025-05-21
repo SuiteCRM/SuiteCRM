@@ -16,10 +16,13 @@
         "composer-plugin-api": "^1.1||^2.0"
     },
     "require-dev": {
+        "ext-json": "*",
         "composer/composer": "^1.1||^2.0",
-        "php-parallel-lint/php-parallel-lint": "~1.1.0",
+        "mediawiki/mediawiki-phan-config": "0.11.1",
+        "php-parallel-lint/php-parallel-lint": "~1.3.1",
+        "phpspec/prophecy": "~1.15.0",
         "phpunit/phpunit": "^8.5||^9.0",
-        "squizlabs/php_codesniffer": "~3.5.4"
+        "squizlabs/php_codesniffer": "~3.7.1"
     },
     "autoload": {
         "psr-4": {
@@ -41,11 +44,14 @@
             "phpunit --log-junit=reports/unitreport.xml --coverage-text --coverage-html=reports/coverage --coverage-clover=reports/coverage.xml",
             "phpcs --encoding=utf-8 --standard=PSR2 --report-checkstyle=reports/checkstyle-phpcs.xml --report-full --extensions=php src/* tests/phpunit/*"
         ],
+        "phan": "phan -d . --long-progress-bar --allow-polyfill-parser",
+        "phpcs": "phpcs --encoding=utf-8 --standard=PSR2 --extensions=php src/* tests/phpunit/*",
+        "phpunit": "phpunit",
         "test": [
             "composer validate --no-interaction",
             "parallel-lint src tests",
-            "phpunit",
-            "phpcs --encoding=utf-8 --standard=PSR2 --extensions=php src/* tests/phpunit/*"
+            "@phpunit",
+            "@phpcs"
         ]
     }
 }

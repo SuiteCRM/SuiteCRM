@@ -51,6 +51,7 @@ use SuiteCRM\Utility\SuiteValidator;
  * represent a fake SugarBean:
  * in legacy logic, Folder ID equals to an Inbound Email ID
  */
+#[\AllowDynamicProperties]
 class Folder
 {
 
@@ -70,7 +71,7 @@ class Folder
      * @var string
      */
     public $mailbox;
-    
+
     /**
      * private, use Folder::getType() instead
      * @var string folder type
@@ -129,11 +130,45 @@ class Folder
         if (isset($request['folders_id']) && !empty($request['folders_id'])) {
             $foldersId = $request['folders_id'];
             $this->retrieve($foldersId);
+            $_SESSION['CURRENT_IMAP_MAILBOX_ID'] = $request['folders_id'];
         } else {
             $GLOBALS['log']->warn("Empty or undefined Email Folder ID");
         }
 
         return $this;
+    }
+
+    /**
+     * @param array|null $request
+     * @throws SuiteException
+     */
+    public function loadMailboxFolder(?array $request): void
+    {
+        global $current_user;
+
+        $inboundEmailID = $current_user->getPreference('defaultIEAccount', 'Emails');
+        $folderId = '';
+        if (isset($request['folders_id']) && !empty($request['folders_id'])) {
+            $folderId = $request['folders_id'];
+        } elseif (!empty($_SESSION['CURRENT_IMAP_MAILBOX_ID'])) {
+            $folderId = $_SESSION['CURRENT_IMAP_MAILBOX_ID'];
+        } elseif (!empty($inboundEmailID)) {
+            $folderId = $inboundEmailID;
+        }
+
+        if (!$this->isSelectedForDisplay($folderId)) {
+            $folderId = $this->getFirstDisplayFolder();
+        }
+
+        if (!empty($folderId)) {
+            $this->retrieve($folderId);
+            $_SESSION['CURRENT_IMAP_MAILBOX_ID'] = $folderId;
+
+            return;
+        }
+
+        $_SESSION['CURRENT_IMAP_MAILBOX_ID'] = '';
+        $GLOBALS['log']->warn("Empty or undefined Email Folder ID");
     }
 
     /**
@@ -159,4 +194,31 @@ class Folder
     {
         return $this->mailbox;
     }
+
+    /**
+     * Check if folder is to display
+     * @param $folderId
+     * @return bool
+     */
+    public function isSelectedForDisplay($folderId): bool
+    {
+        return (new SugarFolder())->isToDisplay($folderId);
+    }
+
+    /**
+     * @return mixed|string
+     */
+    protected function getFirstDisplayFolder(): ?string
+    {
+        $folder = new SugarFolder();
+        $folder = $folder->getFirstDisplayFolders();
+
+        if ($folder === null) {
+            return null;
+        }
+
+        return $folder['id'] ?? '';
+    }
+
+
 }

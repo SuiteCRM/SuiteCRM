@@ -36,12 +36,13 @@
  * SugarCRM" logo and "Supercharged by SuiteCRM" logo. If the display of the logos is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
- */if (!defined('sugarEntry') || !sugarEntry) {
+ */
+if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
 require_once('include/SugarFields/Fields/Relate/SugarFieldRelate.php');
-
+#[\AllowDynamicProperties]
 class SugarFieldParent extends SugarFieldRelate
 {
     /**
@@ -54,7 +55,8 @@ class SugarFieldParent extends SugarFieldRelate
     public function getDetailViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex)
     {
         $nolink = array('Users', 'Teams');
-        if (in_array($vardef['module'], $nolink)) {
+        $module = $vardef['module'] ?? '';
+        if (in_array($module, $nolink)) {
             $this->ss->assign('nolink', true);
         } else {
             $this->ss->assign('nolink', false);
@@ -116,7 +118,9 @@ class SugarFieldParent extends SugarFieldRelate
         $displayParams['disabled_parent_types'] = '<script>var disabledModules=' . $json::encode($disabled_parent_types) . ';</script>';
         $this->ss->assign('quickSearchCode', $this->createQuickSearchCode($form_name, $vardef));
 
-        $keys = $this->getAccessKey($vardef, 'PARENT', $vardef['module']);
+        $module = $vardef['module'] ?? '';
+
+        $keys = $this->getAccessKey($vardef, 'PARENT', $module);
         $displayParams['accessKeySelect'] = $keys['accessKeySelect'];
         $displayParams['accessKeySelectLabel'] = $keys['accessKeySelectLabel'];
         $displayParams['accessKeySelectTitle'] = $keys['accessKeySelectTitle'];

@@ -4,10 +4,11 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\StreamDecorators;
 
-use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Psr7\StreamDecoratorTrait;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Inserts line ending characters after the set number of characters have been
@@ -42,39 +43,36 @@ class ChunkSplitStream implements StreamInterface
     private $lineEndingLength;
 
     /**
-     * @param StreamInterface $stream
-     * @param int $lineLength
-     * @param string $lineEnding
+     * @var StreamInterface $stream
      */
-    public function __construct(StreamInterface $stream, $lineLength = 76, $lineEnding = "\r\n")
+    private $stream;
+
+    public function __construct(StreamInterface $stream, int $lineLength = 76, string $lineEnding = "\r\n")
     {
         $this->stream = $stream;
         $this->lineLength = $lineLength;
         $this->lineEnding = $lineEnding;
-        $this->lineEndingLength = strlen($this->lineEnding);
+        $this->lineEndingLength = \strlen($this->lineEnding);
     }
 
     /**
      * Inserts the line ending character after each line length characters in
      * the passed string, making sure previously written bytes are taken into
      * account.
-     *
-     * @param string $string
-     * @return string
      */
-    private function getChunkedString($string)
+    private function getChunkedString(string $string) : string
     {
         $firstLine = '';
         if ($this->tell() !== 0) {
             $next = $this->lineLength - ($this->position % ($this->lineLength + $this->lineEndingLength));
-            if (strlen($string) > $next) {
-                $firstLine = substr($string, 0, $next) . $this->lineEnding;
-                $string = substr($string, $next);
+            if (\strlen($string) > $next) {
+                $firstLine = \substr($string, 0, $next) . $this->lineEnding;
+                $string = \substr($string, $next);
             }
         }
         // chunk_split always ends with the passed line ending
-        $chunked = $firstLine . chunk_split($string, $this->lineLength, $this->lineEnding);
-        return substr($chunked, 0, strlen($chunked) - $this->lineEndingLength);
+        $chunked = $firstLine . \chunk_split($string, $this->lineLength, $this->lineEnding);
+        return \substr($chunked, 0, \strlen($chunked) - $this->lineEndingLength);
     }
 
     /**
@@ -84,17 +82,17 @@ class ChunkSplitStream implements StreamInterface
      * @param string $string
      * @return int number of bytes written
      */
-    public function write($string)
+    public function write($string) : int
     {
         $chunked = $this->getChunkedString($string);
-        $this->position += strlen($chunked);
+        $this->position += \strlen($chunked);
         return $this->stream->write($chunked);
     }
 
     /**
      * Inserts a final line ending character.
      */
-    private function beforeClose()
+    private function beforeClose() : void
     {
         if ($this->position !== 0) {
             $this->stream->write($this->lineEnding);
@@ -102,24 +100,22 @@ class ChunkSplitStream implements StreamInterface
     }
 
     /**
-     * Closes the stream after ensuring a final line ending character is
-     * inserted.
-     * @return void
+     * @inheritDoc
      */
-    public function close()
+    public function close() : void
     {
         $this->beforeClose();
         $this->stream->close();
     }
 
     /**
-     * Detaches the stream after ensuring a final line ending character is
-     * inserted.
-     * @return resource|null Underlying PHP stream, if any
+     * @inheritDoc
      */
     public function detach()
     {
         $this->beforeClose();
         $this->stream->detach();
+
+        return null;
     }
 }

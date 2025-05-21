@@ -66,6 +66,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @api
  */
+#[\AllowDynamicProperties]
 class LogicHook
 {
     public $bean = null;
@@ -121,7 +122,7 @@ class LogicHook
                         foreach ($hook_array as $type => $hookg) {
                             foreach ($hookg as $index => $hook) {
                                 $this->hookscan[$type][] = $hook;
-                                $idx = count($this->hookscan[$type])-1;
+                                $idx = (is_countable($this->hookscan[$type]) ? count($this->hookscan[$type]) : 0)-1;
                                 $this->hook_map[$type][$idx] = array("file" => $extpath.'/'.$entry, "index" => $index);
                             }
                         }
@@ -179,7 +180,7 @@ class LogicHook
      *
      * @param string $module_dir
      * @param string $event
-     * @param array $arguments
+     * @param object|array $arguments
      * @param SugarBean $bean
      */
     public function call_custom_logic($module_dir, $event, $arguments = null)
@@ -209,7 +210,7 @@ class LogicHook
      *
      * @param array $hook_array
      * @param string $event
-     * @param array $arguments
+     * @param object|array $arguments
      * @param SugarBean $bean
      */
     public function process_hooks($hook_array, $event, $arguments)

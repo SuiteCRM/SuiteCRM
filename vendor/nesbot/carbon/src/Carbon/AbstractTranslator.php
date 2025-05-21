@@ -11,6 +11,7 @@
 
 namespace Carbon;
 
+use Carbon\MessageFormatter\MessageFormatterMapper;
 use Closure;
 use ReflectionException;
 use ReflectionFunction;
@@ -51,7 +52,7 @@ abstract class AbstractTranslator extends Translation\Translator
     /**
      * List of locales aliases.
      *
-     * @var string[]
+     * @var array<string, string>
      */
     protected $aliases = [
         'me' => 'sr_Latn_ME',
@@ -77,13 +78,13 @@ abstract class AbstractTranslator extends Translation\Translator
         return static::$singletons[$key];
     }
 
-    public function __construct($locale, MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
+    public function __construct($locale, ?MessageFormatterInterface $formatter = null, $cacheDir = null, $debug = false)
     {
         parent::setLocale($locale);
         $this->initializing = true;
         $this->directories = [__DIR__.'/Lang'];
         $this->addLoader('array', new ArrayLoader());
-        parent::__construct($locale, $formatter, $cacheDir, $debug);
+        parent::__construct($locale, new MessageFormatterMapper($formatter), $cacheDir, $debug);
         $this->initializing = false;
     }
 
@@ -158,8 +159,10 @@ abstract class AbstractTranslator extends Translation\Translator
             return true;
         }
 
+        $this->assertValidLocale($locale);
+
         foreach ($this->getDirectories() as $directory) {
-            $data = @include sprintf('%s/%s.php', rtrim($directory, '\\/'), $locale);
+            $data = @include \sprintf('%s/%s.php', rtrim($directory, '\\/'), $locale);
 
             if ($data !== false) {
                 $this->messages[$locale] = $data;

@@ -62,7 +62,7 @@ $viewdefs['Users']['QuickCreate'] = array(
             array(
                 array(
                     'name' => 'status',
-                    'customCode' => '{if $IS_ADMIN}@@FIELD@@{else}{$STATUS_READONLY}{/if}',
+                    'customCode' => '{if !empty($IS_ADMIN)}@@FIELD@@{else}{if isset($STATUS_READONLY)}{$STATUS_READONLY}{/if}{/if}',
                     'displayParams' => array('required'=>true),
                 ),
                 array(
@@ -77,7 +77,7 @@ $viewdefs['Users']['QuickCreate'] = array(
                 ),
                 array(
                     'name'=>'UserType',
-                    'customCode'=>'{if $IS_ADMIN}{$USER_TYPE_DROPDOWN}{else}{$USER_TYPE_READONLY}{/if}',
+                    'customCode'=>'{if !empty($IS_ADMIN)}{$USER_TYPE_DROPDOWN}{else}{if isset($USER_TYPE_READONLY)}{$USER_TYPE_READONLY}{/if}{/if}',
                 ),
             ),
         ),
@@ -85,25 +85,25 @@ $viewdefs['Users']['QuickCreate'] = array(
             array(
                 array(
                     'name'=>'employee_status',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$EMPLOYEE_STATUS_READONLY}{/if}',
+                    'customCode'=>'{if !empty($IS_ADMIN)}@@FIELD@@{else}{if isset($EMPLOYEE_STATUS_READONLY)}{$EMPLOYEE_STATUS_READONLY}{/if}{/if}',
                 ),
                 'show_on_employees'
             ),
             array(
                 array(
                     'name'=>'title',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$TITLE_READONLY}{/if}',
+                    'customCode'=>'{if !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($TITLE_READONLY)}{$TITLE_READONLY}{/if} {/if}',
                 ),
                 'phone_work'
             ),
             array(
                 array(
                     'name'=>'department',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$DEPT_READONLY}{/if}',
+                    'customCode'=>'{if !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($DEPT_READONLY)}{$DEPT_READONLY}{/if} {/if}',
                 ),
                 array(
                     'name'=>'reports_to_name',
-                    'customCode'=>'{if $IS_ADMIN}@@FIELD@@{else}{$REPORTS_TO_READONLY}{/if}',
+                    'customCode'=>'{if !empty($IS_ADMIN)}@@FIELD@@{else} {if isset($REPORTS_TO_READONLY)}{$REPORTS_TO_READONLY}{/if} {/if}',
                 ),
             ),
         ),

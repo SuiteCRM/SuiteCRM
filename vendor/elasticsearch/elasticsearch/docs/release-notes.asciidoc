@@ -1,6 +1,10 @@
 [[release-notes]]
 == Release notes
 
+* <<rn-7-17-2>>
+* <<rn-7-17-1>>
+* <<rn-7-17-0>>
+* <<rn-7-16-0>>
 * <<rn-7-15-0>>
 * <<rn-7-14-0>>
 * <<rn-7-13-1>>
@@ -27,6 +31,40 @@
 * <<rn-7-0-2>>
 * <<rn-7-0-1>>
 * <<rn-7-0-0>>
+
+[discrete]
+[[rn-7-17-2]]
+=== 7.17.2
+
+* Added `ELASTIC_CLIENT_URL_PLUS_AS_SPACE` env variable for URL encode
+  https://github.com/elastic/elasticsearch-php/pull/1303[#1303], https://github.com/elastic/elasticsearch-php/commit/b35ec5e777046e687e476624b8a19bab2e31fdb7[b35ec5e]
+
+
+[discrete]
+[[rn-7-17-1]]
+=== 7.17.1
+
+* Fixed a node selector issue for `StickyRoundRobinSelector`
+  https://github.com/elastic/elasticsearch-php/pull/1253[#1253] 
+
+
+[discrete]
+[[rn-7-17-0]]
+=== 7.17.0
+
+* Updated endpoints for Elasticsearch 7.17.0
+  https://github.com/elastic/elasticsearch-php/commit/275de8d9542881c05e944ad786773d441db852bb[275de8d]
+* Allow psr/log v3
+  https://github.com/elastic/elasticsearch-php/pull/1184[#1184]
+
+
+[discrete]
+[[rn-7-16-0]]
+=== 7.16.0
+
+* Updated endpoints for Elasticsearch 7.16.0
+  https://github.com/elastic/elasticsearch-php/commit/797699df38a2f66c20defda4560a65c1efc67c83[797699d]
+
 
 [discrete]
 [[rn-7-15-0]]
@@ -255,7 +293,7 @@
   the phpdoc section (for example, 
   https://github.com/elastic/elasticsearch-php/blob/master/src/Elasticsearch/Client.php[$client->rankEval()]). 
   For more information read the 
-  https://www.elastic.co/guide/en/elasticsearch/client/php-api/master/experimental_and_beta_apis.html[experimental and beta APIs] 
+  https://www.elastic.co/guide/en/elasticsearch/client/php-api/current/experimental_and_beta_apis.html[experimental and beta APIs] 
   section in the documentation. 
   https://github.com/elastic/elasticsearch-php/pull/966[#966]
 * Removed `AlreadyExpiredException` since it has been removed

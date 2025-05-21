@@ -1,9 +1,10 @@
 <?php
 namespace GuzzleHttp\Ring\Future;
 
-use React\Promise\FulfilledPromise;
-use React\Promise\RejectedPromise;
 use React\Promise\PromiseInterface;
+
+use function React\Promise\reject;
+use function React\Promise\resolve;
 
 /**
  * Represents a future value that has been resolved or rejected.
@@ -20,7 +21,7 @@ class CompletedFutureValue implements FutureInterface
      * @param \Exception $e      Error. Pass a GuzzleHttp\Ring\Exception\CancelledFutureAccessException
      *                           to mark the future as cancelled.
      */
-    public function __construct($result, \Exception $e = null)
+    public function __construct($result, ?\Exception $e = null)
     {
         $this->result = $result;
         $this->error = $e;
@@ -38,7 +39,8 @@ class CompletedFutureValue implements FutureInterface
         return $this->result;
     }
 
-    public function cancel() {}
+    public function cancel(): void
+    {}
 
     /**
      * @return PromiseInterface
@@ -47,8 +49,8 @@ class CompletedFutureValue implements FutureInterface
     {
         if (!$this->cachedPromise) {
             $this->cachedPromise = $this->error
-                ? new RejectedPromise($this->error)
-                : new FulfilledPromise($this->result);
+                ? reject($this->error)
+                : resolve($this->result);
         }
 
         return $this->cachedPromise;
@@ -58,10 +60,9 @@ class CompletedFutureValue implements FutureInterface
      * @return PromiseInterface
      */
     public function then(
-        callable $onFulfilled = null,
-        callable $onRejected = null,
-        callable $onProgress = null
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null
     ) {
-        return $this->promise()->then($onFulfilled, $onRejected, $onProgress);
+        return $this->promise()->then($onFulfilled, $onRejected);
     }
 }

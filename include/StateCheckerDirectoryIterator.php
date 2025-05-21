@@ -51,6 +51,7 @@ use RecursiveFilterIterator;
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class StateCheckerDirectoryIterator extends RecursiveFilterIterator
 {
     public function __construct($path)
@@ -64,7 +65,11 @@ class StateCheckerDirectoryIterator extends RecursiveFilterIterator
         parent::__construct($path);
     }
 
-    public function accept()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function accept()
+    public function accept() : bool
+    // END STIC Custom
     {
         return $this->current()->isReadable() && $this->current()->isDir();
     }

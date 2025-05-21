@@ -1,0 +1,13 @@
+parameters:
+	level: 6
+	errorFormat: raw
+	editorUrl: '%%file%% %%line%% %%column%%: %%error%%'
+	paths:
+		- src
+	bootstrapFiles:
+		- PHPStanConstants.php
+	ignoreErrors:
+		-
+			message: '#Call to an undefined method ZBateson\\MailMimeParser#'
+			paths:
+				- src/*

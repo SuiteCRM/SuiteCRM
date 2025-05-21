@@ -4,192 +4,134 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser;
 
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\StreamInterface;
-use ZBateson\MailMimeParser\Message\Helper\MessageHelperService;
-use ZBateson\MailMimeParser\Message\Part\MimePart;
-use ZBateson\MailMimeParser\Message\Part\MessagePart;
-use ZBateson\MailMimeParser\Message\Part\PartBuilder;
-use ZBateson\MailMimeParser\Message\Part\PartStreamFilterManager;
+use ZBateson\MailMimeParser\Header\HeaderConsts;
+use ZBateson\MailMimeParser\Message\Helper\MultipartHelper;
+use ZBateson\MailMimeParser\Message\Helper\PrivacyHelper;
+use ZBateson\MailMimeParser\Message\MimePart;
+use ZBateson\MailMimeParser\Message\PartChildrenContainer;
 use ZBateson\MailMimeParser\Message\PartFilter;
-use ZBateson\MailMimeParser\Message\PartFilterFactory;
-use ZBateson\MailMimeParser\Stream\StreamFactory;
+use ZBateson\MailMimeParser\Message\PartHeaderContainer;
+use ZBateson\MailMimeParser\Message\PartStreamContainer;
 
 /**
- * A parsed mime message with optional mime parts depending on its type.
+ * An email message.
  *
- * A mime message may have any number of mime parts, and each part may have any
- * number of sub-parts, etc...
+ * The message could represent a simple text email, a multipart message with
+ * children, or a non-mime message containing UUEncoded parts.
  *
  * @author Zaahid Bateson
  */
-class Message extends MimePart
+class Message extends MimePart implements IMessage
 {
     /**
-     * @var MessageHelperService helper class with various message manipulation
-     *      routines.
+     * @var MultipartHelper service providing functions for multipart messages.
      */
-    protected $messageHelperService;
+    private $multipartHelper;
 
     /**
-     * Constructor
-     *
-     * @param PartStreamFilterManager $partStreamFilterManager
-     * @param StreamFactory $streamFactory
-     * @param PartFilterFactory $partFilterFactory
-     * @param PartBuilder $partBuilder
-     * @param MessageHelperService $messageHelperService
-     * @param StreamInterface $stream
-     * @param StreamInterface $contentStream
+     * @var PrivacyHelper service providing functions for multipart/signed
+     *      messages.
      */
+    private $privacyHelper;
+
     public function __construct(
-        PartStreamFilterManager $partStreamFilterManager,
-        StreamFactory $streamFactory,
-        PartFilterFactory $partFilterFactory,
-        PartBuilder $partBuilder,
-        MessageHelperService $messageHelperService,
-        StreamInterface $stream = null,
-        StreamInterface $contentStream = null
+        ?PartStreamContainer $streamContainer = null,
+        ?PartHeaderContainer $headerContainer = null,
+        ?PartChildrenContainer $partChildrenContainer = null,
+        ?MultipartHelper $multipartHelper = null,
+        ?PrivacyHelper $privacyHelper = null
     ) {
         parent::__construct(
-            $partStreamFilterManager,
-            $streamFactory,
-            $partFilterFactory,
-            $partBuilder,
-            $stream,
-            $contentStream
+            null,
+            $streamContainer,
+            $headerContainer,
+            $partChildrenContainer
         );
-        $this->messageHelperService = $messageHelperService;
+        if ($multipartHelper === null || $privacyHelper === null) {
+            $di = MailMimeParser::getDependencyContainer();
+            $multipartHelper = $di[\ZBateson\MailMimeParser\Message\Helper\MultipartHelper::class];
+            $privacyHelper = $di[\ZBateson\MailMimeParser\Message\Helper\PrivacyHelper::class];
+        }
+        $this->multipartHelper = $multipartHelper;
+        $this->privacyHelper = $privacyHelper;
     }
 
     /**
-     * Convenience method to parse a handle or string into a Message without
+     * Convenience method to parse a handle or string into an IMessage without
      * requiring including MailMimeParser, instantiating it, and calling parse.
      *
-     * @param resource|string $handleOrString the resource handle to the input
-     *        stream of the mime message, or a string containing a mime message
-     * @return Message
+     * If the passed $resource is a resource handle or StreamInterface, the
+     * resource must remain open while the returned IMessage object exists.
+     * Pass true as the second argument to have the resource attached to the
+     * IMessage and closed for you when it's destroyed, or pass false to
+     * manually close it if it should remain open after the IMessage object is
+     * destroyed.
+     *
+     * @param resource|StreamInterface|string $resource The resource handle to
+     *        the input stream of the mime message, or a string containing a
+     *        mime message.
+     * @param bool $attached pass true to have it attached to the returned
+     *        IMessage and destroyed with it.
+     * @return IMessage
      */
-    public static function from($handleOrString)
+    public static function from($resource, $attached)
     {
-        $mmp = new MailMimeParser();
-        return $mmp->parse($handleOrString);
+        static $mmp = null;
+        if ($mmp === null) {
+            $mmp = new MailMimeParser();
+        }
+        return $mmp->parse($resource, $attached);
     }
 
     /**
-     * Returns the text/plain part at the given index (or null if not found.)
+     * Returns true if the current part is a mime part.
      *
-     * @param int $index
-     * @return MessagePart
+     * The message is considered 'mime' if it has either a Content-Type or
+     * MIME-Version header defined.
+     *
      */
+    public function isMime() : bool
+    {
+        $contentType = $this->getHeaderValue(HeaderConsts::CONTENT_TYPE);
+        $mimeVersion = $this->getHeaderValue(HeaderConsts::MIME_VERSION);
+        return ($contentType !== null || $mimeVersion !== null);
+    }
+
     public function getTextPart($index = 0)
     {
         return $this->getPart(
             $index,
-            $this->partFilterFactory->newFilterFromInlineContentType('text/plain')
+            PartFilter::fromInlineContentType('text/plain')
         );
     }
 
-    /**
-     * Returns the number of text/plain parts in this message.
-     *
-     * @return int
-     */
     public function getTextPartCount()
     {
         return $this->getPartCount(
-            $this->partFilterFactory->newFilterFromInlineContentType('text/plain')
+            PartFilter::fromInlineContentType('text/plain')
         );
     }
 
-    /**
-     * Returns the text/html part at the given index (or null if not found.)
-     *
-     * @param int $index
-     * @return MessagePart
-     */
     public function getHtmlPart($index = 0)
     {
         return $this->getPart(
             $index,
-            $this->partFilterFactory->newFilterFromInlineContentType('text/html')
+            PartFilter::fromInlineContentType('text/html')
         );
     }
 
-    /**
-     * Returns the number of text/html parts in this message.
-     *
-     * @return int
-     */
     public function getHtmlPartCount()
     {
         return $this->getPartCount(
-            $this->partFilterFactory->newFilterFromInlineContentType('text/html')
+            PartFilter::fromInlineContentType('text/html')
         );
     }
 
-    /**
-     * Returns the attachment part at the given 0-based index, or null if none
-     * is set.
-     *
-     * @param int $index
-     * @return MessagePart
-     */
-    public function getAttachmentPart($index)
-    {
-        $attachments = $this->getAllAttachmentParts();
-        if (!isset($attachments[$index])) {
-            return null;
-        }
-        return $attachments[$index];
-    }
-
-    /**
-     * Returns all attachment parts.
-     *
-     * "Attachments" are any non-multipart, non-signature and any text or html
-     * html part witha Content-Disposition set to  'attachment'.
-     *
-     * @return MessagePart[]
-     */
-    public function getAllAttachmentParts()
-    {
-        $parts = $this->getAllParts(
-            $this->partFilterFactory->newFilterFromArray([
-                'multipart' => PartFilter::FILTER_EXCLUDE
-            ])
-        );
-        return array_values(array_filter(
-            $parts,
-            function ($part) {
-                return !(
-                    $part->isTextPart()
-                    && $part->getContentDisposition() === 'inline'
-                );
-            }
-        ));
-    }
-
-    /**
-     * Returns the number of attachments available.
-     *
-     * @return int
-     */
-    public function getAttachmentCount()
-    {
-        return count($this->getAllAttachmentParts());
-    }
-
-    /**
-     * Returns a Psr7 Stream for the 'inline' text/plain content at the passed
-     * $index, or null if unavailable.
-     *
-     * @param int $index
-     * @param string $charset
-     * @return StreamInterface
-     */
     public function getTextStream($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
     {
         $textPart = $this->getTextPart($index);
@@ -199,39 +141,6 @@ class Message extends MimePart
         return null;
     }
 
-    /**
-     * Returns a resource handle for the 'inline' text/plain content at the
-     * passed $index, or null if unavailable.
-     *
-     * Note: this method should *not* be used and has been deprecated. Instead,
-     * use Psr7 streams with getTextStream.  Multibyte chars will not be read
-     * correctly with getTextResourceHandle/fread.
-     *
-     * @param int $index
-     * @param string $charset
-     * @deprecated since version 1.2.1
-     * @return resource
-     */
-    public function getTextResourceHandle($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
-    {
-        trigger_error("getTextResourceHandle is deprecated since version 1.2.1", E_USER_DEPRECATED);
-        $textPart = $this->getTextPart($index);
-        if ($textPart !== null) {
-            return $textPart->getContentResourceHandle($charset);
-        }
-        return null;
-    }
-
-    /**
-     * Returns the content of the inline text/plain part at the given index.
-     *
-     * Reads the entire stream content into a string and returns it.  Returns
-     * null if the message doesn't have an inline text part.
-     *
-     * @param int $index
-     * @param string $charset
-     * @return string
-     */
     public function getTextContent($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
     {
         $part = $this->getTextPart($index);
@@ -241,14 +150,6 @@ class Message extends MimePart
         return null;
     }
 
-    /**
-     * Returns a Psr7 Stream for the 'inline' text/html content at the passed
-     * $index, or null if unavailable.
-     *
-     * @param int $index
-     * @param string $charset
-     * @return StreamInterface
-     */
     public function getHtmlStream($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
     {
         $htmlPart = $this->getHtmlPart($index);
@@ -258,39 +159,6 @@ class Message extends MimePart
         return null;
     }
 
-    /**
-     * Returns a resource handle for the 'inline' text/html content at the
-     * passed $index, or null if unavailable.
-     *
-     * Note: this method should *not* be used and has been deprecated. Instead,
-     * use Psr7 streams with getHtmlStream.  Multibyte chars will not be read
-     * correctly with getHtmlResourceHandle/fread.
-     *
-     * @param int $index
-     * @param string $charset
-     * @deprecated since version 1.2.1
-     * @return resource
-     */
-    public function getHtmlResourceHandle($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
-    {
-        trigger_error("getHtmlResourceHandle is deprecated since version 1.2.1", E_USER_DEPRECATED);
-        $htmlPart = $this->getHtmlPart($index);
-        if ($htmlPart !== null) {
-            return $htmlPart->getContentResourceHandle($charset);
-        }
-        return null;
-    }
-
-    /**
-     * Returns the content of the inline text/html part at the given index.
-     *
-     * Reads the entire stream content into a string and returns it.  Returns
-     * null if the message doesn't have an inline html part.
-     *
-     * @param int $index
-     * @param string $charset
-     * @return string
-     */
     public function getHtmlContent($index = 0, $charset = MailMimeParser::DEFAULT_CHARSET)
     {
         $part = $this->getHtmlPart($index);
@@ -301,259 +169,166 @@ class Message extends MimePart
     }
 
     /**
-     * Returns true if either a Content-Type or Mime-Version header are defined
-     * in this Message.
-     *
-     * @return bool
+     * @return static
      */
-    public function isMime()
+    public function setTextPart($resource, string $charset = 'UTF-8')
     {
-        $contentType = $this->getHeaderValue('Content-Type');
-        $mimeVersion = $this->getHeaderValue('Mime-Version');
-        return ($contentType !== null || $mimeVersion !== null);
-    }
-
-    /**
-     * Sets the text/plain part of the message to the passed $stringOrHandle,
-     * either creating a new part if one doesn't exist for text/plain, or
-     * assigning the value of $stringOrHandle to an existing text/plain part.
-     *
-     * The optional $charset parameter is the charset for saving to.
-     * $stringOrHandle is expected to be in UTF-8 regardless of the target
-     * charset.
-     *
-     * @param string|resource|StreamInterface $resource
-     * @param string $charset
-     */
-    public function setTextPart($resource, $charset = 'UTF-8')
-    {
-        $this->messageHelperService
-            ->getMultipartHelper()
+        $this->multipartHelper
             ->setContentPartForMimeType(
-                $this, 'text/plain', $resource, $charset
+                $this,
+                'text/plain',
+                $resource,
+                $charset
             );
+        return $this;
     }
 
-    /**
-     * Sets the text/html part of the message to the passed $stringOrHandle,
-     * either creating a new part if one doesn't exist for text/html, or
-     * assigning the value of $stringOrHandle to an existing text/html part.
-     *
-     * The optional $charset parameter is the charset for saving to.
-     * $stringOrHandle is expected to be in UTF-8 regardless of the target
-     * charset.
-     *
-     * @param string|resource|StreamInterface $resource
-     * @param string $charset
-     */
-    public function setHtmlPart($resource, $charset = 'UTF-8')
+    public function setHtmlPart($resource, string $charset = 'UTF-8') : self
     {
-        $this->messageHelperService
-            ->getMultipartHelper()
+        $this->multipartHelper
             ->setContentPartForMimeType(
-                $this, 'text/html', $resource, $charset
+                $this,
+                'text/html',
+                $resource,
+                $charset
             );
+        return $this;
     }
 
-    /**
-     * Removes the text/plain part of the message at the passed index if one
-     * exists.  Returns true on success.
-     *
-     * @param int $index
-     * @return bool true on success
-     */
-    public function removeTextPart($index = 0)
+    public function removeTextPart(int $index = 0) : bool
     {
-        return $this->messageHelperService
-            ->getMultipartHelper()
+        return $this->multipartHelper
             ->removePartByMimeType(
-                $this, 'text/plain', $index
+                $this,
+                'text/plain',
+                $index
             );
     }
 
-    /**
-     * Removes all text/plain inline parts in this message, optionally keeping
-     * other inline parts as attachments on the main message (defaults to
-     * keeping them).
-     *
-     * @param bool $keepOtherPartsAsAttachments
-     * @return bool true on success
-     */
-    public function removeAllTextParts($keepOtherPartsAsAttachments = true)
+    public function removeAllTextParts(bool $moveRelatedPartsBelowMessage = true) : bool
     {
-        return $this->messageHelperService
-            ->getMultipartHelper()
+        return $this->multipartHelper
             ->removeAllContentPartsByMimeType(
-                $this, 'text/plain', $keepOtherPartsAsAttachments
+                $this,
+                'text/plain',
+                $moveRelatedPartsBelowMessage
             );
     }
 
-    /**
-     * Removes the html part of the message if one exists.  Returns true on
-     * success.
-     *
-     * @param int $index
-     * @return bool true on success
-     */
-    public function removeHtmlPart($index = 0)
+    public function removeHtmlPart(int $index = 0) : bool
     {
-        return $this->messageHelperService
-            ->getMultipartHelper()
+        return $this->multipartHelper
             ->removePartByMimeType(
-                $this, 'text/html', $index
+                $this,
+                'text/html',
+                $index
             );
     }
 
-    /**
-     * Removes all text/html inline parts in this message, optionally keeping
-     * other inline parts as attachments on the main message (defaults to
-     * keeping them).
-     *
-     * @param bool $keepOtherPartsAsAttachments
-     * @return bool true on success
-     */
-    public function removeAllHtmlParts($keepOtherPartsAsAttachments = true)
+    public function removeAllHtmlParts(bool $moveRelatedPartsBelowMessage = true) : bool
     {
-        return $this->messageHelperService
-            ->getMultipartHelper()
+        return $this->multipartHelper
             ->removeAllContentPartsByMimeType(
-                $this, 'text/html', $keepOtherPartsAsAttachments
+                $this,
+                'text/html',
+                $moveRelatedPartsBelowMessage
             );
     }
 
-    /**
-     * Adds an attachment part for the passed raw data string or handle and
-     * given parameters.
-     *
-     * @param string|resource|StreamInterface $resource
-     * @param string $mimeType
-     * @param string $filename
-     * @param string $disposition
-     * @param string $encoding defaults to 'base64', only applied for a mime
-     *        email
-     */
-    public function addAttachmentPart($resource, $mimeType, $filename = null, $disposition = 'attachment', $encoding = 'base64')
+    public function getAttachmentPart(int $index)
     {
-        $this->messageHelperService
-            ->getMultipartHelper()
-            ->createAndAddPartForAttachment($this, $resource, $mimeType, $disposition, $filename, $encoding);
+        return $this->getPart(
+            $index,
+            PartFilter::fromAttachmentFilter()
+        );
+    }
+
+    public function getAllAttachmentParts()
+    {
+        return $this->getAllParts(
+            PartFilter::fromAttachmentFilter()
+        );
+    }
+
+    public function getAttachmentCount() : int
+    {
+        return \count($this->getAllAttachmentParts());
     }
 
     /**
-     * Adds an attachment part using the passed file.
-     *
-     * Essentially creates a file stream and uses it.
-     *
-     * @param string $filePath
-     * @param string $mimeType
-     * @param string $filename
-     * @param string $disposition
+     * @return static
      */
-    public function addAttachmentPartFromFile($filePath, $mimeType, $filename = null, $disposition = 'attachment', $encoding = 'base64')
+    public function addAttachmentPart($resource, string $mimeType, ?string $filename = null, string $disposition = 'attachment', string $encoding = 'base64')
     {
-        $handle = Psr7\Utils::streamFor(fopen($filePath, 'r'));
+        $this->multipartHelper
+            ->createAndAddPartForAttachment(
+                $this,
+                $resource,
+                $mimeType,
+                (\strcasecmp($disposition, 'inline') === 0) ? 'inline' : 'attachment',
+                $filename,
+                $encoding
+            );
+        return $this;
+    }
+
+    /**
+     * @return static
+     */
+    public function addAttachmentPartFromFile($filePath, string $mimeType, ?string $filename = null, string $disposition = 'attachment', string $encoding = 'base64')
+    {
+        $handle = Psr7\Utils::streamFor(\fopen($filePath, 'r'));
         if ($filename === null) {
-            $filename = basename($filePath);
+            $filename = \basename($filePath);
         }
         $this->addAttachmentPart($handle, $mimeType, $filename, $disposition, $encoding);
+        return $this;
     }
 
-    /**
-     * Removes the attachment with the given index
-     *
-     * @param int $index
-     */
-    public function removeAttachmentPart($index)
+    public function removeAttachmentPart(int $index) : self
     {
         $part = $this->getAttachmentPart($index);
         $this->removePart($part);
+        return $this;
     }
 
-    /**
-     * Returns a stream that can be used to read the content part of a signed
-     * message, which can be used to sign an email or verify a signature.
-     *
-     * The method simply returns the stream for the first child.  No
-     * verification of whether the message is in fact a signed message is
-     * performed.
-     *
-     * Note that unlike getSignedMessageAsString, getSignedMessageStream doesn't
-     * replace new lines.
-     *
-     * @return StreamInterface or null if the message doesn't have any children
-     */
     public function getSignedMessageStream()
     {
         return $this
-            ->messageHelperService
-            ->getPrivacyHelper()
+            ->privacyHelper
             ->getSignedMessageStream($this);
     }
 
-    /**
-     * Returns a string containing the entire body of a signed message for
-     * verification or calculating a signature.
-     *
-     * Non-CRLF new lines are replaced to always be CRLF.
-     *
-     * @return string or null if the message doesn't have any children
-     */
     public function getSignedMessageAsString()
     {
         return $this
-            ->messageHelperService
-            ->getPrivacyHelper()
+            ->privacyHelper
             ->getSignedMessageAsString($this);
     }
 
-    /**
-     * Returns the signature part of a multipart/signed message or null.
-     *
-     * The signature part is determined to always be the 2nd child of a
-     * multipart/signed message, the first being the 'body'.
-     *
-     * Using the 'protocol' parameter of the Content-Type header is unreliable
-     * in some instances (for instance a difference of x-pgp-signature versus
-     * pgp-signature).
-     *
-     * @return MimePart
-     */
     public function getSignaturePart()
     {
-        return $this
-            ->messageHelperService
-            ->getPrivacyHelper()
-            ->getSignaturePart($this);
+        if (\strcasecmp($this->getContentType(), 'multipart/signed') === 0) {
+            return $this->getChild(1);
+        }
+            return null;
+
     }
 
     /**
-     * Turns the message into a multipart/signed message, moving the actual
-     * message into a child part, sets the content-type of the main message to
-     * multipart/signed and adds an empty signature part as well.
-     *
-     * After calling setAsMultipartSigned, call getSignedMessageAsString to
-     * return a
-     *
-     * @param string $micalg The Message Integrity Check algorithm being used
-     * @param string $protocol The mime-type of the signature body
+     * @return static
      */
-    public function setAsMultipartSigned($micalg, $protocol)
+    public function setAsMultipartSigned(string $micalg, string $protocol)
     {
-        $this
-            ->messageHelperService
-            ->getPrivacyHelper()
+        $this->privacyHelper
             ->setMessageAsMultipartSigned($this, $micalg, $protocol);
+        return $this;
     }
 
-    /**
-     * Sets the signature body of the message to the passed $body for a
-     * multipart/signed message.
-     *
-     * @param string $body
-     */
-    public function setSignature($body)
+    public function setSignature(string $body) : self
     {
-        $this->messageHelperService->getPrivacyHelper()
+        $this->privacyHelper
             ->setSignature($this, $body);
+        return $this;
     }
 }

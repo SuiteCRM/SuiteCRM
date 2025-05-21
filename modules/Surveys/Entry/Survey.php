@@ -374,44 +374,32 @@ function displayDateField($question)
 
 function displayClosedPage($survey)
 {
-    // STIC-Custom 20240402 - JBL - Show logo in closed surveys
-    // https://github.com/SinergiaTIC/SinergiaCRM/pull/184
-    $themeObject = SugarThemeRegistry::current();
-    $companyLogoURL = $themeObject->getImageURL('company_logo.png');
-    // END STIC-Custom
+    $ss = new Sugar_Smarty();
 
-    ?>
-    <!DOCTYPE html>
-    <html lang="en">
+    $header = <<<EOF
+<!DOCTYPE html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title><?= $survey->name ?></title>
-
+        <title>$survey->name</title>
         <link href="themes/SuiteP/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-offset-3 col-md-6">
-                <!-- STIC-Custom 20240402 - JBL - Show logo in closed surveys -->
-                <!-- https://github.com/SinergiaTIC/SinergiaCRM/pull/184 -->
-                <!-- <img height=100 src="modules/Surveys/Entry/survey_logo.jpg"/> -->
-                <img src="<?php echo $companyLogoURL ?>"/>
-                <!-- END STIC-Custom -->
-            </div>
-        </div>
-        <div class="row well">
-            <div class="col-md-offset-2 col-md-8">
-                <h1><?= $survey->name ?></h1>
-                <p>Thanks for your interest but this survey is now closed.</p>
-            </div>
-        </div>
-    </div>
-    <script src="include/javascript/jquery/jquery-min.js"></script>
-    </body>
-    </html>
-    <?php
+</head>
+<body>
+EOF;
+
+    $footer = <<<EOF
+<script src="include/javascript/jquery/jquery-min.js"></script>
+</body>
+</html>
+EOF;
+
+    $ss->assign('MESSAGE', translate('LBL_SURVEY_CLOSE_RESPONSE', $survey->module_name));
+    $ss->assign('HEADER', $header);
+    $ss->assign('SURVEY', $survey);
+    $ss->assign('LOGO', SugarThemeRegistry::current()->getImageURL('company_logo.png') );
+    $ss->assign('FOOTER', $footer);
+
+    echo $ss->fetch('modules/Surveys/tpls/closeSurvey.tpl');
 }

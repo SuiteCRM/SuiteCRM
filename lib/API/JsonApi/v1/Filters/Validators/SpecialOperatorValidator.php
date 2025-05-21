@@ -48,6 +48,7 @@ use SuiteCRM\API\JsonApi\v1\Filters\Operators\SpecialOperator;
  * Class SpecialOperatorValidator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Validators
  */
+#[\AllowDynamicProperties]
 class SpecialOperatorValidator implements ValidatorInterface
 {
 

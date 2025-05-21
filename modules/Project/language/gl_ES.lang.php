@@ -176,4 +176,6 @@ $mod_strings = array(
     'LBL_AM_PROJECTTEMPLATES_PROJECT_1_FROM_PROJECT_TITLE' => 'Plantilla de proxecto: Proxecto a partir do nome do proxecto',
     'LBL_AOS_QUOTES_PROJECT' => 'Presupostos: Proxecto',
 
+    'LBL_ASCENDING' => 'Ascendente',
+    'LBL_DESCENDING' => 'Descendente',
 );

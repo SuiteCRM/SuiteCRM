@@ -1,5 +1,5 @@
 [![Latest Stable Version]](https://packagist.org/packages/wikimedia/composer-merge-plugin) [![License]](https://github.com/wikimedia/composer-merge-plugin/blob/master/LICENSE)
-[![Build Status]](https://github.com/wikimedia/composer-merge-plugin/actions)
+[![Build Status]](https://github.com/wikimedia/composer-merge-plugin/actions/workflows/CI.yaml)
 [![Code Coverage]](https://scrutinizer-ci.com/g/wikimedia/composer-merge-plugin/?branch=master)
 
 Composer Merge Plugin
@@ -26,7 +26,7 @@ Installation
 
 Composer Merge Plugin 1.4.x (and older) requires Composer 1.x.
 
-Composer Merge Plugin 1.5.x (and newer) is compatible with both Composer 2.x and 1.x.
+Composer Merge Plugin 2.0.x (and newer) is compatible with both Composer 2.x and 1.x.
 
 ```
 $ composer require wikimedia/composer-merge-plugin
@@ -34,7 +34,7 @@ $ composer require wikimedia/composer-merge-plugin
 
 ### Upgrading from Composer 1 to 2
 
-If you are already using Composer Merge Plugin 1.4 (or older) and you are updating the plugin to 1.5 (or newer), it is recommended that you update the plugin first using Composer 1.
+If you are already using Composer Merge Plugin 1.4 (or older) and you are updating the plugin to 2.0 (or newer), it is recommended that you update the plugin first using Composer 1.
 
 If you update the incompatible plugin using Composer 2, the plugin will be ignored:
 
@@ -66,6 +66,7 @@ Usage
             "merge-dev": true,
             "merge-extra": false,
             "merge-extra-deep": false,
+            "merge-replace": true,
             "merge-scripts": false
         }
     }
@@ -109,6 +110,7 @@ in the top-level composer.json file:
 * [conflict](https://getcomposer.org/doc/04-schema.md#conflict)
 * [provide](https://getcomposer.org/doc/04-schema.md#provide)
 * [replace](https://getcomposer.org/doc/04-schema.md#replace)
+  (optional, see [merge-replace](#merge-replace) below)
 * [repositories](https://getcomposer.org/doc/04-schema.md#repositories)
 * [require](https://getcomposer.org/doc/04-schema.md#require)
 * [require-dev](https://getcomposer.org/doc/04-schema.md#require-dev)
@@ -180,6 +182,11 @@ they are processed by Composer.
 Note that `merge-plugin` sections are excluded from the merge process, but are
 always processed by the plugin unless [recursion](#recurse) is disabled.
 
+### merge-replace
+
+By default, the `replace` section of included files are merged.
+A `"merge-replace": false` setting will disable this behavior.
+
 ### merge-scripts
 
 A `"merge-scripts": true` setting enables merging the contents of the
@@ -212,7 +219,7 @@ project]. We accept code and documentation contributions via Pull Requests on
 GitHub as well.
 
 - [PSR-2 Coding Standard][] is used by the project. The included test
-  configuration uses [PHP Code Sniffer][] to validate the conventions.
+  configuration uses [PHP_CodeSniffer][] to validate the conventions.
 - Tests are encouraged. Our test coverage isn't perfect but we'd like it to
   get better rather than worse, so please try to include tests with your
   changes.
@@ -236,9 +243,9 @@ Composer Merge plugin is licensed under the MIT license. See the
 [MediaWiki]: https://www.mediawiki.org/wiki/MediaWiki
 [GitHub project]: https://github.com/wikimedia/composer-merge-plugin
 [PSR-2 Coding Standard]: https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md
-[PHP Code Sniffer]: http://pear.php.net/package/PHP_CodeSniffer
+[PHP_CodeSniffer]: http://pear.php.net/package/PHP_CodeSniffer
 [Latest Stable Version]: https://img.shields.io/packagist/v/wikimedia/composer-merge-plugin.svg?style=flat
 [License]: https://img.shields.io/packagist/l/wikimedia/composer-merge-plugin.svg?style=flat
-[Build Status]: https://img.shields.io/github/workflow/status/wikimedia/composer-merge-plugin/PHP%20Composer/master?style=flat
+[Build Status]: https://github.com/wikimedia/composer-merge-plugin/actions/workflows/CI.yaml/badge.svg
 [Code Coverage]: https://img.shields.io/scrutinizer/coverage/g/wikimedia/composer-merge-plugin/master.svg?style=flat
 [custom commands]: https://getcomposer.org/doc/articles/scripts.md#writing-custom-commands

@@ -43,9 +43,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class InsideViewLogicHook
 {
-    const URL_BASE = 'https://my.insideview.com/iv/crm/';
+    public const URL_BASE = 'https://my.insideview.com/iv/crm/';
 
     protected function handleFieldMap($bean, $mapping)
     {
@@ -72,7 +73,7 @@ class InsideViewLogicHook
 
         $outStr = '';
         foreach ($outArray as $k => $v) {
-            $outStr .= $k.'='.rawurlencode(html_entity_decode($v, ENT_QUOTES)).'&';
+            $outStr .= $k.'='.rawurlencode(html_entity_decode((string) $v, ENT_QUOTES)).'&';
         }
         
         $outStr = rtrim($outStr, '&');

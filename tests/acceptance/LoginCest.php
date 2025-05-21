@@ -5,6 +5,7 @@
  *
  * Test login page
  */
+#[\AllowDynamicProperties]
 class LoginCest
 {
     /**

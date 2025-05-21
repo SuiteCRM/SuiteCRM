@@ -30,7 +30,7 @@ if (!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
  */
 
 class kreportpresentationplugin {
-    var $canExport = false; 
+    public $canExport = false; 
     
     public function display(&$thisview){
         

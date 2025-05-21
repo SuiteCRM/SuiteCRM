@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Payment_Commitments extends Basic
 {
     public $new_schema = true;
@@ -87,7 +88,7 @@ class stic_Payment_Commitments extends Basic
         parent::save($check_notify);
         
         // If things are happening in Payments subpanel...
-        if ($_REQUEST['child_field'] == 'stic_payments_stic_payment_commitments') {
+        if (!empty($_REQUEST['child_field']) && $_REQUEST['child_field'] == 'stic_payments_stic_payment_commitments') {
             // For multiple payments selection from popup
             if (is_array($_REQUEST['subpanel_id'])) {
                 foreach($_REQUEST['subpanel_id'] as $paymentId) {

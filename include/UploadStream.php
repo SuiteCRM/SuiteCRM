@@ -48,9 +48,10 @@ require_once('include/externalAPI/ExternalAPIFactory.php');
  * @internal
  * Upload file stream handler
  */
+#[\AllowDynamicProperties]
 class UploadStream
 {
-    const STREAM_NAME = "upload";
+    public const STREAM_NAME = "upload";
     protected static $upload_dir;
 
     /**
@@ -147,7 +148,7 @@ class UploadStream
      */
     public static function register()
     {
-        stream_wrapper_register(self::STREAM_NAME, __CLASS__);
+        stream_wrapper_register(self::STREAM_NAME, self::class);
     }
 
     /**
@@ -307,7 +308,12 @@ class UploadStream
 
     public function url_stat($path, $flags)
     {
-        return @stat(self::path($path));
+        // STIC Custom 20250210 JBL - Fix Warnings in missing files
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return @stat(self::path($path));
+        $realPath = self::path($path);
+        return file_exists($realPath) ? @stat($realPath) : false;
+        // END STIC Custom
     }
 
     public static function move_uploaded_file($upload, $path)

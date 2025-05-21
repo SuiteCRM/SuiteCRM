@@ -46,11 +46,16 @@ require_once('include/EditView/QuickCreate.php');
 
 
 
+#[\AllowDynamicProperties]
 class MeetingsQuickCreate extends QuickCreate
 {
     public $javascript;
     
-    public function process()
+    // STIC Custom 20250211 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function process()
+    public function process($checkFormName = false, $formName = '')
+    // End STIC Custom
     {
         global $current_user, $timedate, $app_list_strings, $current_language, $mod_strings, $timeMeridiem;
         $mod_strings = return_module_language($current_language, 'Meetings');
@@ -97,9 +102,9 @@ class MeetingsQuickCreate extends QuickCreate
         }
 
         $this->ss->assign("DATE_START", $focus->date_start);
-        $this->ss->assign("TIME_START", substr($focus->time_start, 0, 5));
-        $time_start_hour = (int)substr($focus->time_start, 0, 2);
-        $time_start_minutes = substr($focus->time_start, 3, 5);
+        $this->ss->assign("TIME_START", substr((string) $focus->time_start, 0, 5));
+        $time_start_hour = (int)substr((string) $focus->time_start, 0, 2);
+        $time_start_minutes = substr((string) $focus->time_start, 3, 5);
         
         if ($time_start_minutes > 0 && $time_start_minutes < 15) {
             $time_start_minutes = "15";
@@ -125,7 +130,7 @@ class MeetingsQuickCreate extends QuickCreate
         $start_at = 0;
 
         $time_pref = $timedate->get_time_format();
-        if (strpos($time_pref, 'a') || strpos($time_pref, 'A')) {
+        if (strpos((string) $time_pref, 'a') || strpos((string) $time_pref, 'A')) {
             $num_of_hours = 13;
             $start_at = 1;
         }
@@ -152,17 +157,17 @@ class MeetingsQuickCreate extends QuickCreate
         $this->ss->assign("DURATION_MINUTES_OPTIONS", get_select_options_with_id($focus->minutes_values, $focus->duration_minutes));
         // Test to see if time format is 11:00am; otherwise it's 11:00AM
         if ($num_of_hours == 13) {
-            if (strpos($time_pref, 'a')) {
+            if (strpos((string) $time_pref, 'a')) {
                 if (!isset($focus->meridiem_am_values)) {
                     $focus->meridiem_am_values = array('am'=>'am', 'pm'=>'pm');
                 }
-               
+
                 $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($focus->meridiem_am_values, $time_start_hour < 12 ? 'am' : 'pm'));
             } else {
                 if (!isset($focus->meridiem_AM_values)) {
                     $focus->meridiem_AM_values = array('AM'=>'AM', 'PM'=>'PM');
                 }
-               
+
                 $this->ss->assign("TIME_MERIDIEM", get_select_options_with_id($focus->meridiem_AM_values, $time_start_hour < 12 ? 'AM' : 'PM'));
             } //if-else
         }

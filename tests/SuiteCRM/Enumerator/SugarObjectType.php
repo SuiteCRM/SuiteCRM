@@ -43,6 +43,7 @@ namespace SuiteCRM\Enumerator;
  * Class SugarObjectType
  * @package SuiteCRM\Tests\SuiteCRM\Enumerator
  */
+#[\AllowDynamicProperties]
 abstract class SugarObjectType
 {
     public const basic = 'basic';

@@ -40,19 +40,22 @@ class ACLActionTest extends SuitePHPUnitFrameworkTestCase
         self::markTestIncomplete('environment dependency');
 
         //take count of actions initially and then after method execution and test if action count increases
-        $action_count = count(ACLAction::getDefaultActions());
+        $defaultActions = ACLAction::getDefaultActions();
+        $action_count = is_countable($defaultActions) ? count($defaultActions) : 0;
         ACLAction::addActions('Test');
         $actual = ACLAction::getDefaultActions();
-        $this->assertGreaterThan($action_count, count($actual));
+        $this->assertGreaterThan($action_count, is_countable($actual) ? count($actual) : 0);
     }
 
     public function testremoveActions()
     {
         //take count of actions initially and then after method execution and test if action count decreases
-        $action_count = count(ACLAction::getDefaultActions());
+        $defaultActions = ACLAction::getDefaultActions();
+        $action_count = is_countable($defaultActions) ? count($defaultActions) : 0;
         ACLAction::removeActions('Test');
         $actual = ACLAction::getDefaultActions();
-        $this->assertLessThanOrEqual($action_count, count($actual), 'actual count was: ' . count($actual));
+        $actualCount = is_countable($actual) ? count($actual) : 0;
+        $this->assertLessThanOrEqual($action_count, $actualCount, 'actual count was: ' . $actualCount);
     }
 
     public function testAccessName()

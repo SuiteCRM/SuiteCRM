@@ -103,7 +103,7 @@ $mod_strings = array(
     'COLUMN_TITLE_PARENT_ENUM' => 'Parent DropDown',
     'LBL_INSERT_FIELD' => 'Insert Field',
 	// STIC-Custom 20230919 MHP - Create dynamic tag for text 'Invalid logic'
-	// STIC#
+	// STIC #1221
     'LBL_INVALID_LOGIC' => 'Invalid logic',
     // END STIC-Custom
 );

@@ -3,5 +3,5 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-$suitecrm_version = '7.12.12';
-$suitecrm_timestamp = '2023-07-11 12:00:00';
+$suitecrm_version = '7.14.6';
+$suitecrm_timestamp = '2024-11-05 12:00:00';

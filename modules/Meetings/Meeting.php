@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Meeting extends SugarBean
 {
     // Stored fields
@@ -114,7 +115,7 @@ class Meeting extends SugarBean
     public $cached_get_users = null;
     public $new_schema = true;
     public $date_changed = false;
-    
+
     protected static $remindersInSaving = false;
 
     /**
@@ -278,7 +279,7 @@ class Meeting extends SugarBean
             $this->saving_reminders_data = true;
 
             $reminderData = json_encode(
-                $this->removeUnInvitedFromReminders(json_decode(html_entity_decode($_REQUEST['reminders_data']), true))
+                $this->removeUnInvitedFromReminders(json_decode(html_entity_decode((string) $_REQUEST['reminders_data']), true))
             );
             Reminder::saveRemindersDataJson('Meetings', $return_id, $reminderData);
 
@@ -355,7 +356,7 @@ class Meeting extends SugarBean
     {
         $custom_join = $this->getCustomJoin(true, true, $where);
         $custom_join['join'] .= $relate_link_join;
-        $contact_required = stristr($where, "contacts");
+        $contact_required = stristr((string) $where, "contacts");
 
         if ($contact_required) {
             $query = "SELECT meetings.*, contacts.first_name, contacts.last_name, contacts.assigned_user_id contact_name_owner, users.user_name as assigned_user_name   ";
@@ -416,13 +417,13 @@ class Meeting extends SugarBean
         $this->fill_in_additional_parent_fields();
 
         if (!isset($this->time_hour_start)) {
-            $this->time_start_hour = (int)substr($this->time_start, 0, 2);
+            $this->time_start_hour = (int)substr((string) $this->time_start, 0, 2);
         } //if-else
 
         if (isset($this->time_minute_start)) {
             $time_start_minutes = $this->time_minute_start;
         } else {
-            $time_start_minutes = substr($this->time_start, 3, 5);
+            $time_start_minutes = substr((string) $this->time_start, 3, 5);
             if ($time_start_minutes > 0 && $time_start_minutes < 15) {
                 $time_start_minutes = "15";
             } elseif ($time_start_minutes > 15 && $time_start_minutes < 30) {
@@ -439,7 +440,7 @@ class Meeting extends SugarBean
         if (isset($this->time_hour_start)) {
             $time_start_hour = $this->time_hour_start;
         } else {
-            $time_start_hour = (int)substr($this->time_start, 0, 2);
+            $time_start_hour = (int)substr((string) $this->time_start, 0, 2);
         }
 
         global $timedate;
@@ -609,6 +610,8 @@ class Meeting extends SugarBean
         global $app_list_strings;
         global $current_user;
         global $timedate;
+
+        $typestring = '';
 
         if (!isset($meeting->current_notify_user->object_name)) {
             LoggerManager::getLogger()->warn('Meeting set_notification_body: Trying to get property of non-object ($meetingCurrentNotifyUserObjectName)');

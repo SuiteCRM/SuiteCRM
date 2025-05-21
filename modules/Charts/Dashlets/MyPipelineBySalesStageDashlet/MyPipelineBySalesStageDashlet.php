@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/Dashlets/DashletGenericChart.php');
 
+#[\AllowDynamicProperties]
 class MyPipelineBySalesStageDashlet extends DashletGenericChart
 {
     public $mypbss_date_start;
@@ -60,7 +61,11 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // array $options = null
+        ?array $options = null
+        // END STIC Custom        
     ) {
         global $timedate;
 
@@ -247,7 +252,7 @@ class MyPipelineBySalesStageDashlet extends DashletGenericChart
             id: '$canvasId',
             x: 10,
             y: 30,
-            text: 'Pipeline total is ${currency_symbol}$total$thousands_symbol',
+            text: 'Pipeline total is {$currency_symbol}$total$thousands_symbol',
             options: {
                 font: 'Arial',
                 bold: true,
@@ -316,7 +321,7 @@ EOD;
         $tempx = $user_sales_stage;
 
         //set $datax using selected sales stage keys
-        if (isset($tempx) && count($tempx) > 0) {
+        if (isset($tempx) && (is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 array_push($selected_datax, $key);
@@ -400,6 +405,7 @@ EOD;
 
     protected function prepareChartData($dataset, $currency_symbol, $thousands_symbol)
     {
+        $chart = [];
         //Use the  lead_source to categorise the data for the charts
         $chart['labels'] = array();
         $chart['data'] = array();

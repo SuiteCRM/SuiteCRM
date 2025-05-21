@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class jjwg_Areas_sugar extends Basic
 {
     public $new_schema = true;

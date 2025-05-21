@@ -12,8 +12,6 @@
 
 namespace ScssPhp\ScssPhp;
 
-use ScssPhp\ScssPhp\Value\SassColor;
-
 /**
  * CSS Colors
  *
@@ -21,7 +19,7 @@ use ScssPhp\ScssPhp\Value\SassColor;
  *
  * @internal
  */
-final class Colors
+class Colors
 {
     /**
      * CSS Colors
@@ -30,7 +28,7 @@ final class Colors
      *
      * @var array<string, string>
      */
-    private static $cssColors = [
+    protected static $cssColors = [
         'aliceblue' => '240,248,255',
         'antiquewhite' => '250,235,215',
         'aqua' => '0,255,255',
@@ -182,17 +180,6 @@ final class Colors
         'transparent' => '0,0,0,0',
     ];
 
-    public static function colorNameToColor(string $colorName): ?SassColor
-    {
-        $rgba = self::colorNameToRGBa($colorName);
-
-        if ($rgba === null) {
-            return null;
-        }
-
-        return SassColor::rgb($rgba[0], $rgba[1], $rgba[2], $rgba[3] ?? null);
-    }
-
     /**
      * Convert named color in a [r,g,b[,a]] array
      *
@@ -202,8 +189,8 @@ final class Colors
      */
     public static function colorNameToRGBa($colorName)
     {
-        if (\is_string($colorName) && isset(self::$cssColors[$colorName])) {
-            $rgba = explode(',', self::$cssColors[$colorName]);
+        if (\is_string($colorName) && isset(static::$cssColors[$colorName])) {
+            $rgba = explode(',', static::$cssColors[$colorName]);
 
             // only case with opacity is transparent, with opacity=0, so we can intval on opacity also
             $rgba = array_map('intval', $rgba);
@@ -239,7 +226,7 @@ final class Colors
         if (\is_null($reverseColorTable)) {
             $reverseColorTable = [];
 
-            foreach (self::$cssColors as $name => $rgb_str) {
+            foreach (static::$cssColors as $name => $rgb_str) {
                 $rgb_str = explode(',', $rgb_str);
 
                 if (

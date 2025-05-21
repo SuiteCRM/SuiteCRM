@@ -30,7 +30,9 @@ if ($color == '#b5bc31' && $settingSidebarColor == '1') {
     copy('themes/SuiteP/css/Stic/style.css', 'themes/SuiteP/css/SticCustom/style.css');
     echo '<li> $color is defaulf. Cloned from Stic subtheme. Compiled unnecessary.';
     // Remove cache/themes/SuiteP/css/SticCustom/style.css to force reload css theme
-    unlink('cache/themes/SuiteP/css/SticCustom/style.css');
+    if (file_exists('cache/themes/SuiteP/css/SticCustom/style.css')) {
+        unlink('cache/themes/SuiteP/css/SticCustom/style.css');
+    }
     return;
 }
 

@@ -42,9 +42,10 @@
  * Reminder class
  *
  */
+#[\AllowDynamicProperties]
 class Reminder extends Basic
 {
-    const UPGRADE_VERSION = '7.4.3';
+    public const UPGRADE_VERSION = '7.4.3';
 
     public $name;
 
@@ -106,6 +107,10 @@ class Reminder extends Basic
         $db = DBManagerFactory::getInstance();
 
         $savedReminderIds = array();
+        // STIC Custom 20250313 JBL - Avoid iterate over null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        $remindersData ??= [];
+        // END STIC Custom        
         foreach ($remindersData as $reminderData) {
             if (isset($_POST['isDuplicate']) && $_POST['isDuplicate']) {
                 $reminderData->id = '';
@@ -323,7 +328,7 @@ class Reminder extends Basic
         $dateTimeMax = $timedate->getNow(true)->modify("+{$app_list_strings['reminder_max_time']} seconds")->asDb(false);
 
         $dateTimeNow = $timedate->getNow(true)->asDb(false);
-        
+
 
         // Original jsAlert used to a meeting integration.
 
@@ -473,7 +478,7 @@ class Reminder extends Basic
     private static function unQuoteTime($timestr)
     {
         $ret = '';
-        for ($i = 0; $i < strlen($timestr); $i++) {
+        for ($i = 0; $i < strlen((string) $timestr); $i++) {
             if ($timestr[$i] != "'") {
                 $ret .= $timestr[$i];
             }
@@ -493,7 +498,7 @@ class Reminder extends Basic
         if ($acceptStats = self::getEventPersonAcceptStatus($event, $person)) {
             $acceptStatusLower = strtolower($acceptStatus);
             foreach ((array)$acceptStats as $acceptStat) {
-                if (strtolower($acceptStat) == $acceptStatusLower) {
+                if (strtolower($acceptStat) === $acceptStatusLower) {
                     return true;
                 }
             }
@@ -535,7 +540,7 @@ class Reminder extends Basic
 
     private static function getEventPersonQuery(SugarBean $event, SugarBean $person)
     {
-        $eventIdField = array_search($event->table_name, $event->relationship_fields);
+        $eventIdField = array_search($event->table_name, $event->relationship_fields, true);
         if (!$eventIdField) {
             $eventIdField = strtolower($event->object_name . '_id');
         }

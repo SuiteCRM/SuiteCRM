@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2019 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -169,7 +169,8 @@ $mod_strings = array(
     'LBL_LIST_FORM_SENT_TITLE' => 'Sent Emails',
     'LBL_LIST_FORM_TITLE' => 'Email List',
     'LBL_LIST_FROM_ADDR' => 'From',
-    'LBL_LIST_RELATED_TO' => 'Recipient Type',
+    //'LBL_LIST_RELATED_TO' => 'Recipient Type' (previous value)
+    'LBL_LIST_RELATED_TO' => 'Related To',
     'LBL_LIST_SUBJECT' => 'Subject',
     'LBL_LIST_TO_ADDR' => 'To',
     'LBL_LIST_TYPE' => 'Type',
@@ -273,7 +274,6 @@ $mod_strings = array(
     'LBL_HAS_ATTACHMENT_INDICATOR' => 'Has Attachments',
     'ERR_MISSING_REQUIRED_FIELDS' => 'Missing required field',
     'ERR_INVALID_REQUIRED_FIELDS' => 'Invalid required field',
-    'LBL_FILTER_BY_RELATED_BEAN' => 'Only show recipients related to',
     'LBL_ADD_INBOUND_ACCOUNT' => 'Add',
     'LBL_ADD_OUTBOUND_ACCOUNT' => 'Add',
     'LBL_EMAIL_ACCOUNTS_INBOUND' => 'Mail Account Properties',
@@ -296,9 +296,7 @@ $mod_strings = array(
     'LBL_MAILBOX_TYPE_PERSONAL' => 'Personal',
     'LBL_MAILBOX_TYPE_GROUP' => 'Group',
     'LBL_MAILBOX_TYPE_GROUP_FOLDER' => 'Group - Auto-Import',
-    'LBL_SEARCH_FOR' => 'Search For',
     'LBL_EMAIL_INBOUND_TYPE_HELP' => '<b>Personal</b>: Email account accessible by you. Only you can manage and import emails from this account.<br><b>Group</b>: Email account accessible by members of specified teams. Team members can manage and import emails from this account.<br><b>Group - auto-import</b>: Email account accessible by members of specified teams. Emails are automatically imported as records.',
-    'LBL_ADDRESS_BOOK_SEARCH_HELP' => 'Enter an email address, First Name, Last Name or Account Name to find recipients.',
     'LBL_TEST_SETTINGS' => 'Test Settings',
     'LBL_EMPTY_EMAIL_BODY' => '<p><span style="color: #888888;"><em>This Message Has No Content</em></span></p>',
     'LBL_HAS_EMPTY_EMAIL_SUBJECT' => 'Please specify the subject',
@@ -387,7 +385,7 @@ $mod_strings = array(
 
     'LBL_LIST_DATE_MODIFIED' => 'Last Modified',
     'LNK_IMPORT_CAMPAIGNS' => 'Import Campaign',
-    
+
     // Email Validation Error messages. Typicaly for Email Validation:
     'ERR_FIELD_FROM_IS_NOT_SET' => 'From field is not set.',
     'ERR_FIELD_FROM_IS_EMPTY' => 'From field is empty.',
@@ -411,4 +409,9 @@ $mod_strings = array(
     'ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM_ADDR' => 'From address and name pair does not match to from address.',
     'ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROMNAME' => 'From address and name pair does not match to from-name.',
     'ERR_FIELD_FROM_ADDR_NAME_INVALID_EMAIL_PART_TO_FIELD_FROM_NAME' => 'From address and name pair does not match to from name.',
+
+    // Address book (not in current use)
+    'LBL_ADDRESS_BOOK_SEARCH_HELP' => 'Enter an email address, First Name, Last Name or Account Name to find recipients.',
+    'LBL_SEARCH_FOR' => 'Search For',
+    'LBL_FILTER_BY_RELATED_BEAN' => 'Only show recipients related to',
 );

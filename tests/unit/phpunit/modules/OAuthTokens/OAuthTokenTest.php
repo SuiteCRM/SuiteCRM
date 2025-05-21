@@ -64,8 +64,8 @@ class OAuthTokenTest extends SuitePHPUnitFrameworkTestCase
         $result = OAuthToken::generate();
 
         self::assertInstanceOf('OAuthToken', $result);
-        self::assertGreaterThan(0, strlen($result->token));
-        self::assertGreaterThan(0, strlen($result->secret));
+        self::assertGreaterThan(0, strlen((string) $result->token));
+        self::assertGreaterThan(0, strlen((string) $result->secret));
     }
 
     public function testSaveAndOthers(): void
@@ -76,7 +76,7 @@ class OAuthTokenTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($oauthToken->id));
-        self::assertEquals(12, strlen($oauthToken->id));
+        self::assertEquals(12, strlen((string) $oauthToken->id));
 
         //test load method
         $this->load($oauthToken->id);
@@ -117,7 +117,7 @@ class OAuthTokenTest extends SuitePHPUnitFrameworkTestCase
         $result = $token->authorize('test');
 
         self::assertEquals('test', $token->authdata);
-        self::assertGreaterThan(0, strlen($result));
+        self::assertGreaterThan(0, strlen((string) $result));
         self::assertEquals($result, $token->verify);
     }
 

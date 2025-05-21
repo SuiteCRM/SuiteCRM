@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-final class DirectiveBlock extends Block
+class DirectiveBlock extends Block
 {
     /**
      * @var string|array

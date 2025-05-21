@@ -58,6 +58,7 @@ $mod_strings = array(
     'LBL_OOTB_CLEANUP_QUEUE' => 'Netejar la cua de tasques',
     'LBL_OOTB_REMOVE_DOCUMENTS_FROM_FS' => 'Eliminar documents del sistema de fitxers',
     'LBL_OOTB_GOOGLE_CAL_SYNC' => 'Sincronització amb Calendari de Google',
+    'LBL_OOTB_ELASTIC_INDEX' => 'Realitzar Indexació d\'Elasticsearch',
 
 // List Labels
     'LBL_LIST_JOB_INTERVAL' => 'Interval',

@@ -17,7 +17,7 @@ class StateHelper
      * @param OutputInterface $output
      * @return State
      */
-    public static function injectIntoCallbackObject($callback, InputInterface $input, OutputInterface $output = null)
+    public static function injectIntoCallbackObject($callback, InputInterface $input, ?OutputInterface $output = null)
     {
         return static::inject(static::recoverCallbackObject($callback), $input, $output);
     }
@@ -29,7 +29,7 @@ class StateHelper
      * @param OutputInterface $output
      * @return State
      */
-    public static function inject($target, InputInterface $input, OutputInterface $output = null)
+    public static function inject($target, InputInterface $input, ?OutputInterface $output = null)
     {
         // Do not allow injection unless the target can save its state
         if (!$target || !($target instanceof SavableState)) {

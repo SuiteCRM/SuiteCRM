@@ -20,7 +20,7 @@
  *
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
-
+#[\AllowDynamicProperties]
 class DataParser
 {
 
@@ -67,12 +67,13 @@ class DataParser
      */
     public function parseDataToIncorpora($bean, $incorporaUserParams)
     {
+        $errors = '';
         global $current_user, $timedate, $mod_strings, $app_list_strings;
         $fieldsDef = $this->listDef;
         $incData = array();
         foreach ($fieldsDef as $beanField => $incField) {
-            if (!$incField['skipAlta']) {
-                switch ($incField[1]) {
+            if (!isset($incField['skipAlta']) || !$incField['skipAlta']) {
+                switch ($incField[1] ?? null) {
                     case 'location':
                         $incData[$incField[0][0]] = $bean->{$incField[2][0]};
                         $incData[$incField[0][1]] = $bean->{$incField[2][1]};
@@ -118,7 +119,7 @@ class DataParser
                     case 'transformedList':
                         include 'modules/stic_Incorpora/utils/TransformedLists.php';
                         if (!empty($bean->$beanField)) {
-                            if ($incField[2]) {
+                            if (isset($incField[2]) && $incField[2]) {
                                 $list = $incField[2];
                                 $incData[$incField[0]] = array_search($bean->$beanField, ${$list});
                             } else {
@@ -138,7 +139,7 @@ class DataParser
                         // Then we add the reference details into the bean record
                         $sufix = $bean->field_defs['inc_id_c'] ? '_c' : '';
                         $beanField = 'inc_reference_' . $incField[1] . $sufix;
-                        if ($incField[1] === 'entity') {
+                        if (isset($incField[1]) && $incField[1] === 'entity') {
                             $bean->$beanField = $incorporaUserParams['group'] . '_' . $incorporaUserParams[$incField[1]];
                         } else {
                             $bean->$beanField = $incorporaUserParams[$incField[1]];
@@ -175,7 +176,7 @@ class DataParser
                 }
             }
         }
-        if ($errors) {
+        if (!empty($errors)) {
             $sufix = $bean->field_defs['inc_id_c'] ? '_c' : '';
             $incSynchronizationErrors = 'inc_synchronization_errors' . $sufix;
             $incSynchronizationLog = 'inc_synchronization_log' . $sufix;
@@ -190,7 +191,7 @@ class DataParser
             $bean->$incSynchronizationLog = $log['logs'][$bean->id]['msg'];
             $bean->save();
             $log['logs'][$bean->id]['cod'] = $dataIncorpora->salidaComun->codRespuesta;
-            $log['logs'][$bean->id]['url'] = $this->createLinkToDetailView($this->module, $bean->id, $bean->name);
+            $log['logs'][$bean->id]['url'] = static::createLinkToDetailView($this->module, $bean->id, $bean->name);
             $this->log = $log;
             // $GLOBALS['log']->fatal(__METHOD__.' '.__LINE__.' ', $errors );
 
@@ -216,8 +217,8 @@ class DataParser
         $fieldsDef = $this->CRMIncArray;
         // include 'modules/stic_Incorpora/utils/FieldsDef.php';
         foreach ($fieldsDef as $key => $value) {
-            if (!$value['skipConsulta']) {
-                switch ($value[1]) {
+            if (!isset($value['skipConsulta']) || !$value['skipConsulta']) {
+                switch ($value[1] ?? null) {
                     case 'location':
                         if (isset($bean->$key)) {
                             $sufix = $bean->field_defs['inc_id_c'] ? '_c' : '';
@@ -226,7 +227,7 @@ class DataParser
                             if ($override || empty($bean->$sticIncorporaLocationsId)) {
                                 $locationBeanList = BeanFactory::getBean('stic_Incorpora_Locations');
 
-                                if ($value[5] == 'consultaDiferentFields') {
+                                if (isset($value[5]) && $value[5] == 'consultaDiferentFields') {
                                     $state = $value[6][0];
                                     $municipality = $value[6][1];
                                     $town = $value[6][2];
@@ -250,7 +251,7 @@ class DataParser
                                 if ($locationBean->id) {
                                     $bean->$sticIncorporaLocationsId = $locationBean->id;
                                 } else {
-                                    $errors .= $mod_strings['LBL_RESULTS_DATAPARSER_NO_LOCATION_ID'] . $dataIncorpora->{$value[0]};
+                                    $errors .= $mod_strings['LBL_RESULTS_DATAPARSER_NO_LOCATION_ID'] . ($dataIncorpora->{$value[0]} ?? '');
                                     $GLOBALS['log']->fatal(__METHOD__ . ' ' . __LINE__ . ' ' . $mod_strings['LBL_RESULTS_DATAPARSER_NO_LOCATION_ID']);
                                 }
                             }
@@ -260,7 +261,7 @@ class DataParser
                     case 'dropdownDependent':
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                $bean->$key = strval($bean->{$value[2]}) . "_" . strval($dataIncorpora->{$value[0]});
+                                $bean->$key = strval($bean->{$value[2]}) . "_" . strval($dataIncorpora->{$value[0]} ?? '');
                             }
                         }
                         break;
@@ -268,7 +269,7 @@ class DataParser
                     case 'multienum':
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                $bean->$key = '^' . str_replace(",", "^,^", $dataIncorpora->{$value[0]}) . '^';
+                                $bean->$key = '^' . str_replace(",", "^,^", ($dataIncorpora->{$value[0]} ?? '')) . '^';
                             }
                         }
                         break;
@@ -277,9 +278,22 @@ class DataParser
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
                                 include 'modules/stic_Incorpora/utils/TransformedLists.php';
-                                if ($value[2]) {
+                                if (isset($value[2]) && $value[2]) {
                                     $list = $value[2];
-                                    $bean->$key = array_key_exists($dataIncorpora->{$value[0]}, ${$list}) ? ${$list}[$dataIncorpora->{$value[0]}] : ${$list}['**not_listed**'];
+                                    // STIC Custom 20250401 JBL - Fix Fatal error
+                                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                                    // $bean->$key = array_key_exists($dataIncorpora->{$value[0]}, ${$list}) ? ${$list}[$dataIncorpora->{$value[0]}] : ${$list}['**not_listed**'];
+                                    $propertyName = $value[0];
+                                    try {
+                                        $propertyValue = $dataIncorpora->$propertyName;
+                                        $bean->$key = array_key_exists($propertyValue, ${$list}) 
+                                            ? ${$list}[$propertyValue] 
+                                            : ${$list}['**not_listed**'];
+                                    } catch (Error $e) {
+                                        // Property does not exists: Use not_listed value
+                                        $bean->$key = ${$list}['**not_listed**'];
+                                    }
+                                    // END STIC Custom
                                 } else {
                                     $errors .= $mod_strings['LBL_RESULTS_DATAPARSER_LIST_NOT_SET'] . $incField[0] . ' / ' . $beanField;
                                 }
@@ -287,7 +301,7 @@ class DataParser
                         }
                         break;
                     case 'relation':
-                        if ($value[5] != 'consultaDiferentFields') {
+                        if (isset($value[5]) && $value[5] != 'consultaDiferentFields') {
                             $incField = $value[0];
                         } else {
                             $incField = $value[6];
@@ -297,7 +311,7 @@ class DataParser
                             $relatedBean = array_pop($relatedBeans);
                             $sufix = $relatedBean->field_defs['inc_id_c'] ? '_c' : '';
                             $incId = 'inc_id' . $sufix;
-                            if ($dataIncorpora->$incField != $relatedBean->$incId) {
+                            if (($dataIncorpora->$incField ?? '') != ($relatedBean->$incId ?? '')) {
                                 $errors .= $mod_strings['LBL_RESULTS_DATAPARSER_MISMATCH_RELATED_INCORPORA_ID'].'' . $incField . ': [' . $dataIncorpora->$incField . '] -- CRM:  '. translate($relatedBean->field_defs[$incId]['vname'], $relatedBean->module_name) .' (' . $app_list_strings['moduleList'][$relatedBean->module_name] . '): [' . $relatedBean->$incId.']';
                             }
                         } else {
@@ -307,10 +321,10 @@ class DataParser
                     case 'dropdown': // We use this because Incorpora return -1 when empty value for dropdown lists
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                if ($dataIncorpora->{$value[0]} == '-1') {
+                                if (($dataIncorpora->{$value[0]} ?? '') == '-1') {
                                     $bean->$key = '';
                                 } else {
-                                    $bean->$key = $dataIncorpora->{$value[0]};
+                                    $bean->$key = $dataIncorpora->{$value[0]} ?? null;
                                 }
                             }
                         }
@@ -318,7 +332,7 @@ class DataParser
                     case 'consultaDiferentFields':
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                $bean->$key = $dataIncorpora->{$value[2]};
+                                $bean->$key = $dataIncorpora->{$value[2]} ?? null;
                             }
                         }
                         break;
@@ -336,14 +350,14 @@ class DataParser
                     case 'concat':
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                $bean->$key = $dataIncorpora->{$value[0]} .' '.$dataIncorpora->{$value[2]};
+                                $bean->$key = ($dataIncorpora->{$value[0]} ?? '') .' '. ($dataIncorpora->{$value[2]} ?? '');
                             }
                         }
                         break;
                     case 'overrideZero':
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key) || $bean->$key == 0) {
-                                $bean->$key = $dataIncorpora->{$value[0]};
+                                $bean->$key = $dataIncorpora->{$value[0]} ?? null;
                             }
                         }
                         break;
@@ -354,7 +368,7 @@ class DataParser
                     default:
                         if (isset($bean->$key)) {
                             if ($override || empty($bean->$key)) {
-                                $bean->$key = $dataIncorpora->{$value[0]};
+                                $bean->$key = $dataIncorpora->{$value[0]} ?? null;
                             }
                         }
                         break;
@@ -371,7 +385,7 @@ class DataParser
         $bean->$incSynchronizationDate = $timedate->asUser($syncDate, $current_user);
         $bean->$incSynchronizationErrors = true;
 
-        if ($errors) {
+        if (!empty($errors)) {
             $GLOBALS['log']->error(__METHOD__ . ' ' . __LINE__ . 'There were errors in the synchronization', $errors);
             $log['logs'][$bean->id]['msg'] = $errors;
             $bean->$incSynchronizationErrors = true;
@@ -386,7 +400,7 @@ class DataParser
         $bean->$incSynchronizationLog = $log['logs'][$bean->id]['msg'];
         $bean->save();
         $log['logs'][$bean->id]['cod'] = $dataIncorpora->salidaComun->codRespuesta;
-        $log['logs'][$bean->id]['url'] = $this->createLinkToDetailView($this->module, $bean->id, $bean->name);
+        $log['logs'][$bean->id]['url'] = static::createLinkToDetailView($this->module, $bean->id, $bean->name);
         return $log;
     }
 
@@ -411,7 +425,7 @@ class DataParser
         $incIncorporaRecord = 'inc_incorpora_record' . $sufix;
 
         $log = array();
-        if ($response['type'] === 'AUT') {
+        if (isset($response['type']) && $response['type'] === 'AUT') {
             $log['aut'] = $response;
             return $log;
         }
@@ -467,7 +481,7 @@ class DataParser
                             } else if ($incCod > 99 && $incCod < 200) {
                                 $incField = $this->extractField($response['msg']);
                                 $incField = preg_replace('/[^\p{L}\p{N}\s]/u', '', $incField);
-                                $crmField = $this->incCRMArray[trim($incField)];
+                                $crmField = isset($this->incCRMArray[trim($incField)]) ? $this->incCRMArray[trim($incField)] : null;
 
                                 $crmFieldsLabel = ' - CRM: ' . translate($bean->field_defs[$crmField]['vname'], $this->module) . ' (' . $crmField . ')';
                                 $log['logs'][$bean->id]['msg'] = $response['msg'] . $crmFieldsLabel;
@@ -480,7 +494,7 @@ class DataParser
                     $syncDate = $timedate->fromDb(gmdate('Y-m-d H:i:s'));
                     $bean->$incSynchronizationDate = $timedate->asUser($syncDate, $current_user);
                     $bean->$incSynchronizationLog = $log['logs'][$bean->id]['msg'];
-                    $log['logs'][$bean->id]['url'] = $this->createLinkToDetailView($this->module, $bean->id, $bean->name);
+                    $log['logs'][$bean->id]['url'] = static::createLinkToDetailView($this->module, $bean->id, $bean->name);
                     $log['logs'][$bean->id]['cod'] = $response['cod'];
                     $bean->save();
                     return $log;
@@ -524,8 +538,13 @@ class DataParser
         $var = array();
         $fieldsDef = $this->listDef;
         foreach ($fieldsDef as $key => $value) {
-            $var[$value[0]] = $key;
-        }
+            // STIC Custom 20250326 JBL - Avoid Uncaught Type Error
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+            if (is_array($value) && isset($value[0]) && !is_array($value[0])) {
+            // END STIC Custom
+                $var[$value[0]] = $key;
+            }
+        }        
         return $var;
     }
 

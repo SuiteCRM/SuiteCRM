@@ -64,6 +64,7 @@ class DonationController extends WebFormDataController
 
             // If there are required fields, we also delete the prefix
             if (!empty($defParams['req_id'])) {
+                $prefix = $prefix ?? null;
                 $newReqId = preg_replace("/{$prefix}/u", '', $defParams['req_id']);
                 $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  New Req Id {$newReqId}");
                 $defParams['req_id'] = $newReqId;
@@ -107,6 +108,7 @@ class DonationController extends WebFormDataController
         $response = $this->fp->manage(true);
 
         // If the creation of the payment method has been successful (or is initiated in the case of card or bizum payment, send the corresponding mail)
+        $response['status'] = $response['status'] ?? null;
         if ($response['status'] == self::RESPONSE_STATUS_OK ||
             $response['status'] == self::RESPONSE_STATUS_PENDING) {
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Generating warning mail ...");

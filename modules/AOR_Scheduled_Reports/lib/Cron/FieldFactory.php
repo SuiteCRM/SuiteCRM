@@ -6,6 +6,7 @@ namespace Cron;
  * CRON field factory implementing a flyweight factory
  * @link http://en.wikipedia.org/wiki/Cron
  */
+#[\AllowDynamicProperties]
 class FieldFactory
 {
     /**

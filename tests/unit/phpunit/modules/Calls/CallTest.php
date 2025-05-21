@@ -54,7 +54,7 @@ class CallTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($call->id));
-        self::assertEquals(36, strlen($call->id));
+        self::assertEquals(36, strlen((string) $call->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $call->mark_deleted($call->id);
@@ -188,13 +188,13 @@ class CallTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $call->set_notification_body(new Sugar_Smarty(), $call);
 
-        self::assertEquals($call->name, $result->_tpl_vars['CALL_SUBJECT']);
-        self::assertEquals($call->current_notify_user->new_assigned_user_name, $result->_tpl_vars['CALL_TO']);
-        self::assertEquals($call->duration_hours, $result->_tpl_vars['CALL_HOURS']);
-        self::assertEquals($call->duration_minutes, $result->_tpl_vars['CALL_MINUTES']);
-        self::assertEquals($call->status, $result->_tpl_vars['CALL_STATUS']);
-        self::assertEquals('09/01/2015 00:02 UTC(+00:00)', $result->_tpl_vars['CALL_STARTDATE']);
-        self::assertEquals($call->description, $result->_tpl_vars['CALL_DESCRIPTION']);
+        self::assertEquals($call->name, $result->tpl_vars['CALL_SUBJECT']->value);
+        self::assertEquals($call->current_notify_user->new_assigned_user_name, $result->tpl_vars['CALL_TO']->value);
+        self::assertEquals($call->duration_hours, $result->tpl_vars['CALL_HOURS']->value);
+        self::assertEquals($call->duration_minutes, $result->tpl_vars['CALL_MINUTES']->value);
+        self::assertEquals($call->status, $result->tpl_vars['CALL_STATUS']->value);
+        self::assertEquals('09/01/2015 00:02 UTC(+00:00)', $result->tpl_vars['CALL_STARTDATE']->value);
+        self::assertEquals($call->description, $result->tpl_vars['CALL_DESCRIPTION']->value);
     }
 
     public function testget_call_users(): void

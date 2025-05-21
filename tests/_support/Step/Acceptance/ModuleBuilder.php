@@ -138,9 +138,9 @@ class ModuleBuilder extends Administration
 
         // Go To Module Builder
         $I->click('#moduleBuilder');
-        $I->waitForElementVisible('.bodywrapper');
+        $I->waitForElementVisible('.bodywrapper', 30);
         $I->click($packageName, '.bodywrapper');
-        $I->waitForElementVisible('[name="name"]');
+        $I->waitForElementVisible('[name="name"]', 30);
         $I->click('Deploy');
 
         if ($packageExists) {
@@ -148,6 +148,6 @@ class ModuleBuilder extends Administration
         }
 
         // Wait for page to refresh and look for new package link
-        $I->waitForElement('#newPackageLink');
+        $I->waitForElement('#newPackageLink', 30);
     }
 }

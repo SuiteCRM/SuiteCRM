@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2023 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once __DIR__ . '/../../include/OutboundEmail/OutboundEmail.php';
 require_once __DIR__ . '/../../modules/UserPreferences/UserPreference.php';
 
+#[\AllowDynamicProperties]
 class UsersController extends SugarController
 {
     /**
@@ -66,18 +67,24 @@ class UsersController extends SugarController
         }
     }
 
+    private function currentUserEqualsRecordUser() {
+        return $_REQUEST['record'] === $GLOBALS['current_user']->id;
+    }
+
     protected function action_delete()
     {
-        if ($_REQUEST['record'] != $GLOBALS['current_user']->id && (
+        global $app_strings, $mod_strings;
+
+        if (!$this->currentUserEqualsRecordUser() && (
             $GLOBALS['current_user']->isAdminForModule('Users')
             )
         ) {
-            $u = BeanFactory::newBean('Users');
-            $u->retrieve($_REQUEST['record']);
-            $u->status = 'Inactive';
-            $u->employee_status = 'Terminated';
-            $u->save();
-            $u->mark_deleted($u->id);
+            $user = BeanFactory::newBean('Users');
+            $user->retrieve($_REQUEST['record']);
+            $user->status = 'Inactive';
+            $user->employee_status = 'Terminated';
+            $user->save();
+            $user->mark_deleted($user->id);
             $GLOBALS['log']->info("User id: {$GLOBALS['current_user']->id} deleted user record: {$_REQUEST['record']}");
 
             $eapm = loadBean('EAPM');
@@ -86,7 +93,11 @@ class UsersController extends SugarController
 
             SugarApplication::redirect("index.php?module=Users&action=index");
         } else {
-            sugar_die("Unauthorized access to administration.");
+            if ($this->currentUserEqualsRecordUser()) {
+                sugar_die($mod_strings['ERR_DELETE_USER']);
+            } else {
+                sugar_die($app_strings['ERR_NOT_ADMIN']);
+            }
         }
     }
 
@@ -187,8 +198,24 @@ class UsersController extends SugarController
                 $_POST['default_locale_name_format'], 0, 'global');
         }
 
+        $current_user->setPreference('language', $_POST['user_language'], 0, 'global');
+        $_SESSION['authenticated_user_language'] = $_POST['user_language'];
+
+        $next = $_POST['whatnext'] ?? '';
+
+        $base = 'index.php?action=index&module=Home';
+        $nextActions = [
+            'users' => 'index.php?action=index&module=Users' ,
+            'finish' =>  'index.php?action=index&module=Home',
+            'settings' => 'index.php?action=index&module=Administration',
+            'studio' => 'index.php?action=index&module=ModuleBuilder?type=studio',
+            'import' => 'index.php?module=Import&action=step1&import_module=Administration',
+        ];
+
+        $returnUrl = $nextActions[$next] ?? $base;
+
         // redirect to home
-        SugarApplication::redirect('index.php?action=index&module=Home');
+        SugarApplication::redirect($returnUrl);
 
     }
 

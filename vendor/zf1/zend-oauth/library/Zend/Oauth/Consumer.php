@@ -98,9 +98,17 @@ class Zend_Oauth_Consumer extends Zend_Oauth
      * @return Zend_Oauth_Token_Request
      */
     public function getRequestToken(
-        array $customServiceParameters = null,
+        // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // array $customServiceParameters = null,
+        ?array $customServiceParameters = null,
+        // END STIC Custom        
         $httpMethod = null,
-        Zend_Oauth_Http_RequestToken $request = null
+        // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // Zend_Oauth_Http_RequestToken $request = null
+        ?Zend_Oauth_Http_RequestToken $request = null
+        // END STIC Custom
     ) {
         if ($request === null) {
             $request = new Zend_Oauth_Http_RequestToken($this, $customServiceParameters);
@@ -130,9 +138,15 @@ class Zend_Oauth_Consumer extends Zend_Oauth
      * @return string
      */
     public function getRedirectUrl(
-        array $customServiceParameters = null,
-        Zend_Oauth_Token_Request $token = null,
-        Zend_Oauth_Http_UserAuthorization $redirect = null
+        // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // array $customServiceParameters = null,
+        // Zend_Oauth_Token_Request $token = null,
+        // Zend_Oauth_Http_UserAuthorization $redirect = null
+        ?array $customServiceParameters = null,
+        ?Zend_Oauth_Token_Request $token = null,
+        ?Zend_Oauth_Http_UserAuthorization $redirect = null
+        // END STIC Custom
     ) {
         if ($redirect === null) {
             $redirect = new Zend_Oauth_Http_UserAuthorization($this, $customServiceParameters);
@@ -157,9 +171,15 @@ class Zend_Oauth_Consumer extends Zend_Oauth
      * @return void
      */
     public function redirect(
-        array $customServiceParameters = null,
-        Zend_Oauth_Token_Request $token = null,
-        Zend_Oauth_Http_UserAuthorization $request = null
+        // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // array $customServiceParameters = null,
+        // Zend_Oauth_Token_Request $token = null,
+        // Zend_Oauth_Http_UserAuthorization $request = null
+        ?array $customServiceParameters = null,
+        ?Zend_Oauth_Token_Request $token = null,
+        ?Zend_Oauth_Http_UserAuthorization $request = null
+        // END STIC Custom
     ) {
         if ($token instanceof Zend_Oauth_Http_UserAuthorization) {
             $request = $token;
@@ -185,7 +205,11 @@ class Zend_Oauth_Consumer extends Zend_Oauth
         $queryData,
         Zend_Oauth_Token_Request $token,
         $httpMethod = null,
-        Zend_Oauth_Http_AccessToken $request = null
+        // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // Zend_Oauth_Http_AccessToken $request = null
+        ?Zend_Oauth_Http_AccessToken $request = null
+        // END STIC Custom
     ) {
         $authorizedToken = new Zend_Oauth_Token_AuthorizedRequest($queryData);
         if (!$authorizedToken->isValid()) {

@@ -48,7 +48,7 @@ if (file_exists('./custom/modules/KReports/includes')) {
 class KReportPluginManager {
 
    // constructor
-   var $plugins = array();
+   public $plugins = array();
 
    public function __construct() {
 
@@ -227,20 +227,20 @@ class KReportPluginManager {
    // loop over all plugins and bild an aray with the active ones
     if ($integrationParams->activePlugins)
       foreach ($this->plugins as $plugin => $pluginData) {
-         if ($pluginData['type'] == 'integration' && $integrationParams->activePlugins->$plugin == 1) {
+         if ($pluginData['type'] == 'integration' && ($integrationParams->activePlugins->$plugin??false) == 1) {
             require_once($this->plugins[$plugin]['plugindirectory'] . '/' . $this->plugins[$plugin]['metadata']['integration']['include']);
             $thisPlugin = new $this->plugins[$plugin]['metadata']['integration']['class']();
 
             if ($thisPlugin->checkAccess($thisReport)) {
                $thisMenuItem = $thisPlugin->getMenuItem();
 
-               if ($thisMenuItem['menuItem'] != '')
+               if ($thisMenuItem['menuItem']??'' != '')
                   $pluginArray[$this->plugins[$plugin]['metadata']['category']][] = $thisMenuItem['menuItem'];
 
-               if ($thisMenuItem['jsCode'] != '')
+               if ($thisMenuItem['jsCode']??'' != '')
                   $pluginjsArray[] = $thisMenuItem['jsCode'];
 
-               if ($thisMenuItem['jsFile'] != '')
+               if ($thisMenuItem['jsFile']??'' != '')
                   if (is_array($thisMenuItem['jsFile'])) {
                      foreach ($thisMenuItem['jsFile'] as $thisFile)
                         $pluginFilesArray[] = '<script type="text/javascript" src="' . $thisFile . '"></script>';
@@ -275,44 +275,48 @@ class KReportPluginManager {
 
 }
 
+// STIC Custom 20250206 JBL - Allow Dynamic Properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class KReport extends SugarBean {
 
-   var $field_name_map;
+   public $field_name_map;
    // Stored fields
-   var $id;
-   var $date_entered;
-   var $date_modified;
-   var $assigned_user_id;
-   var $modified_user_id;
-   var $created_by;
-   var $created_by_name;
-   var $modified_by_name;
-   var $report_module = '';
-   var $reportoptions = '';
-   var $report_status ;
-   var $report_segmentation ;
-   var $team_id;
-   var $description;
-   var $name;
-   var $status;
-   var $assigned_user_name;
-   var $team_name;
-   var $table_name = "kreports";
-   var $object_name = "KReport";
-   var $module_dir = 'KReports';
-   var $importable = true;
-   var $listtype;
-   var $listfields='';
-   var $selectionlimit;
-   var $presentation_params ='';
-   var $visualization_params ='';
-   var $integration_params ='';
-   var $whereconditions ='';
-   var $wheregroups ='';
-   var $unionlistfields='';
-   var $union_modules='';
-   var $listtypeproperties ='';
-   var $advancedoptions;
+   public $id;
+   public $date_entered;
+   public $date_modified;
+   public $assigned_user_id;
+   public $modified_user_id;
+   public $created_by;
+   public $created_by_name;
+   public $modified_by_name;
+   public $report_module = '';
+   public $reportoptions = '';
+   public $report_status ;
+   public $report_segmentation ;
+   public $team_id;
+   public $description;
+   public $name;
+   public $status;
+   public $assigned_user_name;
+   public $team_name;
+   public $table_name = "kreports";
+   public $object_name = "KReport";
+   public $module_dir = 'KReports';
+   public $importable = true;
+   public $listtype;
+   public $listfields='';
+   public $selectionlimit;
+   public $presentation_params ='';
+   public $visualization_params ='';
+   public $integration_params ='';
+   public $whereconditions ='';
+   public $wheregroups ='';
+   public $unionlistfields='';
+   public $union_modules='';
+   public $listtypeproperties ='';
+   public $advancedoptions;
    // This is used to retrieve related fields from form posts.
    // var $additional_column_fields = Array('assigned_user_name', 'assigned_user_id', 'contact_name', 'contact_phone', 'contact_email', 'parent_name');
 
@@ -324,26 +328,26 @@ class KReport extends SugarBean {
      var $rootGuid;
      var $fromString;
     */
-   var $whereOverride;
+   public $whereOverride;
    //2010-02-10 add Field name Mapping
-   var $fieldNameMap;
+   public $fieldNameMap;
    // the query Array
-   var $kQueryArray;
+   public $kQueryArray;
    //2011-02-03 for the total values
-   var $totalResult = '';
+   public $totalResult = '';
    // 2011-03-29 array for the formula evaluation
-   var $formulaArray = '';
+   public $formulaArray = '';
    // variable taht allows to turn off the evaluation of SQL Functions
    // needed if we let the Grid do this
-   var $evalSQLFunctions = true;
+   public $evalSQLFunctions = true;
    // varaible to hold the depth of the join tree
-   var $maxDepth;
+   public $maxDepth;
    // var to hold an array of all list fields with index fieldid
-   var $listFieldArrayById = array();
+   public $listFieldArrayById = [];
    // for the context handling
-   var $hasContext = false;
-   var $contextFields = array();
-   var $contexts = array();
+   public $hasContext = false;
+   public $contextFields = [];
+   public $contexts = [];
 
    function __construct() {
       /*
@@ -393,7 +397,7 @@ class KReport extends SugarBean {
       } else {
          $this->team_set_id = '';
       }
-      
+
       if (isset($sugar_config['KReports']) && isset($sugar_config['KReports']['authCheck']))
          switch ($sugar_config['KReports']['authCheck']) {
                case 'KAuthObjects':
@@ -401,7 +405,7 @@ class KReport extends SugarBean {
                   $this->korgobjectmultiple = json_encode(array('primary' => $_REQUEST['authaccess_id'], 'secondary' => array()));
                   break;
          }
-   
+
       parent::save($checkNotify);
 
       // STIC-Custom 20211118 - This was removed because the SecuritySuite groups can be added now directly from the subpanel in the DetailView or ListView
@@ -491,6 +495,7 @@ class KReport extends SugarBean {
       // evaluate report Options and pass them along to the Query Array
       $reportOptions = json_decode_kinamu(html_entity_decode($this->reportoptions, ENT_QUOTES));
 
+      $paramsArray = array();
       if (isset($reportOptions ['authCheck']))
          $paramsArray ['authChecklevel'] = $reportOptions ['authCheck'];
       if (isset($reportOptions ['showDeleted']))
@@ -584,7 +589,7 @@ class KReport extends SugarBean {
                $linkFieldArray[$unionid] = array(
                    'module' => $unionQuery['kQuery']->fieldNameMap[$fieldId]['module'],
                    // 2013-08-21 BUG #491 .. check if custom field and trake root path alias
-                   'idfield' => ($unionQuery['kQuery']->fieldNameMap[$fieldId]['fields_name_map_entry']['source'] == 'custom_fields' ? $unionQuery['kQuery']->fieldNameMap[$fieldId]['pathalias'] : $unionQuery['kQuery']->fieldNameMap[$fieldId]['tablealias']) . 'id'
+                   'idfield' => (($unionQuery['kQuery']->fieldNameMap[$fieldId]['fields_name_map_entry']['source']??'') == 'custom_fields' ? $unionQuery['kQuery']->fieldNameMap[$fieldId]['pathalias'] : $unionQuery['kQuery']->fieldNameMap[$fieldId]['tablealias']) . 'id'
                );
             }
 
@@ -724,7 +729,7 @@ class KReport extends SugarBean {
                      // bug 2011-03-07 fields might have different options if in a join
                      //$fieldValue = $app_list_strings[$this->fieldNameMap[$fieldID]['fields_name_map_entry']['options']][$fieldValue];
                      if ($fieldValue != '' && isset($this->kQueryArray->queryArray [(isset($fieldArray ['unionid']) ? $fieldArray ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldID] ['fields_name_map_entry'] ['options']))
-                        $fieldValue = $app_list_strings [$this->kQueryArray->queryArray [(isset($fieldArray ['unionid']) ? $fieldArray ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldID] ['fields_name_map_entry'] ['options']] [$fieldValue];
+                        $fieldValue = $app_list_strings [$this->kQueryArray->queryArray [(isset($fieldArray ['unionid']) ? $fieldArray ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldID] ['fields_name_map_entry'] ['options']] [$fieldValue] ?? null;
                   }
 
                   // bug 2011-05-25
@@ -735,7 +740,7 @@ class KReport extends SugarBean {
                case 'multienum' :
                   // do not format if we have a function (Count ... etc ... )
                   if ($this->fieldNameMap [$fieldID] ['sqlFunction'] == '') {
-                     $fieldArray = preg_split('/\^,\^/', $fieldValue);
+                     $fieldArray = preg_split('/\^,\^/', $fieldValue??'');
                      //bugfix 2010-09-22 if only one value is selected 
                      if (is_array($fieldArray) && count($fieldArray) > 1) {
                         $fieldValue = '';
@@ -751,7 +756,7 @@ class KReport extends SugarBean {
                      } else {
                         // bug 2011-03-07 fields might have different options if in a join
                         // $fieldValue = $app_list_strings[$this->fieldNameMap[$fieldID]['fields_name_map_entry']['options']][trim($fieldValue, '^')];
-                        $fieldValue = $app_list_strings [$this->kQueryArray->queryArray [(isset($fieldArray ['unionid']) ? $fieldArray ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldID] ['fields_name_map_entry'] ['options']] [trim($fieldValue, '^')];
+                        $fieldValue = ($app_list_strings [$this->kQueryArray->queryArray [(isset($fieldArray ['unionid']) ? $fieldArray ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldID] ['fields_name_map_entry'] ['options']] [trim($fieldValue??'', '^')])??'';
                      }
                   }
                   break;
@@ -1032,7 +1037,11 @@ class KReport extends SugarBean {
       $fieldIdArray = array();
       foreach ($arrayList as $thisList) {
          if ($thisList ['display'] == 'yes') {
-            $fieldArray [] = array('label' => utf8_decode($thisList ['name']), 'width' => (isset($thisList ['width']) && $thisList ['width'] != '' && $thisList ['width'] != '0') ? $thisList ['width'] : '100', 'display' => $thisList ['display']);
+            // STIC Custom 20250314 JBL - utf8_decode is deprecated
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $fieldArray [] = array('label' => utf8_decode($thisList ['name']), 'width' => (isset($thisList ['width']) && $thisList ['width'] != '' && $thisList ['width'] != '0') ? $thisList ['width'] : '100', 'display' => $thisList ['display']);
+            $fieldArray [] = array('label' => mb_convert_encoding($thisList['name'], 'ISO-8859-1', 'UTF-8'), 'width' => (isset($thisList ['width']) && $thisList ['width'] != '' && $thisList ['width'] != '0') ? $thisList ['width'] : '100', 'display' => $thisList ['display']);
+            // END STIC Custom
             $fieldIdArray [] = $thisList ['fieldid'];
          }
       }
@@ -1056,7 +1065,11 @@ class KReport extends SugarBean {
                            $header .= iconv("UTF-8", $current_user->getPreference('default_export_charset'), $fieldArray ['name']) . $current_user->getPreference('export_delimiter');
                   }
 
-                  $rows .= '"' . iconv("UTF-8", $current_user->getPreference('default_export_charset') . '//IGNORE', preg_replace(array('/"/'), array('""'), html_entity_decode($value, ENT_QUOTES))) . '"' . $current_user->getPreference(('export_delimiter'));
+                  // STIC Custom 20250314 JBL - Avoid pass null as string
+                  // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                  // $rows .= '"' . iconv("UTF-8", $current_user->getPreference('default_export_charset') . '//IGNORE', preg_replace(array('/"/'), array('""'), html_entity_decode($value, ENT_QUOTES))) . '"' . $current_user->getPreference(('export_delimiter'));
+                  $rows .= '"' . iconv("UTF-8", $current_user->getPreference('default_export_charset') . '//IGNORE', preg_replace(array('/"/'), array('""'), html_entity_decode((string) $value, ENT_QUOTES))) . '"' . $current_user->getPreference(('export_delimiter'));
+                  // END STIC Custom
                }
             }
             if ($getHeader)
@@ -1157,7 +1170,13 @@ class KReport extends SugarBean {
             if (strpos($selectionLimit, 'p') > 0) {
                $isPercentage = true;
                $selectionLimit = trim(str_replace('p', '', $this->selectionlimit));
-               $totalRows = $db->getRowCount($queryResults = $db->query($query));
+               $queryResults = $db->query($query);
+               if ($queryResults) {
+                  $totalRows = $db->getRowCount($queryResults);
+               }
+               else {
+                  $totalRows = 0;
+               }
                $selectionLimit = round($totalRows / 100 * $selectionLimit, 0);
             }
             return $db->getRowCount($db->limitquery($query, 0, $selectionLimit));
@@ -1175,7 +1194,11 @@ class KReport extends SugarBean {
               }
               } else
              */
-            return $db->getRowCount($queryResults = $db->query($query));
+            $queryResults = $db->query($query);
+            if ($queryResults){
+               return $db->getRowCount($queryResults);
+            }
+            return false;
          }
       }
 
@@ -1227,7 +1250,7 @@ class KReport extends SugarBean {
       $query = $this->get_report_main_sql_query(true, $additionalFilter, $additionalGroupBy, $parameters);
       $queryResults = $db->query($query);
 
-      if ($_REQUEST['kreportdebugquery'] == true)
+      if ($_REQUEST['kreportdebugquery']??'' == true)
          echo $query;
 
       // 2011-02-03 added for percentage calculation of total
@@ -1804,11 +1827,11 @@ class KReport extends SugarBean {
                      case 'datetime':
                         if (isset($whereField ['valuekey'])) {
                            $valKeyArray = explode(' ', $whereField ['valuekey']);
-                           $whereField ['value'] = $GLOBALS ['timedate']->to_display_date($valKeyArray[0]) . ' ' . $valKeyArray[1];
+                           $whereField ['value'] = $GLOBALS ['timedate']->to_display_date($valKeyArray[0]) . ' ' . ($valKeyArray[1]??'');
                         }
                         if (isset($whereField ['valuetokey'])) {
                            $valKeyArray = explode(' ', $whereField ['valuetokey']);
-                           $whereField ['valueto'] = $GLOBALS ['timedate']->to_display_date($valKeyArray[0]) . ' ' . $valKeyArray[1];
+                           $whereField ['valueto'] = $GLOBALS ['timedate']->to_display_date($valKeyArray[0]) . ' ' . ($valKeyArray[1]??'');
                         }
                         break;
                      case 'date':
@@ -1992,7 +2015,7 @@ class KReport extends SugarBean {
 
 class KReportRenderer {
 
-   var $report = null;
+   public $report = null;
 
    public function __construct($thisReport) {
       $this->report = $thisReport;
@@ -2020,7 +2043,7 @@ class KReportRenderer {
                $fieldValue .= $app_list_strings [$this->report->kQueryArray->queryArray [(isset($record ['unionid']) ? $record ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldid] ['fields_name_map_entry'] ['options']] [trim($thisValue)];
          }
       } else {
-         $fieldValue = $app_list_strings [$this->report->kQueryArray->queryArray [(isset($record ['unionid']) ? $record ['unionid'] : 'root')] ['kQuery']->fieldNameMap [$fieldid] ['fields_name_map_entry'] ['options']] [$record[$fieldid]];
+         $fieldValue = $app_list_strings[$this->report->kQueryArray->queryArray[(isset($record['unionid']) ? $record['unionid'] : 'root')]['kQuery']->fieldNameMap[$fieldid]['fields_name_map_entry']['options'] ?? ''][$record[$fieldid]];
       }
 
       // if value is empty we return the original value
@@ -2069,7 +2092,7 @@ class KReportRenderer {
 
    public static function kintRenderer($fieldid, $record) {
    		// NS-TEAM -> round(,0)
-      return round($record[$fieldid], 0);
+      return is_numeric($record[$fieldid] ?? null) ? round($record[$fieldid], 0) : null;
    }
 
    public static function kdateRenderer($fieldid, $record) {
@@ -2094,7 +2117,7 @@ class KReportRenderer {
    }
 
    public static function ktextRenderer($fieldid, $record) {
-      return nl2br($record[$fieldid]);
+      return nl2br((string)($record[$fieldid] ?? ''));
    }
 
 }

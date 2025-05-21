@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Journal extends Basic
 {
     public $new_schema = true;
@@ -78,7 +79,6 @@ class stic_Journal extends Basic
     public function save($check_notify = false) {
         
         include_once 'SticInclude/Utils.php';
-        include_once 'modules/stic_Journal/Utils.php';
         global $app_list_strings, $timedate;
 
         // Create name if empty

@@ -85,13 +85,13 @@ class CurrencyTest extends SuitePHPUnitFrameworkTestCase
         //test without setting attributes
         $ss = new Sugar_Smarty();
         $result = $currency->list_view_parse_additional_sections($ss);
-        self::assertEquals(null, isset($result->_tpl_vars['PREROW']) ? $result->_tpl_vars['PREROW'] : null);
+        self::assertEquals(null, isset($result->tpl_vars['PREROW']->value) ? $result->tpl_vars['PREROW']->value : null);
 
         //test with required attributes set
         $isMerge = true;
         $ss = new Sugar_Smarty();
         $result = $currency->list_view_parse_additional_sections($ss);
-        self::assertEquals('<input name="mergecur[]" type="checkbox" value="">', $result->_tpl_vars['PREROW']);
+        self::assertEquals('<input name="mergecur[]" type="checkbox" value="">', $result->tpl_vars['PREROW']->value);
     }
 
     public function testretrieve_id_by_name(): void
@@ -158,7 +158,7 @@ class CurrencyTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($currency->id));
-        self::assertEquals(36, strlen($currency->id));
+        self::assertEquals(36, strlen((string) $currency->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $currency->mark_deleted($currency->id);

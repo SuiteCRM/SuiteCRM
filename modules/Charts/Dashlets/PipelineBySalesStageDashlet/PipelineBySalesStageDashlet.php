@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/Dashlets/DashletGenericChart.php');
 
+#[\AllowDynamicProperties]
 class PipelineBySalesStageDashlet extends DashletGenericChart
 {
     public $pbss_date_start;
@@ -66,7 +67,11 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // array $options = null
+        ?array $options = null
+        // END STIC Custom
     ) {
         global $timedate;
 
@@ -229,7 +234,7 @@ new RGraph.HBar({
             id: '$canvasId',
             x: 10,
             y: 550,
-            text: 'Opportunity size in ${currency_symbol}1$thousands_symbol',
+            text: 'Opportunity size in {$currency_symbol}1$thousands_symbol',
             options: {
                 font: 'Arial',
                 bold: true,
@@ -269,7 +274,7 @@ EOD;
         $tempx = $user_sales_stage;
 
         //set $datax using selected sales stage keys
-        if (isset($tempx) && count($tempx) > 0) {
+        if (isset($tempx) && (is_countable($tempx) ? count($tempx) : 0) > 0) {
             foreach ($tempx as $key) {
                 $datax[$key] = $app_list_strings['sales_stage_dom'][$key];
                 $selected_datax[] = $key;
@@ -337,6 +342,7 @@ EOD;
 
     protected function prepareChartData($data, $currency_symbol, $thousands_symbol)
     {
+        $chart = [];
         //return $data;
         $chart['labels']=array();
         $chart['data']=array();
@@ -356,9 +362,9 @@ EOD;
 
     protected function resizeLabel($label)
     {
-        if (strlen($label) < $this->maxLabelSizeBeforeTotal) {
+        if (strlen((string) $label) < $this->maxLabelSizeBeforeTotal) {
             return $label;
         }
-        return substr($label, 0, $this->maxLabelSizeBeforeTotal).$this->labelReplacementString;
+        return substr((string) $label, 0, $this->maxLabelSizeBeforeTotal).$this->labelReplacementString;
     }
 }

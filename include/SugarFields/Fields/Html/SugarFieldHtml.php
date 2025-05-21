@@ -113,6 +113,10 @@ class SugarFieldHtml extends SugarFieldBase
             }
         }
 
-        return utf8_decode($vardef['value']);
+        // STIC Custom 20250314 JBL - utf8_decode is deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return utf8_decode($vardef['value']);
+        return mb_convert_encoding($vardef['value'], 'ISO-8859-1', 'UTF-8');
+        // END STIC Custom
     }
 }

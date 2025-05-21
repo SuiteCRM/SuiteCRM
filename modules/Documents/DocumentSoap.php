@@ -46,6 +46,7 @@ require_once('include/upload_file.php');
 
 require_once('include/upload_file.php');
 
+#[\AllowDynamicProperties]
 class DocumentSoap
 {
     public $upload_file;
@@ -78,8 +79,8 @@ class DocumentSoap
             $decodedFile = base64_decode($document['file']);
             $this->upload_file->set_for_soap($document['filename'], $decodedFile);
 
-            $ext_pos = strrpos($this->upload_file->stored_file_name, ".");
-            $this->upload_file->file_ext = substr($this->upload_file->stored_file_name, $ext_pos + 1);
+            $ext_pos = strrpos((string) $this->upload_file->stored_file_name, ".");
+            $this->upload_file->file_ext = substr((string) $this->upload_file->stored_file_name, $ext_pos + 1);
             if (in_array($this->upload_file->file_ext, $sugar_config['upload_badext'])) {
                 $this->upload_file->stored_file_name .= ".txt";
                 $this->upload_file->file_ext = "txt";
@@ -90,7 +91,11 @@ class DocumentSoap
             $revision->file_mime_type = $this->upload_file->getMimeSoap($revision->filename);
             $revision->file_ext = $this->upload_file->file_ext;
             //$revision->document_name = ;
-            $revision->revision = $document['revision'];
+            // STIC Custom 20250311 JBL - Avoid undefined array key access
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $revision->revision = $document['revision'];
+            $revision->revision = $document['revision'] ?? "";
+            // END STIC Custom
             $revision->document_id = $document['id'];
             $revision->save();
 

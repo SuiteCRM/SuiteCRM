@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ProjectTask extends SugarBean
 {
     // database table columns
@@ -312,7 +313,7 @@ class ProjectTask extends SugarBean
 
         if (!empty($order_by)) {
             //check to see if order by variable already has table name by looking for dot "."
-            $table_defined_already = strpos($order_by, ".");
+            $table_defined_already = strpos((string) $order_by, ".");
 
             if ($table_defined_already === false) {
                 //table not defined yet, define accounts to avoid "ambigous column" SQL error
@@ -416,6 +417,7 @@ class ProjectTask extends SugarBean
      */
     public function getAllSubProjectTasks()
     {
+        $potentialParentTaskIds = [];
         $projectTasksBeans = array();
 
         if (!empty($this->project_task_id) && !empty($this->project_id)) {
@@ -454,7 +456,7 @@ class ProjectTask extends SugarBean
 
                 $endProjectTasksCount = count($subProjectTasks);
 
-                if ($startProjectTasksCount == $endProjectTasksCount) {
+                if ($startProjectTasksCount === $endProjectTasksCount) {
                     $run = false;
                 } else {
                     $startProjectTasksCount = $endProjectTasksCount;

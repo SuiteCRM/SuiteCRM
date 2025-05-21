@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'modules/AOP_Case_Updates/util.php';
 
+#[\AllowDynamicProperties]
 class updatePortal
 {
     /**
@@ -51,6 +52,7 @@ class updatePortal
      */
     public function updateUser($bean)
     {
+        $object_arr = [];
         if (!isAOPEnabled()) {
             return;
         }
@@ -65,10 +67,10 @@ class updatePortal
 
             $object_arr['Contacts'] = $bean->id;
             $body_html = aop_parse_template($template->body_html, $object_arr);
-            $body_html = str_replace($search, $replace, $body_html);
+            $body_html = str_replace($search, $replace, (string) $body_html);
 
             $body_plain = aop_parse_template($template->body, $object_arr);
-            $body_plain = str_replace($search, $replace, $body_plain);
+            $body_plain = str_replace($search, $replace, (string) $body_plain);
 
             $this->sendEmail($bean->email1, $template->subject, $body_html, $body_plain, $bean);
         }
@@ -81,7 +83,11 @@ class updatePortal
      * @param $altEmailBody
      * @param SugarBean|null $relatedBean
      */
-    public function sendEmail($emailTo, $emailSubject, $emailBody, $altEmailBody, SugarBean $relatedBean = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function sendEmail($emailTo, $emailSubject, $emailBody, $altEmailBody, SugarBean $relatedBean = null)
+    public function sendEmail($emailTo, $emailSubject, $emailBody, $altEmailBody, ?SugarBean $relatedBean = null)
+    // END STIC Custom
     {
         require_once 'modules/Emails/Email.php';
         require_once 'include/SugarPHPMailer.php';

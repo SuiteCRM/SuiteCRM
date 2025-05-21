@@ -43,6 +43,7 @@ use AcceptanceTester as Tester;
 use Page\Design;
 use SuiteCRM\Enumerator\DesignBreakPoint;
 
+#[\AllowDynamicProperties]
 class NavigationBarTester extends Tester
 {
     /**

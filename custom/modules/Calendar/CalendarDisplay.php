@@ -103,11 +103,11 @@ class CustomCalendarDisplay extends CalendarDisplay
     // https://github.com/SinergiaTIC/SinergiaCRM/pull/114
     public function checkActivity($activity = "")
     {
-        global $current_user, $mod_strings;
+        global $current_user;
         if (empty($activity)) {
             $activity = $this->activity_colors;
         }
-        $newActivities = unserialize(base64_decode($current_user->getPreference("CalendarActivities")));
+        $newActivities = unserialize(base64_decode((string)$current_user->getPreference("CalendarActivities")));
         if ($newActivities) {
             $activity = array_merge($activity, $newActivities);
         }
@@ -116,8 +116,8 @@ class CustomCalendarDisplay extends CalendarDisplay
                 if ($key != 'stic_Work_Calendar') {
                     $activity[ $key ]['label'] = $GLOBALS['app_list_strings']['moduleList'][ $key ];
                 } else {
-                    $activity[ $key ]['label_working'] = $mod_strings['LBL_SETTINGS_STIC_WORK_CALENDAR_WORKING'];
-                    $activity[ $key ]['label_noworking'] = $mod_strings['LBL_SETTINGS_STIC_WORK_CALENDAR_NOWORKING'];
+                    $activity[ $key ]['label_working'] = translate('LBL_SETTINGS_STIC_WORK_CALENDAR_WORKING','Calendar');
+                    $activity[ $key ]['label_noworking'] = translate('LBL_SETTINGS_STIC_WORK_CALENDAR_NOWORKING','Calendar');
                 }
             } else {
                 unset($activity[ $key ]);

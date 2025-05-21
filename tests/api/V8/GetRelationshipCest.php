@@ -5,6 +5,7 @@ use ApiTester;
 use Codeception\Example;
 use Codeception\Scenario;
 
+#[\AllowDynamicProperties]
 class GetRelationshipCest
 {
     /**
@@ -38,7 +39,7 @@ class GetRelationshipCest
         $accountId = $I->createAccount();
         $contactId = $I->createContact();
 
-        $endpoint = str_replace('{id}', $accountId, $iterator->offsetGet('endPoint'));
+        $endpoint = str_replace('{id}', $accountId, (string) $iterator->offsetGet('endPoint'));
 
         $I->sendGET($I->getInstanceURL() . $endpoint);
         $I->seeResponseCodeIs(200);

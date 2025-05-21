@@ -101,8 +101,8 @@ function additionalDetailsAccount($fields)
         $overlib_string .= '<b>'. $mod_strings['LBL_INDUSTRY'] . '</b> ' . $fields['INDUSTRY'] . '<br>';
     }
     if (!empty($fields['DESCRIPTION'])) {
-        $overlib_string .= '<b>'. $mod_strings['LBL_DESCRIPTION'] . '</b> ' . substr($fields['DESCRIPTION'], 0, 300);
-        if (strlen($fields['DESCRIPTION']) > 300) {
+        $overlib_string .= '<b>'. $mod_strings['LBL_DESCRIPTION'] . '</b> ' . substr((string) $fields['DESCRIPTION'], 0, 300);
+        if (strlen((string) $fields['DESCRIPTION']) > 300) {
             $overlib_string .= '...';
         }
     }

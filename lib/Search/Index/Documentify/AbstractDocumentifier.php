@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * A Documentifier takes a SugarBean as a parameters and converts it into an associative array
  *  suitable for document-oriented databases and json serialisation.
  */
+#[\AllowDynamicProperties]
 abstract class AbstractDocumentifier
 {
 

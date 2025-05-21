@@ -53,6 +53,7 @@ use SuiteCRM\Search\Exceptions\SearchEngineNotFoundException;
  *
  * @author Vittorio Iocolano
  */
+#[\AllowDynamicProperties]
 class SearchWrapper
 {
     /**
@@ -88,7 +89,7 @@ class SearchWrapper
      */
     public static function searchAndDisplay(SearchQuery $query): void
     {
-        $engine = $query->getEngine() ?: self::getDefaultEngine();
+        $engine = !empty($query->getEngine()) ? $query->getEngine() : self::getDefaultEngine();
 
         $engine = self::fetchEngine($engine);
         $engine->searchAndDisplay($query);
@@ -137,7 +138,7 @@ class SearchWrapper
         $default = array_keys(self::$engines);
         $custom = [];
         foreach (glob(self::$customEnginePath . '*.php', GLOB_NOSORT) as $file) {
-            $file = pathinfo($file);
+            $file = pathinfo((string) $file);
             $custom[] = $file['filename'];
         }
 

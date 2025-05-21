@@ -31,6 +31,7 @@ require_once('modules/stic_Import_Validation/sources/ImportFile.php');
 require_once('modules/stic_Import_Validation/views/ImportListView.php');
 require_once('include/ListView/ListViewFacade.php');
 
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewLast extends stic_Import_ValidationView
 {
     protected $pageTitleKey = 'LBL_STEP_5_TITLE';
@@ -46,7 +47,7 @@ class stic_Import_ValidationViewLast extends stic_Import_ValidationView
 
         $this->ss->assign("IMPORT_MODULE", $_REQUEST['import_module']);
         $this->ss->assign("TYPE", $_REQUEST['type']);
-        $this->ss->assign("HEADER", $app_strings['LBL_STIC_IMPORT_VALIDATION']." ". $mod_strings['LBL_MODULE_NAME']);
+        $this->ss->assign("HEADER", ($app_strings['LBL_STIC_IMPORT_VALIDATION'] ?? '')." ". $mod_strings['LBL_MODULE_NAME']);
         $this->ss->assign("MODULE_TITLE", $this->getModuleTitle(false));
         // lookup this module's $mod_strings to get the correct module name
         $module_mod_strings =
@@ -59,12 +60,19 @@ class stic_Import_ValidationViewLast extends stic_Import_ValidationView
         $dupeCount    = 0;
         $createdCount = 0;
         $updatedCount = 0;
-        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
+        // STIC Custom 20250313 JBL - auto_detect_line_endings removed do not work in PHP8.4
+        // Ensure compatibility Windows/Linux
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
+        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'rb');
+        // END STIC Custom
         
         // Read the data if we successfully opened file
         if ($fp !== false) {
             // Read rows 1 by 1 and add the info
-            while ($row = fgetcsv($fp, 8192)) {
+            // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+            // while ($row = fgetcsv($fp, 8192)) {
+            while ($row = fgetcsv($fp, 8192, ',', '"', '\\')) {
                 $count         += (int) $row[0];
                 $errorCount    += (int) $row[1];
                 $dupeCount     += (int) $row[2];
@@ -103,6 +111,7 @@ class stic_Import_ValidationViewLast extends stic_Import_ValidationView
         $this->ss->assign("dupeFile", ImportCacheFiles::convertFileNameToUrl(ImportCacheFiles::getDuplicateFileName()));
 
         // STIC-Code MHP - Check if there are duplicate values in the columns corresponding to the selected search filters within the file
+        $duplicatesValues = [];
         if (isset($_SESSION["stic_ImporValidation"]['duplicateFilters'])){
             $duplicateFilters = $_SESSION["stic_ImporValidation"]['duplicateFilters'];
             foreach ($duplicateFilters as $filter => $valuesArray) {
@@ -117,7 +126,7 @@ class stic_Import_ValidationViewLast extends stic_Import_ValidationView
         }
 
         // Display a list of related modules for multi-module validation
-        $moduleList = $this->loadTabModules();
+        $moduleList = static::loadTabModules();
         $this->ss->assign("MODULELIST", $moduleList);
         // END STIC-Code MHP
 
@@ -187,7 +196,7 @@ class stic_Import_ValidationViewLast extends stic_Import_ValidationView
             if ($mod != $_REQUEST["import_module"] && ACLController::checkAccess($mod, 'import', true)) {
                 // Check if module has import functionality enabled
                 $bean = BeanFactory::newBean($mod);
-                if ($bean->importable){
+                if (isset($bean->importable) && $bean->importable){
                     $modules[$key] = (isset($app_list_strings['moduleList'][$key])) ? $app_list_strings['moduleList'][$key] : $key;
                 }
             }
@@ -313,18 +322,18 @@ EOJAVASCRIPT;
                 'id' => 'prospect_list_id',
             ),
             'passthru_data' => array(
-                'child_field' => 'notused',
-                'return_url' => 'notused',
-                'link_field_name' => 'notused',
-                'module_name' => 'notused',
-                'refresh_page'=>'1',
-                'return_type'=>'addtoprospectlist',
-                'parent_module'=>'ProspectLists',
-                'parent_type'=>'ProspectList',
-                'child_id'=>'id',
-                'link_attribute'=>'prospects',
-                'link_type'=>'default',	 //polymorphic or default
-                'prospect_ids'=>$prospect_id,
+            'child_field' => 'notused',
+            'return_url' => 'notused',
+            'link_field_name' => 'notused',
+            'module_name' => 'notused',
+            'refresh_page'=>'1',
+            'return_type'=>'addtoprospectlist',
+            'parent_module'=>'ProspectLists',
+            'parent_type'=>'ProspectList',
+            'child_id'=>'id',
+            'link_attribute'=>'prospects',
+            'link_type'=>'default',	 //polymorphic or default
+            'prospect_ids'=>$prospect_id,
             )
         );
 

@@ -42,6 +42,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/FP_Event_Locations/FP_Event_Locations_sugar.php');
+#[\AllowDynamicProperties]
 class FP_Event_Locations extends FP_Event_Locations_sugar
 {
     public function __construct()

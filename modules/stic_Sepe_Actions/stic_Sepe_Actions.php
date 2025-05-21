@@ -28,6 +28,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Sepe_Actions extends Basic {
 	public $new_schema = true;
 	public $module_dir = 'stic_Sepe_Actions';

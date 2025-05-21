@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Users/Forms.php');
 require_once('modules/Configurator/Configurator.php');
 
+#[\AllowDynamicProperties]
 class ViewWizard extends SugarView
 {
     /**
@@ -203,6 +204,16 @@ eoq;
 
         //// Name display format
         $this->ss->assign('default_locale_name_format', $locale->getLocaleFormatMacro($current_user));
+
+        $disabledLanguages = $sugar_config['disabled_languages'] ?? '';
+        $language = $current_user->getPreference('language');
+
+
+        if (str_contains($disabledLanguages, $language)){
+            $language = $sugar_config['default_language'];
+        }
+
+        $this->ss->assign('user_language', get_select_options_with_id(get_languages(), $language));
         $this->ss->assign('getNameJs', $locale->getNameJs());
 
         $this->ss->assign('TIMEOPTIONS', get_select_options_with_id($sugar_config['time_formats'], $current_user->_userPreferenceFocus->getDefaultPreference('default_time_format')));

@@ -41,6 +41,7 @@
 /**
  * Class AOBH_BusinessHours
  */
+#[\AllowDynamicProperties]
 class AOBH_BusinessHours extends Basic
 {
     public $new_schema = true;
@@ -88,7 +89,7 @@ class AOBH_BusinessHours extends Basic
     public function areBusinessHoursSet()
     {
         if ($this->businessHoursSet === null) {
-            $this->businessHoursSet = count($this->get_full_list());
+            $this->businessHoursSet = is_countable($this->get_full_list()) ? count($this->get_full_list()) : 0;
         }
 
         return $this->businessHoursSet;
@@ -181,7 +182,11 @@ class AOBH_BusinessHours extends Basic
      *
      * @return DateTime
      */
-    public function addBusinessHours($hours, DateTime $date = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function addBusinessHours($hours, DateTime $date = null)
+    public function addBusinessHours($hours, ?DateTime $date = null)
+    // END STIC Custom
     {
         if ($date == null) {
             $date = new DateTime();

@@ -20,6 +20,8 @@
  *
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
+
+#[\AllowDynamicProperties]
 class stic_Bookings extends Basic
 {
     public $new_schema = true;
@@ -82,7 +84,8 @@ class stic_Bookings extends Basic
             // problems of crossing code assignation in case of concurrent bookings creation. If this
             // proves to be a problem in the future, this section should be rethinked. Anyway, it only
             // affects the name field, which is not a critical data.
-            if (!$currentNum = $this->code) {
+            $currentNum = $this->code ?? null;
+            if (!$currentNum) {
                 // Get last assigned code
                 $query = "SELECT code
                 FROM stic_bookings
@@ -104,7 +107,7 @@ class stic_Bookings extends Basic
         // If all_day is checked and the request is from user interface, set the proper start_date and end_date values.
         // From the API or from the import process is not necessary since the start_date and end_date values are received by the save() method in UTC and in database format.
         // Control that a FdT or an LH does not recalculate the dates more than once through the condition !$this->processed
-        if ($this->all_day == '1' && !empty($_REQUEST['start_date']) && !empty($_REQUEST['end_date']) && !$this->processed) {
+        if (isset($this->all_day) && $this->all_day == '1' && !empty($_REQUEST['start_date']) && !empty($_REQUEST['end_date']) && (!isset($this->processed) || !$this->processed)) {
             $startDate = $timedate->fromUser($_REQUEST['start_date'], $current_user);
             $startDate = $startDate->get_day_begin();
             $startDate = $timedate->asUserDate($startDate, false, $current_user);
@@ -131,7 +134,7 @@ class stic_Bookings extends Basic
             // Retrieve the resources selected in the EditViewFooter
             $newRelatedResources = array();
             foreach ($_REQUEST['resource_id'] as $parent => $key) {
-                if ($_REQUEST['deleted'][$parent] == 0) {
+                if (empty($_REQUEST['deleted'][$parent])) {
                     $newRelatedResources[] = $_REQUEST['resource_id'][$parent];
                 }
             }
@@ -142,7 +145,7 @@ class stic_Bookings extends Basic
         }
 
         // If return module is Booking's Calendar, redirect there
-        if ($_REQUEST['return_module'] == 'stic_Bookings_Calendar') {
+        if (isset($_REQUEST['return_module']) && $_REQUEST['return_module'] == 'stic_Bookings_Calendar') {
             SugarApplication::redirect("index.php?module=stic_Bookings_Calendar&action=index&start_date=".explode(' ', $this->start_date)[0]);
         }
 

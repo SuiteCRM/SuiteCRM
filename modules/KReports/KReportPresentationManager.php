@@ -28,7 +28,7 @@ require_once('modules/KReports/KReport.php');
 class KReportPresentationManager {
 
     // centrally keep the pluginmanager
-    var $pluginManager;
+    public $pluginManager;
 
     public function __construct() {
 

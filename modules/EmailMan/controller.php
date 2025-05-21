@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class EmailManController extends SugarController
 {
     public function action_Save()
@@ -99,6 +100,7 @@ class EmailManController extends SugarController
             $configurator->config['email_enable_auto_send_opt_in'] = (isset($_REQUEST['email_enable_auto_send_opt_in'])) ? true : false;
             $configurator->config['email_confirm_opt_in_email_template_id'] = isset($_REQUEST['email_template_id_opt_in']) ? $_REQUEST['email_template_id_opt_in'] : $configurator->config['aop']['confirm_opt_in_template_id'];
             $configurator->config['email_allow_send_as_user']  = (isset($_REQUEST['mail_allowusersend']) && $_REQUEST['mail_allowusersend'] == '1') ? true : false;
+            $configurator->config['legacy_email_behaviour']  = isTrue($_REQUEST['legacy_email_behaviour'] ?? false);
             ///////////////////////////////////////////////////////////////////////////////
             ////	SECURITY
             $security = array();
@@ -152,7 +154,7 @@ class EmailManController extends SugarController
 
             $configurator->handleOverride();
         }
-        
+
         SugarThemeRegistry::clearAllCaches();
     }
 }

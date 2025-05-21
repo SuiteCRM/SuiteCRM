@@ -60,9 +60,13 @@ interface ImapInterface
      * @param string $password
      * @param int $options
      * @param int $n_retries
-     * @param array $params
+     * @param mixed[]|null $params
      *
      * @return resource or <b>FALSE</b> on error.
      */
-    public function open($mailbox, $username, $password, $options = 0, $n_retries = 0, array $params = null);
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function open($mailbox, $username, $password, $options = 0, $n_retries = 0, array $params = null);
+    public function open($mailbox, $username, $password, $options = 0, $n_retries = 0, ?array $params = null);
+    // END STIC Custom
 }

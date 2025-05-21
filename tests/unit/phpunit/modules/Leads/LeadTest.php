@@ -130,7 +130,7 @@ class LeadTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($lead->id));
-        self::assertEquals(36, strlen($lead->id));
+        self::assertEquals(36, strlen((string) $lead->id));
         self::assertEquals("New", $lead->status);
 
 
@@ -274,10 +274,10 @@ class LeadTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $lead->set_notification_body(new Sugar_Smarty(), $lead);
 
-        self::assertEquals("Mr firstn lastn", $result->_tpl_vars['LEAD_NAME']);
-        self::assertEquals($lead->lead_source, $result->_tpl_vars['LEAD_SOURCE']);
-        self::assertEquals($lead->status, $result->_tpl_vars['LEAD_STATUS']);
-        self::assertEquals($lead->description, $result->_tpl_vars['LEAD_DESCRIPTION']);
+        self::assertEquals("Mr firstn lastn", $result->tpl_vars['LEAD_NAME']->value);
+        self::assertEquals($lead->lead_source, $result->tpl_vars['LEAD_SOURCE']->value);
+        self::assertEquals($lead->status, $result->tpl_vars['LEAD_STATUS']->value);
+        self::assertEquals($lead->description, $result->tpl_vars['LEAD_DESCRIPTION']->value);
     }
 
     public function testbean_implements(): void

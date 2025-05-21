@@ -5,9 +5,10 @@
  * Tests /api/v8/modules API
  * @see https://tools.ietf.org/html/rfc7519
  */
+#[\AllowDynamicProperties]
 class ModulesMetaCest
 {
-    const RESOURCE = '/api/v8/modules/Accounts';
+    public const RESOURCE = '/api/v8/modules/Accounts';
     private static $RECORD = '11111111-1111-1111-1111-111111111111';
     private static $RECORD_TYPE = 'Accounts';
     private static $FAVORITE_RESOURCE = '/api/v8/modules/Favorites';
@@ -52,7 +53,7 @@ class ModulesMetaCest
         $I->seeResponseCodeIs(200);
 
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);
@@ -85,7 +86,7 @@ class ModulesMetaCest
         $I->seeJsonApiContentNegotiation();
 
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);
@@ -117,7 +118,7 @@ class ModulesMetaCest
         $I->seeResponseCodeIs(200);
 
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);
@@ -158,7 +159,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);
@@ -202,7 +203,7 @@ class ModulesMetaCest
 
         $I->seeResponseCodeIs(201);
         $I->seeJsonApiContentNegotiation();
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         $I->assertArrayHasKey('data', $response);
         $I->assertArrayHasKey('type', $response['data']);
         $I->assertArrayHasKey('id', $response['data']);
@@ -231,7 +232,7 @@ class ModulesMetaCest
         $I->seeResponseCodeIs(201);
         $I->seeJsonApiContentNegotiation();
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -245,7 +246,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -297,7 +298,7 @@ class ModulesMetaCest
 
         $I->seeResponseCodeIs(201);
         $I->seeJsonApiContentNegotiation();
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         $I->assertArrayHasKey('data', $response);
         $I->assertArrayHasKey('type', $response['data']);
         $I->assertArrayHasKey('id', $response['data']);
@@ -326,7 +327,7 @@ class ModulesMetaCest
         $I->seeResponseCodeIs(201);
         $I->seeJsonApiContentNegotiation();
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -340,7 +341,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -376,7 +377,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -414,7 +415,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('data', $decodedResponse);
@@ -451,7 +452,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);
@@ -480,7 +481,7 @@ class ModulesMetaCest
         $I->sendGET($url);
         $I->seeResponseCodeIs(200);
         $response = $I->grabResponse();
-        $decodedResponse = json_decode($response, true);
+        $decodedResponse = json_decode((string) $response, true, 512, JSON_THROW_ON_ERROR);
 
         $I->assertNotEmpty($decodedResponse);
         $I->assertArrayHasKey('meta', $decodedResponse);

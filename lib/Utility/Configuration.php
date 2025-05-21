@@ -47,6 +47,7 @@ use SuiteCRM\Exception\Exception;
  * Class Configuration
  * @package SuiteCRM\Utility
  */
+#[\AllowDynamicProperties]
 class Configuration implements ArrayAccess
 {
 
@@ -67,7 +68,11 @@ class Configuration implements ArrayAccess
      * @param mixed $value
      * @throws Exception
      */
-    public function offsetSet($offset, $value)
+    // STIC Custom 20240219 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
+    // END STIC Custom
     {
         if (is_null($offset)) {
             throw new Exception('[Configuration][missing offset]');
@@ -84,7 +89,11 @@ class Configuration implements ArrayAccess
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset)
+    // STIC Custom 20240219 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function offsetExists($offset)
+    public function offsetExists($offset): bool
+    // END STIC Custom
     {
         return isset($this->container[$offset]);
     }
@@ -92,7 +101,11 @@ class Configuration implements ArrayAccess
     /**
      * @param mixed $offset
      */
-    public function offsetUnset($offset)
+    // STIC Custom 20240219 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function offsetUnset($offset)
+    public function offsetUnset($offset): void
+    // END STIC Custom
     {
         unset($this->container[$offset]);
     }
@@ -101,7 +114,11 @@ class Configuration implements ArrayAccess
      * @param mixed $offset
      * @return mixed|null
      */
-    public function offsetGet($offset)
+    // STIC Custom 20240219 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function offsetGet($offset)
+    public function offsetGet($offset): mixed
+    // END STIC Custom
     {
         return $this->container[$offset] ?? null;
     }

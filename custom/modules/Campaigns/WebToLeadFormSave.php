@@ -197,13 +197,13 @@ $html .= $jsContent;
 // END STIC
 
 //Check to ensure we have <html> tags in the form. Without them, IE8 will attempt to display the page as XML.
-if (stripos($html, "<html") === false) {
+if (stripos((string) $html, "<html") === false) {
     $langHeader = get_language_header();
     $html = "<html {$langHeader}><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body>" . $html . "</body></html>";
 }
 
-if (!mb_detect_encoding($str, 'UTF-8')) {
-    $html = utf8_encode($html);
+if (!mb_detect_encoding($html, 'UTF-8')) {
+    $html = mb_convert_encoding($html, 'UTF-8', 'ISO-8859-1');
 }
 $html = str_replace('Â', ' ', $html);
 file_put_contents($form_file, $html);

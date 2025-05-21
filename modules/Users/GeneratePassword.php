@@ -115,7 +115,7 @@ if (isset($_POST['Users0emailAddress0'])) {
 ///////////////////////////////////////////////////
 ///////  Check email address
 
-    if (!preg_match($regexmail, $usr->emailAddress->getPrimaryAddress($usr))) {
+    if (!preg_match($regexmail, (string) $usr->emailAddress->getPrimaryAddress($usr))) {
         echo $mod_strings['ERR_EMAIL_INCORRECT'];
         return;
     }

@@ -43,6 +43,7 @@ namespace SuiteCRM\Tests\Unit\lib\SuiteCRM\Utility\BeanJsonSerializerTestData;
  * Class BeanMock
  * @package SuiteCRM\Tests\Unit\lib\SuiteCRM\Utility\BeanJsonSerializerTestData
  */
+#[\AllowDynamicProperties]
 class BeanMock extends \SugarBean
 {
     public $fetched_rel_row = [];
@@ -54,7 +55,7 @@ class BeanMock extends \SugarBean
     /** @noinspection PhpMissingParentConstructorInspection */
     public function __construct($file)
     {
-        foreach (json_decode(file_get_contents($file), true) as $key => $item) {
+        foreach (json_decode(file_get_contents($file), true, 512, JSON_THROW_ON_ERROR) as $key => $item) {
             $this->$key = $item;
         }
     }

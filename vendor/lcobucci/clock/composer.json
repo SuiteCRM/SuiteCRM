@@ -1,0 +1,40 @@
+{
+    "name": "lcobucci/clock",
+    "description": "Yet another clock abstraction",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Luís Cobucci",
+            "email": "lcobucci@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "stella-maris/clock": "^0.1.4"
+    },
+    "require-dev": {
+        "infection/infection": "^0.26",
+        "lcobucci/coding-standard": "^8.0",
+        "phpstan/extension-installer": "^1.1",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-deprecation-rules": "^0.12",
+        "phpstan/phpstan-phpunit": "^0.12",
+        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Lcobucci\\Clock\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lcobucci\\Clock\\": "test"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

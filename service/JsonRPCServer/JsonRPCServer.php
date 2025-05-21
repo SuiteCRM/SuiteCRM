@@ -49,6 +49,7 @@ require_once __DIR__ . '/../../include/utils.php';
 require_once __DIR__ . '/JsonRPCServerUtils.php';
 require_once __DIR__ . '/JsonRPCServerCalls.php';
 
+#[\AllowDynamicProperties]
 class JsonRPCServer
 {
     /**
@@ -123,6 +124,7 @@ class JsonRPCServer
      */
     private function processRequest()
     {
+        $response = [];
         $response['result'] = null;
         $response['id'] = '-1';
         $jsonParser = $this->jsonParser;

@@ -49,6 +49,7 @@ require_once('include/SubPanel/SubPanelDefinitions.php');
  * Subpanel tiles
  * @api
  */
+#[\AllowDynamicProperties]
 class SubPanelTiles
 {
     public $id;

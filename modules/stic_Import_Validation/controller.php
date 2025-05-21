@@ -29,6 +29,7 @@ require_once("include/MVC/Controller/SugarController.php");
 require_once('modules/stic_Import_Validation/sources/ImportFile.php');
 require_once('modules/stic_Import_Validation/views/ImportListView.php');
 
+#[\AllowDynamicProperties]
 class stic_Import_ValidationController extends SugarController
 {
     /**
@@ -116,17 +117,17 @@ class stic_Import_ValidationController extends SugarController
         $v = new stic_Import_ValidationViewConfirm();
         $fileName = $_REQUEST['importFile'];
 
-        if (isset($fileName) && strpos($fileName, '..') !== false) {
+        if (isset($fileName) && strpos((string) $fileName, '..') !== false) {
             LoggerManager::getLogger()->security('Directory navigation attack denied');
             return;
         }
 
-        if (isset($fileName) && !hasValidFileName('import_refresh_mapping_file_name', str_replace('upload://', '', $fileName))) {
+        if (isset($fileName) && !hasValidFileName('import_refresh_mapping_file_name', str_replace('upload://', '', (string) $fileName))) {
             LoggerManager::getLogger()->fatal('Invalid importFile file name');
             return;
         }
 
-        if (strpos($fileName, 'phar://') !== false) {
+        if (strpos((string) $fileName, 'phar://') !== false) {
             LoggerManager::getLogger()->fatal('Invalid importFile file path');
             return;
         }
@@ -138,7 +139,7 @@ class stic_Import_ValidationController extends SugarController
         }
 
         $enclosure = $_REQUEST['qualif'];
-        $enclosure = html_entity_decode($enclosure, ENT_QUOTES);
+        $enclosure = html_entity_decode((string) $enclosure, ENT_QUOTES);
         $hasHeader = !empty($_REQUEST['header']);
 
         $importFile = new ImportFile($fileName, $delim, $enclosure, false);

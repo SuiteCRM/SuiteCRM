@@ -22,6 +22,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Payments extends Basic
 {
     public $new_schema = true;
@@ -91,13 +92,15 @@ class stic_Payments extends Basic
         // Get payment commitment bean. Depending on the context (editview, subpanel, workflow, etc.)
         // stic_paymebfe2itments_ida will be an string that contains the id of the related payment
         // commitment or will be an object of type Link2, so let's manage it properly.
-        if ($this->stic_paymebfe2itments_ida instanceof Link2) {
-            $PCBean = SticUtils::getRelatedBeanObject($this, 'stic_payments_stic_payment_commitments');
-        } else {
-            $PCBean = BeanFactory::getBean('stic_Payment_Commitments', $this->stic_paymebfe2itments_ida);
+        if (isset($this->stic_paymebfe2itments_ida)) {
+            if ($this->stic_paymebfe2itments_ida instanceof Link2) {
+                $PCBean = SticUtils::getRelatedBeanObject($this, 'stic_payments_stic_payment_commitments');
+            } else {
+                $PCBean = BeanFactory::getBean('stic_Payment_Commitments', $this->stic_paymebfe2itments_ida);
+            }
         }
 
-        if ($PCBean) {
+        if (isset($PCBean)) {
             global $timedate;
             
             // Get userDate object from user format or from database format 
@@ -126,21 +129,21 @@ class stic_Payments extends Basic
 
         // Since the value of `fetched_row` is reset in the case of audited fields, 
         // we will save its contents in a variable to be used after running the `Save` method.
-        $tempFetchedRow = $this->fetched_row;
+        $tempFetchedRow = $this->fetched_row ?? null;
 
 
         // Call the generic save() function from the SugarBean class
         parent::save();
 
 
-        if ($PCBean && $userDate) {
+        if (isset($PCBean) && isset($userDate)) {
         
             // Recalculate the field paid_annualized_fee if applicable.
             // Check if the status, amount, or payment_date fields have changed or if it is a new record.            
             if (
-                $this->status != $tempFetchedRow['status']
-                || SticUtils::unformatDecimal($this->amount) != SticUtils::unformatDecimal($tempFetchedRow['amount'])
-                || $userDate->asDBDate() != $tempFetchedRow['payment_date']
+                (!empty($tempFetchedRow['status']) && $this->status != $tempFetchedRow['status'])
+                || (!empty($tempFetchedRow['status']) && SticUtils::unformatDecimal($this->amount) != SticUtils::unformatDecimal($tempFetchedRow['amount']))
+                || (!empty($tempFetchedRow['payment_date']) && $userDate->asDBDate() != $tempFetchedRow['payment_date'])
                 || empty($this->fetched_row)
             ) {
                 // Recalculate the paid_annualized_fee field.
@@ -164,26 +167,46 @@ class stic_Payments extends Basic
         include_once 'SticInclude/Utils.php';
 
         // If parent payment commitment has changed...
-        if (!empty($this->stic_paymebfe2itments_ida) && (trim($this->stic_paymebfe2itments_ida) != trim($this->rel_fields_before_value['stic_paymebfe2itments_ida']))) {
-            // Get new parent payment commitment bean
-            $PCBean = BeanFactory::getBean('stic_Payment_Commitments', $this->stic_paymebfe2itments_ida);
-            // Get payment commmitment related contact (usual case)
-            $contactId = SticUtils::getRelatedBeanObject($PCBean, 'stic_payment_commitments_contacts')->id;
-            if (!empty($contactId)) {
-                // Remove previous relationship with an account, if any
-                // (a payment can only be related with a single contact or account, not both)
-                $this->stic_payments_accountsaccounts_ida = '';
-                // Set the relationship between payment and contact
-                $this->stic_payments_contactscontacts_ida = $contactId;
-            } else {
-                // Get payment commitment related account
-                $accountId = SticUtils::getRelatedBeanObject($PCBean, 'stic_payment_commitments_accounts')->id;
-                if (!empty($accountId)) {
-                    // Remove previous relationship with a contact, if any
+        // STIC Custom 20250416 JBL - Fix Warnings and TypeErrors
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // if (!empty($this->stic_paymebfe2itments_ida) && (trim($this->stic_paymebfe2itments_ida) != trim($this->rel_fields_before_value['stic_paymebfe2itments_ida']))) {
+        if (!empty($this->stic_paymebfe2itments_ida)) {
+            $payment_commitment_id = '';
+            if (is_string($this->stic_paymebfe2itments_ida) || 
+                (is_object($this->stic_paymebfe2itments_ida) && 
+                 method_exists($this->stic_paymebfe2itments_ida, '__toString'))) {
+                $payment_commitment_id = (string)$this->stic_paymebfe2itments_ida;
+            }
+            $payment_commitment_id_before = '';
+            if (isset($this->rel_fields_before_value['stic_paymebfe2itments_ida'])) {
+                if (is_string($this->rel_fields_before_value['stic_paymebfe2itments_ida']) ||
+                    (is_object($this->rel_fields_before_value['stic_paymebfe2itments_ida']) && 
+                     method_exists($this->rel_fields_before_value['stic_paymebfe2itments_ida'], '__toString'))) {
+                    $payment_commitment_id_before = (string)$this->rel_fields_before_value['stic_paymebfe2itments_ida'];
+                }
+            }
+            if (trim($payment_commitment_id) != trim($payment_commitment_id_before)) {
+        // END STIC Custom
+                // Get new parent payment commitment bean
+                $PCBean = BeanFactory::getBean('stic_Payment_Commitments', $this->stic_paymebfe2itments_ida);
+                // Get payment commmitment related contact (usual case)
+                $contactId = SticUtils::getRelatedBeanObject($PCBean, 'stic_payment_commitments_contacts')->id ?? null; ; 
+                if (!empty($contactId)) {
+                    // Remove previous relationship with an account, if any
                     // (a payment can only be related with a single contact or account, not both)
-                    $this->stic_payments_contactscontacts_ida = '';
-                    // Set the relationship between payment and account
-                    $this->stic_payments_accountsaccounts_ida = $accountId;
+                    $this->stic_payments_accountsaccounts_ida = '';
+                    // Set the relationship between payment and contact
+                    $this->stic_payments_contactscontacts_ida = $contactId;
+                } else {
+                    // Get payment commitment related account
+                    $accountId = SticUtils::getRelatedBeanObject($PCBean, 'stic_payment_commitments_accounts')->id ?? null;
+                    if (!empty($accountId)) {
+                        // Remove previous relationship with a contact, if any
+                        // (a payment can only be related with a single contact or account, not both)
+                        $this->stic_payments_contactscontacts_ida = '';
+                        // Set the relationship between payment and account
+                        $this->stic_payments_accountsaccounts_ida = $accountId;
+                    }
                 }
             }
         }
@@ -206,7 +229,7 @@ class stic_Payments extends Basic
             if (isset($arguments['related_module']) && $arguments['related_module'] == 'stic_Payment_Commitments') {
                 $PCBean = $arguments['related_bean'];
                 require_once 'modules/stic_Payment_Commitments/Utils.php';
-                stic_Payment_CommitmentsUtils::setPaidAnnualizedFee($PCBean, $this);
+                stic_Payment_CommitmentsUtils::setPaidAnnualizedFee($PCBean);
             }
         }
 

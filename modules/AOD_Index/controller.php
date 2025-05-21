@@ -30,6 +30,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @deprecated since v7.12.0
  * Class AOD_IndexController
  */
+#[\AllowDynamicProperties]
 class AOD_IndexController extends SugarController
 {
     protected $action_remap = array('index'=>'indexdata');

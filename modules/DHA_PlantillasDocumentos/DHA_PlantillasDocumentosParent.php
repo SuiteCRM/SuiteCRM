@@ -23,48 +23,49 @@
 require_once('include/SugarObjects/templates/file/File.php');
 require_once ('include/upload_file.php');
 
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentosParent extends File {
 
-   var $new_schema = true;
-   var $module_dir = 'DHA_PlantillasDocumentos';
-   var $object_name = 'DHA_PlantillasDocumentos';
-   var $table_name = 'dha_plantillasdocumentos';
-   var $importable = false;
-   var $disable_row_level_security = true ; // to ensure that modules created and deployed under CE will continue to function under team security if the instance is upgraded to PRO
+   public $new_schema = true;
+   public $module_dir = 'DHA_PlantillasDocumentos';
+   public $object_name = 'DHA_PlantillasDocumentos';
+   public $table_name = 'dha_plantillasdocumentos';
+   public $importable = false;
+   public $disable_row_level_security = true ; // to ensure that modules created and deployed under CE will continue to function under team security if the instance is upgraded to PRO
    //var $disable_custom_fields = true;  // Ver comentarios en la funcion MailMergeReports_get_all_modules (en UI_Hooks.php)
 
-   var $id;
-   var $date_entered;
-   var $date_modified;
-   var $modified_user_id;
-   var $modified_by_name;
-   var $created_by;
-   var $created_by_name;
-   var $description;
-   var $deleted;
-   var $created_by_link;
-   var $modified_user_link;
-   var $assigned_user_id;
-   var $assigned_user_name;
-   var $assigned_user_link;
-   var $document_name;
-   var $filename;
-   var $file_ext;
-   var $file_mime_type;
-   var $uploadfile;
-   var $active_date;
-   var $exp_date;
-   var $category_id;
-   var $subcategory_id;
-   var $status_id;
-   var $status;
-   var $file_url;
-   var $modulo_url;
-   var $doc_url;
-   var $doc_local_location;
-   var $aclroles;
-   var $idioma;
-   var $modulo;
+   public $id;
+   public $date_entered;
+   public $date_modified;
+   public $modified_user_id;
+   public $modified_by_name;
+   public $created_by;
+   public $created_by_name;
+   public $description;
+   public $deleted;
+   public $created_by_link;
+   public $modified_user_link;
+   public $assigned_user_id;
+   public $assigned_user_name;
+   public $assigned_user_link;
+   public $document_name;
+   public $filename;
+   public $file_ext;
+   public $file_mime_type;
+   public $uploadfile;
+   public $active_date;
+   public $exp_date;
+   public $category_id;
+   public $subcategory_id;
+   public $status_id;
+   public $status;
+   public $file_url;
+   public $modulo_url;
+   public $doc_url;
+   public $doc_local_location;
+   public $aclroles;
+   public $idioma;
+   public $modulo;
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -308,7 +309,7 @@ class DHA_PlantillasDocumentosParent extends File {
          if($this->ACLAccess('DetailView')){
             // Nota Sugar 7: El entry_point debe de empezar por download_xxxx para que Sugar no cambie la url a modo #bwc. Ver la funcion javascript "_rewriteNewWindowLinks"
             //$this->file_url = "<a href='index.php?action=download&record=".$this->id."&module=DHA_PlantillasDocumentos' target='_blank'>".SugarThemeRegistry::current()->getImage($img_name, 'alt="'.$mod_strings['LBL_LIST_VIEW_DOCUMENT'].'"  border="0"')."</a>";
-            $this->file_url = "<a href='index.php?entryPoint=download_dha_document_template&type=DHA_PlantillasDocumentos&id=".$this->id."&v=".date('YmdHis')."' target='_blank'>".SugarThemeRegistry::current()->getImage($img_name, 'alt="'.$mod_strings['LBL_LIST_VIEW_DOCUMENT'].'"  border="0"')."</a>";
+            $this->file_url = "<a href='index.php?entryPoint=download_dha_document_template&type=DHA_PlantillasDocumentos&id=".$this->id."&v=".date('YmdHis')."' target='_blank'>".SugarThemeRegistry::current()->getImage($img_name, 'alt="'.($mod_strings['LBL_LIST_VIEW_DOCUMENT']??'').'"  border="0"')."</a>";
          }
       }
 

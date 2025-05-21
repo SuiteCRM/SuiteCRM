@@ -142,32 +142,7 @@
 	{* // fieldSets *}
 
     {* Documents *}
-	{php}
-        global $mod_strings;
-
-        if ($_REQUEST["num_attachment"]) {
-            $fileshtmlstring .= '
-                <tbody id="Documents" class="section">
-                    <tr>
-                        <td colspan="4"> <h3>'.$mod_strings["LBL_FILES_TO_ATTACH"].'</h3></td>
-                    </tr>';
-
-            for($i = 1; $i <= $_REQUEST["num_attachment"]; $i++) {
-                $fileshtmlstring .= '
-                    <tr>
-                        <td id="td_lbl_Documents___document'.$i.'" class="column_25">
-                            <span><label id="lbl_Documents___document'.$i.'">'.$mod_strings["LBL_FILE_TO_ATTACH"].' '.$i.': </span>
-                        </td>
-                        <td id="td_Documents___document'.$i.'" class="column_25">
-                            <span><input id="Documents___document'.$i.'" type="file" class="document" name="documents[]"/></span>
-                            <span id="error_zone_'.$i.'" class="error_zone">&nbsp;</span>					
-                        </td>
-                    </tr>
-                </tbody>';
-            }
-            echo $fileshtmlstring;
-        }
-	{/php}
+		{$FILES_HTML_STRING}
     {* //Documents *}
 
 
@@ -175,7 +150,7 @@
 	<tr>
 	  	<td></td>
 		<td>
-			<input type="button" onclick="submitForm(this.form);" class="button" name="Submit" value="{$MAP.FORM.SUBMIT_LABEL|default $MOD.LBL_WEBFORMS_SUBMIT}"/>
+			<input type="button" onclick="submitForm(this.form);" class="button" name="Submit" value="{$MAP.FORM.SUBMIT_LABEL|default:$MOD.LBL_WEBFORMS_SUBMIT}"/>
 		</td>
 	</tr>
 	{* // buttons *}

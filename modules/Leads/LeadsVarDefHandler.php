@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 require_once('include/VarDefHandler/VarDefHandler.php');
 
+#[\AllowDynamicProperties]
 class LeadsVarDefHandler extends VarDefHandler
 {
     /**

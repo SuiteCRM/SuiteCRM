@@ -9,6 +9,7 @@ Version 1.0.5, on 2006-10-26, by Skrol29
 
 define('TBS_BYPAGE','tbsByPage');
 
+#[\AllowDynamicProperties]
 class tbsByPage {
 
 	function OnInstall() {

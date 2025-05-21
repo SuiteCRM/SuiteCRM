@@ -65,18 +65,20 @@ class stic_Work_CalendarViewWorkCalendarAssistant extends SugarView
             $dow[] = array("index" => $day_index, "label" => $app_list_strings['dom_cal_day_short'][$day_index + 1]);
         }
 
+        $selectedEmployees = [];
+
         if (!empty($_REQUEST['employeeId'])){
             $user = BeanFactory::getBean('Employees', $_REQUEST['employeeId']);
-            $selectedEmployees[0] = $user->name;
+            $selectedEmployees[] = $user->name;
         } else if (!empty($_REQUEST['mass'])) {   
             $selectedEmployees = $_REQUEST["mass"];
             foreach ($selectedEmployees as $key => $id){
                 $user = BeanFactory::getBean('Employees', $id);
                 $selectedEmployees[$key] = $user->name;
             }
-        } else if (!$_REQUEST['selectUser']) {
-            $selectedEmployees = $_SESSION["summaryEmployeeNames"];
-            $_REQUEST['uid'] = $_SESSION["summaryEmployeeIds"];
+        } else if (!isset($_REQUEST['selectUser'])) {
+            $selectedEmployees = $_SESSION["summaryEmployeeNames"] ?? [];
+            $_REQUEST['uid'] = $_SESSION["summaryEmployeeIds"] ?? "";
         }
         // Unset session variables related to periodic creations without reselecting users
         unset($_SESSION["summaryEmployeeNames"]);

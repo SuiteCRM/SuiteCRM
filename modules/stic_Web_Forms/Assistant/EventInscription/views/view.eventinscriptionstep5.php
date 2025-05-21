@@ -87,7 +87,7 @@ class ViewEventinscriptionstep5 extends stic_Web_FormsAssistantView
         $javascript->addFieldGeneric('event_name', '', javascript_escape($mod_strings['LBL_WEBFORMS_NOTIFY_EVENT']), 'true');
         $javascript->addFieldGeneric('email_template_name', '', javascript_escape($mod_strings['LBL_NOTIFICATION_EMAIL_TEMPLATE']), 'false');
         $javascript->addFieldGeneric('assigned_user_name', '', javascript_escape($app_strings['LBL_ASSIGNED_TO']), 'true');
-        $javascript->addFieldGeneric('validate_identification_number', '', javascript_escape($app_strings['LBL_CHECK_IDENTIFICATION_NUMBER']), 'true');
+        $javascript->addFieldGeneric('validate_identification_number', '', javascript_escape($mod_strings['LBL_CHECK_IDENTIFICATION_NUMBER']), 'true');
         $javascript->addFieldGeneric('redirect_ok_url', '', javascript_escape($mod_strings['LBL_WEBFORMS_REDIRECT_OK_URL']), 'true');
         $javascript->addFieldGeneric('redirect_ko_url', '', javascript_escape($mod_strings['LBL_WEBFORMS_REDIRECT_KO_URL']), 'true');
         if ($this->view_object_map['PERSISTENT_DATA']['include_payment_commitment']) {

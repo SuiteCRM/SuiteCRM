@@ -25,6 +25,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * delete_project_tasks.php
  * Used to delete a project's related tasks after a project is deleted
  */
+#[\AllowDynamicProperties]
 class delete_project_tasks
 {
     public function delete_tasks(&$bean, $event, $arguments)

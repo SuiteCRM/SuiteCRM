@@ -56,6 +56,7 @@ use SuiteCRM\Utility\SuiteValidator;
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSyncBase
 {
     /** @var User The SuiteCRM User Bean we're currently working with */
@@ -379,7 +380,7 @@ class GoogleSyncBase
     protected function getSuiteCRMCalendar(Google\Service\Calendar\CalendarList $calendarList)
     {
         foreach ($calendarList->getItems() as $calendarListEntry) {
-            if ($calendarListEntry->getSummary() == $this->suiteCalendarName) {
+            if ($calendarListEntry->getSummary() === $this->suiteCalendarName) {
                 return $calendarListEntry->getId();
                 break;
             }
@@ -419,7 +420,7 @@ class GoogleSyncBase
         if (empty($results)) {
             $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'No events found.');
         } else {
-            $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'Found ' . count($results) . ' Google Events');
+            $this->logger->info(__FILE__ . ':' . __LINE__ . ' ' . __METHOD__ . ' - ' . 'Found ' . (is_countable($results) ? count($results) : 0) . ' Google Events');
         }
 
         return $results;
@@ -547,12 +548,16 @@ class GoogleSyncBase
      * and inserted. If one is provided, the existing Google Event will
      * be updated.
      *
-     * @param Meeting $event_local : SuiteCRM Meeting Bean
-     * @param \Google\Service\Calendar\Event $event_remote (optional) \Google\Service\Calendar\Event Object
+     * @param Meeting|null $event_local : SuiteCRM Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event_remote (optional) \Google\Service\Calendar\Event Object
      *
      * @return string|bool Meeting Id on success, false on failure
      */
-    protected function pushEvent(Meeting $event_local = null, Google\Service\Calendar\Event $event_remote = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function pushEvent(Meeting $event_local = null, Google\Service\Calendar\Event $event_remote = null)
+    protected function pushEvent(?Meeting $event_local = null, ?Google\Service\Calendar\Event $event_remote = null)
+    // END STIC Custom
     {
         if (!$event_local instanceof Meeting) {
             throw new InvalidArgumentException('Argument 1 passed to GoogleSyncBase::pushEvent() must be an instance of Meeting, ' . getType($event_local) . ' given.');
@@ -621,13 +626,17 @@ class GoogleSyncBase
      * If the SuiteCRM Meeting is not provided, a new one will be created
      * and inserted. If one is provided, the existing meeting will be updated.
      *
-     * @param \Google\Service\Calendar\Event $event_remote \Google\Service\Calendar\Event Object
-     * @param Meeting $event_local Meeting (optional) \Meeting Bean
+     * @param \Google\Service\Calendar\Event|null $event_remote \Google\Service\Calendar\Event Object
+     * @param Meeting|null $event_local Meeting (optional) \Meeting Bean
      *
      * @return bool Success/Failure of setLastSync, since that's what saves the record
      * @throws GoogleSyncException if returned event invalid
      */
-    protected function pullEvent(Google\Service\Calendar\Event $event_remote = null, Meeting $event_local = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function pullEvent(Google\Service\Calendar\Event $event_remote = null, Meeting $event_local = null)
+    protected function pullEvent(?Google\Service\Calendar\Event $event_remote = null, ?Meeting $event_local = null)
+    // END STIC Custom
     {
         if (!$event_remote instanceof Google\Service\Calendar\Event) {
             throw new InvalidArgumentException('Argument 1 passed to GoogleSyncBase::pullEvent() must be an instance of Google\Service\Calendar\Event, ' . getType($event_local) . ' given.');
@@ -663,11 +672,15 @@ class GoogleSyncBase
     /**
      * Delete SuiteCRM Meeting
      *
-     * @param Meeting $meeting SuiteCRM Meeting Bean
+     * @param Meeting|null $meeting SuiteCRM Meeting Bean
      *
      * @return string|bool Meeting Id on success, false on failure (from setLastSync, since that's what saves the record)
      */
-    protected function delMeeting(Meeting $meeting = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function delMeeting(Meeting $meeting = null)
+    protected function delMeeting(?Meeting $meeting = null)
+    // END STIC Custom    
     {
         if (!$meeting instanceof Meeting) {
             throw new InvalidArgumentException('Argument 1 passed to GoogleSyncBase::delMeeting() must be an instance of Meeting, ' . getType($meeting) . ' given.');
@@ -681,7 +694,7 @@ class GoogleSyncBase
     /**
      * Delete Google Event
      *
-     * @param \Google\Service\Calendar\Event $event \Google\Service\Calendar\Event Object
+     * @param \Google\Service\Calendar\Event|null $event \Google\Service\Calendar\Event Object
      * @param String $meeting_id SuiteCRM Meeting Id
      *
      * @return string Meeting Id on success
@@ -690,7 +703,11 @@ class GoogleSyncBase
      * @throws GoogleSyncException If Meeting ID fails validation
      * @throws GoogleSyncException If delete fails
      */
-    protected function delEvent(Google\Service\Calendar\Event $event = null, $meeting_id = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function delEvent(Google\Service\Calendar\Event $event = null, $meeting_id = null)
+    protected function delEvent(?Google\Service\Calendar\Event $event = null, $meeting_id = null)
+    // END STIC Custom
     {
         if (!$event instanceof Google\Service\Calendar\Event) {
             throw new InvalidArgumentException('Argument 1 passed to GoogleSyncBase::delEvent() must be an instance of Google\Service\Calendar\Event, ' . gettype($event) . ' given');

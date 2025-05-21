@@ -49,7 +49,7 @@ class stic_Security_Groups_RulesUtils
         $options = array();
 
         // Retrieve systemTabs to filter out irrelevant modules
-        $systemTabs = TabController::get_system_tabs();
+        $systemTabs = (new TabController())->get_system_tabs();
 
         // Check if the main module bean is initialized
         if (!empty($mainModuleBean)) {
@@ -94,11 +94,11 @@ class stic_Security_Groups_RulesUtils
                 // Reset destination module label and module label
                 unset($destModuleLabel, $moduleLabel);
 
-                $moduleLabel = translate($val['vname'], $mainModule);
+                $moduleLabel = translate(($val['vname'] ?? ''), $mainModule);
 
                 // Retrieve certain properties directly from $GLOBALS['dictionary'] if not present
                 $tmpRel = $GLOBALS['dictionary'][$val['relationship']]['relationships'][$val['relationship']] ?? null;
-                if ($tmpRel) {
+                if ($tmpRel && !empty($tmpRel['join_key_rhs']) && !empty($tmpRel['join_key_lhs'])) {
                     // Get the relationship field name from the dictionary
                     $val['field'] = $tmpRel['lhs_module'] == $mainModule ? $tmpRel['join_key_rhs'] : $tmpRel['join_key_lhs'];
                     // Get the module name from the dictionary
@@ -106,7 +106,7 @@ class stic_Security_Groups_RulesUtils
                 }
 
                 // Skip relationship modules that are not in systemTabs
-                if (!in_array($val['module'], $systemTabs)) {continue;}
+                if (empty($val['module']) || !in_array($val['module'], $systemTabs)) {continue;}
 
                 // Check if the module is defined and differs from the module list label
                 if (!empty($val['module']) && $moduleLabel != $app_list_strings['moduleList'][$val['module']]) {
@@ -121,9 +121,9 @@ class stic_Security_Groups_RulesUtils
                             $options[] = [
                                 'id' => $mainModule . $val['relationship'],
                                 'relationship' => $val['relationship'],
-                                'field' => $val['field'],
-                                'module' => $val['module'],
-                                'label' => translate($val['vname'], $mainModule) . $destModuleLabel,
+                                'field' => $val['field'] ?? null,
+                                'module' => $val['module'] ?? null,
+                                'label' => translate($val['vname'] ?? '', $mainModule) . ($destModuleLabel ?? ''),
                             ];
                         }
                     } elseif (!in_array($val['link'], array_column($options, 'relationship'))) {
@@ -171,7 +171,7 @@ class stic_Security_Groups_RulesUtils
         global $app_list_strings;
 
         // Retrieve system tabs
-        $systemTabs = TabController::get_system_tabs();
+        $systemTabs = (new TabController())->get_system_tabs();
 
         // Initialize options array
         $options = [];
@@ -397,7 +397,7 @@ class stic_Security_Groups_RulesUtils
                 if ($rulesBean->inherit_parent == 1 || in_array($value['field'], $filteredRelatedModules)) {
 
                     // Obtain id from parent record
-                    $relatedId = $bean->{$value['field']};
+                    $relatedId = ($bean->{$value['field']})??null;
 
                     // If it is not a string, it indicates we're accessing from a subpanel.
                     // In such cases, retrieve the id in one of the three following ways, or continue.

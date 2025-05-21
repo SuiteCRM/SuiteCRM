@@ -55,8 +55,8 @@ if (isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) && $GLOBALS['sugar
 if (!isset($_REQUEST['guid']) || !isset($_REQUEST['time'])) {
     die('Did not receive a filename to download');
 }
-$time = str_replace(array('.', '/', '\\'), '', $_REQUEST['time']);
-$guid = str_replace(array('.', '/', '\\'), '', $_REQUEST['guid']);
+$time = str_replace(array('.', '/', '\\'), '', (string) $_REQUEST['time']);
+$guid = str_replace(array('.', '/', '\\'), '', (string) $_REQUEST['guid']);
 $path = sugar_cached("diagnostic/{$guid}/diagnostic{$time}.zip");
 $filesize = filesize($path);
 ob_clean();

@@ -333,9 +333,9 @@ class Core
      */
     public static function proxy(
         FutureArrayInterface $future,
-        callable $onFulfilled = null,
-        callable $onRejected = null,
-        callable $onProgress = null
+        ?callable $onFulfilled = null,
+        ?callable $onRejected = null,
+        ?callable $onProgress = null
     ) {
         return new FutureArray(
             $future->then($onFulfilled, $onRejected, $onProgress),

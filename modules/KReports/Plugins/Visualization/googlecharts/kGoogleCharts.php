@@ -59,7 +59,7 @@ class kGoogleChart extends kreportvisualizationplugin{
     public function getItem($thisDivId, $thisReport, $thisParams, $addReportParams = array()) {
 
         $googleData = $this->getChartData($thisReport, $thisParams, 0, $addReportParams);
-        $chartData = $this->wrapGoogleData($googleData, $thisDivId, $thisParams, 0 , $addReportParams);
+        $chartData = $this->wrapGoogleData($googleData, $thisDivId, $thisParams);
 
         $chartDataString = '<script type="text/javascript">';
 
@@ -112,8 +112,8 @@ class kGoogleChart extends kreportvisualizationplugin{
 
         // set Chart Params
         $chartParams = array();
-        $chartParams['showEmptyValues'] = ($thisParams['options']['emptyvalues'] == 'on' ? true : false);
-        if ($thisParams['context'] != '')
+        $chartParams['showEmptyValues'] = ($thisParams['options']['emptyvalues']??'' == 'on' ? true : false);
+        if ($thisParams['context']??'' != '')
             $chartParams['context'] = $thisParams['context'];
 
         $rawData = $chartDataObj->getChartData($thisReport, $snaphotid, $chartParams, $dimensions, $dataseries, $addReportParams);

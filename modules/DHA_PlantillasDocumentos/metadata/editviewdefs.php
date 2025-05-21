@@ -253,9 +253,9 @@ array (
           array (
             'name' => 'aclroles',
             'customLabel' => '<span>{sugar_translate label=\'LBL_ROLES_WITH_ACCESS\' module=$fields.parent_type.value}<br>(<i>{sugar_translate label=\'LBL_ROLES_WITH_ACCESS_HELP\' module=$fields.parent_type.value}</i>) </span>',
-            'displayParams' => array (
-              'size' => ($count_roles > 20)? 20 : ($count_roles < 5)? 5 : $count_roles,
-            ),            
+             'displayParams' => array (
+               'size' => ($count_roles > 20) ? 20 : (($count_roles < 5)? 5 : $count_roles),
+             ),            
           ),
           1 => '',
         ),        

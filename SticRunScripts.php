@@ -108,8 +108,8 @@ require_once('include/entryPoint.php');
 ob_start();
 
 // Checks if a file has been indicated in the request, if it exists in the file system and executes it
-if ($file = $_REQUEST['file']) 
-{
+if (isset($_REQUEST['file'])) {
+    $file = $_REQUEST['file'];
     if (file_exists($file)) {
         $ext = substr($file, -3);
         if ($ext === "php") {

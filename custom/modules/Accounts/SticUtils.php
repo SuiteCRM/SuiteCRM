@@ -42,7 +42,7 @@ class AccountsUtils
         global $app_strings;
         $reasons = array('wrong_address', 'unknown', 'rejected');
 
-        if (in_array($accountBean->stic_postal_mail_return_reason_c, $reasons)) {
+        if (isset($accountBean->stic_postal_mail_return_reason_c) && in_array($accountBean->stic_postal_mail_return_reason_c, $reasons)) {
             global $current_user, $timedate, $app_strings;
 
             // Create the new call

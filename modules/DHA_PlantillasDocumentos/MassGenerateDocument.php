@@ -29,12 +29,13 @@
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('include/EditView/EditView2.php');
+#[\AllowDynamicProperties]
 class MassGenerateDocument {
 
-   var $sugarbean = NULL;
-   var $where_clauses = NULL;
-   var $searchFields = NULL;
-   var $use_old_search = NULL;
+   public $sugarbean = NULL;
+   public $where_clauses = NULL;
+   public $searchFields = NULL;
+   public $use_old_search = NULL;
 
  
    ///////////////////////////////////////////////////////////////////////////////////////////////////      
@@ -257,16 +258,16 @@ class MassGenerateDocument {
                  where modulo = '{$result['module']}' and filename is not null and deleted = 0 
                  order by document_name";
          //$sql = $db->limitQuery($sql, 0, $result['templates_count_max'], false, '', false);     
-         
+
          $dataset = $db->query($sql);
          while ($row = $db->fetchByAssoc($dataset)) {
-         
+
             if (!$this->current_user_has_access_to_template($row['id'], unencodeMultienum($row['aclroles']))) {
                continue;
             }
-            
+
             $result['templates_count'] += 1;
-            
+
             if ($result['templates_count'] > $result['templates_count_max']){
                $result['show_more_templates_link'] = true;
                continue;
@@ -280,26 +281,26 @@ class MassGenerateDocument {
             $template['language'] = $row['idioma'];
             $template['status'] = $row['status_id'];
             $template['description'] = $row['description'];
-            
+
             $template['language_formated'] = $row['idioma'];
             if (isset($app_list_strings['dha_plantillasdocumentos_idiomas_dom'][$row['idioma']]))
                $template['language_formated'] = $app_list_strings['dha_plantillasdocumentos_idiomas_dom'][$row['idioma']];
-            
+
             $template['status_formated'] = $row['status_id'];
             if (isset($app_list_strings['dha_plantillasdocumentos_status_dom'][$row['status_id']]))
                $template['status_formated'] = $app_list_strings['dha_plantillasdocumentos_status_dom'][$row['status_id']];
-               
+
             $template['description_formated'] = $row['description'];
             if (isset($row['description']))
                $template['description_formated'] = nl2br(wordwrap($row['description'],100,'<br>')); 
 
             $template['file_icon'] = SugarThemeRegistry::current()->getImage($row['file_ext'].'_image_inline', '', null, null, '.gif');
-            
+
             $result['templates'][] = $template;    
          }
 
          //if ($result['templates_count'] > 0) {
-         
+
             // Adjuntar documento generado a Email
             $result['can_generate_emails'] = true;
 

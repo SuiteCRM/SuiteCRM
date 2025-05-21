@@ -47,9 +47,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class ImapHandlerException extends Exception
 {
-    const ERR_TEST_SET_NOT_EXISTS = 1;
-    const ERR_KEY_NOT_FOUND = 2;
-    const ERR_KEY_SAVE_ERROR = 3;
+    public const ERR_TEST_SET_NOT_EXISTS = 1;
+    public const ERR_KEY_NOT_FOUND = 2;
+    public const ERR_KEY_SAVE_ERROR = 3;
 }

@@ -49,6 +49,7 @@ require_once('service/core/SugarWebServiceImpl.php');
 require_once('SugarWebServiceUtilv3.php');
 
 
+#[\AllowDynamicProperties]
 class SugarWebServiceImplv3 extends SugarWebServiceImpl
 {
     public function __construct()
@@ -399,6 +400,7 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl
             $sugar_config['list_max_entries_per_page'] = $max_results;
         }
 
+        $unified_search_modules = [];
         require_once('modules/Home/UnifiedSearchAdvanced.php');
         require_once 'include/utils.php';
         $usa = new UnifiedSearchAdvanced();
@@ -459,7 +461,7 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl
                     $emailQuery = false;
 
                     $where = '';
-                    if (count($where_clauses) > 0) {
+                    if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
                         $where = '('. implode(' ) OR ( ', $where_clauses) . ')';
                     }
 
@@ -501,7 +503,7 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl
                     }
 
                     $ret_array = $seed->create_new_list_query('', $where, $filterFields, array(), 0, '', true, $seed, true);
-                    if (empty($params) or !is_array($params)) {
+                    if (empty($params) || !is_array($params)) {
                         $params = array();
                     }
                     if (!isset($params['custom_select'])) {
@@ -624,7 +626,7 @@ class SugarWebServiceImplv3 extends SugarWebServiceImpl
             $list = $result['rows'];
             $filterFields = $result['fields_set_on_rows'];
 
-            if (count($list) > 0) {
+            if ((is_countable($list) ? count($list) : 0) > 0) {
                 // get the related module name and instantiate a bean for that.
                 $submodulename = $mod->$link_field_name->getRelatedModuleName();
                 $submoduleclass = $beanList[$submodulename];

@@ -65,6 +65,7 @@ include_once __DIR__ . '/../../../include/ListView/ListViewFacade.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class ListViewSearchService
 {
     

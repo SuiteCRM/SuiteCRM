@@ -45,6 +45,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewData.php');
 require_once('include/MassUpdate.php');
 
+// STIC Custom 20250210 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class ListViewDisplay
 {
     public static $listViewCounter = 0;
@@ -168,7 +172,13 @@ class ListViewDisplay
 
         $this->fillDisplayColumnsWithVardefs();
 
-        $this->process($file, $data, $seed->object_name);
+        // STIC Custom 20250304 JBL - Avoid Error when $seed is null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $this->process($file, $data, $seed->object_name);
+        if ($seed?->object_name != null) {
+            $this->process($file, $data, $seed->object_name);
+        }
+        // END STIC Custom
         return true;
     }
 
@@ -227,15 +237,16 @@ class ListViewDisplay
     {
         if (!is_array($data)) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data) . ' given.');
+            $data = [];
         } else if (is_array($data) && !is_array($data['data'])) {
             LoggerManager::getLogger()->warn('Row data must be an array, ' . gettype($data['data']) . ' given and converting to an array.');
         }
-        $this->rowCount = count((array)$data['data']);
+        $this->rowCount = count((array)($data['data'] ?? []));
         if (!isset($data['pageData']['bean'])) {
             $GLOBALS['log']->warn("List view process error: Invalid data, bean is not set");
             return false;
         }
-        $this->moduleString = $data['pageData']['bean']['moduleDir'] . '2_' . strtoupper($htmlVar) . '_offset';
+        $this->moduleString = ($data['pageData']['bean']['moduleDir'] ?? '') . '2_' . strtoupper($htmlVar) . '_offset';
         return true;
     }
 
@@ -635,7 +646,11 @@ class ListViewDisplay
      *
      * @return string HTML
      */
-    protected function buildMergeLink(array $modules_array = null, $loc = 'top')
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function buildMergeLink(array $modules_array = null, $loc = 'top')
+    protected function buildMergeLink(?array $modules_array = null, $loc = 'top')
+    // END STIC Custom
     {
         if (empty($modules_array)) {
             require('modules/MailMerge/modules_array.php');

@@ -40,6 +40,7 @@
 
 require_once('modules/ModuleBuilder/MB/MBPackageTree.php');
 require_once('modules/ModuleBuilder/Module/StudioBrowser.php');
+#[\AllowDynamicProperties]
 class MainTree extends MBPackageTree
 {
     public function __construct()

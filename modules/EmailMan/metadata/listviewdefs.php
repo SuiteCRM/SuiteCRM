@@ -81,23 +81,20 @@ $listViewDefs['EmailMan'] = array(
         'width' => '10',
         'label' => 'LBL_LIST_IN_QUEUE',
         'default' => true),
-    // STIC-Custom 20220928 MHP - Add fields to the list view
-    // STIC#873        
-    'date_entered' => array(
+    'DATE_ENTERED' => array(
         'width' => '10',
         'label' => 'LBL_DATE_ENTERED',
         'default' => false),  
-    'date_modified' => array(
+    'DATE_MODIFIED' => array(
         'width' => '10',
         'label' => 'LBL_DATE_MODIFIED',
         'default' => false),  
-    'modified_user_id' => array(
+    'MODIFIED_USER_ID' => array(
         'width' => '10',
         'label' => 'LBL_MODIFIED_USER',
         'default' => false),                  
-    'user_id' => array(
+    'USER_ID' => array(
         'width' => '10',
         'label' => 'LBL_USER_ID',
-        'default' => false),             
-    // END STIC-Custom
+        'default' => false),    
 );

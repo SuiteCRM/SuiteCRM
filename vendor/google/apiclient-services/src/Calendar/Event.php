@@ -32,6 +32,8 @@ class Event extends \Google\Collection
    * @var bool
    */
   public $attendeesOmitted;
+  protected $birthdayPropertiesType = EventBirthdayProperties::class;
+  protected $birthdayPropertiesDataType = '';
   /**
    * @var string
    */
@@ -64,6 +66,8 @@ class Event extends \Google\Collection
   public $eventType;
   protected $extendedPropertiesType = EventExtendedProperties::class;
   protected $extendedPropertiesDataType = '';
+  protected $focusTimePropertiesType = EventFocusTimeProperties::class;
+  protected $focusTimePropertiesDataType = '';
   protected $gadgetType = EventGadget::class;
   protected $gadgetDataType = '';
   /**
@@ -110,6 +114,8 @@ class Event extends \Google\Collection
   protected $organizerDataType = '';
   protected $originalStartTimeType = EventDateTime::class;
   protected $originalStartTimeDataType = '';
+  protected $outOfOfficePropertiesType = EventOutOfOfficeProperties::class;
+  protected $outOfOfficePropertiesDataType = '';
   /**
    * @var bool
    */
@@ -152,6 +158,8 @@ class Event extends \Google\Collection
    * @var string
    */
   public $visibility;
+  protected $workingLocationPropertiesType = EventWorkingLocationProperties::class;
+  protected $workingLocationPropertiesDataType = '';
 
   /**
    * @param bool
@@ -208,6 +216,20 @@ class Event extends \Google\Collection
   public function getAttendeesOmitted()
   {
     return $this->attendeesOmitted;
+  }
+  /**
+   * @param EventBirthdayProperties
+   */
+  public function setBirthdayProperties(EventBirthdayProperties $birthdayProperties)
+  {
+    $this->birthdayProperties = $birthdayProperties;
+  }
+  /**
+   * @return EventBirthdayProperties
+   */
+  public function getBirthdayProperties()
+  {
+    return $this->birthdayProperties;
   }
   /**
    * @param string
@@ -348,6 +370,20 @@ class Event extends \Google\Collection
   public function getExtendedProperties()
   {
     return $this->extendedProperties;
+  }
+  /**
+   * @param EventFocusTimeProperties
+   */
+  public function setFocusTimeProperties(EventFocusTimeProperties $focusTimeProperties)
+  {
+    $this->focusTimeProperties = $focusTimeProperties;
+  }
+  /**
+   * @return EventFocusTimeProperties
+   */
+  public function getFocusTimeProperties()
+  {
+    return $this->focusTimeProperties;
   }
   /**
    * @param EventGadget
@@ -532,6 +568,20 @@ class Event extends \Google\Collection
     return $this->originalStartTime;
   }
   /**
+   * @param EventOutOfOfficeProperties
+   */
+  public function setOutOfOfficeProperties(EventOutOfOfficeProperties $outOfOfficeProperties)
+  {
+    $this->outOfOfficeProperties = $outOfOfficeProperties;
+  }
+  /**
+   * @return EventOutOfOfficeProperties
+   */
+  public function getOutOfOfficeProperties()
+  {
+    return $this->outOfOfficeProperties;
+  }
+  /**
    * @param bool
    */
   public function setPrivateCopy($privateCopy)
@@ -698,6 +748,20 @@ class Event extends \Google\Collection
   public function getVisibility()
   {
     return $this->visibility;
+  }
+  /**
+   * @param EventWorkingLocationProperties
+   */
+  public function setWorkingLocationProperties(EventWorkingLocationProperties $workingLocationProperties)
+  {
+    $this->workingLocationProperties = $workingLocationProperties;
+  }
+  /**
+   * @return EventWorkingLocationProperties
+   */
+  public function getWorkingLocationProperties()
+  {
+    return $this->workingLocationProperties;
   }
 }
 

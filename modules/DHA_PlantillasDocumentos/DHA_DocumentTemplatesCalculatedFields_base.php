@@ -25,6 +25,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 require_once('modules/DHA_PlantillasDocumentos/Generate_Document.php');
 
+#[\AllowDynamicProperties]
 class DHA_DocumentTemplatesCalculatedFields {
 
    // NOTA: En cada modulo que se necesita, se creará un fichero extendiendo esta clase cuyo nombre de clase será "NOMBREMODULO_DocumentTemplatesCalculatedFields", y se situará bien en /modules/NOMBREMODULO/DHA_DocumentTemplatesCalculatedFields.php o bien en /custom/modules/NOMBREMODULO/DHA_DocumentTemplatesCalculatedFields.php

@@ -469,7 +469,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
 
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -537,7 +537,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
 
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -597,7 +597,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
 
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -632,7 +632,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 2;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_invalid_{$i}', 'InvalidClass', '0', '0')
         ";
         $db->query($q);
@@ -671,7 +671,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         self::assertNotEquals($ea_deleted, $bean_deleted);
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -850,7 +850,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1199,8 +1199,8 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         // test
         $q = /** @lang sql */
             "
-          DELETE FROM email_addresses 
-            WHERE 
+          DELETE FROM email_addresses
+            WHERE
               email_address_caps = ''";
         $db->query($q);
 
@@ -1218,8 +1218,8 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         // test
         $q = /** @lang sql */
             "
-          DELETE FROM email_addresses 
-            WHERE 
+          DELETE FROM email_addresses
+            WHERE
               email_address_caps = 'TEST@EMAIL.COM'";
         $db->query($q);
 
@@ -1285,7 +1285,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1329,7 +1329,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1370,7 +1370,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1432,7 +1432,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $query = /** @lang sql */
             "
             SELECT count(*) as cnt
-                FROM email_addresses ea 
+                FROM email_addresses ea
                 LEFT JOIN email_addr_bean_rel ear ON ea.id = ear.email_address_id
                 WHERE ear.bean_module = '' AND ear.bean_id = '' AND ear.deleted = 0";
         $r = $db->query($query);
@@ -1440,7 +1440,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $cnt = $row['cnt'];
 
         $result = $this->ea->getAddressesByGUID($id, $module);
-        $count = count($result);
+        $count = is_countable($result) ? count($result) : 0;
         self::assertEquals($cnt, $count);
 
         // test
@@ -1448,7 +1448,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $module = null;
 
         $result = $this->ea->getAddressesByGUID($id, $module);
-        $count = count($result);
+        $count = is_countable($result) ? count($result) : 0;
         self::assertEquals(0, $count);
 
         // test
@@ -1498,7 +1498,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1610,7 +1610,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         self::assertEquals(false, $result);
 
         self::assertFalse(strpos(
-            $result,
+            (string) $result,
             '[{"email_address":null,"email_address_caps":"TEST@EMAIL.COM","invalid_email":"0","opt_out":"0","date_created":null,"date_modified":null,"id":"test_email_bean_rel_1","email_address_id":"test_email_1","bean_id":"test_contact_1","bean_module":"Contacts","primary_address":"0","reply_to_address":"0","deleted":"0"},{"email_address":null,"email_address_caps":"TEST@EMAIL.COM","invalid_email":"0","opt_out":"0","date_created":null,"date_modified":null,"id":"","email_address_id":"test_email_1","bean_id":"test_contact_1","bean_module":"Contacts","primary_address":"0","reply_to_address":"1","deleted":"0"}]'
         ));
 
@@ -1700,7 +1700,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $i = 1;
         $q = /** @lang sql */
             "
-          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted) 
+          INSERT INTO email_addr_bean_rel (id, email_address_id, bean_id, bean_module, primary_address, deleted)
           VALUES ('test_email_bean_rel_{$i}', 'test_email_{$i}', 'test_contact_{$i}', 'Contacts', '0', '0')
         ";
         $db->query($q);
@@ -1725,7 +1725,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         $c = BeanFactory::getBean('Contacts');
         $c->id = 'an-non-exists-id';
         $result = $this->ea->getEmailAddressWidgetDetailView($c);
-        self::assertNotFalse(strpos($result, '--None--'));
+        self::assertNotFalse(strpos((string) $result, '--None--'));
 
         $expected = !empty($result) && is_string($result);
         self::assertTrue($expected);
@@ -1733,7 +1733,7 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
         // test
         $c->id = "test_contact_{$i}";
         $result = $this->ea->getEmailAddressWidgetDetailView($c);
-        self::assertFalse(strpos($result, '--None--'));
+        self::assertFalse(strpos((string) $result, '--None--'));
 
         $expected = !empty($result) && is_string($result);
         self::assertTrue($expected);
@@ -2103,17 +2103,17 @@ class SugarEmailAddressTest extends SuitePHPUnitFrameworkTestCase
 
         // test
         $result = getEmailAddressWidget($c, null, null, 'ConvertLead');
-        self::assertFalse(strpos($result, '--None--'));
+        self::assertFalse(strpos((string) $result, '--None--'));
         self::assertCount(1, $GLOBALS['log']->calls['fatal']);
 
 
         // test
         $result = getEmailAddressWidget($a, null, null, 'ConvertLead');
-        self::assertFalse(strpos($result, '--None--'));
+        self::assertFalse(strpos((string) $result, '--None--'));
 
         // test
         $result = getEmailAddressWidget($c, null, null, 'EditView');
-        self::assertFalse(strpos($result, '--None--'));
+        self::assertFalse(strpos((string) $result, '--None--'));
 
         // test
         $result = getEmailAddressWidget($c, null, null, 'DetailView');

@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Exception;
 use SuiteCRM\Search\Exceptions\SearchEngineNotFoundException;
 use SuiteCRM\Search\Exceptions\SearchException;
@@ -62,6 +63,7 @@ use Whoops\Run;
  *
  * If developer mode is enabled, further details will be provided.
  */
+#[\AllowDynamicProperties]
 class SearchThrowableHandler
 {
     /** @var Throwable The Exception or Error that has occurred */
@@ -130,11 +132,18 @@ class SearchThrowableHandler
             case SearchException::class:
                 $message = $mod_strings['LBL_ELASTIC_SEARCH_EXCEPTION_SEARCH'];
                 break;
+            case Missing404Exception::class:
+                $message = $mod_strings['LBL_ELASTIC_SEARCH_EXCEPTION_MISSING_INDEX'];
+                break;
             default:
                 $message = $mod_strings['LBL_ELASTIC_SEARCH_EXCEPTION_DEFAULT'];
         }
 
-        return $message;
+        // STIC Custom 20250315 JBL - Fix TypeError: Return value must be of type string, null returned
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return $message;
+        return $message ?? '';
+        // END STIC Custom
     }
 
     /**
@@ -157,7 +166,7 @@ class SearchThrowableHandler
     /**
      * Returns an array with the SearchWrapper status to be displayed in the detailed view.
      *
-     * @return array
+     * @return mixed[]|null
      */
     private function getSearchWrapperStatus(): ?array
     {

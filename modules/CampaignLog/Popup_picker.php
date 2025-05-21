@@ -54,6 +54,7 @@ global $theme;
 
 
 
+#[\AllowDynamicProperties]
 class Popup_Picker
 {
 

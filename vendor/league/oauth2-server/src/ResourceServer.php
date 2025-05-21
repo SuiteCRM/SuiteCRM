@@ -42,7 +42,7 @@ class ResourceServer
     public function __construct(
         AccessTokenRepositoryInterface $accessTokenRepository,
         $publicKey,
-        AuthorizationValidatorInterface $authorizationValidator = null
+        ?AuthorizationValidatorInterface $authorizationValidator = null
     ) {
         $this->accessTokenRepository = $accessTokenRepository;
 
@@ -63,7 +63,9 @@ class ResourceServer
             $this->authorizationValidator = new BearerTokenValidator($this->accessTokenRepository);
         }
 
-        $this->authorizationValidator->setPublicKey($this->publicKey);
+        if ($this->authorizationValidator instanceof BearerTokenValidator === true) {
+            $this->authorizationValidator->setPublicKey($this->publicKey);
+        }
 
         return $this->authorizationValidator;
     }

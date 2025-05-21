@@ -27,7 +27,7 @@ class AOS_QuotesLogicHooks
     public function after_save(&$bean, $event, $arguments)
     {
         // If mass duplicate
-        if ($_REQUEST['mass_duplicate']) {
+        if (!empty($_REQUEST['mass_duplicate'])) {
             global $db, $sugar_config;
             include_once 'SticInclude/Utils.php';
 

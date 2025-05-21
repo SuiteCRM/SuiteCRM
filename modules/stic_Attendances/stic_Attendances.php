@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Attendances extends Basic
 {
     public $new_schema = true;
@@ -61,11 +62,31 @@ class stic_Attendances extends Basic
 
     public function save_relationship_changes($is_update, $exclude = array())
     {
-        if (!empty($this->stic_attendances_stic_registrationsstic_registrations_ida) && (trim($this->stic_attendances_stic_registrationsstic_registrations_ida) != trim($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida']))) {
-            // On new records, inherit amount from related registration
-            if (empty($this->amount) && !$is_update) {
-                $registrationBean = BeanFactory::getBean('stic_Registrations', $this->stic_attendances_stic_registrationsstic_registrations_ida);
-                $this->amount = (float)$registrationBean->session_amount;
+        // STIC Custom 20250416 JBL - Fix Warnings and TypeErrors
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // if (!empty($this->stic_attendances_stic_registrationsstic_registrations_ida) && !empty($this->rel_fields_before_value) && (trim($this->stic_attendances_stic_registrationsstic_registrations_ida) != trim($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida']))) {
+        if (!empty($this->stic_attendances_stic_registrationsstic_registrations_ida)) {
+            $registration_id = '';
+            if (is_string($this->stic_attendances_stic_registrationsstic_registrations_ida) || 
+                (is_object($this->stic_attendances_stic_registrationsstic_registrations_ida) && 
+                    method_exists($this->stic_attendances_stic_registrationsstic_registrations_ida, '__toString'))) {
+                $registration_id = (string)$this->stic_attendances_stic_registrationsstic_registrations_ida;
+            }
+            $registration_id_before = '';
+            if (isset($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida'])) {
+                if (is_string($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida']) ||
+                    (is_object($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida']) && 
+                        method_exists($this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida'], '__toString'))) {
+                    $registration_id_before = (string)$this->rel_fields_before_value['stic_attendances_stic_registrationsstic_registrations_ida'];
+                }
+            }
+            if (trim($registration_id) != trim($registration_id_before)) {
+        // END STIC Custom
+                // On new records, inherit amount from related registration
+                if (empty($this->amount) && !$is_update) {
+                    $registrationBean = BeanFactory::getBean('stic_Registrations', $this->stic_attendances_stic_registrationsstic_registrations_ida);
+                    $this->amount = (float)$registrationBean->session_amount;
+                }
             }
         }
         parent::save_relationship_changes($is_update, $exclude);

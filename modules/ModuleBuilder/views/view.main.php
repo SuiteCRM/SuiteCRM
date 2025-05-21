@@ -39,6 +39,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class ViewMain extends SugarView
 {
     public function __construct()

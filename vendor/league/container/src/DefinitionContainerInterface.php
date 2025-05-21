@@ -16,5 +16,5 @@ interface DefinitionContainerInterface extends ContainerInterface
     public function addShared(string $id, $concrete = null): DefinitionInterface;
     public function extend(string $id): DefinitionInterface;
     public function getNew($id);
-    public function inflector(string $type, callable $callback = null): InflectorInterface;
+    public function inflector(string $type, ?callable $callback = null): InflectorInterface;
 }

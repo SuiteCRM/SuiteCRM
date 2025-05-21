@@ -24,6 +24,7 @@ use Slim\Http\Request;
 use SugarBean;
 use SuiteCRM\Exception\AccessDeniedException;
 
+#[\AllowDynamicProperties]
 class ModuleService
 {
     /**
@@ -98,6 +99,7 @@ class ModuleService
      */
     public function getRecords(GetModulesParams $params, Request $request)
     {
+        $beanResult = [];
         global $db;
         // this whole method should split into separated classes later
         $module = $params->getModuleName();
@@ -332,8 +334,8 @@ class ModuleService
         // Write file to upload dir
         try {
             // Checking file extension
-            $extPos = strrpos($attributes['filename'], '.');
-            $fileExtension = substr($attributes['filename'], $extPos + 1);
+            $extPos = strrpos((string) $attributes['filename'], '.');
+            $fileExtension = substr((string) $attributes['filename'], $extPos + 1);
 
             if ($extPos === false || empty($fileExtension) || in_array(
                     $fileExtension,
@@ -380,8 +382,8 @@ class ModuleService
         // Write file to upload dir
         try {
             // Checking file extension
-            $extPos = strrpos($attributes['filename'], '.');
-            $fileExtension = substr($attributes['filename'], $extPos + 1);
+            $extPos = strrpos((string) $attributes['filename'], '.');
+            $fileExtension = substr((string) $attributes['filename'], $extPos + 1);
 
             if ($extPos === false || empty($fileExtension) || in_array(
                     $fileExtension,
@@ -427,6 +429,10 @@ class ModuleService
         $bean = $this->beanManager->getBeanSafe($module, $id);
 
         if (!$bean->ACLAccess('save')) {
+            throw new AccessDeniedException();
+        }
+
+        if (isset($attributes['deleted']) && isTrue($attributes['deleted']) && !$bean->ACLAccess('delete')) {
             throw new AccessDeniedException();
         }
 

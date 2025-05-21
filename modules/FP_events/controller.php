@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class FP_eventsController extends SugarController
 {
     public function action_markasinvited()
@@ -590,7 +591,11 @@ class FP_eventsController extends SugarController
     }
 
     //handles sending the emails
-    public function sendEmail($emailTo, $emailSubject, $emailToname, $emailBody, $altemailBody, SugarBean $relatedBean = null, $attachments = array())
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function sendEmail($emailTo, $emailSubject, $emailToname, $emailBody, $altemailBody, SugarBean $relatedBean = null, $attachments = array())
+    public function sendEmail($emailTo, $emailSubject, $emailToname, $emailBody, $altemailBody, ?SugarBean $relatedBean = null, $attachments = array())
+    // END STIC Custom
     {
         $emailObj = BeanFactory::newBean('Emails');
         $defaults = $emailObj->getSystemDefaultEmail();

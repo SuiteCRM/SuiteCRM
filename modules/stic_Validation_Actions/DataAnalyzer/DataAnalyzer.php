@@ -74,32 +74,35 @@ class stic_DataAnalyzer
                         throw new Exception("Database error [" . $db->lastError() . "]");
                     }
 
-                    // Create an array with the records to validate
-                    $records = array();
-                    while ($row = $db->fetchByAssoc($dbResult)) {
-                        array_push($records, $row);
-                    }
+                    if (!is_bool($dbResult)) 
+                    {   
+                        // Create an array with the records to validate
+                        $records = array();
+                        while ($row = $db->fetchByAssoc($dbResult)) {
+                            array_push($records, $row);
+                        }
 
-                    // If the result of the query was an object, close it
-                    if (is_object($dbResult)) {
-                        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Closing query object.");
-                        $dbResult->close();
-                    }
-                                    
-                    // Remove stale validation results related to the running validation action
-                    $func->removeObsoleteValidationResults($records, $db, $func->selector, $func->id);
-
-                    // Apply validation action
-                    $result = $func->doAction($records, $action);
-                    if ($result) {
-                        // If the action was executed correctly, the date of the last execution is updated
-                        $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": Action [{$action->id} - {$action->name}] has been successfully completed.");
-                        global $timedate;
-                        $action->last_execution = $timedate->getInstance()->now();
-                        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Saving execution date...");
-                        $action->save();
-                    } else {
-                        $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Action [{$action->id} - {$action->name}]has ended with error.");
+                        // If the result of the query was an object, close it
+                        if (is_object($dbResult)) {
+                            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Closing query object.");
+                            $dbResult->close();
+                        }
+                                        
+                        // Remove stale validation results related to the running validation action
+                        $func->removeObsoleteValidationResults($records, $db, $func->selector, $func->id);
+                        
+                        // Apply validation action
+                        $result = $func->doAction($records, $action);
+                        if ($result) {
+                            // If the action was executed correctly, the date of the last execution is updated
+                            $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": Action [{$action->id} - {$action->name}] has been successfully completed.");
+                            global $timedate;
+                            $action->last_execution = $timedate->getInstance()->now();
+                            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Saving execution date...");
+                            $action->save();
+                        } else {
+                            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Action [{$action->id} - {$action->name}]has ended with error.");
+                        }
                     }
                 } catch (Exception $e) {
                     $idError = uniqid();

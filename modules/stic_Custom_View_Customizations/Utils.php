@@ -46,14 +46,12 @@ function displayConditionLines($focus, $field, $value, $view)
 {
     require_once 'modules/stic_Custom_Views/Utils.php';
 
-    global $mod_strings;
-
     $html =
         "<table cellpadding='0' cellspacing='0' border='0' style='table-layout:fixed; width:100%;'" .
         "id='sticCustomView_ConditionLines' class='sticCustomView_Lines'></table>" .
         "<div style='padding-top: 10px; padding-bottom:10px;'>" .
         "<input type='button' class='button' tabindex='116' " .
-        "value=\"" . $mod_strings['LBL_ADD_CONDITION'] . "\" " .
+        "value=\"" . translate('LBL_ADD_CONDITION', "stic_Custom_View_Customizations") . "\" " .
         "id='btn_ConditionLine' onclick='insertConditionLine()'/>" .
         "</div>";
 
@@ -78,14 +76,13 @@ function displayConditionLines($focus, $field, $value, $view)
 function displayActionLines(SugarBean $focus, $field, $value, $view)
 {
     require_once 'modules/stic_Custom_Views/Utils.php';
-    global $mod_strings;
 
     $html =
         "<table cellpadding='0' cellspacing='0' border='0' style='table-layout:fixed; width:100%;'" .
         "id='sticCustomView_ActionLines' class='sticCustomView_Lines'></table>" .
         "<div style='padding-top: 10px; padding-bottom:10px;'>" .
         "<input type='button' class='button' tabindex='116' " .
-        "value=\"" . $mod_strings['LBL_ADD_ACTION'] . "\" " .
+        "value=\"" . translate('LBL_ADD_ACTION', "stic_Custom_View_Customizations") . "\" " .
         "id='btn_ActionLine' onclick='insertActionLine()'/>" .
         "</div>";
 

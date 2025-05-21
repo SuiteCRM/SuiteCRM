@@ -23,6 +23,7 @@
 require_once('include/MVC/View/views/view.quickcreate.php');
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class stic_Accounts_RelationshipsViewPopup extends ViewPopup {
 
     function preDisplay() {

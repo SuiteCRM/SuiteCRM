@@ -4,281 +4,123 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser;
 
-use ZBateson\MailMimeParser\Header\Consumer\ConsumerService;
-use ZBateson\MailMimeParser\Header\HeaderFactory;
-use ZBateson\MailMimeParser\Header\Part\HeaderPartFactory;
-use ZBateson\MailMimeParser\Header\Part\MimeLiteralPartFactory;
-use ZBateson\MailMimeParser\Message\Helper\MessageHelperService;
-use ZBateson\MailMimeParser\Message\MessageParser;
-use ZBateson\MailMimeParser\Message\Part\Factory\PartBuilderFactory;
-use ZBateson\MailMimeParser\Message\Part\Factory\PartFactoryService;
-use ZBateson\MailMimeParser\Message\Part\Factory\PartStreamFilterManagerFactory;
-use ZBateson\MbWrapper\MbWrapper;
+use Pimple\Container as PimpleContainer;
+use Pimple\Exception\UnknownIdentifierException;
+use ReflectionClass;
+use ReflectionParameter;
 
 /**
- * Dependency injection container for use by ZBateson\MailMimeParser - because a
- * more complex one seems like overkill.
- * 
- * Constructs objects and whatever dependencies they require.
+ * Automatically configures classes and dependencies.
+ *
+ * Sets up an automatic registration for classes when requested through
+ * Pimple by looking up the class's constructor and arguments.
  *
  * @author Zaahid Bateson
  */
-class Container
+class Container extends PimpleContainer
 {
     /**
-     * @var PartBuilderFactory The PartBuilderFactory instance
-     */
-    protected $partBuilderFactory;
-    
-    /**
-     * @var PartFactoryService The PartFactoryService instance
-     */
-    protected $partFactoryService;
-    
-    /**
-     * @var PartFilterFactory The PartFilterFactory instance
-     */
-    protected $partFilterFactory;
-    
-    /**
-     * @var PartStreamFilterManagerFactory The PartStreamFilterManagerFactory
-     *      instance
-     */
-    protected $partStreamFilterManagerFactory;
-    
-    /**
-     * @var \ZBateson\MailMimeParser\Header\HeaderFactory singleton 'service'
-     * instance
-     */
-    protected $headerFactory;
-    
-    /**
-     * @var \ZBateson\MailMimeParser\Header\Part\HeaderPartFactory singleton
-     * 'service' instance
-     */
-    protected $headerPartFactory;
-    
-    /**
-     * @var \ZBateson\MailMimeParser\Header\Part\MimeLiteralPartFactory
-     * singleton 'service' instance
-     */
-    protected $mimeLiteralPartFactory;
-    
-    /**
-     * @var \ZBateson\MailMimeParser\Header\Consumer\ConsumerService singleton
-     * 'service' instance
-     */
-    protected $consumerService;
-    
-    /**
-     * @var MessageHelperService Used to get MessageHelper singletons
-     */
-    protected $messageHelperService;
-
-    /**
-     * @var StreamFactory
-     */
-    protected $streamFactory;
-    
-    /**
-     * Constructs a Container - call singleton() to invoke
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     * Returns a singleton 'service' instance for the given service named $var
-     * with a class type of $class.
-     * 
-     * @param string $var the name of the service
-     * @param string $class the name of the class
-     * @return mixed the service object
-     */
-    protected function getInstance($var, $class)
-    {
-        if ($this->$var === null) {
-            $this->$var = new $class();
-        }
-        return $this->$var;
-    }
-    
-    /**
-     * Constructs and returns a new MessageParser object.
-     * 
-     * @return \ZBateson\MailMimeParser\Message\MessageParser
-     */
-    public function newMessageParser()
-    {
-        return new MessageParser(
-            $this->getPartFactoryService(),
-            $this->getPartBuilderFactory()
-        );
-    }
-    
-    /**
-     * Returns a MessageHelperService instance.
-     * 
-     * @return MessageHelperService
-     */
-    public function getMessageHelperService()
-    {
-        if ($this->messageHelperService === null) {
-            $this->messageHelperService = new MessageHelperService(
-                $this->getPartBuilderFactory()
-            );
-            $this->messageHelperService->setPartFactoryService(
-                $this->getPartFactoryService()
-            );
-        }
-        return $this->messageHelperService;
-    }
-
-    /**
-     * Returns a PartFilterFactory instance
+     * Looks up the type of the passed ReflectionParameter and returns it as a
+     * fully qualified class name as expected by the class's auto registration.
      *
-     * @return PartFilterFactory
-     */
-    public function getPartFilterFactory()
-    {
-        return $this->getInstance(
-            'partFilterFactory',
-            __NAMESPACE__ . '\Message\PartFilterFactory'
-        );
-    }
-    
-    /**
-     * Returns a PartFactoryService singleton.
-     * 
-     * @return PartFactoryService
-     */
-    public function getPartFactoryService()
-    {
-        if ($this->partFactoryService === null) {
-            $this->partFactoryService = new PartFactoryService(
-                $this->getPartFilterFactory(),
-                $this->getStreamFactory(),
-                $this->getPartStreamFilterManagerFactory(),
-                $this->getMessageHelperService()
-            );
-        }
-        return $this->partFactoryService;
-    }
-
-    /**
-     * Returns a PartBuilderFactory instance.
-     * 
-     * @return PartBuilderFactory
-     */
-    public function getPartBuilderFactory()
-    {
-        if ($this->partBuilderFactory === null) {
-            $this->partBuilderFactory = new PartBuilderFactory(
-                $this->getHeaderFactory()
-            );
-        }
-        return $this->partBuilderFactory;
-    }
-    
-    /**
-     * Returns the header factory service instance.
-     * 
-     * @return \ZBateson\MailMimeParser\Header\HeaderFactory
-     */
-    public function getHeaderFactory()
-    {
-        if ($this->headerFactory === null) {
-            $this->headerFactory = new HeaderFactory(
-                $this->getConsumerService(),
-                $this->getMimeLiteralPartFactory()
-            );
-        }
-        return $this->headerFactory;
-    }
-
-    /**
-     * Returns a StreamFactory.
+     * Null is returned for built-in types.
      *
-     * @return StreamFactory
      */
-    public function getStreamFactory()
+    private function getParameterClass(ReflectionParameter $param) : ?string
     {
-        return $this->getInstance(
-            'streamFactory',
-            __NAMESPACE__ . '\Stream\StreamFactory'
-        );
+        if (\method_exists($param, 'getType')) {
+            $type = $param->getType();
+            if ($type && !$type->isBuiltin()) {
+                return \method_exists($type, 'getName') ? $type->getName() : (string) $type;
+            }
+        } elseif ($param->getClass() !== null) {
+            return $param->getClass()->getName();
+        }
+        return null;
     }
 
     /**
-     * Returns a PartStreamFilterManagerFactory.
-     * 
-     * @return PartStreamFilterManagerFactory
+     * Returns a factory function for the passed class.
+     *
+     * The returned factory method looks up arguments and uses pimple to get an
+     * instance of those types to pass them during construction.
      */
-    public function getPartStreamFilterManagerFactory()
+    public function autoRegister($class) : ?string
     {
-        if ($this->partStreamFilterManagerFactory === null) {
-            $this->partStreamFilterManagerFactory = new PartStreamFilterManagerFactory(
-                $this->getStreamFactory()
-            );
-        }
-        return $this->getInstance(
-            'partStreamFilterManagerFactory',
-            __NAMESPACE__ . '\Message\Part\PartStreamFilterManagerFactory'
-        );
+        $fn = function($c) use ($class) {
+            $ref = new ReflectionClass($class);
+            $cargs = ($ref->getConstructor() !== null) ? $ref->getConstructor()->getParameters() : [];
+            $ap = [];
+            foreach ($cargs as $arg) {
+                $name = $arg->getName();
+                $argClass = $this->getParameterClass($arg);
+                if (!empty($c[$name])) {
+                    $ap[] = $c[$name];
+                } elseif ($argClass !== null && !empty($c[$argClass])) {
+                    $ap[] = $c[$argClass];
+                } else {
+                    $ap[] = 0;
+                }
+            }
+            $ret = $ref->newInstanceArgs($ap);
+            return $ret;
+        };
+        $this[$class] = $fn;
+        return null;
     }
 
     /**
-     * Returns a MbWrapper.
-     * 
-     * @return MbWrapper
+     * Overridden to see if the class can be auto-registered and return true if
+     * it can.
      */
-    public function getCharsetConverter()
+    public function offsetExists($id) : bool
     {
-        return new MbWrapper();
-    }
-    
-    /**
-     * Returns the part factory service
-     * 
-     * @return \ZBateson\MailMimeParser\Header\Part\HeaderPartFactory
-     */
-    public function getHeaderPartFactory()
-    {
-        if ($this->headerPartFactory === null) {
-            $this->headerPartFactory = new HeaderPartFactory($this->getCharsetConverter());
+        $exists = parent::offsetExists($id);
+        if (!$exists && \class_exists($id)) {
+            $this->autoRegister($id);
+            return true;
         }
-        return $this->headerPartFactory;
+        return $exists;
     }
-    
+
     /**
-     * Returns the MimeLiteralPartFactory service
-     * 
-     * @return \ZBateson\MailMimeParser\Header\Part\MimeLiteralPartFactory
+     * Overridden to see if the class can be auto-registered and return an
+     * instance if it can.
+     *
+     * @param string | int $id
+     *
+     * @return mixed The value of the parameter or an object
+     *
+     * @throws UnknownIdentifierException
      */
-    public function getMimeLiteralPartFactory()
+    #[\ReturnTypeWillChange]
+    public function offsetGet($id)
     {
-        if ($this->mimeLiteralPartFactory === null) {
-            $this->mimeLiteralPartFactory = new MimeLiteralPartFactory($this->getCharsetConverter());
+        try {
+            return parent::offsetGet($id);
+        } catch (UnknownIdentifierException $e) {
+            if (\class_exists($id)) {
+                $this->autoRegister($id);
+                return parent::offsetGet($id);
+            }
+            throw $e;
         }
-        return $this->mimeLiteralPartFactory;
     }
-    
+
     /**
-     * Returns the header consumer service
-     * 
-     * @return \ZBateson\MailMimeParser\Header\Consumer\ConsumerService
+     * Overridden to see if the class can be auto-registered first before
+     * calling Pimple\Container::extend
+     *
+     * @param string $id
+     * @param callable $callable
+     * @return callable the wrapped $callable
      */
-    public function getConsumerService()
+    public function extend($id, $callable)
     {
-        if ($this->consumerService === null) {
-            $this->consumerService = new ConsumerService(
-                $this->getHeaderPartFactory(),
-                $this->getMimeLiteralPartFactory()
-            );
-        }
-        return $this->consumerService;
+        $this->offsetExists($id);
+        return parent::extend($id, $callable);
     }
-    
 }

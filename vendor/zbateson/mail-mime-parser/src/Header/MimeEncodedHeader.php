@@ -4,6 +4,7 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header;
 
 use ZBateson\MailMimeParser\Header\Consumer\AbstractConsumer;
@@ -15,26 +16,15 @@ use ZBateson\MailMimeParser\Header\Part\MimeLiteralPartFactory;
  * Allows a header to be mime-encoded and be decoded with a consumer after
  * decoding.
  *
- * The entire header's value must only consist of mime-encoded parts for this to
- * apply.
- * 
  * @author Zaahid Bateson
  */
 abstract class MimeEncodedHeader extends AbstractHeader
 {
     /**
-     * @var \ZBateson\MailMimeParser\Header\Part\MimeLiteralPartFactory for
-     * mime decoding.
+     * @var MimeLiteralPartFactory for mime decoding.
      */
     protected $mimeLiteralPartFactory;
 
-    /**
-     * Includes
-     *
-     * @param ConsumerService $consumerService
-     * @param string $name
-     * @param string $value
-     */
     public function __construct(
         MimeLiteralPartFactory $mimeLiteralPartFactory,
         ConsumerService $consumerService,
@@ -46,19 +36,19 @@ abstract class MimeEncodedHeader extends AbstractHeader
     }
 
     /**
-     * Mime-decodes the raw value if the whole raw value only consists of mime-
-     * encoded parts and whitespace prior to invoking the passed consumer.
+     * Mime-decodes any mime-encoded parts prior to invoking the passed
+     * consumer.
      *
-     * @param AbstractConsumer $consumer
+     * @return static
      */
     protected function setParseHeaderValue(AbstractConsumer $consumer)
     {
         $value = $this->rawValue;
-        $matchp = '~^(\s*' . MimeLiteralPart::MIME_PART_PATTERN . '\s*)+$~';
-        if (preg_match($matchp, $value)) {
-            $p = $this->mimeLiteralPartFactory->newInstance($value);
-            $value = $p->getValue();
-        }
+        $matchp = '~' . MimeLiteralPart::MIME_PART_PATTERN . '~';
+        $value = \preg_replace_callback($matchp, function($matches) {
+            return $this->mimeLiteralPartFactory->newInstance($matches[0]);
+        }, $value);
         $this->parts = $consumer($value);
+        return $this;
     }
 }

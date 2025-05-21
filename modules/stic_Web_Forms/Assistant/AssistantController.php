@@ -177,7 +177,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
      */
     function saveSelectedFields() 
     {
-        $selectedFields = $this->persistentData['SELECTED_FIELDS'];        
+        $selectedFields = $this->persistentData['SELECTED_FIELDS'] ?? null;        
         if (empty($selectedFields)) 
         {
             $selectedFields = array();
@@ -250,7 +250,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     	* @param Const $filter
     	* @return Array
     	*/
-    function getFilteredParams ($defaultValues = null, $filter = FILTER_SANITIZE_STRING) 
+    function getFilteredParams ($defaultValues = null, $filter = FILTER_DEFAULT) 
     {
     	$ret = parent::getFilteredParams();	// Call the parent class method
     
@@ -326,9 +326,9 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     				if (is_array($field))  // If it is an array it allows overwriting the default definition of the field
     				{ 
     					$fieldName = $field['name'];
-    					$forceOptions = $field['options'];
-    					$formField['hidden'] = $field['hidden'];
-    					$formField['script'] = $field['script'];
+    					$forceOptions = $field['options'] ?? null;
+    					$formField['hidden'] = $field['hidden'] ?? null;
+    					$formField['script'] = $field['script'] ?? null;
     				} 
     				else {
     					$fieldName = $field;
@@ -375,7 +375,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     					}
     
     					// If the field is required and was not included, it is included in the output array
-    					if ($formField['DEF']['required'] && ! in_array($formField['name'], $outRequiredFields)) 
+    					if (isset($formField['DEF']['required']) && $formField['DEF']['required'] && ! in_array($formField['name'], $outRequiredFields)) 
     					{
     						array_push($outRequiredFields, $formField['name']);
     					}
@@ -414,7 +414,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     		$GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  There are no values ​​to extract.");
     	} 
     	else {
-    		$searchString = ",".implode($extract,",").",";
+    		$searchString = ",".implode(",", $extract).",";
 			foreach($availableFields as $key => $field) 
 			{
     			// Field 1 contains the name of the field. SearchString contains the names of fields to search separated by commas.
@@ -489,7 +489,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
 	
     		// Conditions of exclusion from the list by field no editable 
 			if ((in_array('studio', $field_def))
-				&& ($field_def['studio'] === false || ($field_def['studio']['view'] ?? true) === false)
+				&& ((!empty($field_def['studio']) && $field_def['studio'] === false) || ($field_def['studio']['view'] ?? true) === false)
 			   )
     		{
     			$GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Field [{$field_def['name']}] excluded by field no editable.");
@@ -500,8 +500,8 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
     		$field_def['vname'] = preg_replace('/:$/','',translate($field_def['vname'], $bean->module_name));
     
     		$colArr = array();
-    		$GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Field [{$field_def['name']}] - Type [{$field_def['type']}] - FieldDefRequird [{$field_def['required']}] - Required [{$requiredFields[$field_def['name']]}]");
-    
+			$GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Field [" . ($field_def['name'] ?? 'undefined') . "] - Type [" . ($field_def['type'] ?? 'undefined') . "] - FieldDefRequird [" . ($field_def['required'] ?? 'undefined') . "] - Required [" . ($requiredFields[$field_def['name'] ?? ''] ?? 'undefined') . "]");
+
     		$colsName=$field_def['vname'];
     
     		// If the field name appears in the array of required fields, it has priority over the field definition
@@ -555,7 +555,7 @@ class stic_Web_FormsAssistantController extends stic_Web_FormsController
 			$extractRequiredFields = array();
 			foreach ($availableFields as $key=>$value) 
 			{
-				if ($value[2]){
+				if (!empty($value[2])){
 					array_push($extractRequiredFields, $value[1]);
 				}
 			}

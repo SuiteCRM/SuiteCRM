@@ -1,11 +1,220 @@
-### 1.27.1 (2022-06-09)
+### 2.10.0 (2024-11-12)
 
-  * Fixed MandrillHandler support for SwiftMailer 6 (#1676)
-  * Fixed StreamHandler chunk size (backport from #1552)
+  * Added `$fileOpenMode` to `StreamHandler` to define a custom fopen mode to open the log file (#1913)
+  * Fixed `StreamHandler` handling of write failures so that it now closes/reopens the stream and retries the write once before failing (#1882)
+  * Fixed `StreamHandler` error handler causing issues if a stream handler triggers an error (#1866)
+  * Fixed `JsonFormatter` handling of incomplete classes (#1834)
+  * Fixed `RotatingFileHandler` bug where rotation could sometimes not happen correctly (#1905)
 
-### 1.27.0 (2022-03-13)
+### 2.9.3 (2024-04-12)
 
-  * Added $maxDepth / setMaxDepth to NormalizerFormatter / JsonFormatter to configure the maximum depth if the default of 9 does not work for you (#1633)
+  * Fixed PHP 8.4 deprecation warnings (#1874)
+
+### 2.9.2 (2023-10-27)
+
+  * Fixed display_errors parsing in ErrorHandler which did not support string values (#1804)
+  * Fixed bug where the previous error handler would not be restored in some cases where StreamHandler fails (#1815)
+  * Fixed normalization error when normalizing incomplete classes (#1833)
+
+### 2.9.1 (2023-02-06)
+
+  * Fixed Logger not being serializable anymore (#1792)
+
+### 2.9.0 (2023-02-05)
+
+  * Deprecated FlowdockHandler & Formatter as the flowdock service was shutdown (#1748)
+  * Added support for enum context values in PsrLogMessageProcessor (#1773)
+  * Added graylog2/gelf-php 2.x support (#1747)
+  * Improved `BrowserConsoleHandler` logging to use more appropriate methods than just console.log in the browser (#1739)
+  * Fixed `WhatFailureGroupHandler` not catching errors happening inside `close()` (#1791)
+  * Fixed datetime field in `GoogleCloudLoggingFormatter` (#1758)
+  * Fixed infinite loop detection within Fibers (#1753)
+  * Fixed `AmqpHandler->setExtraAttributes` not working with buffering handler wrappers (#1781)
+
+### 2.8.0 (2022-07-24)
+
+  * Deprecated `CubeHandler` and `PHPConsoleHandler` as both projects are abandoned and those should not be used anymore (#1734)
+  * Added RFC 5424 level (`7` to `0`) support to `Logger::log` and `Logger::addRecord` to increase interoperability (#1723)
+  * Added support for `__toString` for objects which are not json serializable in `JsonFormatter` (#1733)
+  * Added `GoogleCloudLoggingFormatter` (#1719)
+  * Added support for Predis 2.x (#1732)
+  * Added `AmqpHandler->setExtraAttributes` to allow configuring attributes when using an AMQPExchange (#1724)
+  * Fixed serialization/unserialization of handlers to make sure private properties are included (#1727)
+  * Fixed allowInlineLineBreaks in LineFormatter causing issues with windows paths containing `\n` or `\r` sequences (#1720)
+  * Fixed max normalization depth not being taken into account when formatting exceptions with a deep chain of previous exceptions (#1726)
+  * Fixed PHP 8.2 deprecation warnings (#1722)
+  * Fixed rare race condition or filesystem issue where StreamHandler is unable to create the directory the log should go into yet it exists already (#1678)
+
+### 2.7.0 (2022-06-09)
+
+  * Added `$datetime` parameter to `Logger::addRecord` as low level API to allow logging into the past or future (#1682)
+  * Added `Logger::useLoggingLoopDetection` to allow disabling cyclic logging detection in concurrent frameworks (#1681)
+  * Fixed handling of fatal errors if callPrevious is disabled in ErrorHandler (#1670)
+  * Marked the reusable `Monolog\Test\TestCase` class as `@internal` to make sure PHPStorm does not show it above PHPUnit, you may still use it to test your own handlers/etc though (#1677)
+  * Fixed RotatingFileHandler issue when the date format contained slashes (#1671)
+
+### 2.6.0 (2022-05-10)
+
+  * Deprecated `SwiftMailerHandler`, use `SymfonyMailerHandler` instead
+  * Added `SymfonyMailerHandler` (#1663)
+  * Added ElasticSearch 8.x support to the ElasticsearchHandler (#1662)
+  * Added a way to filter/modify stack traces in LineFormatter (#1665)
+  * Fixed UdpSocket not being able to reopen/reconnect after close()
+  * Fixed infinite loops if a Handler is triggering logging while handling log records
+
+### 2.5.0 (2022-04-08)
+
+  * Added `callType` to IntrospectionProcessor (#1612)
+  * Fixed AsMonologProcessor syntax to be compatible with PHP 7.2 (#1651)
+
+### 2.4.0 (2022-03-14)
+
+  * Added [`Monolog\LogRecord`](src/Monolog/LogRecord.php) interface that can be used to type-hint records like `array|\Monolog\LogRecord $record` to be forward compatible with the upcoming Monolog 3 changes
+  * Added `includeStacktraces` constructor params to LineFormatter & JsonFormatter (#1603)
+  * Added `persistent`, `timeout`, `writingTimeout`, `connectionTimeout`, `chunkSize` constructor params to SocketHandler and derivatives (#1600)
+  * Added `AsMonologProcessor` PHP attribute which can help autowiring / autoconfiguration of processors if frameworks / integrations decide to make use of it. This is useless when used purely with Monolog (#1637)
+  * Added support for keeping native BSON types as is in MongoDBFormatter (#1620)
+  * Added support for a `user_agent` key in WebProcessor, disabled by default but you can use it by configuring the $extraFields you want (#1613)
+  * Added support for username/userIcon in SlackWebhookHandler (#1617)
+  * Added extension points to BrowserConsoleHandler (#1593)
+  * Added record message/context/extra info to exceptions thrown when a StreamHandler cannot open its stream to avoid completely losing the data logged (#1630)
+  * Fixed error handler signature to accept a null $context which happens with internal PHP errors (#1614)
+  * Fixed a few setter methods not returning `self` (#1609)
+  * Fixed handling of records going over the max Telegram message length (#1616)
+
+### 2.3.5 (2021-10-01)
+
+  * Fixed regression in StreamHandler since 2.3.3 on systems with the memory_limit set to >=20GB (#1592)
+
+### 2.3.4 (2021-09-15)
+
+  * Fixed support for psr/log 3.x (#1589)
+
+### 2.3.3 (2021-09-14)
+
+  * Fixed memory usage when using StreamHandler and calling stream_get_contents on the resource you passed to it (#1578, #1577)
+  * Fixed support for psr/log 2.x (#1587)
+  * Fixed some type annotations
+
+### 2.3.2 (2021-07-23)
+
+  * Fixed compatibility with PHP 7.2 - 7.4 when experiencing PCRE errors (#1568)
+
+### 2.3.1 (2021-07-14)
+
+  * Fixed Utils::getClass handling of anonymous classes not being fully compatible with PHP 8 (#1563)
+  * Fixed some `@inheritDoc` annotations having the wrong case
+
+### 2.3.0 (2021-07-05)
+
+  * Added a ton of PHPStan type annotations as well as type aliases on Monolog\Logger for Record, Level and LevelName that you can import (#1557)
+  * Added ability to customize date format when using JsonFormatter (#1561)
+  * Fixed FilterHandler not calling reset on its internal handler when reset() is called on it (#1531)
+  * Fixed SyslogUdpHandler not setting the timezone correctly on DateTimeImmutable instances (#1540)
+  * Fixed StreamHandler thread safety - chunk size set to 2GB now to avoid interlacing when doing concurrent writes (#1553)
+
+### 2.2.0 (2020-12-14)
+
+  * Added JSON_PARTIAL_OUTPUT_ON_ERROR to default json encoding flags, to avoid dropping entire context data or even records due to an invalid subset of it somewhere
+  * Added setDateFormat to NormalizerFormatter (and Line/Json formatters by extension) to allow changing this after object creation
+  * Added RedisPubSubHandler to log records to a Redis channel using PUBLISH
+  * Added support for Elastica 7, and deprecated the $type argument of ElasticaFormatter which is not in use anymore as of Elastica 7
+  * Added support for millisecond write timeouts in SocketHandler, you can now pass floats to setWritingTimeout, e.g. 0.2 is 200ms
+  * Added support for unix sockets in SyslogUdpHandler (set $port to 0 to make the $host a unix socket)
+  * Added handleBatch support for TelegramBotHandler
+  * Added RFC5424e extended date format including milliseconds to SyslogUdpHandler
+  * Added support for configuring handlers with numeric level values in strings (coming from e.g. env vars)
+  * Fixed Wildfire/FirePHP/ChromePHP handling of unicode characters
+  * Fixed PHP 8 issues in SyslogUdpHandler
+  * Fixed internal type error when mbstring is missing
+
+### 2.1.1 (2020-07-23)
+
+  * Fixed removing of json encoding options
+  * Fixed type hint of $level not accepting strings in SendGridHandler and OverflowHandler
+  * Fixed SwiftMailerHandler not accepting email templates with an empty subject
+  * Fixed array access on null in RavenHandler
+  * Fixed unique_id in WebProcessor not being disableable
+
+### 2.1.0 (2020-05-22)
+
+  * Added `JSON_INVALID_UTF8_SUBSTITUTE` to default json flags, so that invalid UTF8 characters now get converted to [�](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character) instead of being converted from ISO-8859-15 to UTF8 as it was before, which was hardly a comprehensive solution
+  * Added `$ignoreEmptyContextAndExtra` option to JsonFormatter to skip empty context/extra entirely from the output
+  * Added `$parseMode`, `$disableWebPagePreview` and `$disableNotification` options to TelegramBotHandler
+  * Added tentative support for PHP 8
+  * NormalizerFormatter::addJsonEncodeOption and removeJsonEncodeOption are now public to allow modifying default json flags
+  * Fixed GitProcessor type error when there is no git repo present
+  * Fixed normalization of SoapFault objects containing deeply nested objects as "detail"
+  * Fixed support for relative paths in RotatingFileHandler
+
+### 2.0.2 (2019-12-20)
+
+  * Fixed ElasticsearchHandler swallowing exceptions details when failing to index log records
+  * Fixed normalization of SoapFault objects containing non-strings as "detail" in LineFormatter
+  * Fixed formatting of resources in JsonFormatter
+  * Fixed RedisHandler failing to use MULTI properly when passed a proxied Redis instance (e.g. in Symfony with lazy services)
+  * Fixed FilterHandler triggering a notice when handleBatch was filtering all records passed to it
+  * Fixed Turkish locale messing up the conversion of level names to their constant values
+
+### 2.0.1 (2019-11-13)
+
+  * Fixed normalization of Traversables to avoid traversing them as not all of them are rewindable
+  * Fixed setFormatter/getFormatter to forward to the nested handler in FilterHandler, FingersCrossedHandler, BufferHandler, OverflowHandler and SamplingHandler
+  * Fixed BrowserConsoleHandler formatting when using multiple styles
+  * Fixed normalization of exception codes to be always integers even for PDOException which have them as numeric strings
+  * Fixed normalization of SoapFault objects containing non-strings as "detail"
+  * Fixed json encoding across all handlers to always attempt recovery of non-UTF-8 strings instead of failing the whole encoding
+  * Fixed ChromePHPHandler to avoid sending more data than latest Chrome versions allow in headers (4KB down from 256KB).
+  * Fixed type error in BrowserConsoleHandler when the context array of log records was not associative.
+
+### 2.0.0 (2019-08-30)
+
+  * BC Break: This is a major release, see [UPGRADE.md](UPGRADE.md) for details if you are coming from a 1.x release
+  * BC Break: Logger methods log/debug/info/notice/warning/error/critical/alert/emergency now have explicit void return types
+  * Added FallbackGroupHandler which works like the WhatFailureGroupHandler but stops dispatching log records as soon as one handler accepted it
+  * Fixed support for UTF-8 when cutting strings to avoid cutting a multibyte-character in half
+  * Fixed normalizers handling of exception backtraces to avoid serializing arguments in some cases
+  * Fixed date timezone handling in SyslogUdpHandler
+
+### 2.0.0-beta2 (2019-07-06)
+
+  * BC Break: This is a major release, see [UPGRADE.md](UPGRADE.md) for details if you are coming from a 1.x release
+  * BC Break: PHP 7.2 is now the minimum required PHP version.
+  * BC Break: Removed SlackbotHandler, RavenHandler and HipChatHandler, see [UPGRADE.md](UPGRADE.md) for details
+  * Added OverflowHandler which will only flush log records to its nested handler when reaching a certain amount of logs (i.e. only pass through when things go really bad)
+  * Added TelegramBotHandler to log records to a [Telegram](https://core.telegram.org/bots/api) bot account
+  * Added support for JsonSerializable when normalizing exceptions
+  * Added support for RFC3164 (outdated BSD syslog protocol) to SyslogUdpHandler
+  * Added SoapFault details to formatted exceptions
+  * Fixed DeduplicationHandler silently failing to start when file could not be opened
+  * Fixed issue in GroupHandler and WhatFailureGroupHandler where setting multiple processors would duplicate records
+  * Fixed GelfFormatter losing some data when one attachment was too long
+  * Fixed issue in SignalHandler restarting syscalls functionality
+  * Improved performance of LogglyHandler when sending multiple logs in a single request
+
+### 2.0.0-beta1 (2018-12-08)
+
+  * BC Break: This is a major release, see [UPGRADE.md](UPGRADE.md) for details if you are coming from a 1.x release
+  * BC Break: PHP 7.1 is now the minimum required PHP version.
+  * BC Break: Quite a few interface changes, only relevant if you implemented your own handlers/processors/formatters
+  * BC Break: Removed non-PSR-3 methods to add records, all the `add*` (e.g. `addWarning`) methods as well as `emerg`, `crit`, `err` and `warn`
+  * BC Break: The record timezone is now set per Logger instance and not statically anymore
+  * BC Break: There is no more default handler configured on empty Logger instances
+  * BC Break: ElasticSearchHandler renamed to ElasticaHandler
+  * BC Break: Various handler-specific breaks, see [UPGRADE.md](UPGRADE.md) for details
+  * Added scalar type hints and return hints in all the places it was possible. Switched strict_types on for more reliability.
+  * Added DateTimeImmutable support, all record datetime are now immutable, and will toString/json serialize with the correct date format, including microseconds (unless disabled)
+  * Added timezone and microseconds to the default date format
+  * Added SendGridHandler to use the SendGrid API to send emails
+  * Added LogmaticHandler to use the Logmatic.io API to store log records
+  * Added SqsHandler to send log records to an AWS SQS queue
+  * Added ElasticsearchHandler to send records via the official ES library. Elastica users should now use ElasticaHandler instead of ElasticSearchHandler
+  * Added NoopHandler which is similar to the NullHandle but does not prevent the bubbling of log records to handlers further down the configuration, useful for temporarily disabling a handler in configuration files
+  * Added ProcessHandler to write log output to the STDIN of a given process
+  * Added HostnameProcessor that adds the machine's hostname to log records
+  * Added a `$dateFormat` option to the PsrLogMessageProcessor which lets you format DateTime instances nicely
+  * Added support for the PHP 7.x `mongodb` extension in the MongoDBHandler
+  * Fixed many minor issues in various handlers, and probably added a few regressions too
 
 ### 1.26.1 (2021-05-28)
 
@@ -67,7 +276,7 @@
   * Added a way to log signals being received using Monolog\SignalHandler
   * Added ability to customize error handling at the Logger level using Logger::setExceptionHandler
   * Added InsightOpsHandler to migrate users of the LogEntriesHandler
-  * Added protection to NormalizerHandler against circular and very deep structures, it now stops normalizing at a depth of 9
+  * Added protection to NormalizerFormatter against circular and very deep structures, it now stops normalizing at a depth of 9
   * Added capture of stack traces to ErrorHandler when logging PHP errors
   * Added RavenHandler support for a `contexts` context or extra key to forward that to Sentry's contexts
   * Added forwarding of context info to FluentdFormatter
@@ -107,7 +316,7 @@
   * Added SlackbotHandler and SlackWebhookHandler to set up Slack integration more easily
   * Added MercurialProcessor to add mercurial revision and branch names to log records
   * Added support for AWS SDK v3 in DynamoDbHandler
-  * Fixed fatal errors occuring when normalizing generators that have been fully consumed
+  * Fixed fatal errors occurring when normalizing generators that have been fully consumed
   * Fixed RollbarHandler to include a level (rollbar level), monolog_level (original name), channel and datetime (unix)
   * Fixed RollbarHandler not flushing records automatically, calling close() explicitly is not necessary anymore
   * Fixed SyslogUdpHandler to avoid sending empty frames
@@ -117,7 +326,7 @@
 
   * Break: Reverted the addition of $context when the ErrorHandler handles regular php errors from 1.20.0 as it was causing issues
   * Added support for more formats in RotatingFileHandler::setFilenameFormat as long as they have Y, m and d in order
-  * Added ability to format the main line of text the SlackHandler sends by explictly setting a formatter on the handler
+  * Added ability to format the main line of text the SlackHandler sends by explicitly setting a formatter on the handler
   * Added information about SoapFault instances in NormalizerFormatter
   * Added $handleOnlyReportedErrors option on ErrorHandler::registerErrorHandler (default true) to allow logging of all errors no matter the error_reporting level
 
@@ -239,7 +448,7 @@
   * Added $useShortAttachment to SlackHandler to minify attachment size and $includeExtra to append extra data
   * Added $host to HipChatHandler for users of private instances
   * Added $transactionName to NewRelicHandler and support for a transaction_name context value
-  * Fixed MandrillHandler to avoid outputing API call responses
+  * Fixed MandrillHandler to avoid outputting API call responses
   * Fixed some non-standard behaviors in SyslogUdpHandler
 
 ### 1.11.0 (2014-09-30)

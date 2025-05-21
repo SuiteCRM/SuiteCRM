@@ -77,7 +77,12 @@ function smarty_function_sugar_translate($params, &$smarty)
 		$value = translate($params['label'] , $module);
     }
     if (!empty($params['for_js']) && $params['for_js']) {
-        $value = addslashes($value);
+        // STIC Custom 20250424 JBL - Fix TypeError: addslashes() Argument must be of type string, array given
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if (is_string($value)) {
+            $value = addslashes($value);
+        }
+        // END STIC Custom
         $value = str_replace(array('&#039;', '&#39;'), "\'", $value);
     }
     if(isset($params['trimColon']) && !$params['trimColon']) {

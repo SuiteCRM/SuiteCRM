@@ -51,11 +51,11 @@ require_once('modules/DynamicFields/templates/Fields/TemplateField.php');
 
 class TemplateWysiwyg extends TemplateField
 {
-	var $type = 'wysiwyg';
-	var $len = '';
-    var $inline_edit = 0;
+	public $type = 'wysiwyg';
+	public $len = '';
+    public $inline_edit = 0;
 
-	function get_field_def()
+	public function get_field_def()
 	{
 		$def = parent::get_field_def();
 

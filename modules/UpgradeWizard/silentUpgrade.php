@@ -59,7 +59,7 @@ function build_argument_string($arguments = [])
                 $dir = getcwd();
                 $arg = substr($dir, 0, strrpos($dir, DIRECTORY_SEPARATOR));
             }
-            $argument_string .= ' ' . escapeshellarg($arg);
+            $argument_string .= ' ' . escapeshellarg((string) $arg);
         }
         $count++;
     }

@@ -9,6 +9,7 @@ Version 1.1.1, on 2012-08-15, by Skrol29
 
 define('TBS_ONFLY','tbsMergeOnFly');
 
+#[\AllowDynamicProperties]
 class tbsMergeOnFly {
 
 	function OnInstall($PackSize=10) {

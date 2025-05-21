@@ -117,7 +117,7 @@
                                                                 <span class="suitepicon suitepicon-module-{$item.module_name|lower|replace:'_':'-'}"></span>
                                                                 <span aria-hidden="true">{$item.item_summary_short}</span>
                                                             </a>
-                                                            {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id }{/capture}
+                                                            {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id}{/capture}
                                                             {if $access}
                                                                  <a href="{sugar_link module=$item.module_name action='EditView' record=$item.item_id link_only=1}" class="recent-links-edit"><span class=" glyphicon glyphicon-pencil"></a>
                                                             {/if}
@@ -137,13 +137,13 @@
                                                 {foreach from=$favoriteRecords item=item name=lastViewed}
                                                     {if $smarty.foreach.lastViewed.iteration < 4} {* limit to 3 results *}
                                                         <li class="favoritelinks" role="presentation">
-                                                            <a title="{$item.module_name}"
+                                                            <a title="{sugar_translate module=$item.module_name label=LBL_MODULE_NAME}"
                                                                accessKey="{$smarty.foreach.lastViewed.iteration}"
                                                                href="{sugar_link module=$item.module_name action='DetailView' record=$item.id link_only=1}"  class="favorite-links-detail">
                                                                 <span class="suitepicon suitepicon-module-{$item.module_name|lower|replace:'_':'-'}"></span>
                                                                 <span aria-hidden="true">{$item.item_summary_short}</span>
                                                             </a>
-                                                            {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id }{/capture}
+                                                            {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.id}{/capture}
                                                             {if $access}
                                                                 <a href="{sugar_link module=$item.module_name action='EditView' record=$item.id link_only=1}" class="favorite-links-edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></a>
                                                             {/if}
@@ -259,13 +259,13 @@
                                                     {foreach from=$favoriteRecords item=item name=lastViewed}
                                                         {if $item.module_name == $name and $submoduleFavoriteRecords < 3}
                                                             <li class="favoritelinks" role="presentation">
-                                                                <a title="{$item.module_name}"
+                                                                <a title="{sugar_translate module=$item.module_name label=LBL_MODULE_NAME}"
                                                                    accessKey="{$smarty.foreach.lastViewed.iteration}"
                                                                    href="{sugar_link module=$item.module_name action='DetailView' record=$item.id link_only=1}" class="favorite-links-detail">
                                                                     <span class="suitepicon suitepicon-module-{$item.module_name|lower|replace:'_':'-'}"></span>
                                                                     <span aria-hidden="true">{$item.item_summary_short}</span>
                                                                 </a>
-                                                                {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id }{/capture}
+                                                                {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.id }{/capture}
                                                                 {if $access}
                                                                     <a href="{sugar_link module=$item.module_name action='EditView' record=$item.id link_only=1}" class="favorite-links-edit"><span class=" glyphicon glyphicon-pencil" aria-hidden="true"></a>
                                                                 {/if}
@@ -406,12 +406,12 @@
                                         {foreach from=$favoriteRecords item=item name=lastViewed}
                                             {if $item.module_name == $submodule and $submoduleFavoriteRecords < 3}
                                                 <li class="favoritelinks" role="presentation">
-                                                    <a title="{$item.module_name}"
+                                                    <a title="{sugar_translate module=$item.module_name label=LBL_MODULE_NAME}"
                                                        accessKey="{$smarty.foreach.lastViewed.iteration}"
                                                        href="{sugar_link module=$item.module_name action='DetailView' record=$item.id link_only=1}" class="favorite-links-detail">
                                                         <span aria-hidden="true">{$item.item_summary_short}</span>
                                                     </a>
-                                                    {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id }{/capture}
+                                                    {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.id }{/capture}
                                                     {if $access}
                                                         <a href="{sugar_link module=$item.module_name action='EditView' record=$item.id link_only=1}" class="favorite-links-edit"><span class=" glyphicon glyphicon-pencil" aria-hidden="true"></a>
                                                     {/if}
@@ -517,7 +517,7 @@
                             <input type="hidden" class="form-control" name="advanced" value="false">
                             <div class="input-group">
                                 <input type="text" class="form-control query_string" name="query_string" id="query_string"
-                                       placeholder="{$APP.LBL_SEARCH_BUTTON}..." value="{$SEARCH}"/>
+                                       placeholder="{$APP.LBL_SEARCH_BUTTON_TITLE}..." value="{$SEARCH}"/>
                             <span class="input-group-btn">
                                 <button type="submit" class="btn btn-default suitepicon suitepicon-action-search"></button>
                             </span>
@@ -767,7 +767,7 @@
 
         <a id="buttontoggle" class="buttontoggle"><span></span></a>
 
-        <div {if $smarty.cookies.sidebartoggle|default:'' == 'collapsed'}style="display:none"{/if}
+        <div {if isset($smarty.cookies.sidebartoggle) && $smarty.cookies.sidebartoggle == 'collapsed'}style="display:none"{/if}
              class="sidebar">
 
                 <div id="actionMenuSidebar" class="actionMenuSidebar">
@@ -834,11 +834,11 @@
                             {if $smarty.foreach.lastViewed.index < 5}
                             <div class="recently_viewed_link_container_sidebar">
                                 <li class="recentlinks" role="presentation">
-                                    <a title="{$item.module_name}" accessKey="{$smarty.foreach.lastViewed.iteration}" href="{sugar_link module=$item.module_name action='DetailView' record=$item.id link_only=1}" class="favorite-links-detail">
+                                    <a title="{sugar_translate module=$item.module_name label=LBL_MODULE_NAME}" accessKey="{$smarty.foreach.lastViewed.iteration}" href="{sugar_link module=$item.module_name action='DetailView' record=$item.id link_only=1}" class="favorite-links-detail">
                                         <span class="suitepicon suitepicon-module-{$item.module_name|lower|replace:'_':'-'}"></span>
                                         <span aria-hidden="true">{$item.item_summary_short}</span>
                                     </a>
-                                    {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.item_id }{/capture}
+                                    {capture assign='access'}{suite_check_access module=$item.module_name action='edit' record=$item.id }{/capture}
                                     {if $access}
                                         <a href="{sugar_link module=$item.module_name action='EditView' record=$item.id link_only=1}" class="favorite-links-edit"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
                                     {/if}

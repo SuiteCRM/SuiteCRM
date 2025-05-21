@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldImage extends SugarWidgetFieldVarchar
 {
     public function displayListPlain($layout_def)

@@ -49,6 +49,7 @@ require_once 'modules/ModuleBuilder/parsers/views/HistoryInterface.php';
 /**
  * Class History
  */
+#[\AllowDynamicProperties]
 class History implements HistoryInterface
 {
 
@@ -171,12 +172,17 @@ class History implements HistoryInterface
      */
     public function append($path)
     {
+        $time = '';
         // make sure we don't have a duplicate filename - highly unusual as two people should not be using Studio/MB concurrently, but when testing quite possible to do two appends within one second...
         // because so unlikely in normal use we handle this the naive way by waiting a second so our naming scheme doesn't get overelaborated
         $retries = 0;
 
         $now = TimeDate::getInstance()->getNow();
-        $new_file = null;
+        // STIC Custom 20250313 JBL - Avoid passing null as string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $new_file = null;
+        $new_file = '';
+        // END STIC Custom
         for ($retries = 0; !file_exists($new_file) && $retries < 5; $retries++) {
             $now->modify("+1 second");
             $time = $now->__get('ts');

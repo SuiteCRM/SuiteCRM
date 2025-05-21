@@ -44,6 +44,8 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 {
     public function get_module_view_defs($moduleName, $type, $view)
     {
+        $listViewDefs = [];
+        $viewdefs = [];
         require_once('include/MVC/View/SugarView.php');
         $metadataFile = null;
         $results = array();
@@ -329,7 +331,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
         require_once($beanFiles[$class_name]);
         $ids = array();
         $count = 1;
-        $total = count($name_value_lists);
+        $total = is_countable($name_value_lists) ? count($name_value_lists) : 0;
         foreach ($name_value_lists as $name_value_list) {
             $seed = new $class_name();
 
@@ -357,7 +359,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
                     $vardef = $seed->field_name_map[$field_name];
                     if (isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$val])) {
                         if (in_array($val, $app_list_strings[$vardef['options']])) {
-                            $val = array_search($val, $app_list_strings[$vardef['options']]);
+                            $val = array_search($val, $app_list_strings[$vardef['options']], true);
                         }
                     }
                 }
@@ -414,7 +416,7 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
                             $query = $seed->table_name.".outlook_id = '".$seed->outlook_id."'";
                             $response = $seed->get_list($order_by, $query, 0, -1, -1, 0);
                             $list = $response['list'];
-                            if (count($list) > 0) {
+                            if ((is_countable($list) ? count($list) : 0) > 0) {
                                 foreach ($list as $value) {
                                     $seed->id = $value->id;
                                     break;

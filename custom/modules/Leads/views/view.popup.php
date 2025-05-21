@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/views/view.popup.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomLeadsViewPopup extends ViewPopup
 {
     public function __construct()

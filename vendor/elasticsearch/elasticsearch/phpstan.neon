@@ -7,3 +7,4 @@ parameters:
         - '#Constant JSON_THROW_ON_ERROR not found#'
         - '#Caught class JsonException not found#'
         - '#Call to method getCode\(\) on an unknown class JsonException#'
+        - '#Variable \$\w+ in isset\(\) always exists and is not nullable#'

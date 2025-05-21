@@ -51,6 +51,7 @@
 
 
 
+#[\AllowDynamicProperties]
 class CampaignTracker extends SugarBean
 {
     /* Foreach instance of the bean you will need to access the fields in the table.
@@ -157,7 +158,7 @@ class CampaignTracker extends SugarBean
         }
         $admin=BeanFactory::newBean('Administration');
         $admin->retrieveSettings('massemailer'); //retrieve all admin settings.
-        if (isset($admin->settings['massemailer_tracking_entities_location_type']) and $admin->settings['massemailer_tracking_entities_location_type']=='2'  and isset($admin->settings['massemailer_tracking_entities_location'])) {
+        if (isset($admin->settings['massemailer_tracking_entities_location_type']) && $admin->settings['massemailer_tracking_entities_location_type']=='2' && isset($admin->settings['massemailer_tracking_entities_location'])) {
             $this->message_url=$admin->settings['massemailer_tracking_entities_location'];
         } else {
             $this->message_url=$sugar_config['site_url'];

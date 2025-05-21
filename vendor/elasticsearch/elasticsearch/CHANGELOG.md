@@ -1,3 +1,21 @@
+## Release 7.17.2
+
+- Added `ELASTIC_CLIENT_URL_PLUS_AS_SPACE` env variable for URL encode
+  [#1303](https://github.com/elastic/elasticsearch-php/pull/1303), [b35ec5e](https://github.com/elastic/elasticsearch-php/commit/b35ec5e777046e687e476624b8a19bab2e31fdb7)
+
+## Release 7.17.1
+
+- Fixed a node selector issue for `StickyRoundRobinSelector`
+  [#1253](https://github.com/elastic/elasticsearch-php/pull/1253) 
+
+## Release 7.17.0
+
+This release is compatible with the latest Elasticsearch [7.17.0](https://github.com/elastic/elasticsearch/releases/tag/v7.17.0)
+released the 1st February 2022.
+
+- Allow psr/log v3
+  [#1184](https://github.com/elastic/elasticsearch-php/pull/1184)
+
 ## Release 7.16.0
 
 - Added support of includePortInHostHeader in ClientBuilder::fromConfig

@@ -52,6 +52,7 @@ require_once('modules/Import/ImportDuplicateCheck.php');
 
 require_once('include/upload_file.php');
 
+#[\AllowDynamicProperties]
 class ImportViewExtdupcheck extends ImportView
 {
     protected $pageTitleKey = 'LBL_STEP_DUP_TITLE';

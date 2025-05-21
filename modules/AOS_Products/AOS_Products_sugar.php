@@ -31,6 +31,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class AOS_Products_sugar extends Basic
 {
     public $new_schema = true;

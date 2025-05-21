@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class EntryPointConfirmOptInHandler
  */
+#[\AllowDynamicProperties]
 class EntryPointConfirmOptInHandler
 {
 
@@ -112,7 +113,11 @@ class EntryPointConfirmOptInHandler
         }
 
         $module = $post['module'];
-        $uids = explode(',', $post['uid']);
+        // STIC Custom 20250205 JBL - Avoid errors using null as string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $uids = explode(',', $post['uid']);
+        $uids = explode(',', (string) $post['uid']);
+        // End STIC Custom
         $confirmedOptInEmailsSent = 0;
         $errors = 0;
         $warnings = 0;

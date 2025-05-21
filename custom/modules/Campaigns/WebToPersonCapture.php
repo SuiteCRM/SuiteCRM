@@ -219,7 +219,14 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             // STIC#1066
             //  - PHP Warning:  count(): Parameter must be an array or an object that implements Countable
             // $total_files = count($_FILES["documents"]["name"]);
-            $total_files = is_array($_FILES["documents"]["name"])? count($_FILES["documents"]["name"]) : 0;
+            // STIC Custom 20250311 JBL - Fix Warning: Trying to access array offset on null
+            // $total_files = is_array($_FILES["documents"]["name"])? count($_FILES["documents"]["name"]) : 0;
+            $total_files = 0;
+            if (isset($_FILES["documents"]) && is_array($_FILES["documents"]) && 
+                isset($_FILES["documents"]["name"]) && is_array($_FILES["documents"]["name"])) {
+                $total_files = count($_FILES["documents"]["name"]);
+            }
+            // End STIC Custom 20250311 - JBL
             // End STIC Custom 20230511 - JBL
 
             for ($i = 0; $i < $total_files; $i++) {
@@ -367,13 +374,35 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
                     continue;
                 }
 
-                if ($first_iteration) {
-                    $first_iteration = false;
-                    $query_string .= $first_char;
+                // STIC Custom 20250312 JBL - Fix TypeError when $value is an array
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // if ($first_iteration) {
+                //     $first_iteration = false;
+                //     $query_string .= $first_char;
+                // } else {
+                //     $query_string .= "&";
+                // }
+                // $query_string .= "{$param}=".urlencode($value);
+                if (is_array($value)) {
+                    foreach ($value as $multiple) {
+                        if ($first_iteration) {
+                            $first_iteration = false;
+                            $query_string .= $first_char;
+                        } else {
+                            $query_string .= '&';
+                        }
+                        $query_string .= "{$param}=" . urlencode($multiple);
+                    }
                 } else {
-                    $query_string .= '&';
+                    if ($first_iteration) {
+                        $first_iteration = false;
+                        $query_string .= $first_char;
+                    } else {
+                        $query_string .= '&';
+                    }
+                    $query_string .= "{$param}=" . urlencode($value);
                 }
-                $query_string .= "{$param}=" . urlencode($value);
+                // END STIC Custom   urlencode($value);
             }
             if (empty($person)) {
                 if ($first_iteration) {

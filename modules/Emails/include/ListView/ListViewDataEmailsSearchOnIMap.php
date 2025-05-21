@@ -103,8 +103,8 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
 
         // TODO: figure out why was it for?
         $orderby = $order['orderBy'];
-        if (strpos($order['orderBy'], '.') && ($order['orderBy'] != "report_cache.date_modified")) {
-            $orderby = substr($order['orderBy'], strpos($order['orderBy'], '.') + 1);
+        if (strpos((string) $order['orderBy'], '.') && ($order['orderBy'] != "report_cache.date_modified")) {
+            $orderby = substr((string) $order['orderBy'], strpos((string) $order['orderBy'], '.') + 1);
         }
 
 
@@ -121,15 +121,15 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
         // TODO: PHP Warning:  imap_fetchbody(): Bad message number
         $emailServerEmails = $inboundEmail->checkWithPagination($offset, $limitPerPage, $order, $filter, $filter_fields);
 
-        $total = $emailServerEmails['mailbox_info']['Nmsgs']; // + count($importedEmails['data']);
-        if ($request['Emails2_EMAIL_offset'] === "end") {
+        $total = $emailServerEmails['mailbox_info']['Nmsgs'] ?? 0; // + count($importedEmails['data']);
+        if (isset($request['Emails2_EMAIL_offset']) && $request['Emails2_EMAIL_offset'] === "end") {
             $offset = $total - $limitPerPage;
         }
 
 
         /// Populate the data and its fields from the email server
         $request['uids'] = array();
-
+        $emailServerEmailsData = [];
 
         if (isset($emailServerEmails['data']) && is_array($emailServerEmails['data'])) {
             $emailServerEmailsData = $emailServerEmails['data'];
@@ -168,6 +168,7 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
         }
         $crmWhere = $where . " AND mailbox_id LIKE " . "'" . $inboundEmailIdQuoted . "'";
 
+        $ret_array = [];
         $ret_array['inner_join'] = '';
         if (!empty($this->lvde->seed->listview_inner_join)) {
             $ret_array['inner_join'] = ' ' . implode(' ', $this->lvde->seed->listview_inner_join) . ' ';
@@ -202,10 +203,6 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
             $nextOffset = $offset + $limitPerPage;
         }
 
-        if ($nextOffset >= $total) {
-            $nextOffset = $total;
-        }
-
         if ($page > 0) {
             $prevOffset = $offset - $limitPerPage;
             if ($prevOffset < 0) {
@@ -219,20 +216,33 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
         }
 
         if ($total > 0) {
-            $endOffset = $total / $limitPerPage;
+            $endOffset = ceil($total / $limitPerPage);
+        }
+
+        if ($nextOffset >= $total) {
+            $nextOffset = -1;
+            $endOffset = $offset;
         }
 
         $pageData['offsets']['current'] = $offset;
         $pageData['offsets']['total'] = $total;
         $pageData['offsets']['next'] = $nextOffset;
         $pageData['offsets']['prev'] = $prevOffset;
-        $pageData['offsets']['end'] = ceil($endOffset);
+        $pageData['offsets']['end'] = $endOffset;
 
-        $queries = array('baseUrl', 'endPage', 'nextPage', 'orderBy');
+        $queries = array('baseUrl', 'orderBy');
 
         if ((int)$pageData['offsets']['current'] >= $limitPerPage) {
             $queries[] = 'prevPage';
             $queries[] = 'startPage';
+        }
+
+        if ($nextOffset !== -1) {
+            $queries[] =  'nextPage';
+        }
+
+        if ($endOffset !== -1) {
+            $queries[] =  'endPage';
         }
 
         foreach ($queries as $query) {
@@ -281,13 +291,16 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
 
         if (!isset($pageData['ordering'])) {
             $pageData['ordering'] = array(
-                'orderBy' => 'date_entered',
-                'sortOrder'=> 'ASC'
+                'orderBy' => 'date_sent_received',
+                'sortOrder'=> 'DESC'
             );
         }
 
-        // TODO: TASK: UNDEFINED - HANDLE in second filter after IMap
-        $endOffset = floor(($total - 1) / $limit) * $limit;
+        if ($endOffset !== -1) {
+            // TODO: TASK: UNDEFINED - HANDLE in second filter after IMap
+            $endOffset = floor(($total - 1) / $limit) * $limit;
+        }
+
 
         if (!isset($pageData['ordering']) || !isset($pageData['ordering']['sortOrder'])) {
             LoggerManager::getLogger()->warn('ListViewDataEmailsSearchOnIMap::search: sort order is not set. Using null by default.');
@@ -365,7 +378,11 @@ class ListViewDataEmailsSearchOnIMap extends ListViewDataEmailsSearchAbstract
                         )
                     ) {
                         // Ensure the encoding is UTF-8
-                        $queryString = htmlentities($request[$field_name], null, 'UTF-8');
+                        // STIC Custom 20250210 JBL - Fix Uncaught TypeError in htmlentities
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                        // $queryString = htmlentities((string) $request[$field_name], null, 'UTF-8');
+                        $queryString = htmlentities((string) $request[$field_name], ENT_QUOTES, 'UTF-8');
+                        // END STIC Custom
                         break;
                     }
                 }

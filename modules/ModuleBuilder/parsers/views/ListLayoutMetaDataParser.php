@@ -354,7 +354,7 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
                 }
 
                 if (isset($_REQUEST [strtolower($fieldname) . 'width'])) {
-                    $width = substr($_REQUEST [$fieldname . 'width'], 6, 3);
+                    $width = substr((string) $_REQUEST [$fieldname . 'width'], 6, 3);
                     if (strpos($width, "%") != false) {
                         $width = substr($width, 0, 2);
                     }
@@ -389,7 +389,7 @@ class ListLayoutMetaDataParser extends AbstractMetaDataParser implements MetaDat
      * @param string $class class name
      * @return array view definitions by field definitions
      */
-    public static function createViewDefsByFieldDefs(array $fieldDefs, $class = __CLASS__)
+    public static function createViewDefsByFieldDefs(array $fieldDefs, $class = self::class)
     {
         $rejectTypes = array(
             'html' => 'html',

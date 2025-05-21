@@ -5,14 +5,14 @@ namespace ScssPhp\ScssPhp\Util;
 /**
  * @internal
  */
-final class Path
+class Path
 {
     /**
      * @param string $path
      *
      * @return bool
      */
-    public static function isAbsolute(string $path): bool
+    public static function isAbsolute($path)
     {
         if ($path === '') {
             return false;
@@ -55,7 +55,7 @@ final class Path
      *
      * @return string
      */
-    public static function join(string $part1, string $part2): string
+    public static function join($part1, $part2)
     {
         if ($part1 === '' || self::isAbsolute($part2)) {
             return $part2;
@@ -73,31 +73,5 @@ final class Path
         }
 
         return $part1 . $separator . $part2;
-    }
-
-    /**
-     * Returns a pretty URI for a path
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    public static function prettyUri(string $path): string
-    {
-        $normalizedPath = $path;
-        $normalizedRootDirectory = getcwd().'/';
-
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $normalizedRootDirectory = str_replace('\\', '/', $normalizedRootDirectory);
-            $normalizedPath = str_replace('\\', '/', $path);
-        }
-
-        // TODO add support for returning a relative path using ../ in some cases, like Dart's path.prettyUri method
-
-        if (0 === strpos($normalizedPath, $normalizedRootDirectory)) {
-            return substr($path, \strlen($normalizedRootDirectory));
-        }
-
-        return $path;
     }
 }

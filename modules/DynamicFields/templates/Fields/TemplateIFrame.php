@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/DynamicFields/templates/Fields/TemplateURL.php');
 class TemplateIFrame extends TemplateURL
 {
+    public $height;
     public $type='iframe';
     
     public function get_html_edit()

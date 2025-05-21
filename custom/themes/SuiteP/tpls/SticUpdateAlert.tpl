@@ -20,10 +20,6 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
  *}
-{php}
-include_once 'SticInclude/SticUpdateAlert.php';
-{/php}
-
 {if $showUpdateAlert == 1}
     <div id="stic-notice" class="content hidden">
         <div class="alert alert-danger alert-dismissible" role="alert">

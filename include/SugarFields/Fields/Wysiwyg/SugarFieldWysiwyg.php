@@ -54,7 +54,7 @@ class SugarFieldWysiwyg extends SugarFieldBase {
     {
         $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 
-        $form_name = '';
+        $form_name = $displayParams['formName'] ?? '';
 
         if (!empty($this->ss->_tpl_vars['displayParams']['formName'])) {
             $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
@@ -66,9 +66,17 @@ class SugarFieldWysiwyg extends SugarFieldBase {
         // STIC-Custom 20240722 MHP - Do not apply the configuration if we are in PDF Templates
         // https://github.com/SinergiaTIC/SinergiaCRM/pull/309
         // $config['plugins']  = 'code, table, link, image, wordcount';
-        // $config['selector'] = "#{$form_name} "."#".$vardef['name'];
+        // if ($form_name !== '') {
+        //     $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
+        // } else {
+        //     $config['selector'] = "#" . $vardef['name'];
+        // }
         // $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';        
-        $config['selector'] = "#{$form_name} "."#".$vardef['name'];
+        if ($form_name !== '') {
+            $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
+        } else {
+            $config['selector'] = "#" . $vardef['name'];
+        }
         if ($vardef["custom_module"] != "AOS_PDF_Templates") {
             $config['plugins']  = 'code, table, link, image, wordcount';
             $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';

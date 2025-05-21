@@ -5,6 +5,9 @@ namespace Consolidation\AnnotatedCommand\Attributes;
 use Attribute;
 use Consolidation\AnnotatedCommand\Parser\CommandInfo;
 
+/**
+ * @deprecated Removed in 5.x
+ */
 #[Attribute(Attribute::TARGET_METHOD)]
 class Misc
 {

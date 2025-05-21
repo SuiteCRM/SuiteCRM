@@ -50,6 +50,7 @@ require_once __DIR__ . '/EmailsDataAddressCollector.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class EmailsControllerActionGetFromFields
 {
 
@@ -58,7 +59,7 @@ class EmailsControllerActionGetFromFields
      * @var User
      */
     protected $currentUser;
-    
+
     /**
      *
      * @var EmailsDataAddressCollector
@@ -88,7 +89,11 @@ class EmailsControllerActionGetFromFields
         $ie->email = $email;
         $ieAccounts = $ie->retrieveAllByGroupIdWithGroupAccounts($this->currentUser->id);
         $accountSignatures = $this->currentUser->getPreference('account_signatures', 'Emails');
-        $showFolders = sugar_unserialize(base64_decode($this->currentUser->getPreference('showFolders', 'Emails')));
+        // STIC Custom 20250331 MHP - Avoid Warning: pass null to base64_decode
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477        
+        // $showFolders = sugar_unserialize(base64_decode($this->currentUser->getPreference('showFolders', 'Emails')));
+        $showFolders = sugar_unserialize(base64_decode((string) $this->currentUser->getPreference('showFolders', 'Emails')));        
+        // END STIC Custom
         $emailSignatures = $this->getEmailSignatures($accountSignatures);
         $defaultEmailSignature = $this->getDefaultSignatures();
         $prependSignature = $this->currentUser->getPreference('signature_prepend');
@@ -100,9 +105,40 @@ class EmailsControllerActionGetFromFields
             $defaultEmailSignature
         );
 
+        $dataAddresses = $dataAddresses ?? [];
+
+        $this->addOutboundEmailAccounts($dataAddresses);
+
         $dataEncoded = json_encode(array('data' => $dataAddresses), JSON_UNESCAPED_UNICODE);
-        $results = utf8_decode($dataEncoded);
+        $results = mb_convert_encoding($dataEncoded, 'ISO-8859-1');
         return $results;
+    }
+
+    /**
+     * Get Outbound from fields
+     * @param Email $email
+     * @return string JSON
+     * @throws JsonException
+     */
+    public function getOutboundFromFields(Email $email)
+    {
+        global $log;
+        $email->email2init();
+
+        $dataAddresses = [];
+
+        $this->addOutboundEmailAccounts($dataAddresses);
+
+        $this->collector->addSystemEmailAddress($dataAddresses);
+
+        $dataEncoded = [];
+        try {
+            $dataEncoded = json_encode(array('data' => $dataAddresses), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            $log->fatal('getOutboundFromFields | unable to json encode the addresses for from fields | message: ' . $e->getMessage() ?? '');
+        }
+
+        return mb_convert_encoding($dataEncoded, 'ISO-8859-1');
     }
 
     /**
@@ -140,5 +176,53 @@ class EmailsControllerActionGetFromFields
         }
 
         return $defaultEmailSignature;
+    }
+
+    /**
+     * @param array $dataAddresses
+     * @return void
+     */
+    protected function addOutboundEmailAccounts(array &$dataAddresses): void
+    {
+        /** @var OutboundEmailAccounts $outboundAccount */
+        $outboundAccount = BeanFactory::newBean('OutboundEmailAccounts');
+
+        /** @var OutboundEmailAccounts[] $userOutboundAccounts */
+        $userOutboundAccounts = $outboundAccount->getUserOutboundAccounts();
+
+        foreach ($userOutboundAccounts as $userOutboundAccount) {
+
+            $id = $userOutboundAccount->id ?? '';
+            $name = $userOutboundAccount->name ?? '';
+            $fromAddress = $userOutboundAccount->getFromAddress();
+            $fromName = $userOutboundAccount->getFromName();
+            $replyToAddress = $userOutboundAccount->getReplyToAddress();
+            $replyToName = $userOutboundAccount->getReplyToName();
+            $type = $userOutboundAccount->type ?? '';
+            $signature = $userOutboundAccount->signature ?? '';
+            $isPersonal = $type === 'user';
+            $isGroup = $type === 'group';
+            $entry = [
+                'type' => 'OutboundEmailAccount',
+                'id' => $id,
+                'name' => $name,
+                'attributes' => [
+                    'from' => $fromAddress,
+                    'name' => $fromName,
+                    'oe' => '',
+                    'reply_to' => $replyToAddress,
+                    'reply_to_name' => $replyToName
+                ],
+                'prepend' => false,
+                'isPersonalEmailAccount' => $isPersonal,
+                'isGroupEmailAccount' => $isGroup,
+                'emailSignatures' => [
+                    'html' => mb_convert_encoding(html_entity_decode((string) $signature), 'UTF-8', 'ISO-8859-1'),
+                    'plain' => ''
+                ]
+            ];
+
+            $dataAddresses[] = $entry;
+        }
     }
 }

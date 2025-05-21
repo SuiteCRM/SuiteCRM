@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 require_once('include/MVC/Controller/SugarController.php');
+#[\AllowDynamicProperties]
 class ConfiguratorController extends SugarController
 {
     /**
@@ -116,8 +117,8 @@ class ConfiguratorController extends SugarController
             $this->view = 'addFontView';
             return;
         }
-        $path_info = pathinfo($_FILES['pdf_font_file']['name']);
-        $path_info_metric = pathinfo($_FILES['pdf_metric_file']['name']);
+        $path_info = pathinfo((string) $_FILES['pdf_font_file']['name']);
+        $path_info_metric = pathinfo((string) $_FILES['pdf_metric_file']['name']);
         if (($path_info_metric['extension']!="afm" && $path_info_metric['extension']!="ufm") ||
         ($path_info['extension']!="ttf" && $path_info['extension']!="otf" && $path_info['extension']!="pfb")) {
             $this->errors[]=translate("JS_ALERT_PDF_WRONG_EXTENSION", "Configurator");
@@ -140,6 +141,7 @@ class ConfiguratorController extends SugarController
     }
     public function action_saveadminwizard()
     {
+
         global $current_user;
         if (!is_admin($current_user)) {
             sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
@@ -169,6 +171,8 @@ class ConfiguratorController extends SugarController
             $currency->deleted = 1;
             $currency->save();
         }
+
+        $defaultDashlets = [];
 
         //Only process the scenario item for admin users!
         if ($current_user->isAdmin()) {
@@ -200,7 +204,7 @@ class ConfiguratorController extends SugarController
                 //If the item is not in $_SESSION['scenarios'], then unset them as they are not required
                 if (!in_array($scenario['key'], $_REQUEST['scenarios'])) {
                     foreach ($scenario['modules'] as $module) {
-                        if (($removeKey = array_search($module, $enabled_tabs)) !== false) {
+                        if (($removeKey = array_search($module, $enabled_tabs, true)) !== false) {
                             unset($enabled_tabs[$removeKey]);
                         }
                     }

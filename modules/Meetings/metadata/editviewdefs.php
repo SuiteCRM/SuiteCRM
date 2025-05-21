@@ -384,7 +384,7 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\')){ldelim}document.E
                     {literal}
                     SUGAR.util.doWhen(function(){return typeof DurationDependency != "undefined" && typeof document.getElementById("duration") != "undefined"}, function(){
                         var duration_dependency = new DurationDependency("date_start","date_end","duration",date_time_format);
-                        initEditView(YAHOO.util.Selector.query(\'select#duration\')[0].form);
+                        initEditView(YAHOO.util.Selector.query(\'#duration\')[0].form);
                     });
                     {/literal}
                 </script>            
@@ -403,7 +403,11 @@ function formSubmitCheck(){ldelim}if(check_form(\'EditView\')){ldelim}document.E
           0 => 
           array (
             'name' => 'reminders',
-            'customCode' => '{include file="modules/Reminders/tpls/reminders.tpl"}',
+            // STIC-Custom 20242204 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+            // When updating the SuiteCRM core it is necessary to indicate the path to the custom file in the customCode property
+            // 'customCode' => '{include file="modules/Reminders/tpls/reminders.tpl"}',
+            'customCode' => '{include file="custom/modules/Reminders/tpls/reminders.tpl"}',
+            // END STIC-Custom
             'label' => 'LBL_REMINDERS',
           ),
         ),

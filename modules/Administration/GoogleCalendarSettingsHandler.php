@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class GoogleCalendarSettingsHandler extends BaseHandler
 {
     /**
@@ -125,7 +126,10 @@ class GoogleCalendarSettingsHandler extends BaseHandler
      */
     public function handleDisplay()
     {
+        global $app_strings;
         $this->ss->assign('PAGE_TITLE', $this->getPageTitle());
+        $this->ss->assign('APP', $app_strings);
+        $this->ss->assign('MOD', $this->modStrings);
 
         $this->getJavascript();
         $this->getGoogleCalendarAuthState();
@@ -162,7 +166,7 @@ class GoogleCalendarSettingsHandler extends BaseHandler
 
         // Check for Google Sync JSON
         $json = base64_decode($this->configurator->config['google_auth_json']);
-        $gcConfig = json_decode($json, true);
+        $gcConfig = json_decode($json);
 
         $googleJsonConfState = array(
             'status' => 'UNCONFIGURED',

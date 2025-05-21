@@ -47,6 +47,7 @@ require_once('modules/Import/ImportCacheFiles.php');
 
 
 
+#[\AllowDynamicProperties]
 abstract class ImportDataSource implements Iterator
 {
     /**
@@ -213,7 +214,11 @@ abstract class ImportDataSource implements Iterator
     public function writeError($error, $fieldName, $fieldValue)
     {
         $fp = sugar_fopen(ImportCacheFiles::getErrorFileName(), 'a');
-        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount));
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount));
+        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount), ',', '"', '\\');
+        // END STIC Custom
         fclose($fp);
 
         if (!$this->_rowCountedForErrors) {
@@ -244,7 +249,11 @@ abstract class ImportDataSource implements Iterator
         $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'a');
         $statusData = array($this->_rowsCount,$this->_errorCount,$this->_dupeCount,
                             $this->_createdCount,$this->_updatedCount,$this->_sourcename);
-        fputcsv($fp, $statusData);
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fp, $statusData);
+        fputcsv($fp, $statusData, ',', '"', '\\');
+        // END STIC Custom
         fclose($fp);
     }
 
@@ -254,7 +263,11 @@ abstract class ImportDataSource implements Iterator
     public function markRowAsDuplicate($field_names=array())
     {
         $fp = sugar_fopen(ImportCacheFiles::getDuplicateFileName(), 'a');
-        fputcsv($fp, $this->_currentRow);
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fp, $this->_currentRow);
+        fputcsv($fp, $this->_currentRow, ',', '"', '\\');
+        // END STIC Custom
         fclose($fp);
 
         //if available, grab the column number based on passed in field_name
@@ -293,7 +306,11 @@ abstract class ImportDataSource implements Iterator
 
         //add the row (with or without stylings) to the list view, this will get displayed to the user as a list of duplicates
         $fdp = sugar_fopen(ImportCacheFiles::getDuplicateFileDisplayName(), 'a');
-        fputcsv($fdp, $this->_currentRow);
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fdp, $this->_currentRow);
+        fputcsv($fdp, $this->_currentRow, ',', '"', '\\');
+        // END STIC Custom
         fclose($fdp);
 
         //increment dupecount
@@ -324,11 +341,19 @@ abstract class ImportDataSource implements Iterator
         $fpNoErrors = sugar_fopen(ImportCacheFiles::getErrorRecordsWithoutErrorFileName(), 'a');
 
         //Write records only for download without error message.
-        fputcsv($fpNoErrors, $rowData);
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fpNoErrors, $rowData);
+        fputcsv($fpNoErrors, $rowData, ',', '"', '\\');
+        // END STIC Custom
 
         //Add the error message to the first column
         array_unshift($rowData, $errorMessage);
-        fputcsv($fp, $rowData);
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fputcsv($fp, $rowData);
+        fputcsv($fp, $rowData, ',', '"', '\\');
+        // END STIC Custom        
         
         fclose($fp);
         fclose($fpNoErrors);

@@ -19,7 +19,7 @@ namespace ScssPhp\ScssPhp\Compiler;
  *
  * @internal
  */
-final class Environment
+class Environment
 {
     /**
      * @var \ScssPhp\ScssPhp\Block|null

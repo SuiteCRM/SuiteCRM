@@ -28,6 +28,7 @@ require_once('include/externalAPI/ExternalAPIFactory.php');
 require_once('modules/stic_Import_Validation/Importer.php');
 
 
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
 {
     protected $pageTitleKey = 'LBL_STEP_1_TITLE';
@@ -41,14 +42,14 @@ class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
             $this->importModule = 'Administration';
         }
     }
-    
+
     /**
      * @see SugarView::_getModuleTitleParams()
      */
     protected function _getModuleTitleParams($browserTitle = false)
     {
         global $mod_strings, $app_list_strings;
-        
+
         $iconPath = $this->getModuleTitleIconPath($this->module);
         $returnArray = array();
         if (!empty($iconPath) && !$browserTitle) {
@@ -58,7 +59,7 @@ class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
         }
         $returnArray[] = "<a href='index.php?module=stic_Import_Validation&action=Step1&import_module={$_REQUEST['import_module']}'>".$mod_strings['LBL_MODULE_NAME']."</a>";
         $returnArray[] = $mod_strings['LBL_STEP_1_TITLE'];
-        
+
         return $returnArray;
     }
 
@@ -100,7 +101,7 @@ class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
         $this->ss->assign("selectExternalSource", $selectExternal);
 
         $content = $this->ss->fetch('modules/stic_Import_Validation/tpls/step1.tpl');
-        
+
         $submitContent = "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr><td align=\"right\">";
         $submitContent .= "<input title=\"".$mod_strings['LBL_STIC_IMPORT_VALIDATION_COMPLETE']."\" onclick=\"SUGAR.importWizard.closeDialog();\" class=\"button\" type=\"submit\" name=\"finished\" value=\"  ".$mod_strings['LBL_STIC_IMPORT_VALIDATION_COMPLETE']."  \" id=\"finished\">";
         $submitContent .= "<input title=\"".$mod_strings['LBL_NEXT']."\" class=\"button primary\" type=\"submit\" name=\"button\" value=\"  ".$mod_strings['LBL_NEXT']."  \"  id=\"gonext\"></td></tr></table>";
@@ -144,7 +145,7 @@ class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
         global $mod_strings;
         $EXTERNAL_AUTHENTICATED_SOURCES = json_encode($this->getAuthenticatedImportableExternalEAPMs());
         $selectExternalSource = !empty($_REQUEST['application']) ? $_REQUEST['application'] : '';
-        
+
         $showModuleSelection = ($this->importModule == 'Administration');
         $importableModulesOptions = array();
         $importablePersonModules = array();
@@ -155,7 +156,7 @@ class stic_Import_ValidationViewStep1 extends stic_Import_ValidationView
 
 
         $PERSON_MODULE_LIST = json_encode($importablePersonModules);
-        
+
         return <<<EOJAVASCRIPT
 
 

@@ -38,7 +38,7 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
         $this->view_object_map['PERSISTENT_DATA']['recaptcha_configs'] = $this->getRecaptchaConfigurations();
         $this->view_object_map['PERSISTENT_DATA']['recaptcha_configKeys'] = array_keys($this->view_object_map['PERSISTENT_DATA']['recaptcha_configs']);
         // Get index of selected reCAPTCHA configuration
-        $this->view_object_map['PERSISTENT_DATA']['recaptcha_selected'] = $this->persistentData['recaptcha_selected'];
+        $this->view_object_map['PERSISTENT_DATA']['recaptcha_selected'] = $this->persistentData['recaptcha_selected'] ?? '';
     }
 
     /**
@@ -205,7 +205,7 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
         global $app_list_strings;
 
         // Generate the default shipping url
-        if (!$this->persistentData['FORM_WEB_POST_URL']) {
+        if (empty($this->persistentData['FORM_WEB_POST_URL'])) {
             if ($this->persistentData['include_recaptcha']) {
                 $this->persistentData['FORM_WEB_POST_URL'] = $this->getServerURL() . '/index.php?entryPoint=stic_Web_Forms_saveRecaptcha';
             } else {
@@ -220,7 +220,7 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
         }
 
         // Initialize the user parameter assigned to the form
-        if (!$this->persistentData['ASSIGNED_USER_ID']) {
+        if (empty($this->persistentData['ASSIGNED_USER_ID'])) {
             global $current_user;
             $this->persistentData['ASSIGNED_USER_ID'] = $current_user->id;
             $this->persistentData['ASSIGNED_USER_NAME'] = $current_user->name;
@@ -228,21 +228,21 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
 
         // Load the data in case we come from step 6
         $this->view_object_map['FORM_WEB_POST_URL'] = $this->persistentData['FORM_WEB_POST_URL'];
-        $this->view_object_map['FORM_HEADER'] = $this->persistentData['FORM_HEADER'];
-        $this->view_object_map['FORM_DESCRIPTION'] = $this->persistentData['FORM_DESCRIPTION'];
-        $this->view_object_map['FORM_SUBMIT_LABEL'] = $this->persistentData['FORM_SUBMIT_LABEL'];
-        $this->view_object_map['FORM_REDIRECT_OK_URL'] = $this->persistentData['FORM_REDIRECT_OK_URL'];
-        $this->view_object_map['FORM_REDIRECT_KO_URL'] = $this->persistentData['FORM_REDIRECT_KO_URL'];
-        $this->view_object_map['VALIDATE_IDENTIFICATION_NUMBER'] = $this->persistentData['VALIDATE_IDENTIFICATION_NUMBER'];
-        $this->view_object_map['PAYMENT_TYPE'] = $this->persistentData['PAYMENT_TYPE'];
-        $this->view_object_map['EVENT_ID'] = $this->persistentData['EVENT_ID'];
-        $this->view_object_map['EVENT_NAME'] = $this->persistentData['EVENT_NAME'];
-        $this->view_object_map['EMAIL_TEMPLATE_ID'] = $this->persistentData['EMAIL_TEMPLATE_ID'];
-        $this->view_object_map['EMAIL_TEMPLATE_NAME'] = $this->persistentData['EMAIL_TEMPLATE_NAME'];
-        $this->view_object_map['ASSIGNED_USER_ID'] = $this->persistentData['ASSIGNED_USER_ID'];
-        $this->view_object_map['ASSIGNED_USER_NAME'] = $this->persistentData['ASSIGNED_USER_NAME'];
-        $this->view_object_map['FORM_FOOTER'] = $this->persistentData['FORM_FOOTER'];
-        $this->view_object_map['FORM_AMOUNT'] = $this->persistentData['FORM_AMOUNT'];
+        $this->view_object_map['FORM_HEADER'] = $this->persistentData['FORM_HEADER'] ?? '';
+        $this->view_object_map['FORM_DESCRIPTION'] = $this->persistentData['FORM_DESCRIPTION'] ?? '';
+        $this->view_object_map['FORM_SUBMIT_LABEL'] = $this->persistentData['FORM_SUBMIT_LABEL'] ?? '';
+        $this->view_object_map['FORM_REDIRECT_OK_URL'] = $this->persistentData['FORM_REDIRECT_OK_URL'] ?? '';
+        $this->view_object_map['FORM_REDIRECT_KO_URL'] = $this->persistentData['FORM_REDIRECT_KO_URL'] ?? '';
+        $this->view_object_map['VALIDATE_IDENTIFICATION_NUMBER'] = $this->persistentData['VALIDATE_IDENTIFICATION_NUMBER'] ?? '';
+        $this->view_object_map['PAYMENT_TYPE'] = $this->persistentData['PAYMENT_TYPE'] ?? '';
+        $this->view_object_map['EVENT_ID'] = $this->persistentData['EVENT_ID'] ?? '';
+        $this->view_object_map['EVENT_NAME'] = $this->persistentData['EVENT_NAME'] ?? '';
+        $this->view_object_map['EMAIL_TEMPLATE_ID'] = $this->persistentData['EMAIL_TEMPLATE_ID'] ?? '';
+        $this->view_object_map['EMAIL_TEMPLATE_NAME'] = $this->persistentData['EMAIL_TEMPLATE_NAME'] ?? '';
+        $this->view_object_map['ASSIGNED_USER_ID'] = $this->persistentData['ASSIGNED_USER_ID'] ?? '';
+        $this->view_object_map['ASSIGNED_USER_NAME'] = $this->persistentData['ASSIGNED_USER_NAME'] ?? '';
+        $this->view_object_map['FORM_FOOTER'] = $this->persistentData['FORM_FOOTER'] ?? '';
+        $this->view_object_map['FORM_AMOUNT'] = $this->persistentData['FORM_AMOUNT'] ?? '';
         $this->view = 'Eventinscriptionstep5';
 
         // If you have to include registrations, the previous step will be step 4, otherwise if you have to include organizations, the step will be 3, if not 2
@@ -328,8 +328,8 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
         $this->prepareFieldsToResultForm($requiredFields, $boolFields, $reqFields);
 
         // Prepare the list of required fields and Boolean
-        $reqFields = (!empty($reqFields) ? implode($reqFields, ";") . ";" : "");
-        $boolFields = (!empty($boolFields) ? implode($boolFields, ";") . ";" : "");
+        $reqFields = (is_array($reqFields) && !empty($reqFields) ? implode(";", $reqFields) . ";" : "");
+        $boolFields = (is_array($boolFields) && !empty($boolFields) ? implode(";", $boolFields) . ";" : "");
 
         // Prepare the form definition data
         $defParams = self::formatJsonData2HiddenField(array(
@@ -381,7 +381,7 @@ class EventInscriptionController extends stic_Web_FormsAssistantController {
             ),
             array(
                 'NAME' => 'stic_Payment_Commitments___payment_type',
-                'VALUE' => $this->persistentData['PAYMENT_TYPE'],
+                'VALUE' => $this->persistentData['PAYMENT_TYPE'] ?? '',
             ),
             array(
                 'NAME' => 'stic_Payment_Commitments___periodicity',

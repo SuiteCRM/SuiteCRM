@@ -1,6 +1,7 @@
 <?php
 namespace Api\V8\JsonApi\Response;
 
+#[\AllowDynamicProperties]
 class LinksResponse implements \JsonSerializable
 {
     /**
@@ -48,7 +49,11 @@ class LinksResponse implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    // STIC Custom 20250304 JBL - jsonSerialize() should either be compatible with JsonSerializable::jsonSerialize(): mixed
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function jsonSerialize()
+    public function jsonSerialize(): mixed
+    // END STIC Custom
     {
         $response = [
             'self' => $this->getSelf(),

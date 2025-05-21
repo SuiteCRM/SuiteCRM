@@ -350,9 +350,7 @@ $(document).on("click", function(e) {
                     ) + " " + message_field
                 );
                 if (r == true) {
-                    // STIC-Custom jch 20210609 - Wrong email value displayed when aborting an inline edition
-                    // STIC#298
-                    // var output = setValueClose(output_value);
+		    // Fix #9412 - Wrong email value displayed when aborting an inline edition
                     var output = setValueClose(output_value, false);
                     clickListenerActive = false;
                 } else {

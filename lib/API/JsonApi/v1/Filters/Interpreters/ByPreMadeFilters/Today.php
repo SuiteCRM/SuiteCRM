@@ -46,6 +46,7 @@ use SuiteCRM\API\JsonApi\v1\Filters\Interfaces\ByPreMadeFilterInterpreter;
  * Class Today
  * @package SuiteCRM\API\JsonApi\v1\Filters\Interpreters\ByPreMadeFilters
  */
+#[\AllowDynamicProperties]
 class Today implements ByPreMadeFilterInterpreter
 {
 

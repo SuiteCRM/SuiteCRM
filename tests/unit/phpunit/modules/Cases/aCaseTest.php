@@ -242,10 +242,10 @@ class aCaseTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $aCase->set_notification_body(new Sugar_Smarty(), $aCase);
 
-        self::assertEquals($aCase->name, $result->_tpl_vars['CASE_SUBJECT']);
-        self::assertEquals('High', $result->_tpl_vars['CASE_PRIORITY']);
-        self::assertEquals('New', $result->_tpl_vars['CASE_STATUS']);
-        self::assertEquals($aCase->description, $result->_tpl_vars['CASE_DESCRIPTION']);
+        self::assertEquals($aCase->name, $result->tpl_vars['CASE_SUBJECT']->value);
+        self::assertEquals('High', $result->tpl_vars['CASE_PRIORITY']->value);
+        self::assertEquals('New', $result->tpl_vars['CASE_STATUS']->value);
+        self::assertEquals($aCase->description, $result->tpl_vars['CASE_DESCRIPTION']->value);
     }
 
     public function testbean_implements(): void
@@ -266,7 +266,7 @@ class aCaseTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aCase->id));
-        self::assertEquals(36, strlen($aCase->id));
+        self::assertEquals(36, strlen((string) $aCase->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aCase->mark_deleted($aCase->id);

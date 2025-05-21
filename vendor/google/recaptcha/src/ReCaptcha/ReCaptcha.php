@@ -43,73 +43,73 @@ class ReCaptcha
      * Version of this client library.
      * @const string
      */
-    const VERSION = 'php_1.2.4';
+    public const VERSION = 'php_1.3.0';
 
     /**
      * URL for reCAPTCHA siteverify API
      * @const string
      */
-    const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+    public const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
     /**
      * Invalid JSON received
      * @const string
      */
-    const E_INVALID_JSON = 'invalid-json';
+    public const E_INVALID_JSON = 'invalid-json';
 
     /**
      * Could not connect to service
      * @const string
      */
-    const E_CONNECTION_FAILED = 'connection-failed';
+    public const E_CONNECTION_FAILED = 'connection-failed';
 
     /**
      * Did not receive a 200 from the service
      * @const string
      */
-    const E_BAD_RESPONSE = 'bad-response';
+    public const E_BAD_RESPONSE = 'bad-response';
 
     /**
      * Not a success, but no error codes received!
      * @const string
      */
-    const E_UNKNOWN_ERROR = 'unknown-error';
+    public const E_UNKNOWN_ERROR = 'unknown-error';
 
     /**
      * ReCAPTCHA response not provided
      * @const string
      */
-    const E_MISSING_INPUT_RESPONSE = 'missing-input-response';
+    public const E_MISSING_INPUT_RESPONSE = 'missing-input-response';
 
     /**
      * Expected hostname did not match
      * @const string
      */
-    const E_HOSTNAME_MISMATCH = 'hostname-mismatch';
+    public const E_HOSTNAME_MISMATCH = 'hostname-mismatch';
 
     /**
      * Expected APK package name did not match
      * @const string
      */
-    const E_APK_PACKAGE_NAME_MISMATCH = 'apk_package_name-mismatch';
+    public const E_APK_PACKAGE_NAME_MISMATCH = 'apk_package_name-mismatch';
 
     /**
      * Expected action did not match
      * @const string
      */
-    const E_ACTION_MISMATCH = 'action-mismatch';
+    public const E_ACTION_MISMATCH = 'action-mismatch';
 
     /**
      * Score threshold not met
      * @const string
      */
-    const E_SCORE_THRESHOLD_NOT_MET = 'score-threshold-not-met';
+    public const E_SCORE_THRESHOLD_NOT_MET = 'score-threshold-not-met';
 
     /**
      * Challenge timeout
      * @const string
      */
-    const E_CHALLENGE_TIMEOUT = 'challenge-timeout';
+    public const E_CHALLENGE_TIMEOUT = 'challenge-timeout';
 
     /**
      * Shared secret for the site.
@@ -122,6 +122,12 @@ class ReCaptcha
      * @var RequestMethod
      */
     private $requestMethod;
+
+    private $hostname;
+    private $apkPackageName;
+    private $action;
+    private $threshold;
+    private $timeoutSeconds;
 
     /**
      * Create a configured instance to use the reCAPTCHA service.

@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Custom_Views extends Basic
 {
     public $new_schema = true;
@@ -90,7 +91,7 @@ class stic_Custom_Views extends Basic
 
         $id = parent::save($check_notify);
 
-        if (($_POST["duplicateSave"] && $_POST["duplicateSave"] == "true")) {
+        if (isset($_POST["duplicateSave"]) && $_POST["duplicateSave"] == "true") {
             // Duplicate Customizations
             $originalBean = BeanFactory::getBean("stic_Custom_Views", $_POST["duplicateId"]);
             $customizationBeans = getRelatedBeanObjectArray($originalBean, 'stic_custom_views_stic_custom_view_customizations');

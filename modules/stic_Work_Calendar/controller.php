@@ -43,7 +43,7 @@ class stic_Work_CalendarController extends SugarController
             $type = $data['type'];
             $assignedUserId = $data['assignedUserId'];
 
-            global $timedate;
+            global $timedate, $current_user;
             $assignedUser = BeanFactory::getBean('Users', $assignedUserId);            
             $startDate = $timedate->fromUser($startDate, $assignedUser);
             $startDate = $timedate->asDb($startDate);

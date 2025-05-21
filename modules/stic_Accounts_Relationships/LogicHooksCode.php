@@ -41,7 +41,7 @@ class stic_Accounts_RelationshipsLogicHooks
     public function after_save(&$bean, $event, $arguments)
     {
         // Update active relationship types in Accounts in case of date or relationship type changes
-        if ($bean->start_date != $bean->fetched_row['start_date']
+        if (($bean->start_date ?? null) != ($bean->fetched_row['start_date'] ?? null)
             || $bean->end_date != $bean->fetched_row['end_date']
             || $bean->relationship_type != $bean->fetched_row['relationship_type']
         ) {

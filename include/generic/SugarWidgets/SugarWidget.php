@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Generic Sugar widget
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarWidget
 {
     public $layout_manager = null;

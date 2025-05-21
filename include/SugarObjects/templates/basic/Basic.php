@@ -39,7 +39,10 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-
+// STIC Custom 20250206 JBL - Allow Dynamic Properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+ #[\AllowDynamicProperties]
+// END STIC Custom
 class Basic extends SugarBean
 {
     /**

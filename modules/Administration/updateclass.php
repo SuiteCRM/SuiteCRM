@@ -55,7 +55,7 @@ foreach ($beanFiles as $classname => $filename) {
         sugar_file_put_contents($filename, $data);
         
         // Rename the SugarBean file into SugarCore.SugarBean (Ex: SugarCore.Call.php)
-        $pos=strrpos($filename, "/");
+        $pos=strrpos((string) $filename, "/");
         $newfilename=substr_replace($filename, 'SugarCore.', $pos+1, 0);
         sugar_rename($filename, $newfilename);
         

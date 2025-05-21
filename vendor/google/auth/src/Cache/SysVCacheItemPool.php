@@ -110,11 +110,10 @@ class SysVCacheItemPool implements CacheItemPoolInterface
     {
         $this->loadItems();
         $items = [];
-        $itemClass = \PHP_VERSION_ID >= 80000 ? TypedItem::class : Item::class;
         foreach ($keys as $key) {
             $items[$key] = $this->hasItem($key) ?
                 clone $this->items[$key] :
-                new $itemClass($key);
+                new TypedItem($key);
         }
         return $items;
     }

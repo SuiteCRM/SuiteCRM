@@ -48,6 +48,7 @@ require_once('modules/Import/sources/ImportFile.php');
 require_once('modules/Import/views/ImportListView.php');
 require_once('include/ListView/ListViewFacade.php');
 
+#[\AllowDynamicProperties]
 class ImportViewLast extends ImportView
 {
     protected $pageTitleKey = 'LBL_STEP_5_TITLE';
@@ -78,12 +79,21 @@ class ImportViewLast extends ImportView
         $dupeCount    = 0;
         $createdCount = 0;
         $updatedCount = 0;
-        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
-        
+        // STIC Custom 20250313 JBL - auto_detect_line_endings removed do not work in PHP8.4
+        // Ensure compatibility Windows/Linux
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
+        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'rb');
+        // END STIC Custom
+
         // Read the data if we successfully opened file
         if ($fp !== false) {
             // Read rows 1 by 1 and add the info
-            while ($row = fgetcsv($fp, 8192)) {
+            // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // while ($row = fgetcsv($fp, 8192)) {
+            while ($row = fgetcsv($fp, 8192, ',', '"', '\\')) {
+            // END STIC Custom
                 $count         += (int) $row[0];
                 $errorCount    += (int) $row[1];
                 $dupeCount     += (int) $row[2];
@@ -92,7 +102,7 @@ class ImportViewLast extends ImportView
             }
             fclose($fp);
         }
-        
+
         $this->ss->assign("showUndoButton", false);
         if ($createdCount > 0) {
             $this->ss->assign("showUndoButton", true);

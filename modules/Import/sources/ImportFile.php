@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Import/CsvAutoDetect.php');
 require_once('modules/Import/sources/ImportDataSource.php');
 
+#[\AllowDynamicProperties]
 class ImportFile extends ImportDataSource
 {
     /**
@@ -98,7 +99,7 @@ class ImportFile extends ImportDataSource
      * Enclosure string we are using (i.e. ' or ")
      */
     private $_enclosure;
-    
+
     /**
      * File encoding, used to translate the data into UTF-8 for display and import
      */
@@ -125,9 +126,14 @@ class ImportFile extends ImportDataSource
         }
 
         // turn on auto-detection of line endings to fix bug #10770
-        ini_set('auto_detect_line_endings', '1');
+        // STIC Custom 20250313 JBL - auto_detect_line_endings removed do not work in PHP8.4
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // ini_set('auto_detect_line_endings', '1');
 
-        $this->_fp         = sugar_fopen($filename, 'r');
+        // $this->_fp         = sugar_fopen($filename, 'r');
+
+        $this->_fp         = sugar_fopen($filename, 'rb'); // Ensure compatibility Windows/Linux
+        // END STIC Custom
         $this->_sourcename   = $filename;
         $this->_deleteFile = $deleteFile;
         $this->_delimiter  = (empty($delimiter) ? ',' : $delimiter);
@@ -218,14 +224,25 @@ class ImportFile extends ImportDataSource
                 return false;
             }
         } else {
-            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure);
+            // STIC Custom 20250304 JBL - Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure);
+            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure, '\\');
+            // END STIC Custom
             if ($row !== false && $row != array(null)) {
                 $this->_currentRow = $row;
             } else {
                 return false;
             }
         }
-        
+
+        // STIC Custom 20250213 JBL - Avoid iterate over "false"
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if(!is_array($this->_currentRow)) {
+            return false;
+        }
+        // END STIC Custom
+
         global $locale;
         foreach ($this->_currentRow as $key => $value) {
             // If encoding is set, convert all values from it
@@ -233,12 +250,14 @@ class ImportFile extends ImportDataSource
                 // Convert all values to UTF-8 for display and import purposes
                 $this->_currentRow[$key] = $locale->translateCharset($value, $this->_encoding);
             }
-            
+
+            $this->_currentRow[$key] = securexss($value);
+
             // Convert all line endings to the same style as PHP_EOL
             // Use preg_replace instead of str_replace as str_replace may cause extra lines on Windows
-            $this->_currentRow[$key] = preg_replace("[\r\n|\n|\r]", PHP_EOL, $this->_currentRow[$key]);
+            $this->_currentRow[$key] = preg_replace("[\r\n|\n|\r]", PHP_EOL, (string) $this->_currentRow[$key]);
         }
-        
+
         $this->_rowsCount++;
 
         return $this->_currentRow;
@@ -251,7 +270,7 @@ class ImportFile extends ImportDataSource
      */
     public function getFieldCount()
     {
-        return count($this->_currentRow);
+        return is_countable($this->_currentRow) ? count($this->_currentRow) : 0;
     }
 
     /**
@@ -314,10 +333,10 @@ class ImportFile extends ImportDataSource
         if (!empty($this->_encoding)) {
             return $this->_encoding;
         }
-        
+
         // Move file pointer to start
         $this->setFpAfterBOM();
-        
+
         global $locale;
         $user_charset = $locale->getExportCharset();
         $system_charset = $locale->default_export_charset;
@@ -326,33 +345,33 @@ class ImportFile extends ImportDataSource
 
         // Bug 26824 - mb_detect_encoding() thinks CP1252 is IS0-8859-1, so use that instead in the encoding list passed to the function
         $detectable_charsets = str_replace('CP1252', 'ISO-8859-1', $detectable_charsets);
-        
+
         // If we are able to detect encoding
         if (function_exists('mb_detect_encoding')) {
             // Retrieve a sample of data set
             $text = '';
-            
+
             // Read 10 lines from the file and put them all together in a variable
             $i = 0;
             while ($i < 10 && $temp = fgets($this->_fp, 8192)) {
                 $text .= $temp;
                 $i++;
             }
-            
+
             // If we picked any text, try to detect charset
             if (strlen($text) > 0) {
                 $charset_for_import = mb_detect_encoding($text, $detectable_charsets);
             }
         }
-        
+
         // If we couldn't detect the charset, set it to default export/import charset
         if (empty($charset_for_import)) {
             $charset_for_import = $locale->getExportCharset();
         }
-        
+
         // Reset the fp to after the bom if applicable.
         $this->setFpAfterBOM();
-        
+
         return $charset_for_import;
     }
 
@@ -413,27 +432,47 @@ class ImportFile extends ImportDataSource
     }
 
     //Begin Implementation for SPL's Iterator interface
-    public function key()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function key()
+    public function key(): mixed
+    // END STIC Custom
     {
         return $this->_rowsCount;
     }
 
-    public function current()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function current()
+    public function current(): mixed
+    // END STIC Custom
     {
         return $this->_currentRow;
     }
 
-    public function next()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function next()
+    public function next(): void
+    // END STIC Custom
     {
         $this->getNextRow();
     }
 
-    public function valid()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function valid()
+    public function valid(): bool
+    // END STIC Custom
     {
         return $this->_currentRow !== false;
     }
 
-    public function rewind()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function rewind()
+    public function rewind(): void
+    // END STIC Custom
     {
         $this->setFpAfterBOM();
         //Load our first row
@@ -459,7 +498,7 @@ class ImportFile extends ImportDataSource
             $this->next();
         }
 
-        while ($this->valid() &&  $totalItems > count($this->_dataSet)) {
+        while ($this->valid() &&  $totalItems > (is_countable($this->_dataSet) ? count($this->_dataSet) : 0)) {
             if ($currentLine >= $this->_offset) {
                 $this->_dataSet[] = $this->_currentRow;
             }

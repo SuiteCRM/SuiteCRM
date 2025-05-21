@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/views/view.popup.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomAOS_Products_QuotesViewPopup extends ViewPopup
 {
     public function __construct()

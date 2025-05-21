@@ -69,4 +69,6 @@ $mod_strings = array(
     'LBL_HISTORY_SUBPANEL_TITLE' => 'Ver Historial',
     'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Actividades',
     'LBL_NEW_FORM_TITLE' => 'Nuevo Favorito',
+    'LBL_MARK_FAVORITE' => 'Marcar como Favorito',
+    'LBL_UNMARK_FAVORITE' => 'Desmarcar Favorito',    
 );

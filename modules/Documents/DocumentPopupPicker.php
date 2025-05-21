@@ -53,6 +53,7 @@ require_once('include/Popups/Popup_picker.php');
  *
  * @author Marc Sanchez <@sanchezfauste>
  */
+#[\AllowDynamicProperties]
 class DocumentPopupPicker extends Popup_Picker
 {
     /**

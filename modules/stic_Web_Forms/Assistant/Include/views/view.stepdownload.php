@@ -40,7 +40,7 @@ class stic_Web_FormsViewStepDownload extends stic_Web_FormsAssistantView
         $this->view_object_map['LANG_VARS'] = $this->prepareLangVars();
 
         $html = $this->renderForm();
-        $this->view_object_map['RAW_SOURCE'] = utf8_decode($html);
+        $this->view_object_map['RAW_SOURCE'] = mb_convert_encoding($html, 'ISO-8859-1', 'UTF-8');
         $this->view_object_map['LINK_TO_WEB_FORM'] = $this->createDownloadLink($html);
         $this->view_object_map['DOWNLOAD_LABEL'] = $this->downloadLabel;
         $this->tpl = "StepDownload.tpl";

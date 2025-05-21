@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Old EditView
  * @deprecated
  */
+#[\AllowDynamicProperties]
 class EditView
 {
     /**
@@ -68,7 +69,10 @@ class EditView
      * @param string $module module to use
      * @param string $template template of the form to retreive
      */
-    public function __construct($module, $template)
+    // STIC Custom 20250210 JBL - Fix Uncaught ArgumentCountError
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    public function __construct($module = null, $template = null)
+    // END STIC Custom
     {
         $this->module = $module;
         $this->template = $template;

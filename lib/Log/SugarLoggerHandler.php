@@ -49,6 +49,7 @@ use Monolog\Handler\AbstractProcessingHandler;
 /**
  * Integrates Monolog with the LoggerManager.
  */
+#[\AllowDynamicProperties]
 class SugarLoggerHandler extends AbstractProcessingHandler
 {
 
@@ -58,7 +59,11 @@ class SugarLoggerHandler extends AbstractProcessingHandler
      * @param  array $record
      * @return void
      */
-    protected function write(array $record)
+    // STIC Custom 20250324 JBL - Fix Fatal error: declaration compatible with parent
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function write(array $record)
+    protected function write(array $record): void
+    // END STIC Custom    
     {
         $logger = LoggerManager::getLogger();
 
@@ -79,7 +84,7 @@ class SugarLoggerHandler extends AbstractProcessingHandler
      */
     protected function psrToSugarLevel($level)
     {
-        $level = intval($level);
+        $level = (int) $level;
 
         switch ($level) {
             case 100:

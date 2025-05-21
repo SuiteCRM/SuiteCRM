@@ -2,6 +2,7 @@
 
 require_once('modules/Leads/LeadsListViewSmarty.php');
 
+#[\AllowDynamicProperties]
 class LeadsViewList extends ViewList
 {
     /**

@@ -43,6 +43,7 @@ use AcceptanceTester as Tester;
 use Codeception\Module;
 use SuiteCRM\Enumerator\DesignBreakPoint;
 
+#[\AllowDynamicProperties]
 class Design extends Module
 {
 
@@ -61,7 +62,7 @@ class Design extends Module
     }
 
     /**
-     * @return string
+     * @return string|null
      * @see DesignBreakPoint
      */
     public function getBreakpointString(): ?string

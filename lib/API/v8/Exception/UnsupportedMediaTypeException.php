@@ -44,10 +44,11 @@ namespace SuiteCRM\API\v8\Exception;
  * Class UnsupportedMediaTypeException
  * @package SuiteCRM\API\v8\Exception
  */
+#[\AllowDynamicProperties]
 class UnsupportedMediaTypeException extends ApiException
 {
-    const MSG_PREFIX = '[Unsupported Media Type]';
-    const DEFAULT_CODE = 8005;
-    const HTTP_STATUS = 415;
-    const DETAIL_TEXT_LABEL = 'LBL_UNSUPPORTED_MEDIA_TYPE_EXCEPTION_DETAIL';
+    public const MSG_PREFIX = '[Unsupported Media Type]';
+    public const DEFAULT_CODE = 8005;
+    public const HTTP_STATUS = 415;
+    public const DETAIL_TEXT_LABEL = 'LBL_UNSUPPORTED_MEDIA_TYPE_EXCEPTION_DETAIL';
 }

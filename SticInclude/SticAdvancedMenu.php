@@ -41,7 +41,7 @@ function generateMenu($items, $isFirstLevel = true, $validTabs = null)
     
     require_once 'modules/ModuleBuilder/Module/IconRepository.php';
 
-    if ($_REQUEST['lang'] && is_string($_REQUEST['lang'])) {
+    if (!empty($_REQUEST['lang']) && is_string($_REQUEST['lang'])) {
         $app_strings = return_application_language($_REQUEST['lang']);
     }
 
@@ -60,8 +60,7 @@ function generateMenu($items, $isFirstLevel = true, $validTabs = null)
     $validItemsCount = 0;
 
     $module = $_REQUEST['module'];
-    $moduleLabel = $app_list_strings['moduleList'][$module];
-
+    
     $recents = array_slice(getUserModuleRecents($current_user->id, $module), 0, 5);
     $favs = array_slice(getUserModuleFavs($current_user->id, $module), 0, 5);
 
@@ -91,7 +90,7 @@ function generateMenu($items, $isFirstLevel = true, $validTabs = null)
         if (!empty($favs)) {
             $html .= '<li class="dropdown-header" id="recents-area">Favoritos</li>';
             foreach ($favs as $fav) {
-                $text = strlen($fav['item_summary']) > 70 ? $fav['item_summary_short'] : $fav['item_summary'];
+                $text = strlen((string) $fav['item_summary']) > 70 ? $fav['item_summary_short'] : $fav['item_summary'];
                 $html .= "<li style='display:flex;justify-content: space-between;'>
                     <a style='width:80%' href='index.php?module=$module&action=DetailView&record={$fav['id']}' title='{$fav['item_summary']}'>$text</a>
                     <a style='width:20%' href='index.php?module=$module&action=DetailView&record={$fav['id']}' title='{$fav['item_summary']}'><i class='glyphicon glyphicon-pencil' aria-hidden='true'></i></a>
@@ -121,7 +120,7 @@ function generateMenu($items, $isFirstLevel = true, $validTabs = null)
         }
 
         // Only include valid modules, items with valid children, or items with custom URLs
-        if ($isValidModule || !empty($childrenHtml) || $item['url']) {
+        if ($isValidModule || !empty($childrenHtml) || !empty($item['url'])) {
             $validItemsCount++;
             $itemHtml = '<li' . ($hasChildren ? ' class="dropdown"' : '') . '>';
 
@@ -132,7 +131,7 @@ function generateMenu($items, $isFirstLevel = true, $validTabs = null)
                 // Include icon if enabled in configuration
                 $iconString = $sugar_config['stic_advanced_menu_icons'] ? "<span class='suitepicon suitepicon-module-{$moduleIconName}'></span>" : '';
                 $itemHtml .= "<a href='index.php?module={$cleanId}&action=index'>$iconString $text </a>";
-            } elseif ($item['url']) {
+            } elseif (!empty($item['url'])) {
                 // Generate external link for items with custom URLs
                 $itemHtml .= "<a title='{$item['url']}' target='_blank' href='{$item['url']}'><span class='glyphicon glyphicon-link'></span> $text </a>";
             } elseif ($hasChildren) {
@@ -195,7 +194,7 @@ function addMenuProperties(&$array, $currentLangStrings = null)
     $currentTabs = $controller->get_system_tabs();
     global $app_list_strings, $app_strings;
 
-    if ($_REQUEST['lang'] && is_string($_REQUEST['lang'])) {
+    if (!empty($_REQUEST['lang']) && is_string($_REQUEST['lang'])) {
         $app_strings = return_application_language($_REQUEST['lang']);
     }
 

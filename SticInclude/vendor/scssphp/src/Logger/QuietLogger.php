@@ -14,14 +14,16 @@ namespace ScssPhp\ScssPhp\Logger;
 
 /**
  * A logger that silently ignores all messages.
+ *
+ * @final
  */
 class QuietLogger implements LoggerInterface
 {
-    public function warn(string $message, bool $deprecation = false)
+    public function warn($message, $deprecation = false)
     {
     }
 
-    public function debug(string $message)
+    public function debug($message)
     {
     }
 }

@@ -1,0 +1,27 @@
+{
+	"name": "stella-maris/clock",
+	"description": "A pre-release of the proposed PSR-20 Clock-Interface",
+	"keywords": [
+		"clock",
+		"psr20",
+		"datetime",
+		"point in time"
+	],
+	"homepage": "https://gitlab.com/stella-maris/clock",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Andreas Heigl",
+			"role": "Maintainer"
+		}
+	],
+	"require": {
+		"php": "^7.0|^8.0",
+		"psr/clock": "^1.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"StellaMaris\\Clock\\": "src"
+		}
+	}
+}

@@ -214,8 +214,7 @@ foreach ($moduleFilters as $modFilter => $fieldArray) {
                 $extra .= "\n</select>";
                 break;
             default:
-                //echo "Skipping field {$meta['name']} since the type is not supported<BR>";
-                continue;
+                break;
         }
             echo "<$tag $size name=\"$name\" $multi>\n$extra";
             echo "<BR>\n";
@@ -274,7 +273,7 @@ foreach ($moduleFilters as $modFilter => $fieldArray) {
     $sugar_smarty = new Sugar_Smarty();
     $help_img = smarty_function_sugar_help(array("text"=>$mod_strings['LBL_REASS_VERBOSE_HELP']), $sugar_smarty);
     echo "<BR><input type=checkbox name=verbose> {$mod_strings_users['LBL_REASS_VERBOSE_OUTPUT']}".$help_img."<BR>\n";
-    
+
     unset($_SESSION['reassignRecords']['modules']);
     $beanListFlip = array_flip($_SESSION['reassignRecords']['assignedModuleListCache']);
     foreach ($_POST['modules'] as $module) {
@@ -339,12 +338,10 @@ foreach ($moduleFilters as $modFilter => $fieldArray) {
                             }
                             $in_string .= "'$onevalue', ";
                         }
-                        $in_string = substr($in_string, 0, count($in_string) - 3);
+                        $in_string = substr($in_string, 0, (is_countable($in_string) ? count($in_string) : 0) - 3);
                         $q_where .= " and ({$tableName}{$addcstm}.{$meta['dbname']} in ($in_string) $empty_check)";
                         break;
                     default:
-                        //echo "Skipping field {$meta['name']} since the type is not supported<BR>";
-                        continue;
                         break;
                 }
             }

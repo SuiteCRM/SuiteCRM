@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * based on the users validation
  *
  */
+#[\AllowDynamicProperties]
 class SugarAuthenticate
 {
     public $userAuthenticateClass = 'SugarAuthenticateUser';
@@ -147,7 +148,7 @@ class SugarAuthenticate
     public function postLoginAuthenticate()
     {
         global $reset_language_on_default_user, $sugar_config;
-        
+
         //just do a little house cleaning here
         unset($_SESSION['login_password']);
         unset($_SESSION['login_error']);
@@ -160,10 +161,25 @@ class SugarAuthenticate
         }
 
         //set user language
-        if (isset($reset_language_on_default_user) && $reset_language_on_default_user && $GLOBALS['current_user']->user_name == $sugar_config['default_user_name']) {
+        if (isset($reset_language_on_default_user) &&
+            $reset_language_on_default_user &&
+            $GLOBALS['current_user']->user_name == $sugar_config['default_user_name']
+        ) {
             $authenticated_user_language = $sugar_config['default_language'];
         } else {
-            $authenticated_user_language = isset($_REQUEST['login_language']) ? $_REQUEST['login_language'] : (isset($_REQUEST['ck_login_language_20']) ? $_REQUEST['ck_login_language_20'] : $sugar_config['default_language']);
+            if (isset($_REQUEST['login_language'])){
+                $language = $_REQUEST['login_language'];
+                $GLOBALS['current_user']->setPreference('language', $language, 0, 'global');
+            }
+            $authenticated_user_language = $GLOBALS['current_user']->getPreference('language') ?? $_REQUEST['ck_login_language_20'] ?? $sugar_config['default_language'];
+        }
+
+        // STIC Custom 20250210 JBL - Fix Undefined array key Warning
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // if (str_contains($sugar_config['disabled_languages'], $authenticated_user_language)){
+        if (!empty($sugar_config['disabled_languages']) && str_contains($sugar_config['disabled_languages'], $authenticated_user_language)){
+        // END STIC Custom
+            $authenticated_user_language = $sugar_config['default_language'];
         }
 
         $_SESSION['authenticated_user_language'] = $authenticated_user_language;
@@ -379,7 +395,7 @@ class SugarAuthenticate
                 } else {
                     // match class C IP addresses
                     for ($i = 0; $i < 3; $i ++) {
-                        if ($session_parts[$i] == $client_parts[$i]) {
+                        if ($session_parts[$i] === $client_parts[$i]) {
                             $classCheck = 1;
                             continue;
                         } else {

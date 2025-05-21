@@ -45,7 +45,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/Administration/Forms.php');
 require_once('modules/Configurator/Configurator.php');
 require_once('include/MVC/View/SugarView.php');
-        
+
+#[\AllowDynamicProperties]
 class AdministrationViewThemesettings extends SugarView
 {
     /**
@@ -54,13 +55,13 @@ class AdministrationViewThemesettings extends SugarView
     protected function _getModuleTitleParams($browserTitle = false)
     {
         global $mod_strings;
-        
+
         return array(
            "<a href='index.php?module=Administration&action=index'>".$mod_strings['LBL_MODULE_NAME']."</a>",
            $mod_strings['LBL_THEME_SETTINGS']
            );
     }
-    
+
     /**
      * @see SugarView::process()
      */
@@ -72,31 +73,35 @@ class AdministrationViewThemesettings extends SugarView
         }
 
         // Check if default_theme is valid
-        if (isset($_REQUEST['default_theme']) && !in_array($_REQUEST['default_theme'], array_keys(SugarThemeRegistry::allThemes()))) {
+        if (isset($_REQUEST['default_theme']) && !array_key_exists($_REQUEST['default_theme'], SugarThemeRegistry::allThemes())) {
             sugar_die("Default theme is invalid.");
         }
-        
+
         if (isset($_REQUEST['disabled_themes'])) {
             $configurator = new Configurator();
-            $configurator->config['disabled_themes'] = implode(',', $_REQUEST['disabled_themes']);
+            $disableThemes = $_REQUEST['disabled_themes'] ?? [];
+            if (!is_array($_REQUEST['disabled_themes'])){
+                $disableThemes = [$_REQUEST['disabled_themes']];
+            }
+            $configurator->config['disabled_themes'] = implode(',', $disableThemes);
             $configurator->config['default_theme'] = $_REQUEST['default_theme'];
             $configurator->handleOverride();
         }
 
         parent::process();
     }
-    
+
     /**
      * display the form
      */
     public function display()
     {
         global $mod_strings, $app_strings, $current_user;
-        
+
         if (!is_admin($current_user)) {
             sugar_die($GLOBALS['app_strings']['ERR_NOT_ADMIN']);
         }
-            
+
         $enabled = array();
         foreach (SugarThemeRegistry::availableThemes() as $dir => $theme) {
             $enabled[] = array("theme" => $theme, "dir" => $dir);
@@ -113,7 +118,7 @@ class AdministrationViewThemesettings extends SugarView
         $this->ss->assign('mod', $mod_strings);
         $this->ss->assign('APP', $app_strings);
         $this->ss->assign('currentTheme', SugarThemeRegistry::current());
-        
+
         echo $this->getModuleTitle(false);
         echo $this->ss->fetch('modules/Administration/templates/themeSettings.tpl');
     }

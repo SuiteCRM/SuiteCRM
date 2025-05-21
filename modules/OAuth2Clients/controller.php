@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class OAuth2ClientsController
  */
+#[\AllowDynamicProperties]
 class OAuth2ClientsController extends SugarController
 {
     /**

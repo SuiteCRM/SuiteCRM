@@ -79,8 +79,8 @@ function smarty_function_sugar_help($params, &$smarty)
 
     if (count($params) > 1) {
 
-        $click .= ",'" . $params['myPos'] . "','" . $params['atPos'] . "'";
-    }
+			$click .=",'".($params['myPos'] ?? '')."','".($params['atPos'] ?? '')."'";
+	}
     $helpImage = SugarThemeRegistry::current()->getImageURL('helpInline.png');
     $click .= " );";
     $alt_tag = $GLOBALS['app_strings']['LBL_ALT_INFO'];
@@ -93,3 +93,5 @@ function smarty_function_sugar_help($params, &$smarty)
     />
 EOHTML;
 }
+
+?>

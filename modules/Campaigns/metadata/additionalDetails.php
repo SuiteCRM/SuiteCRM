@@ -64,15 +64,15 @@ function additionalDetailsCampaign($fields)
     }
     
     if (!empty($fields['OBJECTIVE'])) {
-        $overlib_string .= '<b>'. $mod_strings['LBL_CAMPAIGN_OBJECTIVE'] . '</b> ' . substr($fields['OBJECTIVE'], 0, 300);
-        if (strlen($fields['OBJECTIVE']) > 300) {
+        $overlib_string .= '<b>'. $mod_strings['LBL_CAMPAIGN_OBJECTIVE'] . '</b> ' . substr((string) $fields['OBJECTIVE'], 0, 300);
+        if (strlen((string) $fields['OBJECTIVE']) > 300) {
             $overlib_string .= '...';
         }
         $overlib_string .= '<br>';
     }
     if (!empty($fields['CONTENT'])) {
-        $overlib_string .= '<b>'. $mod_strings['LBL_CAMPAIGN_CONTENT'] . '</b> ' . substr($fields['CONTENT'], 0, 300);
-        if (strlen($fields['CONTENT']) > 300) {
+        $overlib_string .= '<b>'. $mod_strings['LBL_CAMPAIGN_CONTENT'] . '</b> ' . substr((string) $fields['CONTENT'], 0, 300);
+        if (strlen((string) $fields['CONTENT']) > 300) {
             $overlib_string .= '...';
         }
     }

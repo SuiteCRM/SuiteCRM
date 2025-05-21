@@ -47,6 +47,7 @@ use SuiteCRM\Enumerator\ExceptionCode;
  * Class Exception
  * @package SuiteCRM\Exception
  */
+#[\AllowDynamicProperties]
 class Exception extends \Exception
 {
     /**

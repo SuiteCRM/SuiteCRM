@@ -47,6 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class EmailMock extends Email
 {
     /**

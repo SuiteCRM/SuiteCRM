@@ -193,7 +193,9 @@ class stic_Bookings_CalendarController extends SugarController
     private function getResourcesAvailability($start_date, $end_date, $filteredResources)
     {
         $resourcesAvailability = array();
-
+        if (empty($filteredResources) || !is_array($filteredResources)) {
+            $filteredResources = [];
+        }
         foreach ($filteredResources as $resourceId) {
             $resourceBean = BeanFactory::getBean('stic_Resources', $resourceId);
 

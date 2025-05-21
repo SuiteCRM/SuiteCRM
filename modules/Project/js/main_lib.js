@@ -397,7 +397,7 @@ function block(){
     $.blockUI({//ajax loading screen
         message:msg,
         css: {
-            height: '70px',
+            height: 'auto',
             width: '240px',
             // top:  ($(window).height() - 50) /2 + 'px',
             left: ($(window).width() - 240) /2 + 'px'//centre box

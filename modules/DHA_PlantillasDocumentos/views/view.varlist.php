@@ -22,6 +22,7 @@
  */
 require_once('include/MVC/View/SugarView.php');
 
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentosViewVarList extends SugarView {
 
    //////////////////////////////////////////////////////////////////////////   

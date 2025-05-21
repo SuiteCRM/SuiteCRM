@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewSmarty.php');
 require_once('modules/Emails/include/ListView/ListViewDataEmails.php');
 
+#[\AllowDynamicProperties]
 class ListViewSmartyEmails extends ListViewSmarty
 {
     /**

@@ -33,7 +33,7 @@ class Inflector implements ArgumentResolverInterface, InflectorInterface
      */
     protected $properties = [];
 
-    public function __construct(string $type, callable $callback = null)
+    public function __construct(string $type, ?callable $callback = null)
     {
         $this->type = $type;
         $this->callback = $callback;

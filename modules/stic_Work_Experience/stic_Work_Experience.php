@@ -22,6 +22,7 @@
  */
 
 
+ #[\AllowDynamicProperties]
 class stic_Work_Experience extends Basic
 {
     public $new_schema = true;

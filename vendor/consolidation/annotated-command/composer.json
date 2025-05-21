@@ -20,11 +20,11 @@
     },
     "require": {
         "php": ">=7.1.3",
-        "consolidation/output-formatters": "^4.1.1",
-        "psr/log": "^1|^2|^3",
-        "symfony/console": "^4.4.8|^5|^6",
-        "symfony/event-dispatcher": "^4.4.8|^5|^6",
-        "symfony/finder": "^4.4.8|^5|^6"
+        "consolidation/output-formatters": "^4.3.1",
+        "psr/log": "^1 || ^2 || ^3",
+        "symfony/console": "^4.4.8 || ^5 || ^6 || ^7",
+        "symfony/event-dispatcher": "^4.4.8 || ^5 || ^6 || ^7",
+        "symfony/finder": "^4.4.8 || ^5 || ^6 || ^7"
     },
     "require-dev": {
         "composer-runtime-api": "^2.0",
@@ -36,7 +36,7 @@
         "optimize-autoloader": true,
         "sort-packages": true,
         "platform": {
-            "php": "7.1.3"
+            "php": "8.2.17"
         }
     },
     "scripts": {

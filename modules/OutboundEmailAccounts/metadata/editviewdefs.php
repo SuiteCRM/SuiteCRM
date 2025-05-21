@@ -1,116 +1,97 @@
 <?php
-$viewdefs ['OutboundEmailAccounts'] =
-array(
-  'EditView' =>
-    array(
-      'templateMeta' =>
-        array(
-          'maxColumns' => '2',
-          'widths' =>
-            array(
-              0 =>
-                array(
-                  'label' => '10',
-                  'field' => '30',
-                ),
-              1 =>
-                array(
-                  'label' => '10',
-                  'field' => '30',
-                ),
-            ),
-          'useTabs' => false,
-          'tabDefs' =>
-            array(
-              'DEFAULT' =>
-                array(
-                  'newTab' => false,
-                  'panelDefault' => 'expanded',
-                ),
-              'LBL_EDITVIEW_PANEL1' =>
-                array(
-                  'newTab' => false,
-                  'panelDefault' => 'expanded',
-                ),
-            ),
-          'syncDetailEditViews' => true,
-        ),
-      'panels' =>
-        array(
-          'default' =>
-            array(
-              0 =>
-                array(
-                  0 => 'name',
-                ),
-            ),
-          'lbl_editview_panel1' =>
-            array(
-              array(
-                0 =>
-                  array(
-                    'name' => 'smtp_from_name',
-                    'label' => 'LBL_SMTP_FROM_NAME',
-                  ),
-              ),
-              array(
-                0 =>
-                  array(
-                    'name' => 'smtp_from_addr',
-                    'label' => 'LBL_SMTP_FROM_ADDR',
-                  ),
-              ),
-              array(
-                0 =>
-                  array(
-                    'name' => 'email_provider_chooser',
-                    'label' => 'LBL_CHOOSE_EMAIL_PROVIDER',
-                  ),
-              ),
-              array(
-                0 =>
-                  array(
-                    'name' => 'mail_smtpserver',
-                    'label' => 'LBL_SMTP_SERVERNAME',
-                  ),
-                1 =>
-                  array(
-                    'name' => 'mail_smtpport',
-                    'label' => 'LBL_SMTP_PORT',
-                  ),
-              ),
-              array(
-                0 =>
-                  array(
-                    'name' => 'mail_smtpauth_req',
-                    'label' => 'LBL_SMTP_AUTH',
-                  ),
-                1 =>
-                  array(
-                    'name' => 'mail_smtpssl',
-                    'studio' => 'visible',
-                    'label' => 'LBL_SMTP_PROTOCOL',
-                  ),
-              ),
-              array(
-                array(
-                  'name' => 'mail_smtpuser',
-                  'label' => 'LBL_USERNAME',
-                ),
-              ),
-              array(
-                array(
-                  'name' => 'password_change',
-                  'label' => 'LBL_PASSWORD',
-                ),
-              ),
-              array(
-                array(
-                  'name' => 'sent_test_email_btn',
-                  'label' => 'LBL_SEND_TEST_EMAIL',
-                ),
-              ),
-            ),
-        ),
-    ),
-);
+$viewdefs ['OutboundEmailAccounts'] = [
+    'EditView' => [
+        'templateMeta' => [
+            'maxColumns' => '2',
+            'widths' => [
+                [
+                    'label' => '10',
+                    'field' => '30',
+                ],
+                [
+                    'label' => '10',
+                    'field' => '30',
+                ],
+            ],
+            'useTabs' => false,
+            'tabDefs' => [
+                'DEFAULT' => [
+                    'newTab' => false,
+                    'panelDefault' => 'expanded',
+                ],
+                'LBL_CONNECTION_CONFIGURATION' => [
+                    'newTab' => false,
+                    'panelDefault' => 'expanded',
+                ],
+                'LBL_OUTBOUND_CONFIGURATION' => [
+                    'newTab' => false,
+                    'panelDefault' => 'expanded',
+                ],
+            ],
+            'form' => [
+                'hidden' => [
+                ],
+            ],
+            'javascript' => '
+                <script type="text/javascript">
+                    {literal}var userService = function() { return { isAdmin: function() { return {/literal}{if $is_admin}true{else}false{/if}{literal};}}}();{/literal}
+                    {suite_combinescripts
+                        files="modules/OutboundEmailAccounts/js/fields.js,
+                               modules/OutboundEmailAccounts/js/ssl_port_set.js,
+                               modules/OutboundEmailAccounts/js/panel_toggle.js,
+                               modules/OutboundEmailAccounts/js/owner_toggle.js,
+                               modules/OutboundEmailAccounts/js/smtp_auth_toggle.js"}
+                </script>
+            ',
+        ],
+        'panels' => [
+            'default' => [
+                [
+                    'name',
+                    ''
+                ],
+                [
+                    'type',
+                    ''
+                ],
+                [
+                    'owner_name',
+                ],
+            ],
+            'lbl_connection_configuration' => [
+                [
+                    'mail_smtpserver',
+                    'mail_smtpauth_req',
+                ],
+                [
+                    'mail_smtpssl',
+                    'mail_smtpuser',
+                ],
+                [
+                    'mail_smtpport',
+                    'mail_smtppass',
+                ],
+                [
+                    [
+                        'name' => 'sent_test_email_btn',
+                        'label' => 'LBL_SEND_TEST_EMAIL',
+                    ],
+                ],
+            ],
+            'lbl_outbound_configuration' => [
+                [
+                    'smtp_from_name',
+                    'reply_to_name'
+                ],
+                [
+                    'smtp_from_addr',
+                    'reply_to_addr'
+                ],
+                [
+                    'signature',
+                    ''
+                ]
+            ],
+        ],
+    ],
+];

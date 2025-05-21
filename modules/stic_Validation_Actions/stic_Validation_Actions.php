@@ -23,6 +23,7 @@
 
 require_once 'modules/stic_Validation_Actions/DataAnalyzer/Functions/DataCheckFunctionFactory.php';
 
+#[\AllowDynamicProperties]
 class stic_Validation_Actions extends Basic {
     public $new_schema = true;
     public $module_dir = 'stic_Validation_Actions';

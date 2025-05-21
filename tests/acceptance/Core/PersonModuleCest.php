@@ -41,6 +41,7 @@ use Faker\Generator;
 use JeroenDesloovere\VCard\VCard;
 use SuiteCRM\Enumerator\SugarObjectType;
 
+#[\AllowDynamicProperties]
 class PersonModuleCest
 {
     /**

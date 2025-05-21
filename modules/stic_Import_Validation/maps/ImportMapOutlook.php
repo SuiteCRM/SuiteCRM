@@ -33,6 +33,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/stic_Import_Validation/maps/ImportMapOther.php');
 
+#[\AllowDynamicProperties]
 class ImportMapOutlook extends ImportMapOther
 {
     /**

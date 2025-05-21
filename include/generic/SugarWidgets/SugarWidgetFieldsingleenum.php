@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
  
+#[\AllowDynamicProperties]
 class SugarWidgetFieldSingleEnum extends SugarWidgetFieldEnum
 {
     public function displayInput($layout_def)

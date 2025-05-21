@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/MVC/View/SugarView.php');
 require_once('include/Sugarpdf/FontManager.php');
+#[\AllowDynamicProperties]
 class ConfiguratorViewAddFontView extends SugarView
 {
    

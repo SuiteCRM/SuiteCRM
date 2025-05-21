@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * A script for ad hoc testing of commands defined in this project.
+ *
+ * You may also test our autocomplete. Get info by running `ac completion --help`
+ */
+require __DIR__ . '/ac.php';

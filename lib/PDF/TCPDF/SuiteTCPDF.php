@@ -29,6 +29,7 @@ namespace SuiteCRM\PDF\TCPDF;
 
 use TCPDF;
 
+#[\AllowDynamicProperties]
 class SuiteTCPDF extends TCPDF
 {
     protected $htmlHeader;

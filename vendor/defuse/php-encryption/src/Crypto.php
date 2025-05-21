@@ -55,7 +55,12 @@ class Crypto
      *
      * @return string
      */
-    public static function encryptWithPassword($plaintext, $password, $raw_binary = false)
+    public static function encryptWithPassword(
+        $plaintext,
+        #[\SensitiveParameter]
+        $password,
+        $raw_binary = false
+    )
     {
         if (!\is_string($plaintext)) {
             throw new \TypeError(
@@ -130,7 +135,12 @@ class Crypto
      *
      * @return string
      */
-    public static function decryptWithPassword($ciphertext, $password, $raw_binary = false)
+    public static function decryptWithPassword(
+        $ciphertext,
+        #[\SensitiveParameter]
+        $password,
+        $raw_binary = false
+    )
     {
         if (!\is_string($ciphertext)) {
             throw new \TypeError(
@@ -166,7 +176,11 @@ class Crypto
      *
      * @return string
      */
-    public static function legacyDecrypt($ciphertext, $key)
+    public static function legacyDecrypt(
+        $ciphertext,
+        #[\SensitiveParameter]
+        $key
+    )
     {
         if (!\is_string($ciphertext)) {
             throw new \TypeError(
@@ -378,7 +392,13 @@ class Crypto
      *
      * @return string
      */
-    protected static function plainEncrypt($plaintext, $key, $iv)
+    protected static function plainEncrypt(
+        $plaintext,
+        #[\SensitiveParameter]
+        $key,
+        #[\SensitiveParameter]
+        $iv
+    )
     {
         Core::ensureConstantExists('OPENSSL_RAW_DATA');
         Core::ensureFunctionExists('openssl_encrypt');
@@ -408,7 +428,14 @@ class Crypto
      *
      * @return string
      */
-    protected static function plainDecrypt($ciphertext, $key, $iv, $cipherMethod)
+    protected static function plainDecrypt(
+        $ciphertext,
+        #[\SensitiveParameter]
+        $key,
+        #[\SensitiveParameter]
+        $iv,
+        $cipherMethod
+    )
     {
         Core::ensureConstantExists('OPENSSL_RAW_DATA');
         Core::ensureFunctionExists('openssl_decrypt');
@@ -437,7 +464,12 @@ class Crypto
      *
      * @return bool
      */
-    protected static function verifyHMAC($expected_hmac, $message, $key)
+    protected static function verifyHMAC(
+        $expected_hmac,
+        $message,
+        #[\SensitiveParameter]
+        $key
+    )
     {
         $message_hmac = \hash_hmac(Core::HASH_FUNCTION_NAME, $message, $key, true);
         return Core::hashEquals($message_hmac, $expected_hmac);

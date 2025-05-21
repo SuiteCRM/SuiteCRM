@@ -24,7 +24,7 @@ class AOR_Scheduled_ReportsTest extends SuitePHPUnitFrameworkTestCase
         //test save and test for record ID to verify that record is saved
         $aorScheduledReports->save();
         self::assertTrue(isset($aorScheduledReports->id));
-        self::assertEquals(36, strlen($aorScheduledReports->id));
+        self::assertEquals(36, strlen((string) $aorScheduledReports->id));
 
 
 

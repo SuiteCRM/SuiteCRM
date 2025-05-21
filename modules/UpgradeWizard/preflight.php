@@ -76,7 +76,7 @@ if (version_compare(phpversion(), '5.2.0') >=0) {
     if (check_php_version() === -1) {
         $phpVersion = "<b><span class=stop>{$mod_strings['ERR_CHECKSYS_PHP_INVALID_VER']} ".constant('PHP_VERSION')." </span></b>";
         $error_txt = '<span class="error">'.$phpVersion.'</span>';
-        if (count($errors) == 0) {
+        if ((is_countable($errors) ? count($errors) : 0) == 0) {
             $errors[] = '';
         }
         $errors[] = $error_txt;
@@ -90,7 +90,7 @@ if (version_compare(phpversion(), '5.2.0') >=0) {
     //Quickcreatedefs on the basis of editviewdefs
     updateQuickCreateDefs();
 
-    if ((count($errors) == 1)) { // only diffs
+    if (((is_countable($errors) ? count($errors) : 0) == 1)) { // only diffs
         logThis('file preflight check passed successfully.');
         $stop = false;
         $out  = $mod_strings['LBL_UW_PREFLIGHT_TESTS_PASSED']."<BR><BR><font color='red'>".$mod_strings['LBL_UW_PREFLIGHT_TESTS_PASSED3']."</font>";
@@ -98,7 +98,7 @@ if (version_compare(phpversion(), '5.2.0') >=0) {
 
         $disableEmail = (empty($current_user->email1)) ? 'DISABLED' : 'CHECKED';
 
-        if (count($errors['manual']) > 0) {
+        if ((is_countable($errors['manual']) ? count($errors['manual']) : 0) > 0) {
             $preserveFiles = array();
 
             $diffs =<<<eoq
@@ -169,7 +169,7 @@ eoq;
                 $diffs .= "<tr><td valign='top'>";
                 $diffs .= "<input type='checkbox' name='diff_files[]' value='{$diff}' $checked>";
                 $diffs .= "</td><td valign='top'>";
-                $diffs .= str_replace(getcwd(), '.', $diff);
+                $diffs .= str_replace(getcwd(), '.', (string) $diff);
                 $diffs .= "</td></tr>";
             }
             $diffs .= "</table>";
@@ -184,7 +184,7 @@ eoq;
                     $preserve .= $mod_strings['LBL_UW_PREFLIGHT_PRESERVE_FILES'];
                     $preserve .= "</b></td></tr>";
                 }
-                $preserve .= "<tr><td valign='top'><i>".str_replace(getcwd(), '.', $pf)."</i></td></tr>";
+                $preserve .= "<tr><td valign='top'><i>".str_replace(getcwd(), '.', (string) $pf)."</i></td></tr>";
             }
             if (!empty($preserve)) {
                 $preserve .= '</table><br>';

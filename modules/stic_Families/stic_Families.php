@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Families extends Basic
 {
     public $new_schema = true;
@@ -76,7 +77,7 @@ class stic_Families extends Basic
             $query = "SELECT code FROM stic_families ORDER BY code DESC LIMIT 1";
             $result = $db->query($query, true);
             $row = $db->fetchByAssoc($result);
-            $lastNum = $row['code'];
+            $lastNum = $row['code'] ?? 0;
             if (!isset($lastNum) || empty($lastNum)) {
                 $lastNum = 0;
             }

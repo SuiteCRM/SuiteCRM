@@ -40,6 +40,7 @@
 
 require_once 'modules/ModuleBuilder/Module/StudioModule.php' ;
 
+#[\AllowDynamicProperties]
 class EmployeesStudioModule extends StudioModule
 {
     public function getProvidedSubpanels()

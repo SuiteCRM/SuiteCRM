@@ -52,6 +52,7 @@ require_once __DIR__ . '/../../../modules/AOS_PDF_Templates/PDF_Lib/mpdf.php';
  * Class LegacyMPDFEngine
  * @package SuiteCRM\PDF\LegacyMPDF
  */
+#[\AllowDynamicProperties]
 class LegacyMPDFEngine extends PDFEngine
 {
     /**
@@ -68,7 +69,11 @@ class LegacyMPDFEngine extends PDFEngine
      * MPDFEngine constructor.
      * @param mPDF|null $pdf
      */
-    public function __construct(mPDF $pdf = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function __construct(mPDF $pdf = null)
+    public function __construct(?mPDF $pdf = null)
+    // END STIC Custom    
     {
         @$this->pdf = $pdf ?? new mPDF();
     }
@@ -148,7 +153,7 @@ class LegacyMPDFEngine extends PDFEngine
 
         @$this->pdf = new mPDF(
             $configOptions['mode'],
-            $configOptions['page_size'],
+            $configOptions['page_size'].'-'.$configOptions['orientation'],
             $configOptions['default_font_size'],
             $configOptions['default_font'],
             $configOptions['margin_left'],

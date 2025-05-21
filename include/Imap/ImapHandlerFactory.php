@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 require_once __DIR__ . '/ImapHandler.php';
+require_once __DIR__ . '/Imap2Handler.php';
 require_once __DIR__ . '/ImapHandlerException.php';
 
 /**
@@ -52,17 +53,18 @@ require_once __DIR__ . '/ImapHandlerException.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class ImapHandlerFactory
 {
-    const SETTINGS_KEY_FILE = '/ImapTestSettings.txt';
-    const DEFAULT_SETTINGS_KEY = 'testSettingsOk';
-    
+    public const SETTINGS_KEY_FILE = '/ImapTestSettings.txt';
+    public const DEFAULT_SETTINGS_KEY = 'testSettingsOk';
+
     /**
      *
      * @var ImapHandlerInterface
      */
     protected $interfaceObject = null;
-    
+
     /**
      *
      * @var array
@@ -72,7 +74,7 @@ class ImapHandlerFactory
         'class' => 'ImapHandlerFake',
         'calls' => 'include/Imap/ImapHandlerFakeCalls.php',
     ];
-    
+
     /**
      *
      * @param ImapHandlerInterface $interfaceObject
@@ -83,7 +85,7 @@ class ImapHandlerFactory
         LoggerManager::getLogger()->debug('ImapHandlerFactory will using a ' . $class);
         $this->interfaceObject = $interfaceObject;
     }
-    
+
     /**
      *
      */
@@ -93,7 +95,7 @@ class ImapHandlerFactory
             require_once $this->imapHandlerTestInterface['file'];
         }
     }
-    
+
     /**
      *
      * @global array $sugar_config
@@ -125,7 +127,7 @@ class ImapHandlerFactory
         $interfaceFakeData->retrieve($interfaceCalls);
         $this->setInterfaceObject(new $interfaceClass($interfaceFakeData));
     }
-    
+
     /**
      *
      * @return string
@@ -155,7 +157,7 @@ class ImapHandlerFactory
             unlink(__DIR__ . self::SETTINGS_KEY_FILE);
         }
     }
-    
+
     /**
      *
      * @param string $key
@@ -168,7 +170,7 @@ class ImapHandlerFactory
             $type = gettype($key);
             throw new InvalidArgumentException('Key should be a non-empty string, ' . ($type == 'string' ? 'empty string' : $type) . ' given.');
         }
-        
+
         $calls = include $this->imapHandlerTestInterface['calls'];
 
         if (!isset($calls[$key])) {
@@ -185,18 +187,21 @@ class ImapHandlerFactory
         }
         return false;
     }
-    
+
     /**
-     *
-     * @global array $sugar_config
-     * @param string $testSettings
+     * Get Handler
+     * @param string|null $testSettings
      * @return ImapHandlerInterface
      * @throws ImapHandlerException
      */
-    public function getImapHandler($testSettings = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function getImapHandler(string $testSettings = null, string $handlerType = 'native' )
+    public function getImapHandler(?string $testSettings = null, string $handlerType = 'native' )
+    // END STIC Custom
     {
         if (null === $this->interfaceObject) {
-            global $sugar_config;
+            global $sugar_config, $log;
 
             $test = (isset($sugar_config['imap_test']) && $sugar_config['imap_test']) || $testSettings;
             $charset = (isset($sugar_config['default_email_charset'])) ? $sugar_config['default_email_charset'] : null;
@@ -209,7 +214,9 @@ class ImapHandlerFactory
                 $logCalls = false;
             }
 
-            $interfaceClass = ImapHandler::class;
+            $interfaceClass = $this->getHandlerClass($handlerType);
+            $log->debug('Using imap handler class: ' . $interfaceClass);
+
             if ($test) {
                 $this->loadTestSettings($testSettings);
             } else {
@@ -217,5 +224,47 @@ class ImapHandlerFactory
             }
         }
         return $this->interfaceObject;
+    }
+
+    /**
+     * Check if all handlers are available
+     * @return bool
+     */
+    public function areAllHandlersAvailable(): bool {
+        foreach ($this->getHandlers() as $handlerClass) {
+            $available = (new $handlerClass())->isAvailable();
+            if ($available === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Get Handler
+     * @param string $handlerType
+     * @return string
+     */
+    protected function getHandlerClass(string $handlerType): string
+    {
+        $handlers = $this->getHandlers();
+
+        if (!empty($handlers[$handlerType])) {
+            return $handlers[$handlerType];
+        }
+
+        return ImapHandler::class;
+    }
+
+    /**
+     * @return ImapHandlerInterface[]
+     */
+    protected function getHandlers(): array
+    {
+        return [
+            'native' => ImapHandler::class,
+            'imap2' => Imap2Handler::class,
+        ];
     }
 }

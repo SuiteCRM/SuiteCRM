@@ -46,6 +46,7 @@ if (!isset($install_script) || !$install_script) {
     die($mod_strings['ERR_NO_DIRECT_SCRIPT']);
 }
 
+#[\AllowDynamicProperties]
 class NonDBLocalization extends Localization
 {
     public function __construct()
@@ -86,6 +87,7 @@ class NonDBLocalization extends Localization
     }
 }
 
+#[\AllowDynamicProperties]
 class InstallLayout
 {
     public static function getSelect($name, $options, $default)
@@ -605,7 +607,7 @@ EOQ;
         if (empty($_SESSION['smtp_tab_selected'])) {
             $_SESSION['smtp_tab_selected'] = 'smtp_tab_other';
         }
-        
+
         if (!isset($_SESSION['smtp_from_name']) || !$_SESSION['smtp_from_name']) {
             $_SESSION['smtp_from_name'] = 'SuiteCRM';
         }
@@ -627,7 +629,7 @@ EOQ;
             <!-- smtp types toggler buttons -->
 
             <p style="display: inline;">
-            
+
             <div>
                 <div class="formrow">
                     <label>{$mod_strings['LBL_FROM_NAME']}</label>
@@ -1758,8 +1760,28 @@ EOQ;
      */
     public function show($data = null)
     {
+        global $mod_strings;
+        global $sugar_version;
+        global $js_custom_version;
+        global $app_list_strings;
+        global $db;
+        global $current_language;
+        global $errs;
+        global $sugarConfigDefaults ;
+        global $drivers;
+        global $checked;
+        global $errors;
+        global $supportedLanguages;
+        global $customSession;
+        global $customLog;
+        global $customId;
+        global $customSessionHidden;
+        global $customLogHidden;
+        global $customIdHidden;
+        global $next_step;
+        global $sugar_md;
         foreach ($data as $__key => $__val) {
-            $$__key = $__val;
+            ${$__key} = $__val;
         }
         $formId = 'installForm';
         $out = $this->getOutput(
@@ -1802,6 +1824,7 @@ EOQ;
     }
 }
 
+#[\AllowDynamicProperties]
 class DisplayErrors
 {
     private static $settingsStack = array();
@@ -1847,7 +1870,7 @@ $setup_db_type = $_SESSION['setup_db_type'];
 
 $errs = '';
 if (isset($validation_errors)) {
-    if (count($validation_errors) > 0) {
+    if ((is_countable($validation_errors) ? count($validation_errors) : 0) > 0) {
         $errs  = '<div id="errorMsgs">';
         $errs .= "<p>{$mod_strings['LBL_SYSOPTS_ERRS_TITLE']}</p>";
         $errs .= '<ul>';

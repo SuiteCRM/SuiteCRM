@@ -28,8 +28,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once "include/utils/additional_details.php";
 
-function additionalDetailsstic_Time_Tracker($fields, SugarBean $bean = null, $params = array())
+function additionalDetailsstic_Time_Tracker($fields, ?SugarBean $bean = null, $params = array())
 {
+    global $current_language;
     if (file_exists('custom/modules/' . $bean->module_name . '/metadata/customAdditionalDetails.php')) {
         $additionalDetailsFile = 'custom/modules/' . $bean->module_name . '/metadata/customAdditionalDetails.php';
         require_once($additionalDetailsFile);

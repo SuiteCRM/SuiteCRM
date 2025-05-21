@@ -203,9 +203,9 @@ class CommandData
         // into the correct spot in the parameters list.
         if (!empty($this->parameterMap)) {
             $mappedArgs = [];
-            foreach ($this->parameterMap as $name => $isOption) {
-                if ($isOption) {
-                    $mappedArgs[$name] = $this->input->getOption($name);
+            foreach ($this->parameterMap as $name => $mappedName) {
+                if ($mappedName) {
+                    $mappedArgs[$name] = $this->input->getOption($mappedName);
                 } else {
                     $mappedArgs[$name] = array_shift($args);
                 }

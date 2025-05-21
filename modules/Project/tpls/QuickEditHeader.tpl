@@ -67,7 +67,7 @@
 <input type="hidden" name="return_module" value="{$smarty.request.return_module}">
 <input type="hidden" name="return_action" value="{$smarty.request.return_action}">
 <input type="hidden" name="return_id" value="{$smarty.request.return_id}">
-<input type="hidden" name="module_tab"> 
+<input type="hidden" name="module_tab">
 <input type="hidden" name="contact_role">
 {if !empty($smarty.request.return_module) || !empty($smarty.request.relate_to)}
 <input type="hidden" name="relate_to" value="{if $smarty.request.return_relationship}{$smarty.request.return_relationship}{elseif $smarty.request.relate_to && empty($smarty.request.from_dcmenu)}{$smarty.request.relate_to}{elseif empty($isDCForm) && empty($smarty.request.from_dcmenu)}{$smarty.request.return_module}{/if}">
@@ -78,13 +78,13 @@
 {assign var='place' value="_HEADER"} <!-- to be used for id for buttons with custom code in def files-->
 {{if isset($form.hidden)}}
 {{foreach from=$form.hidden item=field}}
-{{$field}}   
+{{$field}}
 {{/foreach}}
 {{/if}}
 {{if empty($form.button_location) || $form.button_location == 'top'}}
 {{if !empty($form) && !empty($form.buttons)}}
    {{foreach from=$form.buttons key=val item=button}}
-      {{sugar_button module="$module" id="$button" form_id="$form_id" view="$view" appendTo="header_buttons" location="HEADER"}}
+      {{sugar_button module="$module" id=$button form_id="$form_id" view="$view" appendTo="header_buttons" location="HEADER"}}
    {{/foreach}}
 {{else}}
 {{sugar_button module="$module" id="SAVE" view="$view" form_id="$form_id" location="HEADER" appendTo="header_buttons"}}

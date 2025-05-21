@@ -5,6 +5,7 @@ namespace Cron;
 /**
  * Abstract CRON expression field
  */
+#[\AllowDynamicProperties]
 abstract class AbstractField implements FieldInterface
 {
     /**

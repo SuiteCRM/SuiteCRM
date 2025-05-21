@@ -29,7 +29,7 @@ class tocontents
     public $TOC_page_selector;
     public $m_TOC;
 
-    public function tocontents(&$mpdf)
+    public function __construct(&$mpdf)
     {
         $this->mpdf = $mpdf;
         $this->_toc=array();

@@ -1,0 +1,13 @@
+parameters:
+	level: 6
+	errorFormat: raw
+	editorUrl: '%%file%% %%line%% %%column%%: %%error%%'
+	paths:
+		- src
+		- tests
+	ignoreErrors:
+		-
+			message: '#::seek\(\) has no return type specified.#'
+			paths:
+				- src/*
+

@@ -161,6 +161,12 @@ class MySugar
                 $current_user->setPreference('dashlets', $dashlets, 0, $this->type);
             }
 
+            // STIC Custom 20250509 JBL - Fix Errors when dashlet file does not exist
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            if (!file_exists($dashlets[$id]['fileLocation'])) {
+                return;
+            }
+            // END STIC Custom
             require_once($dashlets[$id]['fileLocation']);
             $dashlet = new $dashlets[$id]['className']($id, (isset($dashlets[$id]['options']) ? $dashlets[$id]['options'] : array()));
             if (!empty($_REQUEST['configure']) && $_REQUEST['configure']) { // save settings

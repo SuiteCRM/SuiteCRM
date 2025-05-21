@@ -124,19 +124,26 @@
                             </td>
                         </tr>
                         <tr>
-                            <td scope="row"><span>{MOD.LBL_FROM_MAILBOX_NAME}</span></td>
-                            <td><span><select id='inbound_email_id' tabindex='1'
-                                        onchange='set_from_email_and_name(this);'
-                                        name='inbound_email_id'>{MAILBOXES}</select>&nbsp;<SPAN id='from_email'
-                                        style="font-style:italic">{DEFAULT_FROM_EMAIL}</SPAN></span></td>
+                            <?php //STIC-Custom 20250117 MHP - Remove the onchange function so that the sender values ​​are not deleted ?>
+                            <?php //https://github.com/SinergiaTIC/SinergiaCRM/pull/315 ?>
+                            <td scope="row"><span>{MOD.LBL_FROM_MAILBOX_NAME}<span class="required">{APP.LBL_REQUIRED_SYMBOL}</span></span></td>
+                            <td><span>
+                                <select id='inbound_email_id' tabindex='1' name='inbound_email_id'>{MAILBOXES}</select>&nbsp;
+                                <SPAN id='from_email'
+                                    style="font-style:italic">{DEFAULT_FROM_EMAIL}</SPAN>
+                            </span></td>
+                            <?php //END STIC-Custom ?>
                             <td scope="row"><span>&nbsp;</span></td>
                             <td class="datafield"><span>&nbsp;</span></td>
                         </tr>
 
                         <tr>
                             <td scope="row"><span>{MOD.LBL_OUTBOUND_EMAIL_ACCOUNT_NAME}</span></td>
-                            <td><span><select
-                                        name="outbound_email_id">{outboundEmailAccountOptionsHTML}</select><br></span>
+                            <td><span>
+                                <?php //STIC-Custom 20250117 MHP - Add onchange function to preload sender values ​​and respond with selected account data ?>
+                                <?php //https://github.com/SinergiaTIC/SinergiaCRM/pull/315 ?>
+                                <select name="outbound_email_id" onchange='set_from_email_and_name(this);'>{outboundEmailAccountOptionsHTML}</select><br></span>
+                                <?php //END STIC-Custom ?>
                             </td>
                             <td scope="row"><span>&nbsp;</span></td>
                             <td class="datafield"><span>&nbsp;</span></td>
@@ -282,7 +289,16 @@
     // STIC-Custom 20240913 MHP - Remove spaces between {} and variable
     // https://github.com/SinergiaTIC/SinergiaCRM/pull/387
     // var ie_stored_options = { IEStoredOptions };
-    var ie_stored_options = {IEStoredOptions};
+    // STIC-Custom 20250117 MHP - Take data from the SMTP account instead of the bounce account
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    // var ie_stored_options = {IEStoredOptions};
+    var oe_stored_options = {OEStoredOptions};
+    // Call the onchange function of the outbound_email_id field to preload the values ​​of the selected element when creating a new marketing email
+    // It is used to differentiate when we are loading the view or when the user has changed the value of the outgoing account
+    var onReady = 1;
+    $(document).ready(function() {
+        $('select[name="outbound_email_id"]').change(); // Dispara el evento `change`
+    });
     // END STIC-Custom
     var from_emails = new Array({ FROM_EMAILS });
 
@@ -292,39 +308,72 @@
         var rn = document.getElementById('reply_to_name');
         var ra = document.getElementById('reply_to_addr');
 
-        if (mailbox.value != '') {
-            if (ie_stored_options[mailbox.value]) {
-                var focusIe = ie_stored_options[mailbox.value];
-                // from name
-                if (focusIe.from_name && focusIe.from_name != "")
-                    fn.value = focusIe.from_name;
-                else
-                    fn.value = '';
+        // STIC-Custom 20250326 MHP - Pre-populate SMTP account values ​​into sender and reply fields
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315      
+        if (!onReady || (onReady && fn.value == '')) { 
+            if (mailbox.value != '') {
+                // if (ie_stored_options[mailbox.value]) {
+                //     var focusIe = ie_stored_options[mailbox.value];
+                //     // from name
+                //     if (focusIe.from_name && focusIe.from_name != "")
+                //         fn.value = focusIe.from_name;
+                //     else
+                //         fn.value = '';
 
-                // from addr
-                if (focusIe.from_addr && focusIe.from_addr != "")
-                    fa.value = focusIe.from_addr;
-                else
-                    fa.value = '';
+                //     // from addr
+                //     if (focusIe.from_addr && focusIe.from_addr != "")
+                //         fa.value = focusIe.from_addr;
+                //     else
+                //         fa.value = '';
 
-                // reply name
-                if (focusIe.reply_to_name && focusIe.reply_to_name != "")
-                    rn.value = focusIe.reply_to_name;
-                else
-                    rn.value = '';
+                //     // reply name
+                //     if (focusIe.reply_to_name && focusIe.reply_to_name != "")
+                //         rn.value = focusIe.reply_to_name;
+                //     else
+                //         rn.value = '';
 
-                // reply add
-                if (focusIe.reply_to_addr && focusIe.reply_to_addr != "")
-                    ra.value = focusIe.reply_to_addr;
-                else
-                    ra.value = '';
+                //     // reply add
+                //     if (focusIe.reply_to_addr && focusIe.reply_to_addr != "")
+                //         ra.value = focusIe.reply_to_addr;
+                //     else
+                //         ra.value = '';
+                // }
+
+                if (oe_stored_options[mailbox.value]) {
+                    var focusOe = oe_stored_options[mailbox.value];
+                    // from name
+                    if (focusOe.smtp_from_name && focusOe.smtp_from_name != "")
+                        fn.value = focusOe.smtp_from_name;
+                    else
+                        fn.value = '';
+
+                    // from addr
+                    if (focusOe.smtp_from_addr && focusOe.smtp_from_addr != "")
+                        fa.value = focusOe.smtp_from_addr;
+                    else
+                        fa.value = '';
+
+                    // reply name
+                    if (focusOe.reply_to_name && focusOe.reply_to_name != "")
+                        rn.value = focusOe.reply_to_name;
+                    else
+                        rn.value = '';
+
+                    // reply add
+                    if (focusOe.reply_to_addr && focusOe.reply_to_addr != "")
+                        ra.value = focusOe.reply_to_addr;
+                    else
+                        ra.value = '';
+                }
+            } else {
+                fn.value = '';
+                fa.value = '';
+                rn.value = '';
+                ra.value = '';
             }
-        } else {
-            fn.value = '';
-            fa.value = '';
-            rn.value = '';
-            ra.value = '';
         }
+        onReady = 0;
+        // END STIC-Custom        
     }
 </script>
 {JAVASCRIPT}

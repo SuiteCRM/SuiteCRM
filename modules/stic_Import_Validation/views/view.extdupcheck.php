@@ -28,6 +28,7 @@ require_once('modules/stic_Import_Validation/ImportDuplicateCheck.php');
 
 require_once('include/upload_file.php');
 
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewExtdupcheck extends stic_Import_ValidationView
 {
     protected $pageTitleKey = 'LBL_STEP_DUP_TITLE';

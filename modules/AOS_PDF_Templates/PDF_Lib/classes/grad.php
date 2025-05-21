@@ -4,7 +4,7 @@ class grad
 {
     public $mpdf = null;
 
-    public function grad(&$mpdf)
+    public function __construct(&$mpdf)
     {
         $this->mpdf = $mpdf;
     }
@@ -505,11 +505,11 @@ class grad
         for ($i=0;$i<count($stops);$i++) {
             // mPDF 5.3.74
             if ($colorspace == 'CMYK') {
-                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F %.3F %.3F %.3F', (ord($stops[$i]['col']{1})/100), (ord($stops[$i]['col']{2})/100), (ord($stops[$i]['col']{3})/100), (ord($stops[$i]['col']{4})/100));
+                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F %.3F %.3F %.3F', (ord($stops[$i]['col'][1])/100), (ord($stops[$i]['col'][2])/100), (ord($stops[$i]['col'][3])/100), (ord($stops[$i]['col'][4])/100));
             } elseif ($colorspace == 'Gray') {
-                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F', (ord($stops[$i]['col']{1})/255));
+                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F', (ord($stops[$i]['col'][1])/255));
             } else {
-                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F %.3F %.3F', (ord($stops[$i]['col']{1})/255), (ord($stops[$i]['col']{2})/255), (ord($stops[$i]['col']{3})/255));
+                $this->mpdf->gradients[$n]['stops'][$i]['col'] = sprintf('%.3F %.3F %.3F', (ord($stops[$i]['col'][1])/255), (ord($stops[$i]['col'][2])/255), (ord($stops[$i]['col'][3])/255));
             }
             if (!isset($stops[$i]['opacity'])) {
                 $stops[$i]['opacity'] = 1;
@@ -716,19 +716,19 @@ class grad
                 } else {
                     $stop['col'] = $col = $this->mpdf->ConvertColor(255);
                 }
-                if ($col{0}==1) {
+                if ($col[0]==1) {
                     $g['colorspace'] = 'Gray';
-                } elseif ($col{0}==4 || $col{0}==6) {
+                } elseif ($col[0]==4 || $col[0]==6) {
                     $g['colorspace'] = 'CMYK';
                 }
-                if ($col{0}==5) {
-                    $stop['opacity'] = ord($col{4})/100;
+                if ($col[0]==5) {
+                    $stop['opacity'] = ord($col[4])/100;
                 }	// transparency from rgba()
-        elseif ($col{0}==6) {
-            $stop['opacity'] = ord($col{5})/100;
+        elseif ($col[0]==6) {
+            $stop['opacity'] = ord($col[5])/100;
         }	// transparency from cmyka()
-        elseif ($col{0}==1 && $col{2}==1) {
-            $stop['opacity'] = ord($col{3})/100;
+        elseif ($col[0]==1 && $col[2]==1) {
+            $stop['opacity'] = ord($col[3])/100;
         }	// transparency converted from rgba or cmyka()
 
         if (isset($el[1]) && preg_match('/(\d+)[%]/', $el[1], $m)) {
@@ -897,19 +897,19 @@ class grad
                 } else {
                     $stop['col'] = $col = $this->mpdf->ConvertColor(255);
                 }
-                if ($col{0}==1) {
+                if ($col[0]==1) {
                     $g['colorspace'] = 'Gray';
-                } elseif ($col{0}==4 || $col{0}==6) {
+                } elseif ($col[0]==4 || $col[0]==6) {
                     $g['colorspace'] = 'CMYK';
                 }
-                if ($col{0}==5) {
-                    $stop['opacity'] = ord($col{4})/100;
+                if ($col[0]==5) {
+                    $stop['opacity'] = ord($col[4])/100;
                 }	// transparency from rgba()
-        elseif ($col{0}==6) {
-            $stop['opacity'] = ord($col{5})/100;
+        elseif ($col[0]==6) {
+            $stop['opacity'] = ord($col[5])/100;
         }	// transparency from cmyka()
-        elseif ($col{0}==1 && $col{2}==1) {
-            $stop['opacity'] = ord($col{3})/100;
+        elseif ($col[0]==1 && $col[2]==1) {
+            $stop['opacity'] = ord($col[3])/100;
         }	// transparency converted from rgba or cmyka()
 
         if (isset($el[1]) && preg_match('/(\d+)[%]/', $el[1], $m)) {
@@ -955,9 +955,9 @@ class grad
             $g['colorspace'] = 'RGB';
             // mPDF 5.3.74
             $cor = $this->mpdf->ConvertColor($bgr[1]);
-            if ($cor{0}==1) {
+            if ($cor[0]==1) {
                 $g['colorspace'] = 'Gray';
-            } elseif ($cor{0}==4 || $cor{0}==6) {
+            } elseif ($cor[0]==4 || $cor[0]==6) {
                 $g['colorspace'] = 'CMYK';
             }
             if ($cor) {

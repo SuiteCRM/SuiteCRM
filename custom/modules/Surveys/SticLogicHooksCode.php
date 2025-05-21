@@ -28,7 +28,7 @@ class SurveysLogicHooks
     {
 
         // If mass duplicate
-        if ($_REQUEST['mass_duplicate']) {
+        if (!empty($_REQUEST['mass_duplicate'])) {
             global $db;
             include_once 'SticInclude/Utils.php';
 

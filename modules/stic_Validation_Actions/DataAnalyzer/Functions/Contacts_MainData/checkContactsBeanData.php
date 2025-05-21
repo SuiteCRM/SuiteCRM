@@ -30,8 +30,8 @@ require_once 'SticInclude/Utils.php';
  */
 class checkContactsBeanData extends DataCheckFunction 
 {
-    const ID_NUMBER_FIELD = 'stic_identification_number_c'; // ID number field that will be validated
-    const ID_TYPE_FIELD = 'stic_identification_type_c'; // ID type field
+    public const ID_NUMBER_FIELD = 'stic_identification_number_c'; // ID number field that will be validated
+    public const ID_TYPE_FIELD = 'stic_identification_type_c'; // ID type field
 
     // Contains the FieldDefs of the contact class
     protected $contactDef = null;

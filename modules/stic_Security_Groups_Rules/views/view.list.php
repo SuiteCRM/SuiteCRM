@@ -55,7 +55,7 @@ class stic_Security_Groups_RulesViewList extends ViewList
          */
         global $db, $app_list_strings, $sugar_config;
         require_once 'modules/MySettings/TabController.php';
-        $systemTabs = TabController::get_system_tabs();
+        $systemTabs = (new TabController())->get_system_tabs();
         foreach ($systemTabs as $key) {
             // Check if the module already exists in the table
             $moduleCount = $db->getOne("SELECT count(*) FROM stic_security_groups_rules WHERE deleted=0 AND name='$key'");

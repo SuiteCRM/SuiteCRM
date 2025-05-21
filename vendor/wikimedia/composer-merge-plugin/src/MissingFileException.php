@@ -10,9 +10,11 @@
 
 namespace Wikimedia\Composer\Merge\V2;
 
+use RuntimeException;
+
 /**
  * @author Bryan Davis <bd808@bd808.com>
  */
-class MissingFileException extends \RuntimeException
+class MissingFileException extends RuntimeException
 {
 }

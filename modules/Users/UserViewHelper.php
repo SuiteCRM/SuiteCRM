@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * This helper handles the rest of the fields for the Users Edit and Detail views.
  * There are a lot of fields on those views that do not map directly to being used on the metadata based UI, so they are handled here.
  */
+#[\AllowDynamicProperties]
 class UserViewHelper
 {
 
@@ -354,7 +355,7 @@ class UserViewHelper
         } else {
             $this->ss->assign("THEMES", get_select_options_with_id(SugarThemeRegistry::availableThemes(), $GLOBALS['sugar_config']['default_theme']));
         }
-        $this->ss->assign("SHOW_THEMES", count(SugarThemeRegistry::availableThemes()) > 1);
+        $this->ss->assign("SHOW_THEMES", (is_countable(SugarThemeRegistry::availableThemes()) ? count(SugarThemeRegistry::availableThemes()) : 0) > 1);
         $this->ss->assign("USER_THEME_COLOR", $this->bean->getPreference('user_theme_color'));
         $this->ss->assign("USER_THEME_FONT", $this->bean->getPreference('user_theme_font'));
         $this->ss->assign("USER_THEME", $user_theme);
@@ -398,14 +399,21 @@ class UserViewHelper
 
     protected function setupAdvancedTabUserSettings()
     {
-        global $current_user, $locale, $app_strings, $app_list_strings, $sugar_config;
+        global $current_user, $locale, $app_strings, $app_list_strings, $sugar_config, $current_language;
         // This is for the "Advanced" tab, it's not controlled by the metadata UI so we have to do more for it.
+
+        $admin = BeanFactory::newBean('Administration');
+        $admin->retrieveSettings();
 
         $this->ss->assign('EXPORT_DELIMITER', $this->bean->getPreference('export_delimiter'));
 
         if ($this->bean->receive_notifications || (!isset($this->bean->id) && $admin->settings['notify_send_by_default'])) {
             $this->ss->assign("RECEIVE_NOTIFICATIONS", "checked");
         }
+        $currentLanguage = $this->bean->getPreference('language') ?? $current_language;
+        $languages = get_languages();
+        $languageOptions = get_select_options_with_id($languages, $currentLanguage);
+        $this->ss->assign('LanguageOptions', $languageOptions);
 
         //jc:12293 - modifying to use the accessor method which will translate the
         //available character sets using the translation files
@@ -562,6 +570,8 @@ class UserViewHelper
     protected function setupAdvancedTabNavSettings()
     {
         global $app_list_strings;
+
+        $ss = null;
 
         // Grouped tabs?
         $useGroupTabs = $this->bean->getPreference('navigation_paradigm');

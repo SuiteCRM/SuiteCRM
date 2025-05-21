@@ -109,6 +109,20 @@ $lang_format_config = array (
       'CurrencyToWords' => false, //true,
    ),      
    
+   'en' => array (
+      'week_days' => array("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"),
+      'months' => array("January","February","March","April","May","June","July","August","September","October","November","December"),      
+      'decimal_point' => '.',
+      'thousands_sep' => ',', 
+      'date_format' => 'd/m/Y',
+      'time_format' => 'H:i', 
+      'long_date_format' => 'j F Y',
+      'bool_0' => 'No',
+      'bool_1' => 'Yes',  
+      'NumberToWords' => false, //true,
+      'CurrencyToWords' => false, //true,
+   ),      
+   
    'de' => array (
       'week_days' => array("Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"),
       'months' => array("Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"),    

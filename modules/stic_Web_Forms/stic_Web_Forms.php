@@ -24,6 +24,7 @@
 /**
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
+#[\AllowDynamicProperties]
 class stic_Web_Forms extends Basic
 {
     public $new_schema = true;

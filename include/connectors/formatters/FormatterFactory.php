@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Formatter factory
  * @api
  */
+#[\AllowDynamicProperties]
 class FormatterFactory
 {
     public static $formatter_map = array();
@@ -70,7 +71,7 @@ class FormatterFactory
             }
 
             //split the wrapper name to find the path to the file.
-            $dir = str_replace('_', '/', $formatter_name);
+            $dir = str_replace('_', '/', (string) $formatter_name);
             $parts = explode("/", $dir);
             $file = $parts[count($parts)-1];
 

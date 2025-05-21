@@ -49,6 +49,12 @@ require_once('modules/Studio/wizards/StudioWizard.php');
 
 $wizard = !empty($_REQUEST['wizard'])? $_REQUEST['wizard']: 'StudioWizard';
 
+$validWizards = ['EditDropDownWizard', 'RenameModules', 'StudioWizard'];
+
+if (!in_array($wizard, $validWizards,true)) {
+    throw new InvalidArgumentException('Invalid wizard');
+}
+
 if (file_exists('modules/Studio/wizards/'. $wizard . '.php')) {
     require_once('modules/Studio/wizards/'. $wizard . '.php');
     $thewiz = new $wizard();

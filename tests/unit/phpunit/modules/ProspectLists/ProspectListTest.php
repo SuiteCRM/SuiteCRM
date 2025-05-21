@@ -108,7 +108,7 @@ class ProspectListTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($prospectList->id));
-        self::assertEquals(36, strlen($prospectList->id));
+        self::assertEquals(36, strlen((string) $prospectList->id));
 
 
         //test set_prospect_relationship method

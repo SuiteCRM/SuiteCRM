@@ -12,7 +12,7 @@
 
 namespace ScssPhp\ScssPhp;
 
-final class CompilationResult
+class CompilationResult
 {
     /**
      * @var string
@@ -34,14 +34,17 @@ final class CompilationResult
      * @param string|null $sourceMap
      * @param string[] $includedFiles
      */
-    public function __construct(string $css, ?string $sourceMap, array $includedFiles)
+    public function __construct($css, $sourceMap, array $includedFiles)
     {
         $this->css = $css;
         $this->sourceMap = $sourceMap;
         $this->includedFiles = $includedFiles;
     }
 
-    public function getCss(): string
+    /**
+     * @return string
+     */
+    public function getCss()
     {
         return $this->css;
     }
@@ -49,7 +52,7 @@ final class CompilationResult
     /**
      * @return string[]
      */
-    public function getIncludedFiles(): array
+    public function getIncludedFiles()
     {
         return $this->includedFiles;
     }
@@ -59,7 +62,7 @@ final class CompilationResult
      *
      * @return null|string
      */
-    public function getSourceMap(): ?string
+    public function getSourceMap()
     {
         return $this->sourceMap;
     }

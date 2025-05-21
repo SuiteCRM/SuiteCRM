@@ -1,0 +1,102 @@
+{
+    "name": "pelago/emogrifier",
+    "description": "Converts CSS styles into inline style attributes in your HTML code",
+    "keywords": [
+        "email",
+        "css",
+        "pre-processing"
+    ],
+    "homepage": "https://www.myintervals.com/emogrifier.php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oliver Klee",
+            "email": "github@oliverklee.de"
+        },
+        {
+            "name": "Zoli Szabó",
+            "email": "zoli.szabo+github@gmail.com"
+        },
+        {
+            "name": "John Reeve",
+            "email": "jreeve@pelagodesign.com"
+        },
+        {
+            "name": "Jake Hotson",
+            "email": "jake@qzdesign.co.uk"
+        },
+        {
+            "name": "Cameron Brooks"
+        },
+        {
+            "name": "Jaime Prado"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/MyIntervals/emogrifier/issues",
+        "source": "https://github.com/MyIntervals/emogrifier"
+    },
+    "require": {
+        "php": "~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0 || ~8.0.0",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "symfony/css-selector": "^3.4.32 || ^4.4 || ^5.1"
+    },
+    "require-dev": {
+        "php-parallel-lint/php-parallel-lint": "^1.2.0",
+        "rawr/cross-data-providers": "^2.3.0",
+        "slevomat/coding-standard": "^6.4.1",
+        "squizlabs/php_codesniffer": "^3.5.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pelago\\Emogrifier\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pelago\\Emogrifier\\Tests\\": "tests/"
+        }
+    },
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "scripts": {
+        "php:version": "php -v | grep -Po 'PHP\\s++\\K(?:\\d++\\.)*+\\d++(?:-\\w++)?+'",
+        "php:fix": "\"./tools/php-cs-fixer.phar\" --config=config/php-cs-fixer.php fix config/ src/ tests/",
+        "ci:php:lint": "\"vendor/bin/parallel-lint\" config src tests",
+        "ci:php:sniff": "\"vendor/bin/phpcs\" config src tests",
+        "ci:php:fixer": "\"./tools/php-cs-fixer.phar\" --config=config/php-cs-fixer.php fix --dry-run -v --show-progress=dots --diff-format=udiff config/ src/ tests/",
+        "ci:php:md": "\"./tools/phpmd.phar\" src text config/phpmd.xml",
+        "ci:php:psalm": "\"./tools/psalm.phar\" --show-info=false",
+        "ci:tests:unit": "\"./tools/phpunit.phar\"",
+        "ci:tests:sof": "\"./tools/phpunit.phar\" --stop-on-failure",
+        "ci:tests": [
+            "@ci:tests:unit"
+        ],
+        "ci:dynamic": [
+            "@ci:tests"
+        ],
+        "ci:static": [
+            "@ci:php:lint",
+            "@ci:php:sniff",
+            "@ci:php:fixer",
+            "@ci:php:md",
+            "@ci:php:psalm"
+        ],
+        "ci": [
+            "@ci:static",
+            "@ci:dynamic"
+        ],
+        "phive:update:phpunit": "echo y | \"./tools/phive.phar\" --no-progress update phpunit"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "6.0.x-dev"
+        }
+    }
+}

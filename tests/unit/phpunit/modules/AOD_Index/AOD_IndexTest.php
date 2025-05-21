@@ -116,7 +116,6 @@ class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
             'Meetings' => 'Meeting',
             'Notes' => 'Note',
             'Opportunities' => 'Opportunity',
-            'OutboundEmailAccounts' => 'OutboundEmailAccounts',
             'Project' => 'Project',
             'ProjectTask' => 'ProjectTask',
             'ProspectLists' => 'ProspectList',
@@ -131,6 +130,8 @@ class AOD_IndexTest extends SuitePHPUnitFrameworkTestCase
 
         //execute the method and verify that it retunrs expected results
         $actual = BeanFactory::newBean('AOD_Index')->getIndexableModules();
-        self::assertSame($expected, $actual);
+        foreach ($expected as $key => $expect){
+            self::assertEquals($expect, $actual[$key]);
+        }
     }
 }

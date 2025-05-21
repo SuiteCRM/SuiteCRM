@@ -43,6 +43,7 @@ namespace SuiteCRM\Test;
  * Class TestLogger
  * @package SuiteCRM\Tests\SuiteCRM\Test
  */
+#[\AllowDynamicProperties]
 class TestLogger
 {
 

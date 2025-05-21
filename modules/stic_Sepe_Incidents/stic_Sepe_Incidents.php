@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Sepe_Incidents extends Basic {
 	public $new_schema = true;
 	public $module_dir = 'stic_Sepe_Incidents';

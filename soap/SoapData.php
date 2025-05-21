@@ -206,7 +206,7 @@ function get_modified_entries($session, $module_name, $ids, $select_fields)
         }
         $field_select .= $table_name.".".$field;
 
-        if ($index < (count($select_fields) - 1)) {
+        if ($index < ((is_countable($select_fields) ? count($select_fields) : 0) - 1)) {
             $field_select .= ",";
             $index++;
         }

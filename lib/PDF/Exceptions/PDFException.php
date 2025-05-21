@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class PDFException
  * @package SuiteCRM\PDF\Exceptions
  */
+#[\AllowDynamicProperties]
 class PDFException extends RuntimeException
 {
 }

@@ -46,6 +46,7 @@ require_once('include/SugarObjects/templates/file/File.php');
 
 
 // User is used to store Forecast information.
+#[\AllowDynamicProperties]
 class Document extends File
 {
     public $id;
@@ -190,6 +191,7 @@ class Document extends File
                 $this->document_revision_id = $Revision->id;
             }
 
+            $save_revision = [];
 
             //set relationship field values if contract_id is passed (via subpanel create)
             if (!empty($_POST['contract_id'])) {
@@ -198,7 +200,7 @@ class Document extends File
                 $this->contracts->add($_POST['contract_id'], $save_revision);
             }
 
-            if ((isset($_POST['load_signed_id']) and !empty($_POST['load_signed_id']))) {
+            if ((isset($_POST['load_signed_id']) && !empty($_POST['load_signed_id']))) {
                 $loadSignedIdQuoted = $this->db->quote($_POST['load_signed_id']);
                 $query="update linked_documents set deleted=1 where id='".$loadSignedIdQuoted."'";
                 $this->db->query($query);
@@ -268,7 +270,7 @@ class Document extends File
 
                 $allowedPreview = $sugar_config['allowed_preview'] ?? [];
 
-                if (in_array($row['file_ext'], $allowedPreview, true)) {
+                if (!empty($row['file_ext']) && in_array($row['file_ext'], $allowedPreview, true)) {
                     $this->show_preview = true;
                 }
 
@@ -325,8 +327,8 @@ class Document extends File
             $this->status = $app_list_strings['document_status_dom'][$this->status_id];
         }
         if (!empty($this->related_doc_id)) {
-            $this->related_doc_name = Document::get_document_name($this->related_doc_id);
-            $this->related_doc_rev_number = DocumentRevision::get_document_revision_name($this->related_doc_rev_id);
+            $this->related_doc_name = (new Document())->get_document_name($this->related_doc_id);
+            $this->related_doc_rev_number = (new DocumentRevision)->get_document_revision_name($this->related_doc_rev_id);
         }
     }
 

@@ -93,7 +93,7 @@ class Logger
             $this->inputOutput->writeError($message);
         } else {
             // @codeCoverageIgnoreStart
-            // Backwards compatiblity for Composer before cb336a5
+            // Backwards compatibility for Composer before cb336a5
             $this->inputOutput->write($message);
             // @codeCoverageIgnoreEnd
         }

@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldMultiEnum extends SugarWidgetFieldEnum
 {
     public function queryFilternot_one_of($layout_def)

@@ -47,6 +47,7 @@ if (!defined('sugarEntry')) {
  */
 require_once('service/core/SugarWebServiceImpl.php');
 
+#[\AllowDynamicProperties]
 class SugarWebServiceImplv2_1 extends SugarWebServiceImpl
 {
     /**

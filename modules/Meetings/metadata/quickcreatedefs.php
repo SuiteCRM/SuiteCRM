@@ -369,7 +369,11 @@ array (
           0 => 
           array (
             'name' => 'reminders',
-            'customCode' => '{include file="modules/Reminders/tpls/reminders.tpl"}',
+            // STIC-Custom 20242204 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+            // When updating the SuiteCRM core it is necessary to indicate the path to the custom file in the customCode property
+            // 'customCode' => '{include file="modules/Reminders/tpls/reminders.tpl"}',
+            'customCode' => '{include file="custom/modules/Reminders/tpls/reminders.tpl"}',
+            // END STIC-Custom
             'label' => 'LBL_REMINDERS',
           ),
         ),

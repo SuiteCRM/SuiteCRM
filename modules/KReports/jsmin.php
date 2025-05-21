@@ -46,8 +46,8 @@
  */
 
 class JSMin {
-  const ORD_LF    = 10;
-  const ORD_SPACE = 32;
+  public const ORD_LF    = 10;
+  public const ORD_SPACE = 32;
 
   protected $a           = '';
   protected $b           = '';

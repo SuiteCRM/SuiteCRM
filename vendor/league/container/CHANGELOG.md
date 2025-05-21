@@ -2,6 +2,22 @@
 
 All Notable changes to `League\Container` will be documented in this file
 
+## 4.2.4
+
+### Fixed
+- Now properly handle string based fully qualified class names in with preceding slashes. (@M1ke)
+
+## 4.2.3
+
+### Fixed
+- Warnings for PHP 8.4 implicit nullable types (@andypost)
+
+## 4.2.1
+
+### Fixed
+- Remove an unnecessary conditional in ServiceProviderAggregate. (@SubhanSh)
+- Fixed an infinite loop in resolving definitions. (@arai-ta)
+
 ## 4.2.0
 
 ### Added
@@ -111,7 +127,7 @@ All Notable changes to `League\Container` will be documented in this file
 
 ### Added
 - Re-added the `share` proxy method that was mistakenly removed in previous major release.
-- Added ability to set Conatiner to "share" by default using `defaultToShared` method.
+- Added ability to set Container to "share" by default using `defaultToShared` method.
 - Added ability for `ReflectionContainer` to cache resolutions and pull from cache for following calls.
 
 ## 3.0.1

@@ -249,6 +249,10 @@
                             <td nowrap="nowrap" scope="row" valign="top">{$MOD.LBL_LOCALE_DEFAULT_NAME_FORMAT}:&nbsp;{sugar_help text=$smarty.capture.SMARTY_LOCALE_NAME_FORMAT_DESC }</td>
                             <td><span><select id="default_locale_name_format" tabindex='14' name="default_locale_name_format" selected="{$default_locale_name_format}">{$NAMEOPTIONS}</select></span></td>
                         </tr>
+                        <tr>
+                            <td nowrap="nowrap" scope="row" valign="top">{$MOD.LBL_USER_LANGUAGE}:&nbsp;</td>
+                            <td><span><select id="user_language" tabindex='14' name="user_language" >{$user_language}</select></span></td>
+                        </tr>
                     </table>
                 </div>
             </td>

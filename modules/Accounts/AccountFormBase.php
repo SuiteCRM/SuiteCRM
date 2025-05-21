@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class AccountFormBase
 {
     protected $db = null;
@@ -95,7 +96,7 @@ class AccountFormBase
         }
         // STIC-Custom 20240312 JBL - Allow Custom duplicate Queries
         // https://github.com/SinergiaTIC/SinergiaCRM/pull/164
-        $focus = SugarModule::get($this->moduleName)->loadBean();        
+        $focus = SugarModule::get("Accounts")->loadBean();        
         if(file_exists("custom/modules/Accounts/sticAccountsDuplicateQueries.php")) {
             require_once("custom/modules/Accounts/sticAccountsDuplicateQueries.php");
             if(method_exists("sticAccountsDuplicateQueries", "getDuplicateQuery")) {
@@ -140,7 +141,7 @@ class AccountFormBase
             global $mod_strings;
         }
         global $app_strings;
-        $cols = count($rows[0]) * 2 + 1;
+        $cols = (is_countable($rows[0]) ? count($rows[0]) : 0) * 2 + 1;
         if ($action != 'ShowDuplicates') {
             $form = "<form action='index.php' method='post' id='dupAccounts'  name='dupAccounts'><input type='hidden' name='selectedAccount' value=''>";
             $form .= '<table width="100%"><tr><td>'.$mod_strings['MSG_DUPLICATE']. '</td></tr><tr><td height="20"></td></tr></table>';
@@ -162,17 +163,17 @@ class AccountFormBase
         if ($action == 'ShowDuplicates') {
             $return_action = 'ListView'; // cn: bug 6658 - hardcoded return action break popup -> create -> duplicate -> cancel
             $return_action = (isset($_REQUEST['return_action']) && !empty($_REQUEST['return_action'])) ? $_REQUEST['return_action'] : $return_action;
-            $form .= "<input type='hidden' name='selectedAccount' id='selectedAccount' value=''><input title='${app_strings['LBL_SAVE_BUTTON_TITLE']}' accessKey='${app_strings['LBL_SAVE_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  ${app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
+            $form .= "<input type='hidden' name='selectedAccount' id='selectedAccount' value=''><input title='{$app_strings['LBL_SAVE_BUTTON_TITLE']}' accessKey='{$app_strings['LBL_SAVE_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  {$app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
 
             if (!empty($_REQUEST['return_module']) && !empty($_REQUEST['return_action']) && !empty($_REQUEST['return_id'])) {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value='".$_REQUEST['return_module']."';this.form.action.value='".$_REQUEST['return_action']."';this.form.record.value='".$_REQUEST['return_id']."'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='{$app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value='".$_REQUEST['return_module']."';this.form.action.value='".$_REQUEST['return_action']."';this.form.record.value='".$_REQUEST['return_id']."'\" type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             } elseif (!empty($_POST['return_module']) && !empty($_POST['return_action'])) {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value='".$_POST['return_module']."';this.form.action.value='". $_POST['return_action']."';\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='{$app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.module.value='".$_POST['return_module']."';this.form.action.value='". $_POST['return_action']."';\" type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             } else {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='${app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='ListView';\" type='submit' type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}' accessKey='{$app_strings['LBL_CANCEL_BUTTON_KEY']}' class='button' onclick=\"this.form.action.value='ListView';\" type='submit' type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             }
         } else {
-            $form .= "<input type='submit' class='button' name='ContinueAccount' value='${mod_strings['LNK_NEW_ACCOUNT']}'>\n";
+            $form .= "<input type='submit' class='button' name='ContinueAccount' value='{$mod_strings['LNK_NEW_ACCOUNT']}'>\n";
         }
         $form .= "</td></tr></table></td></tr><tr>";
         if ($action != 'ShowDuplicates') {
@@ -195,14 +196,14 @@ class AccountFormBase
         foreach ($rows as $row) {
             $form .= "<tr class='$rowColor'>";
             if ($action != 'ShowDuplicates') {
-                $form .= "<td width='1%' nowrap><a href='javascript:void(0)' onclick='document.dupAccounts.selectedAccount.value=\"${row['id']}\"; document.dupAccounts.submit(); '>[${app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>\n";
+                $form .= "<td width='1%' nowrap><a href='javascript:void(0)' onclick='document.dupAccounts.selectedAccount.value=\"{$row['id']}\"; document.dupAccounts.submit(); '>[{$app_strings['LBL_SELECT_BUTTON_LABEL']}]</a>&nbsp;&nbsp;</td>\n";
             }
             foreach ($row as $key=>$value) {
                 if ($key != 'id') {
                     if (isset($_POST['popup']) && $_POST['popup']==true) {
-                        $form .= "<td scope='row'><a  href='javascript:void(0)' onclick=\"window.opener.location='index.php?module=Accounts&action=DetailView&record=${row['id']}'\">$value</a></td>\n";
+                        $form .= "<td scope='row'><a  href='javascript:void(0)' onclick=\"window.opener.location='index.php?module=Accounts&action=DetailView&record={$row['id']}'\">$value</a></td>\n";
                     } else {
-                        $form .= "<td><a target='_blank' href='index.php?module=Accounts&action=DetailView&record=${row['id']}'>$value</a></td>\n";
+                        $form .= "<td><a target='_blank' href='index.php?module=Accounts&action=DetailView&record={$row['id']}'>$value</a></td>\n";
                     }
                 }
             }
@@ -220,17 +221,17 @@ class AccountFormBase
         if ($action == 'ShowDuplicates') {
             $return_action = 'ListView'; // cn: bug 6658 - hardcoded return action break popup -> create -> duplicate -> cancel
             $return_action = (isset($_REQUEST['return_action']) && !empty($_REQUEST['return_action'])) ? $_REQUEST['return_action'] : $return_action;
-            $form .= "<input type='hidden' name='selectedAccount' id='selectedAccount' value=''><input title='${app_strings['LBL_SAVE_BUTTON_TITLE']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  ${app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
+            $form .= "<input type='hidden' name='selectedAccount' id='selectedAccount' value=''><input title='{$app_strings['LBL_SAVE_BUTTON_TITLE']}' class='button' onclick=\"this.form.action.value='Save';\" type='submit' name='button' value='  {$app_strings['LBL_SAVE_BUTTON_LABEL']}  '>\n";
 
             if (!empty($_REQUEST['return_module']) && !empty($_REQUEST['return_action']) && !empty($_REQUEST['return_id'])) {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' class='button' onclick=\"this.form.module.value='".$_REQUEST['return_module']."';this.form.action.value='".$_REQUEST['return_action']."';this.form.record.value='".$_REQUEST['return_id']."'\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}' class='button' onclick=\"this.form.module.value='".$_REQUEST['return_module']."';this.form.action.value='".$_REQUEST['return_action']."';this.form.record.value='".$_REQUEST['return_id']."'\" type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             } elseif (!empty($_POST['return_module']) && !empty($_POST['return_action'])) {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}' class='button' onclick=\"this.form.module.value='".$_POST['return_module']."';this.form.action.value='". $_POST['return_action']."';\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}' class='button' onclick=\"this.form.module.value='".$_POST['return_module']."';this.form.action.value='". $_POST['return_action']."';\" type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             } else {
-                $form .= "<input title='${app_strings['LBL_CANCEL_BUTTON_TITLE']}'  class='button' onclick=\"this.form.action.value='ListView';\" type='submit' name='button' value='  ${app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
+                $form .= "<input title='{$app_strings['LBL_CANCEL_BUTTON_TITLE']}'  class='button' onclick=\"this.form.action.value='ListView';\" type='submit' name='button' value='  {$app_strings['LBL_CANCEL_BUTTON_LABEL']}  '>";
             }
         } else {
-            $form .= "<input type='submit' class='button' name='ContinueAccount' value='${mod_strings['LNK_NEW_ACCOUNT']}'></form>\n";
+            $form .= "<input type='submit' class='button' name='ContinueAccount' value='{$mod_strings['LNK_NEW_ACCOUNT']}'></form>\n";
         }
         $form .= "</td></tr></table></td></tr></table>";
         return $form;
@@ -255,9 +256,9 @@ class AccountFormBase
 
         $the_form = get_left_form_header($mod_strings['LBL_NEW_FORM_TITLE']);
         $the_form .= <<<EOQ
-		<form name="${prefix}AccountSave" onSubmit="return check_form('${prefix}AccountSave');" method="POST" action="index.php">
-			<input type="hidden" name="${prefix}module" value="Accounts">
-			<input type="hidden" name="${prefix}action" value="Save">
+		<form name="{$prefix}AccountSave" onSubmit="return check_form('{$prefix}AccountSave');" method="POST" action="index.php">
+			<input type="hidden" name="{$prefix}module" value="Accounts">
+			<input type="hidden" name="{$prefix}action" value="Save">
 EOQ;
         $the_form .= $this->getFormBody($prefix, $mod, $prefix."AccountSave");
         $the_form .= <<<EOQ
@@ -299,7 +300,7 @@ EOQ;
 			<p><input type="hidden" name="record" value="">
 			<input type="hidden" name="email1" value="">
 			<input type="hidden" name="email2" value="">
-			<input type="hidden" name="assigned_user_id" value='${user_id}'>
+			<input type="hidden" name="assigned_user_id" value='{$user_id}'>
 			<input type="hidden" name="action" value="Save">
 EOQ;
         $form .= "$lbl_account_name&nbsp;<span class='required'>$lbl_required_symbol</span><br><input name='name' type='text' value=''><br>";
@@ -367,16 +368,16 @@ EOQ;
             $default_desc=$contact->description;
         }
         $form .= <<<EOQ
-		<input type="hidden" name="${prefix}record" value="">
-		<input type="hidden" name="${prefix}phone_fax" value="{$contact->phone_fax}">
-		<input type="hidden" name="${prefix}phone_other" value="{$contact->phone_other}">
-		<input type="hidden" name="${prefix}email1" value="{$contact->email1}">
-		<input type="hidden" name="${prefix}email2" value="{$contact->email2}">
-		<input type='hidden' name='${prefix}billing_address_street' value='{$contact->primary_address_street}'><input type='hidden' name='${prefix}billing_address_city' value='{$contact->primary_address_city}'><input type='hidden' name='${prefix}billing_address_state'   value='{$contact->primary_address_state}'><input type='hidden' name='${prefix}billing_address_postalcode'   value='{$contact->primary_address_postalcode}'><input type='hidden' name='${prefix}billing_address_country'  value='{$contact->primary_address_country}'>
-		<input type='hidden' name='${prefix}shipping_address_street' value='{$contact->alt_address_street}'><input type='hidden' name='${prefix}shipping_address_city' value='{$contact->alt_address_city}'><input type='hidden' name='${prefix}shipping_address_state'   value='{$contact->alt_address_state}'><input type='hidden' name='${prefix}shipping_address_postalcode'   value='{$contact->alt_address_postalcode}'><input type='hidden' name='${prefix}shipping_address_country'  value='{$contact->alt_address_country}'>
-		<input type="hidden" name="${prefix}assigned_user_id" value='${user_id}'>
-		<input type='hidden' name='${prefix}do_not_call'  value='{$contact->do_not_call}'>
-		<input type='hidden' name='${prefix}email_opt_out'  value='{$contact->email_opt_out}'>
+		<input type="hidden" name="{$prefix}record" value="">
+		<input type="hidden" name="{$prefix}phone_fax" value="{$contact->phone_fax}">
+		<input type="hidden" name="{$prefix}phone_other" value="{$contact->phone_other}">
+		<input type="hidden" name="{$prefix}email1" value="{$contact->email1}">
+		<input type="hidden" name="{$prefix}email2" value="{$contact->email2}">
+		<input type='hidden' name='{$prefix}billing_address_street' value='{$contact->primary_address_street}'><input type='hidden' name='{$prefix}billing_address_city' value='{$contact->primary_address_city}'><input type='hidden' name='{$prefix}billing_address_state'   value='{$contact->primary_address_state}'><input type='hidden' name='{$prefix}billing_address_postalcode'   value='{$contact->primary_address_postalcode}'><input type='hidden' name='{$prefix}billing_address_country'  value='{$contact->primary_address_country}'>
+		<input type='hidden' name='{$prefix}shipping_address_street' value='{$contact->alt_address_street}'><input type='hidden' name='{$prefix}shipping_address_city' value='{$contact->alt_address_city}'><input type='hidden' name='{$prefix}shipping_address_state'   value='{$contact->alt_address_state}'><input type='hidden' name='{$prefix}shipping_address_postalcode'   value='{$contact->alt_address_postalcode}'><input type='hidden' name='{$prefix}shipping_address_country'  value='{$contact->alt_address_country}'>
+		<input type="hidden" name="{$prefix}assigned_user_id" value='{$user_id}'>
+		<input type='hidden' name='{$prefix}do_not_call'  value='{$contact->do_not_call}'>
+		<input type='hidden' name='{$prefix}email_opt_out'  value='{$contact->email_opt_out}'>
 		<table width='100%' border="0" cellpadding="0" cellspacing="0">
 		<tr>
 		<td width="20%" nowrap scope="row">$lbl_account_name&nbsp;<span class="required">$lbl_required_symbol</span></td>

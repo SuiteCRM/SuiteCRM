@@ -22,6 +22,7 @@
  */
 require_once('include/MVC/Controller/SugarController.php');
   
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentosController extends SugarController {
 
    ///////////////////////////////////////////////////////////////////////////

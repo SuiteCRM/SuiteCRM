@@ -2,6 +2,7 @@
 
 require_once('modules/Accounts/AccountsListViewSmarty.php');
 
+#[\AllowDynamicProperties]
 class AccountsViewList extends ViewList
 {
     /**

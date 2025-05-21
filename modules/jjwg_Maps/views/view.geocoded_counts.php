@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MapsViewGeocoded_Counts extends SugarView
 {
     public function __construct()
@@ -22,7 +23,7 @@ class Jjwg_MapsViewGeocoded_Counts extends SugarView
         echo '<br /><br />';
 
         // Display last status code, if set.
-        if (!empty($_REQUEST['last_status']) && preg_match('/[A-Z\_]/', $_REQUEST['last_status'])) {
+        if (!empty($_REQUEST['last_status']) && preg_match('/[A-Z\_]/', (string) $_REQUEST['last_status'])) {
             echo '<div><b>'.$GLOBALS['mod_strings']['LBL_MAP_LAST_STATUS'].': '.$_REQUEST['last_status'].'</b></div>';
             echo '<br /><br />';
         }
@@ -48,9 +49,9 @@ class Jjwg_MapsViewGeocoded_Counts extends SugarView
             echo '<tr>';
             echo '<td><strong><a href="'.htmlspecialchars($geocode_url).'">'.$GLOBALS['app_list_strings']['moduleList'][$module].'</a></strong></td>';
             foreach ($this->bean->geocoded_headings as $heading) {
-                echo '<td>'.$this->bean->geocoded_counts[$module][$heading].'</td>';
+                echo '<td>'.($this->bean->geocoded_counts[$module][$heading] ?? "").'</td>';
             }
-            echo '<td><strong>'.$this->bean->geocoded_module_totals[$module].'</strong></td>';
+            echo '<td><strong>'.($this->bean->geocoded_module_totals[$module] ?? "").'</strong></td>';
             echo '<td><strong><a href="'.htmlspecialchars($reset_url).'">'.$GLOBALS['mod_strings']['LBL_MODULE_RESET_HEADING'].'</a.</strong></td>';
             echo '</tr>'."\n";
         }

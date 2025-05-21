@@ -54,7 +54,7 @@ class RedsysUtils
         $currentTpvPassword = $tpvSettings['TPV_TEST'] == 0 ? $tpvSettings['TPV_PASSWORD'] : $tpvSettings['TPV_PASSWORD_TEST'];
 
         if ($debugMode) {
-            $debugMsg .= '<div class="row">';
+            $debugMsg = '<div class="row">';
         }
 
         // If payment is already paid don't proccess it again and exit
@@ -231,7 +231,7 @@ class RedsysUtils
         $mail->AddBCC($usersBean->email1);
         $mail->Subject = $mod_strings['LBL_CARD_PAYMENT_COMMITMENT_EXPIRED_TITLE'];
 
-        $bodyContent .= "<h1>{$mod_strings['LBL_CARD_PAYMENT_COMMITMENT_EXPIRED_TITLE']}</h1>";
+        $bodyContent = "<h1>{$mod_strings['LBL_CARD_PAYMENT_COMMITMENT_EXPIRED_TITLE']}</h1>";
         $bodyContent .= "<h2>{$mod_strings['LBL_CARD_PAYMENT_COMMITMENT_EXPIRED_SUBTITLE']}</h2>";
         $bodyContent .= "<ul>";
         $bodyContent .= "<li>{$app_list_strings['moduleListSingular']['stic_Payment_Commitments']}: <a href='{$PCUrl}'>{$PCBean->name}</a>";

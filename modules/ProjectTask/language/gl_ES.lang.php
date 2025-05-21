@@ -113,4 +113,7 @@ $mod_strings = array(
     'LBL_DAYS' => 'Días',
     'LBL_HOURS' => 'Horas',
     'LBL_RELATIONSHIP_TYPE' => 'Tipo de Relación',
+
+    'LBL_ASCENDING' => 'Ascendente',
+    'LBL_DESCENDING' => 'Descendente',
 );

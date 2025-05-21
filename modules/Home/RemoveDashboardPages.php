@@ -47,7 +47,7 @@ $type = 'Home';
 $pages = $current_user->getPreference('pages', $type);
 
 
-if (count($pages) > 1) {
+if ((is_countable($pages) ? count($pages) : 0) > 1) {
     if (!isset($_POST['status'])) {
         $html = "<form method='post' name='removepageform' action='index.php?module=Home&action=RemoveDashboardPages'/>";
         $html .= "<p>".$GLOBALS['app_strings']['LBL_DELETE_DASHBOARD1']." ".$pages[$_POST['page_id']]['pageTitle'] . " ".$GLOBALS['app_strings']['LBL_DELETE_DASHBOARD2']."</p>";

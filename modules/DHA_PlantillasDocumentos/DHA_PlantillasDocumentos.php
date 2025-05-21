@@ -29,6 +29,7 @@ $sugar_7 = version_compare($sugar_version, '7.0.0', '>=');
 
 
 if ($sugar_7) {
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentos extends DHA_PlantillasDocumentosParent {
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +49,7 @@ class DHA_PlantillasDocumentos extends DHA_PlantillasDocumentosParent {
 
 
 if (!$sugar_7) {
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentos extends DHA_PlantillasDocumentosParent {
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////

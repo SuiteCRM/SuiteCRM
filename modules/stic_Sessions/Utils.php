@@ -61,6 +61,7 @@ class stic_SessionsUtils
      */
     public static function setSessionName($sessionBean)
     {
+        global $current_user;
         // Session name must be set if it is empty. If it is not, then only should be overwritten 
         // if its value was not customized by the user.
        
@@ -70,7 +71,10 @@ class stic_SessionsUtils
         $eventName = $eventBean->name;
         $timeDate = new TimeDate();
         // As start date might have changed in the current record edition, let's use the value stored in database
-        $sessionOriginalStartDate = $timeDate->to_display_date_time($sessionBean->fetched_row['start_date'], true, true, $current_user);
+        $sessionOriginalStartDate = '';
+        if(!empty($sessionBean->fetched_row)){
+            $sessionOriginalStartDate = $timeDate->to_display_date_time($sessionBean->fetched_row['start_date'], true, true, $current_user);
+        }
         $sessionOriginalName = "{$eventName} | {$sessionOriginalStartDate}h";
 
         // If session name is empty or it has not been customized, (re)built it

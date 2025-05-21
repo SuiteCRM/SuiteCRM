@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 //TODO Rename this to edit link
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelEditButton extends SugarWidgetField
 {
     protected static $defs = array();

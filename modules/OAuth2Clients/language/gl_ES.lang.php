@@ -55,6 +55,7 @@ $mod_strings = [
     'LBL_ALLOWED_GRANT_TYPE' => 'Tipos de concesión permitidos',
     'LBL_DURATION_AMOUNT' => 'Duración',
     'LBL_DURATION_UNIT' => 'Unidade de duración',
+    'LBL_DURATION_VALUE' => 'Valor de la duración',
     'LBL_USER' => 'Usuario asociado',
 
     'LBL_OAUTHTOKENS_SUBPANEL_TITLE' => 'Tokens OAuth2 activos',

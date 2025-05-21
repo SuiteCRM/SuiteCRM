@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class EmployeesViewList extends ViewList
 {
     public function preDisplay()
@@ -79,10 +80,10 @@ class EmployeesViewList extends ViewList
 
         $theTitle = "<div class='moduleTitle'>\n<h2>";
 
-        $module = preg_replace("/ /", "", $this->module);
+        $module = preg_replace("/ /", "", (string) $this->module);
 
         $params = $this->_getModuleTitleParams();
-        $count = count($params);
+        $count = is_countable($params) ? count($params) : 0;
         $index = 0;
 
         if (SugarThemeRegistry::current()->directionality == "rtl") {
@@ -154,7 +155,7 @@ EOHTML;
     {
         if (isset($_REQUEST['query'])) {
             // we have a query
-            if (!empty($_SERVER['HTTP_REFERER']) && preg_match('/action=EditView/', $_SERVER['HTTP_REFERER'])) { // from EditView cancel
+            if (!empty($_SERVER['HTTP_REFERER']) && preg_match('/action=EditView/', (string) $_SERVER['HTTP_REFERER'])) { // from EditView cancel
                 $this->searchForm->populateFromArray($this->storeQuery->query);
             } else {
                 $this->searchForm->populateFromRequest();
@@ -162,7 +163,7 @@ EOHTML;
         }
         $where_clauses = $this->searchForm->generateSearchWhere(true, $this->seed->module_dir);
 
-        if (count($where_clauses) > 0) {
+        if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
             $this->where = '(' . implode(' ) AND ( ', $where_clauses) . ')';
         }
         $GLOBALS['log']->info("List View Where Clause: $this->where");

@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Outbuound email management
  * @api
  */
+#[\AllowDynamicProperties]
 class OutboundEmail
 {
     /**
@@ -184,7 +185,7 @@ class OutboundEmail
 
         //Now add the system default or user override default to the response.
         if (!empty($system->id)) {
-            if ($system->mail_sendtype == 'SMTP') {
+            if (isSmtp($system->mail_sendtype ?? '')) {
                 $systemErrors = "";
                 $userSystemOverride = $this->getUsersMailerForSystemOverride($user->id);
 
@@ -232,7 +233,7 @@ class OutboundEmail
 
         while ($a = $this->db->fetchByAssoc($r)) {
             $oe = array();
-            if ($a['mail_sendtype'] != 'SMTP') {
+            if (isSmtp($a['mail_sendtype'] ?? '')) {
                 continue;
             }
             $oe['id'] = $a['id'];

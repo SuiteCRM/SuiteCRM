@@ -44,6 +44,7 @@
      * Sugar Oauth consumer
      * @api
      */
+    #[\AllowDynamicProperties]
     class SugarOAuth extends Zend_Oauth_Consumer
     {
         protected $_last = '';
@@ -144,12 +145,21 @@
          * @see Zend_Oauth_Consumer::getAccessToken()
          * @return array
          */
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // public function getAccessToken(
+        //     $url,
+        //     Zend_Oauth_Token_Request $token = null,
+        //     $httpMethod = null,
+        //     Zend_Oauth_Http_AccessToken $request = null
+        // ) {
         public function getAccessToken(
             $url,
-            Zend_Oauth_Token_Request $token = null,
+            ?Zend_Oauth_Token_Request $token = null,
             $httpMethod = null,
-            Zend_Oauth_Http_AccessToken $request = null
+            ?Zend_Oauth_Http_AccessToken $request = null
         ) {
+        // END STIC Custom
             $this->setAccessTokenUrl($url);
             $this->_last = $token = parent::getAccessToken($_REQUEST, $this->makeRequestToken());
             return array('oauth_token' => $token->getToken(), 'oauth_token_secret' => $token->getTokenSecret());

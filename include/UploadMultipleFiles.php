@@ -53,6 +53,7 @@ use SuiteCRM\Utility\AntiMalware\AntiMalwareTrait;
  * Manage uploaded files with multi-file support
  * Use upload_fle.php / UploadFile for legacy support.
  */
+#[\AllowDynamicProperties]
 class UploadMultipleFiles
 {
     use AntiMalwareTrait;
@@ -336,9 +337,9 @@ class UploadMultipleFiles
     {
         $filename = $_FILES_element['name'][$this->index];
         $filetype = isset($_FILES_element['type'][$this->index]) ? $_FILES_element['type'][$this->index] : null;
-        $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $file_ext = pathinfo((string) $filename, PATHINFO_EXTENSION);
 
-        $is_image = strpos($filetype, 'image/') === 0;
+        $is_image = strpos((string) $filetype, 'image/') === 0;
         // if it's an image, or no file extension is available and the mime is octet-stream
         // try to determine the mime type
         $recheckMime = $is_image || (empty($file_ext) && $filetype == 'application/octet-stream');
@@ -422,20 +423,20 @@ class UploadMultipleFiles
             if (is_windows()) {
                 // create a non UTF-8 name encoding
                 // 176 + 36 char guid = windows' maximum filename length
-                $end = (strlen($stored_file_name) > 176) ? 176 : strlen($stored_file_name);
-                $stored_file_name = substr($stored_file_name, 0, $end);
+                $end = (strlen((string) $stored_file_name) > 176) ? 176 : strlen((string) $stored_file_name);
+                $stored_file_name = substr((string) $stored_file_name, 0, $end);
                 $this->original_file_name = $_FILES[$this->field_name]['name'];
             }
-            $stored_file_name = str_replace("\\", "", $stored_file_name);
+            $stored_file_name = str_replace("\\", "", (string) $stored_file_name);
         } else {
             $stored_file_name = $this->stored_file_name;
             $this->original_file_name = $stored_file_name;
         }
 
-        $this->file_ext = pathinfo($stored_file_name, PATHINFO_EXTENSION);
+        $this->file_ext = pathinfo((string) $stored_file_name, PATHINFO_EXTENSION);
         // cn: bug 6347 - fix file extension detection
         foreach ($sugar_config['upload_badext'] as $badExt) {
-            if (strtolower($this->file_ext) == strtolower($badExt)) {
+            if (strtolower($this->file_ext) === strtolower($badExt)) {
                 $stored_file_name .= ".txt";
                 $this->file_ext = "txt";
                 break; // no need to look for more
@@ -453,7 +454,7 @@ class UploadMultipleFiles
     public function final_move($bean_id)
     {
         $destination = $bean_id;
-        if (substr($destination, 0, 9) != "file://") {
+        if (substr((string) $destination, 0, 9) != "file://") {
             $destination = "uploads://$bean_id";
         }
         if ($this->use_soap) {
@@ -486,6 +487,7 @@ class UploadMultipleFiles
      */
     public function upload_doc($bean, $bean_id, $doc_type, $file_name, $mime_type)
     {
+        $result = [];
         if (!empty($doc_type) && $doc_type != 'Sugar') {
             global $sugar_config;
             $destination = $this->get_upload_path($bean_id);
@@ -540,8 +542,8 @@ class UploadMultipleFiles
         $file_name = $bean_id;
 
         // cn: bug 8056 - mbcs filename in urlencoding > 212 chars in Windows fails
-        $end = (strlen($file_name) > 212) ? 212 : strlen($file_name);
-        $ret_file_name = substr($file_name, 0, $end);
+        $end = (strlen((string) $file_name) > 212) ? 212 : strlen((string) $file_name);
+        $ret_file_name = substr((string) $file_name, 0, $end);
 
         return "upload://$ret_file_name";
     }

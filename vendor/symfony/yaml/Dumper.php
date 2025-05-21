@@ -58,6 +58,8 @@ class Dumper
 
         if ($inline <= 0 || (!\is_array($input) && !$input instanceof TaggedValue && $dumpObjectAsInlineMap) || empty($input)) {
             $output .= $prefix.Inline::dump($input, $flags);
+        } elseif ($input instanceof TaggedValue) {
+            $output .= $this->dumpTaggedValue($input, $inline, $indent, $flags, $prefix);
         } else {
             $dumpAsMap = Inline::isHash($input);
 
@@ -67,9 +69,7 @@ class Dumper
                 }
 
                 if (Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK & $flags && \is_string($value) && false !== strpos($value, "\n") && false === strpos($value, "\r")) {
-                    // If the first line starts with a space character, the spec requires a blockIndicationIndicator
-                    // http://www.yaml.org/spec/1.2/spec.html#id2793979
-                    $blockIndentationIndicator = (' ' === substr($value, 0, 1)) ? (string) $this->indentation : '';
+                    $blockIndentationIndicator = $this->getBlockIndentationIndicator($value);
 
                     if (isset($value[-2]) && "\n" === $value[-2] && "\n" === $value[-1]) {
                         $blockChompingIndicator = '+';
@@ -96,9 +96,7 @@ class Dumper
                     $output .= sprintf('%s%s !%s', $prefix, $dumpAsMap ? Inline::dump($key, $flags).':' : '-', $value->getTag());
 
                     if (Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK & $flags && \is_string($value->getValue()) && false !== strpos($value->getValue(), "\n") && false === strpos($value->getValue(), "\r\n")) {
-                        // If the first line starts with a space character, the spec requires a blockIndicationIndicator
-                        // http://www.yaml.org/spec/1.2/spec.html#id2793979
-                        $blockIndentationIndicator = (' ' === substr($value->getValue(), 0, 1)) ? (string) $this->indentation : '';
+                        $blockIndentationIndicator = $this->getBlockIndentationIndicator($value->getValue());
                         $output .= sprintf(' |%s', $blockIndentationIndicator);
 
                         foreach (explode("\n", $value->getValue()) as $row) {
@@ -136,5 +134,43 @@ class Dumper
         }
 
         return $output;
+    }
+
+    private function dumpTaggedValue(TaggedValue $value, int $inline, int $indent, int $flags, string $prefix): string
+    {
+        $output = sprintf('%s!%s', $prefix ? $prefix.' ' : '', $value->getTag());
+
+        if (Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK & $flags && \is_string($value->getValue()) && false !== strpos($value->getValue(), "\n") && false === strpos($value->getValue(), "\r\n")) {
+            $blockIndentationIndicator = $this->getBlockIndentationIndicator($value->getValue());
+            $output .= sprintf(' |%s', $blockIndentationIndicator);
+
+            foreach (explode("\n", $value->getValue()) as $row) {
+                $output .= sprintf("\n%s%s%s", $prefix, str_repeat(' ', $this->indentation), $row);
+            }
+
+            return $output;
+        }
+
+        if ($inline - 1 <= 0 || null === $value->getValue() || \is_scalar($value->getValue())) {
+            return $output.' '.$this->dump($value->getValue(), $inline - 1, 0, $flags)."\n";
+        }
+
+        return $output."\n".$this->dump($value->getValue(), $inline - 1, $indent, $flags);
+    }
+
+    private function getBlockIndentationIndicator(string $value): string
+    {
+        $lines = explode("\n", $value);
+
+        // If the first line (that is neither empty nor contains only spaces)
+        // starts with a space character, the spec requires a block indentation indicator
+        // http://www.yaml.org/spec/1.2/spec.html#id2793979
+        foreach ($lines as $line) {
+            if ('' !== trim($line, ' ')) {
+                return (' ' === substr($line, 0, 1)) ? (string) $this->indentation : '';
+            }
+        }
+
+        return '';
     }
 }

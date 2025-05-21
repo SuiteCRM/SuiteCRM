@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/Dashlet.php');
 
 
+#[\AllowDynamicProperties]
 class iFrameDashlet extends Dashlet
 {
     public $displayTpl = 'modules/Home/Dashlets/iFrameDashlet/display.tpl';
@@ -93,7 +94,7 @@ class iFrameDashlet extends Dashlet
 
     protected function checkURL()
     {
-        $scheme = parse_url($this->url, PHP_URL_SCHEME);
+        $scheme = parse_url((string) $this->url, PHP_URL_SCHEME);
         if (!in_array($scheme, $this->allowed_schemes)) {
             $this->url = 'about:blank';
             return false;
@@ -150,7 +151,7 @@ class iFrameDashlet extends Dashlet
         $out_url = str_replace(
             array('@@LANG@@','@@VER@@','@@EDITION@@'),
             array($GLOBALS['current_language'],$GLOBALS['sugar_config']['sugar_version'],$sugar_edition),
-            $this->url
+            (string) $this->url
         );
         $title = $this->title;
         if (empty($title)) {

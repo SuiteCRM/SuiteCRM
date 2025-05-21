@@ -1,0 +1,54 @@
+{
+  "name": "javanile/php-imap2",
+  "type": "library",
+  "description": "PHP IMAP with OAUTH2",
+  "keywords": [
+    "imap",
+    "oauth",
+    "oauth2",
+    "google",
+    "microsoft",
+    "gmail",
+    "outlook",
+    "exchange"
+  ],
+  "homepage": "https://github.com/javanile/php-imap2",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Francesco Bianco",
+      "homepage": "https://github.com/francescobianco"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "zbateson/mail-mime-parser": "^2.2"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.5"
+  },
+  "suggest": {
+    "ext-mbstring": "For best support/performance",
+    "ext-iconv": "For best support/performance"
+  },
+  "autoload": {
+    "psr-4": {
+      "Javanile\\Imap2\\": "src"
+    },
+    "files": [
+      "bootstrap.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Javanile\\Imap2\\Tests\\": "tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "extra": {
+    "thanks": {
+      "name": "Roundcube",
+      "url": "https://github.com/roundcube"
+    }
+  }
+}

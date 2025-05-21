@@ -25,7 +25,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 require_once('modules/stic_Import_Validation/views/ImportView.php');
-        
+
+#[\AllowDynamicProperties]
 class stic_Import_ValidationViewUndo extends stic_Import_ValidationView
 {
     protected $pageTitleKey = 'LBL_UNDO_LAST_IMPORT';

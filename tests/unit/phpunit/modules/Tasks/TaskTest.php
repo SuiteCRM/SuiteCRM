@@ -42,7 +42,7 @@ class TaskTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($task->id));
-        self::assertEquals(36, strlen($task->id));
+        self::assertEquals(36, strlen((string) $task->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $task->mark_deleted($task->id);
@@ -155,11 +155,11 @@ class TaskTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $task->set_notification_body(new Sugar_Smarty(), $task);
 
-        self::assertEquals($task->name, $result->_tpl_vars['TASK_SUBJECT']);
-        self::assertEquals($task->status, $result->_tpl_vars['TASK_STATUS']);
-        self::assertEquals($task->priority, $result->_tpl_vars['TASK_PRIORITY']);
-        self::assertEquals('02/11/2016 17:30 UTC(+00:00)', $result->_tpl_vars['TASK_DUEDATE']);
-        self::assertEquals($task->description, $result->_tpl_vars['TASK_DESCRIPTION']);
+        self::assertEquals($task->name, $result->tpl_vars['TASK_SUBJECT']->value);
+        self::assertEquals($task->status, $result->tpl_vars['TASK_STATUS']->value);
+        self::assertEquals($task->priority, $result->tpl_vars['TASK_PRIORITY']->value);
+        self::assertEquals('02/11/2016 17:30 UTC(+00:00)', $result->tpl_vars['TASK_DUEDATE']->value);
+        self::assertEquals($task->description, $result->tpl_vars['TASK_DESCRIPTION']->value);
     }
 
     public function testbean_implements(): void

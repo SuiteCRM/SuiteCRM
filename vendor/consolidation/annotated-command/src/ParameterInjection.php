@@ -13,6 +13,8 @@ class ParameterInjection implements ParameterInjector
     {
         $this->register('Symfony\Component\Console\Input\InputInterface', $this);
         $this->register('Symfony\Component\Console\Output\OutputInterface', $this);
+        $this->register('Consolidation\AnnotatedCommand\AnnotationData', $this);
+        $this->register('Consolidation\OutputFormatters\Options\FormatterOptions', $this);
     }
 
     public function register($interfaceName, ParameterInjector $injector)
@@ -52,6 +54,10 @@ class ParameterInjection implements ParameterInjector
                 return $commandData->input();
             case 'Symfony\Component\Console\Output\OutputInterface':
                 return $commandData->output();
+            case 'Consolidation\AnnotatedCommand\AnnotationData':
+                return $commandData->annotationData();
+            case 'Consolidation\OutputFormatters\Options\FormatterOptions':
+                return $commandData->formatterOptions();
         }
 
         return null;

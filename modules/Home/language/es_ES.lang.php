@@ -243,5 +243,10 @@ $mod_strings = array(
     'LBL_ELASTIC_SEARCH_EXCEPTION_NO_NODES_AVAILABLE' => 'Error al conectar al servidor Elasticsearch.',
     'LBL_ELASTIC_SEARCH_EXCEPTION_SEARCH' => 'Se ha producido un error interno en la Búsqueda.',
     'LBL_ELASTIC_SEARCH_EXCEPTION_DEFAULT' => 'Se ha producido un error desconocido al realizar la búsqueda.',
-    'LBL_ELASTIC_SEARCH_EXCEPTION_END_MESSAGE' => 'Contacte con un administrador si el problema persiste. Más información disponible en los registros.'
+    'LBL_ELASTIC_SEARCH_EXCEPTION_END_MESSAGE' => 'Contacte con un administrador si el problema persiste. Más información disponible en los registros.',
+    'LBL_ELASTIC_SEARCH_EXCEPTION_MISSING_INDEX' => 'No se pudo encontrar el índice de búsqueda para uno o más módulos. Por favor, asegúrate de que el crontab esté configurado y en funcionamiento, abre la configuración de Elasticsearch y haz clic en "Programar indexación completa" y considera crear una tarea del Scheduler "Indexador de Elasticsearch" si no existe.',
+
+    'LBL_ELASTIC_SEARCH_DEFAULT' => 'No hay resultados que coincidan con tus criterios de búsqueda. Intenta ampliar la búsqueda.',
+
+    'LNK_TASK_VIEW' => 'Ver Tarea',
 );

@@ -63,7 +63,7 @@ class Exec extends BaseTask implements CommandInterface, PrintedInterface, Simul
             return;
         }
 
-        $stopRunningJobs = Closure::fromCallable(['self', 'stopRunningJobs']);
+        $stopRunningJobs = Closure::fromCallable(self::class.'::stopRunningJobs');
 
         if (function_exists('pcntl_signal')) {
             pcntl_signal(SIGTERM, $stopRunningJobs);

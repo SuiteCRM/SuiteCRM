@@ -48,6 +48,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class Operator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Operators
  */
+#[\AllowDynamicProperties]
 class Operator
 {
     /**

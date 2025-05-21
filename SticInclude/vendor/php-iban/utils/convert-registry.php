@@ -7,7 +7,7 @@ require_once(dirname(dirname(__FILE__)) . '/php-iban.php');
 date_default_timezone_set('UTC'); # mutes a warning
 
 # read registry
-$data = `iconv -f utf8 -t ascii --byte-subst="<0x%x>" --unicode-subst="<U+%04X>" 'IBAN_Registry.txt'`;
+$data = `iconv -f utf-8 -t ascii --byte-subst="<0x%x>" --unicode-subst="<U+%04X>" 'IBAN_Registry.txt'`;
 if($data == '') { die("Couldn't read IBAN_Registry.txt - try downloading from the location described in the REGISTRY-URL file."); }
 
 # print header line

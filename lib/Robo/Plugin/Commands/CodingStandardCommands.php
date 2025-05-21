@@ -44,6 +44,7 @@ use Robo\Tasks;
 use SuiteCRM\Robo\Traits\RoboTrait;
 use SuiteCRM\Utility\Paths;
 
+#[\AllowDynamicProperties]
 class CodingStandardCommands extends Tasks
 {
     use RoboTrait;

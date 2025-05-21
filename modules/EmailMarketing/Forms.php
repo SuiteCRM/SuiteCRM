@@ -57,7 +57,7 @@ function verify_data(form,formname) {
 
 	var isError = false;
 	var errorMessage = "";
-		
+
 	var thecheckbox=document.getElementById('all_prospect_lists');
 	var theselectbox=document.getElementById('message_for');		
 
@@ -65,7 +65,7 @@ function verify_data(form,formname) {
 		isError=true;
 		errorMessage="$err_lbl_send_message";
 	}
-			
+
 	if (isError == true) {
 		alert("$err_missing_required_fields" + errorMessage);
 		return false;

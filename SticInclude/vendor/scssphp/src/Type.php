@@ -17,7 +17,7 @@ namespace ScssPhp\ScssPhp;
  *
  * @author Anthon Pang <anthon.pang@gmail.com>
  */
-final class Type
+class Type
 {
     /**
      * @internal
@@ -32,6 +32,11 @@ final class Type
      */
     const T_BLOCK = 'block';
     /**
+     * @deprecated
+     * @internal
+     */
+    const T_BREAK = 'break';
+    /**
      * @internal
      */
     const T_CHARSET = 'charset';
@@ -40,6 +45,16 @@ final class Type
      * @internal
      */
     const T_COMMENT = 'comment';
+    /**
+     * @deprecated
+     * @internal
+     */
+    const T_CONTINUE = 'continue';
+    /**
+     * @deprecated
+     * @internal
+     */
+    const T_CONTROL = 'control';
     /**
      * @internal
      */

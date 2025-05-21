@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('modules/ModuleBuilder/views/view.listview.php') ;
 require_once 'modules/ModuleBuilder/parsers/constants.php' ;
 
+#[\AllowDynamicProperties]
 class ViewPopupview extends ViewListView
 {
     public function __construct()
@@ -61,14 +62,14 @@ class ViewPopupview extends ViewListView
             $this->translatedEditModule = $moduleNames [ strtolower($this->editModule) ] ;
         }
     }
-    
+
     /**
      * @see SugarView::_getModuleTitleParams()
      */
     protected function _getModuleTitleParams($browserTitle = false)
     {
         global $mod_strings;
-        
+
         return array(
            translate('LBL_MODULE_NAME', 'Administration'),
            ModuleBuilderController::getModuleTitle(),
@@ -161,8 +162,8 @@ class ViewPopupview extends ViewListView
         foreach ($groups as $groupKey => $group) {
             foreach ($group as $fieldKey => $field) {
                 if (isset($field [ 'width' ])) {
-                    if (substr($field [ 'width' ], - 1, 1) == '%') {
-                        $groups [ $groupKey ] [ $fieldKey ] [ 'width' ] = substr($field [ 'width' ], 0, strlen($field [ 'width' ]) - 1) ;
+                    if (substr((string) $field [ 'width' ], - 1, 1) == '%') {
+                        $groups [ $groupKey ] [ $fieldKey ] [ 'width' ] = substr((string) $field [ 'width' ], 0, strlen((string) $field [ 'width' ]) - 1) ;
                     }
                 }
             }

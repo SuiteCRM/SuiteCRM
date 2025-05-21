@@ -1,5 +1,9 @@
 <?php
 
+// STIC Custom 20250303 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class cssmgr
 {
     public $mpdf = null;
@@ -12,7 +16,7 @@ class cssmgr
     public $listCSSlvl;
 
 
-    public function cssmgr(&$mpdf)
+    public function __construct(&$mpdf)
     {
         $this->mpdf = $mpdf;
         $this->tablecascadeCSS = array();
@@ -1237,6 +1241,13 @@ class cssmgr
 
     public function MergeCSS($inherit, $tag, $attr)
     {
+        // STIC Custom 20250411 JBL - Fix TypeError when $attr is not an array
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if (!is_array($attr)) {
+            $attr = [];
+        }
+        // END STIC Custom
+
         $p = array();
         $zp = array();
 

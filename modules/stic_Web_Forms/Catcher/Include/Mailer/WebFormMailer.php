@@ -25,7 +25,7 @@ require_once 'include/utils.php';
 
 class WebFormMailer
 {
-    const TEMP_FILE_NAME_PREFIX = 'stic_dmdata_';
+    public const TEMP_FILE_NAME_PREFIX = 'stic_dmdata_';
     public $subject = '';
     public $from = '';
     public $fromName = '';
@@ -179,7 +179,7 @@ class WebFormMailer
         ////    ATTACHMENTS
         ////    20210525 - STIC - Code copied from modules/Emails/Email.php - Line 3039 + Delete the attached file of the array of files to attach once it has been managed.
         $indice = 0;
-        if (!empty($this->$saved_attachment)) {
+        if (!empty($saved_attachment) && !empty($this->$saved_attachment)) {
             foreach ($this->$saved_attachment as $note) {
                 $mime_type = 'text/plain';
                 if ($note->object_name == 'Note') {
@@ -393,7 +393,7 @@ class WebFormMailer
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Parsing object [{$i}] [{$replacementObjects[$i]->module_dir}] ... ");
             $macro_nv = array();
             $obj = $this->prepareBean2EmailTemplate($replacementObjects[$i]);
-            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Date [{$obj->registration_date}] ... ");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Date [" . ($obj->registration_date ?? null) . "] ... ");
             $parseArr = $template->parse_email_template($parseArr, $obj->module_dir, $obj, $macro_nv);
             $j = $i + 1;
             $parseArr["text{$j}"] = $parseArr["text{$i}"];
@@ -413,7 +413,7 @@ class WebFormMailer
 
         // Get the attached files through Notes
         $notesBean = BeanFactory::getBean('Notes');
-        $this->$saved_attachment = $notesBean->get_full_list(
+        $this->saved_attachment = $notesBean->get_full_list(
             'name',
             "notes.parent_id = '$template->id'"
         );
@@ -448,11 +448,11 @@ class WebFormMailer
                 case 'date':
                     $dateTimeFormat = "{$dateFormat}{$dateTimeFormat}";
                     $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Format [{$fieldDef['type']}] = [{$dateTimeFormat}].");
-                    $td = $timedate->fromDbType($ret->$field, $fieldDef['type']);
+                    $td = !empty($ret->$field) ? $timedate->fromDbType($ret->$field, $fieldDef['type']) : null;
                     if (!empty($td)) {
                         $ret->$field = $td->format($dateTimeFormat);
                     }
-                    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Field [{$field}] formatted [{$bean->$field}] => [{$ret->$field}].");
+                    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Field [{$field}] formatted [" . ($bean->$field ?? null) ." ] => [" . ($ret->$field ?? null) . "]");
                     break;
             }
         }
@@ -579,7 +579,7 @@ class WebFormMailer
 
         ini_set('track_errors', 1);
         $ret = false;
-        $data = file_get_contents($fileName);
+        $data = file_exists($fileName) ? file_get_contents($fileName) : false;
         if ($data === false) {
             $GLOBALS['log']->fatal('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Error reading file.");
         } else {
@@ -601,7 +601,7 @@ class WebFormMailer
             }
         }
 
-        if ($deleteTmpFile) {
+        if ($deleteTmpFile && file_exists($fileName)) {
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Deleting File [{$fileName}]...");
             unlink($fileName);
         }
@@ -674,6 +674,7 @@ class WebFormMailer
 
         $mail->Subject = "[SinergiaCRM Web Form Error] {$msg['subject']}";
 
+        $bodyContent = '';
         $bodyContent .= "<h2>{$msg['subject']}</h2>";
         $bodyContent .= "<p>{$msg['information']}</p>";
 

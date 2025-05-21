@@ -13,7 +13,7 @@ and v3.
 - reCAPTCHA: https://www.google.com/recaptcha
 - This repo: https://github.com/google/recaptcha
 - Hosted demo: https://recaptcha-demo.appspot.com/
-- Version: 1.2.4
+- Version: 1.3.0
 - License: BSD, see [LICENSE](LICENSE)
 
 ## Installation
@@ -26,16 +26,21 @@ Use [Composer](https://getcomposer.org) to install this library from Packagist:
 Run the following command from your project directory to add the dependency:
 
 ```sh
-composer require google/recaptcha "^1.2"
+composer require google/recaptcha "^1.3"
 ```
 
 Alternatively, add the dependency directly to your `composer.json` file:
 
 ```json
 "require": {
-    "google/recaptcha": "^1.2"
+    "google/recaptcha": "^1.3"
 }
 ```
+
+### Support for earlier versions of PHP
+
+The 1.3 release moves to PHP 8 and up. For earlier versions, you will need to
+stay with the 1.2 releases.
 
 ### Direct download
 
@@ -66,7 +71,9 @@ This library comes in when you need to verify the user's response. On the PHP
 side you need the response from the reCAPTCHA service and secret key from your
 credentials. Instantiate the `ReCaptcha` class with your secret key, specify any
 additional validation rules, and then call `verify()` with the reCAPTCHA
-response and user's IP address. For example:
+response (usually in `$_POST['g-recaptcha-response']` or the response from
+`grecaptcha.execute()` in JS which is in `$gRecaptchaResponse` in the example)
+and user's IP address. For example:
 
 ```php
 <?php

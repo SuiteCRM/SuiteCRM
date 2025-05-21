@@ -27,13 +27,13 @@
 abstract class DataCheckFunction
 {
     /* Selector Type Constants */
-    const SELECTOR_INCREMENTAL = 'INCREMENTAL'; // Selector incremental
-    const SELECTOR_SPECIFIC = 'SPECIFIC'; // Specific selector
+    public const SELECTOR_INCREMENTAL = 'INCREMENTAL'; // Selector incremental
+    public const SELECTOR_SPECIFIC = 'SPECIFIC'; // Specific selector
 
     /* Constantes de tipos de acción */
-    const ACTION_UPDATE = 'UPDATE'; // Modification action
-    const ACTION_REPORT = 'REPORT'; // Information Action
-    const ACTION_UPDATE_REPORT = 'UPDATE_REPORT'; // Modification action and information
+    public const ACTION_UPDATE = 'UPDATE'; // Modification action
+    public const ACTION_REPORT = 'REPORT'; // Information Action
+    public const ACTION_UPDATE_REPORT = 'UPDATE_REPORT'; // Modification action and information
 
     /* Class Properties */
     /* Property => Required */
@@ -126,7 +126,7 @@ abstract class DataCheckFunction
             $lang = $GLOBALS['current_language'];
         }
         if ($lang != null) {
-            return $this->lang[$lang][mb_strtoupper($label)];
+            return $this->lang[$lang][mb_strtoupper($label)] ?? null;
         } else {
             return null;
         }
@@ -241,7 +241,7 @@ abstract class DataCheckFunction
         $sqlString = "
         UPDATE stic_validation_results SET deleted = 1, date_modified = NOW()
         WHERE deleted = 0 AND stic_validation_actions_id_c = '$validationActionID'";
-        
+
         // Set the conditions in case the action is incremental
         if ($type == self::SELECTOR_INCREMENTAL) 
         {
@@ -250,7 +250,7 @@ abstract class DataCheckFunction
             while ($row = array_pop($records)) {
                 $recordIds .= "'" . $row['id'] . "', ";
             }
-            
+
             // Remove the last two characters
             if (strlen($recordIds) > 0) {
                 $recordIds = substr($recordIds, 0, -2);

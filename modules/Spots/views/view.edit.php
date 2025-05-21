@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class SpotsViewEdit extends ViewEdit
 {
     public function __construct()
@@ -67,7 +68,7 @@ class SpotsViewEdit extends ViewEdit
 
         $theTitle = "<div class='moduleTitle'>\n";
 
-        $module = preg_replace("/ /", "", $this->module);
+        $module = preg_replace("/ /", "", (string) $this->module);
 
         $params = $this->_getModuleTitleParams();
         $index = 0;
@@ -75,10 +76,10 @@ class SpotsViewEdit extends ViewEdit
         if (SugarThemeRegistry::current()->directionality == "rtl") {
             $params = array_reverse($params);
         }
-        if (count($params) > 1) {
+        if ((is_countable($params) ? count($params) : 0) > 1) {
             array_shift($params);
         }
-        $count = count($params);
+        $count = is_countable($params) ? count($params) : 0;
         $paramString = '';
         foreach ($params as $parm) {
             $index++;
@@ -92,8 +93,8 @@ class SpotsViewEdit extends ViewEdit
             $theTitle .= "<h2> $paramString </h2>";
 
             if (!empty($this->bean->id)) {
-                $theTitle .= "<div class='favorite' record_id='" . $this->bean->id . "' module='" . $this->bean->module_dir . "'><div class='favorite_icon_outline'>" . SugarThemeRegistry::current()->getImage('favorite-star-outline', 'title="' . translate('LBL_DASHLET_EDIT', 'Home') . '" border="0"  align="absmiddle"', null, null, '.gif', translate('LBL_DASHLET_EDIT', 'Home')) . "</div>
-                                                    <div class='favorite_icon_fill'>" . SugarThemeRegistry::current()->getImage('favorite-star', 'title="' . translate('LBL_DASHLET_EDIT', 'Home') . '" border="0"  align="absmiddle"', null, null, '.gif', translate('LBL_DASHLET_EDIT', 'Home')) . "</div></div>";
+                $theTitle .= "<div class='favorite' record_id='" . $this->bean->id . "' module='" . $this->bean->module_dir . "'><div class='favorite_icon_outline' title='" . translate('LBL_MARK_FAVORITE', 'Favorites') . "'>" . SugarThemeRegistry::current()->getImage('favorite-star-outline', 'border="0"  align="absmiddle"', null, null, '.gif', translate('LBL_MARK_FAVORITE', 'Favorites')) . "</div>
+                                                    <div class='favorite_icon_fill' title='" . translate('LBL_UNMARK_FAVORITE', 'Favorites') . "'>" . SugarThemeRegistry::current()->getImage('favorite-star', 'border="0"  align="absmiddle"', null, null, '.gif', translate('LBL_UNMARK_FAVORITE', 'Favorites')) . "</div></div>";
             }
         }
 

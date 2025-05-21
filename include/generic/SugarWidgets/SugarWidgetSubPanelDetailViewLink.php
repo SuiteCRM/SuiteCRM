@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
 {
     public function displayList(&$layout_def)
@@ -114,35 +115,34 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
         $action = 'DetailView';
         if($module === "Emails"){
             $email = BeanFactory::getBean($module, $record);
-            if($email->status === "draft"){
+            // STIC Custom 20250305 JBL - Avoid Attempt to read property "status" on false
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // if($email->status === "draft"){
+            if($email !== false && $email->status === "draft"){
+            // END STIC Custom
                 $action = 'DetailDraftView';
             }
         }
         $value = $layout_def['fields'][$key];
-        
+        global $current_user;
+
+        $detailView = $layout_def['DetailView'] ?? '';
+        $ownerId = $layout_def['owner_id'] ?? '';
+        $ownerModule = $layout_def['owner_module'] ?? '';
+
         // STIC-Custom - JCH - 20220921 - Enable visibility of link to related modules in subpanels if 
         // user has access by roles & Security Groups "group"
         // STIC#861
-        // global $current_user;
         // if (!empty($record) &&
-        //     ($layout_def['DetailView'] && !$layout_def['owner_module']
-        //     ||  $layout_def['DetailView'] && !ACLController::moduleSupportsACL($layout_def['owner_module'])
-        //     || ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id))) {
-        //     $link = ajaxLink("index.php?module=$module&action=$action&record={$record}{$parent}");
-        //     if ($module == 'EAPM') {
-        //         $link = "index.php?module=$module&action=$action&record={$record}{$parent}";
-        //     }
-        //     return '<a href="' . $link . '" >'."$value</a>";
-        // } else {
-        //     return $value;
-        // }
-
-        global $current_user;
+        //     ($detailView && !$layout_def['owner_module']
+        //     ||  $detailView && !ACLController::moduleSupportsACL($layout_def['owner_module'])
+        //     || ACLController::checkAccess($ownerModule, 'view', $ownerId == $current_user->id))) {
         $groupAccessView = SecurityGroup::groupHasAccess($module,$record,'view');
         if (!empty($record) &&
-            ($layout_def['DetailView'] && !$layout_def['owner_module']
-            || $layout_def['DetailView'] && !ACLController::moduleSupportsACL($layout_def['owner_module'])
-            || ACLController::checkAccess($layout_def['owner_module'], 'view', $layout_def['owner_id'] == $current_user->id, 'module',  $groupAccessView))) {
+            ($detailView && !$layout_def['owner_module']
+            || $detailView && !ACLController::moduleSupportsACL($layout_def['owner_module'])
+            || ACLController::checkAccess($ownerModule, 'view', $ownerId == $current_user->id, 'module',  $groupAccessView))) {
+        // END STIC-Custom
             $link = ajaxLink("index.php?module=$module&action=$action&record={$record}{$parent}");
             if ($module == 'EAPM') {
                 $link = "index.php?module=$module&action=$action&record={$record}{$parent}";
@@ -151,6 +151,5 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
         } else {
             return $value;
         }
-        // END STIC-Custom
     }
 }

@@ -64,7 +64,7 @@ class stic_Payment_CommitmentsUtils
                 break;
         }
 
-        return $multiplier * $PCBean->amount;
+        return $multiplier * (float)$PCBean->amount;
     }
 
     /**

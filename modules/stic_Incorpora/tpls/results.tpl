@@ -49,7 +49,7 @@
   			{/foreach}
 			<tr>
 		</table>
-		{if count($MAP.LOG.aut) > 0}
+		{if isset($MAP.LOG.aut) && count($MAP.LOG.aut) > 0}
 			<h3>{$MOD.LBL_RESULTS_INCORPORA_CONNECTION_TITLE}:</h3>
 			<table class="edit view">
 				<tr><td width="3%"></td></tr>
@@ -61,7 +61,7 @@
 				</tr>
 			</table>
 		{/if}
-		{if count($MAP.LOG.logs) > 0}
+		{if isset($MAP.LOG.logs) && count($MAP.LOG.logs) > 0}
 			<h3>{$MOD.LBL_RESULTS_LOG_TITLE}:</h3>
 			<table class="edit view">
 				<tr><td></td></tr>

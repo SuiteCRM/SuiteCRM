@@ -44,6 +44,7 @@ namespace Api\V8\Helper;
  * Class ModuleListProvider
  * @package Api\V8\Helper
  */
+#[\AllowDynamicProperties]
 class ModuleListProvider
 {
     /**

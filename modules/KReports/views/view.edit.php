@@ -35,6 +35,7 @@ require_once('modules/KReports/KReportVisualizationManager.php');
 
 global $dictionary;
 
+#[\AllowDynamicProperties]
 class KReportsViewEdit extends ViewEdit {
 
    function __construct() {

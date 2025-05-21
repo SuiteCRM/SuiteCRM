@@ -57,6 +57,7 @@ use SuiteCRM\API\v8\Exception\ConflictException;
  * @package SuiteCRM\API\JsonApi\v1\Resource
  * @see http://jsonapi.org/format/1.0/#document-resource-objects
  */
+#[\AllowDynamicProperties]
 class SuiteBeanResource extends Resource
 {
     /**
@@ -526,8 +527,8 @@ class SuiteBeanResource extends Resource
         $uploadFile = new \UploadFile($fieldName);
         $uploadFile->set_for_soap($this->attributes[$fieldName], $decodedFile);
 
-        $ext_pos = strrpos($uploadFile->stored_file_name, '.');
-        $uploadFile->file_ext = substr($uploadFile->stored_file_name, $ext_pos + 1);
+        $ext_pos = strrpos((string) $uploadFile->stored_file_name, '.');
+        $uploadFile->file_ext = substr((string) $uploadFile->stored_file_name, $ext_pos + 1);
         if (in_array($uploadFile->file_ext, $config['upload_badext'], true)) {
             $uploadFile->stored_file_name .= '.txt';
             $uploadFile->file_ext = 'txt';

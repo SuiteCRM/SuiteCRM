@@ -55,11 +55,12 @@ use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+#[\AllowDynamicProperties]
 class AuthorizationServer implements EmitterAwareInterface
 {
     use EmitterAwareTrait;
 
-    const ENCRYPTION_KEY_ERROR = 'You must set the encryption key going forward to improve the security of this library - see this page for more information https://oauth2.thephpleague.com/v5-security-improvements/';
+    public const ENCRYPTION_KEY_ERROR = 'You must set the encryption key going forward to improve the security of this library - see this page for more information https://oauth2.thephpleague.com/v5-security-improvements/';
 
     /**
      * @var GrantTypeInterface[]
@@ -122,7 +123,11 @@ class AuthorizationServer implements EmitterAwareInterface
         ScopeRepositoryInterface $scopeRepository,
         $privateKey,
         $publicKey,
-        ResponseTypeInterface $responseType = null
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // ResponseTypeInterface $responseType = null
+        ?ResponseTypeInterface $responseType = null
+        // END STIC Custom        
     ) {
         $this->clientRepository = $clientRepository;
         $this->accessTokenRepository = $accessTokenRepository;
@@ -158,7 +163,11 @@ class AuthorizationServer implements EmitterAwareInterface
      * @param null|\DateInterval $accessTokenTTL
      * @throws \Exception
      */
-    public function enableGrantType(GrantTypeInterface $grantType, \DateInterval $accessTokenTTL = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function enableGrantType(GrantTypeInterface $grantType, \DateInterval $accessTokenTTL = null)
+    public function enableGrantType(GrantTypeInterface $grantType, ?\DateInterval $accessTokenTTL = null)
+    // END STIC Custom    
     {
         if ($accessTokenTTL instanceof \DateInterval === false) {
             $accessTokenTTL = new \DateInterval('PT1H');

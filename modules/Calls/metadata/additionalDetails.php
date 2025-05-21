@@ -45,7 +45,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once "include/utils/additional_details.php";
 
 
-function additionalDetailsCall($fields, SugarBean $bean = null, $params = array())
+// STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+// function additionalDetailsCall($fields, SugarBean $bean = null, $params = array())
+function additionalDetailsCall($fields, ?SugarBean $bean = null, $params = array())
+// END STIC Custom
 {
     return additional_details($fields, $bean, $params);
 }

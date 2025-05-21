@@ -37,32 +37,32 @@ require_once('modules/ACL/ACLController.php');
 // class for the query Array if we have multiple query we join
 class KReportQueryArray {
 
-   var $thisKReport;
-   var $root_module;
-   var $union_modules;
-   var $listArray;
-   var $whereArray;
-   var $whereAddtionalFilter;
-   var $whereGroupsArray;
-   var $groupsByLimit;
-   var $additionalGroupBy;
-   var $evalSQLFunctions;
-   var $whereOverrideArray;
-   var $unionListArray;
-   var $fieldNameMap;
+   public $thisKReport;
+   public $root_module;
+   public $union_modules;
+   public $listArray;
+   public $whereArray;
+   public $whereAddtionalFilter;
+   public $whereGroupsArray;
+   public $groupsByLimit;
+   public $additionalGroupBy;
+   public $evalSQLFunctions;
+   public $whereOverrideArray;
+   public $unionListArray;
+   public $fieldNameMap;
    // the selct strings
-   var $selectString;
-   var $countSelectString;
-   var $totalSelectString;
-   var $summarySelectString;
-   var $fromString;
-   var $whereString;
-   var $groupbyString;
-   var $havingString;
-   var $orderbyString;
-   var $queryContext = array();
-   var $addParams;
-   var $queryArray;
+   public $selectString;
+   public $countSelectString;
+   public $totalSelectString;
+   public $summarySelectString;
+   public $fromString;
+   public $whereString;
+   public $groupbyString;
+   public $havingString;
+   public $orderbyString;
+   public $queryContext = array();
+   public $addParams;
+   public $queryArray;
 
    public function __construct($rootModule = '', $unionModules = '', $evalSQLFunctions = true, $listFields = array(), $unionListFields = array(), $whereFields = array(), $additonalFilter = '', $whereGroupFields = array(), $additionalGroupBy = array(), $addParams = array()) {
       // set the various Fields
@@ -477,7 +477,7 @@ class KReportQueryArray {
             $i++;
          }
 
-         $this->queryArray['root']['kQuery'] = new KReportQuery($this->root_module, $this->evalSQLFunctions, $this->listArray, $this->queryArray['root']['whereArray'], $this->whereAddtionalFilter, $this->queryArray['root']['whereGroupsArray'], $this->additionalGroupBy, $this->addParams);
+         $this->queryArray['root']['kQuery'] = new KReportQuery($this->root_module, $this->evalSQLFunctions, $this->listArray, $this->queryArray['root']['whereArray']??'', $this->whereAddtionalFilter, $this->queryArray['root']['whereGroupsArray'], $this->additionalGroupBy, $this->addParams);
          //temp see if this works
 
          $this->queryArray['root']['kQuery']->build_query_strings();
@@ -549,7 +549,7 @@ class KReportQueryArray {
                   $this->totalSelectString .= ', ';
                   
                   //2014-06-27 support for Oracle with " instead of '
-               $this->totalSelectString .= ' ' . $funcArray[1] . '(' . $thisListEntry['fieldid'] . ")  as \"" . $thisListEntry['fieldid'] . "_total\"";
+               $this->totalSelectString .= ' ' . ($funcArray[1]??'') . '(' . $thisListEntry['fieldid'] . ")  as \"" . $thisListEntry['fieldid'] . "_total\"";
                
                //2014-06-27 support for Oracle
                $fromArray[] = $thisListEntry['fieldid']; $toArray[] = strtoupper($thisListEntry['fieldid']);
@@ -597,51 +597,51 @@ class KReportQuery {
     * after tha you can call the other functions
     */
 
-   var $root_module;
-   var $unionId = '';
-   var $whereArray;
-   var $whereAddtionalFilter = '';
-   var $whereOverrideArray;
-   var $listArray;
-   var $whereGroupsArray;
-   var $fieldNameMap;
+   public $root_module;
+   public $unionId = '';
+   public $whereArray;
+   public $whereAddtionalFilter = '';
+   public $whereOverrideArray;
+   public $listArray;
+   public $whereGroupsArray;
+   public $fieldNameMap;
    // 2012-11-04 a var for the root field nam map Array
    // will feed that sop we now in union what types the root field is ... to react properly on that 
    // especially reqwuired for the currency handling since we need to ensure we have the same number of fields
-   var $rootfieldNameMap;
-   var $tablePath;
-   var $rootGuid;
-   var $joinSegments;
-   var $unionJoinSegments;
-   var $maxDepth;
-   var $queryID = '';
-   var $orderByFieldID = false;
-   var $groupByFieldID = false;
+   public $rootfieldNameMap;
+   public $tablePath;
+   public $rootGuid;
+   public $joinSegments;
+   public $unionJoinSegments;
+   public $maxDepth;
+   public $queryID = '';
+   public $orderByFieldID = false;
+   public $groupByFieldID = false;
    // parts of the SQL Query
-   var $selectString;
-   var $countSelectString;
-   var $totalSelectString;
+   public $selectString;
+   public $countSelectString;
+   public $totalSelectString;
    //2010-03-28 add a select for the union with cosndieration of functions
-   var $unionSelectString;
-   var $fromString;
-   var $whereString;
-   var $havingString;
-   var $groupbyString;
-   var $additionalGroupBy;
-   var $orderbyString;
+   public $unionSelectString;
+   public $fromString;
+   public $whereString;
+   public $havingString;
+   public $groupbyString;
+   public $additionalGroupBy;
+   public $orderbyString;
    // Parameters
-   var $evalSQLFunctions = true;
+   public $evalSQLFunctions = true;
    // auth Check level (full, top, none)
-   var $authChecklevel = 'full';
-   var $showDeleted = false;
+   public $authChecklevel = 'full';
+   public $showDeleted = false;
    //for a custom sort
-   var $sortOverride = array();
+   public $sortOverride = [];
    // for the exclusive Groping required for the tree if add grouping params are sent in
-   var $exclusiveGroupinbgByAddParams = false;
+   public $exclusiveGroupinbgByAddParams = false;
    // array for all fields we are selcting from the database
-   var $fieldArray = array();
+   public $fieldArray = [];
    // for MSSQL 
-   var $isGrouped = false;
+   public $isGrouped = false;
 
    // constructor
    /*
@@ -830,7 +830,7 @@ class KReportQuery {
       /*
        * Build the array for the joins based on the various Path we have
        */
-      foreach ($this->tablePath as $thisPath => $thisPathJoinType) {
+      foreach (($this->tablePath ?? []) as $thisPath => $thisPathJoinType) {
          // Process backcutting until we have found the node going upwards
          // in the segments array or we are on the root segment
          // (when no '::' can be found)
@@ -955,7 +955,7 @@ class KReportQuery {
                      $this->joinSegments[$thisPath]['object'] = new $beanList[$this->joinSegments[$leftPath]['object']->field_defs[$rightArray[2]]['module']]();
 
                      // join on the id = relate id .. on _cstm if custom field .. on main if regular
-                     $this->fromString .= ' ' . $thisPathDetails['jointype'] . ' ' . $this->joinSegments[$thisPath]['object']->table_name . ' AS ' . $this->joinSegments[$thisPath]['alias'] . ' ON ' . $this->joinSegments[$thisPath]['alias'] . '.id=' . ( $this->joinSegments[$leftPath]['object']->field_defs[$this->joinSegments[$leftPath]['object']->field_defs[$rightArray[2]]['id_name']]['source'] == 'custom_fields' ? $this->joinSegments[$leftPath]['customjoin'] : $this->joinSegments[$leftPath]['alias']) . '.' . $this->joinSegments[$leftPath]['object']->field_defs[$rightArray[2]]['id_name'] . ' ';
+                     $this->fromString .= ' ' . $thisPathDetails['jointype'] . ' ' . $this->joinSegments[$thisPath]['object']->table_name . ' AS ' . $this->joinSegments[$thisPath]['alias'] . ' ON ' . $this->joinSegments[$thisPath]['alias'] . '.id=' . ( ($this->joinSegments[$leftPath]['object']->field_defs[$this->joinSegments[$leftPath]['object']->field_defs[$rightArray[2]]['id_name']]['source']??'') == 'custom_fields' ? $this->joinSegments[$leftPath]['customjoin'] : $this->joinSegments[$leftPath]['alias']) . '.' . $this->joinSegments[$leftPath]['object']->field_defs[$rightArray[2]]['id_name'] . ' ';
 
                      // check for Custom Fields
                      if ($this->joinSegments[$thisPath]['object']->hasCustomFields()) {
@@ -1189,7 +1189,12 @@ class KReportQuery {
 
 
                // required handling foir sql function also needed for
-               if ($thisListEntry['sqlfunction'] != '-' && $this->evalSQLFunctions && ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] != 'kreporter' || ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'kreporter' && $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['evalSQLFunction'] == 'X'))) {
+               if ($thisListEntry['sqlfunction'] != '-' && $this->evalSQLFunctions && 
+               ( $pathName == '' ||
+                  (($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] ?? '') != 'kreporter' 
+                  || (($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] ?? '') == 'kreporter' 
+                  && ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['evalSQLFunction'] ?? '') == 'X')))
+                  ) {
                   if ($thisListEntry['sqlfunction'] == 'GROUP_CONCAT') {
                      $this->unionSelectString .= ', ' . $thisListEntry['sqlfunction'] . '(DISTINCT ' . $thisListEntry['fieldid'] . ' SEPARATOR \', \')';
                   }
@@ -1222,12 +1227,12 @@ class KReportQuery {
                    'sqlFunction' => '',
                    'tablealias' => $this->rootGuid,
                    'fields_name_map_entry' => '',
-                   'type' => /* 'fixedvalue' */ (isset($this->joinSegments[$pathName]) ? ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'kreporter') ? $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype'] : $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type']  : 'fixedvalue'),
+                   'type' => /* 'fixedvalue' */ (isset($this->joinSegments[$pathName]) ? (($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'kreporter') ? $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype'] : $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'])  : 'fixedvalue'),
                    'module' => $this->root_module,
                    'fields_name_map_entry' => (isset($this->joinSegments[$pathName]) ? $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]] : array()));
             }
             else {
-               if ($thisListEntry['sqlfunction'] != '-' && $this->evalSQLFunctions && ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] != 'kreporter' || ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'kreporter' && (array_key_exists('evalSQLFunction', $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]) && $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['evalSQLFunction'] == 'X')))) {
+               if ($thisListEntry['sqlfunction'] != '-' && $this->evalSQLFunctions && (($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type']??'') != 'kreporter' || ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'kreporter' && (array_key_exists('evalSQLFunction', $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]) && $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['evalSQLFunction'] == 'X')))) {
                   if ($thisListEntry['sqlfunction'] == 'GROUP_CONCAT') {
                      $this->selectString .= ', ' . $thisListEntry['sqlfunction'] . '(DISTINCT ' . $this->get_field_name($pathName, $fieldArray[1], $thisListEntry['fieldid'], ($thisListEntry['link'] == 'yes') ? true : false, $thisListEntry['sqlfunction']) . ' SEPARATOR \', \')';
                      $this->unionSelectString .= ', ' . $thisListEntry['sqlfunction'] . '(DISTINCT ' . $thisListEntry['fieldid'] . ' SEPARATOR \', \')';
@@ -1286,9 +1291,9 @@ class KReportQuery {
             // 2010-12-18 handle currencies if value is set in vardefs
             // 2011-03-28 handle curencies in any case
             // 2012-11-04 also check the rootfieldNameMap
-            if (isset($this->joinSegments[$pathName]) && ($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] == 'currency' || (isset($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype']) && $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype'] == 'currency')) || $this->rootfieldNameMap[$thisListEntry['fieldid']]['type'] == 'currency') {
+            if (isset($this->joinSegments[$pathName]) && (($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['type'] ?? '') == 'currency' || (isset($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype']) && $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['kreporttype'] == 'currency')) || (isset($this->rootfieldNameMap) && $this->rootfieldNameMap[$thisListEntry['fieldid']]['type'] == 'currency')) {
                // if we have a currency id and no SQL function select the currency .. if we have an SQL fnction select -99 for the system currency
-               if (isset($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['currency_id']) && ($thisListEntry['sqlfunction'] == '-' || strtoupper($thisListEntry['sqlfunction']) == 'SUM'))
+               if (isset($fieldArray[1]) && isset($this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['currency_id']) && ($thisListEntry['sqlfunction'] == '-' || strtoupper($thisListEntry['sqlfunction']) == 'SUM'))
                   $this->selectString .= ", " . $this->joinSegments[$pathName]['alias'] . "." . $this->joinSegments[$pathName]['object']->field_name_map[$fieldArray[1]]['currency_id'] . " as '" . $thisListEntry['fieldid'] . "_curid'";
                else
                   $this->selectString .= ", '-99' as '" . $thisListEntry['fieldid'] . "_curid'";
@@ -1343,6 +1348,9 @@ class KReportQuery {
       foreach ($this->whereGroupsArray as $whereGroupIndex => $thisWhereGroup) {
          $thisWhereString = '';
          // reset the Where fields and loop over all fields to see if any is in our group
+         if (!is_array($this->whereArray)) {
+            $this->whereArray = array();
+         }
          reset($this->whereArray);
          foreach ($this->whereArray as $thisWhere) {
             //2012-11-24 cater for a potential empty where string
@@ -1465,7 +1473,7 @@ class KReportQuery {
       }
 
     	$GLOBALS['log']->info('KReporter query: ' . $this->whereString);
-		
+
       // bugfix 2010-08-19, respect ACL access for owner required
       // check for Role based access on root module
       // 2013-02-22 ... added anyway for each segment ... no need to add here again ... 
@@ -1599,7 +1607,7 @@ class KReportQuery {
               ($operator != 'nextnddays' && !is_numeric($value)) &&
               ($operator != 'betwnddays' && !is_numeric($value))
       ) {
-         if ($this->fieldNameMap[$fieldid]['type'] == 'date') {
+         if (($this->fieldNameMap[$fieldid]['type']??'') == 'date') {
             //2011-07-17 ... get db formatted field from key field
             //else try legacy handliung with date interpretation
             if ($valuekey != '')
@@ -1612,7 +1620,7 @@ class KReportQuery {
             else
                $valueto = $GLOBALS['timedate']->to_db_date($value, false);
          }
-         if ($this->fieldNameMap[$fieldid]['type'] == 'datetime' || $this->fieldNameMap[$fieldid]['type'] == 'datetimecombo') {
+         if (($this->fieldNameMap[$fieldid]['type']??'') == 'datetime' || ($this->fieldNameMap[$fieldid]['type']??'') == 'datetimecombo') {
             //2011-07-17 .. db formated dtae stroed in key field
             if ($valuekey != '')
                $value = $valuekey;
@@ -1636,7 +1644,7 @@ class KReportQuery {
 
 
       // 2012-11-24 special handling for kreporttype fields that have a select eval set
-      if (($this->joinSegments[$path]['object']->field_name_map[$fieldname]['type'] == 'kreporter') && is_array($this->joinSegments[$path]['object']->field_name_map[$fieldname]['eval'])) {
+      if ((($this->joinSegments[$path]['object']->field_name_map[$fieldname]['type']??'') == 'kreporter') && is_array(($this->joinSegments[$path]['object']->field_name_map[$fieldname]['eval'] ?? ''))) {
          //2013-01-22 added {tc}replacement with custom join
          $selString = preg_replace(array('/{t}/', '/{tc}/', '/{p1}/', '/{p2}/'), array($this->joinSegments[$path]['alias'], $this->joinSegments[$path]['customjoin'], $value, $valueto), $this->joinSegments[$path]['object']->field_name_map[$fieldname]['eval']['selection'][$operator]);
          return $selString;
@@ -1808,17 +1816,17 @@ class KReportQuery {
             }
             break;
          case 'today':
-            $todayDate = date('Y-m-d', mktime());
+            $todayDate = date('Y-m-d', time());
             // STIC 20210714 AAM - MariaDB does not accept the time 24:00:00
             // STIC#354
             // $thisWhereString .= ' >= \'' . $todayDate . ' 00:00:00\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . $todayDate . ' 24:00:00\'';
             $thisWhereString .= ' >= \'' . $todayDate . ' 00:00:00\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' <= \'' . $todayDate . ' 23:59:59\'';
             break;
          case 'past':
-            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'future':
-            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          // STIC-Custom 20211104 AAM - Adding operators "after/before N days"  functionality
          // STIC#458
@@ -1826,31 +1834,31 @@ class KReportQuery {
             $thisWhereString .= ' <= DATE_ADD(NOW(), INTERVAL -'.$value.' DAY)';
             break;
          case 'lastndays':
-            $date = gmmktime();
-            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime() - $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) - $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'lastnfdays':
-            $date = gmmktime(0, 0, 0, date('m', gmmktime()), date('d', gmmktime()), date('Y', gmmktime()));
+            $date = gmmktime(0, 0, 0, date('m', gmmktime(gmdate("H"))), date('d', gmmktime(gmdate("H"))), date('Y', gmmktime(gmdate("H"))));
             $thisWhereString .= ' >= \'' . gmdate('Y-m-d H:i:s', $date - $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . gmdate('Y-m-d H:i:s', $date) . '\'';
             break;
          case 'lastnddays':
             // if numeric we still have the number of days .. else we have a date
             if (is_numeric($value)) {
-               $date = gmmktime();
-               $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime() - $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+               $date = gmmktime(gmdate("H"));
+               $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) - $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             }
             else
             // 2011-03-25 date handling no on client side
-            //$thisWhereString .= ' >= \'' . $GLOBALS['timedate']->to_db_date($value, false) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
-               $thisWhereString .= ' >= \'' . $value . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            //$thisWhereString .= ' >= \'' . $GLOBALS['timedate']->to_db_date($value, false) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
+               $thisWhereString .= ' >= \'' . $value . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'lastnweeks':
-            $date = gmmktime();
-            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime() - $value * 604800) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) - $value * 604800) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'notlastnweeks':
-            $date = gmmktime();
-            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime() - $value * 604800) . '\' OR ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) - $value * 604800) . '\' OR ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'lastnfweeks':
             $dayofWeek = date('N');
@@ -1903,42 +1911,42 @@ class KReportQuery {
             $thisWhereString .= ' >= DATE_ADD(NOW(), INTERVAL '.$value.' DAY)';
             break;
          case 'nextndays':
-            $date = gmmktime();
-            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime() + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'nextnddays':
             // if numeric we still have the number of days .. else we have a date
             if (is_numeric($value)) {
-               $date = gmmktime();
-               $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime() + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+               $date = gmmktime(gmdate("H"));
+               $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             } else {
                //$conCatAdd = ' <= \'' . $GLOBALS['timedate']->to_db_date($value) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s') . '\'';
                // 2011-03-25 date handling now on client side
-               // $thisWhereString .= ' <= \'' . $GLOBALS['timedate']->to_db_date($value, false) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
-               $thisWhereString .= ' <= \'' . $value . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+               // $thisWhereString .= ' <= \'' . $GLOBALS['timedate']->to_db_date($value, false) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
+               $thisWhereString .= ' <= \'' . $value . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             }
             break;
          //2011-05-20 added between n days option
          case 'betwndays':
-            $date = gmmktime(0, 0, 0, date('m', gmmktime()), date('d', gmmktime()), date('Y', gmmktime()));
+            $date = gmmktime(0, 0, 0, date('m', gmmktime(gmdate("H"))), date('d', gmmktime(gmdate("H"))), date('Y', gmmktime(gmdate("H"))));
             $thisWhereString .= ' >= \'' . gmdate('Y-m-d H:i:s', $date + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . gmdate('Y-m-d H:i:s', $date + $valueto * 86400) . '\'';
             break;
             break;
          case 'betwnddays':
             if (is_numeric($value)) {
-               $date = gmmktime(0, 0, 0, date('m', gmmktime()), date('d', gmmktime()), date('Y', gmmktime()));
+               $date = gmmktime(0, 0, 0, date('m', gmmktime(gmdate("H"))), date('d', gmmktime(gmdate("H"))), date('Y', gmmktime(gmdate("H"))));
                $thisWhereString .= ' >= \'' . gmdate('Y-m-d H:i:s', $date + $value * 86400) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . gmdate('Y-m-d H:i:s', $date + $valueto * 86400) . '\'';
             } else {
                $thisWhereString .= ' >= \'' . $value . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . $valueto . '\'';
             }
             break;
          case 'nextnweeks':
-            $date = gmmktime();
-            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime() + $value * 604800) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' <= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) + $value * 604800) . '\' AND ' . $this->get_field_name($path, $fieldname, $fieldid) . ' > \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'notnextnweeks':
-            $date = gmmktime();
-            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime() + $value * 604800) . '\' OR ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime()) . '\'';
+            $date = gmmktime(gmdate("H"));
+            $thisWhereString .= ' >= \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H")) + $value * 604800) . '\' OR ' . $this->get_field_name($path, $fieldname, $fieldid) . ' < \'' . date('Y-m-d H:i:s', gmmktime(gmdate("H"))) . '\'';
             break;
          case 'firstdayofmonth':
             $dateArray = getdate();
@@ -2217,7 +2225,7 @@ class KReportQuery {
                         } else {
                            // 2013-01-20 change in call paramteres
                            // $sortArray['100'][] = $thisList['sqlfunction'] . '(' . $this->get_field_name($pathName, $fieldArray[1], $fieldArray[0]) . ')' . ' ' . strtoupper($thisList['sort']);
-                           
+
                            // STIC 20210714 AAM - It was using COUNT_DISTINCT in the sort query but it's wrong. COUNT_DISTINCT is only an internal name for the function COUNT(DISTINCT <field>)
                            // STIC#354
                            // $sortArray['100'][] = $thisList['sqlfunction'] . '(' . $this->get_field_name($pathName, $fieldArray[1], $thisList['fieldid']) . ')' . ' ' . strtoupper($thisList['sort']);
@@ -2272,9 +2280,15 @@ class KReportQuery {
 
    function get_table_for_module($module) {
       global $beanList, $beanFiles;
-      require_once($beanFiles[$beanList[$module]]);
-      $thisModule = new $beanList[$module];
-      return $thisModule->table_name;
+      if (isset($beanList[$module]) && !empty($beanList[$module]) && isset($beanFiles[$beanList[$module]])) {
+         require_once($beanFiles[$beanList[$module]]);
+
+         if (class_exists($beanList[$module])) {
+            $thisModule = new $beanList[$module];
+            return $thisModule->table_name;
+         }
+      }
+      return '';
    }
 
    /*
@@ -2285,11 +2299,17 @@ class KReportQuery {
       // if we do not have a path we have a fixed value field so do not return a name
       if ($path != '') {
          // normal processing
-         $thisAlias = (isset($this->joinSegments[$path]['object']->field_name_map[$field]['source']) && $this->joinSegments[$path]['object']->field_name_map[$field]['source'] == 'custom_fields') ? $this->joinSegments[$path]['customjoin'] : $this->joinSegments[$path]['alias'];
+         $thisAlias = (isset($this->joinSegments[$path]['object']) && 
+                       isset($this->joinSegments[$path]['object']->field_name_map[$field]['source']) && 
+                       $this->joinSegments[$path]['object']->field_name_map[$field]['source'] === 'custom_fields') 
+                     ? ($this->joinSegments[$path]['customjoin'] ?? '')
+                     : ($this->joinSegments[$path]['alias'] ?? '');
 
          global $beanList;
          // 2010-25-10 replace the -> object name with get_class function to handle also the funny aCase obejcts
-         $thisModule = array_search(get_class($this->joinSegments[$path]['object']), $beanList);
+         $thisModule = (isset($this->joinSegments[$path]['object']) && is_object($this->joinSegments[$path]['object'])) 
+                     ? array_search(get_class($this->joinSegments[$path]['object']), $beanList) 
+                     : false;
 
          // bugfix 2011-03-21 moved up to allow proper value handling in tree
          // get the field details
@@ -2306,12 +2326,12 @@ class KReportQuery {
                 'sqlFunction' => $sqlFunction,
                 'customFunction' => (is_array($thisFieldIdEntry) && array_key_exists('customsqlfunction', $thisFieldIdEntry) ? $thisFieldIdEntry['customsqlfunction'] : ''),
                 'tablealias' => $thisAlias,
-                'fields_name_map_entry' => $this->joinSegments[$path]['object']->field_name_map[$field],
-                'type' => ($this->joinSegments[$path]['object']->field_name_map[$field]['type'] == 'kreporter') ? $this->joinSegments[$path]['object']->field_name_map[$field]['kreporttype'] : $this->joinSegments[$path]['object']->field_name_map[$field]['type'],
+                'fields_name_map_entry' => ($this->joinSegments[$path]['object']->field_name_map[$field] ?? null),
+                'type' => (($this->joinSegments[$path]['object']->field_name_map[$field]['type']??'') == 'kreporter') ? $this->joinSegments[$path]['object']->field_name_map[$field]['kreporttype'] : ($this->joinSegments[$path]['object']->field_name_map[$field]['type']??''),
                 'module' => $thisModule);
 
          // check for custom function
-         if ($this->joinSegments[$path]['object']->field_name_map[$field]['type'] == 'kreporter') {
+         if (($this->joinSegments[$path]['object']->field_name_map[$field]['type']?? '') == 'kreporter') {
             //2012-12-24 checkif eval is an array ... then we have to do more
             $thisEval = '';
             if (is_array($this->joinSegments[$path]['object']->field_name_map[$field]['eval']))
@@ -2345,7 +2365,7 @@ class KReportQuery {
                //$functionRaw = trim(preg_replace(array('/{t}/', '/{f}/', '/\$/'), array($thisAlias, $field, $thisAlias), $functionRaw));
                //2013-02-20 change to set proper alias if field is a cstm field
                //$functionRaw = trim(preg_replace(array('/{t}/', '/{tc}/', '/{f}/', '/\$/'), array($thisAlias, $this->joinSegments[$path]['customjoin'], $field, $thisAlias), $functionRaw));
-               $functionRaw = trim(preg_replace(array('/{t}/', '/{tc}/', '/{f}/', '/\$/'), array($this->joinSegments[$path]['alias'], $this->joinSegments[$path]['customjoin'], $field, $this->joinSegments[$path]['alias']), $functionRaw));
+               $functionRaw = trim(preg_replace(array('/{t}/', '/{tc}/', '/{f}/', '/\$/'), array($this->joinSegments[$path]['alias'], $this->joinSegments[$path]['customjoin']??'', $field, $this->joinSegments[$path]['alias']), $functionRaw));
                return '(' . $functionRaw . ')';
             }
          } else {

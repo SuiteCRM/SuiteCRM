@@ -97,7 +97,7 @@ class ViewPopup extends SugarView
         // Dynamically add the New Record button in the popup view in all modules that contain the <module>FormBase.php file and the method handleSave()
         // Also, the button is displayed if the user has EDIT permission on the module.
         $path = 'modules/' . $this->module . '/';
-        $classAndFileName = $popupMeta['moduleMain'] . 'FormBase';
+        $classAndFileName = ($popupMeta['moduleMain'] ?? ''). 'FormBase';
         if (file_exists($path . $classAndFileName . '.php')
             && ACLController::checkAccess($this->module, 'edit', true)) 
         {

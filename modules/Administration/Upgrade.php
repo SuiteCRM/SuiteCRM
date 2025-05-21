@@ -77,7 +77,7 @@ if (DBManagerFactory::getInstance()->supports('fulltext')) {
 <tr>
 <?php
 $server_software = $_SERVER["SERVER_SOFTWARE"];
-if (strpos($server_software, 'Microsoft-IIS') === false) {
+if (strpos((string) $server_software, 'Microsoft-IIS') === false) {
     ?>
     <td scope="row"><?php echo SugarThemeRegistry::current()->getImage('Rebuild', 'align="absmiddle" border="0"', null, null, '.gif', $mod_strings['LBL_REBUILD_HTACCESS']); ?>&nbsp;<a href="./index.php?module=Administration&action=UpgradeAccess"><?php echo $mod_strings['LBL_REBUILD_HTACCESS']; ?></a></td>
     <td> <?php echo $mod_strings['LBL_REBUILD_HTACCESS_DESC'] ; ?> </td>

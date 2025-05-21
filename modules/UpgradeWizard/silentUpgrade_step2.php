@@ -156,9 +156,9 @@ function verifyArguments($argv, $usage_regular)
             echo "FAILURE\n";
             exit(1);
         }
-        if (count($argv) < 5) {
+        if ((is_countable($argv) ? count($argv) : 0) < 5) {
             echo "*******************************************************************************\n";
-            echo '*** ERROR: Missing required parameters.  Received ' . count($argv) . " argument(s), require 5.\n";
+            echo '*** ERROR: Missing required parameters.  Received ' . (is_countable($argv) ? count($argv) : 0) . " argument(s), require 5.\n";
             echo $usage_regular;
             echo "FAILURE\n";
             exit(1);

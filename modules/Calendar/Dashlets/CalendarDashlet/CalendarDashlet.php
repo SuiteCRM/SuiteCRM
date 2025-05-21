@@ -55,6 +55,7 @@ require_once('include/Dashlets/Dashlet.php');
 require_once('custom/modules/Calendar/Calendar.php');
 require_once('custom/modules/Calendar/CalendarDisplay.php');
 // END STIC
+#[\AllowDynamicProperties]
 class CalendarDashlet extends Dashlet
 {
     public $view = 'week';

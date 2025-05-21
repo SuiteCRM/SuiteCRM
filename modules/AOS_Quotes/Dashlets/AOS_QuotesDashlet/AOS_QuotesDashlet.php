@@ -38,11 +38,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/AOS_Quotes/AOS_Quotes.php');
 
+#[\AllowDynamicProperties]
 class AOS_QuotesDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/AOS_Quotes/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

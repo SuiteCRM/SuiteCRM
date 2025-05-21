@@ -104,4 +104,7 @@ $mod_strings = array(
     'LBL_DATE_MODIFIED' => 'Data de Modificación',
     'LBL_DELETED' => 'Eliminada',
     'LBL_FILE_CONTENTS' => 'Contido do arquivo',
+
+    'LBL_ASCENDING' => 'Ascendente',
+    'LBL_DESCENDING' => 'Descendente',
 );

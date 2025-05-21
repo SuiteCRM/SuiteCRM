@@ -23,7 +23,7 @@ use ScssPhp\ScssPhp\Node\Number;
  *
  * @internal
  */
-final class Util
+class Util
 {
     /**
      * Asserts that `value` falls within `range` (inclusive), leaving
@@ -36,9 +36,9 @@ final class Util
      *
      * @return mixed `value` adjusted to fall within range, if it was outside by a floating-point margin.
      *
-     * @throws RangeException
+     * @throws \ScssPhp\ScssPhp\Exception\RangeException
      */
-    public static function checkRange(string $name, Range $range, $value, string $unit = '')
+    public static function checkRange($name, Range $range, $value, $unit = '')
     {
         $val = $value[1];
         $grace = new Range(-0.00001, 0.00001);
@@ -69,45 +69,11 @@ final class Util
      *
      * @return string
      */
-    public static function encodeURIComponent(string $string): string
+    public static function encodeURIComponent($string)
     {
         $revert = ['%21' => '!', '%2A' => '*', '%27' => "'", '%28' => '(', '%29' => ')'];
 
         return strtr(rawurlencode($string), $revert);
-    }
-
-    /**
-     * Returns $name without a vendor prefix.
-     *
-     * If $name has no vendor prefix, it's returned as-is.
-     *
-     * @param string $name
-     *
-     * @return string
-     */
-    public static function unvendor(string $name): string
-    {
-        $length = \strlen($name);
-
-        if ($length < 2) {
-            return $name;
-        }
-
-        if ($name[0] !== '-') {
-            return $name;
-        }
-
-        if ($name[1] === '-') {
-            return $name;
-        }
-
-        for ($i = 2; $i < $length; $i++) {
-            if ($name[$i] === '-') {
-                return substr($name, $i + 1);
-            }
-        }
-
-        return $name;
     }
 
     /**
@@ -117,7 +83,7 @@ final class Util
      *
      * @return string
      */
-    public static function mbChr(int $code): string
+    public static function mbChr($code)
     {
         // Use the native implementation if available, but not on PHP 7.2 as mb_chr(0) is buggy there
         if (\PHP_VERSION_ID > 70300 && \function_exists('mb_chr')) {
@@ -139,49 +105,12 @@ final class Util
     }
 
     /**
-     * mb_ord() wrapper
-     *
-     * @param string $string
-     *
-     * @return int
-     */
-    public static function mbOrd(string $string): int
-    {
-        if (\function_exists('mb_ord')) {
-            return mb_ord($string, 'UTF-8');
-        }
-
-        if (1 === \strlen($string)) {
-            return \ord($string);
-        }
-
-        $s = unpack('C*', substr($string, 0, 4));
-
-        if (!$s) {
-            return 0;
-        }
-
-        $code = $s[1];
-        if (0xF0 <= $code) {
-            return (($code - 0xF0) << 18) + (($s[2] - 0x80) << 12) + (($s[3] - 0x80) << 6) + $s[4] - 0x80;
-        }
-        if (0xE0 <= $code) {
-            return (($code - 0xE0) << 12) + (($s[2] - 0x80) << 6) + $s[3] - 0x80;
-        }
-        if (0xC0 <= $code) {
-            return (($code - 0xC0) << 6) + $s[2] - 0x80;
-        }
-
-        return $code;
-    }
-
-    /**
      * mb_strlen() wrapper
      *
      * @param string $string
      * @return int
      */
-    public static function mbStrlen(string $string): int
+    public static function mbStrlen($string)
     {
         // Use the native implementation if available.
         if (\function_exists('mb_strlen')) {
@@ -202,7 +131,7 @@ final class Util
      * @param null|int $length
      * @return string
      */
-    public static function mbSubstr(string $string, int $start, ?int $length = null): string
+    public static function mbSubstr($string, $start, $length = null)
     {
         // Use the native implementation if available.
         if (\function_exists('mb_substr')) {
@@ -240,7 +169,7 @@ final class Util
      *
      * @return int|false
      */
-    public static function mbStrpos(string $haystack, string $needle, int $offset = 0)
+    public static function mbStrpos($haystack, $needle, $offset = 0)
     {
         if (\function_exists('mb_strpos')) {
             return mb_strpos($haystack, $needle, $offset, 'UTF-8');

@@ -22,6 +22,10 @@ use Exception;
 /**
  * Main class of OneLogin's PHP Toolkit
  */
+// STIC Custom 20250303 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class Auth
 {
     /**
@@ -172,7 +176,11 @@ class Auth
      * @throws Exception
      * @throws Error
      */
-    public function __construct(array $settings = null)
+    // STIC Custom 20250303 JBL - Implicit nullable parameters are deprecated
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function __construct(array $settings = null)
+    public function __construct(?array $settings = null)
+    // END STIC Custom
     {
         $this->_settings = new Settings($settings);
     }

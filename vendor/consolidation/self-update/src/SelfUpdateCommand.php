@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem as sfFilesystem;
 
 /**
- * Update the *.phar from the latest github release.
+ * Update the *.phar from the latest GitHub release.
  *
  * @author Alexander Menk <alex.menk@gmail.com>
  */
@@ -32,7 +32,8 @@ class SelfUpdateCommand extends Command
     public function __construct($applicationName = null, $currentVersion = null, $gitHubRepository = null)
     {
         $this->applicationName = $applicationName;
-        $this->currentVersion = $currentVersion;
+        $version_parser = new VersionParser();
+        $this->currentVersion = $version_parser->normalize($currentVersion);
         $this->gitHubRepository = $gitHubRepository;
         $this->ignorePharRunningCheck = false;
 
@@ -107,8 +108,9 @@ EOT
             }
 
             $parsed_releases[$normalized] = [
-                'tag_name' => $normalized,
+                'tag_name' => $release->tag_name,
                 'assets' => $release->assets,
+                'prerelease' => $release->prerelease,
             ];
         }
         $sorted_versions = Semver::rsort(array_keys($parsed_releases));
@@ -137,19 +139,18 @@ EOT
               'version_constraint' => null,
             ], $options);
 
-        foreach ($this->getReleasesFromGithub() as $release) {
+        foreach ($this->getReleasesFromGithub() as $releaseVersion => $release) {
             // We do not care about this release if it does not contain assets.
             if (!isset($release['assets'][0]) || !is_object($release['assets'][0])) {
                 continue;
             }
 
-            $releaseVersion = $release['tag_name'];
             if ($options['compatible'] && !$this->satisfiesMajorVersionConstraint($releaseVersion)) {
-                // If it does not satisfies, look for the next one.
+                // If it does not satisfy, look for the next one.
                 continue;
             }
 
-            if (!$options['preview'] && VersionParser::parseStability($releaseVersion) !== 'stable') {
+            if (!$options['preview'] && ((VersionParser::parseStability($releaseVersion) !== 'stable') || $release['prerelease'])) {
                 // If preview not requested and current version is not stable, look for the next one.
                 continue;
             }
@@ -161,6 +162,7 @@ EOT
 
             return [
                 'version' => $releaseVersion,
+                'tag_name' => $release['tag_name'],
                 'download_url' => $release['assets'][0]->browser_download_url,
             ];
         }
@@ -218,14 +220,14 @@ EOT
 
         $fs = new sfFilesystem();
 
-        $output->writeln('Downloading ' . $this->applicationName . ' (' . $this->gitHubRepository . ') ' . $latestRelease['version']);
+        $output->writeln('Downloading ' . $this->applicationName . ' (' . $this->gitHubRepository . ') ' . $latestRelease['tag_name']);
 
         $fs->copy($latestRelease['download_url'], $tempFilename);
 
         $output->writeln('Download finished');
 
         try {
-            \error_reporting(E_ALL); // supress notices
+            \error_reporting(E_ALL); // suppress notices
 
             @chmod($tempFilename, 0777 & ~umask());
             // test the phar validity

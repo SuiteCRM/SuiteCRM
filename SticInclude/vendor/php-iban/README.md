@@ -3,13 +3,10 @@ php-iban
 
 `php-iban` is a library for parsing, validating and generating IBAN (and IIBAN) bank account information in PHP.
 
-[![Build Status](https://travis-ci.org/globalcitizen/php-iban.png)](https://travis-ci.org/globalcitizen/php-iban)
 [![Latest Stable Version](https://poser.pugx.org/globalcitizen/php-iban/v/stable)](https://packagist.org/packages/globalcitizen/php-iban) 
 [![License](https://poser.pugx.org/globalcitizen/php-iban/license)](https://packagist.org/packages/globalcitizen/php-iban)
 
-All parts of an IBAN can be retrieved, including country code, checksum, BBAN, financial institution or bank code, account number, and where a fixed-length national system is in use, also branch/sort code. Legacy national checksums may also be retrieved, validated and correctly set, where available, whether they apply to the account number portion, bank and branch identifiers, part or all of the above. IBAN country codes can be converted in to ISO3166-1 alpha-2 and IANA formats, the parent IBAN country acting as registrar for dependent territories may be queried, the official national currency (ISO4217 alpha code format), central bank name and central bank URL may also be queried to ease integration. IBANs may be converted between human and machine representation. A database of example/test IBANs from different countries is included. Finally, highly accurate suggestions for originally intended input can be made when an incorrect IBAN is detected and is due to mistranscription error.
-
-Tested on PHP versions ![PHP 5.3](https://img.shields.io/badge/version-PHP%205.3%2B-lightgrey.svg) ![PHP 5.4](https://img.shields.io/badge/version-PHP%205.4%2B-lightgrey.svg) ![PHP 5.5](https://img.shields.io/badge/version-PHP%205.5%2B-lightgrey.svg) ![PHP 5.6](https://img.shields.io/badge/version-PHP%205.6%2B-lightgrey.svg) ![PHP 7.0](https://img.shields.io/badge/version-PHP%207.0%2B-lightgrey.svg) as well as nightly.
+All parts of an IBAN can be retrieved, including country code, checksum, BBAN, financial institution or bank code, account number, and where a fixed-length national system is in use, also branch/sort code. Legacy national checksums may also be retrieved, validated and correctly set, where available, whether they apply to the account number portion, bank and branch identifiers, part or all of the above. IBAN country codes can be converted in to ISO3166-1 alpha-2 and IANA formats, the parent IBAN country acting as registrar for dependent territories may be queried, the official national currency (ISO4217 alpha code format), central bank name and central bank URL may also be queried to ease integration. IBANs may be converted between human and machine representation. IBANs may be obfuscated for presentation to humans in special circumstances such as relative identification. A database of example/test IBANs from different countries is included. Finally, highly accurate suggestions for originally intended input can be made when an incorrect IBAN is detected and is due to mistranscription error.
 
 The parser was built using regular expressions to adapt the contents of the _official_ IBAN registry available from SWIFT then manually modified for special cases such as [errors and omissions in SWIFT's official specifications](https://raw.githubusercontent.com/globalcitizen/php-iban/master/docs/COMEDY-OF-ERRORS).
 
@@ -17,7 +14,7 @@ Various deficiencies in the initial adaptation have since been rectified, and th
 
 Where appropriate, __European Committee for Banking Standards__ (ECBS) recommendations have also been incorporated.
 
-Please bear in mind that because the specification changes frequently, it may not be 100% up to date if a new version has been recently released - I do my best though. We are currently thought to be up to date with [the May 2017 release, ie. PDF release #77](https://www.swift.com/standards/data-standards/iban).
+Please bear in mind that because the specification changes frequently, it may not be 100% up to date if a new version has been recently released - I do my best though. We are currently thought to be up to date with [the January 2020 release, ie. PDF release #86](https://www.swift.com/standards/data-standards/iban).
 
 Licensed under LGPL, it is free to use in commercial settings.
 
@@ -158,7 +155,7 @@ Then just add the following to your `composer.json` file:
 // composer.json
 {
     "require": {
-        "globalcitizen/php-iban": "2.6.2"
+        "globalcitizen/php-iban": "4.2.3"
     }
 }
 ```
@@ -254,14 +251,14 @@ The following table compares __php-iban__ to other PHP projects offering IBAN-re
 
 | Project                                                    | Lic. | Proc | OO  | Began  | Latest | Star | Watch | Fork | Installs | Home culture | Deps    |
 | ---------------------------------------------------------- | ---- | ---- | --- | ------ | ------ | ---- | ----- | ---- | -------- | ------------ | ------- |
-| __php-iban__                                               | LGPL | ✔    | ✔   | 2009   | 2.6.2  | 210  | 23    | 36   | 350k+*   | Global*      | *none*  |
+| __php-iban__                                               | LGPL | ✔    | ✔   | 2009   | 4.2.3  | 426  | 29    | 104  | ~7M+*    | Global*      | *none*  |
 | [Iban](https://github.com/jschaedl/Iban)                   | MIT  | ✘    | ✔   | 2013   | 1.3.0  | 50   | 9     | 19   | 178.39k  | German       | lots    |
 | [IsoCodes](https://github.com/ronanguilloux/IsoCodes)      | GPL3 | ✘    | ✔   | 2012   | 2.1.1  | 466  | 22    | 54   | 145k     | French       | lots    |
 | [SepaUtil's](https://github.com/AbcAeffchen/SepaUtilities) | GPL3 | ✘    | ✔   | 2014   | 1.2.3  | 8    | 4     | 3    | 25k      | German       | phpunit |
 | [Symfony](https://github.com/symfony/symfony)              | MIT  | ✘    | ✔   | 2013   | 3.3.6  | 15k  | 1214  | 5.6k | 23M+     | French       | lots    |
 
 Notes:
- * Original download records for __php-iban__ releases were hosted on Google Code and are now lost. Prior to establishing a release process on Github, we just expected that people would download the code... so we're really not sure how many installs exist, but this is a fair guess (~11k + composer installs + a little bit now and then).
+ * Original download records for __php-iban__ releases were hosted on Google Code and are now lost. Prior to establishing a release process on Github, we just expected that people would download the code... so we're really not sure how many installs exist, but this is a fair guess (now over 3M composer installs + all prior google code and Github installs).
  * __php-iban__ also powers:
     * [adm-gravity-iban](https://github.com/InternativeNL/adm-gravity-iban)
     * [Azzana consulting's XML Solver for ISO20022](http://www.azzana-consulting.com/xmlsolver/)
@@ -271,15 +268,17 @@ Notes:
     * [contao-haste_plus](https://github.com/heimrichhannot/contao-haste_plus)
     * [Dolibarr ERP &amp; CRM](http://www.dolibarr.org/) ([website](https://github.com/Dolibarr/dolibarr/tree/develop/htdocs/includes/php-iban))
     * [fieldwork: Web forms for cool people](https://github.com/jmversteeg/fieldwork)
-    * [IBAN Validator](https://www.drupal.org/sandbox/encelado/1936168) for Drupal
+    * [IBAN Validator](https://www.drupal.org/project/iban_validator) for Drupal
     * [identity](https://github.com/mpijierro/identity) component for Laravel to check Spanish IDs
     * [lib-bankaccount](https://github.com/majestixx/lib-bankaccount) (conversion to/from legacy German account format)
     * [PHP SEPA XML](http://www.phpclasses.org/package/8179-PHP-Generate-XML-for-the-Single-Euro-Payments-Area.html) class ([github](https://github.com/dmitrirussu/php-sepa-xml-generator))
     * [Project60 SEPA direct debit](https://github.com/Project60/org.project60.sepa)
     * [SEPA Payment Plugin](https://github.com/subs-guru/sepa-payment-plugin) for [SubsGuru](http://subs.guru/)
+    * [Silverstripe CMS module](https://github.com/denkfabrik-neueMedien/silverstripe-siteinfo)
+    * [statement](https://github.com/hiwye/statement) 
     * [WooCommerce Germanized](http://hookr.io/plugins/woocommerce-germanized/)
     * [WooCommerce SEPA Payment Gateway](https://codecanyon.net/item/woocommerce-sepa-payment-gateway/7963419)
- * php-iban's author is an Australian born, Australia/New Zealand/German citizen based in mainland China, who has formerly also worked and banked in the US, UK, and many Asian countries.
+ * php-iban's author is an Australian born, Australia/New Zealand/German citizen who has formerly also worked and banked in the US, UK, and many Asian countries.
  * The IsoCodes and SepaUtil's projects cover standards other than IBAN so their popularity should be considered in this light. (In essence, there is really only one directly competing library, Iban)
 
 Now let's take a look at features.
@@ -315,16 +314,155 @@ Your Help Wanted
 
  * If you know the URL of __national IBAN, BBAN or national checksum documentation__ from official sources, please let us know at [issue #39](https://github.com/globalcitizen/php-iban/issues/39) and [issue #41](https://github.com/globalcitizen/php-iban/issues/41).
   * __Faroe Islands__ (FO) banks do not respond, neither does the Danish National Bank who referred me to them.
-  * __Italy__ (IT) has a custom checksum system we need some help deciphering. Note that it is not the [Italian fiscal code](https://en.wikipedia.org/wiki/Italian_fiscal_code_card).
   * __Luxembourg__ (LU) does not seem to conform to any single checksum system. While some IBAN do validate with reasonably common systems, others don't or use others. The suggestion that Luxembourg has a national checksum system may in fact be incorrect. We need some clarification here, hopefully someone can dig up an official statement.
   * __Mauritania__ (MR) has a dual character checksum system but our example IBAN does not match MOD97-10 which would be the expected system. Previously the IBAN here was always fixed to '13' checksum digits, however as of registry v66 it is now dynamic, which suggests a changed or at least now nationally relaxed checksum system.
-  * __San Marino__ (SM) has an alphabetic checksum with an unknown algorithm.
 
  * If you are willing to spend some time searching, we could do with some more test IBANs for most countries, especially smaller ones...
 
+News: March 2024
+----------------
+__[Version 4.2.3](https://github.com/globalcitizen/php-iban/releases/tag/v4.2.3)__ has been released.
+ * [Fix stupid deprecation warning](https://github.com/globalcitizen/php-iban/pull/128) - thanks to [@odolbeau](https://github.com/odolbeau)
+__[Version 4.2.2](https://github.com/globalcitizen/php-iban/releases/tag/v4.2.2)__ has been released.
+ * [Fix registry bug causing misreporting of Denmark's EU membership](https://github.com/globalcitizen/php-iban/pull/127) - thanks to [@llange](https://github.com/llange)
+ * [Avoid using shell in test script](https://github.com/globalcitizen/php-iban/pull/126) - thanks to [@hannob](https://github.com/hannob)
+
+News: August 2023
+-----------------
+
+ * Remove travis as no longer free
+
+News: January 2023
+------------------
+
+__[Version 4.2.1](https://github.com/globalcitizen/php-iban/releases/tag/v4.2.1)__ has been released.
+ * Further Czech example IBANS (thanks to [@Triplkrypl](https://github.com/Triplkrypl))
+
+__[Version 4.2.0](https://github.com/globalcitizen/php-iban/releases/tag/v4.2.0)__ has been released.
+ * Resolve [forward-compatibility with php 8.2](https://github.com/globalcitizen/php-iban/issues/120)
+
+News: August 2022
+-----------------
+
+__[Version 4.1.1](https://github.com/globalcitizen/php-iban/releases/tag/v4.1.1)__ has been released.
+ * Long-standing bug affecting Belgian pre-IBAN national checksum verification fixed - thanks to [Arne Peirs](https://github.com/Olympic1) for a [very well documented pull request](https://github.com/globalcitizen/php-iban/pull/119).
+
+News: July 2021
+---------------
+
+__[Version 4.1.0](https://github.com/globalcitizen/php-iban/releases/tag/v4.1.0)__ has been released.
+ * New feature to check for EU memberships - thanks to [@julianpollmann](https://github.com/julianpollman)
+
+News: August 2020
+-----------------
+__[Version 4.0.0](https://github.com/globalcitizen/php-iban/releases/tag/v4.0.0)__ has been released.
+ * Major version upgrade to certainly fix missing dot in prior release version string, thus avoiding composer hassles. (See [#108](https://github.com/globalcitizen/php-iban/issues/108)). I am really beginning to hate composer.
+
+__[Version 3.0.3](https://github.com/globalcitizen/php-iban/releases/tag/v3.0.3)__ has been released.
+ * Official support for php-7.4
+
+__[Version 3.0.2](https://github.com/globalcitizen/php-iban/releases/tag/v3.0.2)__ has been released.
+ * BBAN length fixes for Bahrain and Quatar (thanks to @jledrogo)
+
+News: July 2020
+---------------
+
+__[Version 3.0.0](https://github.com/globalcitizen/php-iban/releases/tag/v3.0.0)__ has been released.
+ * Same as previous but bump version to fix issues with the addition of namespaces. (See [#104](https://github.com/globalcitizen/php-iban/issues/104))
+ * Versions 2.8.x are being removed from the releases.
+ * Hopefully this should fix things for users upgrading from earlier versions via composer.
+
+__[Version 2.8.2](https://github.com/globalcitizen/php-iban/releases/tag/v2.8.1)__ has been released.
+ * Same as previous but officially drop php-5.2 support due to lack of namespacing.
+
+__[Version 2.8.1](https://github.com/globalcitizen/php-iban/releases/tag/v2.8.1)__ has been released.
+ * `TL` BBAN format regex removed extraneous spaces (did not affect IBAN validation). (Thanks to @DanyCorbineauBappli)
+
+News: June 2020
+---------------
+__[Version 2.8.0](https://github.com/globalcitizen/php-iban/releases/tag/v2.8.0)__ has been released.
+ * Object oriented class is now namespaced.
+
+News: May 2020
+--------------
+__[Version 2.7.5](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.5)__ has been released.
+ * Corrections from newer IBAN registry releases
+   * Updated Egypt example IBAN and registry entry (disabled French national checksum scheme as this no longer works with the example IBAN provided. Users with insight please check, there are no examples visible online!)
+   * Corrections to Polish BBAN length (now fixed, previously spuriously specified as variable)
+   * Corrections to Seychelles BBAN and IBAN structure
+
+__[Version 2.7.4](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.4)__ has been released.
+ * New function `iban_to_obfsucated_format()` or `ObfuscatedFormat()` to obfuscate IBAN for specific output scenarios (such as relative identification)
+   * Thanks to @jaysee for feature request #99
+
+News: November 2019
+------------------
+__[Version 2.7.3](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.3)__ has been released.
+ * Load registry only when used. This creates slightly more overhead in real world use, but nominally substantially reduces load times in the edge case event that you include the library but only want to use a function that does not require the IBAN registry to be loaded.
+   * Thanks to @manitu-opensource
+
+__[Version 2.7.2](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.2)__ has been released.
+ * Fix composer file to add license.
+   * Thanks to @SunMar
+
+News: October 2019
+------------------
+__[Version 2.7.1](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.1)__ has been released.
+ * Update erroneous bank ID stop offset for Costa Rica.
+   * Thanks to @thinkpozzitive
+ * Minor syntax updates
+   * Thanks to @bwurst
+ * Add quite a number of Costa Rica example IBANs for confidence in testing.
+
+News: July 2019
+---------------
+
+__[Version 2.7.0](https://github.com/globalcitizen/php-iban/releases/tag/v2.7.0)__ has been released.
+ * Fixed erroneous Liechtenstein BBAN length.
+ * Update National Bank of Greece name/website.
+
+News: August 2018
+-----------------
+
+__[Version 2.6.9](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.9)__ has been released.
+ * Added national checksum implementation for San Marino (`SM`)
+ * Thanks to @francescozanoni 
+
+__[Version 2.6.8](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.8)__ has been released.
+ * Added national checksum implementation for Italy (`IT`)
+ * Thanks to @francescozanoni 
+
+News: June 2018
+---------------
+
+__[Version 2.6.7](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.7)__ has been released.
+ * Added national checksum implementation for Slovakia (`SK`)
+ * Thanks to @ostrolucky
+
+News: June 2018
+---------------
+
+__[Version 2.6.6](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.6)__ has been released.
+ * Fixed generation of voluminous errors in environments without `ini_set` enabled
+ * Thanks to @agil-NUBBA
 
 News: March 2018
 ----------------
+
+__[Version 2.6.5](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.5)__ has been released.
+ * Fixed spurious warning when `gmp` extension was enabled
+ * Thanks to @marcovo
+
+__[Version 2.6.4](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.4)__ has been released.
+ * Remove spurious dependency on `bcmath` extension
+ * Minor documentation updates
+
+__[Version 2.6.3](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.3)__ has been released.
+ * Upgrade travis environment as old one broken
+ * Fix test execution under new Travis environment
+ * Re-addition of HHVM test environments
+ * Addition of PHP-5.2 test environment
+ * A few new test IBANs
 
 __[Version 2.6.2](https://github.com/globalcitizen/php-iban/releases/tag/v2.6.2)__ has been released.
  * Update Croatia SEPA status
@@ -940,6 +1078,12 @@ $machine_iban = iban_to_machine_format($iban);
 # Convert an IBAN to human format.  To do this, we
 # add a space every four characters.
 $human_iban = iban_to_human_format($iban);
+
+# Convert an IBAN to obfuscated format for relative
+# identification. To do this, we replace all but the
+# leading country code and final four characters with
+# asterisks.
+$obfuscated_iban = iban_to_obfuscated_format($iban);
 ```
 
 
@@ -1035,6 +1179,18 @@ $central_bank_url = iban_country_get_central_bank_url($iban_country);
 # (Note: Returns '' if there is no central bank. Also, note that
 #        sometimes multiple countries share one central bank)
 $central_bank_name = iban_country_get_central_bank_name($iban_country);
+
+# Get the membership type of the country
+# There are four types of memberships:
+# * EU-Member States (eu_member)
+# * EFTA-Member States (efta_member)
+# * Other Memberships, which have monetary agreements with the EU (other_member)
+# * Non-Members, which don't belong to the EU or have agreements (non_member)
+$country_membership = iban_country_get_membership($iban_country);
+
+# Get if the country is a eu member state
+# (Note: Returns true, if member state; false otherwise)
+$country_membership = iban_country_get_is_eu_member($iban_country);
 ```
 
 
@@ -1155,6 +1311,12 @@ $machine_iban = $myIban->MachineFormat();
 # Convert an IBAN to human format.  To do this, we
 # add a space every four characters.
 $human_iban = $myIban->HumanFormat();
+
+# Convert an IBAN to obfuscated format for relative
+# identification. To do this, we replace all but the
+# leading country code and final four characters with
+# asterisks.
+$obfsucated_iban = $myIban->ObfuscatedFormat();
 ```
 
 IBAN Country-Level Functions

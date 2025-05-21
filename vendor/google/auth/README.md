@@ -35,44 +35,28 @@ composer.phar require google/auth
 ## Application Default Credentials
 
 This library provides an implementation of
-[application default credentials][application default credentials] for PHP.
+[Application Default Credentials (ADC)][application default credentials] for PHP.
 
-The Application Default Credentials provide a simple way to get authorization
-credentials for use in calling Google APIs.
+Application Default Credentials provides a simple way to get authorization
+credentials for use in calling Google APIs, and is
+the recommended approach to authorize calls to Cloud APIs.
 
-They are best suited for cases when the call needs to have the same identity
-and authorization level for the application independent of the user. This is
-the recommended approach to authorize calls to Cloud APIs, particularly when
-you're building an application that uses Google Compute Engine.
+### Set up ADC
 
-#### Download your Service Account Credentials JSON file
+To use ADC, you must set it up by providing credentials.
+How you set up ADC depends on the environment where your code is running,
+and whether you are running code in a test or production environment.
 
-To use `Application Default Credentials`, You first need to download a set of
-JSON credentials for your project. Go to **APIs & Services** > **Credentials** in
-the [Google Developers Console][developer console] and select
-**Service account** from the **Add credentials** dropdown.
+For more information, see [Set up Application Default Credentials][set-up-adc].
 
-> This file is your *only copy* of these credentials. It should never be
-> committed with your source code, and should be stored securely.
-
-Once downloaded, store the path to this file in the
-`GOOGLE_APPLICATION_CREDENTIALS` environment variable.
-
-```php
-putenv('GOOGLE_APPLICATION_CREDENTIALS=/path/to/my/credentials.json');
-```
-
-> PHP's `putenv` function is just one way to set an environment variable.
-> Consider using `.htaccess` or apache configuration files as well.
-
-#### Enable the API you want to use
+### Enable the API you want to use
 
 Before making your API call, you must be sure the API you're calling has been
 enabled. Go to **APIs & Auth** > **APIs** in the
 [Google Developers Console][developer console] and enable the APIs you'd like to
 call. For the example below, you must enable the `Drive API`.
 
-#### Call the APIs
+### Call the APIs
 
 As long as you update the environment variable below to point to *your* JSON
 credentials file, the following code should output a list of your Drive files.
@@ -257,6 +241,18 @@ print_r((string) $response->getBody());
 
 [iap-proxy-header]: https://cloud.google.com/iap/docs/authentication-howto#authenticating_from_proxy-authorization_header
 
+#### External credentials (Workload identity federation)
+
+Using workload identity federation, your application can access Google Cloud resources from Amazon Web Services (AWS),
+Microsoft Azure or any identity provider that supports OpenID Connect (OIDC).
+
+Traditionally, applications running outside Google Cloud have used service account keys to access Google Cloud
+resources. Using identity federation, you can allow your workload to impersonate a service account. This lets you access
+Google Cloud resources directly, eliminating the maintenance and security burden associated with service account keys.
+
+Follow the detailed instructions on how to
+[Configure Workload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds).
+
 #### Verifying JWTs
 
 If you are [using Google ID tokens to authenticate users][google-id-tokens], use
@@ -286,6 +282,58 @@ $auth->verify($idToken, [
 [google-id-tokens]: https://developers.google.com/identity/sign-in/web/backend-auth
 [iap-id-tokens]: https://cloud.google.com/iap/docs/signed-headers-howto
 
+## Caching
+Caching is enabled by passing a PSR-6 `CacheItemPoolInterface`
+instance to the constructor when instantiating the credentials.
+
+We offer some caching classes out of the box under the `Google\Auth\Cache` namespace.
+
+```php
+use Google\Auth\ApplicationDefaultCredentials;
+use Google\Auth\Cache\MemoryCacheItemPool;
+
+// Cache Instance
+$memoryCache = new MemoryCacheItemPool;
+
+// Get the credentials
+// From here, the credentials will cache the access token
+$middleware = ApplicationDefaultCredentials::getCredentials($scope, cache: $memoryCache);
+```
+
+### FileSystemCacheItemPool Cache
+The `FileSystemCacheItemPool` class is a `PSR-6` compliant cache that stores its
+serialized objects on disk, caching data between processes and making it possible 
+to use data between different requests.
+
+```php
+use Google\Auth\Cache\FileSystemCacheItemPool;
+use Google\Auth\ApplicationDefaultCredentials;
+
+// Create a Cache pool instance
+$cache = new FileSystemCacheItemPool(__DIR__ . '/cache');
+
+// Pass your Cache to the Auth Library
+$credentials = ApplicationDefaultCredentials::getCredentials($scope, cache: $cache);
+
+// This token will be cached and be able to be used for the next request
+$token = $credentials->fetchAuthToken();
+```
+
+### Integrating with a third party cache
+You can use a third party that follows the `PSR-6` interface of your choice.
+
+```php
+// run "composer require symfony/cache"
+use Google\Auth\ApplicationDefaultCredentials;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+
+// Create the cache instance
+$filesystemCache = new FilesystemAdapter();
+
+// Create Get the credentials
+$credentials = ApplicationDefaultCredentials::getCredentials($targetAudience, cache: $filesystemCache);
+```
+
 ## License
 
 This library is licensed under Apache 2.0. Full license text is
@@ -304,9 +352,10 @@ hesitate to
 about the client or APIs on [StackOverflow](http://stackoverflow.com).
 
 [google-apis-php-client]: https://github.com/google/google-api-php-client
-[application default credentials]: https://developers.google.com/accounts/docs/application-default-credentials
+[application default credentials]: https://cloud.google.com/docs/authentication/application-default-credentials
 [contributing]: https://github.com/google/google-auth-library-php/tree/main/.github/CONTRIBUTING.md
 [copying]: https://github.com/google/google-auth-library-php/tree/main/COPYING
 [Guzzle]: https://github.com/guzzle/guzzle
 [Guzzle 5]: http://docs.guzzlephp.org/en/5.3
 [developer console]: https://console.developers.google.com
+[set-up-adc]: https://cloud.google.com/docs/authentication/provide-credentials-adc

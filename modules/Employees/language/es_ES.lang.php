@@ -151,4 +151,7 @@ $mod_strings = array(
     'LBL_ROLES' => 'Roles',
     'LBL_SECURITYGROUPS' => 'Grupos de Seguridad',
     'LBL_PROSPECT_LIST' => 'Lista de Público Objetivo',
+
+    'LBL_FACTOR_AUTH_INTERFACE' => 'Interfaz de Autenticación de Dos Factores:',
+    'LBL_EDITOR_TYPE' => 'Editor',
 );

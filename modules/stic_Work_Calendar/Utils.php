@@ -113,8 +113,8 @@ class stic_Work_CalendarUtils
         // Get the data from the smarty template
         $repeat_type = $_REQUEST['repeat_type'] ?: 'Daily' ;
         $interval = $_REQUEST['repeat_interval'] ?: '1';
-        $count = $_REQUEST['repeat_count'];
-        $until = $_REQUEST['repeat_until'];
+        $count = $_REQUEST['repeat_count'] ?? '';
+        $until = $_REQUEST['repeat_until'] ?? '';
         $type = $_REQUEST['type'];
         $startDay = $_REQUEST['repeat_start_day'];
         $finalDay = $_REQUEST['repeat_final_day'];
@@ -147,6 +147,7 @@ class stic_Work_CalendarUtils
 
         // Depending on the chosen type, perform the right operation
         // (none, daily, weekly, monthly or annual)
+        $date = [];
         if ($repeat_type == '') {
             header("Location: index.php?action=index&module=stic_Work_Calendar");
         } else {
@@ -207,13 +208,13 @@ class stic_Work_CalendarUtils
                 // in the smarty template Sunday is in position '0' and not in position '7'
                 $times = 0;
                 for ($i = 1; $i < 7; $i++) {
-                    $dow[$i] = $_REQUEST['repeat_dow_' . $i];
+                    $dow[$i] = $_REQUEST['repeat_dow_' . $i] ?? '';
                     if ($dow[$i] == 'on') {
                         $times = $times + 1;
                         $dow[$i] = 1;} else { $dow[$i] = 0;}
                 }
                 $zero = 0;
-                $dow[7] = $_REQUEST['repeat_dow_' . $zero];
+                $dow[7] = $_REQUEST['repeat_dow_' . $zero] ?? '';
                 if ($dow[7] == 'on') {
                     $times = $times + 1;
                     $dow[7] = 1;} else { $dow[7] = 0;}

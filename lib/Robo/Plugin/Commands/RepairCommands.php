@@ -56,6 +56,7 @@ use VardefManager;
  * @license  GNU GPLv3
  * @link     RepairCommands
  */
+#[\AllowDynamicProperties]
 class RepairCommands extends RoboTasks
 {
     /**

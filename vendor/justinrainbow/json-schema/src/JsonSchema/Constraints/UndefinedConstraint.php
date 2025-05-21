@@ -20,6 +20,7 @@ use JsonSchema\Uri\UriResolver;
  * @author Robert Schönthal <seroscho@googlemail.com>
  * @author Bruno Prieto Reis <bruno.p.reis@gmail.com>
  */
+#[\AllowDynamicProperties]
 class UndefinedConstraint extends Constraint
 {
     /**

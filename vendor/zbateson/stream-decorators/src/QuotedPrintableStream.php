@@ -4,10 +4,11 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\StreamDecorators;
 
-use Psr\Http\Message\StreamInterface;
 use GuzzleHttp\Psr7\StreamDecoratorTrait;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 /**
@@ -30,11 +31,15 @@ class QuotedPrintableStream implements StreamInterface
     private $lastLine = '';
 
     /**
-     * Overridden to return the position in the target encoding.
-     *
-     * @return int
+     * @var StreamInterface $stream
+     * @phpstan-ignore-next-line
      */
-    public function tell()
+    private $stream;
+
+    /**
+     * Overridden to return the position in the target encoding.
+     */
+    public function tell() : int
     {
         return $this->position;
     }
@@ -44,7 +49,7 @@ class QuotedPrintableStream implements StreamInterface
      *
      * @return null
      */
-    public function getSize()
+    public function getSize() : ?int
     {
         return null;
     }
@@ -56,17 +61,15 @@ class QuotedPrintableStream implements StreamInterface
      * @param int $whence
      * @throws RuntimeException
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET) : void
     {
         throw new RuntimeException('Cannot seek a QuotedPrintableStream');
     }
 
     /**
      * Overridden to return false
-     *
-     * @return boolean
      */
-    public function isSeekable()
+    public function isSeekable() : bool
     {
         return false;
     }
@@ -81,16 +84,12 @@ class QuotedPrintableStream implements StreamInterface
      *
      * The quoted-printable encoded characters are returned.  If the characters
      * read are invalid, '3D' is returned indicating an '=' character.
-     *
-     * @param int $length
-     * @param string $pre
-     * @return string
      */
-    private function readEncodedChars($length, $pre = '')
+    private function readEncodedChars(int $length, string $pre = '') : string
     {
         $str = $pre . $this->stream->read($length);
-        $len = strlen($str);
-        if ($len > 0 && !preg_match('/^[0-9a-f]{2}$|^[\r\n]{1,2}.?$/is', $str) && $this->stream->isSeekable()) {
+        $len = \strlen($str);
+        if ($len > 0 && !\preg_match('/^[0-9a-f]{2}$|^[\r\n]{1,2}.?$/is', $str) && $this->stream->isSeekable()) {
             $this->stream->seek(-$len, SEEK_CUR);
             return '3D';    // '=' character
         }
@@ -104,21 +103,18 @@ class QuotedPrintableStream implements StreamInterface
      * beginning of a quoted-printable encoded char, 1 or 2 additional bytes are
      * read from the underlying stream respectively.
      *
-     * The decoded string is returned.
-     *
-     * @param string $block
-     * @return string
+     * @return string The decoded string
      */
-    private function decodeBlock($block)
+    private function decodeBlock(string $block) : string
     {
-        if (substr($block, -1) === '=') {
+        if (\substr($block, -1) === '=') {
             $block .= $this->readEncodedChars(2);
-        } elseif (substr($block, -2, 1) === '=') {
-            $first = substr($block, -1);
-            $block = substr($block, 0, -1);
+        } elseif (\substr($block, -2, 1) === '=') {
+            $first = \substr($block, -1);
+            $block = \substr($block, 0, -1);
             $block .= $this->readEncodedChars(1, $first);
         }
-        return quoted_printable_decode($block);
+        return \quoted_printable_decode($block);
     }
 
     /**
@@ -126,19 +122,15 @@ class QuotedPrintableStream implements StreamInterface
      * and returns the total number of characters read.
      *
      * -1 is returned if there are no more bytes to read.
-     *
-     * @param int $length
-     * @param string $append
-     * @return int
      */
-    private function readRawDecodeAndAppend($length, &$str)
+    private function readRawDecodeAndAppend(int $length, string &$str) : int
     {
         $block = $this->stream->read($length);
-        if ($block === false || $block === '') {
+        if ($block === '') {
             return -1;
         }
         $decoded = $this->decodeBlock($block);
-        $count = strlen($decoded);
+        $count = \strlen($decoded);
         $str .= $decoded;
         return $count;
     }
@@ -148,9 +140,8 @@ class QuotedPrintableStream implements StreamInterface
      * encoded stream and returns them.
      *
      * @param int $length
-     * @return string
      */
-    public function read($length)
+    public function read($length) : string
     {
         // let Guzzle decide what to do.
         if ($length <= 0 || $this->eof()) {
@@ -177,30 +168,31 @@ class QuotedPrintableStream implements StreamInterface
      * supported.
      *
      * @param string $string
+     *
      * @return int the number of bytes written
      */
-    public function write($string)
+    public function write($string) : int
     {
-        $encodedLine = quoted_printable_encode($this->lastLine);
-        $lineAndString = rtrim(quoted_printable_encode($this->lastLine . $string), "\r\n");
-        $write = substr($lineAndString, strlen($encodedLine));
+        $encodedLine = \quoted_printable_encode($this->lastLine);
+        $lineAndString = \rtrim(\quoted_printable_encode($this->lastLine . $string), "\r\n");
+        $write = \substr($lineAndString, \strlen($encodedLine));
         $this->stream->write($write);
-        $written = strlen($string);
+        $written = \strlen($string);
         $this->position += $written;
 
-        $lpos = strrpos($lineAndString, "\n");
+        $lpos = \strrpos($lineAndString, "\n");
         $lastLine = $lineAndString;
         if ($lpos !== false) {
-            $lastLine = substr($lineAndString, $lpos + 1);
+            $lastLine = \substr($lineAndString, $lpos + 1);
         }
-        $this->lastLine = quoted_printable_decode($lastLine);
+        $this->lastLine = \quoted_printable_decode($lastLine);
         return $written;
     }
 
     /**
      * Writes out a final CRLF if the current line isn't empty.
      */
-    private function beforeClose()
+    private function beforeClose() : void
     {
         if ($this->isWritable() && $this->lastLine !== '') {
             $this->stream->write("\r\n");
@@ -209,24 +201,22 @@ class QuotedPrintableStream implements StreamInterface
     }
 
     /**
-     * Closes the underlying stream and writes a final CRLF if the current line
-     * isn't empty.
-     * @return void
+     * @inheritDoc
      */
-    public function close()
+    public function close() : void
     {
         $this->beforeClose();
         $this->stream->close();
     }
 
     /**
-     * Closes the underlying stream and writes a final CRLF if the current line
-     * isn't empty.
-     * @return resource|null Underlying PHP stream, if any
+     * @inheritDoc
      */
     public function detach()
     {
         $this->beforeClose();
         $this->stream->detach();
+
+        return null;
     }
 }

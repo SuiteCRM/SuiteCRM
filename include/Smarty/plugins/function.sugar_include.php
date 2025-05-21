@@ -72,7 +72,7 @@ function smarty_function_sugar_include($params, &$smarty)
 	    ob_end_clean();
 	    echo $output_html; 
     } else if(isset($params['type']) && $params['type'] == 'smarty') {
-		return $smarty->fetch($params['file']);
+        return $smarty->fetch($smarty->loadTemplatePath($params['file']));
 	} else if(is_array($params['include'])) {
 	   	  $code = '';
 	   	  foreach($params['include'] as $include) {

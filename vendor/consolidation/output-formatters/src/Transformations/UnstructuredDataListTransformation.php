@@ -6,6 +6,8 @@ use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 class UnstructuredDataListTransformation extends \ArrayObject implements StringTransformationInterface
 {
+    protected $originalData;
+
     public function __construct($data, $fields)
     {
         $this->originalData = $data;

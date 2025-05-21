@@ -46,18 +46,22 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 {
     protected static $moduleSavePermissions = array();
+    protected $sugarWidgetFieldId;
 
     public function __construct(&$layout_manager)
     {
         parent::__construct($layout_manager);
         $this->reporter = $this->layout_manager->getAttribute('reporter');
+        $this->sugarWidgetFieldId = new SugarWidgetFieldId($layout_manager);
     }
 
     public function displayList(&$layout_def)
     {
+        $field_def = [];
         if (empty($layout_def['column_key'])) {
             return $this->displayListPlain($layout_def);
         }
@@ -91,7 +95,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             $value = $this->displayListPlain($layout_def);
             $str .= $value;
             $field_name = $layout_def['name'];
-            $field_type = $field_def['type'];
+            $field_type = $field_def['type'] ?? '';
             $str .= "</a>";
             if ($field_name == 'name') {
                 $str .= "&nbsp;" .SugarThemeRegistry::current()->getImage("edit_inline", "border='0' alt='Edit Layout' align='bottom' onClick='SUGAR.reportsInlineEdit.inlineEdit(\"$div_id\",\"$value\",\"$module\",\"$record\",\"$field_name\",\"$field_type\");'");
@@ -140,14 +144,18 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             return $this->_get_normal_column_select($layout_def);
         }
         $localeNameFormat = $locale->getLocaleFormatMacro($current_user);
-        $localeNameFormat = trim(preg_replace('/s/i', '', $localeNameFormat));
+        $localeNameFormat = trim(preg_replace('/s/i', '', (string) $localeNameFormat));
 
         if (empty($field_def['fields']) || empty($field_def['fields'][0]) || empty($field_def['fields'][1])) {
             return parent::_get_column_select($layout_def);
         }
 
         if (! empty($layout_def['table_alias'])) {
-            $comps = preg_split("/([fl])/", $localeNameFormat, null, PREG_SPLIT_DELIM_CAPTURE);
+            // STIC Custom 20250303 JBL - Fix Type Error: Expected type 'int', found 'null'
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $comps = preg_split("/([fl])/", $localeNameFormat, null, PREG_SPLIT_DELIM_CAPTURE);
+            $comps = preg_split("/([fl])/", $localeNameFormat, -1, PREG_SPLIT_DELIM_CAPTURE);
+            // END STIC Custom
             $name = array();
             foreach ($comps as $val) {
                 if ($val == 'f') {
@@ -184,7 +192,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             $input_name0 = $current_user->id;
         }
 
-        return SugarWidgetFieldid::_get_column_select($layout_def)."="
+        return $this->sugarWidgetFieldId->_get_column_select($layout_def)."="
             .$this->reporter->db->quoted($input_name0)."\n";
     }
 
@@ -202,7 +210,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             $input_name0 = $current_user->id;
         }
 
-        return SugarWidgetFieldid::_get_column_select($layout_def)."<>"
+        return $this->sugarWidgetFieldId->_get_column_select($layout_def)."<>"
             .$this->reporter->db->quoted($input_name0)."\n";
     }
 
@@ -226,7 +234,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 
         $str = implode(",", $arr);
 
-        return SugarWidgetFieldid::_get_column_select($layout_def)." IN (".$str.")\n";
+        return $this->sugarWidgetFieldId->_get_column_select($layout_def)." IN (".$str.")\n";
     }
     // $rename_columns, if true then you're coming from reports
     public function queryFilternot_one_of($layout_def, $rename_columns = true)
@@ -248,7 +256,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
 
         $str = implode(",", $arr);
 
-        return SugarWidgetFieldid::_get_column_select($layout_def)." NOT IN (".$str.")\n";
+        return $this->sugarWidgetFieldId->_get_column_select($layout_def)." NOT IN (".$str.")\n";
     }
 
     public function &queryGroupBy($layout_def)
@@ -257,7 +265,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
             $layout_def['name'] = 'id';
             $layout_def['type'] = 'id';
 
-            $group_by =  SugarWidgetFieldid::_get_column_select($layout_def)."\n";
+            $group_by =  $this->sugarWidgetFieldId->_get_column_select($layout_def)."\n";
         } else {
             // group by clause for user name passes through here.
             $group_by = $this->_get_column_select($layout_def)."\n";

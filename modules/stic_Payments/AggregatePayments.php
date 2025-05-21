@@ -70,6 +70,7 @@ WHERE
 $res = $db->query($includedPaymentsQuery);
 
 $includedPayments = 0;
+$includedPaymentsData = [];
 
 // Prepare includable payments
 while ($row = $db->fetchByAssoc($res)) {
@@ -301,8 +302,7 @@ while ($row = $db->fetchByAssoc($res)) {
     }
 
     // Set the payment amount
-    require_once('SticInclude/Utils.php');
-    $paymentBean->amount = SticUtils::formatDecimalInConfigSettings($row['attendances_amount'], true);
+    $paymentBean->amount = formatDecimalInConfigSettings($row['attendances_amount'], true);
 
     // Build an array of complete payments
     if (!in_array($paymentId, $uncompletePaymentsId)) {

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### [3.4.3] 2024-09-19
+
+  * Fixed some type annotations
+
+### [3.4.2] 2024-07-12
+
+  * Fixed PHP 5.3 syntax error
+
+### [3.4.1] 2024-07-12
+
+  * Fixed normalizeStability's return type to enforce valid stabilities
+
+### [3.4.0] 2023-08-31
+
+  * Support larger major version numbers (#149)
+
 ### [3.3.2] 2022-04-01
 
   * Fixed handling of non-string values (#134)
@@ -175,6 +191,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
     - Namespace: `Composer\Test\Package\LinkConstraint` -> `Composer\Test\Semver\Constraint`
   * Changed: code style using php-cs-fixer.
 
+[3.4.3]: https://github.com/composer/semver/compare/3.4.2...3.4.3
+[3.4.2]: https://github.com/composer/semver/compare/3.4.1...3.4.2
+[3.4.1]: https://github.com/composer/semver/compare/3.4.0...3.4.1
+[3.4.0]: https://github.com/composer/semver/compare/3.3.2...3.4.0
 [3.3.2]: https://github.com/composer/semver/compare/3.3.1...3.3.2
 [3.3.1]: https://github.com/composer/semver/compare/3.3.0...3.3.1
 [3.3.0]: https://github.com/composer/semver/compare/3.2.9...3.3.0

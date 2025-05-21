@@ -50,6 +50,7 @@ require_once('ModuleInstall/ModuleInstaller.php');
 require_once('include/entryPoint.php');
 require_once('ModuleInstall/PackageManager/PackageManagerComm.php');
 
+#[\AllowDynamicProperties]
 class PackageManager
 {
     public $soap_client;
@@ -74,7 +75,7 @@ class PackageManager
      * Obtain a promotion from SugarDepot
      * @return string   the string from the promotion
      */
-    public function getPromotion()
+    public static function getPromotion()
     {
         $name_value_list = PackageManagerComm::getPromotion();
         if (!empty($name_value_list)) {
@@ -88,7 +89,7 @@ class PackageManager
     /**
      * Obtain a list of category/packages/releases for use within the module loader
      */
-    public function getModuleLoaderCategoryPackages($category_id = '')
+    public static function getModuleLoaderCategoryPackages($category_id = '')
     {
         $filter = array();
         $filter = array('type' => "'module', 'theme', 'langpack'");
@@ -100,7 +101,7 @@ class PackageManager
      * Obtain the list of category_packages from SugarDepot
      * @return category_packages
      */
-    public function getCategoryPackages($category_id = '', $filter = array())
+    public static function getCategoryPackages($category_id = '', $filter = array())
     {
         $results = PackageManagerComm::getCategoryPackages($category_id, $filter);
         PackageManagerComm::errorCheck();
@@ -109,7 +110,7 @@ class PackageManager
         $nodes[$category_id]['packages'] = array();
         if (!empty($results['categories'])) {
             foreach ($results['categories'] as $category) {
-                $mycat = PackageManager::fromNameValueList($category);
+                $mycat = self::fromNameValueList($category);
                 $nodes[$mycat['id']] = array('id' => $mycat['id'], 'label' => $mycat['name'], 'description' => $mycat['description'], 'type' => 'cat', 'parent' => $mycat['parent_id']);
                 $nodes[$mycat['id']]['packages'] = array();
             }
@@ -117,14 +118,14 @@ class PackageManager
         if (!empty($results['packages'])) {
             $uh = new UpgradeHistory();
             foreach ($results['packages'] as $package) {
-                $mypack = PackageManager::fromNameValueList($package);
+                $mypack = self::fromNameValueList($package);
                 $nodes[$mypack['category_id']]['packages'][$mypack['id']] = array('id' => $mypack['id'], 'label' => $mypack['name'], 'description' => $mypack['description'], 'category_id' => $mypack['category_id'], 'type' => 'package');
-                $releases = PackageManager::getReleases($category_id, $mypack['id'], $filter);
+                $releases = self::getReleases($category_id, $mypack['id'], $filter);
                 $arr_releases = array();
                 $nodes[$mypack['category_id']]['packages'][$mypack['id']]['releases'] = array();
                 if (!empty($releases['packages'])) {
                     foreach ($releases['packages'] as $release) {
-                        $myrelease = PackageManager::fromNameValueList($release);
+                        $myrelease = self::fromNameValueList($release);
                         //check to see if we already this one installed
                         $result = $uh->determineIfUpgrade($myrelease['id_name'], $myrelease['version']);
                         $enable = false;
@@ -147,21 +148,21 @@ class PackageManager
      * @param filter        an array of filters to pass to limit the query
      * @return array        an array of categories for display on the client
      */
-    public function getCategories($category_id, $filter = array())
+    public static function getCategories($category_id, $filter = array())
     {
         $nodes = array();
         $results = PackageManagerComm::getCategories($category_id, $filter);
         PackageManagerComm::errorCheck();
         if (!empty($results['categories'])) {
             foreach ($results['categories'] as $category) {
-                $mycat = PackageManager::fromNameValueList($category);
+                $mycat = self::fromNameValueList($category);
                 $nodes[] = array('id' => $mycat['id'], 'label' => $mycat['name'], 'description' => $mycat['description'], 'type' => 'cat', 'parent' => $mycat['parent_id']);
             }
         }
         return $nodes;
     }
 
-    public function getPackages($category_id, $filter = array())
+    public static function getPackages($category_id, $filter = array())
     {
         $nodes = array();
         $results = PackageManagerComm::getPackages($category_id, $filter);
@@ -171,12 +172,12 @@ class PackageManager
         //$xml .= '<packages>';
         if (!empty($results['packages'])) {
             foreach ($results['packages'] as $package) {
-                $mypack = PackageManager::fromNameValueList($package);
+                $mypack = self::fromNameValueList($package);
                 $packages[$mypack['id']] = array('package_id' => $mypack['id'], 'name' => $mypack['name'], 'description' => $mypack['description'], 'category_id' => $mypack['category_id']);
-                $releases = PackageManager::getReleases($category_id, $mypack['id']);
+                $releases = self::getReleases($category_id, $mypack['id']);
                 $arr_releases = array();
                 foreach ($releases['packages'] as $release) {
-                    $myrelease = PackageManager::fromNameValueList($release);
+                    $myrelease = self::fromNameValueList($release);
                     $arr_releases[$myrelease['id']]  = array('release_id' => $myrelease['id'], 'version' => $myrelease['version'], 'description' => $myrelease['description'], 'category_id' => $mypack['category_id'], 'package_id' => $mypack['id']);
                 }
                 $packages[$mypack['id']]['releases'] = $arr_releases;
@@ -185,7 +186,7 @@ class PackageManager
         return $packages;
     }
 
-    public function getReleases($category_id, $package_id, $filter = array())
+    public static function getReleases($category_id, $package_id, $filter = array())
     {
         $releases = PackageManagerComm::getReleases($category_id, $package_id, $filter);
         PackageManagerComm::errorCheck();
@@ -225,9 +226,9 @@ class PackageManager
      * @param systemname   the user's download key
      * @return              true if successful, false otherwise
      */
-    public function authenticate($username, $password, $systemname='', $terms_checked = true)
+    public static function authenticate($username, $password, $systemname='', $terms_checked = true)
     {
-        PackageManager::setCredentials($username, $password, $systemname);
+        self::setCredentials($username, $password, $systemname);
         PackageManagerComm::clearSession();
         $result = PackageManagerComm::login($terms_checked);
         if (is_array($result)) {
@@ -237,7 +238,7 @@ class PackageManager
         }
     }
 
-    public function setCredentials($username, $password, $systemname)
+    public static function setCredentials($username, $password, $systemname)
     {
         $admin = BeanFactory::newBean('Administration');
         $admin->retrieveSettings();
@@ -268,7 +269,7 @@ class PackageManager
         return $credentials;
     }
 
-    public function getTermsAndConditions()
+    public static function getTermsAndConditions()
     {
         return PackageManagerComm::getTermsAndConditions();
     }
@@ -281,7 +282,7 @@ class PackageManager
      *
      * @return documents
      */
-    public function getDocumentation($package_id, $release_id)
+    public static function getDocumentation($package_id, $release_id)
     {
         if (!empty($release_id) || !empty($package_id)) {
             $documents = PackageManagerComm::getDocumentation($package_id, $release_id);
@@ -307,7 +308,7 @@ class PackageManager
 
     ////////////////////////////////////////////////////////
     /////////// HELPER FUNCTIONS
-    public function toNameValueList($array)
+    public static function toNameValueList($array)
     {
         $list = array();
         foreach ($array as $name=>$value) {
@@ -320,12 +321,12 @@ class PackageManager
     {
         $lists = array();
         foreach ($arrays as $array) {
-            $lists[] = PackageManager::toNameValueList($array);
+            $lists[] = self::toNameValueList($array);
         }
         return $lists;
     }
 
-    public function fromNameValueList($nvl)
+    public static function fromNameValueList($nvl)
     {
         $array = array();
         foreach ($nvl as $list) {
@@ -360,7 +361,7 @@ class PackageManager
         if (!empty($releases)) {
             $xml .= '<releases>';
             foreach ($releases['packages'] as $release) {
-                $myrelease = PackageManager::fromNameValueList($release);
+                $myrelease = self::fromNameValueList($release);
                 $xml .= '<release>';
                 $xml .= '<release_id>'.$myrelease['id'].'</release_id>';
                 $xml .= '<version>'.$myrelease['version'].'</version>';
@@ -465,7 +466,7 @@ class PackageManager
             if (isset($versions['regex_matches'])) {
                 $matchesEmpty = false;
                 foreach ($versions['regex_matches'] as $match) {
-                    if (preg_match("/$match/", $checkedVersion)) {
+                    if (preg_match("/$match/", (string) $checkedVersion)) {
                         LoggerManager::getLogger()->debug("Passed $key");
 
                         return true;
@@ -493,8 +494,8 @@ class PackageManager
             exit();
         }
 
-        $versionSugarOk = $this->validateManifestVersion($manifest['acceptable_sugar_versions'], 'acceptable_sugar_versions');
-        $versionSuiteOk = $this->validateManifestVersion($manifest['acceptable_suitecrm_versions'], 'acceptable_suitecrm_versions');
+        $versionSugarOk = $this->validateManifestVersion($manifest['acceptable_sugar_versions'] ?? '', 'acceptable_sugar_versions');
+        $versionSuiteOk = $this->validateManifestVersion($manifest['acceptable_suitecrm_versions'] ?? '', 'acceptable_suitecrm_versions');
 
         if (!$versionSugarOk || !$versionSuiteOk) {
             exit();
@@ -509,7 +510,7 @@ class PackageManager
 
 
         foreach ($subdirs as $subdir) {
-            if (preg_match("#/$subdir/#", $type_string)) {
+            if (preg_match("#/$subdir/#", (string) $type_string)) {
                 return($subdir);
             }
         }
@@ -529,6 +530,7 @@ class PackageManager
         if ($view == 'module') {
             $license_file = $this->extractFile($base_filename, 'LICENSE.txt', $base_tmp_upgrade_dir);
         }
+        $manifest = [];
         if (is_file($manifest_file)) {
             LoggerManager::getLogger()->debug("VALIDATING MANIFEST". $manifest_file);
             require_once($manifest_file);
@@ -560,7 +562,7 @@ class PackageManager
 
             if (isset($manifest['icon']) && $manifest['icon'] != "") {
                 $icon_location = $this->extractFile($tempFile, $manifest['icon'], $base_tmp_upgrade_dir);
-                $path_parts = pathinfo($icon_location);
+                $path_parts = pathinfo((string) $icon_location);
                 copy($icon_location, remove_file_extension($target_path) . "-icon." . $path_parts['extension']);
             }
 
@@ -609,10 +611,12 @@ class PackageManager
         $mi->silent = $silent;
         $mod_strings = return_module_language($current_language, "Administration");
         LoggerManager::getLogger()->debug("ABOUT TO INSTALL: ".$file);
-        if (preg_match("#.*\.zip\$#", $file)) {
+        if (preg_match("#.*\.zip\$#", (string) $file)) {
             LoggerManager::getLogger()->debug("1: ".$file);
             // handle manifest.php
             $target_manifest = remove_file_extension($file) . '-manifest.php';
+            $manifest = [];
+            $installdefs = [];
             include($target_manifest);
             LoggerManager::getLogger()->debug("2: ".$file);
             $unzip_dir = mk_temp_dir($base_tmp_upgrade_dir);
@@ -761,7 +765,7 @@ class PackageManager
                 continue;
             }
 
-            $the_base = basename($upgrade_content);
+            $the_base = basename((string) $upgrade_content);
             $the_md5 = md5_file($upgrade_content);
             $md5_matches = $uh->findByMd5($the_md5);
             $file_install = $upgrade_content;
@@ -788,7 +792,7 @@ class PackageManager
                 if (!empty($dependencies)) {
                     $uh = new UpgradeHistory();
                     $not_found = $uh->checkDependencies($dependencies);
-                    if (!empty($not_found) && count($not_found) > 0) {
+                    if (!empty($not_found) && (is_countable($not_found) ? count($not_found) : 0) > 0) {
                         $file_install = 'errors_'.$mod_strings['ERR_UW_NO_DEPENDENCY']."[".implode(',', $not_found)."]";
                     }
                 }
@@ -805,7 +809,7 @@ class PackageManager
                 if (empty($manifest['icon'])) {
                     $icon = $this->getImageForType($manifest['type']);
                 } else {
-                    $path_parts = pathinfo($manifest['icon']);
+                    $path_parts = pathinfo((string) $manifest['icon']);
                     $icon = "<img src=\"" . remove_file_extension($upgrade_content) . "-icon." . $path_parts['extension'] . "\">";
                 }
 
@@ -845,9 +849,10 @@ class PackageManager
     {
         $uh = new UpgradeHistory();
         $in = "";
-        for ($i = 0; $i < count($types); $i++) {
+        $typesCount = count($types);
+        for ($i = 0; $i < $typesCount; $i++) {
             $in .= "'".$types[$i]."'";
-            if (($i+1) < count($types)) {
+            if (($i+1) < (is_countable($types) ? count($types) : 0)) {
                 $in .= ",";
             }
         }

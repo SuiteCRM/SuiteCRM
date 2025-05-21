@@ -23,6 +23,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class AM_ProjectTemplatesViewDetail extends ViewDetail
 {
     public function __construct()

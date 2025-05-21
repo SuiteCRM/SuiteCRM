@@ -197,8 +197,8 @@ class CommandProcessor implements LoggerAwareInterface
             return $validated;
         }
 
-        // Once we have validated the optins, create the formatter options.
-        $this->createFormatterOptions($commandData);
+        // Once we have validated the options, update the formatter options.
+        $this->updateFormatterOptions($commandData);
 
         $replaceDispatcher = new ReplaceCommandHookDispatcher($this->hookManager(), $names);
         if ($this->logger) {
@@ -220,19 +220,38 @@ class CommandProcessor implements LoggerAwareInterface
     }
 
     /**
-     * Create a FormatterOptions object for use in writing the formatted output.
+     * Update the FormatterOptions object with validated command options.
+     * Also runs the perparers.
+     *
      * @param CommandData $commandData
      * @return FormatterOptions
      */
-    protected function createFormatterOptions($commandData)
+    protected function updateFormatterOptions($commandData)
     {
-        $options = $commandData->input()->getOptions();
-        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $options);
+        // Update formatter options, in case anything was changed in a hook
+        $formatterOptions = $commandData->formatterOptions();
+        $formatterOptions->setConfigurationData($commandData->annotationData()->getArrayCopy());
+        $formatterOptions->setOptions($commandData->input()->getOptions());
+
+        // Run any prepare function, e.g. to prepare a format object to run
         foreach ($this->prepareOptionsList as $preparer) {
             $preparer->prepare($commandData, $formatterOptions);
         }
-        $commandData->setFormatterOptions($formatterOptions);
-        return $formatterOptions;
+
+        // Call 'overrideOptions' in advance of calling the command, to
+        // allow the format options to be as close as possible to their
+        // final state. 'overrideOptions' will be called again right before
+        // rendering, and may be altered, e.g. if the override depends on
+        // the data in the command output.
+        $format = $formatterOptions->getFormat();
+        if ($format) {
+            $placeholderStructuredOutput = [];
+            try {
+                $formatter = $this->formatterManager->getFormatter($format);
+                $this->formatterManager->overrideOptions($formatter, $placeholderStructuredOutput, $formatterOptions);
+            } catch (\Exception $e) {
+            }
+        }
     }
 
     /**

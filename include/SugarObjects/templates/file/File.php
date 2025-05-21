@@ -104,7 +104,11 @@ class File extends Basic
             $img_name_bare = strtolower($this->file_ext) . '_image_inline';
         }
 
-        if (empty($this->filename) || stripos($this->filename, 'svg') || stripos($this->file_mime_type , 'svg')){
+        // STIC Custom 20250305 JBL - Avoid passing null as string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // if (empty($this->filename) || stripos($this->filename, 'svg') || stripos($this->file_mime_type , 'svg')){
+        if (empty($this->filename) || stripos($this->filename, 'svg') || empty($this->file_mime_type) || stripos($this->file_mime_type , 'svg')){
+        // END STIC Custom
             $this->show_preview = false;
         }
 

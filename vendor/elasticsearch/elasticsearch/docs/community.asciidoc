@@ -151,6 +151,6 @@ _____________________
 This helper is a light library which wrap the official client elasticsearch-php. 
 It will help you to manage your ES Indices with no downtime. This helper 
 implements the philosophy described in the 
-https://www.elastic.co/guide/en/elasticsearch/guide/master/index-aliases.html[official documentation]
+https://www.elastic.co/guide/en/elasticsearch/guide/current/index-aliases.html[official documentation]
 which can be summarized in a few words : *use alias instead of index directly*.
 _____________________

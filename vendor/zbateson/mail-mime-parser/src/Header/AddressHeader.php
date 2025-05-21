@@ -4,52 +4,53 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header;
 
 use ZBateson\MailMimeParser\Header\Consumer\AbstractConsumer;
 use ZBateson\MailMimeParser\Header\Consumer\ConsumerService;
-use ZBateson\MailMimeParser\Header\Part\AddressPart;
 use ZBateson\MailMimeParser\Header\Part\AddressGroupPart;
+use ZBateson\MailMimeParser\Header\Part\AddressPart;
 
 /**
- * Reads an address list header using the AddressBaseConsumer.
- * 
- * An address list may consist of one or more addresses and address groups.
- * Each address separated by a comma, and each group separated by a semi-colon.
- * 
- * For full specifications, see https://www.ietf.org/rfc/rfc2822.txt
+ * A header containing one or more email addresses and/or groups of addresses.
+ *
+ * An address is separated by a comma, and each group separated by a semi-colon.
+ * The AddressHeader provides a complete list of all addresses referenced in a
+ * header including any addresses in groups, in addition to being able to access
+ * the groups separately if needed.
+ *
+ * For full specifications, see {@link https://www.ietf.org/rfc/rfc2822.txt}
  *
  * @author Zaahid Bateson
  */
 class AddressHeader extends AbstractHeader
 {
     /**
-     * @var \ZBateson\MailMimeParser\Header\Part\AddressPart[] array of
-     * addresses 
+     * @var AddressPart[] array of addresses, included all addresses contained
+     *      in groups.
      */
     protected $addresses = [];
-    
+
     /**
-     * @var \ZBateson\MailMimeParser\Header\Part\AddressGroupPart[] array of
-     * address groups
+     * @var AddressGroupPart[] array of address groups (lists).
      */
     protected $groups = [];
-    
+
     /**
      * Returns an AddressBaseConsumer.
-     * 
-     * @param ConsumerService $consumerService
+     *
      * @return \ZBateson\MailMimeParser\Header\Consumer\AbstractConsumer
      */
     protected function getConsumer(ConsumerService $consumerService)
     {
         return $consumerService->getAddressBaseConsumer();
     }
-    
+
     /**
      * Overridden to extract all addresses into addresses array.
-     * 
-     * @param AbstractConsumer $consumer
+     *
+     * @return static
      */
     protected function setParseHeaderValue(AbstractConsumer $consumer)
     {
@@ -58,45 +59,44 @@ class AddressHeader extends AbstractHeader
             if ($part instanceof AddressPart) {
                 $this->addresses[] = $part;
             } elseif ($part instanceof AddressGroupPart) {
-                $this->addresses = array_merge($this->addresses, $part->getAddresses());
+                $this->addresses = \array_merge($this->addresses, $part->getAddresses());
                 $this->groups[] = $part;
             }
         }
+        return $this;
     }
-    
+
     /**
-     * Returns all address parts in the header including all addresses that are
-     * in groups.
-     * 
-     * @return \ZBateson\MailMimeParser\Header\Part\AddressPart[]
+     * Returns all address parts in the header including any addresses that are
+     * in groups (lists).
+     *
+     * @return AddressPart[] The addresses.
      */
-    public function getAddresses()
+    public function getAddresses() : array
     {
         return $this->addresses;
     }
-    
+
     /**
-     * Returns all group parts in the header.
-     * 
-     * @return \ZBateson\MailMimeParser\Header\Part\AddressGroupPart[]
+     * Returns all group parts (lists) in the header.
+     *
+     * @return AddressGroupPart[]
      */
-    public function getGroups()
+    public function getGroups() : array
     {
         return $this->groups;
     }
-    
+
     /**
      * Returns true if an address exists with the passed email address.
-     * 
+     *
      * Comparison is done case insensitively.
-     * 
-     * @param string $email
-     * @return boolean
+     *
      */
-    public function hasAddress($email)
+    public function hasAddress(string $email) : bool
     {
         foreach ($this->addresses as $addr) {
-            if (strcasecmp($addr->getEmail(), $email) === 0) {
+            if (\strcasecmp($addr->getEmail(), $email) === 0) {
                 return true;
             }
         }
@@ -104,22 +104,22 @@ class AddressHeader extends AbstractHeader
     }
 
     /**
-     * Same as getValue, but for clarity to match AddressPart.
+     * Returns the first email address in the header.
      *
-     * @return string
+     * @return ?string The email address
      */
-    public function getEmail()
+    public function getEmail() : ?string
     {
         return $this->getValue();
     }
 
     /**
      * Returns the name associated with the first email address to complement
-     * getValue().
-     * 
-     * @return string
+     * getValue()/getEmail() if one is set, or null if not.
+     *
+     * @return string|null The person name.
      */
-    public function getPersonName()
+    public function getPersonName() : ?string
     {
         if (!empty($this->parts)) {
             return $this->parts[0]->getName();

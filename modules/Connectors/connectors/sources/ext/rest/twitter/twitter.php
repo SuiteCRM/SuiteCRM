@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/connectors/sources/ext/rest/rest.php');
 
+#[\AllowDynamicProperties]
 class ext_rest_twitter extends ext_rest
 {
     public function __construct()

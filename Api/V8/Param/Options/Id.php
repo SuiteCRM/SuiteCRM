@@ -4,6 +4,7 @@ namespace Api\V8\Param\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class Id extends BaseOption
 {
     /**

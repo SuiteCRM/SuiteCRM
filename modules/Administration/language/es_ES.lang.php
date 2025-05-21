@@ -324,6 +324,13 @@ $mod_strings = array(
     'LBL_LOCALE' => 'Establece la configuración regional por defecto para su sistema',
     'LBL_MAILBOX_DESC' => 'Configurar buzones para la monitorización del correo entrante.',
     'LBL_MAILBOX_OUTBOUND_DESC' => 'Configurar correo saliente',
+
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS' => 'Conexiones OAuth Externas',
+    'LBL_MANAGE_EXTERNAL_OAUTH_CONNECTIONS_DESC' => 'Configurar conexiones OAuth externas',
+
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS' => 'Proveedores OAuth Externos',
+    'LBL_MANAGE_EXTERNAL_OAUTH_PROVIDERS_DESC' => 'Configurar proveedores OAuth externos',
+
     'LBL_MANAGE_CURRENCIES' => 'Monedas',
     'LBL_MANAGE_LANGUAGES' => 'Idiomas',
     'LBL_MANAGE_LICENSE_TITLE' => 'Administración de licencias',

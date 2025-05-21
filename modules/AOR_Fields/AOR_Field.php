@@ -38,6 +38,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
+#[\AllowDynamicProperties]
 class AOR_Field extends Basic
 {
     public $new_schema = true;
@@ -89,7 +90,7 @@ class AOR_Field extends Basic
             $line_count = 0;
             LoggerManager::getLogger()->warn('AOR Field trying to save lines but post data key not found: ' . $key . 'field');
         } else {
-            $line_count = count($post_data[$key . 'field']);
+            $line_count = is_countable($post_data[$key . 'field']) ? count($post_data[$key . 'field']) : 0;
         }
         for ($i = 0; $i < $line_count; ++$i) {
             if (!isset($post_data[$key . 'deleted'][$i])) {

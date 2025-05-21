@@ -26,7 +26,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once "include/utils/additional_details.php";
 
-function additionalDetailsstic_Bookings($fields, SugarBean $bean = null, $params = array())
+function additionalDetailsstic_Bookings($fields, ?SugarBean $bean = null, $params = array())
 {
     if (file_exists('custom/modules/' . $bean->module_name . '/metadata/customAdditionalDetails.php')) {
         $additionalDetailsFile = 'custom/modules/' . $bean->module_name . '/metadata/customAdditionalDetails.php';

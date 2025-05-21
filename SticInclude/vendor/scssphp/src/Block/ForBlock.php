@@ -18,7 +18,7 @@ use ScssPhp\ScssPhp\Type;
 /**
  * @internal
  */
-final class ForBlock extends Block
+class ForBlock extends Block
 {
     /**
      * @var string

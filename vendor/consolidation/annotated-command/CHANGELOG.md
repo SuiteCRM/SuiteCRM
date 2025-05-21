@@ -1,5 +1,51 @@
 # Change Log
 
+### 4.10.1 - 13 Dec 2024
+
+- Support PHP 8.4
+
+### 4.10.0 - 5 Apr 2024
+
+- Support Symfony 7
+
+### 4.9.2 - 26 Dec 2023
+
+- Avoid infinite loop in \Consolidation\AnnotatedCommand\Parser\CommandInfo::getName (#306)
+
+### 4.9.1, 4.9.0 - 19 May 2023
+
+- Inject command metadata: make AnnotationData and FormatterOptions available (#301)
+- Only call setHidden() if value is true. (#299)
+
+### 4.8.2 - 11 March 2023
+
+- Fix bug with simple options with dashes in their names. (#295)
+- Add new public ->addOption() method (#294)
+- Attributes - Topic needs path (#293)
+- More robust hook attribute, and misc (#291)
+
+### 4.8.0, 4.8.1 - 28 February 2023
+
+- Add HookSelector attribute and adjust Hook attribute accordingly (#290)
+- Allow for just one param to be passed in Help and Topics Attributes (#289)
+
+### 4.7.1 - 6 December 2022
+
+- PHP 8.2 fixes
+
+### 4.7.0 - 22 November 2022
+
+- Allow command help and descriptions to be defined via docblock comments (#281)
+- Fix hidden via Attribute (#283)
+- Fix command completion (#282)
+
+### 4.6.1 - 9 November 2022
+
+- Use Attributes to set suggestedValues for arg/option completion (#275)
+- Default value and therefore data type of parameter-defined cli options was being dropped (#280)
+- Make nullable properties in Attributes actually nullable (#278)
+- Only ignore commands in parent classes if flag is set (reverts backwards-compatibility break) (#277)
+
 ### 4.6.0 - 30 October 2022
 
 - Add support for command completion (#274)

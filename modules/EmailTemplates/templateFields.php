@@ -85,13 +85,13 @@ function generateFieldDefsJS2()
                 // valid def found, process
                 $optionKey = strtolower("{$prefixes[$collectionKey]}{$key}");
                 if (isset($field_def['vname'])) {
-                    $optionLabel = preg_replace('/:$/', "", translate($field_def['vname'], $beankey));
+                    $optionLabel = preg_replace('/:$/', "", (string) translate($field_def['vname'], $beankey));
                 } else {
-                    $optionLabel = preg_replace('/:$/', "", $field_def['name']);
+                    $optionLabel = preg_replace('/:$/', "", (string) $field_def['name']);
                 }
                 $dup = 1;
                 foreach ($collection[$collectionKey] as $value) {
-                    if ($value['name'] == $optionKey) {
+                    if ($value['name'] === $optionKey) {
                         $dup = 0;
                         break;
                     }

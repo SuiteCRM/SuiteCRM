@@ -39,7 +39,7 @@
  */
 
 require_once('include/SugarFields/Fields/Base/SugarFieldBase.php');
-
+#[\AllowDynamicProperties]
 class SugarFieldDatetime extends SugarFieldBase
 {
     public function getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex)
@@ -65,7 +65,7 @@ class SugarFieldDatetime extends SugarFieldBase
         if (!isset($displayParams['hiddeCalendar'])) {
             $displayParams['hiddeCalendar'] = false;
         }
-        
+
         // jpereira@dri - #Bug49552 - Datetime field unable to follow parent class methods
         //jchi , bug #24557 , 10/31/2008
         if (isset($vardef['name']) && ($vardef['name'] == 'date_entered' || $vardef['name'] == 'date_modified')) {

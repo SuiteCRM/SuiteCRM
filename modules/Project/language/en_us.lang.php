@@ -176,4 +176,6 @@ $mod_strings = array(
     'LBL_AM_PROJECTTEMPLATES_PROJECT_1_FROM_PROJECT_TITLE' => 'Project Templates: Project from Project Title',
     'LBL_AOS_QUOTES_PROJECT' => 'Quotes: Project',
 
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
 );

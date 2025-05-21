@@ -48,6 +48,10 @@ require_once('include/MVC/View/SugarView.php');
  * Main SugarCRM controller
  * @api
  */
+// STIC Custom 20250211 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class SugarController
 {
     /**

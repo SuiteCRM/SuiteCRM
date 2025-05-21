@@ -154,6 +154,13 @@ use Rector\Php82\Rector\Encapsed\VariableInStringInterpolationFixerRector;
 use Rector\Php82\Rector\FuncCall\Utf8DecodeEncodeToMbConvertEncodingRector;
 use Rector\Php82\Rector\New_\FilesystemIteratorSkipDotsRector;
 
+use Rector\Php83\Rector\ClassConst\AddTypeToConstRector;
+use Rector\Php83\Rector\ClassMethod\AddOverrideAttributeToOverriddenMethodsRector;
+use Rector\Php83\Rector\FuncCall\CombineHostPortLdapUriRector;
+use Rector\Php83\Rector\FuncCall\RemoveGetClassGetParentClassNoArgsRector;
+
+use Rector\Php84\Rector\Param\ExplicitNullableParamTypeRector;
+
 return static function (RectorConfig $rectorConfig): void {
 
     $path = __DIR__ . '/../../modules';
@@ -202,7 +209,7 @@ return static function (RectorConfig $rectorConfig): void {
         'stic_Training','stic_Validation_Actions','stic_Validation_Results','stic_Web_Forms','stic_Work_Calendar','stic_Work_Experience',
     ];
 
-    // Get all dirs in 'modules' except $excludedDirs and "stic_*" dirs
+    // Get all dirs in 'modules' except $excludedDirs dirs
     $directories = array_filter(scandir($path), function ($item) use ($path, $excludedDirs) {
         return $item !== '.' && $item !== '..' 
                && is_dir($path . '/' . $item)
@@ -306,7 +313,7 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->rules([
         Php4ConstructorRector::class,
         // TernaryToNullCoalescingRector::class,
-        RandomFunctionRector::class,
+        // RandomFunctionRector::class,
         // ExceptionHandlerTypehintRector::class,
         // MultiDirnameRector::class,
         ListSplitStringRector::class,
@@ -508,6 +515,19 @@ return static function (RectorConfig $rectorConfig): void {
         Utf8DecodeEncodeToMbConvertEncodingRector::class, 
         FilesystemIteratorSkipDotsRector::class, 
         VariableInStringInterpolationFixerRector::class
+    ]);
+
+    // php83
+    $rectorConfig->rules([
+        // AddOverrideAttributeToOverriddenMethodsRector::class,
+        // AddTypeToConstRector::class,
+        CombineHostPortLdapUriRector::class,
+        RemoveGetClassGetParentClassNoArgsRector::class
+    ]);
+
+    // php84
+    $rectorConfig->rules([
+        ExplicitNullableParamTypeRector::class
     ]);
 
     // Skip unnecessary Paths

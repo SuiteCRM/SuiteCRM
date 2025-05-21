@@ -75,7 +75,7 @@ if ($sdaEnabled) {
     $r = $db->query($q);
     $a = $db->fetchByAssoc($r);
 
-    if ($a['sda_allowed_c'] == 1) {
+    if (!empty($a['sda_allowed_c']) && $a['sda_allowed_c'] == 1) {
         // Generate sdaUrl
         $currentDomain = $_SERVER['HTTP_HOST'];
         $lang = explode('_', $sugar_config['default_language'])[0];

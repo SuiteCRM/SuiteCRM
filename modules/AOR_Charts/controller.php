@@ -23,6 +23,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class AOR_ChartsController extends SugarController
 {
     protected function action_getImageMap()

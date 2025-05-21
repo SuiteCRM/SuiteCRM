@@ -46,7 +46,11 @@
 {if !empty($vardef.date_formatted_value) }
     {assign var="value" value={$vardef.date_formatted_value} }
 {else}
-    {if strlen({{sugarvar key='value' string=true}}) <= 0}
+    {* STIC Custom 20250207 JBL - Avoid errors using null as string *}
+    {* https://github.com/SinergiaTIC/SinergiaCRM/pull/477 *}
+    {* {if strlen({{sugarvar key='value' string=true}}) <= 0} *}
+    {if strlen((string){{sugarvar key='value' string=true}}) <= 0}
+    {* END STIC *}
         {assign var="value" value={{sugarvar key='default_value' string=true}} }
     {else}
         {assign var="value" value={{sugarvar key='value' string=true}} }

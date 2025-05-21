@@ -29,6 +29,7 @@ require_once('modules/stic_Import_Validation/ImportCacheFiles.php');
 
 
 
+#[\AllowDynamicProperties]
 abstract class ImportDataSource implements Iterator
 {
     /**
@@ -212,7 +213,9 @@ abstract class ImportDataSource implements Iterator
     public function writeError($error, $fieldName, $fieldValue)
     {
         $fp = sugar_fopen(ImportCacheFiles::getErrorFileName(), 'a');
-        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount));
+        // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount));
+        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount), ',', '"', '\\');
         fclose($fp);
 
         if (!$this->_rowCountedForErrors) {
@@ -268,7 +271,9 @@ abstract class ImportDataSource implements Iterator
         $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'a');
         $statusData = array($this->_rowsCount,$this->_errorCount,$this->_dupeCount,
                             $this->_createdCount,$this->_updatedCount,$this->_sourcename);
-        fputcsv($fp, $statusData);
+        // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // fputcsv($fp, $statusData);
+        fputcsv($fp, $statusData, ',', '"', '\\');
         fclose($fp);
     }
 
@@ -278,7 +283,9 @@ abstract class ImportDataSource implements Iterator
     public function markRowAsDuplicate($field_names=array())
     {
         $fp = sugar_fopen(ImportCacheFiles::getDuplicateFileName(), 'a');
-        fputcsv($fp, $this->_currentRow);
+        // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // fputcsv($fp, $this->_currentRow);
+        fputcsv($fp, $this->_currentRow, ',', '"', '\\');
         fclose($fp);
 
         //if available, grab the column number based on passed in field_name
@@ -317,7 +324,9 @@ abstract class ImportDataSource implements Iterator
 
         //add the row (with or without stylings) to the list view, this will get displayed to the user as a list of duplicates
         $fdp = sugar_fopen(ImportCacheFiles::getDuplicateFileDisplayName(), 'a');
-        fputcsv($fdp, $this->_currentRow);
+        // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+        // fputcsv($fdp, $this->_currentRow);
+        fputcsv($fdp, $this->_currentRow, ',', '"', '\\');
         fclose($fdp);
 
         //increment dupecount
@@ -411,7 +420,9 @@ abstract class ImportDataSource implements Iterator
 
         // Write records with the error message by file.
         if ($this->_rowsCount != $this->_previousRowCount){
-            fputcsv($fpNoErrors, $rowData, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"], ENT_QUOTES));
+            // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+            // fputcsv($fpNoErrors, $rowData, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"], ENT_QUOTES));
+            fputcsv($fpNoErrors, $rowData, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"], ENT_QUOTES), '\\');
             $this->_previousRowCount = $this->_rowsCount;
         } else { // Being an error on a row already reported, we eliminate the last existing row to concatenate the errors
             // Read content of file
@@ -424,7 +435,7 @@ abstract class ImportDataSource implements Iterator
             file_put_contents(ImportCacheFiles::getErrorRecordsWithoutErrorFileName(), $contentFile);
             // If it is a DUPLICATE error we copy the ID obtained from the database
             global $mod_strings;
-            if (strpos($errorMessage, $mod_strings['LBL_ERROR_DUPLICATE_RECORD'])) {
+            if (strpos($errorMessage, (string) $mod_strings['LBL_ERROR_DUPLICATE_RECORD'])) {
                 $idPosition = count($columns) - 2;
                 $columns[$idPosition] = $rowData[$idPosition];
             }
@@ -432,7 +443,9 @@ abstract class ImportDataSource implements Iterator
             $lastPosition = count($columns) - 1;
             $columns[$lastPosition] = $rowData[$lastPosition] . " && " . trim($columns[$lastPosition], '"');
             // Add error message
-            fputcsv($fpNoErrors, $columns, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"]));
+            // Avoid Deprecated warning: the $escape parameter must be provided as its default value will change
+            // fputcsv($fpNoErrors, $columns, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"]));
+            fputcsv($fpNoErrors, $columns, $_REQUEST["custom_delimiter"], html_entity_decode($_REQUEST["custom_enclosure"]), '\\');
         }
         
         // Close file

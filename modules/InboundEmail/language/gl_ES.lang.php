@@ -52,6 +52,7 @@ $mod_strings = array(
     'ERR_NO_IMAP' => 'Non se encontraron as librerías de IMAP.  Por favor, resolva isto antes de continuar coa configuración de correo entrante',
     'ERR_NO_OPTS_SAVED' => 'Non se gardaron valores óptimos coa súa conta de correo entrante.  Por favor, revise a configuración',
     'ERR_TEST_MAILBOX' => 'Por favor, comprobe a súa configuración e inténteo de novo.',
+    'ERR_INVALID_PORT' => 'Puerto Inválido',
 
     'LBL_ASSIGN_TO_USER' => 'Asignar a Usuario',
     'LBL_AUTOREPLY' => 'Plantilla de Resposta Automática',
@@ -79,10 +80,12 @@ $mod_strings = array(
     'LBL_LIST_NAME' => 'Nome:',
     'LBL_LIST_GLOBAL_PERSONAL' => 'Tipo',
     'LBL_LIST_SERVER_URL' => 'Servidor de Correo',
+    'LBL_SERVER_ADDRESS' => 'Dirección del servidor',
     'LBL_LIST_STATUS' => 'Estado',
     'LBL_LOGIN' => 'Nome de Usuario',
     'LBL_MAILBOX_DEFAULT' => 'BANDEXA DE ENTRADA',
     'LBL_MAILBOX_SSL' => 'Usar SSL',
+    'LBL_USERNAME' => 'Nombre de usuario',
     'LBL_MAILBOX_TYPE' => 'Accións Posibles',
     'LBL_DISTRIBUTION_METHOD' => 'Método de Distribución',
     'LBL_CREATE_CASE_REPLY_TEMPLATE' => 'Nova Plantilla de Resposta Automática para Caso',
@@ -107,6 +110,7 @@ $mod_strings = array(
     'LBL_ONLY_SINCE_NO' => 'Non. Comprobar contra todos os correos no servidor de correo.',
     'LBL_ONLY_SINCE_YES' => 'Si.',
     'LBL_PASSWORD' => 'Contrasinal',
+    'LBL_EMAIL_PASSWORD' => 'Contraseña',
     'LBL_POP3_SUCCESS' => 'A súa proba de conexión de POP3 tivo éxito.',
     'LBL_POPUP_TITLE' => 'Comprobar Configuración',
     'LBL_SELECT_SUBSCRIBED_FOLDERS' => 'Seleccionar Carpetas Suscritas',
@@ -119,23 +123,29 @@ $mod_strings = array(
     'LBL_SAME_AS_ABOVE' => 'Usando o mesmo Nome/Enderezo',
     'LBL_SERVER_OPTIONS' => 'Configuración Avanzada',
     'LBL_SERVER_TYPE' => 'Protocolo do Servidor de Correo',
+    'LBL_SERVER_PORT' => 'Puerto del servidor de correo',
     'LBL_SERVER_URL' => 'Enderezo do Servidor de Correo',
     'LBL_SSL_DESC' => 'Se o seu servidor de correo soporta conexións seguras de sockets (SSL), habilitar esta opción forzará conexións SSL ao importar o correo.',
     'LBL_ASSIGN_TO_TEAM_DESC' => 'O equipo seleccionado ten acceso á conta de correo.',
     'LBL_SSL' => 'Usar SSL',
     'LBL_STATUS' => 'Estado',
+    'LBL_EMAIL_BODY_FILTERING' => 'Tipo de filtro de cuerpo de correo electrónico',
     'LBL_SYSTEM_DEFAULT' => 'Por Defecto no Sistema',
     'LBL_TEST_BUTTON_TITLE' => 'Probar',
     'LBL_TEST_SETTINGS' => 'Probar Configuración',
+    'LBL_TEST_CONNECTION_SETTINGS' => 'Probar la configuración de conexión',    
     'LBL_TEST_SUCCESSFUL' => 'Conexión completada con éxito.',
     'LBL_TEST_WAIT_MESSAGE' => 'Un momento, por favor...',
     'LBL_WARN_IMAP_TITLE' => 'Correo Entrante Deshabilitado',
     'LBL_WARN_IMAP' => 'Avisos:',
     'LBL_WARN_NO_IMAP' => 'O Correo Entrante <b>non pode</b> funcionar sen as librerías de C do cliente de IMAP habilitadas/compiladas no módulo de PHP.  Por favor, contacte co seu administrador para resolver este problema.',
 
+    'LNK_LIST_CREATE_NEW_PERSONAL' => 'Nueva Cuenta de Correo Personal',
     'LNK_LIST_CREATE_NEW_GROUP' => 'Nova Conta de Correo de Grupo',
+    'LNK_LIST_CREATE_NEW_CASES_TYPE' => 'Nueva Cuenta de Correo para el manejo de casos',
     'LNK_LIST_CREATE_NEW_BOUNCE' => 'Nova Conta de Xestión de Rebotes',
     'LNK_LIST_MAILBOXES' => 'Todas as Contas de Correo',
+    'LNK_LIST_OUTBOUND_EMAILS' => 'Cuentas de correo electrónico salientes',    
     'LNK_LIST_SCHEDULER' => 'Planificadores',
     'LNK_SEED_QUEUES' => 'Crear Cabeza de Serie para Colas de Equipos',
     'LBL_GROUPFOLDER_ID' => 'Id de Carpeta de Grupo',
@@ -159,21 +169,55 @@ $mod_strings = array(
     'LNK_QUICK_REPLY' => 'Responder',
     'LNK_SENT_EMAIL_LIST' => 'Emails Enviados',
     'LBL_EDIT_LAYOUT' => 'Editar deseño' /*for 508 compliance fix*/,
+    'LBL_TYPE_DIFFERENT' => 'El tipo de conexión OAuth externa debe ser el MISMO que el tipo de la cuenta de correo electrónico entrante',
 
     'LBL_MODIFIED_BY' => 'Modificado Por',
     'LBL_SERVICE' => 'Servizo',
     'LBL_STORED_OPTIONS' => 'Opcións Almacenadas',
     'LBL_GROUP_ID' => 'Grupo ID',
-    'LBL_REPLY_ASSIGNING_BEHAVIOR' => 'Asignar respostas a', // PR 6009
-    'LBL_REPLY_ASSIGNING_BEHAVIOR_HELP' => 'Cando un correo electrónico entrante é unha resposta a un correo electrónico enviado desde SuiteCRM, ¿a quen se asigna a resposta a: <br> <br> <b> non facer nada: </b> o comportamento predeterminado. O correo electrónico non está asignado a ninguén. <br> <br> <b> respondeu ao propietario do correo electrónico: </b> o correo electrónico está asignado ao propietario da resposta ao correo electrónico, ou o último correo electrónico enviado desde SuiteCRM no hilo. <br> <br> <b> propietario de rexistro asociado: </b> o correo electrónico asígnase ao propietario do rexistro que o correo electrónico contestado, ou o último correo electrónico enviado desde SuiteCRM no subproceso, está relacionado con.', // PR 6009
 
-    'LBL_CREATE_CONTACT' => 'Crear contacto desde correo electrónico', // PR 5721
-    'LBL_CREATE_CONTACT_HELP' => 'Seleccione para crear automaticamente un rexistro de contacto en SuiteCRM desde os correos entrantes.', // PR 5721
-    'LBL_CONTACT_DEFAULT_LANGUAGE' => 'Idioma de contacto predeterminado', // PR 5721
-    'LBL_FILL_CONTACT_NAME' => 'Reencher o nome do contacto', // PR 5721 - Escaped required
-    'LBL_FILL_CONTACT_NAME_HELP' => 'Seleccione para reencher automaticamente o nome e apelido do novo contacto, creado desde os correos entrantes.', // PR 5721
-    'LBL_CONTACT_DEFAULT_SOURCE' => 'Nova fonte de contacto', // PR 5721
-    'LBL_NEW_CASE_STATUS' => 'Estado do caso creado', // PR 5721
-    'LBL_NEW_CASE_PRIORITY' => 'Prioridade do caso creado', // PR 5721
-    'LBL_NEW_CASE_TYPE' => 'Tipo para o caso creado', // PR 5721
+    'LBL_OUTBOUND_CONFIGURATION' => 'Configuración de correo saliente',
+    'LBL_CONNECTION_CONFIGURATION' => 'Configuración del servidor',
+    'LBL_AUTO_REPLY_CONFIGURATION' => 'Configuración de respuesta automática',
+    'LBL_CASE_CONFIGURATION' => 'Configuración del caso',
+    'LBL_GROUP_CONFIGURATION' => 'Configuración del grupo',
+
+    'LBL_SECURITYGROUPS_SUBPANEL_TITLE' => 'Grupos de seguridad',
+
+    'LBL_OUTBOUND_EMAIL_ACCOUNT' => 'Cuenta de correo saliente',
+    'LBL_OUTBOUND_EMAIL_ACCOUNT_ID' => 'ID de la cuenta de correo saliente',
+    'LBL_OUTBOUND_EMAIL_ACCOUNT_NAME' => 'Cuenta de correo saliente',
+
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE' => 'Plantilla de correo electrónico de respuesta automática',
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE_ID' => 'ID de la plantilla de correo electrónico de respuesta automática',
+    'LBL_AUTOREPLY_EMAIL_TEMPLATE_NAME' => 'Plantilla de correo electrónico de respuesta automática',
+
+    'LBL_CASE_EMAIL_TEMPLATE' => 'Plantilla de correo electrónico de caso',
+    'LBL_CASE_EMAIL_TEMPLATE_ID' => 'ID de la plantilla de correo electrónico de caso',
+    'LBL_CASE_EMAIL_TEMPLATE_NAME' => 'Plantilla de correo electrónico de caso',
+
+    'LBL_PROTOCOL' => 'Protocolo',
+    'LBL_CONNECTION_STRING' => 'Cadena de conexión',
+    'LBL_DISTRIB_METHOD' => 'Método de distribución',
+    'LBL_DISTRIB_OPTIONS' => 'Opciones de distribución',
+
+    'LBL_DISTRIBUTION_USER' => 'Usuario de distribución',
+    'LBL_DISTRIBUTION_USER_ID' => 'ID del usuario de distribución',
+    'LBL_DISTRIBUTION_USER_NAME' => 'Usuario de distribución',
+
+    'LBL_EXTERNAL_OAUTH_CONNECTION' => 'Conexión OAuth externa',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_ID' => 'ID de la conexión OAuth externa',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_NAME' => 'Conexión OAuth externa',
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Conexiones OAuth externas',
+
+    'LBL_TYPE' => 'Tipo',
+    'LBL_AUTH_TYPE' => 'Tipo de autenticación',
+    'LBL_IS_DEFAULT' => 'Predeterminado',
+    'LBL_SIGNATURE' => 'Firma',
+
+    'LBL_OWNER_NAME' => 'Propietario',
+
+    'LBL_SET_AS_DEFAULT_BUTTON' => 'Establecer como predeterminado',
+
+    'LBL_MOVE_MESSAGES_TO_TRASH_AFTER_IMPORT' => '¿Mover mensajes a la papelera después de importarlos?',
 );

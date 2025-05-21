@@ -182,6 +182,10 @@ function sugar_file_put_contents($filename, $data, $flags = null, $context = nul
         return false;
     }
 
+    if ($flags === null){
+        $flags = 0;
+    }
+
     $result = file_put_contents($filename, $data, $flags, $context);
     if ((new SplFileInfo($filename))->getExtension() == 'php') {
         SugarCache::cleanFile($filename);
@@ -231,7 +235,11 @@ function sugar_file_put_contents_atomic($filename, $data, $mode = 'wb')
     }
 
     if (file_exists($filename)) {
-        $result = sugar_chmod($filename, 0755);
+        if (!empty($GLOBALS['sugar_config']['default_permissions']['file_mode'])) {
+            $result = sugar_chmod($filename, $GLOBALS['sugar_config']['default_permissions']['file_mode']);
+        }else{
+            $result = sugar_chmod($filename, 0755);
+        }
         if ((new SplFileInfo($filename))->getExtension() == 'php') {
             SugarCache::cleanFile($filename);
         }
@@ -286,14 +294,29 @@ function sugar_file_get_contents($filename, $use_include_path = false, $context 
  */
 function sugar_touch($filename, $time = null, $atime = null)
 {
-    if (!empty($atime) && !empty($time)) {
-        $result = @touch($filename, $time, $atime);
-    } elseif (!empty($time)) {
-        $result = @touch($filename, $time);
-    } else {
-        $result = @touch($filename);
+    // STIC Custom 20241113 JBL - Avoid Warning touch(): UploadStream::stream_metadata is not implemented!
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // if (!empty($atime) && !empty($time)) {
+    //     $result = @touch($filename, $time, $atime);
+    // } elseif (!empty($time)) {
+    //     $result = @touch($filename, $time);
+    // } else {
+    //     $result = @touch($filename);
+    // }
+    // We need to check if is a local file, it can be a stream wrapper (ex: upload://myfile.txt)
+    // touch is only available in local files
+    $result = false;
+    if (is_string($filename) && !empty($filename) && 
+        stream_is_local($filename)) {
+        if (!empty($atime) && !empty($time)) {
+            $result = @touch($filename, $time, $atime);
+        } elseif (!empty($time)) {
+            $result = @touch($filename, $time);
+        } else {
+            $result = @touch($filename);
+        }
     }
-
+    // END STIC Custom
     if (!$result) {
         $GLOBALS['log']->error("File $filename cannot be touched");
 
@@ -357,7 +380,7 @@ function sugar_chown($filename, $user = '')
         if (strlen($user)) {
             return chown($filename, $user);
         } else {
-            if (strlen($GLOBALS['sugar_config']['default_permissions']['user'])) {
+            if (strlen((string) $GLOBALS['sugar_config']['default_permissions']['user'])) {
                 $user = $GLOBALS['sugar_config']['default_permissions']['user'];
 
                 return chown($filename, $user);

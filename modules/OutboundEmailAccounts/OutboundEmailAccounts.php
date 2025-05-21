@@ -42,6 +42,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/OutboundEmailAccounts/OutboundEmailAccounts_sugar.php');
+#[\AllowDynamicProperties]
 class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
 {
 
@@ -50,6 +51,41 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
      */
     public $mail_smtppass;
 
+    /**
+     * @var string
+     */
+    public $smtp_from_addr;
+
+    /**
+     * @var string
+     */
+    public $smtp_from_name;
+
+    /**
+     * @var string
+     */
+    public $mail_smtpuser;
+
+    /**
+     * @var string
+     */
+    public $type;
+
+    /**
+     * @var string
+     */
+    public $signature;
+
+    /**
+     * @var string
+     */
+    public $reply_to_addr;
+
+    /**
+     * @var string
+     */
+    public $reply_to_name;
+
     public function __construct()
     {
         parent::__construct();
@@ -57,6 +93,13 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
 
     public function save($check_notify = false)
     {
+        if (!$this->hasAccessToPersonalAccount()) {
+            $this->logPersonalAccountAccessDenied('save');
+            throw new RuntimeException('Access Denied');
+        }
+
+        $this->keepWriteOnlyFieldValues();
+
         if (!$this->mail_smtppass && $this->id) {
             $bean = BeanFactory::newBean('OutboundEmailAccounts');
             $bean->retrieve($this->id);
@@ -74,16 +117,269 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
         $this->smtp_from_addr = trim($this->smtp_from_addr);
         $this->mail_smtpserver = trim($this->mail_smtpserver);
         $this->mail_smtpuser = trim($this->mail_smtpuser);
-		
+
         $results = parent::save($check_notify);
         return $results;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function retrieve($id = -1, $encode = true, $deleted = true)
     {
         $results = parent::retrieve($id, $encode, $deleted);
+
+        if (!empty($results) && !$this->hasAccessToPersonalAccount()) {
+            $this->logPersonalAccountAccessDenied('retrieve');
+            return null;
+        }
+
         $this->mail_smtppass = $this->mail_smtppass ? blowfishDecode(blowfishGetKey('OutBoundEmail'), $this->mail_smtppass) : null;
         return $results;
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserOutboundAccounts(): array {
+        global $current_user, $db;
+
+        $where = '';
+        if (is_admin($current_user)) {
+            $currentUserId = $db->quote($current_user->id);
+            $tableName = $db->quote($this->table_name);
+            $where = "(($tableName.type IS NULL) OR ($tableName.type != 'user' ) OR ($tableName.type = 'user' AND $tableName.user_id = '$currentUserId'))";
+        }
+
+        return $this->get_list('', $where)['list'] ?? [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function create_new_list_query(
+        $order_by,
+        $where,
+        $filter = array(),
+        $params = array(),
+        $show_deleted = 0,
+        $join_type = '',
+        $return_array = false,
+        $parentbean = null,
+        $singleSelect = false,
+        $ifListForExport = false
+    ) {
+        global $current_user, $db;
+
+        $ret_array = parent::create_new_list_query(
+            $order_by,
+            $where,
+            $filter,
+            $params ,
+            $show_deleted,
+            $join_type,
+            true,
+            $parentbean,
+            $singleSelect,
+            $ifListForExport
+        );
+
+        if(is_admin($current_user)) {
+            if ($return_array) {
+                return $ret_array;
+            }
+
+            return $ret_array['select'] . $ret_array['from'] . $ret_array['where'] . $ret_array['order_by'];
+        }
+
+        if (is_array($ret_array) && !empty($ret_array['where'])){
+            $tableName = $db->quote($this->table_name);
+            $currentUserId = $db->quote($current_user->id);
+
+            $showGroupRecords = "($tableName.type IS NULL) OR ($tableName.type != 'user' ) OR ";
+
+            // STIC-Custom 2050314 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // Checks if the user can use non-personal accounts and if not, checks the roles instead of applying the has_group_action_acls_defined() function
+            
+            // $hasActionAclsDefined = has_group_action_acls_defined('OutboundEmailAccounts', 'list');
+            // if($hasActionAclsDefined === false) {
+            //     $showGroupRecords = '';
+            // }
+
+            global $db;
+            $res = $db->query("SELECT * FROM config WHERE name = 'allow_default_outbound'");
+            $row = $db->fetchByAssoc($res);
+            $notify_allow_default_outbound = isset($row['value']) ? $row['value'] != 0 : false;
+
+            if (!$notify_allow_default_outbound) {
+                // Check only role permissions instead of applying the has_group_action_acls_defined() function
+                $hasActionAclsDefined = ACLController::checkAccess('OutboundEmailAccounts', 'list');
+                
+                if($hasActionAclsDefined === false) {
+                        $showGroupRecords = '';
+                    }
+            }
+            // END STIC-Custom
+            $ret_array['where'] = $ret_array['where'] . " AND ( $showGroupRecords ($tableName.type = 'user' AND $tableName.user_id = '$currentUserId') )";
+        }
+
+        if ($return_array) {
+            return $ret_array;
+        }
+
+        return $ret_array['select'] . $ret_array['from'] . $ret_array['where'] . $ret_array['order_by'];
+    }
+
+    /**
+     * Check if user has access to personal account
+     * @return bool
+     */
+    public function hasAccessToPersonalAccount() : bool {
+        global $current_user;
+
+        if (is_admin($current_user)) {
+            return true;
+        }
+
+        if (empty($this->type)) {
+            return true;
+        }
+
+        if ($this->type !== 'user') {
+            return true;
+        }
+
+        if (empty($this->user_id)) {
+            return true;
+        }
+
+        if ($this->user_id === $current_user->id) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Log personal account access denied
+     * @param string $action
+     * @return void
+     */
+    public function logPersonalAccountAccessDenied(string $action) : void {
+        global $log, $current_user;
+
+        $log->fatal("OutBoundEmailAccount | Access denied. Non-admin trying to access personal account. Action: '" . $action . "' | Current user id: '" . $current_user->id . "' | record: '" . $this->id . "'" );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function ACLAccess($view, $is_owner = 'not_set', $in_group = 'not_set')
+    {
+        global $current_user;
+
+        $isNotAllowAction = $this->isNotAllowedAction($view);
+        if ($isNotAllowAction === true) {
+            return false;
+        }
+
+        if (!$this->hasAccessToPersonalAccount()) {
+            $this->logPersonalAccountAccessDenied("ACLAccess-$view");
+            return false;
+        }
+
+        if (empty($this->type) && $this->assigned_user_id === $current_user->id){
+            $this->type = 'user';
+        }
+
+        $isPersonal = $this->type === 'user';
+        $isAdmin = is_admin($current_user);
+
+        if ($isPersonal === true && $this->hasAccessToPersonalAccount()) {
+            return true;
+        }
+
+        $isAdminOnlyAction = $this->isAdminOnlyAction($view);
+        if (!$isPersonal && !$isAdmin && $isAdminOnlyAction === true) {
+            return false;
+        }
+
+        $hasActionAclsDefined = has_group_action_acls_defined('OutboundEmailAccounts', 'view');
+        $isSecurityGroupBasedAction = $this->isSecurityGroupBasedAction($view);
+
+        if (!$isPersonal && !$isAdmin && !$hasActionAclsDefined && $isSecurityGroupBasedAction === true) {
+            return false;
+        }
+
+        return parent::ACLAccess($view, $is_owner, $in_group);
+    }
+
+    /**
+     * Get from address
+     * @return string
+     */
+    public function getFromAddress(): string {
+        $fromAddress = $this->smtp_from_addr ?? '';
+        if (empty($fromAddress) || isValidEmailAddress($this->mail_smtpuser, '', false, '')) {
+            $fromAddress = $this->mail_smtpuser;
+        }
+
+        return $fromAddress;
+    }
+
+    /**
+     * Get from name
+     * @return string
+     */
+    public function getFromName(): string {
+        return $this->smtp_from_name ?? '';
+    }
+
+    /**
+     * Get reply to address
+     * @return string
+     */
+    public function getReplyToAddress(): string {
+        $address = $this->reply_to_addr ?? '';
+        if (empty($address) && isValidEmailAddress($this->reply_to_addr, '', false, '')) {
+            return $this->getFromAddress();
+        }
+
+        return $address;
+    }
+
+    /**
+     * Get reply to name
+     * @return string
+     */
+    public function getReplyToName(): string {
+        return $this->reply_to_name ?? '';
+    }
+
+    /**
+     * @return void
+     */
+    protected function keepWriteOnlyFieldValues(): void
+    {
+        if (empty($this->fetched_row)) {
+            return;
+        }
+
+        foreach ($this->field_defs as $field => $field_def) {
+            if (empty($field_def['display']) || $field_def['display'] !== 'writeonly') {
+                continue;
+            }
+
+            if (empty($this->fetched_row[$field])) {
+                continue;
+            }
+
+            if (!empty($this->$field)) {
+                continue;
+            }
+
+            $this->$field = $this->fetched_row[$field];
+        }
     }
 
     public static function getPasswordChange()
@@ -97,11 +393,7 @@ var passwordToggle = function(elem, sel) {
 }
 </script>
 <div id="password_toggle" style="display:none;">
-	<!-- STIC-Custom - MHP - 20250125 - Prevent password autofill
-    https://github.com/SinergiaTIC/SinergiaCRM/pull/85
-	<input type="password" id="mail_smtppass" name="mail_smtppass" /> -->
-	<input type="password" id="mail_smtppass" name="mail_smtppass" autocomplete="new-password" />
-	<!-- END STIC-Custom -->
+	<input type="password" id="mail_smtppass" name="mail_smtppass" />
 </div>
 <a href="javascript:;" onclick="passwordToggle(this, '#password_toggle');">{$mod_strings['LBL_CHANGE_PASSWORD']}</a>
 
@@ -172,7 +464,7 @@ HTML;
 					EmailMan.testOutboundDialog.render();
 					EmailMan.testOutboundDialog.show();
 				}
-                
+
                                 function showFullSmtpLogDialog(headerText, bodyHtml, dialogType) {
 
                                      var config = { };
@@ -183,11 +475,11 @@ HTML;
                                      config.width = 600;
                                      YAHOO.SUGAR.MessageBox.show(config);
                                 }
-				
+
 				function sendTestEmail() {
 					var toAddress = document.getElementById("outboundtest_to_address").value;
-					
-					if (trim(toAddress) == "") 
+
+					if (trim(toAddress) == "")
 					{
 						overlay("{$APP['ERR_MISSING_REQUIRED_FIELDS']}", "{$APP['LBL_EMAIL_SETTINGS_FROM_TO_EMAIL_ADDR']}", 'alert');
 						//return;
@@ -196,11 +488,11 @@ HTML;
 						overlay("{$APP['ERR_INVALID_REQUIRED_FIELDS']}", "{$APP['LBL_EMAIL_SETTINGS_FROM_TO_EMAIL_ADDR']}", 'alert');
 						return;
 					}
-					
+
 					//Hide the email address window and show a message notifying the user that the test email is being sent.
 					EmailMan.testOutboundDialog.hide();
 					overlay("{$APP['LBL_EMAIL_PERFORMING_TASK']}", "{$APP['LBL_EMAIL_ONE_MOMENT']}", 'alert');
-                    
+
 					var callbackOutboundTest = {
 						success	: function(o) {
 							hideOverlay();
@@ -208,17 +500,17 @@ HTML;
 							if (responseObject.status)
 								overlay("{$APP['LBL_EMAIL_TEST_OUTBOUND_SETTINGS']}", "{$APP['LBL_EMAIL_TEST_NOTIFICATION_SENT']}", 'alert');
        							else {
-                                
-                                                           var dialogBody = 
+
+                                                           var dialogBody =
                                                             "<div style='padding: 10px'>" +
                                                                "<div class='well'>" + responseObject.errorMessage + "</div>" +
                                                                "<div >" +
-                                                                   "<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#fullSmtpLog' aria-expanded='false' aria-controls='fullSmtpLog'>" + 
+                                                                   "<button class='btn btn-primary' type='button' data-toggle='collapse' data-target='#fullSmtpLog' aria-expanded='false' aria-controls='fullSmtpLog'>" +
                                                                        "{$APP['LBL_EMAIL_TEST_SEE_FULL_SMTP_LOG']}" +
                                                                   "</button>" +
                                                                    "<div class='collapse' id='fullSmtpLog'>" +
                                                                        "<pre style='height: 300px; overflow: scroll;'>" +
-                                                                           responseObject.fullSmtpLog + 
+                                                                           responseObject.fullSmtpLog +
                                                                        "</pre>" +
                                                                    "</div>" +
                                                                "</div>" +
@@ -232,7 +524,7 @@ HTML;
 					var smtpPort = document.getElementById('mail_smtpport').value;
 					var smtpssl  = document.getElementById('mail_smtpssl').value;
 					var mailsmtpauthreq = document.getElementById('mail_smtpauth_req');
-					var mail_sendtype = 'SMTP'; 
+					var mail_sendtype = 'SMTP';
                                                                 var adminNotifyFromAddress = document.getElementById('smtp_from_addr').value ? document.getElementById('smtp_from_addr').value :'$adminNotifyFromName';
                                                                 var adminNotifyFromName = document.getElementById('smtp_from_name').value ? document.getElementById('smtp_from_name').value : '$adminNotifyFromAddress';
 					var postDataString =
@@ -278,5 +570,38 @@ HTML;
 			</div>
 HTML;
         return $html;
+    }
+
+    /**
+     * Check if its admin only action
+     * @param string $view
+     * @return bool
+     */
+    protected function isAdminOnlyAction(string $view): bool
+    {
+        $adminOnlyAction = ['edit', 'delete', 'editview', 'save'];
+        return in_array(strtolower($view), $adminOnlyAction);
+    }
+
+    /**
+     * Check if its a security based action
+     * @param string $view
+     * @return bool
+     */
+    protected function isSecurityGroupBasedAction(string $view): bool
+    {
+        $securityBasedActions = ['detail', 'detailview', 'view'];
+        return in_array(strtolower($view), $securityBasedActions);
+    }
+
+    /**
+     * Get not allowed action
+     * @param string $view
+     * @return bool
+     */
+    protected function isNotAllowedAction(string $view): bool
+    {
+        $notAllowed = ['export', 'import', 'massupdate', 'duplicate'];
+        return in_array(strtolower($view), $notAllowed);
     }
 }

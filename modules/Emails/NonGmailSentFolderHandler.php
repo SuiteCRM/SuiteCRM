@@ -47,20 +47,21 @@ if (!defined('sugarEntry') || !sugarEntry) {
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class NonGmailSentFolderHandler
 {
-    const NO_ERROR = 0;
-    const ERR_EMPTY_MAILBOX = 1;
-    const ERR_NO_STORED_SENT_FOLDER = 2;
-    const INVALID_STORE_AS_SENT_CALL = 3;
-    const ERR_DONT_HAVE_TO_STORE = 4;
-    const ERR_SHOULD_BE_INT = 5;
-    const ERR_SHOULD_BE_STRING = 6;
-    const ERR_NO_IE_FOUND = 7;
-    const ERR_IS_POP3 = 8;
-    const ERR_IS_GMAIL = 9;
-    const ERR_COULDNT_COPY_TO_SENT = 10;
-    const UNHANDLER_ERROR = 100;
+    public const NO_ERROR = 0;
+    public const ERR_EMPTY_MAILBOX = 1;
+    public const ERR_NO_STORED_SENT_FOLDER = 2;
+    public const INVALID_STORE_AS_SENT_CALL = 3;
+    public const ERR_DONT_HAVE_TO_STORE = 4;
+    public const ERR_SHOULD_BE_INT = 5;
+    public const ERR_SHOULD_BE_STRING = 6;
+    public const ERR_NO_IE_FOUND = 7;
+    public const ERR_IS_POP3 = 8;
+    public const ERR_IS_GMAIL = 9;
+    public const ERR_COULDNT_COPY_TO_SENT = 10;
+    public const UNHANDLER_ERROR = 100;
     
     /**
      *

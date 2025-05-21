@@ -187,6 +187,7 @@ $sqlCurrentPayments = "SELECT p.id
                 AND (p.m182_excluded = 0 OR p.m182_excluded IS NULL)
                 AND p.deleted = 0";
 $currentPaymentResult = $db->query($sqlCurrentPayments);
+$paymentsIds = [];
 while ($row = $db->fetchByAssoc($currentPaymentResult)) {
     $paymentsIds[] = $row['id'];
 }
@@ -200,10 +201,9 @@ $GLOBALS['log']->info('[M182] ' . (is_array($paymentsIds) ? sizeof($paymentsIds)
 // The arrays indexes are the ids of accounts and contacts.
 $contacts = array();
 $accounts = array();
-$lastyearPayments = array();
+$yearPayments = array();
 
 // Process the selected payments
-$paymentsIds = is_array($paymentsIds) ? $paymentsIds : [];
 foreach ($paymentsIds as $id) {
 
     // For each payment get the associated contact/account
@@ -250,10 +250,16 @@ foreach ($paymentsIds as $id) {
     // Store the contacts in an array, the accounts in another one and the total amounts in a third one, classified by type of payment.
     if (isset($contactRow)) {
         $contacts[$contactRow['contact_id']] = $contactRow['contact_id'];
-        $yearPayments[$contactRow['contact_id']][$contactRow['payment_type']] += $contactRow['amount'];
+        if (!isset($yearPayments[$contactRow['contact_id']])) {
+            $yearPayments[$contactRow['contact_id']] = [];
+        }
+        $yearPayments[$contactRow['contact_id']][$contactRow['payment_type']] = ($yearPayments[$contactRow['contact_id']][$contactRow['payment_type']] ?? 0) + $contactRow['amount'];
     } elseif (isset($accountRow)) {
         $accounts[$accountRow['accountId']] = $accountRow['accountId'];
-        $yearPayments[$accountRow['accountId']][$accountRow['payment_type']] += $accountRow['amount'];
+        if (!isset($yearPayments[$accountRow['accountId']])) {
+            $yearPayments[$accountRow['accountId']] = [];
+        }
+        $yearPayments[$accountRow['accountId']][$accountRow['payment_type']] = ($yearPayments[$accountRow['accountId']][$accountRow['payment_type']] ?? 0) + $accountRow['amount'];
     }
 }
 
@@ -333,18 +339,18 @@ foreach ($contacts as $id) {
     $recurrenceMonetary = false;
 
     // Check kind donations recurrence
-    if ($historicalPayments[$lastyear]['kind_total'] > 0
-    && $historicalPayments[$twoYearsAgo]['kind_total'] >= $historicalPayments[$threeYearsAgo]['kind_total'] 
-    && $historicalPayments[$threeYearsAgo]['kind_total'] >= $historicalPayments[$fourYearsAgo]['kind_total'] 
-    && $historicalPayments[$fourYearsAgo]['kind_total'] > 0) {
+    if (($historicalPayments[$lastyear]['kind_total'] ?? 0) > 0
+    && ($historicalPayments[$twoYearsAgo]['kind_total'] ?? 0) >= ($historicalPayments[$threeYearsAgo]['kind_total'] ?? 0) 
+    && ($historicalPayments[$threeYearsAgo]['kind_total'] ?? 0) >= ($historicalPayments[$fourYearsAgo]['kind_total'] ?? 0) 
+    && ($historicalPayments[$fourYearsAgo]['kind_total'] ?? 0) > 0) {
     $recurrenceKind = true;
     }
 
     // Check monetary donations recurrence
-    if ($historicalPayments[$lastyear]['monetary_total'] > 0
-    && $historicalPayments[$twoYearsAgo]['monetary_total'] >= $historicalPayments[$threeYearsAgo]['monetary_total'] 
-    && $historicalPayments[$threeYearsAgo]['monetary_total'] >= $historicalPayments[$fourYearsAgo]['monetary_total'] 
-    && $historicalPayments[$fourYearsAgo]['monetary_total'] > 0) {
+    if (($historicalPayments[$lastyear]['monetary_total'] ?? 0) > 0
+    && ($historicalPayments[$twoYearsAgo]['monetary_total'] ?? 0) >= ($historicalPayments[$threeYearsAgo]['monetary_total'] ?? 0) 
+    && ($historicalPayments[$threeYearsAgo]['monetary_total'] ??0) >= ($historicalPayments[$fourYearsAgo]['monetary_total'] ?? 0) 
+    && ($historicalPayments[$fourYearsAgo]['monetary_total'] ?? 0) > 0) {
     $recurrenceMonetary = true;
     }
 
@@ -354,7 +360,7 @@ foreach ($contacts as $id) {
     // 4.1.4 Save the data obtained for the contact
     $contacts[$id] = $historicalPayments;
 
-    $GLOBALS['log']->debug('[M182] Contact processed: [id] = ' . $historicalPayments['id'] . '; [' . $fourYearsAgo . '] = ' . $historicalPayments[$fourYearsAgo]['total'] . '; [' . $threeYearsAgo . '] = ' . $historicalPayments[$threeYearsAgo]['total'] . '; [' . $twoYearsAgo . '] = ' . $historicalPayments[$twoYearsAgo]['total'] . '; [' . $lastyear . '] = ' . $historicalPayments[$lastyear]['total'] . '; [recurrente] = ' . ($historicalPayments['recurrente'] ? 'Sí' : 'No') . ';');
+    $GLOBALS['log']->debug('[M182] Contact processed: [id] = ' . $historicalPayments['id'] . '; [' . $fourYearsAgo . '] = ' . ($historicalPayments[$fourYearsAgo]['total'] ?? 0) . '; [' . $threeYearsAgo . '] = ' . ($historicalPayments[$threeYearsAgo]['total'] ?? 0) . '; [' . $twoYearsAgo . '] = ' . ($historicalPayments[$twoYearsAgo]['total'] ?? 0) . '; [' . $lastyear . '] = ' . ($historicalPayments[$lastyear]['total'] ?? 0) . '; [recurrente] = ' . ($historicalPayments['recurrente'] ?? 'No') . ';');
 }
 
 // 4.2 Accounts
@@ -745,7 +751,7 @@ $m182['decl_complementaria'] = ' ';
 $m182['decl_sustitutiva'] = ' ';
 $m182['num_justificante_anterior'] = '';
 $m182['num_total_registros_declarados'] = count($model182T2);
-$m182['importe_donacion'] = $total;
+$m182['importe_donacion'] = $total ?? null;
 $m182['naturaleza_decl'] = $m182Vars["M182_NATURALEZA_DECLARANTE"];
 $m182['nif_patrimonio_protegido'] = '';
 $m182['patrimonio_protegido_apellido_1'] = '';

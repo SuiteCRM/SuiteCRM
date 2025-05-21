@@ -81,6 +81,9 @@ class EventInscriptionController extends WebFormDataController
             // We call the controller of the payment methods, delegating the request so that the answer is treated in the method that has called us
             $response = $this->fp->manage(true);
         }
+        
+        // Set response status to 0 if it is not set, to compare it later
+        $response['status'] = $response['status'] ?? 0;
 
         // If the creation of the payment method has been successful (or was not required or is initiated in the case of card or bizum payment, send the corresponding mail)
         if ($response['status'] == self::RESPONSE_STATUS_OK ||
@@ -90,8 +93,8 @@ class EventInscriptionController extends WebFormDataController
 
         // If the request has finished, correctly or with error, check if there is a redirection address.
         // If there is, it turns the response into a redirection, otherwise it will return a text response
-        if ($response['status'] == self::RESPONSE_STATUS_OK ||
-            $response['status'] == self::RESPONSE_STATUS_ERROR) {
+        if (isset($response['status']) && ($response['status'] == self::RESPONSE_STATUS_OK ||
+            $response['status'] == self::RESPONSE_STATUS_ERROR)) {
             $url = $response['status'] == self::RESPONSE_STATUS_OK ? $this->bo->getOKURL() : $this->bo->getKOURL();
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  The status [{$response['status']}] redirection url [{$url}].");
 

@@ -12,13 +12,13 @@ $date = $_POST['date'];
 $reason = $_POST['reason'];
 $hour = $_POST['date_start_hours'];
 $minutes = $_POST['date_start_minutes'];
-$ampm = $_POST['date_start_meridiem'];
+$ampm = $_POST['date_start_meridiem'] ?? '';
 
 $time_format = $timedate->get_user_time_format(); //get the logged in users time settings
 
 //Combine date and time dependant on users settings
 $time_separator = ":";
-if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
     $time_separator = $match[1];
 }
 
@@ -30,7 +30,7 @@ if (isset($ampm) && !empty($ampm)) {
     $time_start = $timedate->merge_time_meridiem($time_start, $timedate->get_time_format(), $ampm);
 }
 
-if (isset($time_start) && strlen($date) == 10) {
+if (isset($time_start) && strlen((string) $date) == 10) {
     $date_start = $date.' ' .$time_start;
 }
 

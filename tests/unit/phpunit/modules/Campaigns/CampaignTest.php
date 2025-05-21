@@ -77,7 +77,7 @@ class CampaignTest extends SuitePHPUnitFrameworkTestCase
         //test with attributes preset and verify template variables are set accordingly
         $tpl = new Sugar_Smarty();
         $campaign->list_view_parse_additional_sections($tpl);
-        self::assertEquals('', isset($tpl->_tpl_vars['ASSIGNED_USER_NAME']) ? $tpl->_tpl_vars['ASSIGNED_USER_NAME'] : null);
+        self::assertEquals('', isset($tpl->tpl_vars['ASSIGNED_USER_NAME']->value) ? $tpl->tpl_vars['ASSIGNED_USER_NAME']->value : null);
     }
 
     public function testget_summary_text(): void
@@ -231,7 +231,7 @@ class CampaignTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($campaign->id));
-        self::assertEquals(36, strlen($campaign->id));
+        self::assertEquals(36, strlen((string) $campaign->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $campaign->mark_deleted($campaign->id);
@@ -252,11 +252,11 @@ class CampaignTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $campaign->set_notification_body(new Sugar_Smarty(), $campaign);
 
-        self::assertEquals($campaign->name, $result->_tpl_vars['CAMPAIGN_NAME']);
-        self::assertEquals($campaign->budget, $result->_tpl_vars['CAMPAIGN_AMOUNT']);
-        self::assertEquals($campaign->end_date, $result->_tpl_vars['CAMPAIGN_CLOSEDATE']);
-        self::assertEquals($campaign->status, $result->_tpl_vars['CAMPAIGN_STATUS']);
-        self::assertEquals($campaign->content, $result->_tpl_vars['CAMPAIGN_DESCRIPTION']);
+        self::assertEquals($campaign->name, $result->tpl_vars['CAMPAIGN_NAME']->value);
+        self::assertEquals($campaign->budget, $result->tpl_vars['CAMPAIGN_AMOUNT']->value);
+        self::assertEquals($campaign->end_date, $result->tpl_vars['CAMPAIGN_CLOSEDATE']->value);
+        self::assertEquals($campaign->status, $result->tpl_vars['CAMPAIGN_STATUS']->value);
+        self::assertEquals($campaign->content, $result->tpl_vars['CAMPAIGN_DESCRIPTION']->value);
     }
 
     public function testtrack_log_leads(): void

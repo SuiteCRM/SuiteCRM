@@ -7,6 +7,7 @@ namespace Helper;
 
 use Codeception\Module;
 
+#[\AllowDynamicProperties]
 class Install extends Module
 {
 }

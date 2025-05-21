@@ -16,6 +16,7 @@ use Symfony\Component\Console\Input\InputAwareInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Consolidation\OutputFormatters\Options\FormatterOptions;
 
 /**
  * AnnotatedCommands are created automatically by the
@@ -190,7 +191,8 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $description = $commandInfo->arguments()->getDescription($name);
             $hasDefault = $commandInfo->arguments()->hasDefault($name);
             $parameterMode = $this->getCommandArgumentMode($hasDefault, $defaultValue);
-            $this->addArgument($name, $parameterMode, $description, $defaultValue);
+            $suggestedValues = $commandInfo->arguments()->getSuggestedValues($name);
+            $this->addArgument($name, $parameterMode, $description, $defaultValue, $suggestedValues);
         }
         return $this;
     }
@@ -220,10 +222,14 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $description = $inputOption->getDescription();
 
             if (empty($description) && isset($automaticOptions[$name])) {
+                // Unfortunately, Console forces us too construct a new InputOption to set a description.
                 $description = $automaticOptions[$name]->getDescription();
                 $this->addInputOption($inputOption, $description);
             } else {
-                $this->addInputOption($inputOption);
+                if ($native = $this->getNativeDefinition()) {
+                    $native->addOption($inputOption);
+                }
+                $this->getDefinition()->addOption($inputOption);
             }
         }
     }
@@ -247,12 +253,22 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $default = null;
         }
 
+        $suggestedValues = [];
+        // Symfony 6.1+ feature https://symfony.com/blog/new-in-symfony-6-1-improved-console-autocompletion#completion-values-in-input-definitions
+        if (property_exists($inputOption, 'suggestedValues')) {
+            // Alas, Symfony provides no accessor.
+            $class = new \ReflectionClass($inputOption);
+            $property = $class->getProperty('suggestedValues');
+            $property->setAccessible(true);
+            $suggestedValues = $property->getValue($inputOption);
+        }
         $this->addOption(
             $inputOption->getName(),
             $inputOption->getShortcut(),
             $mode,
             $description ?? $inputOption->getDescription(),
-            $default
+            $default,
+            $suggestedValues
         );
     }
 
@@ -318,6 +334,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
      */
     public function complete(CompletionInput $input, CompletionSuggestions $suggestions): void
     {
+        parent::complete($input, $suggestions);
         if (is_callable($this->completionCallback)) {
             call_user_func($this->completionCallback, $input, $suggestions);
         }
@@ -363,7 +380,7 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $state = $this->injectIntoCommandfileInstance($input, $output);
         // Validate, run, process, alter, handle results.
@@ -412,6 +429,9 @@ class AnnotatedCommand extends Command implements HelpDocumentAlter
             $output,
             $this->parameterMap
         );
+
+        $formatterOptions = new FormatterOptions($commandData->annotationData()->getArrayCopy(), $commandData->input()->getOptions());
+        $commandData->setFormatterOptions($formatterOptions);
 
         // Fetch any classes (e.g. InputInterface / OutputInterface) that
         // this command's callback wants passed as a parameter and inject

@@ -25,21 +25,30 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=7.1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.3 || ^5.7 || ^4.8.36"
+        "phpstan/phpstan": "1.10.39 || 1.4.10",
+        "phpunit/phpunit": "^9.6 || ^7.5"
     },
     "autoload": {
         "psr-4": {
             "React\\Promise\\": "src/"
         },
-        "files": ["src/functions_include.php"]
+        "files": [
+            "src/functions_include.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
-            "React\\Promise\\": ["tests", "tests/fixtures"]
-        }
+            "React\\Promise\\": [
+                "tests/fixtures/",
+                "tests/"
+            ]
+        },
+        "files": [
+            "tests/Fiber.php"
+        ]
     },
     "keywords": [
         "promise",

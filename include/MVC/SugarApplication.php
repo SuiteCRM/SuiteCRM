@@ -810,7 +810,7 @@ class SugarApplication
         }
         if ($domain === null) {
             if (isset($_SERVER["HTTP_HOST"])) {
-                $domain = $_SERVER["HTTP_HOST"];
+                $domain = preg_replace('/(\:\d+)$/', '', $_SERVER["HTTP_HOST"]); // Fix #9898 Invalid cookie domain when using non-standard HTTP Port.
             } else {
                 $domain = 'localhost';
             }

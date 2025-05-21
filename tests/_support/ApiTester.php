@@ -27,13 +27,14 @@ use Helper\PhpBrowserDriverHelper;
  *
  * @SuppressWarnings(PHPMD)
  */
+#[\AllowDynamicProperties]
 class ApiTester extends Actor
 {
     use _generated\ApiTesterActions;
 
-    const CONTENT_TYPE = 'Content-Type';
-    const CONTENT_TYPE_JSON_API = 'application/vnd.api+json';
-    const CONTENT_TYPE_JSON = 'application/json';
+    public const CONTENT_TYPE = 'Content-Type';
+    public const CONTENT_TYPE_JSON_API = 'application/vnd.api+json';
+    public const CONTENT_TYPE_JSON = 'application/json';
 
     /**
      * @var $string $accessToken
@@ -120,7 +121,7 @@ class ApiTester extends Actor
         $I->canSeeResponseIsJson();
         $I->seeResponseCodeIs(200);
 
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         self::$tokenType = $response['token_type'];
         self::$tokenExpiresIn = (int)$response['expires_in'];
         self::$accessToken = $response['access_token'];
@@ -148,7 +149,7 @@ class ApiTester extends Actor
         $I->canSeeResponseIsJson();
         $I->seeResponseCodeIs(200);
 
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         self::$tokenType = $response['token_type'];
         self::$tokenExpiresIn = (int)$response['expires_in'];
         self::$accessToken = $response['access_token'];
@@ -217,7 +218,7 @@ class ApiTester extends Actor
         $I = $this;
         $I->canSeeResponseIsJson();
 
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         $I->assertArrayNotHasKey('errors', $response);
     }
 
@@ -229,7 +230,7 @@ class ApiTester extends Actor
         $I = $this;
         $I->canSeeResponseIsJson();
 
-        $response = json_decode($I->grabResponse(), true);
+        $response = json_decode((string) $I->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         $I->assertArrayHasKey('errors', $response);
     }
 
@@ -250,7 +251,7 @@ class ApiTester extends Actor
             'client_secret' => $this->getPasswordGrantClientSecret(),
         ]);
 
-        $response = json_decode($this->grabResponse(), true);
+        $response = json_decode((string) $this->grabResponse(), true, 512, JSON_THROW_ON_ERROR);
         $this->setHeader('Authorization', sprintf('%s %s', $response['token_type'], $response['access_token']));
         $this->setHeader('Content-Type', BaseController::MEDIA_TYPE);
 

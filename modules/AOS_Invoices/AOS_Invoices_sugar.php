@@ -23,6 +23,7 @@
  *
  * @author SalesAgility Ltd <support@salesagility.com>
  */
+#[\AllowDynamicProperties]
 class AOS_Invoices_sugar extends Basic
 {
     public $new_schema = true;

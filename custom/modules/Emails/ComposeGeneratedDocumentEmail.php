@@ -78,7 +78,7 @@ function getEmailData($emailId) {
    $return['toAddress'] = $email->to_addrs;   
    $ret = array();
    $ret['uid'] = $emailId;
-   $ret = EmailUI::getDraftAttachments($ret);
+   $ret = (new EmailUI())->getDraftAttachments($ret);
    $return['attachments'] = $ret['attachments'];
    $return['email_id'] = $emailId;
    

@@ -54,6 +54,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * class GoogleApiKeySaverEntryPoint
  */
+#[\AllowDynamicProperties]
 class GoogleApiKeySaverEntryPoint
 {
 
@@ -121,7 +122,7 @@ class GoogleApiKeySaverEntryPoint
 
         $this->handleRequest();
     }
-    
+
     /**
      *
      * @param array $config
@@ -242,7 +243,7 @@ class GoogleApiKeySaverEntryPoint
         $url = $this->sugarConfig['site_url'] . "/index.php?module=Users&action=EditView&record=" . $this->currentUser->id;
         $this->redirect($url);
     }
-    
+
     /**
      * protected function for SugarApplication::redirect() so test mock can override it
      * @param string $url
@@ -251,7 +252,7 @@ class GoogleApiKeySaverEntryPoint
     {
         SugarApplication::redirect($url);
     }
-    
+
     /**
      * protected function for die() so test mock can override it
      * @param string $exitstring

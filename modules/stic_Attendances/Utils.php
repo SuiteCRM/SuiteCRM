@@ -50,6 +50,7 @@ class stic_AttendancesUtils
         }
 
         // Add registration filter if needed
+        $registrationIdWhere = '';
         if (!empty($registrationId)) {
             $registrationIdWhere = " AND i.id='$registrationId' ";
         }
@@ -136,11 +137,11 @@ class stic_AttendancesUtils
             // Avoid attendance creation if $date weekday appears in registration disabled_weekdays string
             $currentWeekday = date('w', strtotime($row['start_date']));
             if (strpos($row['disabled_weekdays'], $currentWeekday) !== false) {
-                $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': Attendance creation for session: ' . $row['session_id'] . ' and registration: ' . $row['registration_id'] . ' is ommited because ' . $row['weekday'] . ' is in registration disabled_weekdays');
+                $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': Attendance creation for session: ' . $row['session_id'] . ' and registration: ' . $row['registration_id'] . ' is ommited because ' . ($row['weekday'] ?? null) . ' is in registration disabled_weekdays');
                 continue;
             }
 
-            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  Creating attendance: ' . $row['attendance_name'] . ' for session: ' . $row['session_id'] . ' and registration: ' . $row['registration_id']);
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  Creating attendance: ' . ($row['attendance_name'] ?? 'undefined'). ' for session: ' . $row['session_id'] . ' and registration: ' . $row['registration_id']);
             $attendance = BeanFactory::newBean('stic_Attendances');
 
             // Set basic data
@@ -154,8 +155,7 @@ class stic_AttendancesUtils
             }
 
             // Set duration with the proper decimal symbol
-            require_once 'SticInclude/Utils.php';
-            $attendance->duration = SticUtils::formatDecimalInConfigSettings($row['duration'], true);
+            $attendance->duration = formatDecimalInConfigSettings($row['duration'], true);
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': Attendance Duration = ' . $attendance->duration);
 
             // Set a virtual attribute in order to know this is an automatically generated attendance
@@ -231,11 +231,10 @@ class stic_AttendancesUtils
         $sessionBean->load_relationship('stic_attendances_stic_sessions');
         foreach ($sessionBean->stic_attendances_stic_sessions->getBeans() as $attendanceBean) {
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  ' . $attendanceBean->name);
-            require_once 'SticInclude/Utils.php';
 
             // Set attendance's duration if session's duration has changed
             if ($sessionBean->duration != $sessionBean->fetched_row['duration']) {
-                $attendanceBean->duration = SticUtils::formatDecimalInConfigSettings($sessionBean->duration, true);
+                $attendanceBean->duration = formatDecimalInConfigSettings($sessionBean->duration, true);
             }
 
             // Set attendance's start_date if session's start_date has changed

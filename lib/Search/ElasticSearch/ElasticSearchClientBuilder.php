@@ -48,6 +48,7 @@ use Elasticsearch\ClientBuilder;
 /**
  * Class ElasticSearchClientBuilder generates a configured Elasticsearch client.
  */
+#[\AllowDynamicProperties]
 class ElasticSearchClientBuilder
 {
     private static $hosts;
@@ -166,9 +167,9 @@ class ElasticSearchClientBuilder
     {
         global $sugar_config;
 
-        $host = $sugar_config['search']['ElasticSearch']['host'];
-        $user = $sugar_config['search']['ElasticSearch']['user'];
-        $pass = $sugar_config['search']['ElasticSearch']['pass'];
+        $host = $sugar_config['search']['ElasticSearch']['host'] ?? '';
+        $user = $sugar_config['search']['ElasticSearch']['user'] ?? '';
+        $pass = $sugar_config['search']['ElasticSearch']['pass'] ?? '';
 
         $host = trim($host);
         $user = trim($user);

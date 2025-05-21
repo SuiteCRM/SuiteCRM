@@ -23,6 +23,7 @@
 require_once 'include/MVC/View/views/view.edit.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomAOS_Products_QuotesViewEdit extends ViewEdit
 {
     public function __construct()

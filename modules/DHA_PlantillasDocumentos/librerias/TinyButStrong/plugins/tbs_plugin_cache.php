@@ -21,6 +21,7 @@ define('TBS_CACHEGETNAME', -7);
 define('TBS_CACHEISONSHOW', -8);
 define('TBS_CACHEDELETEMASK', -9);
 
+#[\AllowDynamicProperties]
 class clsTbsCacheSytem {
 
 	function OnInstall($CacheDir=false,$CacheMask=false) {

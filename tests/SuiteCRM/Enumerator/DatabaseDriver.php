@@ -43,6 +43,7 @@ namespace SuiteCRM\Enumerator;
  * Class DatabaseDriver
  * @package SuiteCRM\Tests\SuiteCRM\Enumerator
  */
+#[\AllowDynamicProperties]
 class DatabaseDriver
 {
     public const NO_DRIVER = 'NO_DRIVER';

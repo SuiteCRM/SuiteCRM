@@ -40,7 +40,7 @@ class DocumentRevisionTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($documentRevision->id));
-        self::assertEquals(36, strlen($documentRevision->id));
+        self::assertEquals(36, strlen((string) $documentRevision->id));
 
         //test document retrieve method
         $docRev = $documentRevision->retrieve($documentRevision->id);

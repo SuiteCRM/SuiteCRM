@@ -256,7 +256,7 @@ function is_valid_ip_address($session_var)
             } else {
                 // match class C IP addresses
                 for ($i = 0; $i < 3; $i++) {
-                    if ($session_parts[$i] == $client_parts[$i]) {
+                    if ($session_parts[$i] === $client_parts[$i]) {
                         $classCheck = 1;
                         continue;
                     }
@@ -448,7 +448,7 @@ function get_entry_list(
                 } elseif ($value->currency_id != $userCurrency->id
                     && isset($temp_field['type'])
                     && 'currency' == $temp_field['type']
-                    && substr($temp_field['name'], -9) != '_usdollar'
+                    && substr((string) $temp_field['name'], -9) != '_usdollar'
                 ) {
                     $temp_property = $temp_field['name'];
                     $value->$temp_property *= $userCurrency->conversion_rate;
@@ -472,10 +472,10 @@ function get_entry_list(
     $field_list = filter_return_list($field_list, $select_fields, $module_name);
 
     // Calculate the offset for the start of the next page
-    $next_offset = $offset + count($output_list);
+    $next_offset = $offset + (is_countable($output_list) ? count($output_list) : 0);
 
     return array(
-        'result_count' => count($output_list),
+        'result_count' => is_countable($output_list) ? count($output_list) : 0,
         'next_offset' => $next_offset,
         'field_list' => $field_list,
         'entry_list' => $output_list,
@@ -653,7 +653,7 @@ function set_entry($session, $module_name, $name_value_list)
     $seed = new $class_name();
 
     foreach ($name_value_list as $value) {
-        if ($value['name'] == 'id' && isset($value['value']) && strlen($value['value']) > 0) {
+        if ($value['name'] == 'id' && isset($value['value']) && strlen((string) $value['value']) > 0) {
             $result = $seed->retrieve($value['value']);
             //bug: 44680 - check to ensure the user has access before proceeding.
             if (is_null($result)) {
@@ -934,7 +934,7 @@ function get_related_notes($session, $module_name, $module_id, $select_fields)
     $field_list = filter_field_list($field_list, $select_fields, $module_name);
 
     return array(
-        'result_count' => count($output_list),
+        'result_count' => is_countable($output_list) ? count($output_list) : 0,
         'next_offset' => 0,
         'field_list' => $field_list,
         'entry_list' => $output_list,
@@ -1332,7 +1332,7 @@ function get_relationships($session, $module_name, $module_id, $related_module, 
         $error->set_error('no_relationship_support');
 
         return array('ids' => $ids, 'error' => $error->get_soap_array());
-    } elseif (count($id_list) == 0) {
+    } elseif ((is_countable($id_list) ? count($id_list) : 0) == 0) {
         return array('ids' => $ids, 'error' => $error->get_soap_array());
     }
 
@@ -1358,22 +1358,11 @@ function get_relationships($session, $module_name, $module_id, $related_module, 
         $sql .= " AND ( {$related_module_query} )";
     }
 
-	/* BEGIN - SECURITY GROUPS */
-	global $current_user;
-	if($mod->bean_implements('ACL') && ACLController::requireSecurityGroup($mod->module_dir, 'list') )
-	{
-		require_once('modules/SecurityGroups/SecurityGroup.php');
-		global $current_user;
-		$owner_where = $mod->getOwnerWhere($current_user->id);
-		$group_where = SecurityGroup::getGroupWhere($mod->table_name,$mod->module_dir,$current_user->id);
-    	if(!empty($owner_where)){
-    		$sql .= " AND (".  $owner_where." or ".$group_where.") ";
-		} else {
-			$sql .= ' AND '.  $group_where;
-		}
-	}
-	/* END - SECURITY GROUPS */
-
+    $accessWhere = $mod->buildAccessWhere('list');
+    if (!empty($accessWhere)) {
+        $sql .= ' AND ' . $accessWhere;
+    }
+    
     $result = $related_mod->db->query($sql);
     while ($row = $related_mod->db->fetchByAssoc($result)) {
         $list[] = $row['id'];
@@ -1506,7 +1495,7 @@ function handle_set_relationship($set_relationship_value, $session = '')
     if ($module1 == "Contacts" && $module2 == "Users") {
         $key = 'contacts_users_id';
     } else {
-        $key = array_search(strtolower($module2), $mod->relationship_fields);
+        $key = array_search(strtolower($module2), $mod->relationship_fields, true);
         if (!$key) {
             $key = Relationship::retrieve_by_modules($module1, $module2, $GLOBALS['db']);
 
@@ -1838,7 +1827,7 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
                         $count = 1;
                         if ($key != 'EmailAddresses') {
                             foreach ($search_terms as $term) {
-                                if (!strpos($where_clause, 'number')) {
+                                if (!strpos((string) $where_clause, 'number')) {
                                     $where .= string_format($where_clause, array(DBManagerFactory::getInstance()->quote($term)));
                                 } elseif (is_numeric($term)) {
                                     $where .= string_format($where_clause, array(DBManagerFactory::getInstance()->quote($term)));
@@ -1890,10 +1879,10 @@ function search_by_module($user_name, $password, $search_string, $modules, $offs
         }//end foreach
     }
 
-    $next_offset = $offset + count($output_list);
+    $next_offset = $offset + (is_countable($output_list) ? count($output_list) : 0);
 
     return array(
-        'result_count' => count($output_list),
+        'result_count' => is_countable($output_list) ? count($output_list) : 0,
         'next_offset' => $next_offset,
         'field_list' => $field_list,
         'entry_list' => $output_list,
@@ -2261,7 +2250,7 @@ function set_campaign_merge($session, $targets, $campaign_id)
 
         return $error->get_soap_array();
     }
-    if (empty($campaign_id) or !is_array($targets) or count($targets) == 0) {
+    if (empty($campaign_id) || !is_array($targets) || count($targets) == 0) {
         $GLOBALS['log']->debug('set_campaign_merge: Merge action status will not be updated, because, campaign_id is null or no targets were selected.');
     } else {
         require_once('modules/Campaigns/utils.php');
@@ -2436,7 +2425,7 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = fa
     require_once($beanFiles[$class_name]);
     $ids = array();
     $count = 1;
-    $total = count($name_value_lists);
+    $total = is_countable($name_value_lists) ? count($name_value_lists) : 0;
 
     foreach ($name_value_lists as $name_value_list) {
         $seed = new $class_name();
@@ -2461,7 +2450,7 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = fa
                 $vardef = $seed->field_name_map[$value['name']];
                 if (isset($app_list_strings[$vardef['options']]) && !isset($app_list_strings[$vardef['options']][$val])) {
                     if (in_array($val, $app_list_strings[$vardef['options']])) {
-                        $val = array_search($val, $app_list_strings[$vardef['options']]);
+                        $val = array_search($val, $app_list_strings[$vardef['options']], true);
                     }
                 }
             } elseif ($seed->field_name_map[$value['name']]['type'] == 'multienum') {
@@ -2472,7 +2461,7 @@ function handle_set_entries($module_name, $name_value_lists, $select_fields = fa
                     $parsedItems = array();
                     foreach ($items as $item) {
                         if (in_array($item, $app_list_strings[$vardef['options']])) {
-                            $keyVal = array_search($item, $app_list_strings[$vardef['options']]);
+                            $keyVal = array_search($item, $app_list_strings[$vardef['options']], true);
                             array_push($parsedItems, $keyVal);
                         }
                     }

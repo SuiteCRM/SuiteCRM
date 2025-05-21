@@ -67,7 +67,7 @@ class AOS_Line_Item_GroupsTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aosLineItemGroup->id));
-        self::assertEquals(36, strlen($aosLineItemGroup->id));
+        self::assertEquals(36, strlen((string) $aosLineItemGroup->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosLineItemGroup->mark_deleted($aosLineItemGroup->id);

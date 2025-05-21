@@ -37,11 +37,11 @@
     "source":   "https://github.com/paragonie/constant_time_encoding"
   },
   "require": {
-    "php": "^7|^8"
+    "php": "^8"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6|^7|^8|^9",
-    "vimeo/psalm": "^1|^2|^3|^4"
+    "phpunit/phpunit": "^9",
+    "vimeo/psalm": "^4|^5"
   },
   "autoload": {
     "psr-4": {

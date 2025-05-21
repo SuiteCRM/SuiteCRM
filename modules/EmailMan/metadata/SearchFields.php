@@ -41,26 +41,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-// STIC-Custom 20220928 MHP - Add account name in search by name, modify the query to search by email and add logic to search by other fields
-// STIC#873
+
 $searchFields['EmailMan'] =
     array(
         'campaign_name' => array( 'query_type'=>'default','db_field'=>array('campaigns.name')),
-        // Add account name in search by name
-        // 'to_name'=> array('query_type'=>'default','db_field'=>array('contacts.first_name','contacts.last_name','leads.first_name','leads.last_name','prospects.first_name','prospects.last_name')),
         'to_name'=> array('query_type'=>'default','db_field'=>array('contacts.first_name','contacts.last_name','accounts.name','leads.first_name','leads.last_name','prospects.first_name','prospects.last_name', 'users.user_name')),
-        // Modify the query to search by email
-        // 'to_email'=> array('query_type'=>'default','db_field'=>array('contacts.email1','leads.email1','prospects.email1')),
-        'to_email'=> array(
-            'query_type'=>'default',
-            'operator' => 'subquery',
-            'subquery' => 'SELECT eabr.bean_id FROM email_addr_bean_rel eabr JOIN email_addresses ea ON (ea.id = eabr.email_address_id) WHERE eabr.deleted=0 AND eabr.primary_address = 1 AND eabr.deleted=0 AND ea.email_address LIKE',
-            'db_field'=>array(
-                0 => 'related_id',
-            ),        
-        ),
+        'to_email'=> array('query_type'=>'default','operator' => 'subquery','subquery' => 'SELECT eabr.bean_id FROM email_addr_bean_rel eabr JOIN email_addresses ea ON (ea.id = eabr.email_address_id) WHERE eabr.deleted=0 AND eabr.primary_address = 1 AND eabr.deleted=0 AND ea.email_address LIKE','db_field'=>array(0 => 'related_id',),),
         'current_user_only'=> array('query_type'=>'default','db_field'=>array('assigned_user_id'),'my_items'=>true, 'vname' => 'LBL_CURRENT_USER_FILTER', 'type' => 'bool'),
-        // Add logic to search by other fields
+        // STIC-Custom 20220928 MHP - Add logic to search in the next fields
+        // STIC#873
         'message_name' => array( 'query_type'=>'default','db_field'=>array('email_marketing.name')),
         'send_attempts' => array( 'query_type'=>'default','db_field'=>array('emailman.send_attempts')),
         'in_queue' => array( 'query_type'=>'default','db_field'=>array('emailman.in_queue')),
@@ -108,6 +97,6 @@ $searchFields['EmailMan'] =
             'query_type' => 'default',
             'enable_range_search' => true,
             'is_date_field' => true,
-        ),                   
+        ),             
+        // END STIC-Custom   
     );
-// END STIC-Custom   

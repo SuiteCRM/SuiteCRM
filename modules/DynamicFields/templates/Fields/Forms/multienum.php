@@ -46,6 +46,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 $edit_mod_strings = return_module_language($GLOBALS['current_language'], 'EditCustomFields');
-$edit_mod_strings['LBL_DROP_DOWN_LIST'] = $edit_mod_strings['LBL_MULTI_SELECT_LIST'];
+// STIC Custom 20250215 JBL - Remove Warning: Undefined array key access
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+// $edit_mod_strings['LBL_DROP_DOWN_LIST'] = $edit_mod_strings['LBL_MULTI_SELECT_LIST'];
+$edit_mod_strings['LBL_DROP_DOWN_LIST'] = $edit_mod_strings['LBL_MULTI_SELECT_LIST'] ?? '';
+// END STIC Custom
 $multi = 'true';
 require_once('modules/DynamicFields/templates/Fields/Forms/enum2.php');

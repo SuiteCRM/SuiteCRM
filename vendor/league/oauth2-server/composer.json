@@ -4,18 +4,21 @@
     "homepage": "https://oauth2.thephpleague.com/",
     "license": "MIT",
     "require": {
-        "php": ">=5.5.9",
+        "php": "^8.0",
         "ext-openssl": "*",
-        "league/event": "^2.1",
-        "lcobucci/jwt": "^3.1",
-        "paragonie/random_compat": "^2.0",
-        "psr/http-message": "^1.0",
-        "defuse/php-encryption": "^2.1"
+        "league/event": "^2.2",
+        "league/uri": "^6.7 || ^7.0",
+        "lcobucci/jwt": "^4.3 || ^5.0",
+        "psr/http-message": "^1.0.1 || ^2.0",
+        "defuse/php-encryption": "^2.3",
+        "lcobucci/clock": "^2.2 || ^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8 || ^5.0",
-        "zendframework/zend-diactoros": "^1.0",
-        "indigophp/hash-compat": "^1.1"
+        "phpunit/phpunit": "^9.6.6",
+        "laminas/laminas-diactoros": "^3.0.0",
+        "phpstan/phpstan": "^0.12.57",
+        "phpstan/phpstan-phpunit": "^0.12.16",
+        "roave/security-advisories": "dev-master"
     },
     "repositories": [
         {
@@ -45,6 +48,12 @@
             "email": "hello@alexbilbie.com",
             "homepage": "http://www.alexbilbie.com",
             "role": "Developer"
+        },
+        {
+            "name": "Andy Millington",
+            "email": "andrew@noexceptions.io",
+            "homepage": "https://www.noexceptions.io",
+            "role": "Developer"
         }
     ],
     "replace": {
@@ -60,13 +69,5 @@
         "psr-4": {
             "LeagueTests\\": "tests/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-V5-WIP": "5.0-dev"
-        }
-    },
-    "suggest": {
-        "indigophp/hash-compat": "Polyfill for hash_equals function for PHP 5.5"
     }
 }

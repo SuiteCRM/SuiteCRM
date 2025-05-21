@@ -54,7 +54,7 @@ function get_body(&$ss, $vardef)
     
     global $timedate;
     $user_time_format = $timedate->get_user_time_format();
-    $show_meridiem = preg_match('/pm$/i', $user_time_format) ? true : false;
+    $show_meridiem = preg_match('/pm$/i', (string) $user_time_format) ? true : false;
     if ($show_meridiem) {
         $ss->assign('default_hours_values', array_flip($td->hoursStrings));
     } else {
@@ -64,7 +64,7 @@ function get_body(&$ss, $vardef)
     $ss->assign('show_meridiem', $show_meridiem);
     $ss->assign('default_minutes_values', array_flip($td->minutesStrings));
     $ss->assign('default_meridiem_values', array_flip($td->meridiemStrings));
-    if (isset($vardef['display_default']) && strstr($vardef['display_default'], '&')) {
+    if (isset($vardef['display_default']) && strstr((string) $vardef['display_default'], '&')) {
         $dt = explode("&", $vardef['display_default']); //+1 day&06:00pm
         $date = $dt[0];
         $defaultTime = $dt[1];
@@ -84,7 +84,7 @@ function get_body(&$ss, $vardef)
         $ss->assign('default_date', $date);
     // STIC-Custom 20221229 AAM - Adding "now" option to default datetime values
     // STIC#949
-    } elseif($vardef['display_default'] == 'now') {
+    } elseif(isset($vardef['display_default']) && $vardef['display_default'] == 'now') {
         $ss->assign('default_date', $vardef['display_default']);
     // END STIC-Custom
     }

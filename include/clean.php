@@ -47,15 +47,19 @@ if (!defined('sugarEntry') || !sugarEntry) {
 // Remap old namespace to the SuiteCRM namespace
 // Older code can still use this the old class names
 // new code can leverage the autoloader and use the SuiteCRM namespace
+#[\AllowDynamicProperties]
 class HTMLPurifier_URIScheme_cid extends \SuiteCRM\HTMLPurifierURISchemeCid
 {
 }
+#[\AllowDynamicProperties]
 class HTMLPurifier_Filter_Xmp extends \SuiteCRM\HTMLPurifierFilterXmp
 {
 }
+#[\AllowDynamicProperties]
 class SugarCleaner extends \SuiteCRM\HtmlSanitizer
 {
 }
+#[\AllowDynamicProperties]
 class SugarURIFilter extends \SuiteCRM\URIFilter
 {
 }

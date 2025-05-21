@@ -30,7 +30,7 @@ require_once 'SticInclude/Utils.php';
  */
 class CheckAccountsBeanData extends DataCheckFunction
 {
-    const NID_FIELD = 'stic_identification_number_c'; // Name of the field to review
+    public const NID_FIELD = 'stic_identification_number_c'; // Name of the field to review
 
     // Contains the FieldDefs of the Organization class
     protected $accountDef = null;

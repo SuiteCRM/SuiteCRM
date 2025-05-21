@@ -78,7 +78,7 @@ foreach ($beanFiles as $beanname=>$beanpath) {
     foreach ($indices as $definition) {
         //database helpers do not know how to handle full text indices
         if ($definition['type']=='fulltext') {
-            if (isset($definition['db']) and $definition['db'] != DBManagerFactory::getInstance()->dbType) {
+            if (isset($definition['db']) && $definition['db'] != DBManagerFactory::getInstance()->dbType) {
                 continue;
             }
 

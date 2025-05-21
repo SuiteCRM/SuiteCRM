@@ -80,10 +80,10 @@ class PHP32 extends PHP
             }
             $step = count($vals) & 3;
             if ($step) {
-                $digit = floor($digit / pow(2, 2 * $step));
+                $digit = (int) floor($digit / pow(2, 2 * $step));
             }
             if ($step != 3) {
-                $digit &= static::MAX_DIGIT;
+                $digit = (int) fmod($digit, static::BASE_FULL);
                 $i++;
             }
             $vals[] = $digit;
@@ -102,7 +102,7 @@ class PHP32 extends PHP
      */
     public static function isValidEngine()
     {
-        return PHP_INT_SIZE >= 4;
+        return PHP_INT_SIZE >= 4 && !self::testJITOnWindows();
     }
 
     /**

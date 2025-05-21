@@ -85,7 +85,7 @@ EOH
         if ($input->getOption('debug')) {
             $this->tailDebugLog($commandName, $output);
 
-            return self::SUCCESS;
+            return 0;
         }
 
         $shell = $input->getArgument('shell') ?? self::guessShell();
@@ -93,15 +93,21 @@ EOH
         if (!file_exists($completionFile)) {
             $supportedShells = $this->getSupportedShells();
 
-            ($output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output)
-                ->writeln(sprintf('<error>Detected shell "%s", which is not supported by Symfony shell completion (supported shells: "%s").</>', $shell, implode('", "', $supportedShells)));
+            if ($output instanceof ConsoleOutputInterface) {
+                $output = $output->getErrorOutput();
+            }
+            if ($shell) {
+                $output->writeln(sprintf('<error>Detected shell "%s", which is not supported by Symfony shell completion (supported shells: "%s").</>', $shell, implode('", "', $supportedShells)));
+            } else {
+                $output->writeln(sprintf('<error>Shell not detected, Symfony shell completion only supports "%s").</>', implode('", "', $supportedShells)));
+            }
 
-            return self::INVALID;
+            return 2;
         }
 
         $output->write(str_replace(['{{ COMMAND_NAME }}', '{{ VERSION }}'], [$commandName, $this->getApplication()->getVersion()], file_get_contents($completionFile)));
 
-        return self::SUCCESS;
+        return 0;
     }
 
     private static function guessShell(): string
@@ -126,8 +132,14 @@ EOH
      */
     private function getSupportedShells(): array
     {
-        return array_map(function ($f) {
-            return pathinfo($f, \PATHINFO_EXTENSION);
-        }, glob(__DIR__.'/../Resources/completion.*'));
+        $shells = [];
+
+        foreach (new \DirectoryIterator(__DIR__.'/../Resources/') as $file) {
+            if (str_starts_with($file->getBasename(), 'completion.') && $file->isFile()) {
+                $shells[] = $file->getExtension();
+            }
+        }
+
+        return $shells;
     }
 }

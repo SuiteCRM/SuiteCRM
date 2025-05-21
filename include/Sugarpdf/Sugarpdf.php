@@ -52,6 +52,10 @@ if (file_exists('custom/include/Sugarpdf/sugarpdf_config.php')) {
 require_once('include/tcpdf/tcpdf.php');
 require_once('include/Sugarpdf/SugarpdfHelper.php');
 
+// STIC Custom 20250211 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class Sugarpdf extends TCPDF
 {
     /**

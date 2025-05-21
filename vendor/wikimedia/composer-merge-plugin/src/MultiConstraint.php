@@ -11,8 +11,10 @@
 
 namespace Wikimedia\Composer\Merge\V2;
 
+use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Semver\Constraint\EmptyConstraint;
 use Composer\Semver\Constraint\MultiConstraint as SemverMultiConstraint;
+use function count;
 
 /**
  * Adapted from Composer's v2 MultiConstraint::create for Composer v1
@@ -34,18 +36,20 @@ class MultiConstraint extends SemverMultiConstraint
      */
     public static function create(array $constraints, $conjunctive = true)
     {
-        if (\count($constraints) === 0) {
+        if (count($constraints) === 0) {
+            // EmptyConstraint only exists in composer 1.x. Configure as to run phan against composer 2.x
+            // @phan-suppress-next-line PhanTypeMismatchReturn, PhanUndeclaredClassMethod
             return new EmptyConstraint();
         }
 
-        if (\count($constraints) === 1) {
+        if (count($constraints) === 1) {
             return $constraints[0];
         }
 
         $optimized = self::optimizeConstraints($constraints, $conjunctive);
         if ($optimized !== null) {
             list($constraints, $conjunctive) = $optimized;
-            if (\count($constraints) === 1) {
+            if (count($constraints) === 1) {
                 return $constraints[0];
             }
         }
@@ -63,16 +67,16 @@ class MultiConstraint extends SemverMultiConstraint
         // [>= 1 < 2] || [>= 2 < 3] || [>= 3 < 4] => [>= 1 < 4]
         if (!$conjunctive) {
             $left = $constraints[0];
-            $mergedConstraints = array();
+            $mergedConstraints = [];
             $optimized = false;
-            for ($i = 1, $l = \count($constraints); $i < $l; $i++) {
+            for ($i = 1, $l = count($constraints); $i < $l; $i++) {
                 $right = $constraints[$i];
                 if ($left instanceof SemverMultiConstraint
                     && $left->conjunctive
                     && $right instanceof SemverMultiConstraint
                     && $right->conjunctive
-                    && \count($left->constraints) === 2
-                    && \count($right->constraints) === 2
+                    && count($left->constraints) === 2
+                    && count($right->constraints) === 2
                     && ($left0 = (string) $left->constraints[0])
                     && $left0[0] === '>' && $left0[1] === '='
                     && ($left1 = (string) $left->constraints[1])
@@ -85,10 +89,10 @@ class MultiConstraint extends SemverMultiConstraint
                 ) {
                     $optimized = true;
                     $left = new MultiConstraint(
-                        array(
+                        [
                             $left->constraints[0],
                             $right->constraints[1],
-                        ),
+                        ],
                         true
                     );
                 } else {
@@ -98,7 +102,7 @@ class MultiConstraint extends SemverMultiConstraint
             }
             if ($optimized) {
                 $mergedConstraints[] = $left;
-                return array($mergedConstraints, false);
+                return [$mergedConstraints, false];
             }
         }
 

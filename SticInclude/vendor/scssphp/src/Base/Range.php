@@ -19,7 +19,7 @@ namespace ScssPhp\ScssPhp\Base;
  *
  * @internal
  */
-final class Range
+class Range
 {
     /**
      * @var float|int
@@ -50,7 +50,7 @@ final class Range
      *
      * @return bool
      */
-    public function includes($value): bool
+    public function includes($value)
     {
         return $value >= $this->first && $value <= $this->last;
     }

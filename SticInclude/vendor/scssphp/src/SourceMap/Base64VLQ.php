@@ -37,7 +37,7 @@ namespace ScssPhp\ScssPhp\SourceMap;
  *
  * @internal
  */
-final class Base64VLQ
+class Base64VLQ
 {
     // A Base64 VLQ digit can represent 5 bits, so it is base-32.
     const VLQ_BASE_SHIFT = 5;

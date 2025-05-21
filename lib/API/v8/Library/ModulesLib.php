@@ -56,6 +56,7 @@ use SuiteCRM\API\v8\Exception\ModuleNotFoundException;
  * Class ModulesLib
  * @package SuiteCRM\API\v8\Library
  */
+#[\AllowDynamicProperties]
 class ModulesLib
 {
 
@@ -271,6 +272,7 @@ class ModulesLib
      */
     protected function getModuleList(Request $req, \SugarBean $module, array $args = array())
     {
+        $filter = [];
         /** @var array $page */
         $page = $req->getParam('page');
 

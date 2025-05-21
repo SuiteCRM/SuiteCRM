@@ -36,7 +36,7 @@ class stic_RegistrationsLogicHooks {
 
             // Get the subject name
             $contactBean = SticUtils::getRelatedBeanObject($bean, 'stic_registrations_contacts');
-            $subjectName .= !empty($bean->stic_registrations_contactscontacts_ida) ? $contactBean->first_name . ' ' . $contactBean->last_name : '';
+            $subjectName = !empty($bean->stic_registrations_contactscontacts_ida) ? $contactBean->first_name . ' ' . $contactBean->last_name : '';
             $subjectName .= !empty($bean->stic_registrations_accountsaccounts_ida) ? (!empty($subjectName) ? ' / ' : '') . SticUtils::getRelatedBeanObject($bean, 'stic_registrations_accounts')->name : '';
             $subjectName .= !empty($bean->stic_registrations_leadsleads_ida) ? SticUtils::getRelatedBeanObject($bean, 'stic_registrations_leads')->name : '';
             $bean->name = $subjectName . ' - ' . $eventName;
@@ -54,7 +54,7 @@ class stic_RegistrationsLogicHooks {
         include_once 'modules/stic_Registrations/Utils.php';
 
         // Recalculate ateendees totals, only if the status or attendees number change.
-        if ($bean->status != $bean->fetched_row['status'] || $bean->attendees != $bean->fetched_row['attendees']) {
+        if ($bean->status != ($bean->fetched_row['status'] ?? null) || $bean->attendees != ($bean->fetched_row['attendees'] ?? null)) {
             stic_RegistrationsUtils::recalculateTotalAttendees($bean);
         }
 

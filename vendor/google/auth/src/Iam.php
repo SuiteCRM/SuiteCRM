@@ -29,22 +29,31 @@ use GuzzleHttp\Psr7\Utils;
  */
 class Iam
 {
+    /**
+     * @deprecated
+     */
     const IAM_API_ROOT = 'https://iamcredentials.googleapis.com/v1';
     const SIGN_BLOB_PATH = '%s:signBlob?alt=json';
     const SERVICE_ACCOUNT_NAME = 'projects/-/serviceAccounts/%s';
+    private const IAM_API_ROOT_TEMPLATE = 'https://iamcredentials.UNIVERSE_DOMAIN/v1';
 
     /**
      * @var callable
      */
     private $httpHandler;
 
+    private string $universeDomain;
+
     /**
      * @param callable $httpHandler [optional] The HTTP Handler to send requests.
      */
-    public function __construct(callable $httpHandler = null)
-    {
+    public function __construct(
+        callable $httpHandler = null,
+        string $universeDomain = GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN
+    ) {
         $this->httpHandler = $httpHandler
             ?: HttpHandlerFactory::build(HttpClientCache::getHttpClient());
+        $this->universeDomain = $universeDomain;
     }
 
     /**
@@ -66,7 +75,8 @@ class Iam
     {
         $httpHandler = $this->httpHandler;
         $name = sprintf(self::SERVICE_ACCOUNT_NAME, $email);
-        $uri = self::IAM_API_ROOT . '/' . sprintf(self::SIGN_BLOB_PATH, $name);
+        $apiRoot = str_replace('UNIVERSE_DOMAIN', $this->universeDomain, self::IAM_API_ROOT_TEMPLATE);
+        $uri = $apiRoot . '/' . sprintf(self::SIGN_BLOB_PATH, $name);
 
         if ($delegates) {
             foreach ($delegates as &$delegate) {

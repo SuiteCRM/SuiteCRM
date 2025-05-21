@@ -105,7 +105,7 @@ if (!empty($_REQUEST['record'])) {
             }
             $beginWhere = substr(trim($where), 0, 5);
             if ($beginWhere == "where") {
-                $where = substr(trim($where), 5, strlen($where));
+                $where = substr(trim($where), 5, strlen((string) $where));
             }
             $orderBy = '';
             $query = $focus->create_export_query($orderBy, $where);
@@ -158,12 +158,12 @@ if (isset($_SESSION['MAILMERGE_RECORD'])) {
                     $pList = $prospect->retrieveTargetList("campaigns.id = '$record_id' AND related_type = #$mname#", array('id', 'first_name', 'last_name'));
 
                     foreach ($pList['list'] as $bean) {
-                        $selected_objects .= $bean->id.'='.str_replace("&", "##", $bean->name).'&';
+                        $selected_objects .= $bean->id.'='.str_replace("&", "##", (string) $bean->name).'&';
                     }
                 }
             } else {
                 $seed->retrieve($record_id);
-                $selected_objects .= $record_id.'='.str_replace("&", "##", $seed->name).'&';
+                $selected_objects .= $record_id.'='.str_replace("&", "##", (string) $seed->name).'&';
             }
         }
 
@@ -197,7 +197,7 @@ $xtpl->assign("MAILMERGE_TEMPLATES", get_select_options_with_id(getDocumentRevis
 
 if (isset($_SESSION['MAILMERGE_MODULE'])) {
     $module_select_text = $mod_strings['LBL_MAILMERGE_SELECTED_MODULE'];
-    $xtpl->assign("MAILMERGE_NUM_SELECTED_OBJECTS", count($_SESSION['MAILMERGE_RECORD'])." ".$_SESSION['MAILMERGE_MODULE']." Selected");
+    $xtpl->assign("MAILMERGE_NUM_SELECTED_OBJECTS", (is_countable($_SESSION['MAILMERGE_RECORD']) ? count($_SESSION['MAILMERGE_RECORD']) : 0)." ".$_SESSION['MAILMERGE_MODULE']." Selected");
 } else {
     $module_select_text = $mod_strings['LBL_MAILMERGE_MODULE'];
 }

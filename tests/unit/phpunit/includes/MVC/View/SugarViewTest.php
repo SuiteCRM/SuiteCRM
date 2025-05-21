@@ -188,7 +188,7 @@ class SugarViewTest extends SuitePHPUnitFrameworkTestCase
     {
         //check if it returns any text i-e JS code
         $js = SugarView::getJavascriptValidation();
-        self::assertGreaterThan(0, strlen($js));
+        self::assertGreaterThan(0, strlen((string) $js));
     }
 
     public function testdisplayFooter(): void
@@ -244,15 +244,15 @@ class SugarViewTest extends SuitePHPUnitFrameworkTestCase
 
         //first execute the method with default value
         $moduleTitle = $SugarView->getModuleTitle();
-        self::assertGreaterThan(0, strlen($moduleTitle));
+        self::assertGreaterThan(0, strlen((string) $moduleTitle));
 
         //second execute the method with true value
         $moduleTitle = $SugarView->getModuleTitle(true);
-        self::assertGreaterThan(0, strlen($moduleTitle));
+        self::assertGreaterThan(0, strlen((string) $moduleTitle));
 
         //third execute the method with false value
         $moduleTitle = $SugarView->getModuleTitle(false);
-        self::assertGreaterThan(0, strlen($moduleTitle));
+        self::assertGreaterThan(0, strlen((string) $moduleTitle));
     }
 
     public function testgetMetaDataFile(): void
@@ -268,21 +268,21 @@ class SugarViewTest extends SuitePHPUnitFrameworkTestCase
         $SugarView->module = 'Users';
 
         $metaDataFile = $SugarView->getMetaDataFile();
-        self::assertGreaterThan(0, strlen($metaDataFile));
+        self::assertGreaterThan(0, strlen((string) $metaDataFile));
     }
 
     public function testgetBrowserTitle(): void
     {
         //execute the method. it should return a title string.
         $browserTitle = (new SugarView())->getBrowserTitle();
-        self::assertGreaterThan(0, strlen($browserTitle));
+        self::assertGreaterThan(0, strlen((string) $browserTitle));
     }
 
     public function testgetBreadCrumbSymbol(): void
     {
         //execute the method. it should return a string.
         $breadCrumbSymbol = (new SugarView())->getBreadCrumbSymbol();
-        self::assertGreaterThan(0, strlen($breadCrumbSymbol));
+        self::assertGreaterThan(0, strlen((string) $breadCrumbSymbol));
     }
 
     public function testcheckPostMaxSizeError(): void

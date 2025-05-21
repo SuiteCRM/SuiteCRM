@@ -412,6 +412,13 @@
                     </slot>
                 </td>
             </tr>
+            <tr>
+            <td width="17%" scope="row">
+               <slot>{$MOD.LBL_USER_LANGUAGE}:</slot></td>
+            <td scope="row">
+            <slot><select tabindex='15' id="language" name="language">{$LanguageOptions}</select></slot>
+            </td>
+            </tr>
         </table>
     </div>
     <div id="calendar_options" style="display:{$HIDE_FOR_GROUP_AND_PORTAL}">
@@ -475,7 +482,7 @@
                     <slot>{$MOD.LBL_GOOGLE_API_TOKEN}:</slot>&nbsp;{sugar_help text=$MOD.LBL_GOOGLE_API_TOKEN_HELP}
                 </td>
                     <td width="20%">
-                    <slot>Current API Token is: <span style="color:{$GOOGLE_API_TOKEN_COLOR}">{$GOOGLE_API_TOKEN}</span> &nbsp;&nbsp;<input style="display:{$GOOGLE_API_TOKEN_ENABLE_NEW}" class="btn btn-primary btn-sm" id="google_gettoken" type="button" value="{$GOOGLE_API_TOKEN_BTN}" onclick="window.open('{$GOOGLE_API_TOKEN_NEW_URL}', '_self')" /></slot>
+                    <slot>Current API Token is: <span style="color:{$GOOGLE_API_TOKEN_COLOR}">{$GOOGLE_API_TOKEN}</span> &nbsp;&nbsp;<input style="display:{$GOOGLE_API_TOKEN_ENABLE_NEW}" class="btn btn-primary btn-sm" id="google_gettoken" type="button" value="{$GOOGLE_API_TOKEN_BTN}" onclick="window.open('{$GOOGLE_API_TOKEN_NEW_URL}', '_blank')" /></slot>
                 </td>
                 <td width="63%">
                     <slot>&nbsp;</slot>
@@ -577,12 +584,23 @@
 
   $(document).ready(function () {
     var checkKey = function (key) {
-      if (key != '') {
+      var validation = /^[A-Z0-9\-_.]*$/i;
+      if (key != '' && validation.test(key)) {
+
+        var encodedKey = key.replace(/[&<>'"]/g, function(tag) {
+          return ({
+              '&': '&amp;',
+              '<': '&lt;',
+              '>': '&gt;',
+              "'": '&#39;',
+              '"': '&quot;'
+            }[tag]);
+        })
         $(".calendar_publish_ok").css('display', 'inline');
         $(".calendar_publish_none").css('display', 'none');
-        $('#cal_pub_key_span').html(key);
-        $('#ical_pub_key_span').html(key);
-        $('#search_pub_key_span').html(key);
+        $('#cal_pub_key_span').html(encodedKey);
+        $('#ical_pub_key_span').html(encodedKey);
+        $('#search_pub_key_span').html(encodedKey);
       } else {
         $(".calendar_publish_ok").css('display', 'none');
         $(".calendar_publish_none").css('display', 'inline');

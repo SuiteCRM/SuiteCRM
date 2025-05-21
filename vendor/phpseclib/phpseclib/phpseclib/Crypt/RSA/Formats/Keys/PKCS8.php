@@ -88,9 +88,9 @@ abstract class PKCS8 extends Progenitor
     /**
      * Convert a private key to the appropriate format.
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
-     * @param \phpseclib3\Math\BigInteger $d
+     * @param BigInteger $n
+     * @param BigInteger $e
+     * @param BigInteger $d
      * @param array $primes
      * @param array $exponents
      * @param array $coefficients
@@ -108,8 +108,8 @@ abstract class PKCS8 extends Progenitor
     /**
      * Convert a public key to the appropriate format
      *
-     * @param \phpseclib3\Math\BigInteger $n
-     * @param \phpseclib3\Math\BigInteger $e
+     * @param BigInteger $n
+     * @param BigInteger $e
      * @param array $options optional
      * @return string
      */
@@ -117,6 +117,6 @@ abstract class PKCS8 extends Progenitor
     {
         $key = PKCS1::savePublicKey($n, $e);
         $key = ASN1::extractBER($key);
-        return self::wrapPublicKey($key, null);
+        return self::wrapPublicKey($key, null, null, $options);
     }
 }

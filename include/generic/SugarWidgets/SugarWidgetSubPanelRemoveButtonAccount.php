@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelRemoveButtonAccount extends SugarWidgetSubPanelRemoveButton
 {
     /**

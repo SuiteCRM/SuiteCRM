@@ -32,7 +32,11 @@ class kreportpresentationstandard extends kreportpresentationplugin {
       global $app_list_strings, $mod_strings, $current_language, $current_user;
 
       // $fieldArray = htmlentities($fieldArray, ENT_QUOTES, 'UTF-8');
-      $viewJS .= '<script type="text/javascript">FieldsArray = ' . htmlentities($this->buildFieldArray($thisReport)) . ';</script>';
+      // STIC-Custom 20250217 EPS -  htmlentities was changing single quotes by html special character &#039; and causing a javascript error
+      // $viewJS .= '<script type="text/javascript">FieldsArray = ' . htmlentities($this->buildFieldArray($thisReport)) . ';</script>';
+      $viewJS = '';
+      $viewJS .= '<script type="text/javascript">FieldsArray = ' . htmlspecialchars($this->buildFieldArray($thisReport), ENT_NOQUOTES|ENT_HTML401) . ';</script>';
+      // END STIC-Custom
 
       // TODO .. JSON Encode with Bitmask ... need Doku
       // $thisview->ss->assign('columnmodeldarray', str_replace('"', '', json_encode($columnArray)));

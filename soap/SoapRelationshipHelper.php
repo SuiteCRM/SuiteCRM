@@ -109,7 +109,7 @@ function retrieve_relationships($module_name, $related_module, $relationship_que
     require_once($beanFiles[$class_name]);
     $mod = new $class_name();
 
-    $count_query = str_replace('rt.*', 'count(*)', $query);
+    $count_query = str_replace('rt.*', 'count(*)', (string) $query);
     $result = $mod->db->query($count_query);
     $row = $mod->db->fetchByAssoc($result);
     $total_count = $row['count(*)'];
@@ -227,7 +227,7 @@ function retrieve_modified_relationships($module_name, $related_module, $relatio
                     		AND email_addr_bean_rel.primary_address!=1
                     	LEFT JOIN email_addresses ON email_addresses.id = email_addr_bean_rel.email_address_id Where {$mod->table_name}.id = m1.ID limit 1) email2";
                 } else {
-                    if (strpos($field, ".") == false) {
+                    if (strpos((string) $field, ".") == false) {
                         // no dot - field for m1
                         $fieldname = "m1.".$mod->db->getValidDBName($field);
                     } else {
@@ -241,7 +241,7 @@ function retrieve_modified_relationships($module_name, $related_module, $relatio
                     }
                 }
             }
-            if ($index < (count($select_fields) - 1)) {
+            if ($index < ((is_countable($select_fields) ? count($select_fields) : 0) - 1)) {
                 $field_select .= ",";
                 $index++;
             }

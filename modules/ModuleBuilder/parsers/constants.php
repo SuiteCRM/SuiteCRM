@@ -68,6 +68,7 @@ define('MB_MAXDBIDENTIFIERLENGTH', 30); // maximum length of any identifier in o
 define('MB_EXPORTPREPEND', 'project_');
 define('MB_VISIBILITY', 'visibility');
 
+#[\AllowDynamicProperties]
 class MBConstants
 {
     public static $EMPTY = array( 'name' => '(empty)' , 'label' => '(empty)' ) ;

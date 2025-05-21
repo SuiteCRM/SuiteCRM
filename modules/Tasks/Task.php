@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 // Task is used to store customer information.
+#[\AllowDynamicProperties]
 class Task extends SugarBean
 {
     public $field_name_map;
@@ -116,7 +117,7 @@ class Task extends SugarBean
     {
         $custom_join = $this->getCustomJoin(true, true, $where);
         $custom_join['join'] .= $relate_link_join;
-        $contact_required = stristr($where, "contacts");
+        $contact_required = stristr((string) $where, "contacts");
         if ($contact_required) {
             $query = "SELECT tasks.*, contacts.first_name, contacts.last_name, users.user_name as assigned_user_name ";
             $query .= $custom_join['select'];
@@ -212,7 +213,7 @@ class Task extends SugarBean
             $this->parent_name_owner = $row['parent_name_owner'];
             $this->parent_name_mod = $this->parent_type;
         }
-        if (is_subclass_of($parent, 'Person') and $row != null) {
+        if (is_subclass_of($parent, 'Person') && $row != null) {
             $this->parent_name = $locale->getLocaleFormattedName(stripslashes($row['first_name']), stripslashes($row['last_name']));
         } else {
             if (is_subclass_of($parent, 'File') && $row != null) {

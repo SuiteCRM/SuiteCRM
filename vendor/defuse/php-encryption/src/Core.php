@@ -98,9 +98,14 @@ final class Core
      */
     public static function secureRandom($octets)
     {
+        if ($octets <= 0) {
+            throw new Ex\CryptoException(
+                'A zero or negative amount of random bytes was requested.'
+            );
+        }
         self::ensureFunctionExists('random_bytes');
         try {
-            return \random_bytes($octets);
+            return \random_bytes(max(1, $octets));
         } catch (\Exception $ex) {
             throw new Ex\EnvironmentIsBrokenException(
                 'Your system does not have a secure random number generator.'
@@ -285,7 +290,7 @@ final class Core
     {
         static $exists = null;
         if ($exists === null) {
-            $exists = \extension_loaded('mbstring') && \ini_get('mbstring.func_overload') !== false && (int)\ini_get('mbstring.func_overload') & MB_OVERLOAD_STRING;
+            $exists = \extension_loaded('mbstring') && \function_exists('mb_strlen');
         }
         if ($exists) {
             $length = \mb_strlen($str, '8bit');
@@ -311,7 +316,7 @@ final class Core
     {
         static $exists = null;
         if ($exists === null) {
-            $exists = \extension_loaded('mbstring') && \ini_get('mbstring.func_overload') !== false && (int)\ini_get('mbstring.func_overload') & MB_OVERLOAD_STRING;
+            $exists = \extension_loaded('mbstring') && \function_exists('mb_substr');
         }
 
         // This is required to make mb_substr behavior identical to substr.
@@ -381,7 +386,15 @@ final class Core
      *
      * @return string A $key_length-byte key derived from the password and salt.
      */
-    public static function pbkdf2($algorithm, $password, $salt, $count, $key_length, $raw_output = false)
+    public static function pbkdf2(
+        $algorithm,
+        #[\SensitiveParameter]
+        $password,
+        $salt,
+        $count,
+        $key_length,
+        $raw_output = false
+    )
     {
         // Type checks:
         if (! \is_string($algorithm)) {

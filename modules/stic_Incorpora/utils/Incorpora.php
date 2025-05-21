@@ -24,6 +24,7 @@
 /**
  * This class contains all the methods necessarries to stablish the connection with Incorpora WS using SOAPclient PHP plugin.
  */
+#[\AllowDynamicProperties]
 class Incorpora
 {
     private $soapClient;
@@ -121,7 +122,7 @@ class Incorpora
             if (!$this->wsdlFileTest) {
                 $this->logMsg['err'] .= $mod_strings['LBL_INCORPORA_MISSING_CREDENTIALS'] . $constantTestUrl . '<br>';
             }
-            if ($this->logMsg['err']) {
+            if (isset($this->logMsg['err']) && $this->logMsg['err']) {
                 return false;
             }
             $optionsConn = array(
@@ -273,7 +274,7 @@ class Incorpora
         // Now we need to get the order in which the params should be called
         foreach ($params as $k => $v) {
             preg_match_all('/\b' . $k . '\b/', $wsdlFunction, $matchData, PREG_OFFSET_CAPTURE);
-            $match = $matchData[0][0][1];
+            $match = isset($matchData[0][0][1]) ? $matchData[0][0][1] : FALSE;
             if ($match !== FALSE) {
                 $requestParams[$k] = $match;
             }

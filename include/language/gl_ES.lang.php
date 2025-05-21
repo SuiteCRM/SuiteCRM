@@ -767,6 +767,44 @@ $app_list_strings = array(
         'PM' => 'PM',
     ),
 
+    'dom_inbound_email_account_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grupo',
+        'bounce' => 'Rebote',
+    ],
+
+    'dom_inbound_email_auth_types' => [
+        'basic' => 'Autenticación Básica',
+        'oauth' => 'OAuth',
+    ],
+
+    'dom_external_oauth_connection_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grupo',
+    ],
+
+    'dom_external_oauth_provider_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grupo',
+    ],
+
+    'dom_outbound_email_account_types' => [
+        'user' => 'Personal',
+        'group' => 'Grupo',
+        'system' => 'Sistema',
+        'system-override' => 'Anulación del Sistema',
+    ],
+
+    'dom_inbound_email_account_status' => [
+        'Active' => 'Activo',
+        'Inactive' => 'Inactivo',
+    ],
+
+    'dom_email_body_filtering_option' => [
+      'multi' => 'Búsqueda de Múltiples Palabras',
+      'single' => 'Búsqueda de Una Palabra',
+    ],
+
     'dom_email_types' => array(
         'out' => 'Enviado',
         'archived' => 'Arquivado',
@@ -1964,6 +2002,8 @@ $app_strings = array(
     'LBL_REMOVE_DASHLET_CONFIRM' => '¿Está seguro de que desexa quitar o SuiteCRM Dashlet?',
     'LBL_REMOVING_DASHLET' => 'Quitando SuiteCRM Dashlet ...',
     'LBL_REMOVED_DASHLET' => 'SuiteCRM Dashlet Quitado',
+    'LBL_MAX_DASHLET_COLUMNS' => "Se pueden mostrar un máximo de %s columnas.",
+    'LBL_RETRIEVING_XML_DATA' => "Hubo un problema al recuperar los datos XML:\n",
 
     // MySugar Menu Options
 

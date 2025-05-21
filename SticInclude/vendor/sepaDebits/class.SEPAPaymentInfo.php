@@ -18,7 +18,7 @@ class SEPAPaymentInfo
    *
    * @var string
    */
-  const PAYMENT_METHOD = 'DD';
+  public const PAYMENT_METHOD = 'DD';
 
   /**
    * Specifies a pre-agreed service or level of service between the parties,
@@ -26,7 +26,7 @@ class SEPAPaymentInfo
    *
    * @var string
    */
-  const SERVICELEVEL_CODE = 'SEPA';
+  public const SERVICELEVEL_CODE = 'SEPA';
 
   /**
    * Specifies which party/parties will bear the charges associated with the
@@ -34,14 +34,14 @@ class SEPAPaymentInfo
    *
    * @var string
    */
-  const CHARGE_BEARER = 'SLEV';
+  public const CHARGE_BEARER = 'SLEV';
 
   /**
    * Name of the identification scheme, in a free text form. (Tag: <CdtrSchmeId->Id->PrvtId->Othr->SchmeNm->Prtry>)
    *
    * @var string
    */
-  const PROPRIETARY_NAME = 'SEPA';
+  public const PROPRIETARY_NAME = 'SEPA';
 
   /**
    * Unique identification, as assigned by a sending party, to unambiguously identify the
@@ -130,7 +130,7 @@ class SEPAPaymentInfo
    *
    * @var SEPADirectDebitTransaction[] array
    */
-  private $transactions = array();
+  private $transactions = [];
 
   /**
    * Getter for PaymentInformationIdentification (PmtInfId)

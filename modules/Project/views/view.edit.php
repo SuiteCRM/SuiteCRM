@@ -41,6 +41,7 @@
 
 require_once('include/json_config.php');
 
+#[\AllowDynamicProperties]
 class ProjectViewEdit extends ViewEdit
 {
     public function __construct()

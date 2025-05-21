@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../../../include/GoogleSync/GoogleSync.php';
  *
  * @author gyula
  */
+#[\AllowDynamicProperties]
 class GoogleSyncMock extends GoogleSync
 {
     public function setProperty($key, $value): void

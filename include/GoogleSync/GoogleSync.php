@@ -53,22 +53,28 @@ require_once __DIR__ . '/GoogleSyncHelper.php';
  * @author Benjamin Long <ben@offsite.guru>
  */
 
+#[\AllowDynamicProperties]
 class GoogleSync extends GoogleSyncBase
 {
-    
+
     /** @var array An array of user id's we are going to sync for */
     protected $users = array();
 
     /**
      * Gets the combined titles of a Meeting/Event pair for Logging
      *
-     * @param Meeting $meeting The CRM Meeting
-     * @param \Google\Service\Calendar\Event $event The Google Event
+     * @param Meeting|null $meeting The CRM Meeting
+     * @param \Google\Service\Calendar\Event|null $event The Google Event
      *
      * @return string The combined title
      */
-    protected function getTitle(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function getTitle(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function getTitle(?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
+    // END STIC Custom
     {
+        $title = '';
         $meetingTitle = isset($meeting) ? $meeting->name : null;
         $eventTitle = isset($event) ? $event->getSummary() : null;
 
@@ -88,14 +94,18 @@ class GoogleSync extends GoogleSyncBase
      * Helper method for doSync
      *
      * @param string $action The action to take with the two events
-     * @param Meeting $meeting The CRM Meeting
-     * @param \Google\Service\Calendar\Event $event The Google Event
+     * @param Meeting|null $meeting The CRM Meeting
+     * @param \Google\Service\Calendar\Event|null $event The Google Event
      *
      * @return bool Success/Failure
      * @throws GoogleSyncException if $action is invalid.
      * @throws GoogleSyncException if something else fails.
      */
-    protected function doAction($action, Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function doAction($action, Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function doAction($action, ?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
+    // END STIC Custom
     {
         $title = $this->getTitle($meeting, $event);
 
@@ -199,7 +209,11 @@ class GoogleSync extends GoogleSyncBase
      *
      * @return string|bool 'push(_delete)', 'pull(_delete)', 'skip', false (on error)
      */
-    protected function pushPullSkip(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function pushPullSkip(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function pushPullSkip(?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
+    // END STIC Custom
     {
         if (empty($meeting) && empty($event)) {
             throw new GoogleSyncException('Missing Parameter, You must pass at least one event');
@@ -247,12 +261,12 @@ class GoogleSync extends GoogleSyncBase
         while ($row = $this->db->fetchByAssoc($result)) {
             $tempData['founds']++;
             $tmp = [];
-            
+
             $user = BeanFactory::getBean('Users', $row['id']);
             if (!$user) {
                 throw new GoogleSyncException('Unable to get User bean. ID was: ' . $row['id'], GoogleSyncException::UNABLE_TO_RETRIEVE_USER);
             }
-                    
+
             if ($tmp['notEmpty'] = !empty($user->getPreference('GoogleApiToken', 'GoogleSync')) &&
                 $tmp['decoded'] = json_decode(base64_decode($user->getPreference('GoogleApiToken', 'GoogleSync'))) &&
                 $tmp['syncPref'] = $user->getPreference('syncGCal', 'GoogleSync')

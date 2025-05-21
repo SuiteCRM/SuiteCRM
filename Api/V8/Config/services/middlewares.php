@@ -26,6 +26,14 @@ return CustomLoader::mergeCustomArray([
 
         $shouldCheckPermissions = OsHelper::getOS() !== OsHelper::OS_WINDOWS;
 
+	    $oauth2EncKey = $GLOBALS['sugar_config']['oauth2_encryption_key'] ?? '';
+	    if (empty($oauth2EncKey)) {
+		    $oauth2EncKey = 'SCRM-DEFK';
+		    if (isset($GLOBALS['log'])) {
+			    $GLOBALS['log']->fatal('WARNING: `oauth2_encryption_key` not set in config.php');
+		    }
+	    }
+
         $server = new AuthorizationServer(
             new ClientRepository(
                 new ClientEntity(),
@@ -41,23 +49,8 @@ return CustomLoader::mergeCustomArray([
                 null,
                 $shouldCheckPermissions
             ),
-            new CryptKey(
-                sprintf('file://%s/%s', $baseDir, ApiConfig::OAUTH2_PUBLIC_KEY),
-                null,
-                $shouldCheckPermissions
-            )
+	        $oauth2EncKey
         );
-
-        $oauth2EncKey = isset($GLOBALS['sugar_config']['oauth2_encryption_key'])
-            ? $GLOBALS['sugar_config']['oauth2_encryption_key'] : '';
-        if (empty($oauth2EncKey)) {
-            $oauth2EncKey = 'SCRM-DEFK';
-            if (isset($GLOBALS['log'])) {
-                $GLOBALS['log']->fatal('WARNING: `oauth2_encryption_key` not set in config.php');
-            }
-        }
-
-        $server->setEncryptionKey($oauth2EncKey);
 
         // Client credentials grant
         $server->enableGrantType(

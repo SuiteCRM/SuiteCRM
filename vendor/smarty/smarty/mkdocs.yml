@@ -1,0 +1,125 @@
+site_name: Smarty Documentation
+theme:
+  name: material
+  palette:
+    primary: amber
+  features:
+    - content.code.copy
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.tracking
+  icon:
+    logo: material/lightbulb-on
+  favicon: images/favicon.ico
+
+extra:
+  version:
+    provider: mike
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+nav:
+  - Home: 'index.md'
+  - 'Getting started':
+    - Introduction: 'getting-started.md'
+    - 'Upgrading from an older version': 'upgrading.md'
+  - 'Designers':
+    - 'Basic Syntax':
+        - Introduction: 'designers/language-basic-syntax/index.md'
+        - Comments: 'designers/language-basic-syntax/language-syntax-comments.md'
+        - Variables: 'designers/language-basic-syntax/language-syntax-variables.md'
+        - Functions: 'designers/language-basic-syntax/language-syntax-functions.md'
+        - Attributes: 'designers/language-basic-syntax/language-syntax-attributes.md'
+        - Quotes: 'designers/language-basic-syntax/language-syntax-quotes.md'
+        - Math: 'designers/language-basic-syntax/language-math.md'
+        - 'Escaping Smarty parsing': 'designers/language-basic-syntax/language-escaping.md'
+    - 'Variables':
+        - 'Introduction': 'designers/language-variables/index.md'
+        - 'Assigned from PHP': 'designers/language-variables/language-assigned-variables.md'
+        - 'Variable scopes': 'designers/language-variables/language-variable-scopes.md'
+        - 'From config files': 'designers/language-variables/language-config-variables.md'
+        - '{$smarty}': 'designers/language-variables/language-variables-smarty.md'
+    - 'Modifiers':
+        - 'Introduction': 'designers/language-modifiers/index.md'
+        - 'capitalize': 'designers/language-modifiers/language-modifier-capitalize.md'
+        - 'cat': 'designers/language-modifiers/language-modifier-cat.md'
+        - 'count_characters': 'designers/language-modifiers/language-modifier-count-characters.md'
+        - 'count_paragraphs': 'designers/language-modifiers/language-modifier-count-paragraphs.md'
+        - 'count_sentences': 'designers/language-modifiers/language-modifier-count-sentences.md'
+        - 'count_words': 'designers/language-modifiers/language-modifier-count-words.md'
+        - 'date_format': 'designers/language-modifiers/language-modifier-date-format.md'
+        - 'default': 'designers/language-modifiers/language-modifier-default.md'
+        - 'escape': 'designers/language-modifiers/language-modifier-escape.md'
+        - 'from_charset': 'designers/language-modifiers/language-modifier-from-charset.md'
+        - 'indent': 'designers/language-modifiers/language-modifier-indent.md'
+        - 'lower': 'designers/language-modifiers/language-modifier-lower.md'
+        - 'nl2br': 'designers/language-modifiers/language-modifier-nl2br.md'
+        - 'regex_replace': 'designers/language-modifiers/language-modifier-regex-replace.md'
+        - 'replace': 'designers/language-modifiers/language-modifier-replace.md'
+        - 'spacify': 'designers/language-modifiers/language-modifier-spacify.md'
+        - 'string_format': 'designers/language-modifiers/language-modifier-string-format.md'
+        - 'strip': 'designers/language-modifiers/language-modifier-strip.md'
+        - 'strip_tags': 'designers/language-modifiers/language-modifier-strip-tags.md'
+        - 'to_charset': 'designers/language-modifiers/language-modifier-to-charset.md'
+        - 'truncate': 'designers/language-modifiers/language-modifier-truncate.md'
+        - 'unescape': 'designers/language-modifiers/language-modifier-unescape.md'
+        - 'upper': 'designers/language-modifiers/language-modifier-upper.md'
+        - 'wordwrap': 'designers/language-modifiers/language-modifier-wordwrap.md'
+    - 'designers/language-combining-modifiers.md'
+    - 'Builtin Functions':
+        - 'Introduction': 'designers/language-builtin-functions/index.md'
+        - '{append}': 'designers/language-builtin-functions/language-function-append.md'
+        - '{assign}': 'designers/language-builtin-functions/language-function-assign.md'
+        - '{block}': 'designers/language-builtin-functions/language-function-block.md'
+        - '{call}': 'designers/language-builtin-functions/language-function-call.md'
+        - '{capture}': 'designers/language-builtin-functions/language-function-capture.md'
+        - '{config_load}': 'designers/language-builtin-functions/language-function-config-load.md'
+        - '{debug}': 'designers/language-builtin-functions/language-function-debug.md'
+        - '{extends}': 'designers/language-builtin-functions/language-function-extends.md'
+        - '{for}': 'designers/language-builtin-functions/language-function-for.md'
+        - '{foreach}': 'designers/language-builtin-functions/language-function-foreach.md'
+        - '{function}': 'designers/language-builtin-functions/language-function-function.md'
+        - '{if},{elseif},{else}': 'designers/language-builtin-functions/language-function-if.md'
+        - '{include}': 'designers/language-builtin-functions/language-function-include.md'
+        - '{insert}': 'designers/language-builtin-functions/language-function-insert.md'
+        - '{ldelim},{rdelim}': 'designers/language-builtin-functions/language-function-ldelim.md'
+        - '{literal}': 'designers/language-builtin-functions/language-function-literal.md'
+        - '{nocache}': 'designers/language-builtin-functions/language-function-nocache.md'
+        - '{section}': 'designers/language-builtin-functions/language-function-section.md'
+        - '{setfilter}': 'designers/language-builtin-functions/language-function-setfilter.md'
+        - '{strip}': 'designers/language-builtin-functions/language-function-strip.md'
+        - '{while}': 'designers/language-builtin-functions/language-function-while.md'
+    - 'Custom Functions':
+        - 'Introduction': 'designers/language-custom-functions/index.md'
+        - '{counter}': 'designers/language-custom-functions/language-function-counter.md'
+        - '{cycle}': 'designers/language-custom-functions/language-function-cycle.md'
+        - '{debug}': 'designers/language-custom-functions/language-function-debug.md'
+        - '{eval}': 'designers/language-custom-functions/language-function-eval.md'
+        - '{fetch}': 'designers/language-custom-functions/language-function-fetch.md'
+        - '{html_checkboxes}': 'designers/language-custom-functions/language-function-html-checkboxes.md'
+        - '{html_image}': 'designers/language-custom-functions/language-function-html-image.md'
+        - '{html_options}': 'designers/language-custom-functions/language-function-html-options.md'
+        - '{html_radios}': 'designers/language-custom-functions/language-function-html-radios.md'
+        - '{html_select_date}': 'designers/language-custom-functions/language-function-html-select-date.md'
+        - '{html_select_time}': 'designers/language-custom-functions/language-function-html-select-time.md'
+        - '{html_table}': 'designers/language-custom-functions/language-function-html-table.md'
+        - '{mailto}': 'designers/language-custom-functions/language-function-mailto.md'
+        - '{math}': 'designers/language-custom-functions/language-function-math.md'
+        - '{textformat}': 'designers/language-custom-functions/language-function-textformat.md'
+    - 'designers/config-files.md'
+    - 'designers/chapter-debugging-console.md'
+  - 'Programmers':
+      - 'programmers/charset.md'
+      - 'programmers/smarty-constants.md'
+      - 'programmers/api-variables.md'
+      - 'programmers/api-functions.md'
+      - 'programmers/caching.md'
+      - 'programmers/resources.md'
+      - 'programmers/advanced-features.md'
+      - 'programmers/plugins.md'

@@ -5,11 +5,12 @@ namespace Api\V8\Helper;
 /**
  * Class OsHelper
  */
+#[\AllowDynamicProperties]
 class OsHelper
 {
-    const OS_WINDOWS = 'WINDOWS';
-    const OS_LINUX = 'LINUX';
-    const OS_OSX = 'OSX';
+    public const OS_WINDOWS = 'WINDOWS';
+    public const OS_LINUX = 'LINUX';
+    public const OS_OSX = 'OSX';
 
     /**
      * @return string

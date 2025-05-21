@@ -1,4 +1,5 @@
 <?php
+#[\AllowDynamicProperties]
 class SticUtils
 {
 
@@ -72,7 +73,7 @@ EOQ;
 EOQ;
                         break;
                     case 'decimal':
-                        $fieldValue = self::formatDecimalInConfigSettings($bean->$field);
+                        $fieldValue = formatDecimalInConfigSettings($bean->$field);
                         $js .= <<<EOQ
                         if ($('#$field').text() != '$fieldValue') {
                             $('#$field').text('$fieldValue').fadeOut(500).fadeIn(1000);
@@ -107,7 +108,7 @@ EOQ;
      */
     public static function getRelatedBeanObject($bean, $relationshipName)
     {
-        if (!$bean->load_relationship($relationshipName)) {
+        if (!$bean || !$bean->load_relationship($relationshipName)) {
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': : Failed retrieve contacts relationship data');
             return false;
         }
@@ -510,7 +511,7 @@ EOQ;
         $sig_digits = empty($user_sig_digits) ? $sugar_config['default_currency_significant_digits'] : $user_sig_digits;
 
         // Format the number
-        $value = number_format($decimalValue, $sig_digits, $dec_sep, $grp_sep);
+        $value = number_format((float)$decimalValue, $sig_digits, $dec_sep, $grp_sep);
         return $value;
     }
 
@@ -589,7 +590,7 @@ EOQ;
             return in_array($k['type'], ['decimal', 'currency', 'float']);
         }, ARRAY_FILTER_USE_BOTH);
         foreach ($decimalFields as $key => $value) {
-            $duplicateBean->$key = (float) number_format($duplicateBean->$key, $value['precision'] ?? 2, '.', '');
+            $duplicateBean->$key = (float) number_format((float)$duplicateBean->$key, $value['precision'] ?? 2, '.', '');
         }
 
         // Apply any changes

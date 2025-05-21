@@ -40,7 +40,7 @@ trait CommandArguments
         if (!is_array($args)) {
             $args = $func_args;
         }
-        $this->arguments .= ' ' . implode(' ', array_map('static::escape', $args));
+        $this->arguments .= ' ' . implode(' ', array_map([static::class, 'escape'], $args));
         return $this;
     }
 

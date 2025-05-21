@@ -41,6 +41,7 @@
 require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 require_once('modules/ModuleBuilder/MB/ModuleBuilder.php');
  
+#[\AllowDynamicProperties]
 class Viewdeletemodule extends SugarView
 {
     /**

@@ -41,7 +41,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-chdir(dirname(__FILE__));
+chdir(__DIR__);
 
 require_once('include/entryPoint.php');
 

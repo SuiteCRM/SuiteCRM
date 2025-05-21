@@ -84,7 +84,7 @@ $skipDirs = [
  * @return bool
  */
 $fileCheck = function ($file, $key, $iterator) use ($baseDirectory, $skipDirs, $includeDirs) {
-    $subDir = explode(DIRECTORY_SEPARATOR, str_replace($baseDirectory . DIRECTORY_SEPARATOR, '', $key));
+    $subDir = explode(DIRECTORY_SEPARATOR, str_replace($baseDirectory . DIRECTORY_SEPARATOR, '', (string) $key));
     if ($iterator->hasChildren() &&
         !in_array($file->getFilename(), $skipDirs, true) &&
         (empty($subDir) || in_array($subDir[0], $includeDirs, true))
@@ -182,7 +182,7 @@ $outs = testPermsDropTable($db, $outs, $outs['skip']);
 $outs['dbOut'] .= '</table>';
 
 
-if (count($outs['db']) < 1) {
+if ((is_countable($outs['db']) ? count($outs['db']) : 0) < 1) {
     logThis('No permissions errors found!');
     $outs['dbOut'] = "<b>".$mod_strings['LBL_UW_DB_NO_ERRORS']."</b>";
 }

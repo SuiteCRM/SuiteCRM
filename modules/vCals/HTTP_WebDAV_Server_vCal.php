@@ -56,6 +56,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
      *
      * @access public
      */
+    #[\AllowDynamicProperties]
     class HTTP_WebDAV_Server_vCal extends HTTP_WebDAV_Server
     {
         /**
@@ -128,7 +129,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
             } else {
                 $this->path = $this->_urldecode($_SERVER["PATH_INFO"]);
 
-                $query_str = preg_replace('/^\//', '', $this->path);
+                $query_str = preg_replace('/^\//', '', (string) $this->path);
                 $query_arr =  array();
                 parse_str($query_str, $query_arr);
             }
@@ -184,16 +185,18 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
 
 
 
+            $userName = $query_arr['user_name'] ?? '';
+
             /**
              * Fake a response so that it is not different from when a user is found
              */
             if ($this->user_focus->id === null) {
-                $this->user_focus->last_name = $query_arr['user_name'];
+                $this->user_focus->last_name = $userName;
             } elseif (
                 !$current_user->isAdmin() &&
                 $current_user->user_name !== $this->user_focus->user_name
             ) {
-                $this->user_focus->last_name = $query_arr['user_name'];
+                $this->user_focus->last_name = $userName;
             }
 
             parent::ServeRequest();
@@ -267,6 +270,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
         */
         public function http_PUT()
         {
+            $focus = null;
             $options = array();
             $options["path"] = $this->path;
             $options["content_length"] = $_SERVER["CONTENT_LENGTH"];

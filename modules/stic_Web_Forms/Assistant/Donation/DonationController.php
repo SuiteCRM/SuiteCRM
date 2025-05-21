@@ -35,14 +35,14 @@ class DonationController extends stic_Web_FormsAssistantController {
     public function actionStep1() {
         $this->createModulesArray();
         $this->view = 'Donationstep1';
-        $this->view_object_map['WEB_MODULE'] = $this->persistentData['WEB_MODULE']; // Retrieve the value saved in previous steps
+        $this->view_object_map['WEB_MODULE'] = $this->persistentData['WEB_MODULE'] ?? null; // Retrieve the value saved in previous steps
         $this->mapStepNavigation('Step1', 'Step2');
 
         // Get all reCAPTCHA configurations and put it in view_object_map['PERSISTENT_DATA']['recaptcha_configs']
         $this->view_object_map['PERSISTENT_DATA']['recaptcha_configs'] = $this->getRecaptchaConfigurations();
         $this->view_object_map['PERSISTENT_DATA']['recaptcha_configKeys'] = array_keys($this->view_object_map['PERSISTENT_DATA']['recaptcha_configs']);
         // Get index of selected reCAPTCHA configuration
-        $this->view_object_map['PERSISTENT_DATA']['recaptcha_selected'] = $this->persistentData['recaptcha_selected'];
+        $this->view_object_map['PERSISTENT_DATA']['recaptcha_selected'] = $this->persistentData['recaptcha_selected'] ?? null;
     }
 
     /**
@@ -100,7 +100,7 @@ class DonationController extends stic_Web_FormsAssistantController {
         global $app_list_strings;
 
         // Generate the default shipping url
-        if (!$this->persistentData['FORM_WEB_POST_URL']) {
+        if (!isset($this->persistentData['FORM_WEB_POST_URL']) || $this->persistentData['FORM_WEB_POST_URL'] === '') {
             if ($this->persistentData['include_recaptcha']) {
                 $this->persistentData['FORM_WEB_POST_URL'] = $this->getServerURL() . '/index.php?entryPoint=stic_Web_Forms_saveRecaptcha';
             } else {
@@ -113,7 +113,7 @@ class DonationController extends stic_Web_FormsAssistantController {
         $this->view_object_map['PAYMENT_TYPE_OPTIONS'] = $app_list_strings[$objFP->field_defs['payment_type']['options']];
 
         // Generate the assigned user id
-        if (!$this->persistentData['ASSIGNED_USER_ID']) {
+        if (!isset($this->persistentData['ASSIGNED_USER_ID']) || $this->persistentData['ASSIGNED_USER_ID'] === '') {
             global $current_user;
             $this->persistentData['ASSIGNED_USER_ID'] = $current_user->id;
             $this->persistentData['ASSIGNED_USER_NAME'] = $current_user->name;
@@ -125,23 +125,23 @@ class DonationController extends stic_Web_FormsAssistantController {
 
         // Load the data in case we come from step 4
         $this->view_object_map['FORM_WEB_POST_URL'] = $this->persistentData['FORM_WEB_POST_URL'];
-        $this->view_object_map['FORM_HEADER'] = $this->persistentData['FORM_HEADER'];
-        $this->view_object_map['FORM_DESCRIPTION'] = $this->persistentData['FORM_DESCRIPTION'];
-        $this->view_object_map['FORM_SUBMIT_LABEL'] = $this->persistentData['FORM_SUBMIT_LABEL'];
-        $this->view_object_map['FORM_REDIRECT_OK_URL'] = $this->persistentData['FORM_REDIRECT_OK_URL'];
-        $this->view_object_map['FORM_REDIRECT_KO_URL'] = $this->persistentData['FORM_REDIRECT_KO_URL'];
-        $this->view_object_map['VALIDATE_IDENTIFICATION_NUMBER'] = $this->persistentData['VALIDATE_IDENTIFICATION_NUMBER'];
-        $this->view_object_map['ALLOW_CARD_RECURRING_PAYMENTS'] = $this->persistentData['ALLOW_CARD_RECURRING_PAYMENTS'];
-        $this->view_object_map['ALLOW_PAYPAL_RECURRING_PAYMENTS'] = $this->persistentData['ALLOW_PAYPAL_RECURRING_PAYMENTS'];
-        $this->view_object_map['PAYMENT_TYPE'] = $this->persistentData['PAYMENT_TYPE'];
-        $this->view_object_map['RELATION_TYPE'] = $this->persistentData['RELATION_TYPE'];
-        $this->view_object_map['EMAIL_TEMPLATE_ID'] = $this->persistentData['EMAIL_TEMPLATE_ID'];
-        $this->view_object_map['EMAIL_TEMPLATE_NAME'] = $this->persistentData['EMAIL_TEMPLATE_NAME'];
-        $this->view_object_map['CAMPAIGN_ID'] = $this->persistentData['CAMPAIGN_ID'];
-        $this->view_object_map['CAMPAIGN_NAME'] = $this->persistentData['CAMPAIGN_NAME'];
-        $this->view_object_map['ASSIGNED_USER_ID'] = $this->persistentData['ASSIGNED_USER_ID'];
-        $this->view_object_map['ASSIGNED_USER_NAME'] = $this->persistentData['ASSIGNED_USER_NAME'];
-        $this->view_object_map['FORM_FOOTER'] = $this->persistentData['FORM_FOOTER'];
+        $this->view_object_map['FORM_DESCRIPTION'] = $this->persistentData['FORM_DESCRIPTION'] ?? null;
+        $this->view_object_map['FORM_HEADER'] = $this->persistentData['FORM_HEADER'] ?? null;
+        $this->view_object_map['FORM_SUBMIT_LABEL'] = $this->persistentData['FORM_SUBMIT_LABEL'] ?? null;
+        $this->view_object_map['FORM_REDIRECT_OK_URL'] = $this->persistentData['FORM_REDIRECT_OK_URL'] ?? null;
+        $this->view_object_map['FORM_REDIRECT_KO_URL'] = $this->persistentData['FORM_REDIRECT_KO_URL'] ?? null;
+        $this->view_object_map['VALIDATE_IDENTIFICATION_NUMBER'] = $this->persistentData['VALIDATE_IDENTIFICATION_NUMBER'] ?? null;
+        $this->view_object_map['ALLOW_CARD_RECURRING_PAYMENTS'] = $this->persistentData['ALLOW_CARD_RECURRING_PAYMENTS'] ?? null;
+        $this->view_object_map['ALLOW_PAYPAL_RECURRING_PAYMENTS'] = $this->persistentData['ALLOW_PAYPAL_RECURRING_PAYMENTS'] ?? null;
+        $this->view_object_map['PAYMENT_TYPE'] = $this->persistentData['PAYMENT_TYPE'] ?? null;
+        $this->view_object_map['RELATION_TYPE'] = $this->persistentData['RELATION_TYPE'] ?? null;
+        $this->view_object_map['EMAIL_TEMPLATE_ID'] = $this->persistentData['EMAIL_TEMPLATE_ID'] ?? null;
+        $this->view_object_map['EMAIL_TEMPLATE_NAME'] = $this->persistentData['EMAIL_TEMPLATE_NAME'] ?? null;
+        $this->view_object_map['CAMPAIGN_ID'] = $this->persistentData['CAMPAIGN_ID'] ?? null;
+        $this->view_object_map['CAMPAIGN_NAME'] = $this->persistentData['CAMPAIGN_NAME'] ?? null;
+        $this->view_object_map['ASSIGNED_USER_ID'] = $this->persistentData['ASSIGNED_USER_ID'] ?? null;
+        $this->view_object_map['ASSIGNED_USER_NAME'] = $this->persistentData['ASSIGNED_USER_NAME'] ?? null;
+        $this->view_object_map['FORM_FOOTER'] = $this->persistentData['FORM_FOOTER'] ?? null ;
 
         $this->view = 'Donationstep3';
 
@@ -209,8 +209,8 @@ class DonationController extends stic_Web_FormsAssistantController {
         $this->prepareFieldsToResultForm($requiredFields, $boolFields, $reqFields);
 
         // Prepare the list of required fields and Boolean
-        $reqFields = (!empty($reqFields) ? implode($reqFields, ";") . ";" : "");
-        $boolFields = (!empty($boolFields) ? implode($boolFields, ";") . ";" : "");
+        $reqFields = (is_array($reqFields) && !empty($reqFields) ? implode(";", $reqFields) . ";" : "");
+        $boolFields = (is_array($boolFields) && !empty($boolFields) ? implode(";", $boolFields) . ";" : "");
 
         // Prepare the form definition data
         $defParams = self::formatJsonData2HiddenField(array(

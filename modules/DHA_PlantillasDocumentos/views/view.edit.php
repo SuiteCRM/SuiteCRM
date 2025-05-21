@@ -22,10 +22,11 @@
  */
 if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentosViewEdit extends ViewEdit{
 
    //////////////////////////////////////////////////////////////////////////
-   function DHA_PlantillasDocumentosViewEdit(){
+   function __construct(){
       //parent::ViewEdit();
       parent::__construct();
       

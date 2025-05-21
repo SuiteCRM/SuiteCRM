@@ -49,6 +49,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $used_aliases = array();
 $alias_map = array();
 
+#[\AllowDynamicProperties]
 class SugarWidgetReportField extends SugarWidgetField
 {
     /**
@@ -147,7 +148,7 @@ class SugarWidgetReportField extends SugarWidgetField
             }
 
             // for a field with type='currency' conversion of values into a user-preferred currency
-            if ($layout_def['type'] == 'currency' && strpos($layout_def['name'], '_usdoll') === false) {
+            if ($layout_def['type'] == 'currency' && strpos((string) $layout_def['name'], '_usdoll') === false) {
                 $currency = $this->reporter->currency_obj;
                 $currency_alias = isset($layout_def['currency_alias'])
                 ? $layout_def['currency_alias'] : $currency->table_name;

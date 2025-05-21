@@ -48,6 +48,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 class SugarWidgetSubPanelTopCreateTaskButton extends SugarWidgetSubPanelTopButtonQuickCreate
 {
+    /**
+     * @var string
+     */
+    public $subpanelDiv;
     public function &_get_form($defines, $additionalFormFields = null, $asUrl = false)
     {
         global $app_strings;

@@ -4,6 +4,7 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header\Part;
 
 use ZBateson\MbWrapper\MbWrapper;
@@ -22,15 +23,14 @@ class ReceivedPart extends ParameterPart
 {
     /**
      * Constructor.
-     * 
-     * @param MbWrapper $charsetConverter
+     *
      * @param string $name
      * @param string $value
      */
     public function __construct(MbWrapper $charsetConverter, $name, $value) {
         parent::__construct($charsetConverter, '', '');
         // can't be mime-encoded
-        $this->name = trim($name);
-        $this->value = trim($value);
+        $this->name = \trim($name);
+        $this->value = $value ? \trim($value) : $value;
     }
 }

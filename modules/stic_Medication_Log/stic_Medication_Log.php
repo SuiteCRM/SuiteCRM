@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Medication_Log extends Basic
 {
     public $new_schema = true;
@@ -109,7 +110,7 @@ class stic_Medication_Log extends Basic
             }
 
             $date = SugarDateTime::createFromFormat(TimeDate::DB_DATE_FORMAT, $intakeDate, null);
-            $intakeDateFormatted = $date->format($timedate->get_date_format($user));
+            $intakeDateFormatted = $date->format($timedate->get_date_format($current_user));
 
             
             $this->name = $contactName . ' - ' . $medicationName . ' - ' . $intakeDateFormatted
@@ -134,13 +135,33 @@ class stic_Medication_Log extends Basic
     {
         include_once 'SticInclude/Utils.php';
 
-        // If parent payment commitment has changed...
-        if (!empty($this->stic_prescription_stic_medicationstic_medication_ida) && (trim($this->stic_prescription_stic_medicationstic_medication_ida) != trim($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida']))) {
-            // Get new parent prescription bean
-            $prescriptionBean = BeanFactory::getBean('stic_Prescription', $this->stic_prescription_stic_medicationstic_medication_ida);
-            // Get prescription related contact (usual case)
-            $contactId = SticUtils::getRelatedBeanObject($prescriptionBean, 'stic_prescription_contacts')->id;
-            $this->stic_medication_log_contactscontacts_ida = $contactId;
+        // If parent medication has changed...
+        // STIC Custom 20250416 JBL - Fix Warnings and TypeErrors
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // if (!empty($this->stic_prescription_stic_medicationstic_medication_ida) && (trim($this->stic_prescription_stic_medicationstic_medication_ida) != trim($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida']))) {
+        if (!empty($this->stic_prescription_stic_medicationstic_medication_ida)) {
+            $medication_id = '';
+            if (is_string($this->stic_prescription_stic_medicationstic_medication_ida) || 
+                (is_object($this->stic_prescription_stic_medicationstic_medication_ida) && 
+                    method_exists($this->stic_prescription_stic_medicationstic_medication_ida, '__toString'))) {
+                $medication_id = (string)$this->stic_prescription_stic_medicationstic_medication_ida;
+            }
+            $medication_id_before = '';
+            if (isset($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida'])) {
+                if (is_string($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida']) ||
+                    (is_object($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida']) && 
+                        method_exists($this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida'], '__toString'))) {
+                    $medication_id_before = (string)$this->rel_fields_before_value['stic_prescription_stic_medicationstic_medication_ida'];
+                }
+            }
+            if (trim($medication_id) != trim($medication_id_before)) {
+        // END STIC Custom
+                // Get new parent prescription bean
+                $prescriptionBean = BeanFactory::getBean('stic_Prescription', $this->stic_prescription_stic_medicationstic_medication_ida);
+                // Get prescription related contact (usual case)
+                $contactId = SticUtils::getRelatedBeanObject($prescriptionBean, 'stic_prescription_contacts')->id;
+                $this->stic_medication_log_contactscontacts_ida = $contactId;
+            }
         }
 
         // Call the generic save_relationship_changes() function from the SugarBean class

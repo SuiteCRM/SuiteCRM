@@ -396,7 +396,7 @@ class SugarApplicationTest extends SuitePHPUnitFrameworkTestCase
     {
         //execute the method and test that it returns a plus length string
         $redirect = (new SugarApplication())->getLoginRedirect();
-        self::assertGreaterThan(0, strlen($redirect));
+        self::assertGreaterThan(0, strlen((string) $redirect));
     }
 
     protected function setUp(): void

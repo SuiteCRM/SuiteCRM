@@ -33,10 +33,12 @@ require_once('include/upload_file.php');
 
 class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
 {
-    const SAMPLE_ROW_SIZE = 3;
+    public $ss;
+    public $bean;
+    public const SAMPLE_ROW_SIZE = 3;
     protected $pageTitleKey = 'LBL_CONFIRM_TITLE';
     protected $errorScript = "";
-    
+
     /**
      * @see SugarView::display()
      */
@@ -45,8 +47,11 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
         global $mod_strings, $app_strings, $current_user;
         global $sugar_config, $locale;
 
+        $error_msgs = [];
+
         // STIC-Code MHP - If we are in multimodule import, cancel the file verification
-        if (!$_SESSION["stic_ImporValidation"]["multimodule"]) {
+        $multimodule = $_SESSION["stic_ImporValidation"]["multimodule"] ?? '';
+        if (empty($multimodule)) {
             if (isset($_FILES['userfile']['name']) && !hasValidFileName('import_upload_file_name', $_FILES['userfile']['name'])) {
                 LoggerManager::getLogger()->fatal('Invalid import file name');
                 echo $app_strings['LBL_LOGGER_INVALID_FILENAME'];
@@ -79,7 +84,7 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
         ImportCacheFiles::clearCacheFiles();
 
         // STIC-Code MHP - If we are in multimodule import, assign the file that we have saved in session
-        if (!$_SESSION["stic_ImporValidation"]["multimodule"]) 
+        if (empty($multimodule))
         {
             // handle uploaded file
             $uploadFile = new UploadFile('userfile');
@@ -90,7 +95,7 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
                 $uploadFileName = $uploadFile->get_upload_path($filename);
                 $_SESSION["stic_ImporValidation"]["path_name"] = "upload/" . $filename;
             } elseif (!empty($_REQUEST['tmp_file'])) {
-                $uploadFileName = "upload://".basename($_REQUEST['tmp_file']);
+                $uploadFileName = "upload://".basename((string) $_REQUEST['tmp_file']);
             } else {
                 $this->_showImportError($mod_strings['LBL_STIC_IMPORT_VALIDATION_MODULE_ERROR_NO_UPLOAD'], $_REQUEST['import_module'], 'Step2', true, null, true);
                 return;
@@ -106,8 +111,8 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
             $mimeTypeOk = true;
 
             //check to see if the file mime type is not a form of text or application octed streramand fire error if not
-            if (isset($_FILES['userfile']['type']) && strpos($_FILES['userfile']['type'], 'octet-stream') === false && strpos($_FILES['userfile']['type'], 'text') === false
-                && strpos($_FILES['userfile']['type'], 'application/vnd.ms-excel') === false) {
+            if (isset($_FILES['userfile']['type']) && strpos((string) $_FILES['userfile']['type'], 'octet-stream') === false && strpos((string) $_FILES['userfile']['type'], 'text') === false
+                && strpos((string) $_FILES['userfile']['type'], 'application/vnd.ms-excel') === false) {
                 //this file does not have a known text or application type of mime type, issue the warning
                 $error_msgs[] = $mod_strings['LBL_MIME_TYPE_ERROR_1'];
                 $error_msgs[] = $mod_strings['LBL_MIME_TYPE_ERROR_2'];
@@ -123,7 +128,7 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
             // END STIC-Code
         }
         // Now parse the file and look for errors
-        $importFile = new ImportFile($uploadFileName, $_REQUEST['custom_delimiter'], html_entity_decode($_REQUEST['custom_enclosure'], ENT_QUOTES), false);
+        $importFile = new ImportFile($uploadFileName, $_REQUEST['custom_delimiter'], html_entity_decode((string) $_REQUEST['custom_enclosure'], ENT_QUOTES), false);
 
         if ($this->shouldAutoDetectProperties($importSource)) {
             $GLOBALS['log']->debug("Auto detecing csv properties...");
@@ -165,7 +170,7 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
             $importFileMap = $this->overloadImportFileMapFromRequest($importFileMap);
             $delimeter = !empty($_REQUEST['custom_delimiter']) ? $_REQUEST['custom_delimiter'] : $delimeter;
             $enclosure = isset($_REQUEST['custom_enclosure']) ? $_REQUEST['custom_enclosure'] : $enclosure;
-            $enclosure = html_entity_decode($enclosure, ENT_QUOTES);
+            $enclosure = html_entity_decode((string) $enclosure, ENT_QUOTES);
             $hasHeader = !empty($_REQUEST['has_header']) ? $_REQUEST['has_header'] : $hasHeader;
             if ($hasHeader == 'on') {
                 $hasHeader = true;
@@ -179,7 +184,7 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
         $this->ss->assign("IMPORT_ENCLOSURE_OPTIONS", $this->getEnclosureOptions($enclosure));
         $this->ss->assign("IMPORT_DELIMETER_OPTIONS", $this->getDelimeterOptions($delimeter));
         $this->ss->assign("CUSTOM_DELIMITER", $delimeter);
-        $this->ss->assign("CUSTOM_ENCLOSURE", htmlentities($enclosure, ENT_QUOTES));
+        $this->ss->assign("CUSTOM_ENCLOSURE", htmlentities((string) $enclosure, ENT_QUOTES));
         $hasHeaderFlag = $hasHeader ? " CHECKED" : "";
         $this->ss->assign("HAS_HEADER_CHECKED", $hasHeaderFlag);
 
@@ -232,10 +237,10 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
     {
         $results = array();
         foreach ($GLOBALS['app_list_strings']['import_enclosure_options'] as $k => $v) {
-            $results[htmlentities($k, ENT_QUOTES)] = $v;
+            $results[htmlentities((string) $k, ENT_QUOTES)] = $v;
         }
 
-        return get_select_options_with_id($results, htmlentities($enclosure, ENT_QUOTES));
+        return get_select_options_with_id($results, htmlentities((string) $enclosure, ENT_QUOTES));
     }
 
     private function overloadImportFileMapFromRequest($importFileMap)
@@ -265,8 +270,9 @@ class stic_Import_ValidationViewConfirm extends stic_Import_ValidationView
 
     private function getImportMap($importSource)
     {
+        $import_map_seed = null;
         if (strncasecmp("custom:", $importSource, 7) == 0) {
-            $id = substr($importSource, 7);
+            $id = substr((string) $importSource, 7);
             $import_map_seed = BeanFactory::newBean('Import_1');
             $import_map_seed->retrieve($id, false);
 
@@ -411,10 +417,8 @@ eoq;
     {
         $maxColumns = 0;
         foreach ($sampleSet as $v) {
-            if (count($v) > $maxColumns) {
-                $maxColumns = count($v);
-            } else {
-                continue;
+            if ((is_countable($v) ? count($v) : 0) > $maxColumns) {
+                $maxColumns = is_countable($v) ? count($v) : 0;
             }
         }
 
@@ -431,14 +435,17 @@ eoq;
         if (! $importFile->hasHeaderRow(false)) {
             array_unshift($rows, array_fill(0, 1, ''));
         }
-        
-        foreach ($rows as &$row) {
+
+        foreach ($rows as $key => &$row) {
             if (is_array($row)) {
                 foreach ($row as &$val) {
                     $val = strip_tags($val);
                 }
+            }else{
+                unset($rows[$key]);
             }
         }
+
         return $rows;
     }
 
@@ -450,11 +457,11 @@ eoq;
         global $mod_strings, $locale;
         $maxRecordsExceededJS = $maxRecordsExceeded?"true":"false";
         $importMappingJS = json_encode($importMappingJS);
-        
+
         $currencySymbolJs = $this->setCurrencyOptions($importFileMap);
         $getNumberJs = $locale->getNumberJs();
         $getNameJs = $locale->getNameJs();
-        
+
         return <<<EOJAVASCRIPT
 
 

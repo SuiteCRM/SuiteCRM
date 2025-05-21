@@ -224,4 +224,6 @@ $mod_strings = array(
     'LBL_AOS_INVOICES' => 'Facturas',
     'LBL_AOS_QUOTES' => 'Presupuestos',
     'LBL_PROJECT_CONTACTS_1_FROM_PROJECT_TITLE' => 'Contactos del projecto a partir del nombre del projecto',
+
+    'LBL_LIST_INVITE_STATUS' => 'Estado de la Invitación',
 );

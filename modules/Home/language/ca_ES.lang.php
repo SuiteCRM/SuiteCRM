@@ -243,5 +243,10 @@ $mod_strings = array(
     'LBL_ELASTIC_SEARCH_EXCEPTION_NO_NODES_AVAILABLE' => 'No s\'ha pogut connectar amb el servidor d\'Elasticsearch.',
     'LBL_ELASTIC_SEARCH_EXCEPTION_SEARCH' => 'S\'ha produït un error intern a la cerca.',
     'LBL_ELASTIC_SEARCH_EXCEPTION_DEFAULT' => 'S\'ha produït un error desconegut mentre es realitzava la cerca.',
-    'LBL_ELASTIC_SEARCH_EXCEPTION_END_MESSAGE' => 'Si el problema persisteix, contacteu amb un administrador. Més informació al registre de l\'aplicació.'
+    'LBL_ELASTIC_SEARCH_EXCEPTION_END_MESSAGE' => 'Si el problema persisteix, contacteu amb un administrador. Més informació al registre de l\'aplicació.',
+    'LBL_ELASTIC_SEARCH_EXCEPTION_MISSING_INDEX' => 'No s\'ha pogut trobar l\'índex de cerca per a un o més mòduls. Si us plau, assegureu-vos que el crontab està configurat i en funcionament, obriu la configuració d\'Elasticsearch i feu clic a "Planificar indexació completa" i considereu crear una tasca del Scheduler "Indexador d\'Elasticsearch" si no existeix.',
+
+    'LBL_ELASTIC_SEARCH_DEFAULT' => 'No hi ha resultats que coincideixin amb els criteris de cerca. Proveu d\'ampliar la cerca.',
+
+    'LNK_TASK_VIEW' => 'Veure Tasca',
 );

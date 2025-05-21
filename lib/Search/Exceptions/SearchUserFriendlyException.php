@@ -53,6 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * An example could be: "An error has occurred while performing the search. Your query syntax might not be valid."
  *
  */
+#[\AllowDynamicProperties]
 class SearchUserFriendlyException extends SearchException
 {
 }

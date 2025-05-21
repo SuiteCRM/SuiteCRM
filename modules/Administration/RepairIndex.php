@@ -55,7 +55,7 @@ function compare($table_name, $db_indexes, $var_indexes)
         //else by columns in the index.
         $sel_db_index = null;
         $var_fields_string ='';
-        if (count($var_i_def['fields'])>0) {
+        if ((is_countable($var_i_def['fields']) ? count($var_i_def['fields']) : 0)>0) {
             $var_fields_string = implode('', $var_i_def['fields']);
         }
         $field_list_match = false;
@@ -90,7 +90,7 @@ function compare($table_name, $db_indexes, $var_indexes)
         }
         //check for name match.
         //it should not occur for indexes of type primary or unique.
-        if ($var_i_def['type'] != 'primary' and $var_i_def['type'] != 'unique' and $var_i_def['name'] != $sel_db_index['name']) {
+        if ($var_i_def['type'] != 'primary' && $var_i_def['type'] != 'unique' && $var_i_def['name'] != $sel_db_index['name']) {
             //rename index.
             $rename=DBManagerFactory::getInstance()->renameIndexDefs($sel_db_index, $var_i_def, $table_name);
             if (is_array($rename)) {
@@ -160,7 +160,7 @@ foreach ($beanFiles as $beanname=>$beanpath) {
             continue;
         }
 
-        if (empty($definition['db']) or $definition['db'] == $focus->db->dbType) {
+        if (empty($definition['db']) || $definition['db'] == $focus->db->dbType) {
             $var_indices[$definition['name']] = $definition;
         }
     }
@@ -186,7 +186,7 @@ foreach ($dictionary as $rel=>$rel_def) {
     //set index name as the key.
     $var_indices=array();
     foreach ($indices as $definition) {
-        if (empty($definition['db']) or $definition['db'] == $focus->db->dbType) {
+        if (empty($definition['db']) || $definition['db'] == $focus->db->dbType) {
             $var_indices[$definition['name']] = $definition;
         }
     }
@@ -203,15 +203,15 @@ foreach ($dictionary as $rel=>$rel_def) {
 (function_exists('logThis')) ? logThis("RepairIndex: we have ".count($add_index)." indices to ADD.") : "";
 (function_exists('logThis')) ? logThis("RepairIndex: we have ".count($change_index)." indices to CHANGE.") : "";
 
-if ((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0)) {
-    if (!isset($_REQUEST['mode']) or $_REQUEST['mode'] != 'execute') {
+if ((count($drop_index) > 0 || count($add_index) > 0 || count($change_index) > 0)) {
+    if (!isset($_REQUEST['mode']) || $_REQUEST['mode'] != 'execute') {
         echo ($_REQUEST['silent']) ? "" : "<BR><BR><BR>";
         echo ($_REQUEST['silent']) ? "" : "<a href='index.php?module=Administration&action=RepairIndex&mode=execute'>Execute Script</a>";
     }
 
     $focus = BeanFactory::newBean('Accounts');
     if (count($drop_index) > 0) {
-        if (isset($_REQUEST['mode']) and $_REQUEST['mode']=='execute') {
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode']=='execute') {
             echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_DROPPING'];
             foreach ($drop_index as $statement) {
                 echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_EXECUTING'].$statement;
@@ -227,7 +227,7 @@ if ((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0
     }
 
     if (count($add_index) > 0) {
-        if (isset($_REQUEST['mode']) and $_REQUEST['mode']=='execute') {
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode']=='execute') {
             echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_ADDING'];
             foreach ($add_index as $statement) {
                 echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_EXECUTING'].$statement;
@@ -242,7 +242,7 @@ if ((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0
         }
     }
     if (count($change_index) > 0) {
-        if (isset($_REQUEST['mode']) and $_REQUEST['mode']=='execute') {
+        if (isset($_REQUEST['mode']) && $_REQUEST['mode']=='execute') {
             echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_ALTERING'];
             foreach ($change_index as $statement) {
                 echo ($_REQUEST['silent']) ? "" : $mod_strings['LBL_REPAIR_INDEX_EXECUTING'].$statement;
@@ -257,7 +257,7 @@ if ((count($drop_index) > 0 or count($add_index) > 0 or count($change_index) > 0
         }
     }
 
-    if (!isset($_REQUEST['mode']) or $_REQUEST['mode'] != 'execute') {
+    if (!isset($_REQUEST['mode']) || $_REQUEST['mode'] != 'execute') {
         echo ($_REQUEST['silent']) ? "" : "<BR><BR><BR>";
         echo ($_REQUEST['silent']) ? "" : "<a href='index.php?module=Administration&action=RepairIndex&mode=execute'>Execute Script</a>";
     }

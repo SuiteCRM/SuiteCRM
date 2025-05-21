@@ -13,16 +13,19 @@ class Option
      *   The name of the option.
      * @param $description
      *   A one line description.
+     * @param $suggestedValues
+     *   An array of suggestions or a Closure which gets them. See https://symfony.com/blog/new-in-symfony-6-1-improved-console-autocompletion#completion-values-in-input-definitions.
      */
     public function __construct(
         public string $name,
-        public string $description
+        public string $description,
+        public array|\Closure $suggestedValues = []
     ) {
     }
 
     public static function handle(\ReflectionAttribute $attribute, CommandInfo $commandInfo)
     {
-        $args = $attribute->getArguments();
-        $commandInfo->addOptionDescription($args['name'], @$args['description']);
+        $instance = $attribute->newInstance();
+        $commandInfo->addOptionDescription($instance->name, $instance->description, $instance->suggestedValues);
     }
 }

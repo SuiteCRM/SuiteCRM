@@ -24,11 +24,12 @@
 require_once 'modules/DHA_PlantillasDocumentos/views/view.edit.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomDHA_PlantillasDocumentosViewEdit extends DHA_PlantillasDocumentosViewEdit
 {
     public function __construct()
     {
-        parent::DHA_PlantillasDocumentosViewEdit();
+        parent::__construct();
     }
 
     public function preDisplay()

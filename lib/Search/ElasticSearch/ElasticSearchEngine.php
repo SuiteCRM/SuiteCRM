@@ -53,6 +53,7 @@ use SuiteCRM\Search\SearchWrapper;
 /**
  * SearchEngine that use Elasticsearch index for performing almost real-time search.
  */
+#[\AllowDynamicProperties]
 class ElasticSearchEngine extends SearchEngine
 {
     /** @var Client */
@@ -63,7 +64,11 @@ class ElasticSearchEngine extends SearchEngine
      *
      * @param Client|null $client
      */
-    public function __construct(Client $client = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function __construct(Client $client = null)
+    public function __construct(?Client $client = null)
+    // END STIC Custom
     {
         $this->client = $client ?? ElasticSearchClientBuilder::getClient();
     }
@@ -113,7 +118,7 @@ class ElasticSearchEngine extends SearchEngine
         // Override frontend wildcard character
         if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
             $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
-            if ($wildcardFe !== $wildcardBe && strlen($wildcardFe) === 1) {
+            if ($wildcardFe !== $wildcardBe && strlen((string) $wildcardFe) === 1) {
                 $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
             }
         }

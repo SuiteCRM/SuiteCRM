@@ -26,6 +26,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/stic_Import_Validation/Forms.php');
 
+#[\AllowDynamicProperties]
 class stic_UsersLastImport extends SugarBean
 {
     /**

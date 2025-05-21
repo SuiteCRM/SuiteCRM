@@ -41,6 +41,7 @@
 /**
  * Class AOPAssignManager.
  */
+#[\AllowDynamicProperties]
 class AOPAssignManager
 {
     private $ieX = false;
@@ -214,9 +215,8 @@ class AOPAssignManager
     {
         $leastBusyCounts = $this->getLeastBusyCounts();
         asort($leastBusyCounts);
-        reset($leastBusyCounts);
 
-        return key($leastBusyCounts);
+        return array_key_first($leastBusyCounts);
     }
 
     /**
@@ -272,6 +272,7 @@ class AOPAssignManager
      */
     private function getRoundRobinUser()
     {
+        $lastUser = [];
         $id = empty($this->ieX) ? '' : $this->ieX->id;
         $file = create_cache_directory('modules/AOP_Case_Updates/Users/').$id.'lastUser.cache.php';
         $lastUserId = '';

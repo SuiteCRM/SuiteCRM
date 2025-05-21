@@ -215,6 +215,30 @@ latest 7.x client and set the environment variable `ELASTIC_CLIENT_APIVERSIONING
 to `true`. The client is handling the rest internally. For every 8.0 and beyond
 client, you're all set! The compatibility mode is enabled by default.
 
+[discrete]
+[[space-encode-url]]
+=== Space encode in URL
+
+If you use a space character in an index name, elasticsearch-php converts it into
+a `+`, since this space must be encoded in a URL. The same applies to the `id` and `type`
+parameters.
+
+Starting from Elasticsearch 7.4, a `+` in URL is encoded as `%2B` by all the REST
+API functionality. Prior versions handled a `+` as a single space. If your
+application requires handling `+` as a single space you can return to the old
+behaviour by setting the Elasticsearch system property `es.rest.url_plus_as_space` to `true`.
+You can read the https://www.elastic.co/guide/en/elasticsearch/reference/7.17/breaking-changes-7.4.html#_changes_to_encoding_plus_signs_in_urls[Elasticsearch release note]
+for mote information.
+
+Starting from elasticsearch-php 7.17.2, we introduced an environmental variable `ELASTIC_CLIENT_URL_PLUS_AS_SPACE`
+that can be used to encode a space using `+`, setting the variable to `true`.
+If `ELASTIC_CLIENT_URL_PLUS_AS_SPACE` is set to `false`, a space is encoded using `%20`
+as specified in https://www.rfc-editor.org/rfc/rfc3986[RFC 3986].
+
+For instance, if you are using a space character in an index name, this will be
+encoded using a `+`, default behaviour. If you set `ELASTIC_CLIENT_URL_PLUS_AS_SPACE`
+to `false` the space in the index name will be encoded with `%20`.
+
 
 [discrete]
 [[client-usage]]

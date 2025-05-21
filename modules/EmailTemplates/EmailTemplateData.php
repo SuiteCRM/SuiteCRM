@@ -23,7 +23,7 @@ if (isset($_REQUEST['campaignId'])) {
     $_SESSION['campaignWizard'][$_REQUEST['campaignId']]['defaultSelectedTemplateId'] = $emailTemplateId;
 }
 
-if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/', $emailTemplateId) || !$emailTemplateId) {
+if (preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/', (string) $emailTemplateId) || !$emailTemplateId) {
     $func = isset($_REQUEST['func']) ? $_REQUEST['func'] : null;
 
     $fields = array('body_html', 'subject', 'name');

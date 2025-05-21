@@ -96,7 +96,6 @@ if (is_admin($current_user)) {
                 $class_names[] = $GLOBALS['beanList'][$module];
             }
 
-            $repairClass->module_list[] = $module;
             foreach ($views as $view) {
                 try {
                     $parser = ParserFactory::getParser($view, $module);

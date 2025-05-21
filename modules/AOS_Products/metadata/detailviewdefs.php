@@ -49,7 +49,7 @@ $module_name = 'AOS_Products';
 // https://github.com/SinergiaTIC/SinergiaCRM/pull/105
 // $viewdefs [$module_name] =
 // array(
-//   'DetailView' =>
+// 'DetailView' =>
 //   array(
 //     'templateMeta' =>
 //     array(
@@ -149,6 +149,10 @@ $module_name = 'AOS_Products';
 //           array(
 //             'name' => 'url',
 //             'label' => 'LBL_URL',
+//             'displayParams' =>
+//             array(
+//              'link_target' => '_blank',
+//             ),
 //           ),
 //         ),
 //         5 =>

@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Surveys extends Basic
 {
 
@@ -150,7 +151,7 @@ class Surveys extends Basic
         // STIC-Custom 20210729 - There is a bug when duplicating because the question ids 
         // of the first survey are not removed when creating the duplicate one. More info: 
         // STIC#367
-        if (($_POST["duplicateSave"] && $_POST["duplicateSave"]="true"))
+        if (isset($_POST["duplicateSave"]) && $_POST["duplicateSave"]="true")
         {
             unset($_REQUEST['survey_questions_ids']);
         }
@@ -219,7 +220,7 @@ class Surveys extends Basic
         // STIC-Custom 20210729 - There is a bug when duplicating because the question option ids 
         // of the first survey are not removed when creating the duplicate one. More info: 
         // STIC#367
-        if (($_POST["duplicateSave"] && $_POST["duplicateSave"] == "true"))
+        if (isset($_POST["duplicateSave"]) && $_POST["duplicateSave"] == "true")
         {
             unset($ids);
         }

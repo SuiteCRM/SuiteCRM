@@ -1,7 +1,7 @@
 php-encryption
 ===============
 
-[![Build Status](https://travis-ci.org/defuse/php-encryption.svg?branch=master)](https://travis-ci.org/defuse/php-encryption)
+![Build Status](https://app.travis-ci.com/defuse/php-encryption.svg?branch=master)
 [![codecov](https://codecov.io/gh/defuse/php-encryption/branch/master/graph/badge.svg)](https://codecov.io/gh/defuse/php-encryption)
 [![Latest Stable Version](https://poser.pugx.org/defuse/php-encryption/v/stable)](https://packagist.org/packages/defuse/php-encryption)
 [![License](https://poser.pugx.org/defuse/php-encryption/license)](https://packagist.org/packages/defuse/php-encryption)
@@ -15,12 +15,12 @@ This is a library for encrypting data with a key or password in PHP. **It
 requires PHP 5.6 or newer and OpenSSL 1.0.1 or newer.** We recommend using a
 version of PHP that [still has security
 support](https://www.php.net/supported-versions.php), which at the time of
-writing means PHP 7.3 or later. Using this library with an unsupported
+writing means PHP 8.0 or later. Using this library with an unsupported
 version of PHP could lead to security vulnerabilities.
 
-The current version of `php-encryption` is v2.3.1. This library is expected to
+The current version of `php-encryption` is v2.4.0. This library is expected to
 remain stable and supported by its authors with security and bugfixes until at
-least January 1st, 2022.
+least January 1st, 2024.
 
 The library is a joint effort between [Taylor Hornby](https://defuse.ca/) and
 [Scott Arciszewski](https://paragonie.com/blog/author/scott-arcizewski) as well

@@ -52,6 +52,10 @@ require_once __DIR__ . '/../../include/EmailInterface.php';
 require_once __DIR__ . '/../Emails/EmailUI.php';
 
 // User is used to store customer information.
+// STIC Custom 20250304 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class User extends Person implements EmailInterface
 {
 
@@ -115,6 +119,11 @@ class User extends Person implements EmailInterface
     );
     public $emailAddress;
     public $new_schema = true;
+
+    // STIC Custom 20250305 JBL - Avoid Attempt to access to undefined property
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    public $default_team;
+    // END STIC Custom
 
     /**
      * @var bool
@@ -637,7 +646,7 @@ class User extends Person implements EmailInterface
                     SugarApplication::appendErrorMessage($mod_strings['ERR_USER_FACTOR_SMTP_REQUIRED']);
                 }
             } else {
-                if (($tmpUser instanceof User) && ($this->factor_auth != $tmpUser->factor_auth || $this->factor_auth_interface != $tmpUser->factor_auth_interface)) {
+                if (($tmpUser instanceof User) && ($this->factor_auth !== $tmpUser->factor_auth || $this->factor_auth_interface !== $tmpUser->factor_auth_interface)) {
                     $msg .= 'Current user is not able to change two factor authentication settings.';
                     $GLOBALS['log']->warn($msg);
                     SugarApplication::appendErrorMessage($mod_strings['ERR_USER_FACTOR_CHANGE_DISABLED']);
@@ -821,7 +830,7 @@ class User extends Person implements EmailInterface
         if (!$this->is_group && !$this->portal_only) {
             require_once('modules/MySettings/TabController.php');
 
-            global $current_user, $sugar_config;
+            global $current_user, $sugar_config, $app_strings, $mod_strings, $current_language;
 
             $display_tabs_def = isset($_REQUEST['display_tabs_def']) ? urldecode($_REQUEST['display_tabs_def']) : '';
             $hide_tabs_def = isset($_REQUEST['hide_tabs_def']) ? urldecode($_REQUEST['hide_tabs_def']) : '';
@@ -847,43 +856,78 @@ class User extends Person implements EmailInterface
             if (isset($_POST['mailmerge_on']) && !empty($_POST['mailmerge_on'])) {
                 $this->setPreference('mailmerge_on', 'on', 0, 'global');
             } else {
-                $this->setPreference('mailmerge_on', 'off', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('mailmerge_on', 'off', 0, 'global');
+                $mailMerge = $this->getCurrentPreference('mailmerge_on');
+                $this->setPreference('mailmerge_on', $mailMerge ?? 'off', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['user_swap_last_viewed'])) {
                 $this->setPreference('swap_last_viewed', $_POST['user_swap_last_viewed'], 0, 'global');
             } else {
-                $this->setPreference('swap_last_viewed', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('swap_last_viewed', '', 0, 'global');
+                $lastViewedSwap = $this->getCurrentPreference('swap_last_viewed');
+                $this->setPreference('swap_last_viewed', $lastViewedSwap ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['user_swap_shortcuts'])) {
                 $this->setPreference('swap_shortcuts', $_POST['user_swap_shortcuts'], 0, 'global');
             } else {
-                $this->setPreference('swap_shortcuts', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('swap_shortcuts', '', 0, 'global');
+                $swapShortcuts = $this->getCurrentPreference('swap_shortcuts');
+                $this->setPreference('swap_shortcuts', $swapShortcuts ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['use_group_tabs'])) {
                 $this->setPreference('navigation_paradigm', $_POST['use_group_tabs'], 0, 'global');
             } else {
-                $this->setPreference('navigation_paradigm', $GLOBALS['sugar_config']['default_navigation_paradigm'], 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315                
+                // $this->setPreference('navigation_paradigm', $GLOBALS['sugar_config']['default_navigation_paradigm'], 0, 'global');
+                $groupTabs = $this->getCurrentPreference('navigation_paradigm');
+                $this->setPreference('navigation_paradigm', $groupTabs ?? $GLOBALS['sugar_config']['default_navigation_paradigm'], 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['sort_modules_by_name'])) {
                 $this->setPreference('sort_modules_by_name', $_POST['sort_modules_by_name'], 0, 'global');
             } else {
-                $this->setPreference('sort_modules_by_name', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('sort_modules_by_name', '', 0, 'global');
+                $modulesByName = $this->getCurrentPreference('sort_modules_by_name');
+                $this->setPreference('sort_modules_by_name', $modulesByName ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['user_subpanel_tabs'])) {
                 $this->setPreference('subpanel_tabs', $_POST['user_subpanel_tabs'], 0, 'global');
             } else {
-                $this->setPreference('subpanel_tabs', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('subpanel_tabs', '', 0, 'global');
+                $subpanelTabs = $this->getCurrentPreference('subpanel_tabs');
+                $this->setPreference('subpanel_tabs', $subpanelTabs ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['user_count_collapsed_subpanels'])) {
                 $this->setPreference('count_collapsed_subpanels', $_POST['user_count_collapsed_subpanels'], 0, 'global');
             } else {
-                $this->setPreference('count_collapsed_subpanels', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('count_collapsed_subpanels', '', 0, 'global');
+                $countCollapsedSubpanel = $this->getCurrentPreference('count_collapsed_subpanels');
+                $this->setPreference('count_collapsed_subpanels', $countCollapsedSubpanel ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['user_theme'])) {
@@ -894,7 +938,12 @@ class User extends Person implements EmailInterface
             if (isset($_POST['user_module_favicon'])) {
                 $this->setPreference('module_favicon', $_POST['user_module_favicon'], 0, 'global');
             } else {
-                $this->setPreference('module_favicon', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('module_favicon', '', 0, 'global');
+                $moduleFavicon = $this->getCurrentPreference('module_favicon');
+                $this->setPreference('module_favicon', $moduleFavicon ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             $tabs = new TabController();
@@ -917,7 +966,12 @@ class User extends Person implements EmailInterface
             if (isset($_POST['no_opps'])) {
                 $this->setPreference('no_opps', $_POST['no_opps'], 0, 'global');
             } else {
-                $this->setPreference('no_opps', 'off', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('no_opps', 'off', 0, 'global');
+                $noOpps = $this->getCurrentPreference('no_opps');
+                $this->setPreference('no_opps', $noOpps ?? 'off', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['reminder_time'])) {
@@ -935,11 +989,23 @@ class User extends Person implements EmailInterface
 
             if (isset($_POST['timezone'])) {
                 $this->setPreference('timezone', $_POST['timezone'], 0, 'global');
+            } else {
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('timezone', 'UTC', 0, 'global');
+                $timezone = $this->getCurrentPreference('timezone');
+                $this->setPreference('timezone', $timezone, 0, 'global');
+                // END STIC Custom
             }
             if (isset($_POST['ut'])) {
                 $this->setPreference('ut', '0', 0, 'global');
             } else {
-                $this->setPreference('ut', '1', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('ut', '1', 0, 'global');
+                $ut = $this->getCurrentPreference('ut');
+                $this->setPreference('ut', $ut ?? '1', 0, 'global');
+                // END STIC Custom
             }
             if (isset($_POST['currency'])) {
                 $this->setPreference('currency', $_POST['currency'], 0, 'global');
@@ -964,6 +1030,15 @@ class User extends Person implements EmailInterface
             }
             if (isset($_POST['timezone'])) {
                 $this->setPreference('timezone', $_POST['timezone'], 0, 'global');
+            }
+            if (isset($_POST['language'])) {
+                if ($_SESSION['authenticated_user_id'] === $this->id){
+                    $_SESSION['authenticated_user_language'] = $_POST['language'];
+                }
+                $current_language = $_POST['language'];
+                $mod_strings = return_module_language($_POST['language'], 'Users');
+                $app_strings = return_application_language($_POST['language']);
+                $this->setPreference('language', $_POST['language'], 0, 'global');
             }
             if (isset($_POST['mail_fromname'])) {
                 $this->setPreference('mail_fromname', $_POST['mail_fromname'], 0, 'global');
@@ -999,20 +1074,35 @@ class User extends Person implements EmailInterface
                 $this->setPreference('use_real_names', 'on', 0, 'global');
             } elseif (!isset($_POST['use_real_names']) && !isset($_POST['from_dcmenu'])) {
                 // Make sure we're on the full form and not the QuickCreate.
-                $this->setPreference('use_real_names', 'off', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('use_real_names', 'off', 0, 'global');
+                $useRealNames = $this->getCurrentPreference('use_real_names');
+                $this->setPreference('use_real_names', $useRealNames ?? 'off', 0, 'global');
+                // END STIC Custom
             }
 
             if (isset($_POST['mail_smtpauth_req'])) {
                 $this->setPreference('mail_smtpauth_req', $_POST['mail_smtpauth_req'], 0, 'global');
             } else {
-                $this->setPreference('mail_smtpauth_req', '', 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('mail_smtpauth_req', '', 0, 'global');
+                $smtpAuthRequired = $this->getCurrentPreference('mail_smtpauth_req');
+                $this->setPreference('mail_smtpauth_req', $smtpAuthRequired ?? '', 0, 'global');
+                // END STIC Custom
             }
 
             // SSL-enabled SMTP connection
             if (isset($_POST['mail_smtpssl'])) {
                 $this->setPreference('mail_smtpssl', 1, 0, 'global');
             } else {
-                $this->setPreference('mail_smtpssl', 0, 0, 'global');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('mail_smtpssl', 0, 0, 'global');
+                $smtpSsl = $this->getCurrentPreference('mail_smtpssl');
+                $this->setPreference('mail_smtpssl', $smtpSsl ?? 0, 0, 'global');
+                // END STIC Custom
             }
             ///////////////////////////////////////////////////////////////////////////
             ////    PDF SETTINGS
@@ -1054,16 +1144,26 @@ class User extends Person implements EmailInterface
                 $this->setPreference('default_email_charset', $_REQUEST['default_email_charset'], 0, 'global');
             }
 
-            if (isset($_POST['calendar_publish_key'])) {
+            $isValidator = new \SuiteCRM\Utility\SuiteValidator();
+
+            if (isset($_POST['calendar_publish_key']) && $isValidator->isValidKey($_POST['calendar_publish_key'])) {
                 $this->setPreference('calendar_publish_key', $_POST['calendar_publish_key'], 0, 'global');
+            } elseif (isset($_POST['calendar_publish_key'])) {
+                $_POST['calendar_publish_key'] = '';
             }
+
             if (isset($_POST['subtheme'])) {
                 $this->setPreference('subtheme', $_POST['subtheme'], 0, 'global');
             }
             if (isset($_POST['gsync_cal'])) {
                 $this->setPreference('syncGCal', 1, 0, 'GoogleSync');
             } else {
-                $this->setPreference('syncGCal', 0, 0, 'GoogleSync');
+                // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+                // $this->setPreference('syncGCal', 0, 0, 'GoogleSync');
+                $syncGCal = $this->getCurrentPreference('syncGCal');
+                $this->setPreference('syncGCal', $syncGCal ?? 0, 0, 'GoogleSync');
+                // END STIC Custom
             }
             if ($this->user_hash === null) {
                 $newUser = true;
@@ -1150,7 +1250,7 @@ class User extends Person implements EmailInterface
     public function encrypt_password($username_password)
     {
         // encrypt the password.
-        $salt = substr($this->user_name, 0, 2);
+        $salt = substr((string) $this->user_name, 0, 2);
         $encrypted_password = crypt($username_password, $salt);
 
         return $encrypted_password;
@@ -1360,7 +1460,11 @@ EOQ;
         $result = $db->limitQuery($query, 0, 1, false);
         if (!empty($result)) {
             $row = $db->fetchByAssoc($result);
-            if (!$checkPasswordMD5 || self::checkPasswordMD5($password, $row['user_hash'])) {
+            // STIC Custom 20250311 JBL - Avoid trying to access array offset on false
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // if (!$checkPasswordMD5 || self::checkPasswordMD5($password, $row['user_hash'])) {
+            if ($row !== false && (!$checkPasswordMD5 || self::checkPasswordMD5($password, $row['user_hash']))) {
+            // END STIC Custom            
                 return $row;
             }
         }
@@ -1511,7 +1615,7 @@ EOQ;
         $onespecial = $sugar_config['passwordsetting']['onespecial'];
 
 
-        if ($minpwdlength && strlen($newPassword) < $minpwdlength) {
+        if ($minpwdlength && strlen((string) $newPassword) < $minpwdlength) {
             $messages[] = sprintf($mod_strings['ERR_PASSWORD_MINPWDLENGTH'], $minpwdlength);
         }
 
@@ -1523,7 +1627,7 @@ EOQ;
             $messages[] = $mod_strings['ERR_PASSWORD_ONELOWER'];
         }
 
-        if ($onenumber && !preg_match('/[0-9]/', $newPassword)) {
+        if ($onenumber && !preg_match('/[0-9]/', (string) $newPassword)) {
             $messages[] = $mod_strings['ERR_PASSWORD_ONENUMBER'];
         }
 
@@ -1702,7 +1806,7 @@ EOQ;
             $user_fields['IS_ADMIN'] = '';
         }
         if ($this->is_group) {
-            $user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '', null, null, '.gif', $mod_strings['LBL_CHECKMARK']);
+            $user_fields['IS_GROUP_IMAGE'] = SugarThemeRegistry::current()->getImage('check_inline', '', null, null, '.gif', translate('LBL_CHECKMARK', 'Users'));
         } else {
             $user_fields['IS_GROUP_IMAGE'] = '';
         }
@@ -1984,6 +2088,7 @@ EOQ;
             }
         }
 
+        $ret = [];
         $ret['name'] = $fromName;
         $ret['email'] = $fromaddr;
 
@@ -2014,8 +2119,9 @@ EOQ;
         $emailLink = '';
 
         $emailUI = new EmailUI();
-        for ($i = 0; $i < count($focus->emailAddress->addresses); $i++) {
-            $emailField = 'email' . (string) ($i + 1);
+        $addressesCount = is_countable($focus->emailAddress->addresses) ? count($focus->emailAddress->addresses) : 0;
+        for ($i = 0; $i < $addressesCount; $i++) {
+            $emailField = 'email' . ($i + 1);
             $optOut = (bool)$focus->emailAddress->addresses[$i]['opt_out'];
             if (!$optOut && $focus->emailAddress->addresses[$i]['email_address'] === $emailAddress) {
                 $focus->$emailField = $emailAddress;
@@ -2090,11 +2196,13 @@ EOQ;
         global $mod_strings;
         global $app_strings;
 
+        $format = [];
         $format['f'] = $mod_strings['LBL_LOCALE_DESC_FIRST'];
         $format['l'] = $mod_strings['LBL_LOCALE_DESC_LAST'];
         $format['s'] = $mod_strings['LBL_LOCALE_DESC_SALUTATION'];
         $format['t'] = $mod_strings['LBL_LOCALE_DESC_TITLE'];
 
+        $name = [];
         $name['f'] = $app_strings['LBL_LOCALE_NAME_EXAMPLE_FIRST'];
         $name['l'] = $app_strings['LBL_LOCALE_NAME_EXAMPLE_LAST'];
         $name['s'] = $app_strings['LBL_LOCALE_NAME_EXAMPLE_SALUTATION'];
@@ -2104,7 +2212,7 @@ EOQ;
 
         $ret1 = '';
         $ret2 = '';
-        for ($i = 0, $iMax = strlen($macro); $i < $iMax; $i++) {
+        for ($i = 0, $iMax = strlen((string) $macro); $i < $iMax; $i++) {
             if (array_key_exists($macro[$i], $format)) {
                 $ret1 .= "<i>" . $format[$macro[$i]] . "</i>";
                 $ret2 .= "<i>" . $name[$macro[$i]] . "</i>";
@@ -2133,7 +2241,7 @@ EOQ;
         if ($module == 'ContractTypes') {
             $module = 'Contracts';
         }
-        if (preg_match('/Product[a-zA-Z]*/', $module)) {
+        if (preg_match('/Product[a-zA-Z]*/', (string) $module)) {
             $module = 'Products';
         }
 
@@ -2325,7 +2433,7 @@ EOQ;
     {
         global $locale;
         $localeFormat = $locale->getLocaleFormatMacro($this);
-        if (strpos($localeFormat, 'l') > strpos($localeFormat, 'f')) {
+        if (strpos((string) $localeFormat, 'l') > strpos((string) $localeFormat, 'f')) {
             return false;
         }
         return true;
@@ -2501,11 +2609,11 @@ EOQ;
         $htmlBody = $emailTemp->body_html;
         $body = $emailTemp->body;
         if (isset($additionalData['link']) && $additionalData['link'] == true) {
-            $htmlBody = str_replace('$contact_user_link_guid', $additionalData['url'], $htmlBody);
-            $body = str_replace('$contact_user_link_guid', $additionalData['url'], $body);
+            $htmlBody = str_replace('$contact_user_link_guid', $additionalData['url'], (string) $htmlBody);
+            $body = str_replace('$contact_user_link_guid', $additionalData['url'], (string) $body);
         } else {
-            $htmlBody = str_replace('$contact_user_user_hash', $additionalData['password'], $htmlBody);
-            $body = str_replace('$contact_user_user_hash', $additionalData['password'], $body);
+            $htmlBody = str_replace('$contact_user_user_hash', $additionalData['password'], (string) $htmlBody);
+            $body = str_replace('$contact_user_user_hash', $additionalData['password'], (string) $body);
         }
         // Bug 36833 - Add replacing of special value $instance_url
         $htmlBody = str_replace('$config_site_url', $sugar_config['site_url'], $htmlBody);
@@ -2619,7 +2727,7 @@ EOQ;
      */
     public function isPrimaryEmail($email)
     {
-        if (!empty($this->email1) && !empty($email) && strcasecmp($this->email1, $email) == 0) {
+        if (!empty($this->email1) && !empty($email) && strcasecmp($this->email1, $email) === 0) {
             return true;
         }
         return false;
@@ -2700,6 +2808,13 @@ EOQ;
         }
 
     }
+
+    // STIC Custom 20250520 JBL - Fix Reset User Preferences 
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    protected function getCurrentPreference(string $key) {
+        return $_SESSION[$this->user_name.'_PREFERENCES']['global'][$key] ?? $this->getPreference($key);
+    }
+    // END STIC Custom
 
     /**
      * @return bool

@@ -3,6 +3,7 @@
 namespace Consolidation\OutputFormatters\Formatters;
 
 use Consolidation\OutputFormatters\Options\FormatterOptions;
+use Consolidation\OutputFormatters\Validate\ValidationInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
@@ -13,7 +14,7 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
  *
  * Run provided data through Symfony VarDumper component.
  */
-class VarDumpFormatter implements FormatterInterface
+class VarDumpFormatter implements FormatterInterface, ValidationInterface
 {
     /**
      * @inheritdoc
@@ -36,5 +37,15 @@ class VarDumpFormatter implements FormatterInterface
             $output->writeln(stream_get_contents($stream, -1, 0));
             fclose($stream);
         }
+    }
+
+    public function isValidDataType(\ReflectionClass $dataType)
+    {
+        return true;
+    }
+
+    public function validate($structuredData)
+    {
+        return $structuredData;
     }
 }

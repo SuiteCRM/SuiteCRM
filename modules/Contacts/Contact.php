@@ -52,6 +52,7 @@ require_once('include/SugarObjects/templates/person/Person.php');
 require_once __DIR__ . '/../../include/EmailInterface.php';
 
 // Contact is used to store customer information.
+#[\AllowDynamicProperties]
 class Contact extends Person implements EmailInterface
 {
     public $field_name_map;
@@ -181,7 +182,7 @@ class Contact extends Person implements EmailInterface
     public function add_list_count_joins(&$query, $where)
     {
         // accounts.name
-        if (stristr($where, "accounts.name")) {
+        if (stristr((string) $where, "accounts.name")) {
             // add a join to the accounts table.
             $query .= "
 	            LEFT JOIN accounts_contacts
@@ -242,7 +243,7 @@ class Contact extends Person implements EmailInterface
             );
         }
         //any other action goes to parent function in sugarbean
-        if (strpos($order_by, 'sync_contact') !== false) {
+        if (strpos((string) $order_by, 'sync_contact') !== false) {
             //we have found that the user is ordering by the sync_contact field, it would be troublesome to sort by this field
             //and perhaps a performance issue, so just remove it
             $order_by = '';
@@ -300,6 +301,7 @@ class Contact extends Person implements EmailInterface
                 accounts.assigned_user_id account_id_owner,
                 users.user_name as assigned_user_name ";
         $select_query .= $custom_join['select'];
+        $ret_array = [];
         $ret_array['select'] = $select_query;
 
         $from_query = "
@@ -423,9 +425,13 @@ class Contact extends Person implements EmailInterface
 		where contacts.id = '" . $this->id . "'";
         // Bug 43196 - If a contact is related to multiple accounts, make sure we pull the one we are looking for
         // Bug 44730  was introduced due to this, fix is to simply clear any whitespaces around the account_id first
-
-        $clean_account_id = trim($this->account_id);
-
+        
+        // STIC Custom 20250218 JBL - Avoid pass null to trim
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $clean_account_id = trim($this->account_id);
+        $clean_account_id = trim((string)$this->account_id);
+        // End STIC Custom
+        
         if (!empty($clean_account_id)) {
             $query .= " and acc.id = '{$this->account_id}'";
         }
@@ -566,7 +572,11 @@ class Contact extends Person implements EmailInterface
         global $locale;
 
         $xtpl->assign("CONTACT_NAME", trim($locale->getLocaleFormattedName($contact->first_name, $contact->last_name)));
-        $xtpl->assign("CONTACT_DESCRIPTION", nl2br($contact->description));
+        // STIC Custom 20250311 JBL - Avoid passing null as string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $xtpl->assign("CONTACT_DESCRIPTION", nl2br($contact->description));
+        $xtpl->assign("CONTACT_DESCRIPTION", nl2br((string) $contact->description));
+        // END STIC Custom        
 
         return $xtpl;
     }
@@ -593,8 +603,7 @@ class Contact extends Person implements EmailInterface
 
         //if account_id was replaced unlink the previous account_id.
         //this rel_fields_before_value is populated by sugarbean during the retrieve call.
-        if (!empty($this->account_id) and !empty($this->rel_fields_before_value['account_id']) and
-            (trim($this->account_id) != trim($this->rel_fields_before_value['account_id']))
+        if (!empty($this->account_id) && !empty($this->rel_fields_before_value['account_id']) && trim($this->account_id) !== trim($this->rel_fields_before_value['account_id'])
         ) {
             //unlink the old record.
             $this->load_relationship('accounts');

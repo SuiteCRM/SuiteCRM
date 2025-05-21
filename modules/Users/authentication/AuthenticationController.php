@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class AuthenticationController
 {
     public $loggedIn = false; //if a user has attempted to login

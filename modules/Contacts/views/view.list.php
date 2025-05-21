@@ -2,6 +2,7 @@
 
 require_once('modules/Contacts/ContactsListViewSmarty.php');
 
+#[\AllowDynamicProperties]
 class ContactsViewList extends ViewList
 {
     /**

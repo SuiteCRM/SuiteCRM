@@ -29,6 +29,7 @@
  define("LABEL_LIGHT", 690032);
 
  /* pSpring class definition */
+ #[\AllowDynamicProperties]
  class pSpring
  {
      public $History;
@@ -125,7 +126,7 @@
          /* Check connections reciprocity */
          foreach ($this->Data as $Key => $Settings) {
              if (isset($Settings["Connections"])) {
-                 $this->Data[$Key]["FreeZone"] = count($Settings["Connections"])*10 + 20;
+                 $this->Data[$Key]["FreeZone"] = (is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0)*10 + 20;
              } else {
                  $this->Data[$Key]["FreeZone"] = 20;
              }
@@ -286,6 +287,7 @@
      /* Set color attribute for a list of nodes */
      public function setNodesColor($Nodes, $Settings="")
      {
+         $NodeID = [];
          if (is_array($Nodes)) {
              foreach ($Nodes as $Key => $NodeID) {
                  if (isset($this->Data[$NodeID])) {
@@ -428,8 +430,9 @@
          $MaxConnections = 0;
          foreach ($this->Data as $Key => $Settings) {
              if (isset($Settings["Connections"])) {
-                 if ($MaxConnections < count($Settings["Connections"])) {
-                     $MaxConnections = count($Settings["Connections"]);
+                 $connectionCount = is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0;
+                 if ($MaxConnections < $connectionCount) {
+                     $MaxConnections = $connectionCount;
                  }
              }
          }
@@ -442,7 +445,7 @@
                  }
                  if ($Settings["Type"] == NODE_TYPE_FREE) {
                      if (isset($Settings["Connections"])) {
-                         $Connections = count($Settings["Connections"]);
+                         $Connections = is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0;
                      } else {
                          $Connections = 0;
                      }
@@ -458,7 +461,7 @@
              /* Put a weight on each nodes */
              foreach ($this->Data as $Key => $Settings) {
                  if (isset($Settings["Connections"])) {
-                     $this->Data[$Key]["Weight"] = count($Settings["Connections"]);
+                     $this->Data[$Key]["Weight"] = is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0;
                  } else {
                      $this->Data[$Key]["Weight"] = 0;
                  }
@@ -473,12 +476,12 @@
                      }
                      if ($Settings["Type"] == NODE_TYPE_FREE) {
                          if (isset($Settings["Connections"])) {
-                             $Connections = count($Settings["Connections"]);
+                             $Connections = is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0;
                          } else {
                              $Connections = 0;
                          }
 
-                         if ($Connections == $i) {
+                         if ($Connections === $i) {
                              $BiggestPartner = $this->getBiggestPartner($Key);
                              if ($BiggestPartner != "") {
                                  $Ring          = $this->Data[$BiggestPartner]["FreeZone"];
@@ -519,12 +522,12 @@
                      }
                      if ($Settings["Type"] == NODE_TYPE_FREE) {
                          if (isset($Settings["Connections"])) {
-                             $Connections = count($Settings["Connections"]);
+                             $Connections = is_countable($Settings["Connections"]) ? count($Settings["Connections"]) : 0;
                          } else {
                              $Connections = 0;
                          }
 
-                         if ($Connections == $i) {
+                         if ($Connections === $i) {
                              $Ring  = $MaxConnections - $Connections;
                              $Angle = mt_rand(0, 360);
 
@@ -658,7 +661,7 @@
          }
 
          /* Dump all links */
-         $Links = "";
+         $Links = [];
          foreach ($this->Data as $Key => $Settings) {
              $X1 = $Settings["X"];
              $Y1 = $Settings["Y"];
@@ -885,7 +888,7 @@
              if ($Shape == NODE_SHAPE_CIRCLE) {
                  $this->pChartObject->drawFilledCircle($X, $Y, $Size, $Color);
              } elseif ($Shape == NODE_SHAPE_TRIANGLE) {
-                 $Points = "";
+                 $Points = [];
                  $Points[] = cos(deg2rad(270)) * $Size + $X;
                  $Points[] = sin(deg2rad(270)) * $Size + $Y;
                  $Points[] = cos(deg2rad(45)) * $Size + $X;

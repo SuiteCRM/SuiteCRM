@@ -18976,7 +18976,7 @@ $sugar_demodata['last_name_array'] = array(
 	"Aikin",
 	"Acres"
 	);
-	
+
 $sugar_demodata['first_name_array'] = array(
 	"Mary",
 	"Patricia",
@@ -21708,7 +21708,7 @@ $sugar_demodata['quotes_seed_data']['quotes'][1] = array(
     'description' => '',
  	'purcahse_order_num' => '3940021',
     'payment_terms' => 'Net 15',
-         
+
 
     'bundle_data' => array(
 		0 => array (

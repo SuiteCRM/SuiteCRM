@@ -49,6 +49,7 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * Class ArrayMapper maps an array using a mapping definition.
  */
+#[\AllowDynamicProperties]
 class ArrayMapper
 {
     /** @var array|object */
@@ -123,7 +124,7 @@ class ArrayMapper
     }
 
     /**
-     * @param array|null $regexMappings
+     * @param mixed[] $regexMappings
      *
      * @return ArrayMapper fluent setter
      */
@@ -192,7 +193,11 @@ class ArrayMapper
      *
      * @return array
      */
-    public function map(array $keys = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function map(array $keys = null)
+    public function map(?array $keys = null)
+    // END STIC Custom
     {
         if (is_array($this->mappable)) {
             $this->mapArray($this->mappable, $keys);
@@ -238,7 +243,11 @@ class ArrayMapper
      * @param array      $array
      * @param array|null $keys
      */
-    private function mapArray(array $array, array $keys = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // private function mapArray(array $array, array $keys = null)
+    private function mapArray(array $array, ?array $keys = null)
+    // END STIC Custom
     {
         if ($keys === null) {
             $keys = array_keys($array);
@@ -257,7 +266,11 @@ class ArrayMapper
      * @param object     $obj
      * @param array|null $keys
      */
-    private function mapObject($obj, array $keys = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // private function mapObject($obj, array $keys = null)
+    private function mapObject($obj, ?array $keys = null)
+    // END STIC Custom    
     {
         if ($keys === null) {
             $keys = array_keys(get_object_vars($obj));
@@ -363,7 +376,7 @@ class ArrayMapper
             }
 
             foreach ($matches as $key => $match) {
-                $mappedPath = str_replace("@$key", $match, $mappedPath);
+                $mappedPath = str_replace("@$key", $match, (string) $mappedPath);
             }
 
             $this->handleValue($value, $mappedPath);
@@ -494,8 +507,8 @@ class ArrayMapper
      */
     private function handleValue($value, $mappedPath)
     {
-        if (strpos($mappedPath, '+') === 0) {
-            $mappedPath = substr($mappedPath, 1);
+        if (strpos((string) $mappedPath, '+') === 0) {
+            $mappedPath = substr((string) $mappedPath, 1);
             $this->appendInPath($value, $mappedPath);
         } else {
             $this->putInPath($value, $mappedPath);

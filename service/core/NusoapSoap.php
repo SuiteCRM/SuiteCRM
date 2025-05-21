@@ -49,6 +49,7 @@ require('include/nusoap/nusoap.php');
  * all NUSOAP call by passing the client's request to NUSOAP server and seding response back to client
  * @api
  */
+#[\AllowDynamicProperties]
 abstract class NusoapSoap extends SugarSoapService{
 	/**
 	 * This is the constructor. It creates an instance of NUSOAP server.
@@ -122,7 +123,7 @@ abstract class NusoapSoap extends SugarSoapService{
   	 * @param Array $output - assoc array of output values: key = param name, value = param type
 	 * @access public
   	 */
-	function registerFunction($function, $input, $output){
+	public function registerFunction($function, $input, $output){
 		if(in_array($function, $this->excludeFunctions))return;
 		$use = false;
 		$style = false;
@@ -142,7 +143,7 @@ abstract class NusoapSoap extends SugarSoapService{
 	 * @param String $implementationClass
 	 * @access public
 	 */
-	function registerImplClass($implementationClass){
+	public function registerImplClass($implementationClass){
 		$GLOBALS['log']->info('Begin: NusoapSoap->registerImplClass');
 		if (empty($implementationClass)) {
 			$implementationClass = $this->implementationClass;
@@ -157,7 +158,7 @@ abstract class NusoapSoap extends SugarSoapService{
 	 * @param String $registryClass
 	 * @access public
 	 */
-	function registerClass($registryClass){
+	public function registerClass($registryClass){
 		$GLOBALS['log']->info('Begin: NusoapSoap->registerClass');
 		$this->registryClass = $registryClass;
 		$GLOBALS['log']->info('End: NusoapSoap->registerClass');

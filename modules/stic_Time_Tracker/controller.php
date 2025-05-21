@@ -51,7 +51,7 @@ class stic_Time_TrackerController extends SugarController {
         }
 
         // Check if there is a time tracker record for the employee in today
-        $data = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id);
+        $data = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id) ?? [];
         $todayRegistrationStarted = !is_array($data) ? 0 : (empty($data["end_date"]) ? 1 : 0);
 
         $data = array(
@@ -84,7 +84,7 @@ class stic_Time_TrackerController extends SugarController {
         $currentUserNow = $currentUserNow->format($timedate->get_date_time_format($current_user));
 
         // Get record data
-        $recordName = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id)['name'];
+        $recordName = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id)['name'] ?? '';
         $data = array(
             'date' => $currentUserNow,
             'recordName' => $recordName,
@@ -109,7 +109,7 @@ class stic_Time_TrackerController extends SugarController {
         $data = json_decode(file_get_contents('php://input'), true);
         // Check if the user has started any time registration today
         include_once 'modules/stic_Time_Tracker/stic_Time_Tracker.php';        
-        $todayUserRegistrationData = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id);
+        $todayUserRegistrationData = stic_Time_Tracker::getLastTodayTimeTrackerRecord($current_user->id) ?? [];
         $todayRegistrationStarted =  $todayUserRegistrationData ? empty($todayUserRegistrationData["end_date"]) : false;
 
         $date = $timedate->fromUser($data['date'], $current_user);

@@ -45,7 +45,7 @@ class stic_GoalsController extends SugarController {
             // If the popup selection was previously filtered, use custom function to generate custom where conditions
             if (isset($_REQUEST['current_query_by_page'])) {
                 include 'modules/stic_Goals/Utils.php';
-                $where = generateAllWhereClausesFromGoalsPopup($_REQUEST);
+                $where = generateAllWhereClausesFromGoalsPopup();
             }
             $entireListSQL = "SELECT distinct id FROM stic_goals WHERE deleted=0 AND id != '{$currentGoalId}'";
             if (!empty($where)) {
@@ -88,7 +88,7 @@ class stic_GoalsController extends SugarController {
             // If the popup selection was previously filtered, use custom function to generate custom where conditions
             if (isset($_REQUEST['current_query_by_page'])) {
                 include 'modules/stic_Goals/Utils.php';
-                $where = generateAllWhereClausesFromGoalsPopup($_REQUEST);
+                $where = generateAllWhereClausesFromGoalsPopup();
             }
             $entireListSQL = "SELECT distinct id FROM stic_goals WHERE deleted=0 AND id != '{$currentGoalId}'";
             if (!empty($where)) {

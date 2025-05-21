@@ -63,7 +63,7 @@ class EmailTemplateTest extends SuitePHPUnitFrameworkTestCase
         $_POST['body_html'] = 'BodyHTML';
         require('modules/EmailTemplates/EmailTemplateData.php');
 
-        $output = json_decode($this->getActualOutput(), true);
+        $output = json_decode($this->getActualOutput(), true, 512, JSON_THROW_ON_ERROR);
         self::assertNotEmpty($output['data']);
         self::assertNotEmpty($output['data']['id']);
         $template = BeanFactory::newBean('EmailTemplates');
@@ -141,7 +141,7 @@ class EmailTemplateTest extends SuitePHPUnitFrameworkTestCase
         $actual = $emailTemplate->generateFieldDefsJS();
         // $this->assertSame($expected, $actual);
 
-        self::assertGreaterThan(0, strlen($actual));
+        self::assertGreaterThan(0, strlen((string) $actual));
     }
 
     public function testget_summary_text(): void

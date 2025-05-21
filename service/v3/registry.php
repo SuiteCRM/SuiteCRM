@@ -44,6 +44,7 @@ if (!defined('sugarEntry')) {
 
 require_once('service/v2/registry.php'); //Extend off of v2 registry
 
+#[\AllowDynamicProperties]
 class registry_v3 extends registry
 {
     
@@ -61,39 +62,39 @@ class registry_v3 extends registry
             array('session'=>'xsd:string', 'module_names'=>'tns:select_fields'),
             array('return'=>'tns:md5_results')
         );
-            
+
         $this->serviceClass->registerFunction(
             'get_available_modules',
             array('session'=>'xsd:string','filter'=>'xsd:string'),
             array('return'=>'tns:module_list')
         );
-            
+
         $this->serviceClass->registerFunction(
             'get_last_viewed',
             array('session'=>'xsd:string','module_names'=>'tns:module_names'),
             array('return'=>'tns:last_viewed_list')
         );
-            
+
         $this->serviceClass->registerFunction(
             'get_upcoming_activities',
             array('session'=>'xsd:string'),
             array('return'=>'tns:upcoming_activities_list')
         );
-            
+
         $this->serviceClass->registerFunction(
             'search_by_module',
             array('session'=>'xsd:string','search_string'=>'xsd:string', 'modules'=>'tns:select_fields', 'offset'=>'xsd:int', 'max_results'=>'xsd:int','assigned_user_id' => 'xsd:string', 'select_fields'=>'tns:select_fields'),
             array('return'=>'tns:return_search_result')
         );
-            
+
         $this->serviceClass->registerFunction(
             'get_relationships',
             array('session'=>'xsd:string', 'module_name'=>'xsd:string', 'module_id'=>'xsd:string', 'link_field_name'=>'xsd:string', 'related_module_query'=>'xsd:string', 'related_fields'=>'tns:select_fields', 'related_module_link_name_to_fields_array'=>'tns:link_names_to_fields_array', 'deleted'=>'xsd:int', 'order_by'=>'xsd:string',),
             array('return'=>'tns:get_entry_result_version2')
         );
-                    
+
         $GLOBALS['log']->info('END: registry->registerFunction');
-            
+
         // END OF REGISTER FUNCTIONS
     }
     

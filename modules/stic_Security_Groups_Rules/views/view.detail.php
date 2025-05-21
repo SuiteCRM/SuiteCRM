@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/views/view.detail.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class stic_Security_Groups_RulesViewDetail extends ViewDetail
 {
 

@@ -48,6 +48,7 @@ use SuiteCRM\Exception\InvalidArgumentException;
  * Class LikeOperator
  * @package SuiteCRM\API\JsonApi\v1\Filters\Operators\Strings
  */
+#[\AllowDynamicProperties]
 class LikeOperator extends Operator implements OperatorInterface
 {
     /**

@@ -11,6 +11,7 @@ Version 1.0.8, on 2013-09-30, by Skrol29
 define('TBS_HTML','clsTbsPlugInHtml');
 $GLOBALS['_TBS_AutoInstallPlugIns'][] = TBS_HTML; // Auto-install
 
+#[\AllowDynamicProperties]
 class clsTbsPlugInHtml {
 
 function OnInstall() {

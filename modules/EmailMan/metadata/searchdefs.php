@@ -49,8 +49,6 @@
                             'maxColumns' => '3', 'maxColumnsBasic' => '4',
                             'widths' => array('label' => '10', 'field' => '30'),
                            ),
-                    // STIC-Custom 20220928 MHP - Add filters to the basic and advanced search
-                    // STIC#873                                                   
                     'layout' => array(
                         'basic_search' => array(
                             array('name'=>'campaign_name', 'label'=>'LBL_LIST_CAMPAIGN'),
@@ -60,8 +58,6 @@
                             array('name'=>'send_date_time', 'label'=>'LBL_SEND_DATE_TIME'),                        
                             array('name'=>'send_attempts', 'label'=>'LBL_SEND_ATTEMPTS'),
                             array('name'=>'in_queue', 'label'=>'LBL_IN_QUEUE'),
-                            // END STIC-Custom
-                            array('name'=>'current_user_only', 'label'=>'LBL_CURRENT_USER_FILTER', 'type'=>'bool'),
                         ),
                         'advanced_search' => array(
                             array('name'=>'campaign_name', 'label'=>'LBL_LIST_CAMPAIGN'),
@@ -79,6 +75,4 @@
                             array('name' => 'user_id', 'label' => 'LBL_USER_ID' ),
                         ),
                     ),
-                    // END STIC-Custom                            
-
                );

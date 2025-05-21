@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("include/utils/db_utils.php");
 
+#[\AllowDynamicProperties]
 class jsAlerts
 {
     public $script;

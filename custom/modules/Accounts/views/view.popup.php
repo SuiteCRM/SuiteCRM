@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/views/view.popup.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class CustomAccountsViewPopup extends ViewPopup
 {
     public function __construct()
@@ -50,8 +51,8 @@ class CustomAccountsViewPopup extends ViewPopup
 
         // We need to add manually to the frontend the required Incorpora fields
         require_once('modules/stic_Incorpora/utils/FieldsDef.php');
-        $incorporaRequiredFieldsArray = json_encode(array_filter($accountDef, function ($var) { return $var['required']; }));
-        $incorporaAgreementRequiredFieldsArray = json_encode(array_filter($accountDef, function ($var) { return $var['agreementRequired']; }));
+        $incorporaRequiredFieldsArray = json_encode(array_filter($accountDef, function ($var) { return $var['required'] ?? false; }));
+        $incorporaAgreementRequiredFieldsArray = json_encode(array_filter($accountDef, function ($var) { return $var['agreementRequired'] ?? false; }));
 
         echo <<<SCRIPT
         <script>

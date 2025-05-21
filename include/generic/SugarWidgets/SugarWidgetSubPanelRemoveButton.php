@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
 {
     public function displayHeaderCell($layout_def)
@@ -109,6 +110,11 @@ class SugarWidgetSubPanelRemoveButton extends SugarWidgetField
         if ($linked_field === 'get_emails_by_assign_or_link') {
             $linked_field = 'emails';
         }
+
+        if ($linked_field === 'get_unlinked_email_query'){
+            $hideremove = true;
+        }
+
         //based on listview since that lets you select records
 
         // STIC-Custom 20230703 EPS: Show remove button must be dependant from Edit permission not from list permission

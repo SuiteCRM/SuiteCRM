@@ -1,69 +1,69 @@
 <?php
-/**
- * This file is part of Lcobucci\JWT, a simple library to handle JWT and JWS
- *
- * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- */
+declare(strict_types=1);
 
 namespace Lcobucci\JWT\Signer;
 
 use Lcobucci\JWT\Signer\Ecdsa\MultibyteStringConverter;
 use Lcobucci\JWT\Signer\Ecdsa\SignatureConverter;
+
 use const OPENSSL_KEYTYPE_EC;
 
-/**
- * Base class for ECDSA signers
- *
- * @author Luís Otávio Cobucci Oblonczyk <lcobucci@gmail.com>
- * @since 2.1.0
- */
 abstract class Ecdsa extends OpenSSL
 {
-    /**
-     * @var SignatureConverter
-     */
-    private $converter;
+    private SignatureConverter $converter;
 
-    public function __construct(SignatureConverter $converter = null)
+    public function __construct(?SignatureConverter $converter = null)
     {
-        $this->converter = $converter ?: new MultibyteStringConverter();
+        $this->converter = $converter ?? new MultibyteStringConverter();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function createHash($payload, Key $key)
+    /** @deprecated */
+    public static function create(): Ecdsa
+    {
+        return new static(); // @phpstan-ignore-line
+    }
+
+    final public function sign(string $payload, Key $key): string
     {
         return $this->converter->fromAsn1(
-            parent::createHash($payload, $key),
-            $this->getKeyLength()
+            $this->createSignature($key->contents(), $key->passphrase(), $payload),
+            $this->pointLength()
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function doVerify($expected, $payload, Key $key)
+    final public function verify(string $expected, string $payload, Key $key): bool
     {
-        return parent::doVerify(
-            $this->converter->toAsn1($expected, $this->getKeyLength()),
+        return $this->verifySignature(
+            $this->converter->toAsn1($expected, $this->pointLength()),
             $payload,
-            $key
+            $key->contents()
         );
     }
+
+    /** {@inheritdoc} */
+    final protected function guardAgainstIncompatibleKey(int $type, int $lengthInBits): void
+    {
+        if ($type !== OPENSSL_KEYTYPE_EC) {
+            throw InvalidKeyProvided::incompatibleKeyType(
+                self::KEY_TYPE_MAP[OPENSSL_KEYTYPE_EC],
+                self::KEY_TYPE_MAP[$type],
+            );
+        }
+
+        $expectedKeyLength = $this->expectedKeyLength();
+
+        if ($lengthInBits !== $expectedKeyLength) {
+            throw InvalidKeyProvided::incompatibleKeyLength($expectedKeyLength, $lengthInBits);
+        }
+    }
+
+    /** @internal */
+    abstract public function expectedKeyLength(): int;
 
     /**
      * Returns the length of each point in the signature, so that we can calculate and verify R and S points properly
      *
      * @internal
      */
-    abstract public function getKeyLength();
-
-    /**
-     * {@inheritdoc}
-     */
-    final public function getKeyType()
-    {
-        return OPENSSL_KEYTYPE_EC;
-    }
+    abstract public function pointLength(): int;
 }

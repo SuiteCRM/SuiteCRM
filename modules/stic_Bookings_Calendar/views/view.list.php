@@ -43,7 +43,7 @@ class stic_Bookings_CalendarViewList extends ViewList
         global $mod_strings, $current_user, $app_strings, $sugar_config;
         SticViews::display($this);
 
-        $initialCalendarDate = $_REQUEST['start_date'] ? $_REQUEST['start_date'] : '';
+        $initialCalendarDate = $_REQUEST['start_date'] ?? '';
         $initialCalendarDate = json_encode($initialCalendarDate);
         echo <<<SCRIPT
         <script>initialCalendarDate = $initialCalendarDate;</script>

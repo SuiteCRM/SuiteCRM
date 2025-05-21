@@ -29,10 +29,10 @@ require_once 'modules/stic_Validation_Actions/DataAnalyzer/Functions/DataCheckFu
 class DataCheckFunctionFactory {
 
     /* Constant indicating the path of the include directory */
-    const FUNCTION_PATH = 'modules/stic_Validation_Actions/DataAnalyzer/Functions';
-    const CUSTOM_FUNCTION_PATH = 'custom/modules/stic_Validation_Actions/DataAnalyzer/Functions';
-    const INCLUDE_DIR = 'include';
-    const INCLUDE_PATH = 'modules/stic_Validation_Actions/DataAnalyzer/Functions/include';
+    public const FUNCTION_PATH = 'modules/stic_Validation_Actions/DataAnalyzer/Functions';
+    public const CUSTOM_FUNCTION_PATH = 'custom/modules/stic_Validation_Actions/DataAnalyzer/Functions';
+    public const INCLUDE_DIR = 'include';
+    public const INCLUDE_PATH = 'modules/stic_Validation_Actions/DataAnalyzer/Functions/include';
 
     /* Array with the list of available function objects */
     private static $functionList = array();

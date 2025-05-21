@@ -21,6 +21,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
+#[\AllowDynamicProperties]
 class stic_Incorpora_Locations extends Basic {
 	public $new_schema = true;
 	public $module_dir = 'stic_Incorpora_Locations';

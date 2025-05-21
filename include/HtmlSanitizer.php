@@ -7,6 +7,7 @@ namespace SuiteCRM;
  * @package SuiteCRM
  * Html Sanitizer
  */
+#[\AllowDynamicProperties]
 class HtmlSanitizer
 {
     /**
@@ -24,7 +25,7 @@ class HtmlSanitizer
     /**
      * SugarCleaner constructor.
      */
-    public function __construct()
+    public function __construct(array $extraConfigs = [])
     {
         $configurator = new \Configurator();
         $sugar_config = $configurator->config;
@@ -36,29 +37,31 @@ class HtmlSanitizer
             create_cache_directory("htmlclean/");
         }
 
-        $config->set('HTML.Doctype', 'XHTML 1.0 Transitional');
-        $config->set('Core.Encoding', 'UTF-8');
+        $baseConfigs = [];
+        $baseConfigs['HTML.Doctype'] = 'XHTML 1.0 Transitional';
+        $baseConfigs['Core.Encoding'] = 'UTF-8';
         $hidden_tags = array('script' => true, 'style' => true, 'title' => true, 'head' => true);
-        $config->set('Core.HiddenElements', $hidden_tags);
-        $config->set('Cache.SerializerPath', sugar_cached("htmlclean"));
-        $config->set('URI.Base', isset($sugar_config['site_url']) ? $sugar_config['site_url'] : null);
-        $config->set('CSS.Proprietary', true);
-        $config->set('HTML.TidyLevel', 'light');
-        $config->set('HTML.ForbiddenElements', array('body' => true, 'html' => true));
-        $config->set('AutoFormat.RemoveEmpty', true);
-        $config->set('Cache.SerializerPermissions', 0775);
-        $config->set('Filter.ExtractStyleBlocks.TidyImpl', false);
+        $baseConfigs['Core.HiddenElements'] = $hidden_tags;
+        $baseConfigs['URI.Base'] = $sugar_config['site_url'] ?? null;
+        $baseConfigs['CSS.Proprietary'] = true;
+        $baseConfigs['HTML.TidyLevel'] = 'light';
+        $baseConfigs['HTML.ForbiddenElements'] = array('body' => true, 'html' => true);
+        $baseConfigs['AutoFormat.RemoveEmpty'] = true;
+        $baseConfigs['Cache.SerializerPermissions'] = 0775;
+        $baseConfigs['Filter.ExtractStyleBlocks.TidyImpl'] = false;
         if (!empty($sugar_config['html_allow_objects'])) {
-            $config->set('HTML.SafeObject', true);
-            $config->set('HTML.SafeEmbed', true);
+            $baseConfigs['HTML.SafeObject'] = true;
+            $baseConfigs['HTML.SafeEmbed'] = true;
         }
-        $config->set('Output.FlashCompat', true);
-        $config->set('Filter.Custom', array(new HTMLPurifierFilterXmp()));
-        $config->set('HTML.DefinitionID', 'Sugar HTML Def');
-        $config->set('HTML.DefinitionRev', 2);
-        $config->set('Cache.SerializerPath', sugar_cached('htmlclean/'));
-        $config->set('Attr.EnableID', true);
-        $config->set('Attr.IDPrefix', 'sugar_text_');
+        $baseConfigs['Output.FlashCompat'] = true;
+        $baseConfigs['Filter.Custom'] = array(new HTMLPurifierFilterXmp());
+        $baseConfigs['HTML.DefinitionID'] = 'Sugar HTML Def';
+        $baseConfigs['HTML.DefinitionRev'] = 2;
+        $baseConfigs['Cache.SerializerPath'] = sugar_cached('htmlclean/');
+        $baseConfigs['Attr.EnableID'] = true;
+        $baseConfigs['Attr.IDPrefix'] = 'sugar_text_';
+
+        $this->applyConfigs($baseConfigs, $extraConfigs, $config);
 
         if ($def = $config->maybeGetRawHTMLDefinition()) {
             $iframe = $def->addElement(
@@ -110,26 +113,11 @@ class HtmlSanitizer
      */
     public static function cleanHtml($dirtyHtml, $removeHtml = false)
     {
-        // $encode_html previously effected the decoding process.
-        // we should decode regardless, just in case, the calling method passing encoded html
-        //Prevent that the email address in Outlook format are removed
-        $pattern = '/(.*)(&lt;([a-zA-Z0-9.!#$%&\'*+\=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)&gt;)(.*)/';
-        $replacement = '${1}<<a href="mailto:${3}">${3}</a>> ${4}';
-        $dirtyHtml =  preg_replace($pattern, $replacement, $dirtyHtml);
-        $dirty_html_decoded = html_entity_decode($dirtyHtml);
-
-        // Re-encode html
-        if ($removeHtml === true) {
-            // remove all HTML tags
-            $sugarCleaner = self::getInstance();
-            $purifier = $sugarCleaner->purifier;
-            $clean_html = $purifier->purify($dirty_html_decoded);
-        } else {
-            // encode all HTML tags
-            $clean_html = $dirty_html_decoded;
-        }
-
-        return $clean_html;
+        // STIC Custom 20250304 JBL - Fix TypeError: argument must be of type string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return self::getInstance()->clean($dirtyHtml, $removeHtml);
+        return self::getInstance()->clean((string) $dirtyHtml, $removeHtml);
+        // END STIC Custom
     }
 
     /**
@@ -142,7 +130,81 @@ class HtmlSanitizer
         if ($isEncoded) {
             $dirtyHtml = from_html($dirtyHtml);
         }
-        $dirtyHtml = filter_var($dirtyHtml, FILTER_SANITIZE_STRIPPED, FILTER_FLAG_NO_ENCODE_QUOTES);
+
+        if (preg_match('/([a-z]+)(?![^>]*\/>)[^>]*/', $dirtyHtml)) {
+            $dirtyHtml = strip_tags($dirtyHtml);
+        }
+
         return $isEncoded ? to_html($dirtyHtml) : $dirtyHtml;
+    }
+
+    /**
+     * @param string $dirtyHtml
+     * @param bool $removeHtml
+     * @return string
+     */
+    public function clean(string $dirtyHtml, bool $removeHtml): string
+    {
+        // $encode_html previously effected the decoding process.
+        // we should decode regardless, just in case, the calling method passing encoded html
+        //Prevent that the email address in Outlook format are removed
+        $pattern = '/(.*)(&lt;([a-zA-Z0-9.!#$%&\'*+\=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)&gt;)(.*)/';
+        $replacement = '${1}<<a href="mailto:${3}">${3}</a>> ${4}';
+        $dirtyHtml = preg_replace($pattern, $replacement, $dirtyHtml);
+        $dirty_html_decoded = html_entity_decode($dirtyHtml);
+
+        // Re-encode html
+        if ($removeHtml === true) {
+            // remove all HTML tags
+            $purifier = $this->purifier;
+            $clean_html = $purifier->purify($dirty_html_decoded);
+        } else {
+            // encode all HTML tags
+            $clean_html = $dirty_html_decoded;
+        }
+
+        return $clean_html;
+    }
+
+    /**
+     * @param array $baseConfigs
+     * @param array $extraConfigs
+     * @param \HTMLPurifier_Config $config
+     */
+    protected function applyConfigs(array $baseConfigs, array $extraConfigs, \HTMLPurifier_Config $config): void
+    {
+        $configKeys = array_keys($baseConfigs);
+        if (!empty($extraConfigs)) {
+            $configKeys = array_merge($configKeys, array_keys($extraConfigs));
+        }
+
+        foreach ($configKeys as $configKey) {
+            // no base config, set the custom config
+            if (!isset($baseConfigs[$configKey])) {
+                $config->set($configKey, $extraConfigs[$configKey]);
+                continue;
+            }
+
+            // no extra config, set the base config
+            if (!isset($extraConfigs[$configKey])) {
+                $config->set($configKey, $baseConfigs[$configKey]);
+                continue;
+            }
+
+            // both values are arrays, merge and set
+            if (is_array($baseConfigs[$configKey]) && is_array($extraConfigs[$configKey])) {
+                $config->set($configKey, array_merge($baseConfigs[$configKey], $extraConfigs[$configKey]));
+                continue;
+            }
+
+            // custom value does not match base value type, keep base value
+            if (is_array($baseConfigs[$configKey]) && !is_array($extraConfigs[$configKey])) {
+                $config->set($configKey, $baseConfigs[$configKey]);
+                continue;
+            }
+
+            //Override base value with custom value
+            $config->set($configKey, $extraConfigs[$configKey]);
+        }
     }
 }

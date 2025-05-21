@@ -811,12 +811,21 @@ class wsdl extends nusoap_base
     */
     public function webDescription()
     {
-        global $HTTP_SERVER_VARS;
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // global $HTTP_SERVER_VARS;
+        global $_SERVER;
+        // End STIC Custom
 
         if (isset($_SERVER)) {
             $PHP_SELF = $_SERVER['PHP_SELF'];
-        } elseif (isset($HTTP_SERVER_VARS)) {
-            $PHP_SELF = $HTTP_SERVER_VARS['PHP_SELF'];
+        // STIC Custom 20241113 JBL - Change old var $HTTP_SERVER_VARS to $_SERVER
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // } elseif (isset($HTTP_SERVER_VARS)) {
+        //     $PHP_SELF = $HTTP_SERVER_VARS['PHP_SELF'];
+        } elseif (isset($_SERVER)) {
+            $PHP_SELF = $_SERVER['PHP_SELF'];
+        // End STIC Custom
         } else {
             $this->setError("Neither _SERVER nor HTTP_SERVER_VARS is available");
         }

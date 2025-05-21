@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_PDF_TemplatesViewEdit extends ViewEdit
 {
     public function __construct()
@@ -25,8 +26,9 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
         //Loading Sample Files
         $json = getJSONobj();
         $samples = array();
+        $sample_options_array = [];
+
         if ($handle = opendir('modules/AOS_PDF_Templates/samples')) {
-            $sample_options_array[] = ' ';
             while (false !== ($file = readdir($handle))) {
                 if ($value = ltrim(rtrim($file, '.php'), 'smpl_')) {
                     require_once('modules/AOS_PDF_Templates/samples/'.$file);
@@ -70,7 +72,11 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
             foreach ($module->field_defs as $name => $arr) {
                 if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || (isset($arr['type']) && $arr['type'] == 'id') || (isset($arr['type']) && $arr['type'] == 'link'))) {
                     if (!isset($arr['reportable']) || $arr['reportable']) {
-                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'], $module->module_dir);
+                        // STIC Custom 20250411 JBL - Fix Undefined key warning
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                        // $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'], $module->module_dir);
+                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'] ?? '', $module->module_dir);
+                        // END STIC Custom
                     }
                 }
             } //End loop.
@@ -232,7 +238,7 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
 		<select name='variable_name' id='variable_name' tabindex="50" onchange="showVariable(this.options[this.selectedIndex].value);">
 		</select>
 		<input type="text" size="30" tabindex="60" name="variable_text" id="variable_text" />
-		<input type='button' tabindex="70" onclick='insert_variable(document.EditView.variable_text.value, "email_template_editor");' class='button' value='${mod_strings['LBL_BUTTON_INSERT']}'>
+		<input type='button' tabindex="70" onclick='insert_variable(document.EditView.variable_text.value, "email_template_editor");' class='button' value='{$mod_strings['LBL_BUTTON_INSERT']}'>
 		<script type="text/javascript">
 			populateModuleVariables("$type");
 	</script>

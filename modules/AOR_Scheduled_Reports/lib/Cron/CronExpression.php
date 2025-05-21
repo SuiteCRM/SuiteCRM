@@ -14,14 +14,15 @@ namespace Cron;
  *
  * @link http://en.wikipedia.org/wiki/Cron
  */
+#[\AllowDynamicProperties]
 class CronExpression
 {
-    const MINUTE = 0;
-    const HOUR = 1;
-    const DAY = 2;
-    const MONTH = 3;
-    const WEEKDAY = 4;
-    const YEAR = 5;
+    public const MINUTE = 0;
+    public const HOUR = 1;
+    public const DAY = 2;
+    public const MONTH = 3;
+    public const WEEKDAY = 4;
+    public const YEAR = 5;
 
     /**
      * @var array CRON expression parts
@@ -54,7 +55,11 @@ class CronExpression
      *
      * @return CronExpression
      */
-    public static function factory($expression, FieldFactory $fieldFactory = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public static function factory($expression, FieldFactory $fieldFactory = null)
+    public static function factory($expression, ?FieldFactory $fieldFactory = null)
+    // END STIC Custom    
     {
         $mappings = array(
             '@yearly' => '0 0 1 1 *',
@@ -95,7 +100,7 @@ class CronExpression
     public function setExpression($value)
     {
         $this->cronParts = preg_split('/\s/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        if (count($this->cronParts) < 5) {
+        if ((is_countable($this->cronParts) ? count($this->cronParts) : 0) < 5) {
             throw new \InvalidArgumentException(
                 $value . ' is not a valid CRON expression'
             );

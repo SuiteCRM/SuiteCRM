@@ -31,6 +31,7 @@ require_once __DIR__ . '/../../modules/AOR_Reports/aor_utils.php';
 /**
  * Class AOR_ReportsController
  */
+#[\AllowDynamicProperties]
 class AOR_ReportsController extends SugarController
 {
     protected function action_getModuleFields()
@@ -198,7 +199,7 @@ class AOR_ReportsController extends SugarController
 
         $companyLogo = explode('?', SugarThemeRegistry::current()->getImageURL('company_logo.png'), 2);
         $reportName = strtoupper($this->bean->name);
-        $graphs = $_POST["graphsForPDF"];
+        $graphs = $_POST["graphsForPDF"] ?? '';
         $graphHtml = '';
         $chartsPerRow = $this->bean->graphs_per_row;
 
@@ -207,7 +208,7 @@ class AOR_ReportsController extends SugarController
         }
         if (!empty($countOfCharts) && $countOfCharts > 0) {
             $graphHtml = "<div class='reportGraphs' style='width:100%; text-align:center;'>";
-            
+
             $width = (100 / $chartsPerRow);
 
             $modulusRemainder = $countOfCharts % $chartsPerRow;
@@ -244,15 +245,15 @@ class AOR_ReportsController extends SugarController
                 </tr>
                 </tbody>
                 </table>';
-        
-        
+
+
         if (!empty($graphHtml)) {
             $head .= '<br />' . $graphHtml;
         }
 
         $this->bean->user_parameters = requestToUserParameters($this->bean);
         $report = $this->bean->build_group_report(-1, false);
-        
+
         ob_clean();
         try {
             $pdf = PDFWrapper::getPDFEngine();

@@ -30,6 +30,7 @@
  * view_object_map. This variable is redirected to the tpl smarty template, with the name of $MAP,
  * and it can be manipulated as needed
  */
+#[\AllowDynamicProperties]
 class stic_IncorporaController extends SugarController
 {
     private $summary = array(
@@ -207,15 +208,15 @@ class stic_IncorporaController extends SugarController
         }
 
         // Retrieving the data from last action
-        $this->summary = $_REQUEST['summary'];
-        $ids = $_REQUEST['ids'];
-        $inc_ids = $_REQUEST['inc_ids'];
-        $this->option = $_REQUEST['sync_option'];
-        $override = $_REQUEST['override'];
+        $this->summary = $_REQUEST['summary'] ?? ['crm_ids' => 0, 'inc_ids' => 0, 'no_inc_ids' => 0];
+        $ids = $_REQUEST['ids'] ?? [];
+        $inc_ids = $_REQUEST['inc_ids'] ?? [];
+        $this->option = $_REQUEST['sync_option'] ?? false;
+        $override = $_REQUEST['override'] ?? false;
 
         // Retrieving user parameters if it's PRO or TEST.
         // For the correct visualization in the UI, we need to 
-        if ($test = $_REQUEST['test']) {
+        if ($test = ($_REQUEST['test'] ?? false)) {
             $this->incorporaUserParams = array(
                 'group' => $_REQUEST['reference_group_test_code'],
                 'entity' => $_REQUEST['reference_entity_test_code'],
@@ -321,7 +322,7 @@ class stic_IncorporaController extends SugarController
                 // No Incorpora ID
                 $bean = BeanFactory::getBean($this->returnModule, $beanId);
                 $this->log['logs'][$beanId]['msg'] = $mod_strings['LBL_RESULTS_SYNC_RECORD_WITHOUT_INCORPORA_ID'];
-                $this->log['logs'][$beanId]['url'] = $this->createLinkToDetailView($this->returnModule, $beanId, $bean->name);
+                $this->log['logs'][$beanId]['url'] = static::createLinkToDetailView($this->returnModule, $beanId, $bean->name);
                 $this->log['logs'][$beanId]['cod'] = '999';
                 $this->log['logs'][$beanId]['error'] = true;
                 $GLOBALS['log']->error(__METHOD__ . ' ' . __LINE__ . ' ' . $mod_strings['LBL_RESULTS_SYNC_RECORD_WITHOUT_INCORPORA_ID'], $beanId);
@@ -353,7 +354,7 @@ class stic_IncorporaController extends SugarController
 
         foreach ($crmIds as $beanId) {
             // In this case, if there is incorpora ID, we don't proceed
-            if (!$incIds[$beanId]) {
+            if (!isset($incIds[$beanId]) || !$incIds[$beanId]) {
                 // Retrieve record bean to be created
                 $bean = BeanFactory::getBean($this->returnModule, $beanId);
 
@@ -378,7 +379,7 @@ class stic_IncorporaController extends SugarController
                 $logParser = $DataParser->parseResponseIncorpora($Incorpora->getLogMsg(), $bean, $this->option);
 
                 // At this point, it could happen that the user doesn't have permission to edit the record. It will be displayed here.
-                if ($logParser['aut']) {
+                if (isset($logParser['aut']) && $logParser['aut']) {
                     $GLOBALS['log']->error(__METHOD__ . ' ' . __LINE__ . ' ' . ' ERROR INCORPORA RESPONSE:  ', $logParser);
                     $this->log = $logParser;
                     continue;
@@ -388,7 +389,7 @@ class stic_IncorporaController extends SugarController
                 // Record has Incorpora ID
                 $bean = BeanFactory::getBean($this->returnModule, $beanId);
                 $this->log['logs'][$beanId]['msg'] = $mod_strings['LBL_RESULTS_NEW_RECORD_WITH_INCORPORA_ID'];
-                $this->log['logs'][$beanId]['url'] = $this->createLinkToDetailView($this->returnModule, $beanId, $bean->name);
+                $this->log['logs'][$beanId]['url'] = static::createLinkToDetailView($this->returnModule, $beanId, $bean->name);
                 $this->log['logs'][$beanId]['cod'] = '999';
                 $this->log['logs'][$beanId]['error'] = true;
                 $GLOBALS['log']->error(__METHOD__ . ' ' . __LINE__ . ' ' . $mod_strings['LBL_RESULTS_NEW_RECORD_WITH_INCORPORA_ID'], $beanId);
@@ -421,7 +422,7 @@ class stic_IncorporaController extends SugarController
 
         foreach ($crmIds as $beanId) {
             // If there is no incorpora ID, we don't proceed
-            if ($incIds[$beanId]) {
+            if (isset($incIds[$beanId]) && $incIds[$beanId]) {
                 // Calling the Incorpora function to get the record with the Incorpora ID. If there is an error, it will be displayed on the log
                 if (!$incorporaRecord = $Incorpora->getRecordIncorpora($incIds[$beanId], $beanId)) {
                     $errLog = $Incorpora->getLogMsg();
@@ -452,7 +453,7 @@ class stic_IncorporaController extends SugarController
                     $syncDate = $timedate->fromDb(gmdate('Y-m-d H:i:s'));
                     $bean->$inc_synchronization_date = $timedate->asUser($syncDate, $current_user);
                     $bean->save();
-                    $this->log['logs'][$beanId]['url'] = $this->createLinkToDetailView($this->returnModule, $beanId, $bean->name);
+                    $this->log['logs'][$beanId]['url'] = static::createLinkToDetailView($this->returnModule, $beanId, $bean->name);
                     $this->log['logs'][$beanId]['error'] = true;
                 } else {
                     // If successful, save the data into the bean
@@ -464,7 +465,7 @@ class stic_IncorporaController extends SugarController
             } else {
                 $bean = BeanFactory::getBean($this->returnModule, $beanId);
                 $this->log['logs'][$beanId]['msg'] = $mod_strings['LBL_RESULTS_SYNC_RECORD_WITHOUT_INCORPORA_ID'];
-                $this->log['logs'][$beanId]['url'] = $this->createLinkToDetailView($this->returnModule, $beanId, $bean->name);
+                $this->log['logs'][$beanId]['url'] = static::createLinkToDetailView($this->returnModule, $beanId, $bean->name);
                 $this->log['logs'][$beanId]['cod'] = '999';
                 $this->log['logs'][$beanId]['error'] = true;
             }
@@ -521,7 +522,7 @@ class stic_IncorporaController extends SugarController
         $this->summary['failed'] = 0;
         foreach ($this->log['logs'] as $row) {
             // Errors may come from Incorpora WS (cod > 0) or from the CRM (error = 1). Both should be considered in totals.
-            if ($row['cod'] > 0 || $row['error'] == 1) {
+            if (($row['cod'] ?? 0) > 0 || ($row['error'] ?? 0) == 1) {
                 $this->summary['failed']++;
             } else {
                 $this->summary['successful']++;

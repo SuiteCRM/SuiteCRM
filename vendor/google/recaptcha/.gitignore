@@ -1,7 +1,0 @@
-/.php_cs.cache
-/.phpunit.result.cache
-/build
-/composer.lock
-/examples/config.php
-/nbproject/private/
-/vendor/

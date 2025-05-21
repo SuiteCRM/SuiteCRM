@@ -42,6 +42,7 @@
 /**
  * Class FormulaNode
  */
+#[\AllowDynamicProperties]
 class FormulaNode
 {
     public $text;
@@ -71,12 +72,13 @@ class FormulaNode
 /**
  * Class FormulaCalculator
  */
+#[\AllowDynamicProperties]
 class FormulaCalculator
 {
-    const START_TERMINAL = "{";
-    const END_TERMINAL = "}";
-    const PARAMETER_SEPARATOR_TERMINAL = ";";
-    const CONFIGURATOR_NAME = "SweeterCalc";
+    public const START_TERMINAL = "{";
+    public const END_TERMINAL = "}";
+    public const PARAMETER_SEPARATOR_TERMINAL = ";";
+    public const CONFIGURATOR_NAME = "SweeterCalc";
 
     private $parameters;
     private $relationParameters;
@@ -105,8 +107,11 @@ class FormulaCalculator
         $this->configurator = new Configurator();
         $this->configurator->loadConfig();
 
-        $this->debugEnabled = $this->configurator->config[FormulaCalculator::CONFIGURATOR_NAME]['DebugEnabled'] == 1;
-        $this->debugFileName = isset($this->configurator->config[FormulaCalculator::CONFIGURATOR_NAME]['DebugFileName']) ? $this->configurator->config[FormulaCalculator::CONFIGURATOR_NAME]['DebugFileName'] : 'SweeterCalc.log';
+        $configName = $this->configurator->config[FormulaCalculator::CONFIGURATOR_NAME] ?? '';
+
+        $debugEnabled = $configName['DebugEnabled'] ?? 0;
+        $this->debugEnabled = $debugEnabled == 1;
+        $this->debugFileName = $configName['DebugFileName'] ?? 'SweeterCalc.log';
     }
 
     /**
@@ -174,12 +179,13 @@ class FormulaCalculator
      */
     private function findLexicalElementsOnLevel($content, $level, &$node)
     {
-        $characters = preg_split('//u', $content, -1, PREG_SPLIT_NO_EMPTY);
+        $characters = preg_split('//u', (string) $content, -1, PREG_SPLIT_NO_EMPTY);
         $terminalLevel = 0;
         $hasChild = false;
 
         $currentText = "";
-        for ($i = 0; $i < count($characters); $i++) {
+        $charactersCount = is_countable($characters) ? count($characters) : 0;
+        for ($i = 0; $i < $charactersCount; $i++) {
             $char = $characters[$i];
 
             if ($terminalLevel > 0) {
@@ -242,14 +248,14 @@ class FormulaCalculator
             $evaluatedValue = $node->text;
 
             foreach ($childItems as $childItem) {
-                $pos = strpos($evaluatedValue, $childItem['value']);
+                $pos = strpos((string) $evaluatedValue, (string) $childItem['value']);
                 if ($pos !== false) {
                     $this->log("Going to replace child value '" . $childItem['value'] . "' in expression: " . $evaluatedValue);
                     $evaluatedValue = substr_replace(
                         $evaluatedValue,
                         $childItem['evaluatedValue'],
                         $pos,
-                        strlen($childItem['value'])
+                        strlen((string) $childItem['value'])
                     );
                     $this->log("Replaced child value '" . $childItem['evaluatedValue'] . "'. New expression: " . $evaluatedValue);
                 }
@@ -340,11 +346,11 @@ class FormulaCalculator
         }
 
         if (($params = $this->evaluateFunctionParams("replace", $text, $childItems)) != null) {
-            return str_replace($params[0], $params[1], $params[2]);
+            return str_replace($params[0], $params[1], (string) $params[2]);
         }
 
         if (($params = $this->evaluateFunctionParams("position", $text, $childItems)) != null) {
-            $pos = mb_strpos($params[0], $params[1]);
+            $pos = mb_strpos((string) $params[0], (string) $params[1]);
 
             return ($pos == false) ? -1 : $pos;
         }
@@ -371,7 +377,11 @@ class FormulaCalculator
         }
 
         if (($params = $this->evaluateFunctionParams("divide", $text, $childItems)) != null) {
-            return $this->parseFloat($params[0]) / $this->parseFloat($params[1]);
+            // STIC-Custom 20250324 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // Fix PHP Fatal error:  Uncaught DivisionByZeroError returning INF just like in php 7.4
+            // return $this->parseFloat($params[0]) / $this->parseFloat($params[1]);
+            return (empty($params[1]) || $this->parseFloat($params[1]) == 0) ? INF : ($this->parseFloat($params[0]) / $this->parseFloat($params[1]));
+            // END STIC-Custom
         }
 
         if (($params = $this->evaluateFunctionParams("power", $text, $childItems)) != null) {
@@ -408,7 +418,7 @@ class FormulaCalculator
             // END STIC-Custom
         }
 
-        if (($params = $this->evaluateFunctionParams("datediff", $text, $childItems)) != null) { 
+        if (($params = $this->evaluateFunctionParams("datediff", $text, $childItems)) != null) {
             $d1 = new DateTime($this->getDBFormat($params[0]));
             $d2 = new DateTime($this->getDBFormat($params[1]));
             $diff = $d1->diff($d2);
@@ -509,7 +519,7 @@ class FormulaCalculator
      */
     private function evaluateFunctionParams($functionName, $text, $childItems)
     {
-        if (!preg_match("/^\s*\{\s*$functionName\s*\(/i", $text)) {
+        if (!preg_match("/^\s*\{\s*$functionName\s*\(/i", (string) $text)) {
             return null;
         }
 
@@ -555,11 +565,11 @@ class FormulaCalculator
 
                 $this->log("Single expression parameter not found, trying to parse multi expression parameter...");
                 foreach ($childItems as $childItem) {
-                    if (mb_strpos($paramText, $childItem['value']) !== false) {
+                    if (mb_strpos((string) $paramText, (string) $childItem['value']) !== false) {
                         $this->log("Found multi expression part '" . $childItem['value'] . "' in parameter '$paramText'");
                         $this->log("Replacing parameter part '" . $childItem['value'] . "' with value '" . $childItem['evaluatedValue'] . "'");
 
-                        $paramText = str_replace($childItem['value'], $childItem['evaluatedValue'], $paramText);
+                        $paramText = str_replace($childItem['value'], $childItem['evaluatedValue'], (string) $paramText);
                         $replaced = true;
 
                         $this->log("New parameter value '$paramText'");
@@ -594,7 +604,8 @@ class FormulaCalculator
 
         $params = array();
         $currentParam = "";
-        for ($i = 0; $i < count($characters); $i++) {
+        $charactersCount = is_countable($characters) ? count($characters) : 0;
+        for ($i = 0; $i < $charactersCount; $i++) {
             $char = $characters[$i];
 
             if ($char === FormulaCalculator::START_TERMINAL) {
@@ -636,7 +647,7 @@ class FormulaCalculator
      */
     private function getParameterText($functionName, $text)
     {
-        $parameterText = preg_replace("/^\s*\{\s*" . $functionName . "\s*\(\s*/", "", $text, 1);
+        $parameterText = preg_replace("/^\s*\{\s*" . $functionName . "\s*\(\s*/", "", (string) $text, 1);
         $parameterText = preg_replace("/\s*\)\s*\}\s*$/", "", $parameterText, 1);
 
         return trim($parameterText);
@@ -649,7 +660,7 @@ class FormulaCalculator
      */
     private function parseFloat($value)
     {
-        return (float)str_replace(",", ".", $value);
+        return (float)str_replace(",", ".", (string) $value);
     }
 
     /**
@@ -686,15 +697,17 @@ class FormulaCalculator
     {
         $evaluated = $leaf;
 
-        if (preg_match("/{P[0-9]+}/i", $leaf)) {
-            for ($i = 0; $i < count($this->parameters); $i++) {
-                $evaluated = str_replace("{P$i}", $this->parameters[$i], $evaluated);
+        if (preg_match("/{P[0-9]+}/i", (string) $leaf)) {
+            $parametersCount = is_countable($this->parameters) ? count($this->parameters) : 0;
+            for ($i = 0; $i < $parametersCount; $i++) {
+                $evaluated = str_replace("{P$i}", $this->parameters[$i], (string) $evaluated);
                 $evaluated = str_replace("{p$i}", $this->parameters[$i], $evaluated);
             }
         } else {
-            if (preg_match("/{R[0-9]+}/i", $leaf)) {
-                for ($i = 0; $i < count($this->relationParameters); $i++) {
-                    $evaluated = str_replace("{R$i}", $this->relationParameters[$i], $evaluated);
+            if (preg_match("/{R[0-9]+}/i", (string) $leaf)) {
+                $relationParametersCount = is_countable($this->relationParameters) ? count($this->relationParameters) : 0;
+                for ($i = 0; $i < $relationParametersCount; $i++) {
+                    $evaluated = str_replace("{R$i}", $this->relationParameters[$i], (string) $evaluated);
                     $evaluated = str_replace("{r$i}", $this->relationParameters[$i], $evaluated);
                 }
             }
@@ -734,7 +747,7 @@ class FormulaCalculator
      */
     private function replaceGlobalVariable($globalVariableType, $text)
     {
-        if (preg_match("/^\{$globalVariableType\(/i", $text)) {
+        if (preg_match("/^\{$globalVariableType\(/i", (string) $text)) {
             $parameters = $this->getParameterArray($globalVariableType, $text);
             $currentValue = $this->getGlobalVariableConfig($globalVariableType, $parameters[0]);
             $newValue = $currentValue + 1;

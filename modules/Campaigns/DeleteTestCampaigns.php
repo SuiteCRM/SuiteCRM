@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * This is a class to encapsulate deleting test campaigns
  * @author Collin Lee
  */
+#[\AllowDynamicProperties]
 class DeleteTestCampaigns
 {
 
@@ -59,7 +60,7 @@ class DeleteTestCampaigns
  */
     public function deleteTestRecords($focus)
     {
-        if (empty($focus) || empty($focus->id)) {
+        if (empty($focus)  || empty($focus->id)) {
             return;
         }
 

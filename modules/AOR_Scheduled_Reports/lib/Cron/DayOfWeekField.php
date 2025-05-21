@@ -31,8 +31,8 @@ class DayOfWeekField extends AbstractField
         $lastDayOfMonth = $date->format('t');
 
         // Find out if this is the last specific weekday of the month
-        if (strpos($value, 'L')) {
-            $weekday = str_replace('7', '0', substr($value, 0, strpos($value, 'L')));
+        if (strpos((string) $value, 'L')) {
+            $weekday = str_replace('7', '0', substr((string) $value, 0, strpos((string) $value, 'L')));
             $tdate = clone $date;
             $tdate->setDate($currentYear, $currentMonth, $lastDayOfMonth);
             while ($tdate->format('w') != $weekday) {
@@ -43,7 +43,7 @@ class DayOfWeekField extends AbstractField
         }
 
         // Handle # hash tokens
-        if (strpos($value, '#')) {
+        if (strpos((string) $value, '#')) {
             list($weekday, $nth) = explode('#', $value);
 
             // 0 and 7 are both Sunday, however 7 matches date('N') format ISO-8601
@@ -80,7 +80,7 @@ class DayOfWeekField extends AbstractField
         }
 
         // Handle day of the week values
-        if (strpos($value, '-')) {
+        if (strpos((string) $value, '-')) {
             $parts = explode('-', $value);
             if ($parts[0] == '7') {
                 $parts[0] = '0';
@@ -128,7 +128,7 @@ class DayOfWeekField extends AbstractField
         return str_ireplace(
             array('SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'),
             range(0, 6),
-            $string
+            (string) $string
         );
     }
 }

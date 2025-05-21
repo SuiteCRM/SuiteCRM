@@ -42,6 +42,7 @@ require_once('modules/ModuleBuilder/MB/AjaxCompose.php');
 require_once('include/MVC/View/SugarView.php');
 require_once('modules/ModuleBuilder/parsers/ParserFactory.php');
 
+#[\AllowDynamicProperties]
 class ViewProperty extends SugarView
 {
     public function __construct()
@@ -85,7 +86,7 @@ class ViewProperty extends SugarView
                 // tyoung - now a nasty hack to disable editing of labels which contain Smarty functions - this is envisaged to be a temporary fix to prevent admins modifying these functions then being unable to restore the original complicated value if they regret it
                 if (substr($key, 6) == 'label') {
                     //#29796  , we disable the edit function for sub panel label
-                    if (preg_match('/\{.*\}/', $value) || !empty($this->subpanel)) {
+                    if (preg_match('/\{.*\}/', (string) $value) || !empty($this->subpanel)) {
                         $this->properties[substr($key, 6)]['hidden'] = 1;
                     }
                 }

@@ -142,7 +142,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
                             require_once('include/dir_inc.php');
                         }
 
-                        mkdir_recursive(dirname($trgt));
+                        mkdir_recursive(dirname((string) $trgt));
                         //create and open target file
                         if (function_exists('sugar_fopen')) {
                             $trgt_handle = @sugar_fopen($trgt, 'w');
@@ -154,9 +154,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
                         //       warning to admin users and revert back to displaying all of the
                         //       Javascript files insted of displaying the minified versions.
                         if ($trgt_handle === false) {
-                            $target_directory = dirname($trgt);
+                            $target_directory = dirname((string) $trgt);
                             $base = dirname($target_directory);
-                            while (!is_dir($base) && !empty($base) && $base != dirname($base)) {
+                            while (!is_dir($base) && !empty($base) && $base !== dirname($base)) {
                                 $base = dirname($base);
                             }
                             sugar_die("Creating $target_directory failed: please make sure {$base} is writable\n");
@@ -166,7 +166,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
                     //make sure we have handles to both source and target file
                     if ($trgt_handle) {
-                        if ($already_minified || isset($excludedFiles[dirname($loc)])) {
+                        if ($already_minified || isset($excludedFiles[dirname((string) $loc)])) {
                             $buffer = file_get_contents($loc);
                         } else {
                             $buffer = SugarMin::minify(file_get_contents($loc));
@@ -207,7 +207,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
     function create_backup_folder($bu_path)
     {
-        $bu_path = str_replace('\\', '/', $bu_path);
+        $bu_path = str_replace('\\', '/', (string) $bu_path);
         //get path after root
         $jpos = strpos($bu_path, 'jssource');
         if ($jpos===false) {
@@ -266,7 +266,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
             if (file_exists($from_path) && is_file($from_path)) {
                 //read in license script
                 if (function_exists('sugar_fopen')) {
-                    $file_handle = sugar_fopen($from_path, 'r');
+                    // STIC Custom 20250313 JBL - auto_detect_line_endings removed do not work in PHP8.4
+                    // Ensure compatibility Windows/Linux
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // $file_handle = sugar_fopen($from_path, 'r');
+                    $file_handle = sugar_fopen($from_path, 'rb');
+                    // END STIC Custom
                 } else {
                     $file_handle = fopen($from_path, 'rb');
                 }
@@ -323,8 +328,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
                 //minify javascript
                 //$jMin = new JSMin($from_path,$to_path,$lic_arr);
-                $min_file = str_replace('.js', '-min.js', $from_path);
-                if (strpos($from_path, '-min.js') !== false) {
+                $min_file = str_replace('.js', '-min.js', (string) $from_path);
+                if (strpos((string) $from_path, '-min.js') !== false) {
                     $min_file = $from_path;
                 }
 
@@ -352,11 +357,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
     function reverseScripts($from_path, $to_path='')
     {
-        $from_path = str_replace('\\', '/', $from_path);
+        $from_path = str_replace('\\', '/', (string) $from_path);
         if (empty($to_path)) {
             $to_path = $from_path;
         }
-        $to_path = str_replace('\\', '/', $to_path);
+        $to_path = str_replace('\\', '/', (string) $to_path);
 
         //check to see if provided paths are legit
 
@@ -424,7 +429,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
             echo "The from directory, $from_path Does Not Exist<p>\n";
             return;
         } else {
-            $from_path = str_replace('\\', '/', $from_path);
+            $from_path = str_replace('\\', '/', (string) $from_path);
         }
 
         if (empty($to_path)) {
@@ -443,7 +448,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
                 //get correct path for backup
             $bu_path = $to_path.'/jssource/src_files';
-            $bu_path .= substr($from_path, strlen($to_path));
+            $bu_path .= substr($from_path, strlen((string) $to_path));
 
             //if this is a directory, then read it and process files
             if (is_dir((string)$from_path)) {

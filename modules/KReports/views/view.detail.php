@@ -34,6 +34,7 @@ if (!class_exists('JSMin'))
 
 global $dictionary;
 
+#[\AllowDynamicProperties]
 class KReportsViewDetail extends ViewDetail {
 
    function __construct() {
@@ -112,7 +113,7 @@ class KReportsViewDetail extends ViewDetail {
       //    $this->bean->listtype = 'standard';
       //$this->ss->assign('viewJS', $this->setFormatVars() . '<script type="text/javascript" src="modules/KReports/views/view.detail.' . $this->bean->listtype . /* @ObfsProperty@ */ '.js" charset="utf-8"></script>');
       // override the options settings if the user is the admin
-      $optionsJson = json_decode(html_entity_decode($this->bean->reportoptions));
+      $optionsJson = json_decode(html_entity_decode($this->bean->reportoptions ?? '')) ?: (object) [];
       if ($current_user->is_admin) {
          $optionsJson->showTools = true;
          $optionsJson->showExport = true;
@@ -171,19 +172,19 @@ class KReportsViewDetail extends ViewDetail {
 
       //$varJS = '<script type="text/javascript">';
 
-      $varJS = 'kreport_default_currency_symbol = \'' . $GLOBALS['sugar_config']['default_currency_symbol'] . '\';';
-      $varJS .= 'kreport_dec_sep = \'' . $_SESSION[$current_user->user_name . '_PREFERENCES']['global']['dec_sep'] . '\';';
-      $varJS .= 'kreport_num_grp_sep = \'' . $_SESSION[$current_user->user_name . '_PREFERENCES']['global']['num_grp_sep'] . '\';';
-      $varJS .= 'kreport_default_currency_significant_digits = \'' . $_SESSION[$current_user->user_name . '_PREFERENCES']['global']['default_currency_significant_digits'] . '\';';
+      $varJS = 'kreport_default_currency_symbol = \'' . ($GLOBALS['sugar_config']['default_currency_symbol'] ?? '') . '\';';
+      $varJS .= 'kreport_dec_sep = \'' . ($_SESSION[$current_user->user_name . '_PREFERENCES']['global']['dec_sep'] ?? '') . '\';';
+      $varJS .= 'kreport_num_grp_sep = \'' . ($_SESSION[$current_user->user_name . '_PREFERENCES']['global']['num_grp_sep'] ?? '') . '\';';
+      $varJS .= 'kreport_default_currency_significant_digits = \'' . ($_SESSION[$current_user->user_name . '_PREFERENCES']['global']['default_currency_significant_digits'] ?? '') . '\';';
 
       //2013-05-17 add users time format BUG #484
-      $varJS .= 'kreport_tf = \'' . $_SESSION[$current_user->user_name . '_PREFERENCES']['global']['timef'] . '\';';
+      $varJS .= 'kreport_tf = \'' . ($_SESSION[$current_user->user_name . '_PREFERENCES']['global']['timef'] ?? '') . '\';';
       
       // get currencies
       $curResArray = $GLOBALS['db']->query('SELECT id, symbol FROM currencies WHERE deleted = \'0\'');
 
       $curArray = array();
-      $curArray['-99'] = $GLOBALS['sugar_config']['default_currency_symbol'];
+      $curArray = ['-99' => ($GLOBALS['sugar_config']['default_currency_symbol'] ?? '')];
       while ($thisCurEntry = $GLOBALS['db']->fetchByAssoc($curResArray)) {
          $curArray[$thisCurEntry['id']] = $thisCurEntry['symbol'];
       }

@@ -74,7 +74,7 @@ or via PHP 8 attributes.
     #[CLI\Param(name: 'two', description: 'The other parameter')]
     #[CLI\Option(name: 'flip', description: 'Whether or not the second parameter should come first in the result.')]
     #[CLI\Usage(name: 'bet alpha --flip', description: 'Concatenate "alpha" and "bet".')]
-    public function myEcho($one, $two = '', array $options = ['flip' => false])
+    public function myEcho($one, $two = '', $flip = false)
     {
         if ($options['flip']) {
             return "{$two}{$one}";
@@ -535,6 +535,15 @@ Then, an instance of 'MySymfonyStyle' will be provided to any command handler me
 ```
 $commandProcessor->parameterInjection()->register('Symfony\Component\Console\Style\SymfonyStyle', new SymfonyStyleInjector);
 ```
+
+The following classes are available to be injected into the command method by default:
+
+- Symfony\Component\Console\Input\InputInterface
+- Symfony\Component\Console\Output\OutputInterface
+- Consolidation\AnnotatedCommand\AnnotationData
+- Consolidation\OutputFormatters\Options\FormatterOptions
+
+Note that these instances are also available via the CommandData object passed to most command hooks.
 
 ## Handling Standard Input
 

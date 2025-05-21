@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 
+#[\AllowDynamicProperties]
 class AOS_InvoicesViewEdit extends ViewEdit
 {
     public function __construct()

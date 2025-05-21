@@ -1,75 +1,89 @@
 <?php
 /**
  * Smarty plugin
- * @package Smarty
- * @subpackage plugins
+ *
+ * @package    Smarty
+ * @subpackage PluginsFilter
  */
-
 /**
  * Smarty trimwhitespace outputfilter plugin
+ * Trim unnecessary whitespace from HTML markup.
  *
- * File:     outputfilter.trimwhitespace.php<br>
- * Type:     outputfilter<br>
- * Name:     trimwhitespace<br>
- * Date:     Jan 25, 2003<br>
- * Purpose:  trim leading white space and blank lines from
- *           template source after it gets interpreted, cleaning
- *           up code and saving bandwidth. Does not affect
- *           <<PRE>></PRE> and <SCRIPT></SCRIPT> blocks.<br>
- * Install:  Drop into the plugin directory, call
- *           <code>$smarty->load_filter('output','trimwhitespace');</code>
- *           from application.
- * @author   Monte Ohrt <monte at ohrt dot com>
- * @author Contributions from Lars Noschinski <lars@usenet.noschinski.de>
- * @version  1.3
- * @param string
- * @param Smarty
+ * @author Rodney Rehm
+ *
+ * @param string $source input string
+ *
+ * @return string filtered output
+ * @todo   substr_replace() is not overloaded by mbstring.func_overload - so this function might fail!
  */
-function smarty_outputfilter_trimwhitespace($source, &$smarty)
+function smarty_outputfilter_trimwhitespace($source)
 {
-    // Pull out the script blocks
-    preg_match_all("!<script[^>]*?>.*?</script>!is", $source, $match);
-    $_script_blocks = $match[0];
-    $source = preg_replace("!<script[^>]*?>.*?</script>!is",
-                           '@@@SMARTY:TRIM:SCRIPT@@@', $source);
-
-    // Pull out the pre blocks
-    preg_match_all("!<pre[^>]*?>.*?</pre>!is", $source, $match);
-    $_pre_blocks = $match[0];
-    $source = preg_replace("!<pre[^>]*?>.*?</pre>!is",
-                           '@@@SMARTY:TRIM:PRE@@@', $source);
-    
-    // Pull out the textarea blocks
-    preg_match_all("!<textarea[^>]*?>.*?</textarea>!is", $source, $match);
-    $_textarea_blocks = $match[0];
-    $source = preg_replace("!<textarea[^>]*?>.*?</textarea>!is",
-                           '@@@SMARTY:TRIM:TEXTAREA@@@', $source);
-
-    // remove all leading spaces, tabs and carriage returns NOT
-    // preceeded by a php close tag.
-    $source = trim(preg_replace('/((?<!\?>)\n)[\s]+/m', '\1', $source));
-
-    // replace textarea blocks
-    smarty_outputfilter_trimwhitespace_replace("@@@SMARTY:TRIM:TEXTAREA@@@",$_textarea_blocks, $source);
-
-    // replace pre blocks
-    smarty_outputfilter_trimwhitespace_replace("@@@SMARTY:TRIM:PRE@@@",$_pre_blocks, $source);
-
-    // replace script blocks
-    smarty_outputfilter_trimwhitespace_replace("@@@SMARTY:TRIM:SCRIPT@@@",$_script_blocks, $source);
-
+    $store = array();
+    $_store = 0;
+    $_offset = 0;
+    // Unify Line-Breaks to \n
+    $source = preg_replace('/\015\012|\015|\012/', "\n", $source);
+    // capture Internet Explorer and KnockoutJS Conditional Comments
+    if (preg_match_all(
+        '#<!--((\[[^\]]+\]>.*?<!\[[^\]]+\])|(\s*/?ko\s+.+))-->#is',
+        $source,
+        $matches,
+        PREG_OFFSET_CAPTURE | PREG_SET_ORDER
+    )
+    ) {
+        foreach ($matches as $match) {
+            $store[] = $match[ 0 ][ 0 ];
+            $_length = strlen($match[ 0 ][ 0 ]);
+            $replace = '@!@SMARTY:' . $_store . ':SMARTY@!@';
+            $source = substr_replace($source, $replace, $match[ 0 ][ 1 ] - $_offset, $_length);
+            $_offset += $_length - strlen($replace);
+            $_store++;
+        }
+    }
+    // Strip all HTML-Comments
+    // yes, even the ones in <script> - see https://stackoverflow.com/a/808850/515124
+    $source = preg_replace('#<!--.*?-->#ms', '', $source);
+    // capture html elements not to be messed with
+    $_offset = 0;
+    if (preg_match_all(
+        '#(<script[^>]*>.*?</script[^>]*>)|(<textarea[^>]*>.*?</textarea[^>]*>)|(<pre[^>]*>.*?</pre[^>]*>)#is',
+        $source,
+        $matches,
+        PREG_OFFSET_CAPTURE | PREG_SET_ORDER
+    )
+    ) {
+        foreach ($matches as $match) {
+            $store[] = $match[ 0 ][ 0 ];
+            $_length = strlen($match[ 0 ][ 0 ]);
+            $replace = '@!@SMARTY:' . $_store . ':SMARTY@!@';
+            $source = substr_replace($source, $replace, $match[ 0 ][ 1 ] - $_offset, $_length);
+            $_offset += $_length - strlen($replace);
+            $_store++;
+        }
+    }
+    $expressions = array(// replace multiple spaces between tags by a single space
+                         // can't remove them entirely, because that might break poorly implemented CSS display:inline-block elements
+                         '#(:SMARTY@!@|>)\s+(?=@!@SMARTY:|<)#s'                                    => '\1 \2',
+                         // remove spaces between attributes (but not in attribute values!)
+                         '#(([a-z0-9]\s*=\s*("[^"]*?")|(\'[^\']*?\'))|<[a-z0-9_]+)\s+([a-z/>])#is' => '\1 \5',
+                         // note: for some very weird reason trim() seems to remove spaces inside attributes.
+                         // maybe a \0 byte or something is interfering?
+                         '#^\s+<#Ss'                                                               => '<',
+                         '#>\s+$#Ss'                                                               => '>',
+    );
+    $source = preg_replace(array_keys($expressions), array_values($expressions), $source);
+    // note: for some very weird reason trim() seems to remove spaces inside attributes.
+    // maybe a \0 byte or something is interfering?
+    // $source = trim( $source );
+    $_offset = 0;
+    if (preg_match_all('#@!@SMARTY:([0-9]+):SMARTY@!@#is', $source, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER)) {
+        foreach ($matches as $match) {
+            $_length = strlen($match[ 0 ][ 0 ]);
+            $replace = $store[ $match[ 1 ][ 0 ] ];
+            $source = substr_replace($source, $replace, $match[ 0 ][ 1 ] + $_offset, $_length);
+            $_offset += strlen($replace) - $_length;
+            $_store++;
+        }
+    }
     return $source;
 }
-
-function smarty_outputfilter_trimwhitespace_replace($search_str, $replace, &$subject) {
-    $_len = strlen($search_str);
-    $_pos = 0;
-    for ($_i=0, $_count=count($replace); $_i<$_count; $_i++)
-        if (($_pos=strpos($subject, $search_str, $_pos))!==false)
-            $subject = substr_replace($subject, $replace[$_i], $_pos, $_len);
-        else
-            break;
-
-}
-
-?>

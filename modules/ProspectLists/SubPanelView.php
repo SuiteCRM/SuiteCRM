@@ -79,7 +79,7 @@ if ($currentModule == 'Campaigns') {
     ///////////////////////////////////////
     ///
     /// SETUP PARENT POPUP
-    
+
     $popup_request_data = array(
         'call_back_function' => 'set_return_prospect_list_and_save',
         'form_name' => 'ProspectListForm',
@@ -87,13 +87,13 @@ if ($currentModule == 'Campaigns') {
             'id' => 'prospect_list_id',
             ),
         );
-    
+
     $json = getJSONobj();
     $encoded_popup_request_data = $json->encode($popup_request_data);
-    
+
     //
     ///////////////////////////////////////
-    
+
     $button .= "<input title='".$app_strings['LBL_SELECT_BUTTON_TITLE']
         ." 'accessyKey='".$app_strings['LBL_SELECT_BUTTON_KEY']
         ."' type='button' class='button' value='  ".$app_strings['LBL_SELECT_BUTTON_LABEL']

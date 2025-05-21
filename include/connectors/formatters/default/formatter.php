@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Generic formatter
  * @api
  */
+#[\AllowDynamicProperties]
 class default_formatter
 {
     protected $_ss;

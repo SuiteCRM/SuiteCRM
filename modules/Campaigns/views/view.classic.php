@@ -41,6 +41,7 @@
 require_once('include/MVC/View/SugarView.php');
 require_once('include/MVC/Controller/SugarController.php');
 
+#[\AllowDynamicProperties]
 class CampaignsViewClassic extends SugarView
 {
     public function __construct()

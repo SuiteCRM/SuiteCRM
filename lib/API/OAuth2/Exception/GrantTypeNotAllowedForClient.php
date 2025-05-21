@@ -43,6 +43,7 @@ namespace SuiteCRM\API\OAuth2\Exception;
 
 use SuiteCRM\Enumerator\ExceptionCode;
 
+#[\AllowDynamicProperties]
 class GrantTypeNotAllowedForClient extends OAuth2
 {
     /**

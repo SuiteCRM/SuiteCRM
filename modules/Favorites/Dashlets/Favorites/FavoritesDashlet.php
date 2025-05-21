@@ -52,11 +52,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/Dashlets/DashletGeneric.php');
 require_once('modules/Favorites/Favorites.php');
 
+#[\AllowDynamicProperties]
 class FavoritesDashlet extends DashletGeneric
 {
     public function __construct($id, $def = null)
     {
-        global $current_user, $app_strings;
+        global $current_user, $app_strings, $dashletData;
+
+        $dashletData = $dashletData ?? [];
+
         require('modules/Favorites/metadata/dashletviewdefs.php');
 
         parent::__construct($id, $def);

@@ -53,6 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class OpportunitiesViewDetail extends ViewDetail
 {
     public function __construct()

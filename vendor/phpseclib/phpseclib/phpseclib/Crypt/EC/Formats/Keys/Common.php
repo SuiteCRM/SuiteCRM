@@ -183,7 +183,7 @@ trait Common
      * If the key contains an implicit curve phpseclib needs the curve
      * to be explicitly provided
      *
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      */
     public static function setImplicitCurve(BaseCurve $curve)
     {
@@ -195,7 +195,7 @@ trait Common
      * on the curve parameters
      *
      * @param array $params
-     * @return \phpseclib3\Crypt\EC\BaseCurves\Base|false
+     * @return BaseCurve|false
      */
     protected static function loadCurveByParam(array $params)
     {
@@ -269,7 +269,7 @@ trait Common
      * Supports both compressed and uncompressed points
      *
      * @param string $str
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      * @return object[]
      */
     public static function extractPoint($str, BaseCurve $curve)
@@ -335,7 +335,7 @@ trait Common
      * Encode Parameters
      *
      * @todo Maybe at some point this could be moved to __toString() for each of the curves?
-     * @param \phpseclib3\Crypt\EC\BaseCurves\Base $curve
+     * @param BaseCurve $curve
      * @param bool $returnArray optional
      * @param array $options optional
      * @return string|false

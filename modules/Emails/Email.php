@@ -55,6 +55,7 @@ require_once __DIR__ . '/../../include/UploadMultipleFiles.php';
 require_once __DIR__ . '/NonGmailSentFolderHandler.php';
 
 
+#[\AllowDynamicProperties]
 class Email extends Basic
 {
     /**
@@ -457,13 +458,13 @@ class Email extends Basic
      * @var string
      */
     public $assigned_user_name;
-    const NO_ERROR = 0;
-    const ERR_NOT_STORED_AS_SENT = 1;
-    const ERR_NO_IE = 2;
-    const ERR_NO_IE_MAIL_ID = 3;
-    const ERR_CODE_SHOULD_BE_INT = 4;
-    const ERR_IE_RETRIEVE = 5;
-    const UNHANDLED_LAST_ERROR = 6;
+    public const NO_ERROR = 0;
+    public const ERR_NOT_STORED_AS_SENT = 1;
+    public const ERR_NO_IE = 2;
+    public const ERR_NO_IE_MAIL_ID = 3;
+    public const ERR_CODE_SHOULD_BE_INT = 4;
+    public const ERR_IE_RETRIEVE = 5;
+    public const UNHANDLED_LAST_ERROR = 6;
 
     /**
      *
@@ -542,9 +543,13 @@ class Email extends Basic
 
     /**
      *
-     * @param Email $email
+     * @param \Email|null $email
      */
-    protected function createTempEmailAtSend(Email $email = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function createTempEmailAtSend(Email $email = null)
+    protected function createTempEmailAtSend(?Email $email = null)
+    // END STIC Custom
     {
         $this->tempEmailAtSend = $email ? $email : BeanFactory::newBean('Emails');
         if (!$this->tempEmailAtSend->date_sent_received) {
@@ -670,7 +675,7 @@ class Email extends Basic
 
         //check to see if this is a file with extension located in "badext"
         foreach ($sugar_config['upload_badext'] as $badExt) {
-            if (strtolower($file_ext) == strtolower($badExt)) {
+            if (strtolower($file_ext) === strtolower($badExt)) {
                 //if found, then append with .txt and break out of lookup
                 $filename = $filename . ".txt";
                 $badExtension = true;
@@ -696,7 +701,7 @@ class Email extends Basic
         if (!empty($matchs[0])) {
             $total = $matchs[0];
             foreach ($total as $match) {
-                $convertedPattern = str_replace(',', '::;::', $match);
+                $convertedPattern = str_replace(',', '::;::', (string) $match);
                 $addresses = str_replace($match, $convertedPattern, $addresses);
             } //foreach
         }
@@ -737,12 +742,12 @@ class Email extends Basic
     {
         $addresses = from_html($addresses);
         $pattern = '/@.*,/U';
-        preg_match_all($pattern, $addresses, $matchs);
+        preg_match_all($pattern, (string) $addresses, $matchs);
         if (!empty($matchs[0])) {
             $total = $matchs[0];
             foreach ($total as $match) {
-                $convertedPattern = str_replace(',', '::;::', $match);
-                $addresses = str_replace($match, $convertedPattern, $addresses);
+                $convertedPattern = str_replace(',', '::;::', (string) $match);
+                $addresses = str_replace($match, $convertedPattern, (string) $addresses);
             } //foreach
         }
 
@@ -880,7 +885,7 @@ class Email extends Basic
      */
     public function decodeDuringSend($htmlData)
     {
-        $htmlData = str_replace("sugarLessThan", "&lt;", $htmlData);
+        $htmlData = str_replace("sugarLessThan", "&lt;", (string) $htmlData);
         $htmlData = str_replace("sugarGreaterThan", "&gt;", $htmlData);
 
         return $htmlData;
@@ -924,6 +929,7 @@ class Email extends Basic
         global $beanFiles;
 
         $OBCharset = $locale->getPrecedentPreference('default_email_charset');
+        $ie = null;
 
         /**********************************************************************
          * Sugar Email PREP
@@ -1025,10 +1031,17 @@ class Email extends Basic
                 $object_arr= array('Contacts' => '123');
             }
             $object_arr['Users'] = $current_user->id;
-            $this->description_html = EmailTemplate::parse_template($this->description_html, $object_arr);
-            $this->name = EmailTemplate::parse_template($this->name, $object_arr);
-            $this->description = EmailTemplate::parse_template($this->description, $object_arr);
-            $this->description = html_entity_decode($this->description, ENT_COMPAT, 'UTF-8');
+            // STIC Custom 20241113 JBL - Fix static calls to non static methods
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $this->description_html = EmailTemplate::parse_template($this->description_html, $object_arr);
+            // $this->name = EmailTemplate::parse_template($this->name, $object_arr);
+            // $this->description = EmailTemplate::parse_template($this->description, $object_arr);
+            $emailTemplate = BeanFactory::newBean('EmailTemplates');
+            $this->description_html = $emailTemplate->parse_template($this->description_html, $object_arr);
+            $this->name = $emailTemplate->parse_template($this->name, $object_arr);
+            $this->description = $emailTemplate->parse_template($this->description, $object_arr);
+            // End STIC Custom
+            $this->description = html_entity_decode((string) $this->description, ENT_COMPAT, 'UTF-8');
             if ($this->type != 'draft' && $this->status != 'draft') {
                 $this->id = create_guid();
                 $this->date_entered = "";
@@ -1225,7 +1238,7 @@ class Email extends Basic
                     $docRev->retrieve($doc->document_revision_id);
 
                     $filename = $docRev->filename;
-                    $docGUID = preg_replace('/[^a-z0-9\-]/', "", $docRev->id);
+                    $docGUID = preg_replace('/[^a-z0-9\-]/', "", (string) $docRev->id);
                     $fileLocation = "upload/{$docGUID}";
                     $mime_type = $docRev->file_mime_type;
                     $mail->AddAttachment(
@@ -1266,7 +1279,7 @@ class Email extends Basic
                     $note->retrieve($noteId);
                     if (!empty($note->id)) {
                         $filename = $note->filename;
-                        $noteGUID = preg_replace('/[^a-z0-9\-]/', "", $note->id);
+                        $noteGUID = preg_replace('/[^a-z0-9\-]/', "", (string) $note->id);
                         $fileLocation = "upload/{$noteGUID}";
                         $mime_type = $note->file_mime_type;
                         if (!$note->embed_flag) {
@@ -1416,7 +1429,12 @@ class Email extends Basic
                 if (!class_exists('aCase')) {
                 } else {
                     $c = BeanFactory::newBean('Cases');
-                    if ($caseId = InboundEmail::getCaseIdFromCaseNumber($mail->Subject, $c)) {
+                    // STIC Custom 20241113 JBL - Fix static calls to non static methods
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // if ($caseId = InboundEmail::getCaseIdFromCaseNumber($mail->Subject, $c)) {
+                    $inboundEmail = BeanFactory::newBean('InboundEmail');
+                    if ($caseId = $inboundEmail->getCaseIdFromCaseNumber($mail->Subject, $c)) {
+                    // End STIC Custom
                         $c->retrieve($caseId);
                         $c->load_relationship('emails');
                         $c->emails->add($this->id);
@@ -1569,7 +1587,7 @@ class Email extends Basic
             $this->cc_addrs_names = $this->cleanEmails($this->cc_addrs_names);
             $this->bcc_addrs_names = $this->cleanEmails($this->bcc_addrs_names);
             $this->reply_to_addr = $this->cleanEmails($this->reply_to_addr);
-            $this->description = SugarCleaner::cleanHtml($this->description);
+            $this->description = SugarCleaner::cleanHtml($this->description ?? '');
             if (empty($this->description_html)) {
                 $this->description_html = $this->description;
                 $this->description_html = nl2br($this->description_html);
@@ -1577,8 +1595,8 @@ class Email extends Basic
             // STIC-Custom 20210617
             // We comment on this line so that when sending an email from the Emails module the HTML entered in the TinyMCE editor of the Composition view is not modified 
             // STIC#327
-            // $this->description_html = SugarCleaner::cleanHtml($this->description_html, true);
-            $this->raw_source = SugarCleaner::cleanHtml($this->raw_source, true);
+            // $this->description_html = SugarCleaner::cleanHtml($this->description_html ?? '', true);
+            $this->raw_source = SugarCleaner::cleanHtml($this->raw_source ?? '', true);
             $this->saveEmailText();
             $this->saveEmailAddresses();
 
@@ -1693,7 +1711,7 @@ class Email extends Basic
 
         // to, multiple
         $replace = array(",", ";");
-        $toaddrs = str_replace($replace, "::", from_html($this->to_addrs));
+        $toaddrs = str_replace($replace, "::", (string) from_html($this->to_addrs));
         $exToAddrs = explode("::", $toaddrs);
 
         if (!empty($exToAddrs)) {
@@ -1708,7 +1726,7 @@ class Email extends Basic
         }
 
         // cc, multiple
-        $ccAddrs = str_replace($replace, "::", from_html($this->cc_addrs));
+        $ccAddrs = str_replace($replace, "::", (string) from_html($this->cc_addrs));
         $exccAddrs = explode("::", $ccAddrs);
 
         if (!empty($exccAddrs)) {
@@ -1723,7 +1741,7 @@ class Email extends Basic
         }
 
         // bcc, multiple
-        $bccAddrs = str_replace($replace, "::", from_html($this->bcc_addrs));
+        $bccAddrs = str_replace($replace, "::", (string) from_html($this->bcc_addrs));
         $exbccAddrs = explode("::", $bccAddrs);
         if (!empty($exbccAddrs)) {
             foreach ($exbccAddrs as $bccAddr) {
@@ -1772,7 +1790,7 @@ class Email extends Basic
         if (empty($emails)) {
             return '';
         }
-        $emails = str_replace(array(",", ";"), "::", from_html($emails));
+        $emails = str_replace(array(",", ";"), "::", (string) from_html($emails));
         $addrs = explode("::", $emails);
         $res = array();
         foreach ($addrs as $addr) {
@@ -1957,6 +1975,7 @@ class Email extends Basic
             $exRemoved = explode('::', $_REQUEST['removeAttachment']);
         }
 
+        $noteDupe = null;
         $noteArray = array();
         $q = "SELECT id FROM notes WHERE deleted = 0 AND parent_id = " . $this->db->quoted($id);
         $r = $this->db->query($q);
@@ -2080,7 +2099,7 @@ class Email extends Basic
         }
 
         $send_type = $current_user->getPreference('mail_sendtype');
-        if (!empty($send_type) && $send_type == "SMTP") {
+        if (isSmtp($send_type ?? '')) {
             $mail_smtpserver = $current_user->getPreference('mail_smtpserver');
             $mail_smtpport = $current_user->getPreference('mail_smtpport');
             $mail_smtpauth_req = $current_user->getPreference('mail_smtpauth_req');
@@ -2267,7 +2286,7 @@ class Email extends Basic
 
             //// get the email to see if we're dealing with a dupe
             //// what crappy coding
-            preg_match("/[A-Z0-9._%-\']+@[A-Z0-9.-]+\.[A-Z]{2,}/i", $v, $match);
+            preg_match("/[A-Z0-9._%-\']+@[A-Z0-9.-]+\.[A-Z]{2,}/i", (string) $v, $match);
 
 
             if (!empty($match[0]) && !in_array(trim($match[0]), $knownEmails)) {
@@ -2275,7 +2294,7 @@ class Email extends Basic
                 $recipient['email'] = $match[0];
 
                 //// handle the Display name
-                $display = trim(str_replace($match[0], '', $v));
+                $display = trim(str_replace($match[0], '', (string) $v));
 
                 //// only trigger a "displayName" <email@address> when necessary
                 if (isset($addrs_names_arr[$i])) {
@@ -2816,7 +2835,7 @@ class Email extends Basic
 
         // ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
         $mail->protocol = ($oe->mail_smtpssl) ? "ssl://" : "tcp://";
-        if ($oe->mail_sendtype == "SMTP") {
+        if (isSmtp($oe->mail_sendtype ?? '')) {
             //Set mail send type information
             $mail->Mailer = "smtp";
             $mail->Host = $oe->mail_smtpserver;
@@ -2840,6 +2859,55 @@ class Email extends Basic
         $mail->oe = $oe;
 
         return $mail;
+    }
+
+    /**
+     * preps SMTP info for email transmission
+     * @param SugarPHPMailer $mail SugarPHPMailer object
+     */
+    public function setOutboundBasedMailer(SugarPHPMailer $mail, OutboundEmailAccounts $outboundEmail): void
+    {
+        $type = $outboundEmail->type;
+
+        if ($type === 'system-override') {
+            $mail->setMailerForSystem();
+        } else {
+            $this->setupMailerFromOutbound($outboundEmail, $mail);
+
+        }
+
+        $mail->oe = $outboundEmail;
+    }
+
+    /**
+     * @param OutboundEmailAccounts $oe
+     * @param SugarPHPMailer $mail
+     * @return void
+     */
+    protected function setupMailerFromOutbound(OutboundEmailAccounts $oe, SugarPHPMailer $mail): void
+    {
+        // ssl or tcp - keeping outside isSMTP b/c a default may inadvertantly set ssl://
+        $mail->protocol = ($oe->mail_smtpssl) ? "ssl://" : "tcp://";
+        if (isSmtp($oe->mail_sendtype ?? '')) {
+            //Set mail send type information
+            $mail->Mailer = "smtp";
+            $mail->Host = $oe->mail_smtpserver;
+            $mail->Port = $oe->mail_smtpport;
+            if ($oe->mail_smtpssl == 1) {
+                $mail->SMTPSecure = 'ssl';
+            } // if
+            if ($oe->mail_smtpssl == 2) {
+                $mail->SMTPSecure = 'tls';
+            } // if
+
+            if ($oe->mail_smtpauth_req) {
+                $mail->SMTPAuth = true;
+                $mail->Username = $oe->mail_smtpuser;
+                $mail->Password = $oe->mail_smtppass;
+            }
+        } else {
+            $mail->Mailer = "sendmail";
+        }
     }
 
     /**
@@ -2923,15 +2991,22 @@ class Email extends Basic
      * @global User $current_user
      * @global array $sugar_config
      * @global Localization $locale
-     * @param SugarPHPMailer $mail
-     * @param NonGmailSentFolderHandler $nonGmailSentFolder
+     * @param SugarPHPMailer|null $mail
+     * @param \NonGmailSentFolderHandler|null $nonGmailSentFolder
      * @return boolean True on success
      */
     public function send(
-        SugarPHPMailer $mail = null,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
-        InboundEmail $ie = null,
-        Email $tempEmail = null,
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // SugarPHPMailer $mail = null,
+        // NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        // InboundEmail $ie = null,
+        // Email $tempEmail = null,
+        ?SugarPHPMailer $mail = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?InboundEmail $ie = null,
+        ?Email $tempEmail = null,
+        // END STIC Custom
         $check_notify = false,
         $options = "\\Seen"
     ) {
@@ -2949,62 +3024,14 @@ class Email extends Basic
             LoggerManager::getLogger()->error('"To" address(es) is not set or empty to sending email.');
             return false; // return false as error, to-address is required to sending an email
         }
-        foreach ((array)$this->to_addrs_arr as $addr_arr) {
-            if (empty($addr_arr['display'])) {
-                if (!isset($addr_arr['email']) || !$addr_arr['email']) {
-                    LoggerManager::getLogger()->error('"To" email address is missing!');
-                } else {
-                    $mail->AddAddress($addr_arr['email'], "");
-                }
-            } else {
-                $mail->AddAddress(
-                    $addr_arr['email'],
-                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
-                );
-            }
-        }
 
-        if (!$this->cc_addrs_arr) {
-            LoggerManager::getLogger()->warn('"CC" address(es) is not set or empty to sending email.');
-        }
-        foreach ((array)$this->cc_addrs_arr as $addr_arr) {
-            if (empty($addr_arr['display'])) {
-                $mail->AddCC($addr_arr['email'], "");
-            } else {
-                $mail->AddCC(
-                    $addr_arr['email'],
-                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
-                );
-            }
-        }
-
-        if (!$this->bcc_addrs_arr) {
-            LoggerManager::getLogger()->warn('"BCC" address(es) is not set or empty to sending email.');
-        }
-        foreach ((array)$this->bcc_addrs_arr as $addr_arr) {
-            if (empty($addr_arr['display'])) {
-                $mail->AddBCC($addr_arr['email'], "");
-            } else {
-                $mail->AddBCC(
-                    $addr_arr['email'],
-                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
-                );
-            }
-        }
+        $this->setRecipientAddresses($mail, $locale, $OBCharset);
 
         $ieId = $this->mailbox_id;
         $mail = $this->setMailer($mail, '', $ieId);
 
-        if (($mail->oe->type === 'system') && (!isset($sugar_config['email_allow_send_as_user']) || (!$sugar_config['email_allow_send_as_user']))) {
-            $fromAddr = $mail->oe->smtp_from_addr;
-            $fromName = $mail->oe->smtp_from_name;
-
-            $mail->From = $fromAddr;
-            $sender = $fromAddr;
-            $ReplyToAddr = $fromAddr;
-            isValidEmailAddress($mail->From);
-            $ReplyToName = $fromName;
-            $mail->FromName = $fromName;
+        if ($this->isToUseSystemEmail($mail, $sugar_config)) {
+            [$sender, $ReplyToAddr, $ReplyToName] = $this->setSystemBasedSenderAddresses($mail);
         } else {
 
             // FROM ADDRESS
@@ -3049,90 +3076,25 @@ class Email extends Basic
         isValidEmailAddress($mail->Sender);
         $mail->AddReplyTo($ReplyToAddr, $locale->translateCharsetMIME(trim($ReplyToName), 'UTF-8', $OBCharset));
 
-        $mail->Subject = html_entity_decode($this->name, ENT_QUOTES, 'UTF-8');
-        //$mail->Subject = $this->name;
+        $mail->Subject = html_entity_decode((string) $this->name, ENT_QUOTES, 'UTF-8');
 
-        ///////////////////////////////////////////////////////////////////////
-        ////	ATTACHMENTS
-        if (isset($this->saved_attachments)) {
-            foreach ($this->saved_attachments as $note) {
-                $mime_type = 'text/plain';
-                if ($note->object_name == 'Note') {
-                    if (!empty($note->file->temp_file_location) && is_file($note->file->temp_file_location)) { // brandy-new file upload/attachment
-                        $file_location = "file/" . $note->file->temp_file_location;
-                        $filename = $note->file->original_file_name;
-                        $mime_type = $note->file->mime_type;
-                    } else { // attachment coming from template/forward
-                        $file_location = "upload/{$note->id}";
-                        // cn: bug 9723 - documents from EmailTemplates sent with Doc Name, not file name.
-                        $filename = !empty($note->filename) ? $note->filename : $note->name;
-                        $mime_type = $note->file_mime_type;
-                    }
-                } elseif ($note->object_name == 'DocumentRevision') { // from Documents
-                    $filePathName = $note->id;
-                    // cn: bug 9723 - Emails with documents send GUID instead of Doc name
-                    $filename = $note->getDocumentRevisionNameForDisplay();
-                    $file_location = "upload/$note->id";
-                    $mime_type = $note->file_mime_type;
-                }
+        $attachmentLabel = $mod_strings['LBL_EMAIL_ATTACHMENT'] ?? '';
 
-                // strip out the "Email attachment label if exists
-                $filename = str_replace($mod_strings['LBL_EMAIL_ATTACHMENT'] . ': ', '', $filename);
-                $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
-                //is attachment in our list of bad files extensions?  If so, append .txt to file location
-                //check to see if this is a file with extension located in "badext"
-                foreach ($sugar_config['upload_badext'] as $badExt) {
-                    if (strtolower($file_ext) == strtolower($badExt)) {
-                        //if found, then append with .txt to filename and break out of lookup
-                        //this will make sure that the file goes out with right extension, but is stored
-                        //as a text in db.
-                        $file_location = $file_location . ".txt";
-                        break; // no need to look for more
-                    }
-                }
-                $mail->AddAttachment(
-                    $file_location,
-                    $locale->translateCharsetMIME(trim($filename), 'UTF-8', $OBCharset),
-                    'base64',
-                    $mime_type
-                );
-
-                // embedded Images
-                if ($note->embed_flag == true) {
-                    $cid = $filename;
-                    $mail->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
-                }
-            }
-        } else {
-            LoggerManager::getLogger()->fatal('Attachements not found');
-        }
-        ////	END ATTACHMENTS
-        ///////////////////////////////////////////////////////////////////////
+        $this->setupAttachments(
+            $attachmentLabel,
+            $sugar_config['upload_badext'],
+            $mail,
+            $locale,
+            $OBCharset
+        );
 
         $mail = $this->handleBody($mail);
 
         $GLOBALS['log']->debug('Email sending --------------------- ');
 
-        ///////////////////////////////////////////////////////////////////////
-        ////	I18N TRANSLATION
         $mail->prepForOutbound();
-        ////	END I18N TRANSLATION
-        ///////////////////////////////////////////////////////////////////////
 
-        $validator = new EmailFromValidator();
-        if (!$validator->isValid($this)) {
-
-            // if an email is invalid before sending,
-            // maybe at this point sould "return false;" because the email having
-            // invalid from address and/or name but we will trying to send it..
-            // and we should log the problem at least:
-
-            // (needs EmailFromValidation and EmailFromFixer.. everywhere where from name and/or from email address get a value)
-
-            $errors = $validator->getErrorsAsText();
-            $details = "Details:\n{$errors['messages']}\ncodes:{$errors['codes']}\n{$mail->ErrorInfo}";
-            LoggerManager::getLogger()->error("Invalid email from address or name detected before sending. $details");
-        }
+        $this->validateBeforeSend($mail);
         if ($mail->send()) {
             ///////////////////////////////////////////////////////////////////
             ////	INBOUND EMAIL HANDLING
@@ -3151,11 +3113,87 @@ class Email extends Basic
                     LoggerManager::getLogger()->warn('Email saving error: after save and store in non-gmail sent folder.');
                 }
             }
-            $GLOBALS['log']->debug(' --------------------- buh bye -- sent successful');
+
             ////	END INBOUND EMAIL HANDLING
             ///////////////////////////////////////////////////////////////////
+            $GLOBALS['log']->debug(' --------------------- buh bye -- sent successful');
             return true;
         }
+        $GLOBALS['log']->debug($app_strings['LBL_EMAIL_ERROR_PREPEND'] . $mail->ErrorInfo);
+
+        return false;
+    }
+
+    /**
+     * Send using outbound email configuration only
+     * @param OutboundEmailAccounts $outboundEmailAccount
+     * @param SugarPHPMailer|null $mail
+     * @return bool
+     * @throws EmailValidatorException
+     * @throws \PHPMailer\PHPMailer\Exception
+     * @throws \SuiteCRM\ErrorMessageException
+     */
+    public function sendFromOutbound(
+        OutboundEmailAccounts $outboundEmailAccount,
+        // STIC Custom 20250303 JBL - Implicit nullable parameters are deprecated
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // SugarPHPMailer $mail = null
+        ?SugarPHPMailer $mail = null
+        // END STIC Custom
+    ) {
+        global $mod_strings, $app_strings, $sugar_config, $locale;
+
+        $this->clearTempEmailAtSend();
+
+        $OBCharset = $locale->getPrecedentPreference('default_email_charset');
+        $mail = $mail ? $mail : new SugarPHPMailer();
+
+        if (!$this->to_addrs_arr) {
+            LoggerManager::getLogger()->error('"To" address(es) is not set or empty to sending email.');
+            return false; // return false as error, to-address is required to sending an email
+        }
+
+        $this->setRecipientAddresses($mail, $locale, $OBCharset);
+
+        $ieId = $this->mailbox_id;
+        $this->setOutboundBasedMailer($mail, $outboundEmailAccount);
+
+        if ($this->isToUseSystemEmail($mail, $sugar_config)) {
+            [$sender, $ReplyToAddr, $ReplyToName] = $this->setSystemBasedSenderAddresses($mail);
+        } else {
+            [$sender, $ReplyToAddr, $ReplyToName] = $this->setOutboundBasedSenderAddresses($outboundEmailAccount, $mail);
+        }
+
+        if (empty($mail->From) || !isValidEmailAddress($mail->From, 'Invalid email address given', false)) {
+            LoggerManager::getLogger()->fatal('No from address defined');
+            return false; // return false as error, to-address is required to sending an email
+        }
+
+        $mail->Sender = $sender; /* set Return-Path field in header to reduce spam score in emails sent via Sugar's Email module */
+        $mail->AddReplyTo($ReplyToAddr, $locale->translateCharsetMIME(trim($ReplyToName), 'UTF-8', $OBCharset));
+
+        $mail->Subject = html_entity_decode((string) $this->name, ENT_QUOTES, 'UTF-8');
+
+        $this->setupAttachments(
+            $mod_strings['LBL_EMAIL_ATTACHMENT'],
+            $sugar_config['upload_badext'],
+            $mail,
+            $locale,
+            $OBCharset
+        );
+
+        $mail = $this->handleBody($mail);
+
+        $GLOBALS['log']->debug('Email sending --------------------- ');
+
+        $mail->prepForOutbound();
+
+        $this->validateBeforeSend($mail);
+
+        if ($mail->send()) {
+            return true;
+        }
+
         $GLOBALS['log']->debug($app_strings['LBL_EMAIL_ERROR_PREPEND'] . $mail->ErrorInfo);
 
         return false;
@@ -3200,14 +3238,18 @@ class Email extends Basic
      *
      * @param SugarPHPMailer $mail
      * @param InboundEmail $ie
-     * @param NonGmailSentFolderHandler $nonGmailSentFolder
+     * @param \NonGmailSentFolderHandler|null $nonGmailSentFolder
      * @param bool $check_notify
      * @return string
      */
     protected function saveAndStoreInSent(
         SugarPHPMailer $mail,
         InboundEmail $ie,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        // END STIC Custom
         $check_notify = false,
         $options = "\\Seen"
     ) {
@@ -3358,6 +3400,8 @@ class Email extends Basic
         $singleSelect = false,
         $ifListForExport = false
     ) {
+        $where_auto = '';
+
         if ($return_array) {
             return parent::create_new_list_query(
                 $order_by,
@@ -3418,31 +3462,30 @@ class Email extends Basic
      */
     public function fill_in_additional_list_fields()
     {
-        global $timedate, $mod_strings;
         $this->fill_in_additional_detail_fields();
 
         $this->link_action = 'DetailView';
-        ///////////////////////////////////////////////////////////////////////
-        //populate attachment_image, used to display attachment icon.
-        $query = "select 1 from notes where notes.parent_id = '$this->id' and notes.deleted = 0";
-        $result = $this->db->query($query, true, " Error filling in additional list fields: ");
+        $this->attachment_image = '';
 
-        $row = $this->db->fetchByAssoc($result);
+        if (!empty($this->id)) {
+            //populate attachment_image, used to display attachment icon.
+            $query = "select 1 from notes where notes.parent_id = '$this->id' and notes.deleted = 0";
+            $result = $this->db->query($query, true, " Error filling in additional list fields: ");
 
-        if ($row) {
-            $this->attachment_image = SugarThemeRegistry::current()->getImage(
-                'attachment',
-                '',
-                null,
-                null,
-                '.gif',
-                translate('LBL_ATTACHMENT', 'Emails')
-            );
-        } else {
-            $this->attachment_image = '';
+            $row = $this->db->fetchByAssoc($result);
+
+            if ($row) {
+                $this->attachment_image = SugarThemeRegistry::current()->getImage(
+                    'attachment',
+                    '',
+                    null,
+                    null,
+                    '.gif',
+                    translate('LBL_ATTACHMENT', 'Emails')
+                );
+            }
         }
-
-        ///////////////////////////////////////////////////////////////////////
+        
         if (empty($this->contact_id) && !empty($this->parent_id) && !empty($this->parent_type) && $this->parent_type === 'Contacts' && !empty($this->parent_name)) {
             $this->contact_id = $this->parent_id;
             $this->contact_name = $this->parent_name;
@@ -3712,7 +3755,7 @@ class Email extends Basic
             $mod_strings = return_module_language($current_language, 'Emails');
         }
 
-        return $mod_strings['LBL_QUICK_CREATE'] . "&nbsp;<a id='$this->id' onclick='return quick_create_overlib(\"{$this->id}\", \"" . (string)SugarThemeRegistry::current() . "\", this);' href=\"#\" >" . SugarThemeRegistry::current()->getImage(
+        return $mod_strings['LBL_QUICK_CREATE'] . "&nbsp;<a id='$this->id' onclick='return quick_create_overlib(\"{$this->id}\", \"" . SugarThemeRegistry::current() . "\", this);' href=\"#\" >" . SugarThemeRegistry::current()->getImage(
             "advanced_search",
             "border='0' align='absmiddle'",
             null,
@@ -3810,8 +3853,8 @@ class Email extends Basic
             $temp['hasAttach'] = $this->doesImportedEmailHaveAttachment($a['id']);
             //To and from addresses may be stored in emails_text, if nothing is found, revert to
             //regular email addresses.
-            $temp['to_addrs'] = preg_replace('/[\x00-\x08\x0B-\x1F]/', '', $a['to_addrs']);
-            $temp['from'] = preg_replace('/[\x00-\x08\x0B-\x1F]/', '', $a['from_addr']);
+            $temp['to_addrs'] = preg_replace('/[\x00-\x08\x0B-\x1F]/', '', (string) $a['to_addrs']);
+            $temp['from'] = preg_replace('/[\x00-\x08\x0B-\x1F]/', '', (string) $a['from_addr']);
             isValidEmailAddress($temp['from']);
             if (empty($temp['from']) || empty($temp['to_addrs'])) {
                 //Retrieve email addresses seperatly.
@@ -3981,6 +4024,11 @@ class Email extends Basic
      */
     public function trimLongTo($str)
     {
+        // STIC Custom 20250305 JBL - Avoid TypeError with null as string
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        $str = (string) ($str ?? '');
+        // END STIC Custom
+        
         if (strpos($str, ',')) {
             $exStr = explode(',', $str);
 
@@ -4484,7 +4532,11 @@ eoq;
                 // just make sure are there any default 'from' address set? (validation)
 
                 if (!isset($defaultEmail['email']) || !$defaultEmail['email']) {
-                    throw new EmailException("No system default 'from' email address", NO_DEFAULT_FROM_ADDR);
+                    // STIC Custom 20250519 JBL - Fix Undefined constant
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // throw new EmailException("No system default 'from' email address", NO_DEFAULT_FROM_ADDR);
+                    throw new EmailException("No system default 'from' email address", EmailException::NO_DEFAULT_FROM_ADDR);
+                    // END STIC Custom
                 }
 
                 // use the default one
@@ -4499,7 +4551,11 @@ eoq;
                 // just make sure are there any default 'from' address set? (validation)
 
                 if (!isset($defaultEmail['name']) || !$defaultEmail['name']) {
-                    throw new EmailException("No system default 'from' name", NO_DEFAULT_FROM_NAME);
+                    // STIC Custom 20250519 JBL - Fix Undefined constant
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    // throw new EmailException("No system default 'from' name", NO_DEFAULT_FROM_NAME);
+                    throw new EmailException("No system default 'from' name", EmailException::NO_DEFAULT_FROM_NAME);
+                    // END STIC Custom
                 }
 
                 // use the default one
@@ -4509,14 +4565,14 @@ eoq;
         }
 
         if (isset($request['from_addr']) && $request['from_addr'] != $request['from_addr_name'] . ' &lt;' . $request['from_addr_email'] . '&gt;') {
-            if (false === strpos($request['from_addr'], '&lt;')) { // we have an email only?
+            if (false === strpos((string) $request['from_addr'], '&lt;')) { // we have an email only?
                 $bean->from_addr = $request['from_addr'];
                 isValidEmailAddress($bean->from_addr);
                 $bean->from_name = '';
                 $bean->reply_to_addr = $bean->from_addr;
                 $bean->reply_to_name = $bean->from_name;
             } else { // we have a compound string
-                $newFromAddr = str_replace($old, $new, $request['from_addr']);
+                $newFromAddr = str_replace($old, $new, (string) $request['from_addr']);
                 $bean->from_addr = substr(
                     $newFromAddr,
                     (1 + strpos($newFromAddr, '<')),
@@ -4541,20 +4597,24 @@ eoq;
 
 
         if (!empty($request['to_addrs_names'])) {
-            $bean->to_addrs_names = htmlspecialchars_decode($request['to_addrs_names']);
+            $bean->to_addrs_names = htmlspecialchars_decode((string) $request['to_addrs_names']);
         }
 
         if (!empty($bean->to_addrs_names)) {
-            $bean->to_addrs = htmlspecialchars_decode($bean->to_addrs_names);
+            $bean->to_addrs = htmlspecialchars_decode((string) $bean->to_addrs_names);
         }
 
 
-        $toEmailAddresses = preg_split('/[,;]/', $bean->to_addrs, null, PREG_SPLIT_NO_EMPTY);
+        // STIC Custom 20250303 JBL - Fix Type Error: Expected type 'int', found 'null'
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $toEmailAddresses = preg_split('/[,;]/', (string) $bean->to_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $toEmailAddresses = preg_split('/[,;]/', (string) $bean->to_addrs, -1, PREG_SPLIT_NO_EMPTY);
+        // END STIC Custom
         $bean->to_addr_arr = array();
         foreach ($toEmailAddresses as $ea => $address) {
             preg_match(
                 '/([a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\ =\?\^\`\{\|\}\~\.\[\]\"\(\)\s]+)((<[a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.\[\]\"\(\)]+)(@)([a-zA-z0-9\-\.]+\>))$/',
-                $address,
+                (string) $address,
                 $matches
             );
 
@@ -4562,14 +4622,14 @@ eoq;
             // eg Angel Mcmahon <sales.vegan@example.it>
             if (count($matches) > 3) {
                 $email = $matches[2];
-                $display = (str_replace($email, '', $address));
+                $display = (str_replace($email, '', (string) $address));
                 $display = (trim(str_replace('"', '', $display)));
             } else {
                 $email = $address;
                 $display = '';
             }
 
-            $email = str_ireplace('<', '', $email);
+            $email = str_ireplace('<', '', (string) $email);
             $email = str_ireplace('>', '', $email);
             $email = str_ireplace('&lt;', '', $email);
             $email = str_ireplace('&rt;', '', $email);
@@ -4584,22 +4644,26 @@ eoq;
 
         if (empty($bean->cc_addrs)) {
             if (!empty($request['cc_addrs_names'])) {
-                $bean->cc_addrs_names = htmlspecialchars_decode($request['cc_addrs_names']);
+                $bean->cc_addrs_names = htmlspecialchars_decode((string) $request['cc_addrs_names']);
             }
 
             if (!empty($bean->cc_addrs_names)) {
-                $bean->cc_addrs = htmlspecialchars_decode($bean->cc_addrs_names);
+                $bean->cc_addrs = htmlspecialchars_decode((string) $bean->cc_addrs_names);
             }
         }
 
-        $ccEmailAddresses = preg_split('/[,;]/', $bean->cc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        // STIC Custom 20250303 JBL - Fix Type Error: Expected type 'int', found 'null'
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $ccEmailAddresses = preg_split('/[,;]/', (string) $bean->cc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $ccEmailAddresses = preg_split('/[,;]/', (string) $bean->cc_addrs, -1, PREG_SPLIT_NO_EMPTY);
+        // END STIC Custom
         $bean->cc_addrs_arr = array();
         foreach ($ccEmailAddresses as $ea => $address) {
             $email = '';
             $display = '';
             preg_match(
                 '/([a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\ =\?\^\`\{\|\}\~\.\[\]\"\(\)\s]+)((<[a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.\[\]\"\(\)]+)(@)([a-zA-z0-9\-\.]+\>))$/',
-                $address,
+                (string) $address,
                 $matches
             );
 
@@ -4613,7 +4677,7 @@ eoq;
                 $display = '';
             }
 
-            $email = str_ireplace('<', '', $email);
+            $email = str_ireplace('<', '', (string) $email);
             $email = str_ireplace('>', '', $email);
             $email = str_ireplace('&lt;', '', $email);
             $email = str_ireplace('&rt;', '', $email);
@@ -4628,22 +4692,26 @@ eoq;
 
         if (empty($bean->bcc_addrs)) {
             if (!empty($request['bcc_addrs_names'])) {
-                $bean->bcc_addrs_names = htmlspecialchars_decode($request['bcc_addrs_names']);
+                $bean->bcc_addrs_names = htmlspecialchars_decode((string) $request['bcc_addrs_names']);
             }
 
             if (!empty($bean->bcc_addrs_names)) {
-                $bean->bcc_addrs = htmlspecialchars_decode($bean->bcc_addrs_names);
+                $bean->bcc_addrs = htmlspecialchars_decode((string) $bean->bcc_addrs_names);
             }
         }
 
-        $bccEmailAddresses = preg_split('/[,;]/', $bean->bcc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        // STIC Custom 20250303 JBL - Fix Type Error: Expected type 'int', found 'null'
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $bccEmailAddresses = preg_split('/[,;]/', (string) $bean->bcc_addrs, null, PREG_SPLIT_NO_EMPTY);
+        $bccEmailAddresses = preg_split('/[,;]/', (string) $bean->bcc_addrs, -1, PREG_SPLIT_NO_EMPTY);
+        // END STIC Custom
         $bean->bcc_addrs_arr = array();
         foreach ($bccEmailAddresses as $ea => $address) {
             $email = '';
             $display = '';
             preg_match(
                 '/([a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\ =\?\^\`\{\|\}\~\.\[\]\"\(\)\s]+)((<[a-zA-z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.\[\]\"\(\)]+)(@)([a-zA-z0-9\-\.]+\>))$/',
-                $address,
+                (string) $address,
                 $matches
             );
 
@@ -4657,7 +4725,7 @@ eoq;
                 $display = '';
             }
 
-            $email = str_ireplace('<', '', $email);
+            $email = str_ireplace('<', '', (string) $email);
             $email = str_ireplace('>', '', $email);
             $email = str_ireplace('&lt;', '', $email);
             $email = str_ireplace('&rt;', '', $email);
@@ -4719,7 +4787,7 @@ eoq;
         $this->description_html = '';
         $mail->IsHTML(false);
         $plainText = from_html($this->description);
-        $plainText = str_replace("&nbsp;", " ", $plainText);
+        $plainText = str_replace("&nbsp;", " ", (string) $plainText);
         $plainText = str_replace("</p>", "</p><br />", $plainText);
         $plainText = strip_tags(br2nl($plainText));
         $plainText = str_replace("&amp;", "&", $plainText);
@@ -4875,6 +4943,69 @@ eoq;
     }
 
     /**
+     * @param SugarPHPMailer $mail
+     * @param Localization $locale
+     * @param string|null $OBCharset
+     * @return void
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    protected function setRecipientAddresses(SugarPHPMailer $mail, Localization $locale, ?string $OBCharset): void
+    {
+        foreach ((array)$this->to_addrs_arr as $addr_arr) {
+            if (empty($addr_arr['display'])) {
+                if (!isset($addr_arr['email']) || !$addr_arr['email']) {
+                    LoggerManager::getLogger()->error('"To" email address is missing!');
+                } else {
+                    $mail->AddAddress($addr_arr['email'], "");
+                }
+            } else {
+                $mail->AddAddress(
+                    $addr_arr['email'],
+                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
+                );
+            }
+        }
+
+        if (!$this->cc_addrs_arr) {
+            LoggerManager::getLogger()->warn('"CC" address(es) is not set or empty to sending email.');
+        }
+        foreach ((array)$this->cc_addrs_arr as $addr_arr) {
+            if (empty($addr_arr['display'])) {
+                $mail->AddCC($addr_arr['email'], "");
+            } else {
+                $mail->AddCC(
+                    $addr_arr['email'],
+                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
+                );
+            }
+        }
+
+        if (!$this->bcc_addrs_arr) {
+            LoggerManager::getLogger()->warn('"BCC" address(es) is not set or empty to sending email.');
+        }
+        foreach ((array)$this->bcc_addrs_arr as $addr_arr) {
+            if (empty($addr_arr['display'])) {
+                $mail->AddBCC($addr_arr['email'], "");
+            } else {
+                $mail->AddBCC(
+                    $addr_arr['email'],
+                    $locale->translateCharsetMIME(trim($addr_arr['display']), 'UTF-8', $OBCharset)
+                );
+            }
+        }
+    }
+
+    /**
+     * @param object $mail
+     * @param array $sugar_config
+     * @return bool
+     */
+    public function isToUseSystemEmail(object $mail, array $sugar_config): bool
+    {
+        return ($mail->oe->type === 'system') && (!isset($sugar_config['email_allow_send_as_user']) || (!$sugar_config['email_allow_send_as_user']));
+    }
+
+    /**
      * @param string $emailField eg from_name
      */
     protected function validateSugarEmailAddressField($emailField)
@@ -4887,4 +5018,139 @@ eoq;
             LoggerManager::getLogger()->error('from_name is invalid email address field.');
         }
     }
+
+    /**
+     * @param $LBL_EMAIL_ATTACHMENT
+     * @param $upload_badext
+     * @param object $mail
+     * @param Localization $locale
+     * @param string|null $OBCharset
+     * @return void
+     */
+    protected function setupAttachments(
+        $LBL_EMAIL_ATTACHMENT,
+        $upload_badext,
+        object $mail,
+        Localization $locale,
+        ?string $OBCharset
+    ): void {
+///////////////////////////////////////////////////////////////////////
+        ////	ATTACHMENTS
+        if (isset($this->saved_attachments)) {
+            foreach ($this->saved_attachments as $note) {
+                $mime_type = 'text/plain';
+                if ($note->object_name == 'Note') {
+                    if (!empty($note->file->temp_file_location) && is_file($note->file->temp_file_location)) { // brandy-new file upload/attachment
+                        $file_location = "file/" . $note->file->temp_file_location;
+                        $filename = $note->file->original_file_name;
+                        $mime_type = $note->file->mime_type;
+                    } else { // attachment coming from template/forward
+                        $file_location = "upload/{$note->id}";
+                        // cn: bug 9723 - documents from EmailTemplates sent with Doc Name, not file name.
+                        $filename = !empty($note->filename) ? $note->filename : $note->name;
+                        $mime_type = $note->file_mime_type;
+                    }
+                } elseif ($note->object_name == 'DocumentRevision') { // from Documents
+                    $filePathName = $note->id;
+                    // cn: bug 9723 - Emails with documents send GUID instead of Doc name
+                    $filename = $note->getDocumentRevisionNameForDisplay();
+                    $file_location = "upload/$note->id";
+                    $mime_type = $note->file_mime_type;
+                }
+
+                // strip out the "Email attachment label if exists
+                $filename = str_replace($LBL_EMAIL_ATTACHMENT . ': ', '', (string) $filename);
+                $file_ext = pathinfo($filename, PATHINFO_EXTENSION);
+                //is attachment in our list of bad files extensions?  If so, append .txt to file location
+                //check to see if this is a file with extension located in "badext"
+                foreach ($upload_badext as $badExt) {
+                    if (strtolower($file_ext) === strtolower($badExt)) {
+                        //if found, then append with .txt to filename and break out of lookup
+                        //this will make sure that the file goes out with right extension, but is stored
+                        //as a text in db.
+                        $file_location = $file_location . ".txt";
+                        break; // no need to look for more
+                    }
+                }
+                $mail->AddAttachment(
+                    $file_location,
+                    $locale->translateCharsetMIME(trim($filename), 'UTF-8', $OBCharset),
+                    'base64',
+                    $mime_type
+                );
+
+                // embedded Images
+                if ($note->embed_flag == true) {
+                    $cid = $filename;
+                    $mail->AddEmbeddedImage($file_location, $cid, $filename, 'base64', $mime_type);
+                }
+            }
+        } else {
+            LoggerManager::getLogger()->fatal('Attachements not found');
+        }
+        ////	END ATTACHMENTS
+        ///////////////////////////////////////////////////////////////////////
+    }
+
+    /**
+     * @param OutboundEmailAccounts $outboundEmailAccount
+     * @param object $mail
+     * @return array
+     */
+    protected function setOutboundBasedSenderAddresses(OutboundEmailAccounts $outboundEmailAccount, object $mail): array
+    {
+        $mail->From = $outboundEmailAccount->getFromAddress();
+        $this->from_addr = $mail->From;
+        $mail->FromName = $outboundEmailAccount->getFromName();
+        $this->from_name = $mail->FromName;
+
+        $ReplyToAddr = $outboundEmailAccount->getReplyToAddress();
+        $ReplyToName = $outboundEmailAccount->getReplyToName();
+
+        return [$mail->From, $ReplyToAddr, $ReplyToName];
+    }
+
+    /**
+     * @param object $mail
+     * @return array
+     */
+    protected function setSystemBasedSenderAddresses(object $mail): array
+    {
+        $fromAddr = $mail->oe->smtp_from_addr;
+        $fromName = $mail->oe->smtp_from_name;
+
+        $mail->From = $fromAddr;
+        $sender = $fromAddr;
+        $ReplyToAddr = $fromAddr;
+        isValidEmailAddress($mail->From);
+        $ReplyToName = $fromName;
+        $mail->FromName = $fromName;
+
+        return [$sender, $ReplyToAddr, $ReplyToName];
+    }
+
+    /**
+     * @param $mail
+     * @return void
+     * @throws EmailValidatorException
+     * @throws \SuiteCRM\ErrorMessageException
+     */
+    protected function validateBeforeSend($mail): void
+    {
+        $validator = new EmailFromValidator();
+        if (!$validator->isValid($this)) {
+
+            // if an email is invalid before sending,
+            // maybe at this point sould "return false;" because the email having
+            // invalid from address and/or name but we will trying to send it..
+            // and we should log the problem at least:
+
+            // (needs EmailFromValidation and EmailFromFixer.. everywhere where from name and/or from email address get a value)
+
+            $errors = $validator->getErrorsAsText();
+            $details = "Details:\n{$errors['messages']}\ncodes:{$errors['codes']}\n{$mail->ErrorInfo}";
+            LoggerManager::getLogger()->error("Invalid email from address or name detected before sending. $details");
+        }
+    }
+
 } // end class def

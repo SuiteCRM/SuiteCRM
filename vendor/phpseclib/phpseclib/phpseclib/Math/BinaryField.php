@@ -48,6 +48,15 @@ class BinaryField extends FiniteField
     public function __construct(...$indices)
     {
         $m = array_shift($indices);
+        if ($m > 571) {
+            /* sect571r1 and sect571k1 are the largest binary curves that https://www.secg.org/sec2-v2.pdf defines
+               altho theoretically there may be legit reasons to use binary finite fields with larger degrees
+               imposing a limit on the maximum size is both reasonable and precedented. in particular,
+               http://tools.ietf.org/html/rfc4253#section-6.1 (The Secure Shell (SSH) Transport Layer Protocol) says
+               "implementations SHOULD check that the packet length is reasonable in order for the implementation to
+                avoid denial of service and/or buffer overflow attacks" */
+            throw new \OutOfBoundsException('Degrees larger than 571 are not supported');
+        }
         $val = str_repeat('0', $m) . '1';
         foreach ($indices as $index) {
             $val[$index] = '1';

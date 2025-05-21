@@ -50,7 +50,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("include/JSON.php");
 
-
+// STIC Custom 20250206 JBL - Allow Dynamic Properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class SugarEmailAddress extends SugarBean
 {
     const ERR_INVALID_REQUEST_NO_USER_PROFILE_PAGE_SAVE_ACTION = 1;
@@ -491,7 +494,7 @@ class SugarEmailAddress extends SugarBean
                     email_address = '$_address', 
                     email_address_caps = '$_addressCaps' 
                   WHERE 
-                    id = '{$_id}' AND
+                    id = {$_id} AND
                     deleted = 0";
             $result = $db->query($query);
             if (!$result) {
@@ -575,6 +578,12 @@ class SugarEmailAddress extends SugarBean
         $this->addresses = $this->getAddressesByGUID($bean->id, $module_dir);
         $this->populateLegacyFields($bean);
         if (isset($bean->email1) && !isset($bean->fetched_row['email1'])) {
+            // STIC Custom 20250305 JBL - Avoid Deprecated warning: Automatic conversion of false to array
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            if ($bean->fetched_row === false) {
+                $bean->fetched_row = [];
+            }
+            // END STIC Custom
             $bean->fetched_row['email1'] = $bean->email1;
         }
 

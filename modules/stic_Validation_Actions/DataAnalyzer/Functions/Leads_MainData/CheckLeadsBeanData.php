@@ -30,8 +30,8 @@ require_once 'SticInclude/Utils.php';
  */
 class CheckLeadsBeanData extends DataCheckFunction 
 {
-    const ID_NUMBER_FIELD = 'stic_identification_number_c';  // ID number field that will be validated
-    const ID_TYPE_FIELD = 'stic_identification_type_c';      // ID type field
+    public const ID_NUMBER_FIELD = 'stic_identification_number_c';  // ID number field that will be validated
+    public const ID_TYPE_FIELD = 'stic_identification_type_c';      // ID type field
 
     /**
      * DoAction function
@@ -104,7 +104,7 @@ class CheckLeadsBeanData extends DataCheckFunction
                     $update = $newNIF != $oldNIF; // If the NIF has changed it will be necessary to save the changes
                     $valid = SticUtils::isValidNIForNIE($newNIF); // Validate the ID
                     $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Old NIF [{$oldNIF}] - Cleaned NIF [{$newNIF}] - Changed [{$update}] - Valid [{$valid}].");                    
-                    
+
                     if (!$valid) {
                         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Wrong record: Identification type [{$row[self::ID_TYPE_FIELD]}] with identification number [{$row[self::ID_NUMBER_FIELD]}].");
                         $errorMsg = '<span style="color:red;">' . $this->getLabel('NO_VALID_NIF_NIE') . " [{$row[self::ID_NUMBER_FIELD]}]" . '</span>';

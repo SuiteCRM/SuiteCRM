@@ -102,6 +102,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
 
     public function & displayList(&$layout_def)
     {
+        $field_def = [];
         if (!empty($layout_def['column_key'])) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -138,6 +139,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
     }
     public function & displayListPlain($layout_def)
     {
+        $field_def = [];
         if (!empty($layout_def['column_key'])) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -146,6 +148,7 @@ class SugarWidgetFieldEnum extends SugarWidgetReportField
             }
         }
 
+        $value = '';
         if (!empty($layout_def['table_key']) &&(empty($field_def['fields']) || empty($field_def['fields'][0]) || empty($field_def['fields'][1]))) {
             $value = $this->_get_list_value($layout_def);
         } else {

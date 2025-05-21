@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties] 
 class stic_Centers extends Basic
 {
     public $new_schema = true;

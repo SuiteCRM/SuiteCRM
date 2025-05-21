@@ -98,6 +98,7 @@ class SearchResultsController extends Controller
 
     public function display(): void
     {
+        global $app_strings;
         $headers = [];
 
         try {
@@ -138,14 +139,71 @@ class SearchResultsController extends Controller
         $smarty->assign('total', $total);
         $smarty->assign('headers', $headers);
         $smarty->assign('results', $this->results);
+        $smarty->assign('APP', $app_strings);
         try {
-            $smarty->assign('resultsAsBean', $this->results->getHitsAsBeans());
+            // STIC Custom 20241127 - JBL - SuiteCRM 7.14.6 core update
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+            // {php} in Smarty Template is not allowed
+            // $smarty->assign('resultsAsBean', $this->results->getHitsAsBeans());
+            $resultsAsBean = $this->results->getHitsAsBeans();
+            $processedResults = $this->translateModulesAndLists($headers, $resultsAsBean);
+            $smarty->assign('resultsAsBean', $processedResults);
+            // End STIC Custom
         } catch (\SuiteCRM\Exception\Exception $e) {
             LoggerManager::getLogger()->fatal("Failed to retrieve ElasticSearch options");
         }
 
         parent::display();
     }
+
+    // STIC Custom 20241127 - JBL - SuiteCRM 7.14.6 core update
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    // {php} in Smarty Template is not allowed.
+    // https://github.com/SinergiaTIC/SinergiaCRM-SuiteCRM/pull/696
+    // Translate in global search module and lists labels
+    private function translateModulesAndLists($headers, $resultsAsBean) {
+        $processedResults = [];
+        foreach ($resultsAsBean as $module => $beans) {
+            foreach ($beans as $bean) {
+                $processedBean = [];
+                foreach ($headers[$module] as $header) {
+                    $field = $header['field'];
+                    if (isset($bean->field_name_map[$field])) {
+                        $type = $bean->field_name_map[$field]['type'];
+                        $value = $bean->$field;
+            
+                        if ($type == 'enum' || $type == 'dynamicenum') {
+                            global $app_list_strings;
+                            $list = $bean->field_name_map[$field]['options'];
+                            $value = $app_list_strings[$list][$value] ?? $value;
+                        } elseif ($type == 'multienum') {
+                            global $app_list_strings;
+                            $displayFieldValues = unencodeMultienum($value);
+                            $list = $bean->field_name_map[$field]['options'];
+                            array_walk(
+                                $displayFieldValues,
+                                function (&$val) use ($list, $app_list_strings) {
+                                    $val = $app_list_strings[$list][$val] ?? $val;
+                                }
+                            );
+                            $value = implode(", ", $displayFieldValues);
+                        }
+        
+                        $processedBean[$field] = $value;
+                    }
+                }
+                if (!isset($processedBean['id'])) {
+                    $processedBean['id'] = $bean->id;
+                }
+                if (!isset($processedResults[$module])) {
+                    $processedResults[$module] = [];
+                }
+                $processedResults[$module][] = $processedBean;
+            }
+        }
+        return $processedResults;
+    }
+    // End STIC Custom
 
     /**
      *
@@ -217,8 +275,13 @@ class SearchResultsController extends Controller
 
         return [
             'label' => $this->getListViewHeaderLabel($bean, $fieldValue, $fieldDef),
-            'comment' => $fieldDef['comment'] ?? null,
-            'field' => $fieldDef['name'],
+            // STIC Custom 20250304 JBL - Avoid Trying to access array offset on false
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // 'comment' => $fieldDef['comment'] ?? null,
+            // 'field' => $fieldDef['name'],
+            'comment' => is_array($fieldDef) ? ($fieldDef['comment'] ?? null) : null,
+            'field' => is_array($fieldDef) ? ($fieldDef['name'] ?? null) : null,
+            // END STIC Custom
         ];
     }
 

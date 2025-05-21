@@ -181,7 +181,7 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($opportunity->id));
-        self::assertEquals(36, strlen($opportunity->id));
+        self::assertEquals(36, strlen((string) $opportunity->id));
         self::assertEquals(-99, $opportunity->currency_id);
         self::assertEquals(30, $opportunity->probability);
 
@@ -230,11 +230,11 @@ class OpportunityTest extends SuitePHPUnitFrameworkTestCase
 
         $result = $opportunity->set_notification_body(new Sugar_Smarty(), $opportunity);
 
-        self::assertEquals($opportunity->name, $result->_tpl_vars['OPPORTUNITY_NAME']);
-        self::assertEquals($opportunity->amount, $result->_tpl_vars['OPPORTUNITY_AMOUNT']);
-        self::assertEquals($opportunity->date_closed, $result->_tpl_vars['OPPORTUNITY_CLOSEDATE']);
-        self::assertEquals($opportunity->sales_stage, $result->_tpl_vars['OPPORTUNITY_STAGE']);
-        self::assertEquals($opportunity->description, $result->_tpl_vars['OPPORTUNITY_DESCRIPTION']);
+        self::assertEquals($opportunity->name, $result->tpl_vars['OPPORTUNITY_NAME']->value);
+        self::assertEquals($opportunity->amount, $result->tpl_vars['OPPORTUNITY_AMOUNT']->value);
+        self::assertEquals($opportunity->date_closed, $result->tpl_vars['OPPORTUNITY_CLOSEDATE']->value);
+        self::assertEquals($opportunity->sales_stage, $result->tpl_vars['OPPORTUNITY_STAGE']->value);
+        self::assertEquals($opportunity->description, $result->tpl_vars['OPPORTUNITY_DESCRIPTION']->value);
     }
 
     public function testbean_implements(): void

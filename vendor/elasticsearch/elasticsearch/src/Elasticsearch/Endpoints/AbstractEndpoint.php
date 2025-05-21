@@ -20,9 +20,7 @@ namespace Elasticsearch\Endpoints;
 
 use Elasticsearch\Common\Exceptions\UnexpectedValueException;
 use Elasticsearch\Serializers\SerializerInterface;
-use Elasticsearch\Transport;
-use Exception;
-use GuzzleHttp\Ring\Future\FutureArrayInterface;
+use Elasticsearch\Utility;
 
 abstract class AbstractEndpoint
 {
@@ -127,7 +125,7 @@ abstract class AbstractEndpoint
             $index = implode(",", $index);
         }
 
-        $this->index = urlencode($index);
+        $this->index = Utility::urlencode($index);
 
         return $this;
     }
@@ -155,7 +153,7 @@ abstract class AbstractEndpoint
             $type = implode(",", $type);
         }
 
-        $this->type = urlencode($type);
+        $this->type = Utility::urlencode($type);
 
         return $this;
     }
@@ -175,7 +173,7 @@ abstract class AbstractEndpoint
             $docID = (string) $docID;
         }
         
-        $this->id = urlencode($docID);
+        $this->id = Utility::urlencode($docID);
 
         return $this;
     }

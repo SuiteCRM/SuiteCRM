@@ -40,7 +40,7 @@ elseif (isset($_REQUEST['entire'])) {
     if (isset($_SESSION['export_where']) && !empty($_SESSION['export_where'])) { // bug 4679
         $where = $_SESSION['export_where'];
         $whereArr = explode(" ", trim($where));
-        if ($whereArr[0] == trim('where')) {
+        if ($whereArr[0] === trim('where')) {
             $whereClean = array_shift($whereArr);
         }
         $where = implode(" ", $whereArr);

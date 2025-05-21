@@ -2,8 +2,12 @@
 
 # Google APIs Client Library for PHP #
 
+**NOTE**: please check to see if the package you'd like to install is available in our
+list of [Google cloud packages](https://cloud.google.com/php/docs/reference) first, as
+these are the recommended libraries.
+
 <dl>
-  <dt>Reference Docs</dt><dd><a href="https://googleapis.github.io/google-api-php-client/main/">https://googleapis.github.io/google-api-php-client/main/</a></dd>
+  <dt>Reference Docs</dt><dd><a href="https://googleapis.github.io/google-api-php-client/">https://googleapis.github.io/google-api-php-client/</a></dd>
   <dt>License</dt><dd>Apache 2.0</dd>
 </dl>
 
@@ -21,7 +25,7 @@ For Google Cloud Platform APIs such as [Datastore][cloud-datastore], [Cloud Stor
 [cloud-compute]: https://github.com/googleapis/google-cloud-php-compute
 
 ## Requirements ##
-* [PHP 5.6.0 or higher](https://www.php.net/)
+* [PHP 8.0 or higher](https://www.php.net/)
 
 ## Developer Documentation ##
 
@@ -40,7 +44,16 @@ composer installed.
 Once composer is installed, execute the following command in your project root to install this library:
 
 ```sh
-composer require google/apiclient:^2.12.1
+composer require google/apiclient:^2.15.0
+```
+
+If you're facing a timeout error then either increase the timeout for composer by adding the env flag as `COMPOSER_PROCESS_TIMEOUT=600 composer install` or you can put this in the `config` section of the composer schema:
+```
+{
+    "config": {
+        "process-timeout": 600
+    }
+}
 ```
 
 Finally, be sure to include the autoloader:
@@ -61,7 +74,7 @@ you want to keep in `composer.json`:
 ```json
 {
     "require": {
-        "google/apiclient": "^2.12.1"
+        "google/apiclient": "^2.15.0"
     },
     "scripts": {
         "pre-autoload-dump": "Google\\Task\\Composer::cleanup"
@@ -241,9 +254,10 @@ The classes used to call the API in [google-api-php-client-services](https://git
 
 A JSON request to the [Datastore API](https://developers.google.com/apis-explorer/#p/datastore/v1beta3/datastore.projects.runQuery) would look like this:
 
-```json
+```
 POST https://datastore.googleapis.com/v1beta3/projects/YOUR_PROJECT_ID:runQuery?key=YOUR_API_KEY
-
+```
+```json
 {
     "query": {
         "kind": [{
@@ -417,6 +431,28 @@ $client->setHttpClient($httpClient);
 ```
 
 Other Guzzle features such as [Handlers and Middleware](http://docs.guzzlephp.org/en/stable/handlers-and-middleware.html) offer even more control.
+
+### Partial Consent and Granted Scopes
+
+When using OAuth2 3LO (e.g. you're a client requesting credentials from a 3rd
+party, such as in the [simple file upload example](examples/simple-file-upload.php)),
+you may want to take advantage of Partial Consent.
+
+To allow clients to only grant certain scopes in the OAuth2 screen, pass the
+querystring parameter for `enable_serial_consent` when generating the
+authorization URL:
+
+```php
+$authUrl = $client->createAuthUrl($scope, ['enable_serial_consent' => 'true']);
+```
+
+Once the flow is completed, you can see which scopes were granted by calling
+`getGrantedScope` on the OAuth2 object:
+
+```php
+// Space-separated string of granted scopes if it exists, otherwise null.
+echo $client->getOAuth2Service()->getGrantedScope();
+```
 
 ### Service Specific Examples ###
 

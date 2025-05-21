@@ -62,8 +62,11 @@ class MetaParser
 
 
 
-
-    public function parse()
+    // STIC Custom 20250204 JBL - Fix inherited declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function parse()
+    public function parse($filePath)
+    // End STIC Custom
     {
         return "NOT AVAILABLE";
     }
@@ -242,13 +245,13 @@ class MetaParser
      * stripFlavorTags
      * This method accepts the file contents and uses the $GLOBALS['sugar_flavor'] value
      * to remove the flavor tags in the file contents if present.  If $GLOBALS['sugar_flavor']
-     * is not set, it defaults to PRO flavor
+     * is not set, it defaults to CE flavor
      * @param $contents The file contents as a String value
      * @param $result The file contents with non-matching flavor tags and their nested comments removed
      */
     public function stripFlavorTags($contents)
     {
-        $flavor = isset($GLOBALS['sugar_flavor']) ? $GLOBALS['sugar_flavor'] : 'PRO';
+        $flavor = isset($GLOBALS['sugar_flavor']) ? $GLOBALS['sugar_flavor'] : 'CE';
         $isPro = ($flavor == 'ENT' || $flavor == 'PRO') ? true : false;
         if ($isPro) {
             $contents = preg_replace('/<!-- BEGIN: open_source -->.*?<!-- END: open_source -->/', '', $contents);
@@ -359,7 +362,11 @@ class MetaParser
             return $javascript;
         }
 
-        return $this->parseDelimiters($javascript);
+        // STIC Custom 20250206 JBL - Fix non static call to static method
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return $this->parseDelimiters($javascript);
+        return static::parseDelimiters($javascript);
+        // END STIC Custom
     }
 
     public static function parseDelimiters($javascript)
@@ -550,7 +557,11 @@ class MetaParser
 
         //Now run defined rules
         require_once("include/SugarFields/Parsers/Rules/ParseRules.php");
-        $rules = ParseRules::getRules();
+        // STIC Custom 20241113 JBL - Fix static calls to non static methods
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $rules = ParseRules::getRules();
+        $rules = (new ParseRules())->getRules();
+        // End STIC Custom
 
         foreach ($rules as $rule) {
             if (!file_exists($rule['file'])) {

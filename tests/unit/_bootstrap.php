@@ -1,7 +1,7 @@
 <?php
 // Here you can initialize variables that will be available to your test
 //echo "CWD:" . getcwd() . "\n";
-chdir('../');
+chdir(__DIR__.'/../../');
 if (!defined('sugarEntry')) {
     define('sugarEntry', true);
     define('SUITE_PHPUNIT_RUNNER', true);

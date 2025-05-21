@@ -19,6 +19,7 @@
  * @author Andrew Mclaughlan <andrew@mclaughlan.info>
  */
 
+#[\AllowDynamicProperties]
 class Gantt
 {
     private $start_date;
@@ -61,13 +62,13 @@ class Gantt
                 //Generate a table containing the days in each month
                 echo '<table class="table_inner"><tr>';
 
-                
+
                 foreach ($days as $day => $d) {
                     echo '<td class="inner_td"><div class="cell_width">'.'&nbsp;'.'</div></td>';//day number shown $day
                 }
                 echo '</tr><tr>';
 
-                
+
                 foreach ($days as $d) {
                     $day_num ++;
                     echo '<td class="inner_td"><div class="cell_width">'.$day_num.'</div></td>';//First letter of the days name shown //$this->substr_unicode($d,0,1)
@@ -249,7 +250,7 @@ class Gantt
     public function substr_unicode($str, $s, $l = null)
     {
         return implode("", array_slice(
-            preg_split("//u", $str, -1, PREG_SPLIT_NO_EMPTY),
+            preg_split("//u", (string) $str, -1, PREG_SPLIT_NO_EMPTY),
             $s,
             $l
         ));

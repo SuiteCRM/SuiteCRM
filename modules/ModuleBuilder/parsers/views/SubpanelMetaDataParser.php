@@ -48,6 +48,7 @@ require_once 'modules/ModuleBuilder/parsers/constants.php';
 
 class SubpanelMetaDataParser extends ListLayoutMetaDataParser
 {
+    public $_invisibleFields;
     /**
      * @var array $columns
      * Columns is used by the view to construct the listview - each column is built by calling the named function

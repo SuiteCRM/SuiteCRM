@@ -44,7 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once "include/utils/additional_details.php";
 
-function additionalDetailsTask($fields, SugarBean $bean = null, $params = array())
+function additionalDetailsTask($fields, ?SugarBean $bean = null, $params = array())
 {
     return additional_details($fields, $bean, $params);
 }

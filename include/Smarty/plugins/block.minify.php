@@ -1,4 +1,6 @@
 <?php
+define('X', 'X');
+
 function smarty_block_minify($params, $content, &$smarty, &$repeat)
 {
     if (!$repeat && isset($content)) {

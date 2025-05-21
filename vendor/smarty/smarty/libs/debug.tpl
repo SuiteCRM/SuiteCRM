@@ -1,157 +1,173 @@
-{* Smarty *}
-{* debug.tpl, last updated version 2.1.0 *}
-{assign_debug_info}
-{capture assign=debug_output}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-    <title>Smarty Debug Console</title>
-{literal}
-<style type="text/css">
-/* <![CDATA[ */
-body, h1, h2, td, th, p {
-    font-family: sans-serif;
-    font-weight: normal;
-    font-size: 0.9em;
-    margin: 1px;
-    padding: 0;
-}
+{capture name='_smarty_debug' assign=debug_output}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>Smarty Debug Console</title>
+        <style>
+            {literal}
+            body, h1, h2, h3, td, th, p {
+                font-family: sans-serif;
+                font-weight: normal;
+                font-size: 0.9em;
+                margin: 1px;
+                padding: 0;
+            }
 
-h1 {
-    margin: 0;
-    text-align: left;
-    padding: 2px;
-    background-color: #f0c040;
-    color:  black;
-    font-weight: bold;
-    font-size: 1.2em;
- }
+            h1 {
+                margin: 0;
+                text-align: left;
+                padding: 2px;
+                background-color: #f0c040;
+                color: black;
+                font-weight: bold;
+                font-size: 1.2em;
+            }
 
-h2 {
-    background-color: #9B410E;
-    color: white;
-    text-align: left;
-    font-weight: bold;
-    padding: 2px;
-    border-top: 1px solid black;
-}
+            h2 {
+                background-color: #9B410E;
+                color: white;
+                text-align: left;
+                font-weight: bold;
+                padding: 2px;
+                border-top: 1px solid black;
+            }
 
-body {
-    background: black; 
-}
+            h3 {
+                text-align: left;
+                font-weight: bold;
+                color: black;
+                font-size: 0.7em;
+                padding: 2px;
+            }
 
-p, table, div {
-    background: #f0ead8;
-} 
+            body {
+                background: black;
+            }
 
-p {
-    margin: 0;
-    font-style: italic;
-    text-align: center;
-}
+            p, table, div {
+                background: #f0ead8;
+            }
 
-table {
-    width: 100%;
-}
+            p {
+                margin: 0;
+                font-style: italic;
+                text-align: center;
+            }
 
-th, td {
-    font-family: monospace;
-    vertical-align: top;
-    text-align: left;
-    width: 50%;
-}
+            table {
+                width: 100%;
+            }
 
-td {
-    color: green;
-}
+            th, td {
+                font-family: monospace;
+                vertical-align: top;
+                text-align: left;
+            }
 
-.odd {
-    background-color: #eeeeee;
-}
+            td {
+                color: green;
+            }
 
-.even {
-    background-color: #fafafa;
-}
+            tr:nth-child(odd) {
+                background-color: #eeeeee;
+            }
 
-.exectime {
-    font-size: 0.8em;
-    font-style: italic;
-}
+            tr:nth-child(even) {
+                background-color: #fafafa;
+            }
 
-#table_assigned_vars th {
-    color: blue;
-}
+            .exectime {
+                font-size: 0.8em;
+                font-style: italic;
+            }
 
-#table_config_vars th {
-    color: maroon;
-}
-/* ]]> */
-</style>
-{/literal}
-</head>
-<body>
+            #bold div {
+                color: black;
+                font-weight: bold;
+            }
 
-<h1>Smarty Debug Console</h1>
+            #blue h3 {
+                color: blue;
+            }
 
-<h2>included templates &amp; config files (load time in seconds)</h2>
+            #normal div {
+                color: black;
+                font-weight: normal;
+            }
 
-<div>
-{section name=templates loop=$_debug_tpls}
-    {section name=indent loop=$_debug_tpls[templates].depth}&nbsp;&nbsp;&nbsp;{/section}
-    <font color={if $_debug_tpls[templates].type eq "template"}brown{elseif $_debug_tpls[templates].type eq "insert"}black{else}green{/if}>
-        {$_debug_tpls[templates].filename|escape:html}</font>
-    {if isset($_debug_tpls[templates].exec_time)}
-        <span class="exectime">
-        ({$_debug_tpls[templates].exec_time|string_format:"%.5f"})
-        {if %templates.index% eq 0}(total){/if}
-        </span>
+            #table_assigned_vars th {
+                color: blue;
+                font-weight: bold;
+            }
+
+            #table_config_vars th {
+                color: maroon;
+            }
+            {/literal}
+        </style>
+    </head>
+    <body>
+
+    <h1>Smarty {Smarty::SMARTY_VERSION} Debug Console
+        -  {if isset($template_name)}{$template_name|debug_print_var nofilter} {/if}{if !empty($template_data)}Total Time {$execution_time|string_format:"%.5f"}{/if}</h1>
+
+    {if !empty($template_data)}
+        <h2>included templates &amp; config files (load time in seconds)</h2>
+        <div>
+            {foreach $template_data as $template}
+                <span style="color: brown;">{$template.name}</span>
+                <br>&nbsp;&nbsp;<span class="exectime">
+                (compile {$template['compile_time']|string_format:"%.5f"}) (render {$template['render_time']|string_format:"%.5f"}) (cache {$template['cache_time']|string_format:"%.5f"})
+                 </span>
+                <br>
+            {/foreach}
+        </div>
     {/if}
-    <br />
-{sectionelse}
-    <p>no templates included</p>
-{/section}
-</div>
 
-<h2>assigned template variables</h2>
+    <h2>assigned template variables</h2>
 
-<table id="table_assigned_vars">
-    {section name=vars loop=$_debug_keys}
-        <tr class="{cycle values="odd,even"}">
-            <th>{ldelim}${$_debug_keys[vars]|escape:'html'}{rdelim}</th>
-            <td>{$_debug_vals[vars]|@debug_print_var}</td></tr>
-    {sectionelse}
-        <tr><td><p>no template variables assigned</p></td></tr>
-    {/section}
-</table>
+    <table id="table_assigned_vars">
+        {foreach $assigned_vars as $vars}
+            <tr>
+                <td>
+                    <h3 style="color: blue;">${$vars@key}</h3>
+                    {if isset($vars['nocache'])}<strong>Nocache</strong><br>{/if}
+                    {if isset($vars['scope'])}<strong>Origin:</strong> {$vars['scope']|debug_print_var nofilter}{/if}
+                </td>
+                <td>
+                    <h3>Value</h3>
+                    {$vars['value']|debug_print_var:10:80 nofilter}
+                </td>
+                <td>
+                    {if isset($vars['attributes'])}
+                        <h3>Attributes</h3>
+                        {$vars['attributes']|debug_print_var nofilter}
+                    {/if}
+                </td>
+         {/foreach}
+    </table>
 
-<h2>assigned config file variables (outer template scope)</h2>
+    <h2>assigned config file variables</h2>
 
-<table id="table_config_vars">
-    {section name=config_vars loop=$_debug_config_keys}
-        <tr class="{cycle values="odd,even"}">
-            <th>{ldelim}#{$_debug_config_keys[config_vars]|escape:'html'}#{rdelim}</th>
-            <td>{$_debug_config_vals[config_vars]|@debug_print_var}</td></tr>
-    {sectionelse}
-        <tr><td><p>no config vars assigned</p></td></tr>
-    {/section}
-</table>
-</body>
-</html>
+    <table id="table_config_vars">
+        {foreach $config_vars as $vars}
+            <tr>
+                <td>
+                    <h3 style="color: blue;">#{$vars@key}#</h3>
+                    {if isset($vars['scope'])}<strong>Origin:</strong> {$vars['scope']|debug_print_var nofilter}{/if}
+                </td>
+                <td>
+                    {$vars['value']|debug_print_var:10:80 nofilter}
+                </td>
+            </tr>
+        {/foreach}
+
+    </table>
+    </body>
+    </html>
 {/capture}
-{if isset($_smarty_debug_output) and $_smarty_debug_output eq "html"}
-    {$debug_output}
-{else}
 <script type="text/javascript">
-// <![CDATA[
-    if ( self.name == '' ) {ldelim}
-       var title = 'Console';
-    {rdelim}
-    else {ldelim}
-       var title = 'Console_' + self.name;
-    {rdelim}
-    _smarty_console = window.open("",title.value,"width=680,height=600,resizable,scrollbars=yes");
-    _smarty_console.document.write('{$debug_output|escape:'javascript'}');
+    _smarty_console = window.open("", "console{$targetWindow}", "width=1024,height=600,left={$offset},top={$offset},resizable,scrollbars=yes");
+    _smarty_console.document.write("{$debug_output|escape:'javascript' nofilter}");
     _smarty_console.document.close();
-// ]]>
 </script>
-{/if}

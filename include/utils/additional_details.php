@@ -58,7 +58,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
                 continue;
             }
 
-            if ($bean->field_name_map[strtolower($i)]['type'] == 'datetime' or $bean->field_name_map[strtolower($i)]['type'] == 'datetimecombo') {
+            if ($bean->field_name_map[strtolower($i)]['type'] == 'datetime' || $bean->field_name_map[strtolower($i)]['type'] == 'datetimecombo') {
                 $db_date = $timedate->fromUser($f);
                 $db_date_format = $db_date->format('Y-m-d H:i:s');
                 $fields['DB_'.$i] = $db_date_format;
@@ -75,7 +75,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
         $templateCaption->assign('PARAM', $params);
         $templateCaption->assign('MODULE_NAME', $bean->module_name);
         $templateCaption->assign('OBJECT_NAME', $bean->object_name);
-        $caption = $templateCaption->fetch('modules/'. $bean->module_name .'/tpls/additionalDetails.caption.tpl');
+        // STIC Custom 20241128 JBL - Upgrade SuiteCRM core to 7.14.5
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // Additional details does not show correctly in PHP 8
+        // $caption = $templateCaption->fetch('modules/'. $bean->module_name .'/tpls/additionalDetails.caption.tpl');
+        $caption = null;
+        if (file_exists('modules/'. $bean->module_name .'/tpls/additionalDetails.caption.tpl')) {
+            $caption = $templateCaption->fetch('modules/'. $bean->module_name .'/tpls/additionalDetails.caption.tpl');
+        }
+        // END STIC
 
         $templateBody = new Sugar_Smarty();
         $templateBody->assign('APP', $app_list_strings);

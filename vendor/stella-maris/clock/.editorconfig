@@ -1,0 +1,15 @@
+root = true
+
+[*]
+trim_trailing_whitespace = true
+indent_size = tab
+indent_style = tab
+tab_width = 4
+end_of_line = lf
+insert_final_newline = true
+max_line_length = off
+charset = utf-8
+
+[*.{yml,yaml}]
+tab_width = 2
+

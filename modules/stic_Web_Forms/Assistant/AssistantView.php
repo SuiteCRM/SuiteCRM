@@ -23,6 +23,7 @@
 
 require_once 'include/MVC/View/SugarView.php';
 
+#[\AllowDynamicProperties]
 class stic_Web_FormsAssistantView extends SugarView
 {
     protected $tpl = '';
@@ -76,6 +77,35 @@ class stic_Web_FormsAssistantView extends SugarView
         $this->ss->assign('MAP', $this->view_object_map);
         $this->ss->assign('TEMPLATE_DIR', $this->templateDir);
         $this->ss->assign('INCLUDE_TEMPLATE_DIR', $this->commonTemplateDir);
+
+        // Extracted from old {php} directive in FormToFormat.tpl
+        global $mod_strings;
+        $fileshtmlstring = '';
+        $numAttachments = $_REQUEST["num_attachment"] ?? 0;
+        if ($numAttachments) {
+            $fileshtmlstring .= '
+                <tbody id="Documents" class="section">
+                    <tr>
+                        <td colspan="4"> <h3>'.$mod_strings["LBL_FILES_TO_ATTACH"].'</h3></td>
+                    </tr>';
+
+            for($i = 1; $i <= $numAttachments; $i++) {
+                $fileshtmlstring .= '
+                    <tr>
+                        <td id="td_lbl_Documents___document'.$i.'" class="column_25">
+                            <span><label id="lbl_Documents___document'.$i.'">'.$mod_strings["LBL_FILE_TO_ATTACH"].' '.$i.': </span>
+                        </td>
+                        <td id="td_Documents___document'.$i.'" class="column_25">
+                            <span><input id="Documents___document'.$i.'" type="file" class="document" name="documents[]"/></span>
+                            <span id="error_zone_'.$i.'" class="error_zone">&nbsp;</span>					
+                        </td>
+                    </tr>';
+            }
+            $fileshtmlstring .= '
+                </tbody>';
+        }
+        $this->ss->assign('FILES_HTML_STRING', $fileshtmlstring);
+
 
         if ($this->autoForm) { // Show the form header
             echo $this->ss->display("{$this->commonTemplateDir}/Header.tpl");

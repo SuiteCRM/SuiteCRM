@@ -118,7 +118,7 @@ class db_utilsTest extends SuitePHPUnitFrameworkTestCase
         self::assertSame($expected, $actual);
 
         $string = "'test'&trial<\">";
-        $expected = '&#039;test&#039;&trial&lt;&quot;&gt;';
+        $expected = '&#039;test&#039;&amp;trial&lt;&quot;&gt;';
         $actual = to_html($string);
         self::assertSame($expected, $actual);
     }

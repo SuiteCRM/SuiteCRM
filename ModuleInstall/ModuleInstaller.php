@@ -67,6 +67,7 @@ define('DISABLED_PATH', 'Disabled');
 
 require_once 'include/SugarCache/SugarCache.php';
 
+#[\AllowDynamicProperties]
 class ModuleInstaller
 {
     public $modules = array();
@@ -147,6 +148,8 @@ class ModuleInstaller
                         .$app_strings['LBL_DISPLAY_LOG'].'</a> </div><div id="displayLog" style="display:none">';
             }
 
+            $errors = [];
+            $installdefs = [];
             include($this->base_dir . '/manifest.php');
             if ($is_upgrade && !empty($previous_version)) {
                 //check if the upgrade path exists
@@ -250,7 +253,7 @@ class ModuleInstaller
         require_once($this->base_dir . '/manifest.php');
         if (isset($this->installdefs['pre_execute']) && is_array($this->installdefs['pre_execute'])) {
             foreach ($this->installdefs['pre_execute'] as $includefile) {
-                require_once(str_replace('<basepath>', $this->base_dir, $includefile));
+                require_once(str_replace('<basepath>', $this->base_dir, (string) $includefile));
             }
         }
     }
@@ -260,7 +263,7 @@ class ModuleInstaller
         require_once($this->base_dir . '/manifest.php');
         if (isset($this->installdefs['post_execute']) && is_array($this->installdefs['post_execute'])) {
             foreach ($this->installdefs['post_execute'] as $includefile) {
-                require_once(str_replace('<basepath>', $this->base_dir, $includefile));
+                require_once(str_replace('<basepath>', $this->base_dir, (string) $includefile));
             }
         }
     }
@@ -270,7 +273,7 @@ class ModuleInstaller
         require_once($this->base_dir . '/manifest.php');
         if (isset($this->installdefs['pre_uninstall']) && is_array($this->installdefs['pre_uninstall'])) {
             foreach ($this->installdefs['pre_uninstall'] as $includefile) {
-                require_once(str_replace('<basepath>', $this->base_dir, $includefile));
+                require_once(str_replace('<basepath>', $this->base_dir, (string) $includefile));
             }
         }
     }
@@ -281,7 +284,7 @@ class ModuleInstaller
         require_once($this->base_dir . '/manifest.php');
         if (isset($this->installdefs['post_uninstall']) && is_array($this->installdefs['post_uninstall'])) {
             foreach ($this->installdefs['post_uninstall'] as $includefile) {
-                require_once(str_replace('<basepath>', $this->base_dir, $includefile));
+                require_once(str_replace('<basepath>', $this->base_dir, (string) $includefile));
             }
         }
 
@@ -324,8 +327,8 @@ class ModuleInstaller
     {
         if (!empty($this->installdefs['copy'])) {
             foreach ($this->installdefs['copy'] as $cp) {
-                $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, $cp['to']));
-                $cp['from'] = clean_path(str_replace('<basepath>', $this->base_dir, $cp['from']));
+                $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, (string) $cp['to']));
+                $cp['from'] = clean_path(str_replace('<basepath>', $this->base_dir, (string) $cp['from']));
                 $GLOBALS['log']->debug('Unlink ' . $cp['to']);
                 /* BEGIN - RESTORE POINT - by MR. MILK August 31, 2005 02:22:11 PM */
                 //rmdir_recursive($cp['to']);
@@ -400,7 +403,7 @@ class ModuleInstaller
             $this->log(sprintf(translate("LBL_MI_IN_EXT"), $section));
             foreach ($this->installdefs[$section] as $item) {
                 if (isset($item['from'])) {
-                    $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                    $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 } else {
                     $from = '';
                 }
@@ -444,7 +447,7 @@ class ModuleInstaller
             $this->log(sprintf(translate("LBL_MI_UN_EXT"), $section));
             foreach ($this->installdefs[$section] as $item) {
                 if (isset($item['from'])) {
-                    $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                    $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 } else {
                     $from = '';
                 }
@@ -508,7 +511,7 @@ class ModuleInstaller
         if (isset($this->installdefs[$section])) {
             foreach ($this->installdefs[$section] as $item) {
                 if (isset($item['from'])) {
-                    $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                    $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 } else {
                     $from = '';
                 }
@@ -555,7 +558,7 @@ class ModuleInstaller
         if (isset($this->installdefs[$section])) {
             foreach ($this->installdefs[$section] as $item) {
                 if (isset($item['from'])) {
-                    $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                    $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 } else {
                     $from = '';
                 }
@@ -613,7 +616,7 @@ class ModuleInstaller
         require('custom/modules/unified_search_modules_display.php');
 
         foreach ($this->installdefs['beans'] as $beanDefs) {
-            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) == false) {
+            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) === false) {
                 continue;
             }
             unset($unified_search_modules_display[$beanDefs['module']]);
@@ -623,7 +626,7 @@ class ModuleInstaller
                 }
                 $user->retrieve($userId);
                 $prefs = $user->getPreference('globalSearch', 'search');
-                if (array_key_exists($beanDefs['module'], $prefs) == false) {
+                if (empty($prefs) || array_key_exists($beanDefs['module'], $prefs) == false) {
                     continue;
                 }
                 unset($prefs[$beanDefs['module']]);
@@ -661,7 +664,7 @@ class ModuleInstaller
         require('custom/modules/unified_search_modules_display.php');
 
         foreach ($this->installdefs['beans'] as $beanDefs) {
-            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) == false) {
+            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) === false) {
                 continue;
             }
             if (isset($unified_search_modules_display[$beanDefs['module']]['disabled_module_visible']) == false) {
@@ -700,7 +703,7 @@ class ModuleInstaller
         require('custom/modules/unified_search_modules_display.php');
 
         foreach ($this->installdefs['beans'] as $beanDefs) {
-            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) == false) {
+            if (array_key_exists($beanDefs['module'], $unified_search_modules_display) === false) {
                 continue;
             }
             if (isset($unified_search_modules_display[$beanDefs['module']]['visible']) == false) {
@@ -806,7 +809,7 @@ class ModuleInstaller
         if (isset($this->installdefs['dashlets'])) {
             foreach ($this->installdefs['dashlets'] as $cp) {
                 $this->log(translate('LBL_MI_IN_DASHLETS') . $cp['name']);
-                $cp['from'] = str_replace('<basepath>', $this->base_dir, $cp['from']);
+                $cp['from'] = str_replace('<basepath>', $this->base_dir, (string) $cp['from']);
                 $path = 'custom/modules/Home/Dashlets/' . $cp['name'] . '/';
                 $GLOBALS['log']->debug("Installing Dashlet " . $cp['name'] . "..." . $cp['from']);
                 if (!file_exists($path)) {
@@ -847,7 +850,7 @@ class ModuleInstaller
         if (isset($this->installdefs['dcaction'])) {
             $this->log(translate('LBL_MI_IN_MENUS'));
             foreach ($this->installdefs['dcaction'] as $action) {
-                $action['from'] = str_replace('<basepath>', $this->base_dir, $action['from']);
+                $action['from'] = str_replace('<basepath>', $this->base_dir, (string) $action['from']);
                 $GLOBALS['log']->debug("Installing DCActions ..." . $action['from']);
                 $path = 'custom/Extension/application/Ext/DashletContainer/Containers';
                 if (!file_exists($path)) {
@@ -864,7 +867,7 @@ class ModuleInstaller
         if (isset($this->installdefs['dcaction'])) {
             $this->log(translate('LBL_MI_UN_MENUS'));
             foreach ($this->installdefs['dcaction'] as $action) {
-                $action['from'] = str_replace('<basepath>', $this->base_dir, $action['from']);
+                $action['from'] = str_replace('<basepath>', $this->base_dir, (string) $action['from']);
                 $GLOBALS['log']->debug("Uninstalling DCActions ..." . $action['from']);
                 $path = 'custom/Extension/application/Ext/DashletContainer/Containers';
                 if (is_file($path . '/'. $this->id_name . '.php')) {
@@ -884,8 +887,8 @@ class ModuleInstaller
         if (isset($this->installdefs['connectors'])) {
             foreach ($this->installdefs['connectors'] as $cp) {
                 $this->log(translate('LBL_MI_IN_CONNECTORS') . $cp['name']);
-                $dir = str_replace('_', '/', $cp['name']);
-                $cp['connector'] = str_replace('<basepath>', $this->base_dir, $cp['connector']);
+                $dir = str_replace('_', '/', (string) $cp['name']);
+                $cp['connector'] = str_replace('<basepath>', $this->base_dir, (string) $cp['connector']);
                 $source_path = 'custom/modules/Connectors/connectors/sources/' . $dir. '/';
                 $GLOBALS['log']->debug("Installing Connector " . $cp['name'] . "..." . $cp['connector']);
                 if (!file_exists($source_path)) {
@@ -895,7 +898,7 @@ class ModuleInstaller
 
                 //Install optional formatter code if it is specified
                 if (!empty($cp['formatter'])) {
-                    $cp['formatter'] = str_replace('<basepath>', $this->base_dir, $cp['formatter']);
+                    $cp['formatter'] = str_replace('<basepath>', $this->base_dir, (string) $cp['formatter']);
                     $formatter_path = 'custom/modules/Connectors/connectors/formatters/' . $dir. '/';
                     if (!file_exists($formatter_path)) {
                         mkdir_recursive($formatter_path, true);
@@ -903,6 +906,7 @@ class ModuleInstaller
                     copy_recursive($cp['formatter'], $formatter_path);
                 }
             }
+            $cp = $cp ?? [];
             require_once('include/connectors/utils/ConnectorUtils.php');
             ConnectorUtils::installSource($cp['name']);
         }
@@ -912,13 +916,14 @@ class ModuleInstaller
         if (isset($this->installdefs['connectors'])) {
             foreach ($this->installdefs['connectors'] as $cp) {
                 $this->log(translate('LBL_MI_UN_CONNECTORS') . $cp['name']);
-                $dir = str_replace('_', '/', $cp['name']);
+                $dir = str_replace('_', '/', (string) $cp['name']);
                 $source_path = 'custom/modules/Connectors/connectors/sources/' . $dir;
                 $formatter_path = 'custom/modules/Connectors/connectors/formatters/' . $dir;
                 $GLOBALS['log']->debug('Unlink ' .$source_path);
                 rmdir_recursive($source_path);
                 rmdir_recursive($formatter_path);
             }
+            $cp = $cp ?? [];
             require_once('include/connectors/utils/ConnectorUtils.php');
             //ConnectorUtils::getConnectors(true);
             ConnectorUtils::uninstallSource($cp['name']);
@@ -935,7 +940,7 @@ class ModuleInstaller
         if (!file_exists($path)) {
             mkdir_recursive($path, true);
         }
-        copy_recursive($from, $path.'/'. basename($from));
+        copy_recursive($from, $path.'/'. basename((string) $from));
     }
 
     public function install_layoutdef($from, $to_module)
@@ -948,7 +953,7 @@ class ModuleInstaller
         if (!file_exists($path)) {
             mkdir_recursive($path, true);
         }
-        copy_recursive($from, $path.'/'. basename($from));
+        copy_recursive($from, $path.'/'. basename((string) $from));
     }
 
     // Non-standard - needs special rebuild call
@@ -962,7 +967,7 @@ class ModuleInstaller
             foreach ($this->installdefs['language'] as $packs) {
                 $modules[]=$packs['to_module'];
                 $languages[$packs['language']] = $packs['language'];
-                $packs['from'] = str_replace('<basepath>', $this->base_dir, $packs['from']);
+                $packs['from'] = str_replace('<basepath>', $this->base_dir, (string) $packs['from']);
                 $GLOBALS['log']->debug("Installing Language Pack ..." . $packs['from']  .  " for " .$packs['to_module']);
                 $path = $this->getInstallLanguagesPath($packs);
                 if (!file_exists(dirname($path))) {
@@ -1002,7 +1007,7 @@ class ModuleInstaller
             foreach ($this->installdefs['language'] as $packs) {
                 $modules[]=$packs['to_module'];
                 $languages[$packs['language']] = $packs['language'];
-                $packs['from'] = str_replace('<basepath>', $this->base_dir, $packs['from']);
+                $packs['from'] = str_replace('<basepath>', $this->base_dir, (string) $packs['from']);
                 $GLOBALS['log']->debug("Uninstalling Language Pack ..." . $packs['from']  .  " for " .$packs['to_module']);
                 $path = 'custom/Extension/modules/' . $packs['to_module']. '/Ext/Language';
                 if ($packs['to_module'] == 'application') {
@@ -1026,7 +1031,7 @@ class ModuleInstaller
         if (isset($this->installdefs['language'])) {
             $languages = $modules = array();
             foreach ($this->installdefs['language'] as $item) {
-                $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 $GLOBALS['log']->debug("Disabling Language {$item['language']}... from $from for " .$item['to_module']);
                 $modules[]=$item['to_module'];
                 $languages[$item['language']] = $item['language'];
@@ -1063,9 +1068,9 @@ class ModuleInstaller
         if (isset($this->installdefs['language'])) {
              $modules = [];
              $languages = [];
-            
+
             foreach ($this->installdefs['language'] as $item) {
-                $from = str_replace('<basepath>', $this->base_dir, $item['from']);
+                $from = str_replace('<basepath>', $this->base_dir, (string) $item['from']);
                 $GLOBALS['log']->debug("Enabling Language {$item['language']}... from $from for " .$item['to_module']);
                 $modules[]=$item['to_module'];
                 $languages[$item['language']] = $item['language'];
@@ -1256,19 +1261,19 @@ class ModuleInstaller
     {
         //function copy_path($from, $to){
         /* END - RESTORE POINT - by MR. MILK August 31, 2005 02:22:18 PM */
-        $to = str_replace('<basepath>', $this->base_dir, $to);
+        $to = str_replace('<basepath>', $this->base_dir, (string) $to);
 
         if (!$uninstall) {
-            $from = str_replace('<basepath>', $this->base_dir, $from);
+            $from = str_replace('<basepath>', $this->base_dir, (string) $from);
             $GLOBALS['log']->debug('Copy ' . $from);
         } else {
-            $from = str_replace('<basepath>', $backup_path, $from);
+            $from = str_replace('<basepath>', $backup_path, (string) $from);
             //$GLOBALS['log']->debug('Restore ' . $from);
         }
         $from = clean_path($from);
         $to = clean_path($to);
 
-        $dir = dirname($to);
+        $dir = dirname((string) $to);
         //there are cases where if we need to create a directory in the root directory
         if ($dir == '.' && is_dir($from)) {
             $dir = $to;
@@ -1373,18 +1378,18 @@ class ModuleInstaller
             }
 
             foreach ($this->installdefs [ 'relationships' ] as $key => $relationship) {
-                $filename = basename($relationship [ 'meta_data' ]) ;
+                $filename = basename((string) $relationship [ 'meta_data' ]) ;
                 $this->copy_path($relationship [ 'meta_data' ], 'custom/metadata/' . $filename) ;
                 $this->install_relationship('custom/metadata/' . $filename) ;
                 $save_table_dictionary = true ;
 
                 if (! empty($relationship [ 'module_vardefs' ])) {
-                    $relationship [ 'module_vardefs' ] = str_replace('<basepath>', $this->base_dir, $relationship [ 'module_vardefs' ]) ;
+                    $relationship [ 'module_vardefs' ] = str_replace('<basepath>', $this->base_dir, (string) $relationship [ 'module_vardefs' ]) ;
                     $this->install_vardef($relationship [ 'module_vardefs' ], $relationship [ 'module' ]) ;
                 }
 
                 if (! empty($relationship [ 'module_layoutdefs' ])) {
-                    $relationship [ 'module_layoutdefs' ] = str_replace('<basepath>', $this->base_dir, $relationship [ 'module_layoutdefs' ]) ;
+                    $relationship [ 'module_layoutdefs' ] = str_replace('<basepath>', $this->base_dir, (string) $relationship [ 'module_layoutdefs' ]) ;
                     $this->install_layoutdef($relationship [ 'module_layoutdefs' ], $relationship [ 'module' ]) ;
                 }
 
@@ -1631,7 +1636,7 @@ class ModuleInstaller
             $this->log(translate('LBL_MI_UN_RELATIONSHIPS'));
             foreach ($relationships as $relationship) {
                 // remove the metadata entry
-                $filename = basename($relationship['meta_data']);
+                $filename = basename((string) $relationship['meta_data']);
                 $pathname = (file_exists("custom/metadata/$filename")) ? "custom/metadata/$filename" : "metadata/$filename" ;
                 if (isset($GLOBALS['mi_remove_tables']) && $GLOBALS['mi_remove_tables']) {
                     $this->uninstall_relationship($pathname);
@@ -1683,6 +1688,7 @@ class ModuleInstaller
             }
 
             global $moduleList;
+            $installdefs = [];
             include($this->base_dir . '/manifest.php');
             $this->installdefs = $installdefs;
             $this->id_name = $this->installdefs['id'];
@@ -1859,7 +1865,7 @@ class ModuleInstaller
                     $shouldSave = true;
                     $override = array();
                     while ($entry = $dir->read()) {
-                        if ((empty($filter) || substr_count($entry, $filter) > 0) && is_file($module_install.'/'.$entry)
+                        if ((empty($filter) || substr_count($entry, (string) $filter) > 0) && is_file($module_install.'/'.$entry)
                           && $entry != '.' && $entry != '..' && strtolower(substr($entry, -4)) == ".php") {
                             if (substr($entry, 0, 9) == '_override') {
                                 $override[] = $entry;
@@ -1900,7 +1906,7 @@ class ModuleInstaller
             $dir = dir($module_install);
             while ($entry = $dir->read()) {
                 $shouldSave = true;
-                if ((empty($filter) || substr_count($entry, $filter) > 0) && is_file($module_install.'/'.$entry)
+                if ((empty($filter) || substr_count($entry, (string) $filter) > 0) && is_file($module_install.'/'.$entry)
                                   && $entry != '.' && $entry != '..' && strtolower(substr($entry, -4)) == ".php") {
                     $file = file_get_contents($module_install . '/' . $entry);
                     $extension .= "\n". str_replace(array('<?php', '?>', '<?PHP', '<?'), array('','', '' ,''), $file);
@@ -2057,8 +2063,8 @@ class ModuleInstaller
             } else {
                 if (file_exists($dest)) {
                     $rest = clean_path($backup_path."/$dest");
-                    if (!is_dir(dirname($rest))) {
-                        mkdir_recursive(dirname($rest), true);
+                    if (!is_dir(dirname((string) $rest))) {
+                        mkdir_recursive(dirname((string) $rest), true);
                     }
 
                     $GLOBALS['log']->debug("Backup ... " . $dest.  " to " .$rest);
@@ -2266,7 +2272,8 @@ class ModuleInstaller
                 display_progress_bar('install', $current_step, $total_steps);
                 echo '<div id ="displayLoglink" ><a href="#" onclick="toggleDisplay(\'displayLog\')">'.$app_strings['LBL_DISPLAY_LOG'].'</a> </div><div id="displayLog" style="display:none">';
             }
-
+            $errors = [];
+            $installdefs = [];
             require_once($this->base_dir . '/manifest.php');
             if ($is_upgrade && !empty($previous_version)) {
                 //check if the upgrade path exists
@@ -2383,7 +2390,7 @@ class ModuleInstaller
             $str = "<?php \n //WARNING: The contents of this file are auto-generated\n";
             $save_table_dictionary = false;
             foreach ($this->installdefs['relationships'] as $relationship) {
-                $filename	=basename($relationship['meta_data']);
+                $filename	=basename((string) $relationship['meta_data']);
 
                 $save_table_dictionary  = true;
                 $str .= "include_once('metadata/$filename');\n";
@@ -2416,7 +2423,7 @@ class ModuleInstaller
     {
         if (isset($this->installdefs['relationships'])) {
             foreach ($this->installdefs['relationships'] as $relationship) {
-                $filename = basename($relationship['meta_data']);
+                $filename = basename((string) $relationship['meta_data']);
                 $relName = substr($filename, -12) == "MetaData.php" ? substr($filename, 0, strlen($filename) - 12) : "";
                 if (empty($relationship['module']) && empty($relName)) {
                     continue;
@@ -2460,7 +2467,7 @@ class ModuleInstaller
     {
         if (isset($this->installdefs['dashlets'])) {
             foreach ($this->installdefs['dashlets'] as $cp) {
-                $cp['from'] = str_replace('<basepath>', $this->base_dir, $cp['from']);
+                $cp['from'] = str_replace('<basepath>', $this->base_dir, (string) $cp['from']);
                 $path = 'custom/modules/Home/Dashlets/' . $cp['name'] . '/';
                 $disabled_path = 'custom/modules/Home/'.DISABLED_PATH.'Dashlets/' . $cp['name'];
                 $GLOBALS['log']->debug("Enabling Dashlet " . $cp['name'] . "..." . $cp['from']);
@@ -2495,7 +2502,7 @@ class ModuleInstaller
         if (isset($GLOBALS['mi_overwrite_files']) && $GLOBALS['mi_overwrite_files']) {
             if (!empty($this->installdefs['copy'])) {
                 foreach ($this->installdefs['copy'] as $cp) {
-                    $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, $cp['to']));
+                    $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, (string) $cp['to']));
                     $backup_path = clean_path(remove_file_extension(urldecode(hashToFile($_REQUEST['install_file'])))."-restore/".$cp['to']);
 
                     //check if this file exists in the -restore directory
@@ -2527,13 +2534,13 @@ class ModuleInstaller
             if (!empty($this->installdefs['copy'])) {
                 //				$GLOBALS['log']->debug('ModuleInstaller.php->disable_copy(): installdefs not empty');
                 foreach ($this->installdefs['copy'] as $cp) {
-                    $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, $cp['to']));
+                    $cp['to'] = clean_path(str_replace('<basepath>', $this->base_dir, (string) $cp['to']));
                     $backup_path = clean_path(remove_file_extension(urldecode(hashToFile($_REQUEST['install_file'])))."-restore/".$cp['to']); // bug 16966 tyoung - replaced missing assignment to $backup_path
                     //check if this file exists in the -restore directory
                     //					$GLOBALS['log']->debug("ModuleInstaller.php->disable_copy(): backup_path=".$backup_path);
                     if (file_exists($backup_path)) {
                         //since the file exists, then we want do an md5 of the install version and the file system version
-                        $from = str_replace('<basepath>', $this->base_dir, $cp['from']);
+                        $from = str_replace('<basepath>', $this->base_dir, (string) $cp['from']);
 
                         //if(is_file($from) && md5_file($from) == md5_file($cp['to'])){
                         //since the files are the same then we can safely move back from the -restore

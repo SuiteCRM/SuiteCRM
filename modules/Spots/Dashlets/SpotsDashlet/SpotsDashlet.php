@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 require_once 'include/Dashlets/Dashlet.php';
 
+#[\AllowDynamicProperties]
 class SpotsDashlet extends Dashlet
 {
     public $pivotId;
@@ -175,7 +176,7 @@ class SpotsDashlet extends Dashlet
             foreach ($beanList as $b) {
                 $bean = new stdClass();
                 $bean->type = $b->type;
-                $bean->config = htmlspecialchars_decode($b->config);
+                $bean->config = htmlspecialchars_decode((string) $b->config);
                 $bean->name = $b->name;
                 $bean->id = $b->id;
                 $returnArray[] = $bean;

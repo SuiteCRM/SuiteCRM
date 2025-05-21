@@ -42,6 +42,7 @@ require_once 'util.php';
 /**
  * Class CaseUpdatesHook
  */
+#[\AllowDynamicProperties]
 class CaseUpdatesHook
 {
     private $slug_size = 50;
@@ -119,8 +120,8 @@ class CaseUpdatesHook
         $case_update->internal = $case->internal;
         $case->internal = false;
         $case_update->assigned_user_id = $current_user->id;
-        if (strlen($text) > $this->slug_size) {
-            $case_update->name = substr($text, 0, $this->slug_size) . '...';
+        if (strlen((string) $text) > $this->slug_size) {
+            $case_update->name = substr((string) $text, 0, $this->slug_size) . '...';
         }
         $case_update->description = nl2br($text);
         $case_update->case_id = $case->id;
@@ -294,7 +295,7 @@ class CaseUpdatesHook
         if (empty($caseId) || empty($sugar_config['aop']['case_status_changes'])) {
             return;
         }
-        $statusMap = json_decode($sugar_config['aop']['case_status_changes'], 1);
+        $statusMap = json_decode((string) $sugar_config['aop']['case_status_changes'], 1);
         if (empty($statusMap)) {
             return;
         }
@@ -318,9 +319,9 @@ class CaseUpdatesHook
     private function unquoteEmail($text)
     {
         global $app_strings;
-        $text = html_entity_decode($text);
+        $text = html_entity_decode((string) $text);
         $text = preg_replace('/(\r\n|\r|\n)/s', "\n", $text);
-        $pos = strpos($text, $app_strings['LBL_AOP_EMAIL_REPLY_DELIMITER']);
+        $pos = strpos($text, (string) $app_strings['LBL_AOP_EMAIL_REPLY_DELIMITER']);
         if ($pos !== false) {
             $text = substr($text, 0, $pos);
         }
@@ -337,7 +338,7 @@ class CaseUpdatesHook
             return;
         }
         $case->send_closure_email = true;
-        if ($case->state !== 'Closed' || $case->fetched_row['state'] === 'Closed') {
+        if (($case->state ?? '') !== 'Closed' || ($case->fetched_row['state'] ?? '') === 'Closed') {
             $case->send_closure_email = false;
         }
     }
@@ -472,7 +473,7 @@ class CaseUpdatesHook
                 str_replace(
                     '$sugarurl',
                     $sugar_config['site_url'],
-                    $template->body_html
+                    (string) $template->body_html
                 ),
                 $beans
             )
@@ -483,7 +484,7 @@ class CaseUpdatesHook
                     str_replace(
                         '$sugarurl',
                         $sugar_config['site_url'],
-                        $template->body
+                        (string) $template->body
                     ),
                     $beans
                 )

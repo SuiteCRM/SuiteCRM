@@ -73,6 +73,7 @@ class TableFormatter implements FormatterInterface, ValidDataTypesInterface, Ren
         $defaults = [
             FormatterOptions::TABLE_STYLE => 'consolidation',
             FormatterOptions::INCLUDE_FIELD_LABELS => true,
+            FormatterOptions::TABLE_EMPTY_MESSAGE => false,
         ];
 
         $table = new Table($output);
@@ -83,9 +84,19 @@ class TableFormatter implements FormatterInterface, ValidDataTypesInterface, Ren
         $isList = $tableTransformer->isList();
         $includeHeaders = $options->get(FormatterOptions::INCLUDE_FIELD_LABELS, $defaults);
         $listDelimiter = $options->get(FormatterOptions::LIST_DELIMITER, $defaults);
+        $emptyMessage = $options->get(FormatterOptions::TABLE_EMPTY_MESSAGE, $defaults);
 
         $headers = $tableTransformer->getHeaders();
         $data = $tableTransformer->getTableData($includeHeaders && $isList);
+
+        // Do not print table headers for an empty table if the
+        // TABLE_EMPTY_MESSAGE has been set.
+        if (empty($data) && ($emptyMessage !== false)) {
+            if (!empty($emptyMessage)) {
+                $output->writeln($emptyMessage);
+            }
+            return;
+        }
 
         if ($listDelimiter) {
             if (!empty($headers)) {

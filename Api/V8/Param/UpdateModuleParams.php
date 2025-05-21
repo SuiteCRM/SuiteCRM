@@ -5,6 +5,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[\AllowDynamicProperties]
 class UpdateModuleParams extends BaseParam
 {
     /**

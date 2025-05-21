@@ -184,8 +184,8 @@ class PaymentBO extends WebFormDataBO
         $fp->channel = 'web';
         $fp->amount = currency_format_number($this->formParams['amount'], array('currency_symbol' => false));
 
-        // If first_payment_date has not been sent by the web form or is not right (YYYY-MM-DD) then set it to current date
-        $dateExplode = explode('-', $fp->first_payment_date);
+        // If first_payment_date has not been sent by the web form or is not right (YYYY-MM-DD OR YYYY/MM/DD) then set it to current date
+        $dateExplode = preg_split('/[-\/]/', $fp->first_payment_date);
         if (empty($fp->first_payment_date) || !checkDate($dateExplode[1], $dateExplode[2], $dateExplode[0])) {
             $fp->first_payment_date = date('Y-m-d');
         }
@@ -529,6 +529,11 @@ class PaymentBO extends WebFormDataBO
         require_once 'modules/stic_Web_Forms/controller.php';
         $server = stic_Web_FormsController::getServerURL();
         $url = "{$server}/index.php?entryPoint={$entryPoint}";
+        if(str_starts_with($url,'http:'))
+        {
+            global $sugar_config;
+            $url = "{$sugar_config['site_url']}/index.php?entryPoint={$entryPoint}";
+        }
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  {$url}");
         return $url;
     }
@@ -687,7 +692,10 @@ class PaymentBO extends WebFormDataBO
         $paymentMailer = new PaymentMailer();
 
         $txnType = $ipnMessage['txn_type'];
-
+        
+        // Set the subscr_id to null if it is not present in the IPN message 
+        $ipnMessage['subscr_id']= $ipnMessage['subscr_id'] ?? null;
+        
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Processing PayPal response (IPN notification) Type: [{$txnType}] Content:" . print_r($ipnMessage, true));
 
         // Switch the message type
@@ -700,6 +708,7 @@ class PaymentBO extends WebFormDataBO
                 $paymentBean = $this->getPaymentByIPNMessage($ipnMessage);
                 if (!empty($paymentBean)) {
                     if ($paymentStatus == 'Completed') {
+                        
                         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$paymentBean->name} successfully processed. PayPal data: [message: {$txnType}] [status: {$paymentStatus}] [subscr_id (only for recurring payments): {$ipnMessage['subscr_id']}]");
                         $paymentBean->status = 'paid';
                         $paymentBean->amount = floatval($ipnMessage['mc_gross']);
@@ -764,7 +773,7 @@ class PaymentBO extends WebFormDataBO
                 break;
         }
 
-        return $this->returnCode($ret);
+        return $this->returnCode($ret ?? null);
     }
 
     /**
@@ -882,7 +891,7 @@ class PaymentBO extends WebFormDataBO
             $paymentBean = $paymentBean->retrieve_by_string_fields(array('transaction_code' => $transaction_code));
             $pcBean = SticUtils::getRelatedBeanObject($paymentBean, 'stic_payments_stic_payment_commitments');
             // Update Subscription Id
-            if ($session->subscription != null) {
+            if ($session->subscription != null && isset($pcBean)) {
                 $pcBean->stripe_subscr_id = $session->subscription;
                 $pcBean->save();
             }
@@ -1013,7 +1022,7 @@ class PaymentBO extends WebFormDataBO
 
         // Update end date
         if (!empty($subscription->ended_at)) {
-            $pcBean->end_date = date('Y-m-d H:i:s', $subscription->ended_at);
+            $pcBean->end_date = date('Y-m-d', $subscription->ended_at);
             $pcBean->gateway_log .= '##### ' . print_r($subscription, true);
             $pcBean->save();
         }
@@ -1043,7 +1052,7 @@ class PaymentBO extends WebFormDataBO
 
     private function getBeanPaymentFromStripePaymentCommitment($pcBean, $paymentTimestamp)
     {
-        $pcId = $pcBean->id;
+        $pcId = $pcBean->id ?? null;
         $paymentDate = date('Ym', $paymentTimestamp);
         $paymentIdSQL ="SELECT p.id
                         FROM stic_payments p
@@ -1063,13 +1072,13 @@ class PaymentBO extends WebFormDataBO
             $paymentBean = BeanFactory::getBean('stic_Payments', $paymentId);
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Retrieved {$paymentId} payment for [{$pcBean->stripe_subscr_id}] Stripe subscription with date {$paymentDate}.");
         } else {
-            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": No payment has been found for [{$pcBean->stripe_subscr_id}] Stripe subscription with date {$paymentDate}.");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": No payment has been found for [".($pcBean->stripe_subscr_id ?? null)."] Stripe subscription with date {$paymentDate}.");
         }
 
-        if ($paymentBean->id) {
+        if (isset($paymentBean->id)) {
             return $paymentBean;
         } else {
-            $GLOBALS['log']->fatal('Line ' . __LINE__ . ': ' . __METHOD__ . ":  The payment referred in the Stripe event could not be retrieved: subscr_id {$pcBean->stripe_subscr_id}, for date {$paymentDate}");
+            $GLOBALS['log']->fatal('Line ' . __LINE__ . ': ' . __METHOD__ . ":  The payment referred in the Stripe event could not be retrieved: subscr_id ".($pcBean->stripe_subscr_id ?? null).", for date {$paymentDate}");
         }
     }
 
@@ -1081,6 +1090,7 @@ class PaymentBO extends WebFormDataBO
      */
     private function getPaymentByIPNMessage($ipnMessage)
     {
+        $ipnMessage['subscr_id'] = $ipnMessage['subscr_id'] ?? null;
         $paymentDate = date('Ym', strtotime($ipnMessage['payment_date']));
         $paymentIdSQL = "SELECT
                             p.id

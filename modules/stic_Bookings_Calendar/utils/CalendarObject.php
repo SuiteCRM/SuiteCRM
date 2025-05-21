@@ -30,7 +30,7 @@ class CalendarObject
 {
 
     // Tests whether the given ISO8601 string has a time-of-day or not
-    const ALL_DAY_REGEX = '/^\d{4}-\d\d-\d\d$/'; // matches strings like "2013-12-29"
+    public const ALL_DAY_REGEX = '/^\d{4}-\d\d-\d\d$/'; // matches strings like "2013-12-29"
 
     public $title;
     public $allDay; // a boolean

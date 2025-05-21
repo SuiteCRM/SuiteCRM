@@ -45,7 +45,11 @@ $field = $_REQUEST['field'];
 $removeFile = "upload://{$_REQUEST[$field . '_record_id'] }_" . $field;
 $bean = BeanFactory::getBean($_REQUEST['module'], $_REQUEST[$field . "_record_id"]);
 
-if (!$bean->ACLAccess('save')){
+// STIC Custom 20250326 JBL - Fix Uncaught Error: Call to a member function ACLAccess() on false
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+// if (!$bean->ACLAccess('save')){
+if ($bean === false || !$bean->ACLAccess('save')){
+// END STIC Custom
     throw new RuntimeException('Not authorized');
 }
 

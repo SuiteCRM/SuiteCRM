@@ -483,7 +483,7 @@ $sugar_config = array(
     'strict_id_validation' => false,
     'sugar_version' => '6.5.25',
     'sugarbeet' => false,
-    'suitecrm_version' => '7.12.4',
+    'suitecrm_version' => '7.14.5',
     'system_email_templates' => array(
         'confirm_opt_in_template_id' => '9cbe9b2c-0b86-ad83-dd83-5d71212484f4',
     ),
@@ -539,6 +539,40 @@ $sugar_config = array(
     'vcal_time' => '2',
     'verify_client_ip' => true,
 
+    // STIC Custom 20240826 JBL - Upgrade SuiteCRM core to 7.14.5
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    'legacy_email_behaviour' => true,
+    'valid_imap_ports' => array(
+        '110', 
+        '143', 
+        '993', 
+        '995'
+    ),
+    'web_to_lead_allowed_redirect_hosts' => array(),
+    'trusted_hosts' => array(),
+    'login_language' => true,
+    'upload_bad_ext' => array(
+        'php',
+        'php3',
+        'php4',
+        'php5',
+        'php6',
+        'php7',
+        'php8',
+        'pl',
+        'cgi',
+        'py',
+        'asp',
+        'cfm',
+        'js',
+        'vbs',
+        'html',
+        'htm',
+        'phtml',
+        'phar'
+    ),
+    // END STIC
+
     // STIC Custom 20211025 MHP - Related to "SinergiaCRM - Purge database" scheduler. Sets the number of days after which records will be totally deleted from database.
     // STIC#448 y STIC#540
     'stic_purge_database_days' => 90,
@@ -578,7 +612,7 @@ $sugar_config = array(
     // STIC#1319
     'sinergiacrm_version' => '1.8.0', 
     'js_custom_version' => 14,
-    'stic_show_update_alert' => 1,
+    'stic_show_update_alert' => 0,
     // END STIC
 
     // STIC-Custom 20240117 JCH - Security Groups Module Rules activation config

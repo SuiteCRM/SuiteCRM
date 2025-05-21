@@ -40,7 +40,10 @@
 
 require_once('include/SugarFields/Fields/Collection/SugarFieldCollection.php');
 
-
+// STIC Custom 20250210 JBL - Allow dynamic properties
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+#[\AllowDynamicProperties]
+// END STIC Custom
 class ViewSugarFieldCollection
 {
     public $ss; // Sugar Smarty Object

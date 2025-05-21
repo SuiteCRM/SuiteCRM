@@ -64,20 +64,19 @@ class Terminal
             return self::$stty;
         }
 
-        // skip check if exec function is disabled
-        if (!\function_exists('exec')) {
+        // skip check if shell_exec function is disabled
+        if (!\function_exists('shell_exec')) {
             return false;
         }
 
-        exec('stty 2>&1', $output, $exitcode);
-
-        return self::$stty = 0 === $exitcode;
+        return self::$stty = (bool) shell_exec('stty 2> '.('\\' === \DIRECTORY_SEPARATOR ? 'NUL' : '/dev/null'));
     }
 
     private static function initDimensions()
     {
         if ('\\' === \DIRECTORY_SEPARATOR) {
-            if (preg_match('/^(\d+)x(\d+)(?: \((\d+)x(\d+)\))?$/', trim(getenv('ANSICON')), $matches)) {
+            $ansicon = getenv('ANSICON');
+            if (false !== $ansicon && preg_match('/^(\d+)x(\d+)(?: \((\d+)x(\d+)\))?$/', trim($ansicon), $matches)) {
                 // extract [w, H] from "wxh (WxH)"
                 // or [w, h] from "wxh"
                 self::$width = (int) $matches[1];
@@ -157,8 +156,9 @@ class Terminal
             2 => ['pipe', 'w'],
         ];
 
-        $process = proc_open($command, $descriptorspec, $pipes, null, null, ['suppress_errors' => true]);
-        if (!\is_resource($process)) {
+        $cp = \function_exists('sapi_windows_cp_set') ? sapi_windows_cp_get() : 0;
+
+        if (!$process = @proc_open($command, $descriptorspec, $pipes, null, null, ['suppress_errors' => true])) {
             return null;
         }
 
@@ -166,6 +166,10 @@ class Terminal
         fclose($pipes[1]);
         fclose($pipes[2]);
         proc_close($process);
+
+        if ($cp) {
+            sapi_windows_cp_set($cp);
+        }
 
         return $info;
     }

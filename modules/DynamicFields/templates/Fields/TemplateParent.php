@@ -49,7 +49,7 @@ class TemplateParent extends TemplateEnum
 {
     public $max_size = 25;
     public $type='parent';
-    
+
     public function get_field_def()
     {
         $def = parent::get_field_def();
@@ -58,9 +58,10 @@ class TemplateParent extends TemplateEnum
         $def['parent_type'] = 'record_type_display';
         $def['source'] = 'non-db';
         $def['studio'] = 'visible';
+        $def['resetFieldInStudio'] = 'true';
         return $def;
     }
-    
+
     public function delete($df)
     {
         parent::delete($df);
@@ -68,19 +69,19 @@ class TemplateParent extends TemplateEnum
         $parent_type = new TemplateText();
         $parent_type->name = 'parent_type';
         $parent_type->delete($df);
-        
+
         $parent_id = new TemplateId();
         $parent_id->name = 'parent_id';
         $parent_id->delete($df);
     }
-    
+
     public function save($df)
     {
         $this->ext1 = 'parent_type_display';
         $this->name = 'parent_name';
         $this->default_value = '';
         parent::save($df); // always save because we may have updates
-        
+
         //save parent_type
         $parent_type = new TemplateParentType();
         $parent_type->name = 'parent_type';
@@ -89,7 +90,7 @@ class TemplateParent extends TemplateEnum
         $parent_type->len = 255;
         $parent_type->importable = $this->importable;
         $parent_type->save($df);
-            
+
         //save parent_name
         $parent_id = new TemplateId();
         $parent_id->name = 'parent_id';
@@ -99,7 +100,7 @@ class TemplateParent extends TemplateEnum
         $parent_id->importable = $this->importable;
         $parent_id->save($df);
     }
-    
+
     public function get_db_add_alter_table($table)
     {
         return '';

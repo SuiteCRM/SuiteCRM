@@ -36,7 +36,7 @@ use ScssPhp\ScssPhp\Node\Number;
  *
  * @internal
  */
-final class Parser
+class Parser
 {
     const SOURCE_INDEX  = -1;
     const SOURCE_LINE   = -2;
@@ -45,7 +45,7 @@ final class Parser
     /**
      * @var array<string, int>
      */
-    private static $precedence = [
+    protected static $precedence = [
         '='   => 0,
         'or'  => 1,
         'and' => 2,
@@ -65,20 +65,20 @@ final class Parser
     /**
      * @var string
      */
-    private static $commentPattern;
+    protected static $commentPattern;
     /**
      * @var string
      */
-    private static $operatorPattern;
+    protected static $operatorPattern;
     /**
      * @var string
      */
-    private static $whitePattern;
+    protected static $whitePattern;
 
     /**
      * @var Cache|null
      */
-    private $cache;
+    protected $cache;
 
     private $sourceName;
     private $sourceIndex;
@@ -113,6 +113,7 @@ final class Parser
      * @var string
      */
     private $buffer;
+    private $utf8;
     /**
      * @var string|null
      */
@@ -130,31 +131,37 @@ final class Parser
     /**
      * Constructor
      *
+     * @api
+     *
      * @param string|null          $sourceName
      * @param int                  $sourceIndex
+     * @param string|null          $encoding
      * @param Cache|null           $cache
      * @param bool                 $cssOnly
      * @param LoggerInterface|null $logger
      */
-    public function __construct(?string $sourceName, int $sourceIndex = 0, Cache $cache = null, bool $cssOnly = false, LoggerInterface $logger = null)
+    public function __construct($sourceName, $sourceIndex = 0, $encoding = 'utf-8', Cache $cache = null, $cssOnly = false, LoggerInterface $logger = null)
     {
         $this->sourceName       = $sourceName ?: '(stdin)';
         $this->sourceIndex      = $sourceIndex;
-        $this->patternModifiers = 'Aisu';
+        $this->utf8             = ! $encoding || strtolower($encoding) === 'utf-8';
+        $this->patternModifiers = $this->utf8 ? 'Aisu' : 'Ais';
         $this->commentsSeen     = [];
         $this->allowVars        = true;
         $this->cssOnly          = $cssOnly;
         $this->logger = $logger ?: new QuietLogger();
 
-        if (empty(self::$operatorPattern)) {
-            self::$operatorPattern = '([*\/%+-]|[!=]\=|\>\=?|\<\=?|and|or)';
+        if (empty(static::$operatorPattern)) {
+            static::$operatorPattern = '([*\/%+-]|[!=]\=|\>\=?|\<\=?|and|or)';
 
             $commentSingle      = '\/\/';
             $commentMultiLeft   = '\/\*';
             $commentMultiRight  = '\*\/';
 
-            self::$commentPattern = $commentMultiLeft . '.*?' . $commentMultiRight;
-            self::$whitePattern = '/' . $commentSingle . '[^\n]*\s*|(' . self::$commentPattern . ')\s*|\s+/AisuS';
+            static::$commentPattern = $commentMultiLeft . '.*?' . $commentMultiRight;
+            static::$whitePattern = $this->utf8
+                ? '/' . $commentSingle . '[^\n]*\s*|(' . static::$commentPattern . ')\s*|\s+/AisuS'
+                : '/' . $commentSingle . '[^\n]*\s*|(' . static::$commentPattern . ')\s*|\s+/AisS';
         }
 
         $this->cache = $cache;
@@ -163,23 +170,50 @@ final class Parser
     /**
      * Get source file name
      *
+     * @api
+     *
      * @return string
      */
-    public function getSourceName(): string
+    public function getSourceName()
     {
         return $this->sourceName;
     }
 
     /**
+     * Throw parser error
+     *
+     * @api
+     *
+     * @param string $msg
+     *
+     * @phpstan-return never-return
+     *
+     * @throws ParserException
+     *
+     * @deprecated use "parseError" and throw the exception in the caller instead.
+     */
+    public function throwParseError($msg = 'parse error')
+    {
+        @trigger_error(
+            'The method "throwParseError" is deprecated. Use "parseError" and throw the exception in the caller instead',
+            E_USER_DEPRECATED
+        );
+
+        throw $this->parseError($msg);
+    }
+
+    /**
      * Creates a parser error
+     *
+     * @api
      *
      * @param string $msg
      *
      * @return ParserException
      */
-    public function parseError(string $msg = 'parse error'): ParserException
+    public function parseError($msg = 'parse error')
     {
-        [$line, $column] = $this->getSourcePosition($this->count);
+        list($line, $column) = $this->getSourcePosition($this->count);
 
         $loc = empty($this->sourceName)
              ? "line: $line, column: $column"
@@ -205,15 +239,19 @@ final class Parser
     /**
      * Parser buffer
      *
+     * @api
+     *
      * @param string $buffer
      *
      * @return Block
      */
-    public function parse(string $buffer): Block
+    public function parse($buffer)
     {
         if ($this->cache) {
             $cacheKey = $this->sourceName . ':' . md5($buffer);
-            $parseOptions = [];
+            $parseOptions = [
+                'utf8' => $this->utf8,
+            ];
             $v = $this->cache->getCache('parse', $cacheKey, $parseOptions);
 
             if (! \is_null($v)) {
@@ -234,6 +272,11 @@ final class Parser
 
         $this->saveEncoding();
         $this->extractLineNumbers($buffer);
+
+        if ($this->utf8 && !preg_match('//u', $buffer)) {
+            $message = $this->sourceName ? 'Invalid UTF-8 file: ' . $this->sourceName : 'Invalid UTF-8 file';
+            throw new ParserException($message);
+        }
 
         $this->pushBlock(null); // root block
         $this->whitespace();
@@ -265,23 +308,32 @@ final class Parser
     /**
      * Parse a value or value list
      *
+     * @api
+     *
      * @param string       $buffer
      * @param string|array $out
      *
      * @return bool
      */
-    public function parseValue(string $buffer, &$out): bool
+    public function parseValue($buffer, &$out)
     {
         $this->count           = 0;
         $this->env             = null;
         $this->inParens        = false;
         $this->eatWhiteDefault = true;
-        $this->buffer          = $buffer;
+        $this->buffer          = (string) $buffer;
 
         $this->saveEncoding();
         $this->extractLineNumbers($this->buffer);
 
         $list = $this->valueList($out);
+
+        if ($this->count !== \strlen($this->buffer)) {
+            $error = $this->parseError('Expected end of value');
+            $message = 'Passing trailing content after the expression when parsing a value is deprecated since Scssphp 1.12.0 and will be an error in 2.0. ' . $error->getMessage();
+
+            @trigger_error($message, E_USER_DEPRECATED);
+        }
 
         $this->restoreEncoding();
 
@@ -291,19 +343,21 @@ final class Parser
     /**
      * Parse a selector or selector list
      *
+     * @api
+     *
      * @param string       $buffer
      * @param string|array $out
      * @param bool         $shouldValidate
      *
      * @return bool
      */
-    public function parseSelector(string $buffer, &$out, bool $shouldValidate = true): bool
+    public function parseSelector($buffer, &$out, $shouldValidate = true)
     {
         $this->count           = 0;
         $this->env             = null;
         $this->inParens        = false;
         $this->eatWhiteDefault = true;
-        $this->buffer          = $buffer;
+        $this->buffer          = (string) $buffer;
 
         $this->saveEncoding();
         $this->extractLineNumbers($this->buffer);
@@ -327,21 +381,26 @@ final class Parser
     /**
      * Parse a media Query
      *
+     * @api
+     *
      * @param string $buffer
      * @param array  $out
      *
      * @return bool
      */
-    public function parseMediaQueryList(string $buffer, &$out): bool
+    public function parseMediaQueryList($buffer, &$out)
     {
         $this->count           = 0;
         $this->env             = null;
         $this->inParens        = false;
         $this->eatWhiteDefault = true;
-        $this->buffer          = $buffer;
+        $this->buffer          = (string) $buffer;
+        $this->discardComments = true;
 
         $this->saveEncoding();
         $this->extractLineNumbers($this->buffer);
+
+        $this->whitespace();
 
         $isMediaQuery = $this->mediaQueryList($out);
 
@@ -389,7 +448,7 @@ final class Parser
      *
      * @return bool
      */
-    private function parseChunk(): bool
+    protected function parseChunk()
     {
         $s = $this->count;
 
@@ -477,6 +536,24 @@ final class Parser
                 } else {
                     $this->append($child, $s);
                 }
+
+                return true;
+            }
+
+            $this->seek($s);
+
+            if (
+                $this->literal('@scssphp-import-once', 20) &&
+                $this->valueList($importPath) &&
+                $this->end()
+            ) {
+                ! $this->cssOnly || $this->assertPlainCssValid(false, $s);
+
+                list($line, $column) = $this->getSourcePosition($s);
+                $file = $this->sourceName;
+                $this->logger->warn("The \"@scssphp-import-once\" directive is deprecated and will be removed in ScssPhp 2.0, in \"$file\", line $line, column $column.", true);
+
+                $this->append([Type::T_SCSSPHP_IMPORT_ONCE, $importPath], $s);
 
                 return true;
             }
@@ -725,7 +802,7 @@ final class Parser
             $last = $this->last();
 
             if (isset($last) && $last[0] === Type::T_IF) {
-                [, $if] = $last;
+                list(, $if) = $last;
                 assert($if instanceof IfBlock);
 
                 if ($this->literal('@else', 5)) {
@@ -1038,7 +1115,7 @@ final class Parser
      *
      * @return Block
      */
-    private function pushBlock(?array $selectors, int $pos = 0): Block
+    protected function pushBlock($selectors, $pos = 0)
     {
         $b = new Block();
         $b->selectors = $selectors;
@@ -1056,7 +1133,7 @@ final class Parser
      */
     private function registerPushedBlock(Block $b, $pos)
     {
-        [$line, $column] = $this->getSourcePosition($pos);
+        list($line, $column) = $this->getSourcePosition($pos);
 
         $b->sourceName   = $this->sourceName;
         $b->sourceLine   = $line;
@@ -1099,7 +1176,7 @@ final class Parser
      *
      * @return Block
      */
-    private function pushSpecialBlock(string $type, int $pos): Block
+    protected function pushSpecialBlock($type, $pos)
     {
         $block = $this->pushBlock(null, $pos);
         $block->type = $type;
@@ -1114,7 +1191,7 @@ final class Parser
      *
      * @throws \Exception
      */
-    private function popBlock(): Block
+    protected function popBlock()
     {
         assert($this->env !== null);
 
@@ -1151,7 +1228,7 @@ final class Parser
      *
      * @return int
      */
-    private function peek(string $regex, &$out, ?int $from = null): int
+    protected function peek($regex, &$out, $from = null)
     {
         if (! isset($from)) {
             $from = $this->count;
@@ -1170,7 +1247,7 @@ final class Parser
      *
      * @return void
      */
-    private function seek(int $where): void
+    protected function seek($where)
     {
         $this->count = $where;
     }
@@ -1185,7 +1262,7 @@ final class Parser
      *
      * @throws ParserException
      */
-    private function assertPlainCssValid($parsed, ?int $startPos = null)
+    protected function assertPlainCssValid($parsed, $startPos = null)
     {
         $type = '';
         if ($parsed) {
@@ -1211,12 +1288,12 @@ final class Parser
     /**
      * Check a parsed element is plain CSS Valid
      *
-     * @param array|string $parsed
+     * @param array $parsed
      * @param bool  $allowExpression
      *
-     * @return false|array|string
+     * @return array|false
      */
-    private function isPlainCssValidElement($parsed, bool $allowExpression = false)
+    protected function isPlainCssValidElement($parsed, $allowExpression = false)
     {
         // keep string as is
         if (is_string($parsed)) {
@@ -1322,7 +1399,7 @@ final class Parser
                 return $parsed;
 
             case Type::T_EXPRESSION:
-                [ ,$op, $lhs, $rhs, $inParens, $whiteBefore, $whiteAfter] = $parsed;
+                list( ,$op, $lhs, $rhs, $inParens, $whiteBefore, $whiteAfter) = $parsed;
                 if (! $allowExpression &&  ! \in_array($op, ['and', 'or', '/'])) {
                     return false;
                 }
@@ -1397,7 +1474,7 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function matchString(&$m, string $delim): bool
+    protected function matchString(&$m, $delim)
     {
         $token = null;
 
@@ -1439,7 +1516,7 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function match(string $regex, &$out, ?bool $eatWhitespace = null)
+    protected function match($regex, &$out, $eatWhitespace = null)
     {
         $r = '/' . $regex . '/' . $this->patternModifiers;
 
@@ -1470,7 +1547,7 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function matchChar(string $char, ?bool $eatWhitespace = null): bool
+    protected function matchChar($char, $eatWhitespace = null)
     {
         if (! isset($this->buffer[$this->count]) || $this->buffer[$this->count] !== $char) {
             return false;
@@ -1500,7 +1577,7 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function literal(string $what, int $len, ?bool $eatWhitespace = null): bool
+    protected function literal($what, $len, $eatWhitespace = null)
     {
         if (strcasecmp(substr($this->buffer, $this->count, $len), $what) !== 0) {
             return false;
@@ -1526,11 +1603,11 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function whitespace(): bool
+    protected function whitespace()
     {
         $gotWhite = false;
 
-        while (preg_match(self::$whitePattern, $this->buffer, $m, 0, $this->count)) {
+        while (preg_match(static::$whitePattern, $this->buffer, $m, 0, $this->count)) {
             if (isset($m[1]) && empty($this->commentsSeen[$this->count])) {
                 // comment that are kept in the output CSS
                 $comment = [];
@@ -1558,8 +1635,10 @@ final class Parser
 
                         $comment[] = [Type::T_COMMENT, substr($this->buffer, $p, $this->count - $p), $out];
                     } else {
+                        list($line, $column) = $this->getSourcePosition($this->count);
+                        $file = $this->sourceName;
                         if (!$this->discardComments) {
-                            throw $this->parseError('Unterminated interpolation');
+                            $this->logger->warn("Unterminated interpolations in multiline comments are deprecated and will be removed in ScssPhp 2.0, in \"$file\", line $line, column $column.", true);
                         }
                         $comment[] = substr($this->buffer, $this->count, 2);
 
@@ -1581,7 +1660,7 @@ final class Parser
                     $commentStatement = [Type::T_COMMENT, $staticComment, [Type::T_STRING, '', $comment]];
                 }
 
-                [$line, $column] = $this->getSourcePosition($startCommentCount);
+                list($line, $column) = $this->getSourcePosition($startCommentCount);
                 $commentStatement[self::SOURCE_LINE] = $line;
                 $commentStatement[self::SOURCE_COLUMN] = $column;
                 $commentStatement[self::SOURCE_INDEX] = $this->sourceIndex;
@@ -1612,11 +1691,11 @@ final class Parser
      *
      * @return void
      */
-    private function appendComment(array $comment): void
+    protected function appendComment($comment)
     {
-        assert($this->env !== null);
-
         if (! $this->discardComments) {
+            assert($this->env !== null);
+
             $this->env->comments[] = $comment;
         }
     }
@@ -1629,7 +1708,7 @@ final class Parser
      *
      * @return void
      */
-    private function append(?array $statement, ?int $pos = null): void
+    protected function append($statement, $pos = null)
     {
         assert($this->env !== null);
 
@@ -1637,11 +1716,11 @@ final class Parser
             ! $this->cssOnly || ($statement = $this->assertPlainCssValid($statement, $pos));
 
             if (! \is_null($pos)) {
-                [$line, $column] = $this->getSourcePosition($pos);
+                list($line, $column) = $this->getSourcePosition($pos);
 
-                $statement[self::SOURCE_LINE]   = $line;
-                $statement[self::SOURCE_COLUMN] = $column;
-                $statement[self::SOURCE_INDEX]  = $this->sourceIndex;
+                $statement[static::SOURCE_LINE]   = $line;
+                $statement[static::SOURCE_COLUMN] = $column;
+                $statement[static::SOURCE_INDEX]  = $this->sourceIndex;
             }
 
             $this->env->children[] = $statement;
@@ -1660,7 +1739,7 @@ final class Parser
      *
      * @return array|null
      */
-    private function last(): ?array
+    protected function last()
     {
         assert($this->env !== null);
 
@@ -1680,7 +1759,7 @@ final class Parser
      *
      * @return bool
      */
-    private function mediaQueryList(&$out): bool
+    protected function mediaQueryList(&$out)
     {
         return $this->genericList($out, 'mediaQuery', ',', false);
     }
@@ -1692,7 +1771,7 @@ final class Parser
      *
      * @return bool
      */
-    private function mediaQuery(&$out): bool
+    protected function mediaQuery(&$out)
     {
         $expressions = null;
         $parts = [];
@@ -1746,7 +1825,7 @@ final class Parser
      *
      * @return bool
      */
-    private function supportsQuery(&$out): bool
+    protected function supportsQuery(&$out)
     {
         $expressions = null;
         $parts = [];
@@ -1879,7 +1958,7 @@ final class Parser
      *
      * @return bool
      */
-    private function mediaExpression(&$out): bool
+    protected function mediaExpression(&$out)
     {
         $s = $this->count;
         $value = null;
@@ -1912,7 +1991,7 @@ final class Parser
      *
      * @return bool
      */
-    private function argValues(&$out): bool
+    protected function argValues(&$out)
     {
         $discardComments = $this->discardComments;
         $this->discardComments = true;
@@ -1937,7 +2016,7 @@ final class Parser
      *
      * @return bool
      */
-    private function argValue(&$out): bool
+    protected function argValue(&$out)
     {
         $s = $this->count;
 
@@ -1970,7 +2049,7 @@ final class Parser
      * @param mixed $directiveName
      * @return bool
      */
-    private function isKnownGenericDirective($directiveName): bool
+    protected function isKnownGenericDirective($directiveName)
     {
         if (\is_array($directiveName) && \is_string(reset($directiveName))) {
             $directiveName = reset($directiveName);
@@ -2022,7 +2101,7 @@ final class Parser
      *
      * @phpstan-impure
      */
-    private function directiveValue(&$out, $endChar = false): bool
+    protected function directiveValue(&$out, $endChar = false)
     {
         $s = $this->count;
 
@@ -2083,7 +2162,7 @@ final class Parser
      *
      * @return bool
      */
-    private function valueList(&$out): bool
+    protected function valueList(&$out)
     {
         $discardComments = $this->discardComments;
         $this->discardComments = true;
@@ -2104,7 +2183,7 @@ final class Parser
      *
      * @return bool
      */
-    private function functionCallArgumentsList(&$out, bool $mandatoryEnclos = true, ?string $charAfter = null, ?bool $eatWhiteSp = null): bool
+    protected function functionCallArgumentsList(&$out, $mandatoryEnclos = true, $charAfter = null, $eatWhiteSp = null)
     {
         $s = $this->count;
 
@@ -2140,7 +2219,7 @@ final class Parser
      *
      * @return bool
      */
-    private function spaceList(&$out): bool
+    protected function spaceList(&$out)
     {
         return $this->genericList($out, 'expression');
     }
@@ -2155,7 +2234,7 @@ final class Parser
      *
      * @return bool
      */
-    private function genericList(&$out, string $parseItem, string $delim = '', bool $flatten = true): bool
+    protected function genericList(&$out, $parseItem, $delim = '', $flatten = true)
     {
         $s     = $this->count;
         $items = [];
@@ -2255,15 +2334,15 @@ final class Parser
     /**
      * Parse expression
      *
-     * @param array|Number $out
-     * @param bool         $listOnly
-     * @param bool         $lookForExp
+     * @param array $out
+     * @param bool  $listOnly
+     * @param bool  $lookForExp
      *
      * @return bool
      *
      * @phpstan-impure
      */
-    private function expression(&$out, bool $listOnly = false, bool $lookForExp = true): bool
+    protected function expression(&$out, $listOnly = false, $lookForExp = true)
     {
         $s = $this->count;
         $discard = $this->discardComments;
@@ -2331,7 +2410,7 @@ final class Parser
      *
      * @phpstan-param array<Type::*> $allowedTypes
      */
-    private function enclosedExpression(&$out, int $s, string $closingParen = ')', array $allowedTypes = [Type::T_LIST, Type::T_MAP]): bool
+    protected function enclosedExpression(&$out, $s, $closingParen = ')', $allowedTypes = [Type::T_LIST, Type::T_MAP])
     {
         if ($this->matchChar($closingParen) && \in_array(Type::T_LIST, $allowedTypes)) {
             $out = [Type::T_LIST, '', []];
@@ -2384,20 +2463,20 @@ final class Parser
     /**
      * Parse left-hand side of subexpression
      *
-     * @param array|Number $lhs
-     * @param int      $minP
+     * @param array $lhs
+     * @param int   $minP
      *
-     * @return array|Number
+     * @return array
      */
-    private function expHelper($lhs, int $minP)
+    protected function expHelper($lhs, $minP)
     {
-        $operators = self::$operatorPattern;
+        $operators = static::$operatorPattern;
 
         $ss = $this->count;
         $whiteBefore = isset($this->buffer[$this->count - 1]) &&
             ctype_space($this->buffer[$this->count - 1]);
 
-        while ($this->match($operators, $m, false) && self::$precedence[$m[1]] >= $minP) {
+        while ($this->match($operators, $m, false) && static::$precedence[strtolower($m[1])] >= $minP) {
             $whiteAfter = isset($this->buffer[$this->count]) &&
                 ctype_space($this->buffer[$this->count]);
             $varAfter = isset($this->buffer[$this->count]) &&
@@ -2421,7 +2500,7 @@ final class Parser
             }
 
             // consume higher-precedence operators on the right-hand side
-            $rhs = $this->expHelper($rhs, self::$precedence[$op] + 1);
+            $rhs = $this->expHelper($rhs, static::$precedence[strtolower($op)] + 1);
 
             $lhs = [Type::T_EXPRESSION, $op, $lhs, $rhs, $this->inParens, $whiteBefore, $whiteAfter];
 
@@ -2438,11 +2517,11 @@ final class Parser
     /**
      * Parse value
      *
-     * @param array|Number $out
+     * @param array $out
      *
      * @return bool
      */
-    private function value(&$out): bool
+    protected function value(&$out)
     {
         if (! isset($this->buffer[$this->count])) {
             return false;
@@ -2646,11 +2725,11 @@ final class Parser
     /**
      * Parse parenthesized value
      *
-     * @param array|Number $out
+     * @param array $out
      *
      * @return bool
      */
-    private function parenValue(&$out): bool
+    protected function parenValue(&$out)
     {
         $s = $this->count;
 
@@ -2689,7 +2768,7 @@ final class Parser
      *
      * @return bool
      */
-    private function progid(&$out): bool
+    protected function progid(&$out)
     {
         $s = $this->count;
 
@@ -2722,7 +2801,7 @@ final class Parser
      *
      * @return bool
      */
-    private function func(string $name, &$func): bool
+    protected function func($name, &$func)
     {
         $s = $this->count;
 
@@ -2740,6 +2819,10 @@ final class Parser
                     $this->argValues($args) &&
                     $this->matchChar(')')
                 ) {
+                    if (strtolower($name) === 'var' && \count($args) === 2 && $args[1][0] === Type::T_NULL) {
+                        $args[1] = [null, [Type::T_STRING, '', [' ']], false];
+                    }
+
                     $func = [Type::T_FUNCTION_CALL, $name, $args];
 
                     return true;
@@ -2776,7 +2859,7 @@ final class Parser
      *
      * @return bool
      */
-    private function argumentList(&$out): bool
+    protected function argumentList(&$out)
     {
         $s = $this->count;
         $this->matchChar('(');
@@ -2821,7 +2904,7 @@ final class Parser
      *
      * @return bool
      */
-    private function argumentDef(&$out): bool
+    protected function argumentDef(&$out)
     {
         $s = $this->count;
         $this->matchChar('(');
@@ -2883,7 +2966,7 @@ final class Parser
      *
      * @return bool
      */
-    private function map(&$out): bool
+    protected function map(&$out)
     {
         $s = $this->count;
 
@@ -2925,7 +3008,7 @@ final class Parser
      *
      * @return bool
      */
-    private function color(&$out): bool
+    protected function color(&$out)
     {
         $s = $this->count;
 
@@ -2947,11 +3030,11 @@ final class Parser
     /**
      * Parse number with unit
      *
-     * @param array|Number $unit
+     * @param array $unit
      *
      * @return bool
      */
-    private function unit(&$unit): bool
+    protected function unit(&$unit)
     {
         $s = $this->count;
 
@@ -2978,7 +3061,7 @@ final class Parser
      *
      * @return bool
      */
-    private function string(&$out, bool $keepDelimWithInterpolation = false): bool
+    protected function string(&$out, $keepDelimWithInterpolation = false)
     {
         $s = $this->count;
 
@@ -3061,7 +3144,7 @@ final class Parser
      *
      * @return bool
      */
-    private function matchEscapeCharacter(&$out, bool $inKeywords = false): bool
+    protected function matchEscapeCharacter(&$out, $inKeywords = false)
     {
         $s = $this->count;
         if ($this->match('[a-f0-9]', $m, false)) {
@@ -3113,7 +3196,7 @@ final class Parser
      *
      * @return bool
      */
-    private function mixedKeyword(&$out, bool $restricted = false): bool
+    protected function mixedKeyword(&$out, $restricted = false)
     {
         $parts = [];
 
@@ -3161,7 +3244,7 @@ final class Parser
      *
      * @return bool
      */
-    private function openString(string $end, &$out, ?string $nestOpen = null, ?string $nestClose = null, bool $rtrim = true, ?string $disallow = null): bool
+    protected function openString($end, &$out, $nestOpen = null, $nestClose = null, $rtrim = true, $disallow = null)
     {
         $oldWhite = $this->eatWhiteDefault;
         $this->eatWhiteDefault = false;
@@ -3174,7 +3257,7 @@ final class Parser
         $patt = '(' . $patt . '*?)([\'"]|#\{|'
             . $this->pregQuote($end) . '|'
             . (($nestClose && $nestClose !== $end) ? $this->pregQuote($nestClose) . '|' : '')
-            . self::$commentPattern . ')';
+            . static::$commentPattern . ')';
 
         $nestingLevel = 0;
 
@@ -3239,7 +3322,7 @@ final class Parser
      *
      * @return bool
      */
-    private function interpolation(&$out, bool $lookWhite = true): bool
+    protected function interpolation(&$out, $lookWhite = true)
     {
         $oldWhite = $this->eatWhiteDefault;
         $allowVars = $this->allowVars;
@@ -3294,7 +3377,7 @@ final class Parser
      *
      * @return bool
      */
-    private function propertyName(&$out): bool
+    protected function propertyName(&$out)
     {
         $parts = [];
 
@@ -3328,7 +3411,7 @@ final class Parser
         }
 
         // match comment hack
-        if (preg_match(self::$whitePattern, $this->buffer, $m, 0, $this->count)) {
+        if (preg_match(static::$whitePattern, $this->buffer, $m, 0, $this->count)) {
             if (! empty($m[0])) {
                 $parts[] = $m[0];
                 $this->count += \strlen($m[0]);
@@ -3349,7 +3432,7 @@ final class Parser
      *
      * @return bool
      */
-    private function customProperty(&$out): bool
+    protected function customProperty(&$out)
     {
         $s = $this->count;
 
@@ -3409,7 +3492,7 @@ final class Parser
      *
      * @return bool
      */
-    private function selectors(&$out, $subSelector = false): bool
+    protected function selectors(&$out, $subSelector = false)
     {
         $s = $this->count;
         $selectors = [];
@@ -3445,7 +3528,7 @@ final class Parser
      *
      * @return bool
      */
-    private function selector(&$out, $subSelector = false): bool
+    protected function selector(&$out, $subSelector = false)
     {
         $selector = [];
 
@@ -3490,7 +3573,7 @@ final class Parser
     /**
      * parsing escaped chars in selectors:
      * - escaped single chars are kept escaped in the selector but in a normalized form
-     *   (if not in 0-9a-f range as this would be ambiguous)
+     *   (if not in 0-9a-f range as this would be ambigous)
      * - other escaped sequences (multibyte chars or 0-9a-f) are kept in their initial escaped form,
      *   normalized to lowercase
      *
@@ -3503,7 +3586,7 @@ final class Parser
      *
      * @return bool
      */
-    private function matchEscapeCharacterInSelector(&$out, bool $keepEscapedNumber = false): bool
+    protected function matchEscapeCharacterInSelector(&$out, $keepEscapedNumber = false)
     {
         $s_escape = $this->count;
         if ($this->match('\\\\', $m)) {
@@ -3549,7 +3632,7 @@ final class Parser
      *
      * @return bool
      */
-    private function selectorSingle(&$out, $subSelector = false): bool
+    protected function selectorSingle(&$out, $subSelector = false)
     {
         $oldWhite = $this->eatWhiteDefault;
         $this->eatWhiteDefault = false;
@@ -3773,7 +3856,7 @@ final class Parser
      *
      * @return bool
      */
-    private function variable(&$out): bool
+    protected function variable(&$out)
     {
         $s = $this->count;
 
@@ -3804,11 +3887,13 @@ final class Parser
      *
      * @return bool
      */
-    private function keyword(&$word, ?bool $eatWhitespace = null, bool $inSelector = false): bool
+    protected function keyword(&$word, $eatWhitespace = null, $inSelector = false)
     {
         $s = $this->count;
         $match = $this->match(
-            '(([\pL\w\x{00A0}-\x{10FFFF}_\-\*!"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)([\pL\w\x{00A0}-\x{10FFFF}\-_"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)*)',
+            $this->utf8
+                ? '(([\pL\w\x{00A0}-\x{10FFFF}_\-\*!"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)([\pL\w\x{00A0}-\x{10FFFF}\-_"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)*)'
+                : '(([\w_\-\*!"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)([\w\-_"\']|\\\\[a-f0-9]{6} ?|\\\\[a-f0-9]{1,5}(?![a-f0-9]) ?|[\\\\].)*)',
             $m,
             false
         );
@@ -3869,7 +3954,7 @@ final class Parser
      *
      * @return bool
      */
-    private function restrictedKeyword(&$word, $eatWhitespace = null, $inSelector = false): bool
+    protected function restrictedKeyword(&$word, $eatWhitespace = null, $inSelector = false)
     {
         $s = $this->count;
 
@@ -3889,10 +3974,12 @@ final class Parser
      *
      * @return bool
      */
-    private function placeholder(&$placeholder): bool
+    protected function placeholder(&$placeholder)
     {
         $match = $this->match(
-            '([\pL\w\-_]+)',
+            $this->utf8
+                ? '([\pL\w\-_]+)'
+                : '([\w\-_]+)',
             $m
         );
 
@@ -3916,7 +4003,7 @@ final class Parser
      *
      * @return bool
      */
-    private function url(&$out): bool
+    protected function url(&$out)
     {
         if ($this->literal('url(', 4)) {
             $s = $this->count;
@@ -3951,7 +4038,7 @@ final class Parser
      *
      * @return bool
      */
-    private function end(?bool $eatWhitespace = null): bool
+    protected function end($eatWhitespace = null)
     {
         if ($this->matchChar(';', $eatWhitespace)) {
             return true;
@@ -3972,7 +4059,7 @@ final class Parser
      *
      * @return string[]
      */
-    private function stripAssignmentFlags(&$value): array
+    protected function stripAssignmentFlags(&$value)
     {
         $flags = [];
 
@@ -3999,7 +4086,7 @@ final class Parser
      *
      * @return bool
      */
-    private function stripOptionalFlag(&$selectors): bool
+    protected function stripOptionalFlag(&$selectors)
     {
         $optional = false;
         $selector = end($selectors);
@@ -4021,7 +4108,7 @@ final class Parser
      *
      * @return array
      */
-    private function flattenList($value)
+    protected function flattenList($value)
     {
         if ($value[0] === Type::T_LIST && \count($value[2]) === 1) {
             return $this->flattenList($value[2][0]);
@@ -4037,7 +4124,7 @@ final class Parser
      *
      * @return string
      */
-    private function pregQuote(string $what): string
+    private function pregQuote($what)
     {
         return preg_quote($what, '/');
     }
@@ -4049,7 +4136,7 @@ final class Parser
      *
      * @return void
      */
-    private function extractLineNumbers(string $buffer): void
+    private function extractLineNumbers($buffer)
     {
         $this->sourcePositions = [0 => 0];
         $prev = 0;
@@ -4074,7 +4161,7 @@ final class Parser
      * @return array
      * @phpstan-return array{int, int}
      */
-    private function getSourcePosition(int $pos): array
+    private function getSourcePosition($pos)
     {
         $low = 0;
         $high = \count($this->sourcePositions);
@@ -4110,7 +4197,7 @@ final class Parser
      *
      * @return void
      */
-    private function saveEncoding(): void
+    private function saveEncoding()
     {
         if (\PHP_VERSION_ID < 80000 && \extension_loaded('mbstring') && (2 & (int) ini_get('mbstring.func_overload')) > 0) {
             $this->encoding = mb_internal_encoding();
@@ -4124,7 +4211,7 @@ final class Parser
      *
      * @return void
      */
-    private function restoreEncoding(): void
+    private function restoreEncoding()
     {
         if (\extension_loaded('mbstring') && $this->encoding) {
             mb_internal_encoding($this->encoding);

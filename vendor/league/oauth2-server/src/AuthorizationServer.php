@@ -9,6 +9,8 @@
 
 namespace League\OAuth2\Server;
 
+use DateInterval;
+use Defuse\Crypto\Key;
 use League\Event\EmitterAwareInterface;
 use League\Event\EmitterAwareTrait;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -17,6 +19,7 @@ use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use League\OAuth2\Server\ResponseTypes\AbstractResponseType;
 use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
 use League\OAuth2\Server\ResponseTypes\ResponseTypeInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,15 +29,13 @@ class AuthorizationServer implements EmitterAwareInterface
 {
     use EmitterAwareTrait;
 
-    const ENCRYPTION_KEY_ERROR = 'You must set the encryption key going forward to improve the security of this library - see this page for more information https://oauth2.thephpleague.com/v5-security-improvements/';
-
     /**
      * @var GrantTypeInterface[]
      */
     protected $enabledGrantTypes = [];
 
     /**
-     * @var \DateInterval[]
+     * @var DateInterval[]
      */
     protected $grantTypeAccessTokenTTL = [];
 
@@ -49,7 +50,7 @@ class AuthorizationServer implements EmitterAwareInterface
     protected $publicKey;
 
     /**
-     * @var null|ResponseTypeInterface
+     * @var ResponseTypeInterface
      */
     protected $responseType;
 
@@ -69,9 +70,19 @@ class AuthorizationServer implements EmitterAwareInterface
     private $scopeRepository;
 
     /**
-     * @var string
+     * @var string|Key
      */
     private $encryptionKey;
+
+    /**
+     * @var string
+     */
+    private $defaultScope = '';
+
+    /**
+     * @var bool
+     */
+    private $revokeRefreshTokens = true;
 
     /**
      * New server instance.
@@ -80,7 +91,7 @@ class AuthorizationServer implements EmitterAwareInterface
      * @param AccessTokenRepositoryInterface $accessTokenRepository
      * @param ScopeRepositoryInterface       $scopeRepository
      * @param CryptKey|string                $privateKey
-     * @param CryptKey|string                $publicKey
+     * @param string|Key                     $encryptionKey
      * @param null|ResponseTypeInterface     $responseType
      */
     public function __construct(
@@ -88,8 +99,8 @@ class AuthorizationServer implements EmitterAwareInterface
         AccessTokenRepositoryInterface $accessTokenRepository,
         ScopeRepositoryInterface $scopeRepository,
         $privateKey,
-        $publicKey,
-        ResponseTypeInterface $responseType = null
+        $encryptionKey,
+        ?ResponseTypeInterface $responseType = null
     ) {
         $this->clientRepository = $clientRepository;
         $this->accessTokenRepository = $accessTokenRepository;
@@ -98,51 +109,39 @@ class AuthorizationServer implements EmitterAwareInterface
         if ($privateKey instanceof CryptKey === false) {
             $privateKey = new CryptKey($privateKey);
         }
-        $this->privateKey = $privateKey;
 
-        if ($publicKey instanceof CryptKey === false) {
-            $publicKey = new CryptKey($publicKey);
+        $this->privateKey = $privateKey;
+        $this->encryptionKey = $encryptionKey;
+
+        if ($responseType === null) {
+            $responseType = new BearerTokenResponse();
+        } else {
+            $responseType = clone $responseType;
         }
-        $this->publicKey = $publicKey;
 
         $this->responseType = $responseType;
-    }
-
-    /**
-     * Set the encryption key
-     *
-     * @param string $key
-     */
-    public function setEncryptionKey($key)
-    {
-        $this->encryptionKey = $key;
     }
 
     /**
      * Enable a grant type on the server.
      *
      * @param GrantTypeInterface $grantType
-     * @param null|\DateInterval $accessTokenTTL
+     * @param null|DateInterval  $accessTokenTTL
      */
-    public function enableGrantType(GrantTypeInterface $grantType, \DateInterval $accessTokenTTL = null)
+    public function enableGrantType(GrantTypeInterface $grantType, ?DateInterval $accessTokenTTL = null)
     {
-        if ($accessTokenTTL instanceof \DateInterval === false) {
-            $accessTokenTTL = new \DateInterval('PT1H');
+        if ($accessTokenTTL === null) {
+            $accessTokenTTL = new DateInterval('PT1H');
         }
 
         $grantType->setAccessTokenRepository($this->accessTokenRepository);
         $grantType->setClientRepository($this->clientRepository);
         $grantType->setScopeRepository($this->scopeRepository);
+        $grantType->setDefaultScope($this->defaultScope);
         $grantType->setPrivateKey($this->privateKey);
-        $grantType->setPublicKey($this->publicKey);
         $grantType->setEmitter($this->getEmitter());
-
-        if ($this->encryptionKey === null) {
-            // @codeCoverageIgnoreStart
-            trigger_error(self::ENCRYPTION_KEY_ERROR, E_USER_DEPRECATED);
-            // @codeCoverageIgnoreEnd
-        }
         $grantType->setEncryptionKey($this->encryptionKey);
+        $grantType->revokeRefreshTokens($this->revokeRefreshTokens);
 
         $this->enabledGrantTypes[$grantType->getIdentifier()] = $grantType;
         $this->grantTypeAccessTokenTTL[$grantType->getIdentifier()] = $accessTokenTTL;
@@ -159,12 +158,6 @@ class AuthorizationServer implements EmitterAwareInterface
      */
     public function validateAuthorizationRequest(ServerRequestInterface $request)
     {
-        if ($this->encryptionKey === null) {
-            // @codeCoverageIgnoreStart
-            trigger_error(self::ENCRYPTION_KEY_ERROR, E_USER_DEPRECATED);
-            // @codeCoverageIgnoreEnd
-        }
-
         foreach ($this->enabledGrantTypes as $grantType) {
             if ($grantType->canRespondToAuthorizationRequest($request)) {
                 return $grantType->validateAuthorizationRequest($request);
@@ -202,16 +195,17 @@ class AuthorizationServer implements EmitterAwareInterface
     public function respondToAccessTokenRequest(ServerRequestInterface $request, ResponseInterface $response)
     {
         foreach ($this->enabledGrantTypes as $grantType) {
-            if ($grantType->canRespondToAccessTokenRequest($request)) {
-                $tokenResponse = $grantType->respondToAccessTokenRequest(
-                    $request,
-                    $this->getResponseType(),
-                    $this->grantTypeAccessTokenTTL[$grantType->getIdentifier()]
-                );
+            if (!$grantType->canRespondToAccessTokenRequest($request)) {
+                continue;
+            }
+            $tokenResponse = $grantType->respondToAccessTokenRequest(
+                $request,
+                $this->getResponseType(),
+                $this->grantTypeAccessTokenTTL[$grantType->getIdentifier()]
+            );
 
-                if ($tokenResponse instanceof ResponseTypeInterface) {
-                    return $tokenResponse->generateHttpResponse($response);
-                }
+            if ($tokenResponse instanceof ResponseTypeInterface) {
+                return $tokenResponse->generateHttpResponse($response);
             }
         }
 
@@ -225,13 +219,34 @@ class AuthorizationServer implements EmitterAwareInterface
      */
     protected function getResponseType()
     {
-        if ($this->responseType instanceof ResponseTypeInterface === false) {
-            $this->responseType = new BearerTokenResponse();
+        $responseType = clone $this->responseType;
+
+        if ($responseType instanceof AbstractResponseType) {
+            $responseType->setPrivateKey($this->privateKey);
         }
 
-        $this->responseType->setPrivateKey($this->privateKey);
-        $this->responseType->setEncryptionKey($this->encryptionKey);
+        $responseType->setEncryptionKey($this->encryptionKey);
 
-        return $this->responseType;
+        return $responseType;
+    }
+
+    /**
+     * Set the default scope for the authorization server.
+     *
+     * @param string $defaultScope
+     */
+    public function setDefaultScope($defaultScope)
+    {
+        $this->defaultScope = $defaultScope;
+    }
+
+    /**
+     * Sets whether to revoke refresh tokens or not (for all grant types).
+     *
+     * @param bool $revokeRefreshTokens
+     */
+    public function revokeRefreshTokens(bool $revokeRefreshTokens): void
+    {
+        $this->revokeRefreshTokens = $revokeRefreshTokens;
     }
 }

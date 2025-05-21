@@ -544,7 +544,7 @@ $contact_user_link_guid',
     'LBL_START' => 'Iniciar',
     'LBL_DB_CONN_ERR' => 'Error en base de dades',
     'LBL_OLD_PHP' => 'Antiga versió de PHP detectat!',
-    'LBL_OLD_PHP_MSG' => 'La versió de PHP recomanada per a instal·lar SuiteCRM és %s <br />Tot i que la versió mínima de PHP requerida és %s, no es recomana a causa del gran nombre d\'errors corregits, incloent solucions de seguretat, alliberats en les versions més modernes.<br />Vostè està usant la versió de PHP %s, que es EOL: <a href="http://php.net/eol.php">http://php.net/eol.php</a>.<br />Si us plau, actualitzar la seva versió de PHP. Instruccions en <a href="http://php.net/migration70"> http://php.net/migration70</a>. ',
+    'LBL_OLD_PHP_MSG' => 'La versió de PHP recomanada per a instal·lar SuiteCRM és %s <br />La versió mínima de PHP requerida és %s<br />Estàs utilitzant la versió de PHP %s, que està EOL: <a href="http://php.net/eol.php">http://php.net/eol.php</a>.<br />Si us plau, considera actualitzar la teva versió de PHP.',
     'LBL_OLD_PHP_OK' => 'Sóc conscient dels riscos i vull continuar.',
 
     'LBL_DBCONF_TITLE_USER_INFO_LABEL' => 'Usuari',

@@ -1,5 +1,5 @@
 name: Self update testing
-on: push
+on: [push, pull_request]
 jobs:
   # Checkout in separate job because docker image is alpine based and checkout action doesn't work.
   functional:

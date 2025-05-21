@@ -59,6 +59,7 @@ $mod_strings = array(
     'LBL_EMAIL_ENABLE_CONFIRM_OPT_IN' => 'Configuració d\'Autoritzat a enviar',
     'LBL_EMAIL_ENABLE_SEND_OPT_IN' => 'Enviar automàticament Autoritzat a enviar per correu electrònic',
     'LBL_EMAIL_CONFIRM_OPT_IN_TEMPLATE_ID' => 'Confirmar la plantilla de correu electrònic Autoritzat a enviar',
+    'LBL_LEGACY_EMAIL_COMPOSE_BEHAVIOR' => 'Activar el Comportament Antic de Redacció de Correu Electrònic',
     'LBL_EMAIL_OUTBOUND_CONFIGURATION' => 'Configuració de correu electrònic sortint',
     'LBL_EMAILS_PER_RUN' => 'Nombre de missatges enviats per lot',
     'LBL_ID' => 'Id',

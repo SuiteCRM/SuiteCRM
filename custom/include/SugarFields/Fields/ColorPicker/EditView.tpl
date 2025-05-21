@@ -21,7 +21,7 @@
  */
  *}
 <script src="SticInclude/vendor/jqColorPicker/jqColorPicker.min.js"></script>
-{if strlen({{sugarvar key='value' string=true}}) <= 0}
+{if strlen((string){{sugarvar key='value' string=true}}) <= 0}
     {assign var="value" value={{sugarvar key='default_value' string=true}} }
 {else}
     {assign var="value" value={{sugarvar key='value' string=true}} }

@@ -547,6 +547,7 @@
 								<input type="checkbox" name="update_exists_template" class="form-checkbox input-sm hidden">
 							</span>
 						</div>
+						{if !$hide_width_set}
 						<script>
 							{literal}
 							$(function(){
@@ -554,6 +555,16 @@
 									onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
 								}
 							});
+							{/literal}
+                        </script>
+						{/if}
+						<script>
+							{literal}
+							function loadtemplate() {
+									if (document.getElementById('template_id').value) {
+										onEmailTemplateChange(document.getElementById('template_id'), '{$MOD.LBL_COPY_OF}');
+									}
+							}
 							{/literal}
 						</script>
 					</div>
@@ -782,7 +793,11 @@
 				<td scope="col" NOWRAP valign="top"><span>{$MOD.LBL_FROM_MAILBOX_NAME}<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></span></td>
 				<td>
 					<span>
-						<select  title='{$MOD.LBL_FROM_MAILBOX_TITLE}' id='inbound_email_id' name='wiz_step3_inbound_email_id' onchange='set_from_reply_info(this);'>{$MAILBOXES}</select>
+						<!-- STIC-Custom 20250117 MHP - Remove the onchange function so that the sender values ​​are not deleted
+						https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+						<select  title='{$MOD.LBL_FROM_MAILBOX_TITLE}' id='inbound_email_id' name='wiz_step3_inbound_email_id' onchange='set_from_reply_info(this);'>{$MAILBOXES}</select>-->
+						<select  title='{$MOD.LBL_FROM_MAILBOX_TITLE}' id='inbound_email_id' name='wiz_step3_inbound_email_id'>{$MAILBOXES}</select>
+						<!-- END STIC-Custom -->
 					</span>
 					<!--
 					<br>
@@ -1007,10 +1022,15 @@
 
 		{literal}
 		<script type="text/javascript">
-                    $(document).ready(function(){
-                       $('#inbound_email_id').change();
-                       $('#outbound_email_id').change();
-                    });
+			// STIC-Custom 20250325 MHP - Take data from the SMTP account instead of the bounce account
+			// https://github.com/SinergiaTIC/SinergiaCRM/pull/315			
+			// It is used to differentiate when we are loading the view or when the user has changed the value of the outgoing account
+			var onReady = 1;
+			$(document).ready(function(){
+				// $('#inbound_email_id').change();
+				$('#outbound_email_id').change();
+			});
+			// End STIC-Custom			
 /*
 			Calendar.setup ({{/literal}
 				inputField : "date_start", ifFormat : "{$CALENDAR_DATEFORMAT}", showsTime : false, button : "jscal_trigger", singleClick : true, step : 1
@@ -1127,103 +1147,109 @@
 			var rn = document.getElementById('reply_name');
 			var ra = document.getElementById('reply_addr');
 
-			if(mailbox.value != '') {
-				// STIC 20210813 - Select the sender account of the inbound mailbox and not of the outbound mailbox
-				// STIC#379
-				// if(oe_stored_options[mailbox.value]) {
-				// 	var focusOe = oe_stored_options[mailbox.value];
-				// 	// from name
+			// STIC-Custom 20250325 MHP - Take data from the SMTP account instead of the bounce account
+			// https://github.com/SinergiaTIC/SinergiaCRM/pull/315			
+        	if (!onReady || (onReady && fn.value == '')) {
+				if(mailbox.value != '') {
+					if(oe_stored_options[mailbox.value]) {
+						var focusOe = oe_stored_options[mailbox.value];
+						
+						// STIC-Custom 20250117 MHP - Pre-populate SMTP account values ​​into Sender and Reply fields
+						// https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+						// 						if(!fn.value) {
+						//                             var fromName = focusOe.smtp_from_name ? focusOe.smtp_from_name : (
+						//                                 focusOe.from_name ? focusOe.from_name : (
+						//                                     focusOe.name ? focusOe.name : ''
+						//                                 ));
+						//                             if (fromName && fromName != "") {
+						//                                 fn.value = fromName;
+						//                             } else {
+						//                                 fn.value = '';
+						//                             }
+						//                         }
 
-                //                         if(!fn.value) {
-                //                             var fromName = focusOe.smtp_from_name ? focusOe.smtp_from_name : (
-                //                                 focusOe.from_name ? focusOe.from_name : (
-                //                                     focusOe.name ? focusOe.name : ''
-                //                                 ));
-                //                             if (fromName && fromName != "") {
-                //                                 fn.value = fromName;
-                //                             } else {
-                //                                 fn.value = '';
-                //                             }
-                //                         }
+						// 	// from address
+						// 	if (!fa.value) {
+						// 		if (focusIe.from_addr && focusIe.from_addr != "") {
+						// 			fa.value = focusIe.from_addr;
+						// 		} else {
+						// 			fa.value = '';
+						// 		}
+						// 	}
 
-				// 	// from addr
-                //                         if(!fa.value) {
-                //                             var fromAddr = focusOe.smtp_from_addr ? focusOe.smtp_from_addr : (
-                //                                 focusOe.from_addr ? focusOe.from_addr : (
-                //                                     focusOe.mail_smtpuser ? focusOe.mail_smtpuser : ''
-                //                                 ));
-                //                             if (fromAddr && fromAddr != "") {
-                //                                 fa.value = fromAddr;
-                //                             } else {
-                //                                 fa.value = '';
-                //                             }
-                //                         }
-                //                 }
-				// if(ie_stored_options[mailbox.value]) {
-				// 	var focusIe = ie_stored_options[mailbox.value];
-				// 	// reply name
-                //                         if (!rn.value) {
-                //                             if (focusIe.from_name && focusIe.from_name != "") {
-                //                                 rn.value = focusIe.from_name;
-                //                             } else {
-                //                                 rn.value = '';
-                //                             }
-                //                         }
+						// 	// reply name
+						// 	if (!rn.value) {
+						// 		if (focusIe.reply_to_name && focusIe.reply_to_name != "") {
+						// 			rn.value = focusIe.reply_to_name;
+						// 		} else {
+						// 			rn.value = '';
+						// 		}
+						// 	}
 
-                //                         // reply add
-                //                         if (!ra.value) {
-                //                             if(focusIe.from_addr && focusIe.from_addr != "") {
-                //                                 ra.value = focusIe.from_addr;
-                //                             } else {
-                //                                 ra.value = '';
-                //                             }
-                //                         }
-				// }
-				if (ie_stored_options[mailbox.value]) {
-					var focusIe = ie_stored_options[mailbox.value];
-					// from name
-					if (!fn.value) {
-						if (focusIe.from_name && focusIe.from_name != "") {
-							fn.value = focusIe.from_name;
+						// 	// reply address
+						// 	if (!ra.value) {
+						// 		if (focusIe.reply_to_addr && focusIe.reply_to_addr != "") {
+						// 			ra.value = focusIe.reply_to_addr;
+						// 		} else {
+						// 			ra.value = '';
+						// 		}
+						// 	}
+						// }
+						
+						// from name					
+						var fromName = focusOe.smtp_from_name ? focusOe.smtp_from_name : (
+							focusOe.from_name ? focusOe.from_name : (
+								focusOe.name ? focusOe.name : ''
+							));
+						if (fromName && fromName != "") {
+							fn.value = fromName;
 						} else {
 							fn.value = '';
 						}
-					}
 
-					// from address
-					if (!fa.value) {
-						if (focusIe.from_addr && focusIe.from_addr != "") {
-							fa.value = focusIe.from_addr;
+						// from addr
+						var fromAddr = focusOe.smtp_from_addr ? focusOe.smtp_from_addr : (
+							focusOe.from_addr ? focusOe.from_addr : (
+								focusOe.mail_smtpuser ? focusOe.mail_smtpuser : ''
+							));
+						if (fromAddr && fromAddr != "") {
+							fa.value = fromAddr;
 						} else {
 							fa.value = '';
 						}
-					}
 
-					// reply name
-					if (!rn.value) {
-						if (focusIe.reply_to_name && focusIe.reply_to_name != "") {
-							rn.value = focusIe.reply_to_name;
+						// reply name
+						var replyToName = focusOe.smtp_reply_to_name ? focusOe.smtp_reply_to_name : (
+							focusOe.reply_to_name ? focusOe.reply_to_name : (
+								focusOe.reply_to_name ? focusOe.reply_to_name : ''
+							));
+						if (replyToName && replyToName != "") {
+							rn.value = replyToName;
 						} else {
 							rn.value = '';
 						}
-					}
 
-					// reply address
-					if (!ra.value) {
-						if (focusIe.reply_to_addr && focusIe.reply_to_addr != "") {
-							ra.value = focusIe.reply_to_addr;
+						// reply addr
+						var replyToAddr = focusOe.smtp_reply_to_addr ? focusOe.smtp_reply_to_addr : (
+							focusOe.reply_to_addr ? focusOe.reply_to_addr : (
+								focusOe.reply_to_addr ? focusOe.reply_to_addr : ''
+							));
+						if (replyToAddr && replyToAddr != "") {
+							ra.value = replyToAddr;
 						} else {
 							ra.value = '';
 						}
 					}
+					// END STIC-Custom
+				} else {
+					fn.value = '';
+					fa.value = '';
+					rn.value = '';
+					ra.value = '';
 				}
-				// END STIC
-			} else {
-				fn.value = '';
-				fa.value = '';
-				rn.value = '';
-				ra.value = '';
-			}
+			}        
+			onReady = 0;
+			// END STIC-Custom
 		}
 
 
@@ -1487,7 +1513,7 @@ function determine_back(){
 			<!-- BEGIN: NoInbound2 -->
 			<tr>
 				<td valign="top" scope="row">
-					{$MOD.LBL_ATTACHMENTS}: 
+					{$MOD.LBL_ATTACHMENTS}:
 				</td>
 				<td colspan="2" nowrap id="attachments_container">
 					{$ATTACHMENTS}
@@ -1510,7 +1536,7 @@ function determine_back(){
 				<input type="hidden" id="documentId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="docRevId" name="seldoc" tabindex="0" />
 				<input type="hidden" id="documentType" name="seldoc" tabindex="0" />
-				
+
 
 				<input type="hidden" name="attach_to_template_id" id="attach_to_template_id" value="{$TEMPLATE_ID}">
 				<input type="hidden" name="campaign_id" value="{$CAMPAIGN_ID}">

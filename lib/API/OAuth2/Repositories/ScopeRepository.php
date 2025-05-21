@@ -44,6 +44,7 @@ use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\ScopeEntity;
 
+#[\AllowDynamicProperties]
 class ScopeRepository implements ScopeRepositoryInterface
 {
     /**

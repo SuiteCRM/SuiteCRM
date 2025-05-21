@@ -50,6 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  ********************************************************************************/
 require_once('include/MVC/View/SugarView.php');
  
+#[\AllowDynamicProperties]
 class HomeViewAdditionaldetailsretrieve extends SugarView
 {
     public function display()
@@ -90,7 +91,7 @@ class HomeViewAdditionaldetailsretrieve extends SugarView
             $results = $adFunction($arr, $bean, $_REQUEST);
 
             $retArray = array();
-            $retArray['body'] = str_replace(array("\rn", "\r", "\n"), array('','','<br />'), $results['string']);
+            $retArray['body'] = str_replace(array("\rn", "\r", "\n"), array('','','<br />'), (string) $results['string']);
             if (!$bean->ACLAccess('EditView')) {
                 $results['editLink'] = '';
             }

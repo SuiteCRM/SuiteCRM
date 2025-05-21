@@ -13,9 +13,10 @@ use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 use SuiteCRM\API\OAuth2\Entities\RefreshTokenEntity;
 
+#[\AllowDynamicProperties]
 class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
-    const ACCESS_TOKEN_FIELD = 'access_token';
+    public const ACCESS_TOKEN_FIELD = 'access_token';
 
     /**
      * {@inheritdoc}

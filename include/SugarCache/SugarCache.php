@@ -162,7 +162,11 @@ class SugarCache
         if (SugarCache::isOPcacheEnabled()) {
             // three attempts incase concurrent opcache operations pose a lock
             for ($i = 3; $i && !opcache_invalidate($file, true); --$i) {
-                sleep(0.2);
+                // STIC Custom 20250218 JBL - Avoid implicit conversion from float to int
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // sleep(0.2);
+                usleep(200000); // Sleep 0.2 seconds: 200000 microseconds
+                // End STIC Custom
             }
 
             if (!$i) {

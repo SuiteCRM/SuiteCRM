@@ -78,7 +78,9 @@ function dha_utf8_encode($in) {
       }
    } elseif(is_string($in)) {
       if(mb_detect_encoding($in, 'UTF-8', true) != "UTF-8")
-         return utf8_encode($in);
+         // Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+         // return utf8_encode($in);
+         return mb_convert_encoding($in, 'UTF-8', 'ISO-8859-1');
       else
          return $in;
    } else {

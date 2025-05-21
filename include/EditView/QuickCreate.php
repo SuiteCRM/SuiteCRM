@@ -48,6 +48,7 @@ require_once('include/EditView/EditView.php');
  * QuickCreate - minimal object creation form
  * @api
  */
+#[\AllowDynamicProperties]
 class QuickCreate extends EditView
 {
     /**
@@ -55,11 +56,19 @@ class QuickCreate extends EditView
      */
     public $viaAJAX = false;
 
-    public function process()
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function process()
+    public function process($checkFormName = false, $formName = '')
+    // END STIC Custom
     {
         global $current_user, $timedate;
 
-        parent::process();
+        // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // parent::process();
+        parent::process($checkFormName, $formName);
+        // END STIC Custom
 
         $this->ss->assign('ASSIGNED_USER_ID', $current_user->id);
 
@@ -72,10 +81,10 @@ class QuickCreate extends EditView
 
         $time_format = $timedate->get_user_time_format();
         $time_separator = ":";
-        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', $time_format, $match)) {
+        if (preg_match('/\d+([^\d])\d+([^\d]*)/s', (string) $time_format, $match)) {
             $time_separator = $match[1];
         }
-        $t23 = strpos($time_format, '23') !== false ? '%H' : '%I';
+        $t23 = strpos((string) $time_format, '23') !== false ? '%H' : '%I';
         if (!isset($match[2]) || $match[2] == '') {
             $this->ss->assign('CALENDAR_FORMAT', $date_format . ' ' . $t23 . $time_separator . "%M");
         } else {

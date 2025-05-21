@@ -1,4 +1,4 @@
-# JShrink [![Build Status](https://travis-ci.org/tedious/JShrink.svg?branch=master)](https://travis-ci.org/tedivm/JShrink)
+# JShrink [![Build Status](https://img.shields.io/github/actions/workflow/status/tedious/jshrink/pr_tests.yml?branch=master)](https://github.com/tedious/JShrink/actions/workflows/pr_tests.yml)
 
 [![License](http://img.shields.io/packagist/l/tedivm/JShrink.svg)](https://github.com/tedivm/JShrink/blob/master/LICENSE)
 [![Latest Stable Version](http://img.shields.io/github/release/tedious/JShrink.svg)](https://packagist.org/packages/tedivm/JShrink)
@@ -62,7 +62,7 @@ In the spirit of open source, use of this library for evil is discouraged but no
 
 ## Reporting Security and Vulnerability Issues
 
-This project utilizes the [Tidelift Security Reporting System](https://tidelift.com/security) for security and vulnerability reporting. 
+This project utilizes the [Tidelift Security Reporting System](https://tidelift.com/security) for security and vulnerability reporting.
 
 
 ## Support

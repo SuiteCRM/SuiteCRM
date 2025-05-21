@@ -39,7 +39,7 @@ class AOS_Product_CategoriesTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($aosProductCategories->id));
-        self::assertEquals(36, strlen($aosProductCategories->id));
+        self::assertEquals(36, strlen((string) $aosProductCategories->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $aosProductCategories->mark_deleted($aosProductCategories->id);

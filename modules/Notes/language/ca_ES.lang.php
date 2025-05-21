@@ -104,4 +104,7 @@ $mod_strings = array(
     'LBL_DATE_MODIFIED' => 'Última Modificació',
     'LBL_DELETED' => 'Esborrat',
     'LBL_FILE_CONTENTS' => 'Continguts del fitxer',
+
+    'LBL_ASCENDING' => 'Ascendent',
+    'LBL_DESCENDING' => 'Descendent',
 );

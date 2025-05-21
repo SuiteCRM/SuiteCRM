@@ -61,12 +61,12 @@ class fpdi_pdf_parser extends pdf_parser
      * @param string $filename  Source-Filename
      * @param object $fpdi      Object of type fpdi
      */
-    public function fpdi_pdf_parser($filename, &$fpdi)
+    public function __construct($filename, &$fpdi)
     {
         $this->fpdi =& $fpdi;
         $this->filename = $filename;
 
-        parent::pdf_parser($filename);
+        parent::__construct($filename);
         if ($this->success == false) {
             return false;
         }

@@ -82,7 +82,8 @@ if (didThisStepRunBefore('commit')) {
     set_upgrade_progress('commit', 'in_progress', 'commit', 'in_progress');
 }
 //Initialize session errors array
-if (!isset($_SESSION['sqlSkippedQueries']) && !is_array($_SESSION['sqlSkippedQueries'])) {
+$sqlSkipppedQueries = $_SESSION['sqlSkippedQueries'] ?? '';
+if (empty($sqlSkipppedQueries) && !is_array($sqlSkipppedQueries)) {
     $_SESSION['sqlSkippedQueries'] = array();
 }
 // prevent "REFRESH" double commits
@@ -343,6 +344,12 @@ eoq;
             logThis('*** ERROR: could not write config.php! - upgrade will fail!');
             $errors[] = $mod_strings['ERR_UW_CONFIG_WRITE'];
         }
+
+        if (function_exists('post_install_config_rebuild')) {
+            logThis('running post_install_config_rebuild() function');
+            @post_install_config_rebuild();
+        }
+
     }
     logThis('post_install() done.');
     //// END POSTINSTALL SCRIPTS
@@ -467,7 +474,7 @@ if (version_compare($_SESSION['current_db_version'], $_SESSION['target_db_versio
         $old_schema_contents = @drop_preUpgardeSchema(true);
         ob_end_clean();
     }
-    if ($old_schema_contents != null && strlen($old_schema_contents) > 0) {
+    if ($old_schema_contents != null && strlen((string) $old_schema_contents) > 0) {
         $old_schema = "<p><a href='javascript:void(0); toggleNwFiles(\"old_schemashow\");'>{$mod_strings['LBL_UW_SHOW_OLD_SCHEMA_TO_DROP']}</a>";
         $old_schema .= "<div id='old_schemashow' style='display:none;'>";
         $old_schema .= "<textarea readonly cols='80' rows='10'>{$old_schema_contents}</textarea>";
@@ -488,7 +495,7 @@ if (version_compare($_SESSION['current_db_version'], $_SESSION['target_db_versio
 }
 
 $copiedDesc = '';
-if (count($copiedFiles) > 0) {
+if ((is_countable($copiedFiles) ? count($copiedFiles) : 0) > 0) {
     $copiedDesc .= "<b>{$mod_strings['LBL_UW_COPIED_FILES_TITLE']}</b><br />";
     $copiedDesc .= "<a href='javascript:void(0); toggleNwFiles(\"copiedFiles\");'>{$mod_strings['LBL_UW_SHOW']}</a>";
     $copiedDesc .= "<div id='copiedFiles' style='display:none;'>";
@@ -500,7 +507,7 @@ if (count($copiedFiles) > 0) {
 }
 
 $skippedDesc = '';
-if (count($skippedFiles) > 0) {
+if ((is_countable($skippedFiles) ? count($skippedFiles) : 0) > 0) {
     $skippedDesc .= "<b>{$mod_strings['LBL_UW_SKIPPED_FILES_TITLE']}</b><br />";
     $skippedDesc .= "<a href='javascript:void(0); toggleNwFiles(\"skippedFiles\");'>{$mod_strings['LBL_UW_SHOW']}</a>";
     $skippedDesc .= "<div id='skippedFiles' style='display:none;'>";

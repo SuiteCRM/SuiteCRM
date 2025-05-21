@@ -87,7 +87,11 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
     }
 
     /** @inheritdoc */
-    public function documentify(\SugarBean $bean, ParserSearchFields $parser = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function documentify(\SugarBean $bean, ParserSearchFields $parser = null)
+    public function documentify(\SugarBean $bean, ?ParserSearchFields $parser = null)
+    // END STIC Custom    
     {
         $fields = &$this->getFieldsToIndexCached($bean, $parser);
 
@@ -113,7 +117,11 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
      *
      * @return string[]
      */
-    protected function getFieldsToIndex($module, ParserSearchFields $parser = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function getFieldsToIndex($module, ParserSearchFields $parser = null)
+    protected function getFieldsToIndex($module, ?ParserSearchFields $parser = null)
+    // END STIC Custom    
     {
         if (empty($parser)) {
             $parser = new ParserSearchFields($module);
@@ -142,7 +150,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
                 continue;
             }
 
-            if (strpos($key, 'range_date') !== false) {
+            if (strpos((string) $key, 'range_date') !== false) {
                 continue;
             }
 
@@ -168,11 +176,15 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
      * @see getFieldsToIndex
      *
      * @param \SugarBean         $bean
-     * @param ParserSearchFields $parser
+     * @param ParserSearchFields|null $parser
      *
      * @return array
      */
-    private function &getFieldsToIndexCached(\SugarBean $bean, ParserSearchFields $parser = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // private function &getFieldsToIndexCached(\SugarBean $bean, ParserSearchFields $parser = null)
+    private function &getFieldsToIndexCached(\SugarBean $bean, ?ParserSearchFields $parser = null)
+    // END STIC Custom    
     {
         $module_name = $bean->module_name;
 

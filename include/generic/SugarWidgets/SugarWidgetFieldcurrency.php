@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
-                                                                                       
+
 
 
 global $current_user;
@@ -92,6 +92,7 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
         $layout_def['currency_id'] = $currency_id;
         $display = $this->displayListPlain($layout_def);
 
+        $field_def = [];
         if (!empty($layout_def['column_key'])) {
             $field_def = $this->reporter->all_fields[$layout_def['column_key']];
         } else {
@@ -114,6 +115,7 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
 
             $div_id = $module ."&$record&$field_name";
             $str = "<div id='$div_id'>".$display;
+            $value = '';
             global $sugar_config;
             if (isset($sugar_config['enable_inline_reports_edit']) && $sugar_config['enable_inline_reports_edit']) {
                 $str .= "&nbsp;" .SugarThemeRegistry::current()->getImage("edit_inline", "border='0' alt='Edit Layout' align='bottom' onClick='SUGAR.reportsInlineEdit.inlineEdit(\"$div_id\",\"$value\",\"$module\",\"$record\",\"$field_name\",\"$field_type\",\"$currency_id\",\"$symbol\");'");
@@ -165,7 +167,7 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
 
     public function isSystemCurrency(&$layout_def)
     {
-        if (strpos($layout_def['name'], '_usdoll') === false) {
+        if (strpos((string) $layout_def['name'], '_usdoll') === false) {
             return false;
         } else {
             return true;
@@ -212,8 +214,8 @@ class SugarWidgetFieldCurrency extends SugarWidgetFieldInt
                 $cols = DBManagerFactory::getInstance()->getHelper()->get_columns($real_table);
                 $add_currency_id = isset($cols['currency_id']) ? true : false;
 
-                if (!$add_currency_id && preg_match('/.*?_cstm$/i', $real_table)) {
-                    $table = str_replace('_cstm', '', $table);
+                if (!$add_currency_id && preg_match('/.*?_cstm$/i', (string) $real_table)) {
+                    $table = str_replace('_cstm', '', (string) $table);
                     $cols = DBManagerFactory::getInstance()->getHelper()->get_columns($table);
                     $add_currency_id = isset($cols['currency_id']) ? true : false;
                 }

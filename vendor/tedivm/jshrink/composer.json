@@ -1,7 +1,10 @@
 {
   "name": "tedivm/jshrink",
   "description": "Javascript Minifier built in PHP",
-  "keywords": ["minifier","javascript"],
+  "keywords": [
+    "minifier",
+    "javascript"
+  ],
   "homepage": "http://github.com/tedious/JShrink",
   "type": "library",
   "license": "BSD-3-Clause",
@@ -12,14 +15,16 @@
     }
   ],
   "require": {
-    "php": "^5.6|^7.0|^8.0"
+    "php": "^7.0|^8.0"
   },
   "require-dev": {
-      "phpunit/phpunit": "^6",
-      "friendsofphp/php-cs-fixer": "^2.8",
-      "php-coveralls/php-coveralls": "^1.1.0"
+    "phpunit/phpunit": "^9|^10",
+    "friendsofphp/php-cs-fixer": "^3.14",
+    "php-coveralls/php-coveralls": "^2.5.0"
   },
   "autoload": {
-    "psr-0": {"JShrink": "src/"}
+    "psr-0": {
+      "JShrink": "src/"
+    }
   }
 }

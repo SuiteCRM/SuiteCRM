@@ -31,7 +31,7 @@ clean:
 
 defuse-crypto.phar: dist/box.json composer.lock
 	cp dist/box.json .
-	php -d phar.readonly=0 $(box) build -c box.json -v
+	php $(box) compile -c box.json -v
 
 composer.lock:
 	$(composer) config autoloader-suffix $(gitcommit)

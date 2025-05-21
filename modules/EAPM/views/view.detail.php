@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
+#[\AllowDynamicProperties]
 class EAPMViewDetail extends ViewDetail
 {
     private $_returnId;

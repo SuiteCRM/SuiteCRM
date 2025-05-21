@@ -43,6 +43,7 @@ namespace SuiteCRM\API\OAuth2\Entities;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Entities\Traits\EntityTrait;
 
+#[\AllowDynamicProperties]
 class ScopeEntity implements ScopeEntityInterface
 {
     use EntityTrait;
@@ -50,7 +51,11 @@ class ScopeEntity implements ScopeEntityInterface
     /**
      * @return mixed
      */
-    public function jsonSerialize()
+    // STIC Custom 20250304 JBL - jsonSerialize() should either be compatible with JsonSerializable::jsonSerialize(): mixed
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function jsonSerialize()
+    public function jsonSerialize(): mixed
+    // END STIC Custom
     {
         return $this->getIdentifier();
     }

@@ -66,6 +66,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @see    fromArray()
  * @author Vittorio Iocolano
  */
+#[\AllowDynamicProperties]
 class SearchQuery implements JsonSerializable
 {
     public const DEFAULT_SEARCH_SIZE = 10;
@@ -109,7 +110,7 @@ class SearchQuery implements JsonSerializable
      * @param int $size The number of results
      * @param int $from The results offset (for pagination)
      * @param string|null $engine Name of the search engine to use. Use default if `null`
-     * @param array|null $options Array with options (optional)
+     * @param mixed[] $options Array with options (optional)
      *
      * @return SearchQuery a fully built query
      */
@@ -137,11 +138,20 @@ class SearchQuery implements JsonSerializable
      */
     public static function fromRequestArray(array $request): SearchQuery
     {
-        $searchQuery = self::filterArray($request, 'search-query-string', '', FILTER_SANITIZE_STRING);
-        $searchQueryAlt = self::filterArray($request, 'query_string', '', FILTER_SANITIZE_STRING);
+        // STIC Custom 20250311 JBL - Avoid use of deprecated const: FILTER_SANITIZE_STRING
+        //                          - Ensure passing string to strip_tags 
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $searchQuery = self::filterArray($request, 'search-query-string', '', FILTER_SANITIZE_STRING);
+        // $searchQueryAlt = self::filterArray($request, 'query_string', '', FILTER_SANITIZE_STRING);
+        // $searchSize = self::filterArray($request, 'search-query-size', null, FILTER_SANITIZE_NUMBER_INT);
+        // $searchFrom = self::filterArray($request, 'search-query-from', 0, FILTER_SANITIZE_NUMBER_INT);
+        // $searchEngine = self::filterArray($request, 'search-engine', null, FILTER_SANITIZE_STRING);
+        $searchQuery = strip_tags((string) self::filterArray($request, 'search-query-string', '', null));
+        $searchQueryAlt = strip_tags((string) self::filterArray($request, 'query_string', '', null));
         $searchSize = self::filterArray($request, 'search-query-size', null, FILTER_SANITIZE_NUMBER_INT);
         $searchFrom = self::filterArray($request, 'search-query-from', 0, FILTER_SANITIZE_NUMBER_INT);
-        $searchEngine = self::filterArray($request, 'search-engine', null, FILTER_SANITIZE_STRING);
+        $searchEngine = strip_tags((string) self::filterArray($request, 'search-engine', null, null));
+        // END STIC Custom
 
         if (!empty($searchQueryAlt) && empty($searchQuery)) {
             $searchQuery = $searchQueryAlt;
@@ -185,7 +195,15 @@ class SearchQuery implements JsonSerializable
             return $default;
         }
 
-        $value = filter_var($array[$key], $filter);
+        // STIC Custom 20250311 JBL - Manage option when $filter is null
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $value = filter_var($array[$key], $filter);
+        if ($filter === null) {
+            $value = $array[$key];
+        } else {
+            $value = filter_var($array[$key], $filter);
+        }
+        // END STIC Custom
 
         if ($value === false) {
             return $default;
@@ -374,7 +392,11 @@ class SearchQuery implements JsonSerializable
     }
 
     /** @inheritdoc */
-    public function jsonSerialize()
+    // STIC Custom 20250304 JBL - jsonSerialize() should either be compatible with JsonSerializable::jsonSerialize(): mixed
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function jsonSerialize()
+    public function jsonSerialize(): mixed
+    // END STIC Custom    
     {
         return [
             'query' => $this->query,

@@ -382,6 +382,7 @@ $dictionary['User'] = array(
             'source' => 'non-db',
             'import' => false,
             'reportable' => false,
+            'inline_edit' => false,
             'studio' => array('formula' => false),
         ),
         'deleted' => array(

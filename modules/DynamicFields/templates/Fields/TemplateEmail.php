@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class TemplateEmail extends TemplateText
 {
     public function get_html_detail()

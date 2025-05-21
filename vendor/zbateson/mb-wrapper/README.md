@@ -2,7 +2,7 @@
 
 Charset conversion and string manipulation wrapper with a large defined set of aliases.
 
-[![Build Status](https://travis-ci.org/zbateson/mb-wrapper.svg?branch=master)](https://travis-ci.org/zbateson/mb-wrapper)
+[![Tests](https://github.com/zbateson/mb-wrapper.svg/actions/workflows/tests.yml/badge.svg)](https://github.com/zbateson/mb-wrapper.svg/actions/workflows/tests.yml)
 [![Code Coverage](https://scrutinizer-ci.com/g/zbateson/mb-wrapper/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/zbateson/mb-wrapper/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zbateson/mb-wrapper/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zbateson/mb-wrapper/?branch=master)
 [![Total Downloads](https://poser.pugx.org/zbateson/mb-wrapper/downloads)](https://packagist.org/packages/zbateson/mb-wrapper)
@@ -22,7 +22,7 @@ composer require zbateson/mb-wrapper
 
 ## Requirements
 
-mb-wrapper requires PHP 5.4 or newer.  Tested on PHP 5.4, 5.5, 5.6, 7, 7.1, 7.2, 7.3, 7.4 and 8.0 on travis.
+mb-wrapper requires PHP 7.1 or newer.  Tested on PHP 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, and 8.2 on GitHub Actions.
 
 ## Description
 

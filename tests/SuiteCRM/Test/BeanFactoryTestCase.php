@@ -214,7 +214,7 @@ class BeanFactoryTestCase extends SuitePHPUnitFrameworkTestCase
      */
     protected function shouldSkipFileEntry($file, $path): bool
     {
-        if ($file === '.' || $file === '..' || strtolower(substr($file, -4)) !== '.php') {
+        if ($file === '.' || $file === '..' || strtolower(substr((string) $file, -4)) !== '.php') {
             return true;
         }
 

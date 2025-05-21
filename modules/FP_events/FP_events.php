@@ -42,6 +42,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/FP_events/FP_events_sugar.php');
+#[\AllowDynamicProperties]
 class FP_events extends FP_events_sugar
 {
     public function __construct()

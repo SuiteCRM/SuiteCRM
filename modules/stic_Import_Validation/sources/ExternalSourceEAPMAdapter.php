@@ -24,6 +24,7 @@
 require_once('modules/stic_Import_Validation/sources/ImportDataSource.php');
 
 
+#[\AllowDynamicProperties]
 class ExternalSourceEAPMAdapter extends ImportDataSource
 {
 

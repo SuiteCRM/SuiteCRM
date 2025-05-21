@@ -4,61 +4,60 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header\Part;
 
+use ZBateson\MailMimeParser\Header\IHeaderPart;
 use ZBateson\MbWrapper\MbWrapper;
 
 /**
- * Constructs and returns HeaderPart objects.
+ * Constructs and returns IHeaderPart objects.
  *
  * @author Zaahid Bateson
  */
 class HeaderPartFactory
 {
     /**
-     * @var MbWrapper $charsetConverter passed to HeaderPart constructors
-     *      for converting strings in HeaderPart::convertEncoding
+     * @var MbWrapper $charsetConverter passed to IHeaderPart constructors
+     *      for converting strings in IHeaderPart::convertEncoding
      */
     protected $charsetConverter;
-    
+
     /**
      * Sets up dependencies.
-     * 
-     * @param MbWrapper $charsetConverter
+     *
      */
     public function __construct(MbWrapper $charsetConverter)
     {
         $this->charsetConverter = $charsetConverter;
     }
-    
+
     /**
-     * Creates and returns a default HeaderPart for this factory, allowing
-     * subclass factories for specialized HeaderParts.
-     * 
+     * Creates and returns a default IHeaderPart for this factory, allowing
+     * subclass factories for specialized IHeaderParts.
+     *
      * The default implementation returns a new Token.
-     * 
-     * @param string $value
-     * @return HeaderPart
+     *
+     * @return IHeaderPart
      */
-    public function newInstance($value)
+    public function newInstance(string $value)
     {
         return $this->newToken($value);
     }
-    
+
     /**
      * Initializes and returns a new Token.
-     * 
-     * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\Token
+     *
+     * @return Token
      */
-    public function newToken($value)
+    public function newToken(string $value)
     {
         return new Token($this->charsetConverter, $value);
     }
-    
+
     /**
      * Instantiates and returns a SplitParameterToken with the given name.
-     * 
+     *
      * @param string $name
      * @return SplitParameterToken
      */
@@ -66,82 +65,81 @@ class HeaderPartFactory
     {
         return new SplitParameterToken($this->charsetConverter, $name);
     }
-    
+
     /**
      * Initializes and returns a new LiteralPart.
-     * 
+     *
      * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\LiteralPart
+     * @return LiteralPart
      */
     public function newLiteralPart($value)
     {
         return new LiteralPart($this->charsetConverter, $value);
     }
-    
+
     /**
      * Initializes and returns a new MimeLiteralPart.
-     * 
+     *
      * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\MimeLiteralPart
+     * @return MimeLiteralPart
      */
     public function newMimeLiteralPart($value)
     {
         return new MimeLiteralPart($this->charsetConverter, $value);
     }
-    
+
     /**
      * Initializes and returns a new CommentPart.
-     * 
+     *
      * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\CommentPart
+     * @return CommentPart
      */
     public function newCommentPart($value)
     {
         return new CommentPart($this->charsetConverter, $value);
     }
-    
+
     /**
      * Initializes and returns a new AddressPart.
-     * 
+     *
      * @param string $name
      * @param string $email
-     * @return \ZBateson\MailMimeParser\Header\Part\AddressPart
+     * @return AddressPart
      */
     public function newAddressPart($name, $email)
     {
         return new AddressPart($this->charsetConverter, $name, $email);
     }
-    
+
     /**
      * Initializes and returns a new AddressGroupPart
-     * 
-     * @param array $addresses
+     *
      * @param string $name
-     * @return \ZBateson\MailMimeParser\Header\Part\AddressGroupPart
+     * @return AddressGroupPart
      */
     public function newAddressGroupPart(array $addresses, $name = '')
     {
         return new AddressGroupPart($this->charsetConverter, $addresses, $name);
     }
-    
+
     /**
      * Initializes and returns a new DatePart
-     * 
+     *
      * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\DatePart
+     * @return DatePart
      */
     public function newDatePart($value)
     {
         return new DatePart($this->charsetConverter, $value);
     }
-    
+
     /**
      * Initializes and returns a new ParameterPart.
-     * 
+     *
      * @param string $name
      * @param string $value
      * @param string $language
-     * @return \ZBateson\MailMimeParser\Header\Part\ParameterPart
+     * @return ParameterPart
      */
     public function newParameterPart($name, $value, $language = null)
     {
@@ -153,7 +151,7 @@ class HeaderPartFactory
      *
      * @param string $name
      * @param string $value
-     * @return \ZBateson\MailMimeParser\Header\Part\ReceivedPart
+     * @return ReceivedPart
      */
     public function newReceivedPart($name, $value)
     {
@@ -168,7 +166,7 @@ class HeaderPartFactory
      * @param string $ehloName
      * @param string $hostName
      * @param string $hostAddress
-     * @return \ZBateson\MailMimeParser\Header\Part\ReceivedDomainPart
+     * @return ReceivedDomainPart
      */
     public function newReceivedDomainPart(
         $name,

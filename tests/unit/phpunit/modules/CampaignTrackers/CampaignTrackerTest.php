@@ -37,7 +37,7 @@ class CampaignTrackerTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($campaignTracker->id));
-        self::assertEquals(36, strlen($campaignTracker->id));
+        self::assertEquals(36, strlen((string) $campaignTracker->id));
 
         //mark the record as deleted and verify that this record cannot be retrieved anymore.
         $campaignTracker->mark_deleted($campaignTracker->id);

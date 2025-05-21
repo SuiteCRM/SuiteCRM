@@ -13,7 +13,7 @@ class SEPADirectDebitTransaction {
    * Code allocated to a currency, by a maintenance agency, under an international identification
    * scheme as described in the latest edition of the international standard ISO 4217.
    */
-  const CURRENCY_CODE = 'EUR';
+  public const CURRENCY_CODE = 'EUR';
 
   /**
    * The instruction identification is a point to point reference that can be used between

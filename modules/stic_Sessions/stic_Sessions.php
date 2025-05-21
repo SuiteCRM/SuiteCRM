@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Sessions extends Basic
 {
     public $new_schema = true;
@@ -68,11 +69,31 @@ class stic_Sessions extends Basic
 
     public function save_relationship_changes($is_update, $exclude = array())
     {
-        if (!empty($this->stic_sessions_stic_eventsstic_events_ida) && (trim($this->stic_sessions_stic_eventsstic_events_ida) != trim($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida']))) {
-            // On new records, inherit session_color from related registration
-            if (empty($this->color) && !$is_update) {
-                $eventBean = BeanFactory::getBean('stic_Events', $this->stic_sessions_stic_eventsstic_events_ida);
-                $this->color = $eventBean->session_color;
+        // STIC Custom 20250416 JBL - Fix Warnings and TypeErrors
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+        // if (!empty($this->stic_sessions_stic_eventsstic_events_ida) && (empty($this->rel_fields_before_value) || (trim($this->stic_sessions_stic_eventsstic_events_ida) != trim($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida'])))) {
+        if (!empty($this->stic_sessions_stic_eventsstic_events_ida)) {
+            $event_id = '';
+            if (is_string($this->stic_sessions_stic_eventsstic_events_ida) || 
+                (is_object($this->stic_sessions_stic_eventsstic_events_ida) && 
+                    method_exists($this->stic_sessions_stic_eventsstic_events_ida, '__toString'))) {
+                $event_id = (string)$this->stic_sessions_stic_eventsstic_events_ida;
+            }
+            $event_id_before = '';
+            if (isset($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida'])) {
+                if (is_string($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida']) ||
+                    (is_object($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida']) && 
+                        method_exists($this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida'], '__toString'))) {
+                    $event_id_before = (string)$this->rel_fields_before_value['stic_sessions_stic_eventsstic_events_ida'];
+                }
+            }
+            if (trim($event_id) != trim($event_id_before)) {
+        // END STIC Custom
+                // On new records, inherit session_color from related registration
+                if (empty($this->color) && !$is_update) {
+                    $eventBean = BeanFactory::getBean('stic_Events', $this->stic_sessions_stic_eventsstic_events_ida);
+                    $this->color = $eventBean->session_color;
+                }
             }
         }
         parent::save_relationship_changes($is_update, $exclude);

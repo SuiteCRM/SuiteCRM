@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Contributor(s): ______________________________________..
  ********************************************************************************/
 require_once('modules/DynamicFields/templates/Fields/TemplateField.php');
+#[\AllowDynamicProperties]
 class TemplateEncrypt extends TemplateField
 {
     public $type='encrypt';

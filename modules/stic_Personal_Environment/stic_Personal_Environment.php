@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Personal_Environment extends Basic
 {
     public $new_schema = true;

@@ -215,11 +215,15 @@ $xtpl->assign("STATUS_OPTIONS", get_select_options_with_id($app_list_strings['em
 //pass in info to populate from/reply address info
 require_once('modules/Campaigns/utils.php');
 $json = getJSONobj();
-$IEStoredOptions = get_campaign_mailboxes_with_stored_options();
-$IEStoredOptionsJSON = (!empty($IEStoredOptions)) ? $json->encode($IEStoredOptions, false) : 'new Object()';
-$xtpl->assign("IEStoredOptions", $IEStoredOptionsJSON);
-
-
+// STIC-Custom 20250117 MHP - Pass the values ​​of the output accounts to the template instead of the input ones
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+// $IEStoredOptions = get_campaign_mailboxes_with_stored_options();
+// $IEStoredOptionsJSON = (!empty($IEStoredOptions)) ? $json->encode($IEStoredOptions, false) : 'new Object()';
+// $xtpl->assign("IEStoredOptions", $IEStoredOptionsJSON);
+$OEStoredOptions = get_campaign_mailboxes_with_stored_options_outbound();
+$OEStoredOptionsJSON = (!empty($OEStoredOptions)) ? $json->encode($OEStoredOptions, false) : 'new Object()';
+$xtpl->assign("OEStoredOptions", $OEStoredOptionsJSON);
+// END STIC-Custom 
 function getOutboundEmailAccountOptions()
 {
     global $mod_strings;

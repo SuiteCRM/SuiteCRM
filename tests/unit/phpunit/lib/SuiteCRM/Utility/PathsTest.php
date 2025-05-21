@@ -27,7 +27,7 @@ class PathsTest extends SuitePHPUnitFrameworkTestCase
         }
 
         if (self::$projectPath === null) {
-            self::$projectPath = dirname(dirname(dirname(dirname(dirname(dirname(__DIR__))))));
+            self::$projectPath = dirname(__DIR__, 6);
         }
     }
 

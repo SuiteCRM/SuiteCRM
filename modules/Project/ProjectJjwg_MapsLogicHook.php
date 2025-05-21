@@ -6,6 +6,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ProjectJjwg_MapsLogicHook
 {
     public $jjwg_Maps;

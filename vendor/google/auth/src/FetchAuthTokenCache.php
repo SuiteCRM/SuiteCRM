@@ -26,6 +26,7 @@ use Psr\Cache\CacheItemPoolInterface;
 class FetchAuthTokenCache implements
     FetchAuthTokenInterface,
     GetQuotaProjectInterface,
+    GetUniverseDomainInterface,
     SignBlobInterface,
     ProjectIdProviderInterface,
     UpdateMetadataInterface
@@ -57,7 +58,16 @@ class FetchAuthTokenCache implements
         $this->cacheConfig = array_merge([
             'lifetime' => 1500,
             'prefix' => '',
+            'cacheUniverseDomain' => $fetcher instanceof Credentials\GCECredentials,
         ], (array) $cacheConfig);
+    }
+
+    /**
+     * @return FetchAuthTokenInterface
+     */
+    public function getFetcher()
+    {
+        return $this->fetcher;
     }
 
     /**
@@ -137,11 +147,14 @@ class FetchAuthTokenCache implements
             );
         }
 
-        // Pass the access token from cache to GCECredentials for signing a blob.
-        // This saves a call to the metadata server when a cached token exists.
-        if ($this->fetcher instanceof Credentials\GCECredentials) {
+        // Pass the access token from cache for credentials that sign blobs
+        // using the IAM API. This saves a call to fetch an access token when a
+        // cached token exists.
+        if ($this->fetcher instanceof Credentials\GCECredentials
+            || $this->fetcher instanceof Credentials\ImpersonatedServiceAccountCredentials
+        ) {
             $cached = $this->fetchAuthTokenFromCache();
-            $accessToken = isset($cached['access_token']) ? $cached['access_token'] : null;
+            $accessToken = $cached['access_token'] ?? null;
             return $this->fetcher->signBlob($stringToSign, $forceOpenSsl, $accessToken);
         }
 
@@ -180,7 +193,33 @@ class FetchAuthTokenCache implements
             );
         }
 
+        // Pass the access token from cache for credentials that require an
+        // access token to fetch the project ID. This saves a call to fetch an
+        // access token when a cached token exists.
+        if ($this->fetcher instanceof Credentials\ExternalAccountCredentials) {
+            $cached = $this->fetchAuthTokenFromCache();
+            $accessToken = $cached['access_token'] ?? null;
+            return $this->fetcher->getProjectId($httpHandler, $accessToken);
+        }
+
         return $this->fetcher->getProjectId($httpHandler);
+    }
+
+    /*
+     * Get the Universe Domain from the fetcher.
+     *
+     * @return string
+     */
+    public function getUniverseDomain(): string
+    {
+        if ($this->fetcher instanceof GetUniverseDomainInterface) {
+            if ($this->cacheConfig['cacheUniverseDomain']) {
+                return $this->getCachedUniverseDomain($this->fetcher);
+            }
+            return $this->fetcher->getUniverseDomain();
+        }
+
+        return GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN;
     }
 
     /**
@@ -213,6 +252,10 @@ class FetchAuthTokenCache implements
             if (isset($cached['access_token'])) {
                 $metadata[self::AUTH_METADATA_KEY] = [
                     'Bearer ' . $cached['access_token']
+                ];
+            } elseif (isset($cached['id_token'])) {
+                $metadata[self::AUTH_METADATA_KEY] = [
+                    'Bearer ' . $cached['id_token']
                 ];
             }
         }
@@ -280,5 +323,17 @@ class FetchAuthTokenCache implements
 
             $this->setCachedValue($cacheKey, $authToken);
         }
+    }
+
+    private function getCachedUniverseDomain(GetUniverseDomainInterface $fetcher): string
+    {
+        $cacheKey = $this->getFullCacheKey($fetcher->getCacheKey() . 'universe_domain'); // @phpstan-ignore-line
+        if ($universeDomain = $this->getCachedValue($cacheKey)) {
+            return $universeDomain;
+        }
+
+        $universeDomain = $fetcher->getUniverseDomain();
+        $this->setCachedValue($cacheKey, $universeDomain);
+        return $universeDomain;
     }
 }

@@ -105,9 +105,10 @@ $dictionary['OAuth2Clients'] = [
         ],
         'duration_value' => [
             'name' => 'duration_value',
+            'vname' => 'LBL_DURATION_VALUE',
             'type' => 'int',
             'len' => 11,
-            'required' => true,
+            'required' => true, 
             'reportable' => false,
             'api-visible' => false,
             'inline_edit' => false,

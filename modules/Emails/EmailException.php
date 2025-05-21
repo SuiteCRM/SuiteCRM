@@ -45,9 +45,14 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class EmailException
  */
+#[\AllowDynamicProperties]
 class EmailException extends Exception
 {
-    const NO_DEFAULT_FROM_ADDR = 10;
-    const NO_DEFAULT_FROM_EMAIL = 20;
-    const NO_PROBLEM_MSG_FOUND = 30;
+    public const NO_DEFAULT_FROM_ADDR = 10;
+    public const NO_DEFAULT_FROM_EMAIL = 20;
+    // STIC Custom 20250519 JBL - Fix Undefined constant
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    public const NO_DEFAULT_FROM_NAME = 25;
+    // END STIC Custom
+    public const NO_PROBLEM_MSG_FOUND = 30;
 }

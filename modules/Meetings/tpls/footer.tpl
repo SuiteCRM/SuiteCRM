@@ -58,7 +58,7 @@
 <script type='text/javascript' src='{sugar_getjspath file='include/javascript/popup_helper.js'}'></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui2.js'}"></script>
 <script type="text/javascript" src="{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}"></script>
-  
+
 <script type="text/javascript">
 {literal}
 SUGAR.meetings = {};
@@ -114,7 +114,7 @@ YAHOO.util.Event.onContentReady("{/literal}{{$form_name}}{literal}",function() {
 <div class="buttons">
 {{if !empty($form) && !empty($form.buttons_footer)}}
    {{foreach from=$form.buttons_footer key=val item=button}}
-      {{sugar_button module="$module" id="$button" location="FOOTER" view="$view"}}
+      {{sugar_button module="$module" id=$button location="FOOTER" view="$view"}}
    {{/foreach}}
 {{else}}
 	{{sugar_button module="$module" id="SAVE" view="$view"}}
@@ -122,4 +122,4 @@ YAHOO.util.Event.onContentReady("{/literal}{{$form_name}}{literal}",function() {
 {{/if}}
 
 {{sugar_button module="$module" id="Audit" view="$view"}}
-</div> 
+</div>

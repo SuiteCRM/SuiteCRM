@@ -41,6 +41,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+#[\AllowDynamicProperties]
 class SugarWidgetField extends SugarWidget
 {
     public function __construct(&$layout_manager)

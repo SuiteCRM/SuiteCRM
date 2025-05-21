@@ -55,7 +55,7 @@ class DonationPaymentBO extends PaymentBO
     {
         // Manage attached files
         require_once 'modules/Documents/Document.php'; // Call to the Document class
-        $total_files = $_FILES["documents"]["name"] ? count($_FILES["documents"]["name"]) : 0; // Assignment of the number of attachments received from the form
+        $total_files = isset($_FILES["documents"]["name"]) ? count($_FILES["documents"]["name"]) : 0; // Assignment of the number of attachments received from the form
         $objLink->load_relationship('documents'); // Loading of the relationship between the contacts/organizations module and the document module
 
         // For each document received from the form

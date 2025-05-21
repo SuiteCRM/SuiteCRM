@@ -4,6 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class Jjwg_MapsViewGeocoding_Test extends SugarView
 {
     public function __construct()
@@ -28,7 +29,7 @@ class Jjwg_MapsViewGeocoding_Test extends SugarView
 <input type="hidden" name="action" value="geocoding_test" />
 <strong><?php echo $GLOBALS['mod_strings']['LBL_MAP_ADDRESS'].': '; ?> </strong>
 <input autocomplete="off" type="text" name="geocoding_address" id="geocoding_address"
-value="<?php echo htmlspecialchars($_REQUEST['geocoding_address']); ?>" title='' tabindex='1' size="40" maxlength="255">
+value="<?php echo htmlspecialchars((string) $_REQUEST['geocoding_address']); ?>" title='' tabindex='1' size="40" maxlength="255">
 <br /><br />
 <input class="button" type="submit" name="submit" value="<?php echo $GLOBALS['mod_strings']['LBL_MAP_PROCESS']; ?>" align="bottom">
 <input type="hidden" name="process_trigger" value="yes">

@@ -52,6 +52,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  ********************************************************************************/
 
 
+#[\AllowDynamicProperties]
 class ProjectTaskViewList extends ViewList
 {
     public function __construct()
@@ -64,6 +65,11 @@ class ProjectTaskViewList extends ViewList
 
     public function display()
     {
+        $metafiles = [];
+        $searchdefs = [];
+        $searchFields = [];
+        $listViewDefs = [];
+
         if (!$this->bean->ACLAccess('list')) {
             ACLController::displayNoAccess();
             return;
@@ -102,7 +108,7 @@ class ProjectTaskViewList extends ViewList
                     $blockVariables[] = 'lvso';
                 }
 
-                $current_query_by_page = json_decode(html_entity_decode($_REQUEST['current_query_by_page']), true);
+                $current_query_by_page = json_decode(html_entity_decode((string) $_REQUEST['current_query_by_page']), true, 512, JSON_THROW_ON_ERROR);
                 foreach ($current_query_by_page as $search_key=>$search_value) {
                     if ($search_key != $module.'2_'.strtoupper($this->bean->object_name).'_offset' && !in_array($search_key, $blockVariables)) {
                         if (!is_array($search_value)) {
@@ -223,13 +229,13 @@ class ProjectTaskViewList extends ViewList
         $where = '';
         if (isset($_REQUEST['query'])) {
             // we have a query
-            if (!empty($_SERVER['HTTP_REFERER']) && preg_match('/action=EditView/', $_SERVER['HTTP_REFERER'])) { // from EditView cancel
+            if (!empty($_SERVER['HTTP_REFERER']) && preg_match('/action=EditView/', (string) $_SERVER['HTTP_REFERER'])) { // from EditView cancel
                    $searchForm->populateFromArray($storeQuery->query);
             } else {
                 $searchForm->populateFromRequest();
             }
             $where_clauses = $searchForm->generateSearchWhere(true, $this->seed->module_dir);
-            if (count($where_clauses) > 0) {
+            if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
                 $where = '('. implode(' ) AND ( ', $where_clauses) . ')';
             }
             $GLOBALS['log']->info("List View Where Clause: $where");
@@ -260,6 +266,7 @@ class ProjectTaskViewList extends ViewList
         $lv->searchColumns = $searchForm->searchColumns;
 
         if (empty($_REQUEST['search_form_only']) || $_REQUEST['search_form_only'] == false) {
+            $lv->ss->assign('savedSearchData', $searchForm->getSavedSearchData());
             //Bug 58841 - mass update form was not displayed for non-admin users that should have access
             if (ACLController::checkAccess($module, 'massupdate') || ACLController::checkAccess($module, 'export')) {
                 $lv->setup($seed, 'include/ListView/ListViewGeneric.tpl', $where, $params);

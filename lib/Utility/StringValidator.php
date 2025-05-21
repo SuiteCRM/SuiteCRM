@@ -44,6 +44,7 @@ namespace SuiteCRM\Utility;
  * Class StringValidator
  * @package SuiteCRM\Utility
  */
+#[\AllowDynamicProperties]
 class StringValidator
 {
     /**

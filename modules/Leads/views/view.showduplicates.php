@@ -48,6 +48,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * This is the SugarView subclass to handle displaying the list of duplicate Leads found when attempting to create
  * a new Lead.  This class is called from the LeadFormBase class handleSave function.
  */
+#[\AllowDynamicProperties]
 class ViewShowDuplicates extends SugarView
 {
     public function display()
@@ -88,7 +89,7 @@ class ViewShowDuplicates extends SugarView
         // END STIC-Custom
 
         $duplicates = $_POST['duplicate'];
-        $count = count($duplicates);
+        $count = is_countable($duplicates) ? count($duplicates) : 0;
         $db = DBManagerFactory::getInstance();
         if ($count > 0) {
             $query .= "and (";
@@ -117,13 +118,13 @@ class ViewShowDuplicates extends SugarView
         $input = '';
         foreach ($lead->column_fields as $field) {
             if (!empty($_POST['Leads'.$field])) {
-                $input .= "<input type='hidden' name='$field' value='${_POST['Leads'.$field]}'>\n";
+                $input .= "<input type='hidden' name='$field' value='{$_POST['Leads'.$field]}'>\n";
             }
         }
 
         foreach ($lead->additional_column_fields as $field) {
             if (!empty($_POST['Leads'.$field])) {
-                $input .= "<input type='hidden' name='$field' value='${_POST['Leads'.$field]}'>\n";
+                $input .= "<input type='hidden' name='$field' value='{$_POST['Leads'.$field]}'>\n";
             }
         }
 

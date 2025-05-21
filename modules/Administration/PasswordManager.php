@@ -151,8 +151,7 @@ $sugar_smarty = new Sugar_Smarty();
 
 // if no IMAP libraries available, disable Save/Test Settings
 $imapFactory = new ImapHandlerFactory();
-$imap = $imapFactory->getImapHandler();
-if (!$imap->isAvailable()) {
+if (!$imapFactory->areAllHandlersAvailable()) {
     $sugar_smarty->assign('IE_DISABLED', 'DISABLED');
 }
 

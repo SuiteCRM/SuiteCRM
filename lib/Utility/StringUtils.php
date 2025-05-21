@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 /**
  * Class StringUtils holds static methods to perform various operations with strings.
  */
+#[\AllowDynamicProperties]
 class StringUtils
 {
     /**

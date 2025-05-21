@@ -49,6 +49,7 @@ require_once 'data/Relationships/SugarRelationship.php';
  *
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarRelationshipFactory
 {
     public static $rfInstance;

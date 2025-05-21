@@ -259,7 +259,7 @@ class aSubPanel
         // STIC#1157
         global $dictionary;
 
-        $relationshipType = $dictionary[$this->name]['true_relationship_type'];
+        $relationshipType = $dictionary[$this->name]['true_relationship_type'] ?? null;
         // if($relationshipType == 'one-to-many') {
         if($relationshipType == 'one-to-many' || $relationshipType == 'many-to-one') {
             // STIC-Custom JBL 20240123: Don't show button in Custom views
@@ -440,7 +440,8 @@ class aSubPanel
 
     public function isDatasourceFunction()
     {
-        if (strpos($this->get_inst_prop_value('get_subpanel_data'), 'function') === false) {
+        $subpanelData = $this->get_inst_prop_value('get_subpanel_data') ?? '';
+        if (strpos($subpanelData, 'function') === false) {
             return false ;
         }
         return true ;

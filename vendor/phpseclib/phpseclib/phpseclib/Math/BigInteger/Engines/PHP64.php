@@ -103,7 +103,7 @@ class PHP64 extends PHP
      */
     public static function isValidEngine()
     {
-        return PHP_INT_SIZE >= 8;
+        return PHP_INT_SIZE >= 8 && !self::testJITOnWindows();
     }
 
     /**

@@ -63,7 +63,11 @@ class SugarWidgetSubPanelTopButtonListView extends SugarWidgetSubPanelTopButton
         // Create the additional form fields with real values if they were not passed in
         if (empty($additionalFormFields) && $this->additional_form_fields) {
             foreach ($this->additional_form_fields as $key=>$value) {
-                if (!empty($defines['focus']->$value)) {
+                // STIC Custom 20250213 JBL - Protect access for PHP 8+ restrictions 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // if (!empty($defines['focus']->$value)) {
+                if (isset($defines['focus']) && is_object($defines['focus']) && property_exists($defines['focus'], $value) && !empty($defines['focus']->$value)) {
+                // END STIC Custom
                     $additionalFormFields[$key] = $defines['focus']->$value;
                 } else {
                     $additionalFormFields[$key] = '';

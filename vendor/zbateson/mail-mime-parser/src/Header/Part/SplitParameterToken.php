@@ -4,13 +4,14 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header\Part;
 
 use ZBateson\MbWrapper\MbWrapper;
 
 /**
  * Holds a running value for an RFC-2231 split header parameter.
- * 
+ *
  * ParameterConsumer creates SplitParameterTokens when a split header parameter
  * is first found, and adds subsequent split parts to an already created one if
  * the parameter name matches.
@@ -51,27 +52,23 @@ class SplitParameterToken extends HeaderPart
 
     /**
      * Initializes a SplitParameterToken.
-     * 
-     * @param MbWrapper $charsetConverter
+     *
      * @param string $name the parameter's name
      */
     public function __construct(MbWrapper $charsetConverter, $name)
     {
         parent::__construct($charsetConverter);
-        $this->name = trim($name);
+        $this->name = \trim($name);
     }
 
     /**
      * Extracts charset and language from an encoded value, setting them on the
      * current object if $index is 0 and adds the value part to the encodedParts
      * array.
-     * 
-     * @param string $value
-     * @param int $index
      */
-    protected function extractMetaInformationAndValue($value, $index)
+    protected function extractMetaInformationAndValue(string $value, int $index) : self
     {
-        if (preg_match('~^([^\']*)\'([^\']*)\'(.*)$~', $value, $matches)) {
+        if (\preg_match('~^([^\']*)\'([^\']*)\'(.*)$~', $value, $matches)) {
             if ($index === 0) {
                 $this->charset = (!empty($matches[1])) ? $matches[1] : $this->charset;
                 $this->language = (!empty($matches[2])) ? $matches[2] : $this->language;
@@ -79,20 +76,21 @@ class SplitParameterToken extends HeaderPart
             $value = $matches[3];
         }
         $this->encodedParts[$index] = $value;
+        return $this;
     }
-    
+
     /**
      * Adds the passed part to the running array of values.
-     * 
+     *
      * If $isEncoded is true, language and charset info is extracted from the
      * value, and the value is decoded before returning in getValue.
-     * 
+     *
      * The value of the parameter is sorted based on the passed $index
      * arguments when adding before concatenating when re-constructing the
      * value.
-     * 
+     *
      * @param string $value
-     * @param boolean $isEncoded
+     * @param bool $isEncoded
      * @param int $index
      */
     public function addPart($value, $isEncoded, $index)
@@ -106,78 +104,75 @@ class SplitParameterToken extends HeaderPart
             $this->literalParts[$index] = $this->convertEncoding($value);
         }
     }
-    
+
     /**
      * Traverses $this->encodedParts until a non-sequential key is found, or the
      * end of the array is found.
-     * 
+     *
      * This allows encoded parts of a split parameter to be split anywhere and
      * reconstructed.
-     * 
+     *
      * The returned string is converted to UTF-8 before being returned.
-     * 
-     * @return string
+     *
      */
-    private function getNextEncodedValue()
+    private function getNextEncodedValue() : string
     {
-        $cur = current($this->encodedParts);
-        $key = key($this->encodedParts);
+        $cur = \current($this->encodedParts);
+        $key = \key($this->encodedParts);
         $running = '';
         while ($cur !== false) {
             $running .= $cur;
-            $cur = next($this->encodedParts);
-            $nKey = key($this->encodedParts);
+            $cur = \next($this->encodedParts);
+            $nKey = \key($this->encodedParts);
             if ($nKey !== $key + 1) {
                 break;
             }
             $key = $nKey;
         }
         return $this->convertEncoding(
-            rawurldecode($running),
+            \rawurldecode($running),
             $this->charset,
             true
         );
     }
-    
+
     /**
      * Reconstructs the value of the split parameter into a single UTF-8 string
      * and returns it.
-     * 
-     * @return string
      */
-    public function getValue()
+    public function getValue() : ?string
     {
         $parts = $this->literalParts;
-        
-        reset($this->encodedParts);
-        ksort($this->encodedParts);
-        while (current($this->encodedParts) !== false) {
-            $parts[key($this->encodedParts)] = $this->getNextEncodedValue();
+
+        \reset($this->encodedParts);
+        \ksort($this->encodedParts);
+        while (\current($this->encodedParts) !== false) {
+            $parts[\key($this->encodedParts)] = $this->getNextEncodedValue();
         }
-        
-        ksort($parts);
-        return array_reduce(
+
+        \ksort($parts);
+        return \array_reduce(
             $parts,
-            function ($carry, $item) {
+            function($carry, $item) {
                 return $carry . $item;
             },
             ''
         );
     }
-    
+
     /**
      * Returns the name of the parameter.
-     * 
+     *
      * @return string
      */
     public function getName()
     {
         return $this->name;
     }
-    
+
     /**
      * Returns the language of the parameter if set, or null if not.
-     * 
+     *
      * @return string
      */
     public function getLanguage()

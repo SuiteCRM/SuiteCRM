@@ -4,6 +4,7 @@
 
 include_once('include/utils.php');
 
+#[\AllowDynamicProperties]
 class jjwg_AreasController extends SugarController
 {
     public function action_area_edit_map()

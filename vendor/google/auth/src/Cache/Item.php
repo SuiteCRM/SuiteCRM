@@ -28,6 +28,7 @@ use TypeError;
  *
  * This class will be used by MemoryCacheItemPool and SysVCacheItemPool
  * on PHP 7.4 and below. It is compatible with psr/cache 1.0 and 2.0 (PSR-6).
+ * @deprecated
  * @see TypedItem for compatiblity with psr/cache 3.0.
  */
 final class Item implements CacheItemInterface

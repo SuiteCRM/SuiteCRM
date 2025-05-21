@@ -50,7 +50,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $GLOBALS['starttTime'] = microtime(true);
 
 set_include_path(
-    dirname(__FILE__).'/..'.PATH_SEPARATOR.
+    __DIR__.'/..'.PATH_SEPARATOR.
     get_include_path()
 );
 
@@ -106,7 +106,11 @@ clean_special_arguments();
 $skipAntiXSS = false;
 // See if the current module is set as an exception 
 foreach ($GLOBALS['sugar_config']['anti_xss_data_exceptions'] as $key => $xssException) {
-    if ($xssException['module'] == $_REQUEST['module'] && $skipAntiXSS !== true ) {
+    // STIC Custom 20250205 JBL - Avoid Undefined array key Warning
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // if ($xssException['module'] == $_REQUEST['module'] && $skipAntiXSS !== true ) {
+    if (($xssException['module'] ?? null) === ($_REQUEST['module'] ?? null) && $skipAntiXSS !== true) {
+    // End STIC Custom
         // Sort config exception array (further than module, may contain other params like action or step)
         ksort($xssException);
         // Create a subarray from $_REQUEST containing the elements with keys defined in the prior exception
@@ -178,7 +182,7 @@ UploadStream::register();
 ///////////////////////////////////////////////////////////////////////////////
 ////    Handle loading and instantiation of various Sugar* class
 if (!defined('SUGAR_PATH')) {
-    define('SUGAR_PATH', realpath(dirname(__FILE__).'/..'));
+    define('SUGAR_PATH', realpath(__DIR__.'/..'));
 }
 require_once 'include/SugarObjects/SugarRegistry.php';
 
@@ -243,3 +247,6 @@ if (empty($GLOBALS['installing'])) {
 
 ////	END SETTING DEFAULT VAR VALUES
 ///////////////////////////////////////////////////////////////////////////////
+
+//It does a check to see if the host is valid
+check_trusted_hosts();

@@ -42,6 +42,7 @@ namespace SuiteCRM\API\OAuth2\Entities;
 
 use League\OAuth2\Server\Entities\UserEntityInterface;
 
+#[\AllowDynamicProperties]
 class UserEntity implements UserEntityInterface
 {
     private $id;

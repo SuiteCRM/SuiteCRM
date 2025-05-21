@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/connectors/sources/SourceFactory.php');
 
+#[\AllowDynamicProperties]
 class ViewMappingProperties extends ViewList
 {
     /**
@@ -105,8 +106,8 @@ class ViewMappingProperties extends ViewList
                     }
                     
                     //Remove the ':' character in some labels
-                    if (preg_match('/\:$/', $available_fields[$id])) {
-                        $available_fields[$id] = substr($available_fields[$id], 0, strlen($available_fields[$id])-1);
+                    if (preg_match('/\:$/', (string) $available_fields[$id])) {
+                        $available_fields[$id] = substr((string) $available_fields[$id], 0, strlen((string) $available_fields[$id])-1);
                     }
                     
                     if (isset($labels[$available_fields[$id]])) {

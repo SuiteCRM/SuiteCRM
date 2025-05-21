@@ -28,6 +28,7 @@
  * THIS CLASS IS FOR DEVELOPERS TO MAKE CUSTOMIZATIONS IN
  */
 require_once('modules/AOS_PDF_Templates/AOS_PDF_Templates_sugar.php');
+#[\AllowDynamicProperties]
 class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
 {
     public function __construct()
@@ -36,7 +37,7 @@ class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
         // STIC-Custom 20220124 MHP - Set in pdf_template_type_dom an ordered list with the names of the modules displayed in the menu tabs in the current user's language  
         // STIC#564   
         global $app_list_strings;
-        $app_list_strings['pdf_template_type_dom'] = $this->loadTabModules();
+        $app_list_strings['pdf_template_type_dom'] = static::loadTabModules();
         // END STIC-Custom        
     }
 
@@ -86,8 +87,8 @@ class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
     public function cleanBean()
     {
         parent::cleanBean();
-        $this->pdfheader = purify_html($this->pdfheader);
-        $this->description = purify_html($this->description);
-        $this->pdffooter = purify_html($this->pdffooter);
+        $this->pdfheader = purify_html($this->pdfheader, ['HTML.ForbiddenElements' => ['iframe' => true]]);
+        $this->description = purify_html($this->description, ['HTML.ForbiddenElements' => ['iframe' => true]]);
+        $this->pdffooter = purify_html($this->pdffooter, ['HTML.ForbiddenElements' => ['iframe' => true]]);
     }
 }

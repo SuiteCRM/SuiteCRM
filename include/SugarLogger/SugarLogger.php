@@ -55,6 +55,7 @@ require_once('include/SugarLogger/LoggerTemplate.php');
  * Default SugarCRM Logger
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarLogger implements LoggerTemplate
 {
     /**
@@ -70,6 +71,10 @@ class SugarLogger implements LoggerTemplate
     protected $log_dir = '.';
     protected $defaultPerms = 0664;
 
+    // STIC Custom 20250207 JBL - Change strftime to IntlDateFormatter::format
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    protected $dateFormatter = null;
+    // End STIC Custom
 
     /**
      * used for config screen
@@ -145,6 +150,10 @@ class SugarLogger implements LoggerTemplate
             $this->date_suffix = "_" . date(str_replace("%", "", $this->filesuffix));
         }
         $this->full_log_file = $this->log_dir . $this->logfile . $this->date_suffix . $this->ext;
+        // STIC Custom 20250207 JBL - Change strftime to IntlDateFormatter::format
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        $this->setDateFormatter();
+        // End STIC Custom
         $this->initialized = $this->_fileCanBeCreatedAndWrittenTo();
         $this->rollLog();
     }
@@ -193,6 +202,63 @@ class SugarLogger implements LoggerTemplate
         return $ret;
     }
 
+    // STIC Custom 20250207 JBL - Change strftime to IntlDateFormatter::format
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    private function convertStrftimeToIntl(string $strftimeFormat): string {
+        $map = [
+            '%a' => 'EEE',   // Abbreviated weekday name (Mon, Tue)
+            '%A' => 'EEEE',  // Full weekday name (Monday, Tuesday)
+            '%b' => 'MMM',   // Abbreviated month name (Jan, Feb)
+            '%B' => 'MMMM',  // Full month name (January, February)
+            '%C' => 'yy',    // Century (20 for the year 2024)
+            '%d' => 'dd',    // Day of the month (01-31)
+            '%e' => 'd',     // Day of the month without leading zero (1-31)
+            '%D' => 'MM/dd/yy',  // Short date (equivalent to %m/%d/%y)
+            '%F' => 'yyyy-MM-dd', // ISO 8601 date (equivalent to %Y-%m-%d)
+            '%H' => 'HH',    // Hour (24-hour format, 00-23)
+            '%I' => 'hh',    // Hour (12-hour format, 01-12)
+            '%j' => 'D',     // Day of the year (001-366)
+            '%m' => 'MM',    // Month (01-12)
+            '%M' => 'mm',    // Minutes (00-59)
+            '%n' => "\n",    // New line (not applicable in IntlDateFormatter)
+            '%p' => 'a',     // AM/PM marker
+            '%r' => 'hh:mm:ss a', // 12-hour clock time (equivalent to %I:%M:%S %p)
+            '%R' => 'HH:mm', // 24-hour time format without seconds
+            '%S' => 'ss',    // Seconds (00-59)
+            '%T' => 'HH:mm:ss', // Full time format (equivalent to %H:%M:%S)
+            '%u' => 'e',     // ISO-8601 weekday (1=Monday, 7=Sunday)
+            '%w' => 'c',     // Weekday (0=Sunday, 6=Saturday)
+            '%x' => 'dd/MM/yy', // Short date representation (locale-dependent)
+            '%X' => 'HH:mm:ss', // Full time representation (locale-dependent)
+            '%y' => 'yy',    // Year without century (00-99)
+            '%Y' => 'yyyy',  // Year with century (2024)
+            '%z' => 'Z',     // Time zone offset (e.g., +0100)
+            '%Z' => 'VV',    // Time zone name (e.g., Europe/Madrid)
+            '%c' => 'EEE MMM dd HH:mm:ss yyyy',  // Format for Fri Feb 07 10:00:13 2025
+            '%%' => '%',     // Literal percent sign
+        ];
+    
+        // Special processing for unsupported values
+        $strftimeFormat = str_replace('%s', time(), $strftimeFormat); // %s → UNIX Timestamp
+        $strftimeFormat = str_replace('%U', date('W'), $strftimeFormat); // %U → Week of the year
+    
+        return strtr($strftimeFormat, $map);
+    }
+
+    private function setDateFormatter() {
+        $intlFormat = $this->convertStrftimeToIntl($this->dateFormat);
+       
+        $this->dateFormatter = new IntlDateFormatter(
+            locale_get_default(),
+            IntlDateFormatter::NONE, 
+            IntlDateFormatter::NONE,
+            date_default_timezone_get(),
+            IntlDateFormatter::GREGORIAN,
+            $intlFormat 
+        );
+    }
+    // End STIC Custom
+    
     /**
      * Show log
      * and show a backtrace information in log when
@@ -233,10 +299,17 @@ class SugarLogger implements LoggerTemplate
         }
 
         //write out to the file including the time in the dateFormat the process id , the user id , and the log level as well as the message
+        // STIC Custom 20250207 JBL - Change strftime to IntlDateFormatter::format
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // fwrite(
+        //     $this->fp,
+        //     strftime($this->dateFormat) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
+        //     );
         fwrite(
             $this->fp,
-            strftime($this->dateFormat) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
+            $this->dateFormatter->format(time()) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
             );
+        // End STIC Custom
     }
 
     /**

@@ -44,7 +44,7 @@ function getDocumentRevisionPath($revisionId)
 function createPPTXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Pptx::loadPptxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
@@ -57,7 +57,7 @@ function createPPTXDocument($path)
 function createXLSXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Xlsx::loadXlsxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 /**
@@ -69,7 +69,7 @@ function createXLSXDocument($path)
 function createHTMLDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Html::loadHTMLFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
@@ -82,7 +82,7 @@ function createHTMLDocument($path)
 function createDocXDocument($path)
 {
     $doc = Zend_Search_Lucene_Document_Docx::loadDocxFile($path);
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
@@ -108,7 +108,7 @@ function createDocDocument($path)
     $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/", "", $outtext);
 
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $outtext));
     fclose($fileHandle);
     return $doc;
@@ -125,7 +125,7 @@ function createPDFDocument($path)
     require_once('PdfParser.php');
     $text = PdfParser::parseFile($path);
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $text));
     return $doc;
 }
@@ -155,7 +155,7 @@ function createOdtDocument($path)
     // Close file
     $package->close();
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', implode(' ', $documentBody), 'UTF-8'));
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     return $doc;
 }
 
@@ -168,7 +168,7 @@ function createOdtDocument($path)
 function createTextDocument($path)
 {
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', file_get_contents($path)));
     return $doc;
 }
@@ -183,7 +183,7 @@ function createTextDocument($path)
 function createRTFDocument($path)
 {
     $doc = new Zend_Search_Lucene_Document();
-    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename($path)));
+    $doc->addField(Zend_Search_Lucene_Field::Text('filename', basename((string) $path)));
     $contents = rtf2text($path);
     //print_r($contents);
     $doc->addField(Zend_Search_Lucene_Field::UnStored('contents', $contents));
@@ -198,7 +198,8 @@ function createRTFDocument($path)
 function rtf_isPlainText($s)
 {
     $arrfailAt = array("*", "fonttbl", "colortbl", "datastore", "themedata");
-    for ($i = 0; $i < count($arrfailAt); $i++) {
+    $arrfailAtCount = count($arrfailAt);
+    for ($i = 0; $i < $arrfailAtCount; $i++) {
         if (!empty($s[$arrfailAt[$i]])) {
             return false;
         }
@@ -301,7 +302,11 @@ function rtf2text($filename)
                         // We need to check whether the stack contains \ucN control word. If it does,
                         // we should remove the N characters from the output stream.
                         case "u":
-                            $toText .= html_entity_decode("&#x".dechex($param).";");
+                            // STIC Custom 20250205 JBL - Avoid TypeError in PHP 8.4
+                            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                            // $toText .= html_entity_decode("&#x".dechex($param).";");
+                            $toText .= html_entity_decode("&#x".dechex((int) $param).";");
+                            // End STIC Custom
                             $ucDelta = @$stack[$j]["uc"];
                             if ($ucDelta > 0) {
                                 $i += $ucDelta;

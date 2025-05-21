@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/SugarView.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class stic_Custom_ViewsViewselectmodule extends SugarView
 {
     private $buttons;

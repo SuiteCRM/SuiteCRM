@@ -65,32 +65,34 @@ abstract class Formatter
     public $keepSemicolons;
 
     /**
-     * @var OutputBlock
+     * @var \ScssPhp\ScssPhp\Formatter\OutputBlock
      */
-    private $currentBlock;
+    protected $currentBlock;
 
     /**
      * @var int
      */
-    private $currentLine;
+    protected $currentLine;
 
     /**
      * @var int
      */
-    private $currentColumn;
+    protected $currentColumn;
 
     /**
-     * @var SourceMapGenerator|null
+     * @var \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator|null
      */
-    private $sourceMapGenerator;
+    protected $sourceMapGenerator;
 
     /**
      * @var string
      */
-    private $strippedSemicolon;
+    protected $strippedSemicolon;
 
     /**
      * Initialize formatter
+     *
+     * @api
      */
     abstract public function __construct();
 
@@ -99,7 +101,7 @@ abstract class Formatter
      *
      * @return string
      */
-    protected function indentStr(): string
+    protected function indentStr()
     {
         return '';
     }
@@ -107,12 +109,14 @@ abstract class Formatter
     /**
      * Return property assignment
      *
+     * @api
+     *
      * @param string $name
-     * @param string  $value
+     * @param mixed  $value
      *
      * @return string
      */
-    public function property(string $name, string $value): string
+    public function property($name, $value)
     {
         return rtrim($name) . $this->assignSeparator . $value . ';';
     }
@@ -121,12 +125,14 @@ abstract class Formatter
      * Return custom property assignment
      * differs in that you have to keep spaces in the value as is
      *
+     * @api
+     *
      * @param string $name
-     * @param string  $value
+     * @param mixed  $value
      *
      * @return string
      */
-    public function customProperty(string $name, string $value): string
+    public function customProperty($name, $value)
     {
         return rtrim($name) . trim($this->assignSeparator) . $value . ';';
     }
@@ -134,11 +140,11 @@ abstract class Formatter
     /**
      * Output lines inside a block
      *
-     * @param OutputBlock $block
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
      *
      * @return void
      */
-    protected function blockLines(OutputBlock $block): void
+    protected function blockLines(OutputBlock $block)
     {
         $inner = $this->indentStr();
         $glue  = $this->break . $inner;
@@ -153,11 +159,11 @@ abstract class Formatter
     /**
      * Output block selectors
      *
-     * @param OutputBlock $block
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
      *
      * @return void
      */
-    protected function blockSelectors(OutputBlock $block): void
+    protected function blockSelectors(OutputBlock $block)
     {
         assert(! empty($block->selectors));
 
@@ -171,11 +177,11 @@ abstract class Formatter
     /**
      * Output block children
      *
-     * @param OutputBlock $block
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
      *
      * @return void
      */
-    private function blockChildren(OutputBlock $block)
+    protected function blockChildren(OutputBlock $block)
     {
         foreach ($block->children as $child) {
             $this->block($child);
@@ -185,11 +191,11 @@ abstract class Formatter
     /**
      * Output non-empty block
      *
-     * @param OutputBlock $block
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
      *
      * @return void
      */
-    private function block(OutputBlock $block)
+    protected function block(OutputBlock $block)
     {
         if (empty($block->lines) && empty($block->children)) {
             return;
@@ -231,11 +237,11 @@ abstract class Formatter
     /**
      * Test and clean safely empty children
      *
-     * @param OutputBlock $block
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock $block
      *
      * @return bool
      */
-    private function testEmptyChildren(OutputBlock $block): bool
+    protected function testEmptyChildren($block)
     {
         $isEmpty = empty($block->lines);
 
@@ -259,12 +265,14 @@ abstract class Formatter
     /**
      * Entry point to formatting a block
      *
-     * @param OutputBlock             $block              An abstract syntax tree
-     * @param SourceMapGenerator|null $sourceMapGenerator Optional source map generator
+     * @api
+     *
+     * @param \ScssPhp\ScssPhp\Formatter\OutputBlock             $block              An abstract syntax tree
+     * @param \ScssPhp\ScssPhp\SourceMap\SourceMapGenerator|null $sourceMapGenerator Optional source map generator
      *
      * @return string
      */
-    public function format(OutputBlock $block, SourceMapGenerator $sourceMapGenerator = null): string
+    public function format(OutputBlock $block, SourceMapGenerator $sourceMapGenerator = null)
     {
         $this->sourceMapGenerator = null;
 
@@ -301,7 +309,7 @@ abstract class Formatter
      *
      * @return void
      */
-    protected function write(string $str): void
+    protected function write($str)
     {
         if (! empty($this->strippedSemicolon)) {
             echo $this->strippedSemicolon;

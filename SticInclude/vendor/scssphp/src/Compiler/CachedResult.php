@@ -17,7 +17,7 @@ use ScssPhp\ScssPhp\CompilationResult;
 /**
  * @internal
  */
-final class CachedResult
+class CachedResult
 {
     /**
      * @var CompilationResult
@@ -52,7 +52,7 @@ final class CachedResult
     /**
      * @return CompilationResult
      */
-    public function getResult(): CompilationResult
+    public function getResult()
     {
         return $this->result;
     }
@@ -60,7 +60,7 @@ final class CachedResult
     /**
      * @return array<string, int>
      */
-    public function getParsedFiles(): array
+    public function getParsedFiles()
     {
         return $this->parsedFiles;
     }
@@ -70,7 +70,7 @@ final class CachedResult
      *
      * @phpstan-return list<array{currentDir: string|null, path: string, filePath: string}>
      */
-    public function getResolvedImports(): array
+    public function getResolvedImports()
     {
         return $this->resolvedImports;
     }

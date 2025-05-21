@@ -43,6 +43,7 @@
  * Class for parsing title from RSS feed, and keep default encoding (UTF-8)
  * Created: Sep 12, 2011
  */
+#[\AllowDynamicProperties]
 class DashletRssFeedTitle
 {
     public $defaultEncoding = "UTF-8";
@@ -78,7 +79,7 @@ class DashletRssFeedTitle
     public function readFeed()
     {
         if ($this->url) {
-            if (!in_array(strtolower(parse_url($this->url, PHP_URL_SCHEME)), array("http", "https"), true)) {
+            if (!in_array(strtolower(parse_url((string) $this->url, PHP_URL_SCHEME)), array("http", "https"), true)) {
                 return false;
             }
             $fileOpen = @fopen($this->url, 'rb');
@@ -98,7 +99,7 @@ class DashletRssFeedTitle
     public function getTitle()
     {
         $matches = array();
-        preg_match("/<title>(.*?)<\/title>/i", $this->contents, $matches);
+        preg_match("/<title>(.*?)<\/title>/i", (string) $this->contents, $matches);
         if (isset($matches[0])) {
             $match = $matches[0];
             if (isset($matches[1])) {
@@ -118,7 +119,7 @@ class DashletRssFeedTitle
     private function _identifyXmlEncoding()
     {
         $matches = array();
-        preg_match('/encoding\=*\".*?\"/', $this->contents, $matches);
+        preg_match('/encoding\=*\".*?\"/', (string) $this->contents, $matches);
         if (isset($matches[0])) {
             $this->xmlEncoding = trim(str_replace('encoding="', '"', $matches[0]), '"');
         }

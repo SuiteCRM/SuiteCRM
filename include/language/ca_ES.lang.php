@@ -764,6 +764,44 @@ $app_list_strings = array(
         'PM' => 'PM',
     ),
 
+    'dom_inbound_email_account_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grup',
+        'bounce' => 'Rebot',
+    ],
+
+    'dom_inbound_email_auth_types' => [
+        'basic' => 'Autenticació Bàsica',
+        'oauth' => 'OAuth',
+    ],
+
+    'dom_external_oauth_connection_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grup',
+    ],
+
+    'dom_external_oauth_provider_types' => [
+        'personal' => 'Personal',
+        'group' => 'Grup',
+    ],
+
+    'dom_outbound_email_account_types' => [
+        'user' => 'Personal',
+        'group' => 'Grup',
+        'system' => 'Sistema',
+        'system-override' => 'Anul·lació del sistema',
+    ],
+
+    'dom_inbound_email_account_status' => [
+        'Active' => 'Actiu',
+        'Inactive' => 'Inactiu',
+    ],
+
+    'dom_email_body_filtering_option' => [
+      'multi' => 'Cerca de Múltiples Paraules',
+      'single' => "Cerca d'una Paraula",
+    ],
+
     'dom_email_types' => array(
         'out' => 'Enviat',
         'archived' => 'Arxivat',
@@ -1961,6 +1999,8 @@ $app_strings = array(
     'LBL_REMOVE_DASHLET_CONFIRM' => 'Està segur que vol eliminar el Dashlet de SuiteCRM?',
     'LBL_REMOVING_DASHLET' => 'Eliminant Dashlet de SuiteCRM...',
     'LBL_REMOVED_DASHLET' => 'Dashlet de SuiteCRM eliminat',
+    'LBL_MAX_DASHLET_COLUMNS' => "Es poden mostrar un màxim de %s columnes.",
+    'LBL_RETRIEVING_XML_DATA' => "Hi ha hagut un problema en recuperar les dades XML:\n",
 
     // MySugar Menu Options
 

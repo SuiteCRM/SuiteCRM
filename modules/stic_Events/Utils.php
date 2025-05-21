@@ -47,8 +47,8 @@ class stic_EventsUtils
         $user = $current_user->id;
         $type = $_REQUEST['repeat_type'];
         $interval = $_REQUEST['repeat_interval'];
-        $count = $_REQUEST['repeat_count'];
-        $until = $_REQUEST['repeat_until'];
+        $count = $_REQUEST['repeat_count'] ?? null;
+        $until = $_REQUEST['repeat_until']??null;
         $startDay = $_REQUEST['repeat_start_day'];
         $finalDay = $_REQUEST['repeat_final_day'];
         $startHour = $_REQUEST['repeat_start_hour'];
@@ -76,13 +76,15 @@ class stic_EventsUtils
 
         // Take the dates collected in the smarty template and set their values
         // in order to calculate the duration of the session
-        $until = str_replace('/', '-', $until);
+        $until = str_replace('/', '-', $until??'');
         $until = date("Y-m-d", strtotime($until));
         $startDay = str_replace('/', '-', $startDay);
         $startDay = date('Y-m-d H:i:s', strtotime($startDay . " + $startHour hours + $startMinute minutes"));
         $finalDay = str_replace('/', '-', $finalDay);
         $finalDay = date('Y-m-d H:i:s', strtotime($finalDay . " + $finalHour hours + $finalMinute minutes"));
         $duration = strtotime($finalDay) - strtotime($startDay);
+
+        $date = [];
 
         // Depending on the chosen type, perform the right operation
         // (none, daily, weekly, monthly or annual)
@@ -146,13 +148,13 @@ class stic_EventsUtils
                 // in the smarty template Sunday is in position '0' and not in position '7'
                 $times = 0;
                 for ($i = 1; $i < 7; $i++) {
-                    $dow[$i] = $_REQUEST['repeat_dow_' . $i];
+                    $dow[$i] = $_REQUEST['repeat_dow_' . $i]??null;
                     if ($dow[$i] == 'on') {
                         $times = $times + 1;
                         $dow[$i] = 1;} else { $dow[$i] = 0;}
                 }
                 $zero = 0;
-                $dow[7] = $_REQUEST['repeat_dow_' . $zero];
+                $dow[7] = $_REQUEST['repeat_dow_' . $zero]??null;
                 if ($dow[7] == 'on') {
                     $times = $times + 1;
                     $dow[7] = 1;} else { $dow[7] = 0;}
@@ -320,7 +322,7 @@ class stic_EventsUtils
             } else {
                 $eventBean = BeanFactory::getBean('stic_Events', $sessionBean->stic_sessions_stic_eventsstic_events_ida);
 
-                $sessionBean->color = $eventBean->color;
+                $sessionBean->color = $eventBean->color??null;
             }
             if (isset($_REQUEST['description']) && $_REQUEST['description'] != '') {
                 $sessionBean->description = $_REQUEST['description'];
@@ -531,7 +533,7 @@ class stic_EventsUtils
         $res = $eventBean->db->getOne($query);
 
         // Set event total hours
-        $eventBean->total_hours = str_replace('.', $dec_sep, $res);
+        $eventBean->total_hours = str_replace('.', $dec_sep, $res??'');
         $eventBean->save();
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ':  Setting total hours for event: ' . $eventBean->name . ". Total Hours=" . $eventBean->total_hours);
     }

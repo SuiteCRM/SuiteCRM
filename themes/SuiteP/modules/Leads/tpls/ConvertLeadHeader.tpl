@@ -125,7 +125,7 @@
                 <input type="hidden" name="offset" value="{$offset}">
                 {if $bean->aclAccess("save")}
                 <input title='{sugar_translate label="LBL_SAVE_BUTTON_LABEL"}' id='SAVE_HEADER'
-                       accessKey="{sugar_translate label='LBL_SAVE_BUTTON_KEY}" class="button primary"
+                       accessKey="{sugar_translate label='LBL_SAVE_BUTTON_KEY'}" class="button primary"
         onclick="return check_form('{$form_name}');"
         type="submit" name="button" value="{sugar_translate label='LBL_SAVE_BUTTON_LABEL'}">
 {/if}

@@ -926,7 +926,11 @@ class Utils
      *
      * @return DOMNodeList The queried nodes
      */
-    public static function query(DOMDocument $dom, $query, DOMElement $context = null)
+    // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    // public static function query(DOMDocument $dom, $query, DOMElement $context = null)
+    public static function query(DOMDocument $dom, $query, ?DOMElement $context = null)
+    // END STIC Custom    
     {
         $xpath = new DOMXPath($dom);
         $xpath->registerNamespace('samlp', Constants::NS_SAMLP);

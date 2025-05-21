@@ -1,5 +1,13 @@
 # Changelog
 
+### 3.0.12 4/30/2023
+
+* Move register command out of runner and into Robo class. (#1143) (#1144)
+
+### 3.0.11 12/7/2022
+
+* PHP 8.2
+
 ### 3.0.10 2/21/2022
 
 * symfony/process ^6

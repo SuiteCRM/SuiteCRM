@@ -93,10 +93,10 @@ class SmartSerializer implements SerializerInterface
                             $result = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
                             return $result;
                         } catch (JsonException $e) {
-                            throw new JsonErrorException($e->getCode(), $data, $result ?? []);
+                            throw new JsonErrorException($e->getCode(), $data, []);
                         }
                 }
-                throw new JsonErrorException($e->getCode(), $data, $result ?? []);
+                throw new JsonErrorException($e->getCode(), $data, []);
             }
         }
 

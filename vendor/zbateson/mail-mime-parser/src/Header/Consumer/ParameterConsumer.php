@@ -4,33 +4,35 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MailMimeParser\Header\Consumer;
 
-use ZBateson\MailMimeParser\Header\Part\Token;
+use ArrayObject;
+use ZBateson\MailMimeParser\Header\IHeaderPart;
 use ZBateson\MailMimeParser\Header\Part\MimeLiteralPart;
 use ZBateson\MailMimeParser\Header\Part\SplitParameterToken;
-use ArrayObject;
+use ZBateson\MailMimeParser\Header\Part\Token;
 
 /**
- * Reads headers separated into parameters consisting of a main value, and
- * subsequent name/value pairs - for example text/html; charset=utf-8.
- * 
+ * Reads headers separated into parameters consisting of an optional main value,
+ * and subsequent name/value pairs - for example text/html; charset=utf-8.
+ *
  * A ParameterConsumer's parts are separated by a semi-colon.  Its name/value
  * pairs are separated with an '=' character.
- * 
+ *
  * Parts may be mime-encoded entities.  Additionally, a value can be quoted and
  * comments may exist.
- * 
+ *
  * @author Zaahid Bateson
  */
 class ParameterConsumer extends GenericConsumer
 {
     /**
      * Returns semi-colon and equals char as token separators.
-     * 
+     *
      * @return string[]
      */
-    protected function getTokenSeparators()
+    protected function getTokenSeparators() : array
     {
         return [';', '='];
     }
@@ -46,9 +48,9 @@ class ParameterConsumer extends GenericConsumer
      *
      * @return string the regex pattern
      */
-    protected function getTokenSplitPattern()
+    protected function getTokenSplitPattern() : string
     {
-        $sChars = implode('|', $this->getAllTokenSeparators());
+        $sChars = \implode('|', $this->getAllTokenSeparators());
         $mimePartPattern = MimeLiteralPart::MIME_PART_PATTERN_NO_QUOTES;
         return '~(' . $mimePartPattern . '|\\\\.|' . $sChars . ')~';
     }
@@ -57,66 +59,56 @@ class ParameterConsumer extends GenericConsumer
      * Creates and returns a \ZBateson\MailMimeParser\Header\Part\Token out of
      * the passed string token and returns it, unless the token is an escaped
      * literal, in which case a LiteralPart is returned.
-     * 
-     * @param string $token
-     * @param bool $isLiteral
-     * @return \ZBateson\MailMimeParser\Header\Part\HeaderPart
+     *
+     * @return \ZBateson\MailMimeParser\Header\IHeaderPart
      */
-    protected function getPartForToken($token, $isLiteral)
+    protected function getPartForToken(string $token, bool $isLiteral)
     {
         if ($isLiteral) {
             return $this->partFactory->newLiteralPart($token);
         }
         return $this->partFactory->newToken($token);
     }
-    
+
     /**
      * Adds the passed parameter with the given name and value to a
      * SplitParameterToken, at the passed index. If one with the given name
      * doesn't exist, it is created.
-     * 
-     * @param ArrayObject $splitParts
-     * @param string $name
-     * @param string $value
-     * @param int $index
-     * @param boolean $isEncoded
+     *
+     * @return SplitParameterToken
      */
-    private function addToSplitPart(ArrayObject $splitParts, $name, $value, $index, $isEncoded)
+    private function addToSplitPart(ArrayObject $splitParts, string $name, string $value, int $index, bool $isEncoded)
     {
         $ret = null;
-        if (!isset($splitParts[trim($name)])) {
+        if (!isset($splitParts[$name])) {
             $ret = $this->partFactory->newSplitParameterToken($name);
             $splitParts[$name] = $ret;
         }
         $splitParts[$name]->addPart($value, $isEncoded, $index);
         return $ret;
     }
-    
+
     /**
      * Instantiates and returns either a MimeLiteralPart if $strName is empty,
      * a SplitParameterToken if the parameter is a split parameter and is the
      * first in a series, null if it's a split parameter but is not the first
      * part in its series, or a ParameterPart is returned otherwise.
-     * 
+     *
      * If the part is a SplitParameterToken, it's added to the passed
      * $splitParts as well with its name as a key.
-     * 
-     * @param string $strName
-     * @param string $strValue
-     * @param ArrayObject $splitParts
-     * @return \ZBateson\MailMimeParser\Header\Part\MimeLiteralPart
-     *         |SplitParameterToken|\ZBateson\MailMimeParser\Header\Part\ParameterPart
+     *
+     * @return MimeLiteralPart|SplitParameterToken|\ZBateson\MailMimeParser\Header\Part\ParameterPart
      */
-    private function getPartFor($strName, $strValue, ArrayObject $splitParts)
+    private function getPartFor(string $strName, string $strValue, ArrayObject $splitParts)
     {
         if ($strName === '') {
             return $this->partFactory->newMimeLiteralPart($strValue);
-        } elseif (preg_match('~^\s*([^\*]+)\*(\d*)(\*)?$~', $strName, $matches)) {
+        } elseif (\preg_match('~^\s*([^\*]+)\*(\d*)(\*)?$~', $strName, $matches)) {
             return $this->addToSplitPart(
                 $splitParts,
                 $matches[1],
                 $strValue,
-                $matches[2],
+                (int) $matches[2],
                 (($matches[2] === '') || !empty($matches[3]))
             );
         }
@@ -125,27 +117,16 @@ class ParameterConsumer extends GenericConsumer
 
     /**
      * Handles parameter separator tokens during final processing.
-     * 
-     * If the end token is found, a new HeaderPart is assigned to the passed
+     *
+     * If the end token is found, a new IHeaderPart is assigned to the passed
      * $combined array.  If an '=' character is found, $strCat is assigned to
      * $strName and emptied.
-     * 
+     *
      * Returns true if the token was processed, and false otherwise.
-     * 
-     * @param string $tokenValue
-     * @param ArrayObject $combined
-     * @param ArrayObject $splitParts
-     * @param string $strName
-     * @param string $strCat
-     * @return boolean
+     *
      */
-    private function processTokenPart(
-        $tokenValue,
-        ArrayObject $combined,
-        ArrayObject $splitParts,
-        &$strName,
-        &$strCat
-    ) {
+    private function processTokenPart(string $tokenValue, ArrayObject $combined, ArrayObject $splitParts, string &$strName, string &$strCat) : bool
+    {
         if ($tokenValue === ';') {
             $combined[] = $this->getPartFor($strName, $strCat, $splitParts);
             $strName = '';
@@ -158,18 +139,17 @@ class ParameterConsumer extends GenericConsumer
         }
         return false;
     }
-    
+
     /**
      * Loops over parts in the passed array, creating ParameterParts out of any
      * parsed SplitParameterTokens, replacing them in the array.
-     * 
+     *
      * The method then calls filterIgnoreSpaces to filter out empty elements in
      * the combined array and returns an array.
-     * 
-     * @param ArrayObject $combined
-     * @return HeaderPart[]|array
+     *
+     * @return IHeaderPart[]|array
      */
-    private function finalizeParameterParts(ArrayObject $combined)
+    private function finalizeParameterParts(ArrayObject $combined) : array
     {
         foreach ($combined as $key => $part) {
             if ($part instanceof SplitParameterToken) {
@@ -182,15 +162,15 @@ class ParameterConsumer extends GenericConsumer
         }
         return $this->filterIgnoredSpaces($combined->getArrayCopy());
     }
-    
+
     /**
      * Post processing involves creating Part\LiteralPart or Part\ParameterPart
      * objects out of created Token and LiteralParts.
-     * 
-     * @param HeaderPart[] $parts
-     * @return HeaderPart[]|array
+     *
+     * @param IHeaderPart[] $parts The parsed parts.
+     * @return IHeaderPart[] Array of resulting final parts.
      */
-    protected function processParts(array $parts)
+    protected function processParts(array $parts) : array
     {
         $combined = new ArrayObject();
         $splitParts = new ArrayObject();

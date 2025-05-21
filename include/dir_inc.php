@@ -94,7 +94,7 @@ function mkdir_recursive($path, $check_is_parent_dir = false)
         $basecmp = strtolower($base);
     }
 
-    if ($basecmp == $pathcmp) {
+    if ($basecmp === $pathcmp) {
         return true;
     }
     $base .= "/";

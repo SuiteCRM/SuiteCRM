@@ -24,18 +24,19 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ImportCacheFiles
 {
     /**#@+
      * Cache file names
      */
-    const FILE_MISCELLANEOUS      = 'misc';
-    const FILE_DUPLICATES         = 'dupes';
-    const FILE_DUPLICATES_DISPLAY = 'dupesdisplay';
-    const FILE_ERRORS             = 'error';
-    const FILE_ERROR_RECORDS      = 'errorrecords';
-    const FILE_ERROR_RECORDS_ONLY = 'OriginalFileWithErrors';
-    const FILE_STATUS             = 'status';
+    public const FILE_MISCELLANEOUS      = 'misc';
+    public const FILE_DUPLICATES         = 'dupes';
+    public const FILE_DUPLICATES_DISPLAY = 'dupesdisplay';
+    public const FILE_ERRORS             = 'error';
+    public const FILE_ERROR_RECORDS      = 'errorrecords';
+    public const FILE_ERROR_RECORDS_ONLY = 'OriginalFileWithErrors';
+    public const FILE_STATUS             = 'status';
     /**#@-*/
 
     /**

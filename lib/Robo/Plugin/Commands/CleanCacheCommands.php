@@ -53,6 +53,7 @@ use Symfony\Component\Finder\SplFileInfo;
  * @link     CleanCacheCommands
  */
 
+#[\AllowDynamicProperties]
 class CleanCacheCommands extends \Robo\Tasks
 {
     use CliRunnerTrait;

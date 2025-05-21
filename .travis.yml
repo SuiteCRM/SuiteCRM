@@ -4,15 +4,12 @@ os: linux
 matrix:
   fast_finish: true
   include:
-    - name: "PHP 7.3 / MySQL 5.7"
-      php: "7.3"
-      dist: xenial
     - name: "PHP 7.4 / MySQL 5.7"
       php: "7.4"
       dist: xenial
     # Run composer validate to make sure the composer.json and composer.lock are in sync.
     - name: "composer validate"
-      php: "7.3"
+      php: "7.4"
       dist: xenial
       before_script: composer install
       script: composer validate

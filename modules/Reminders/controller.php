@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class RemindersController extends SugarController
 {
     public function action_getInviteesPersonName()

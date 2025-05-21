@@ -4,6 +4,7 @@ namespace GuzzleHttp\Ring\Future;
 /**
  * Represents a future array value that when dereferenced returns an array.
  */
+#[\AllowDynamicProperties]
 class FutureArray implements FutureArrayInterface
 {
     use MagicFutureTrait;

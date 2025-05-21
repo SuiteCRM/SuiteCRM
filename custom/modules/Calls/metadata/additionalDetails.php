@@ -27,7 +27,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once "include/utils/additional_details.php";
 
-function additionalDetailsCall($fields, SugarBean $bean = null, $params = array())
+function additionalDetailsCall($fields, ?SugarBean $bean = null, $params = array())
 {
 
     if (file_exists('custom/modules/' . $bean->module_name . '/metadata/customAdditionalDetails.php')) {

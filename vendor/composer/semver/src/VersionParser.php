@@ -82,10 +82,15 @@ class VersionParser
      * @param string $stability
      *
      * @return string
+     * @phpstan-return 'stable'|'RC'|'beta'|'alpha'|'dev'
      */
     public static function normalizeStability($stability)
     {
         $stability = strtolower((string) $stability);
+
+        if (!in_array($stability, array('stable', 'rc', 'beta', 'alpha', 'dev'), true)) {
+            throw new \InvalidArgumentException('Invalid stability string "'.$stability.'", expected one of stable, RC, beta, alpha or dev');
+        }
 
         return $stability === 'rc' ? 'RC' : $stability;
     }
@@ -134,15 +139,15 @@ class VersionParser
         }
 
         // match classical versioning
-        if (preg_match('{^v?(\d{1,5})(\.\d++)?(\.\d++)?(\.\d++)?' . self::$modifierRegex . '$}i', $version, $matches)) {
+        if (preg_match('{^v?(\d{1,5}+)(\.\d++)?(\.\d++)?(\.\d++)?' . self::$modifierRegex . '$}i', $version, $matches)) {
             $version = $matches[1]
                 . (!empty($matches[2]) ? $matches[2] : '.0')
                 . (!empty($matches[3]) ? $matches[3] : '.0')
                 . (!empty($matches[4]) ? $matches[4] : '.0');
             $index = 5;
         // match date(time) based versioning
-        } elseif (preg_match('{^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3})?)' . self::$modifierRegex . '$}i', $version, $matches)) {
-            $version = preg_replace('{\D}', '.', $matches[1]);
+        } elseif (preg_match('{^v?(\d{4}(?:[.:-]?\d{2}){1,6}(?:[.:-]?\d{1,3}){0,2})' . self::$modifierRegex . '$}i', $version, $matches)) {
+            $version = (string) preg_replace('{\D}', '.', $matches[1]);
             $index = 2;
         }
 
@@ -260,16 +265,16 @@ class VersionParser
         }
         $orGroups = array();
 
-        foreach ($orConstraints as $constraints) {
-            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $constraints);
+        foreach ($orConstraints as $orConstraint) {
+            $andConstraints = preg_split('{(?<!^|as|[=>< ,]) *(?<!-)[, ](?!-) *(?!,|as|$)}', $orConstraint);
             if (false === $andConstraints) {
-                throw new \RuntimeException('Failed to preg_split string: '.$constraints);
+                throw new \RuntimeException('Failed to preg_split string: '.$orConstraint);
             }
             if (\count($andConstraints) > 1) {
                 $constraintObjects = array();
-                foreach ($andConstraints as $constraint) {
-                    foreach ($this->parseConstraint($constraint) as $parsedConstraint) {
-                        $constraintObjects[] = $parsedConstraint;
+                foreach ($andConstraints as $andConstraint) {
+                    foreach ($this->parseConstraint($andConstraint) as $parsedAndConstraint) {
+                        $constraintObjects[] = $parsedAndConstraint;
                     }
                 }
             } else {
@@ -285,11 +290,11 @@ class VersionParser
             $orGroups[] = $constraint;
         }
 
-        $constraint = MultiConstraint::create($orGroups, false);
+        $parsedConstraint = MultiConstraint::create($orGroups, false);
 
-        $constraint->setPrettyString($prettyConstraint);
+        $parsedConstraint->setPrettyString($prettyConstraint);
 
-        return $constraint;
+        return $parsedConstraint;
     }
 
     /**

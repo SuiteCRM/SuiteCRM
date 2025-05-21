@@ -155,18 +155,33 @@ $groupFocus = BeanFactory::newBean('SecurityGroups');
 $defaultGroups = SecurityGroup::retrieveDefaultGroups();
 $defaultGroup_string = "";
 foreach ($defaultGroups as $default_id => $defaultGroup) {
+    // STIC CUSTOM - JCH - 20250210 - Fix Warning error
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    // $defaultGroup_string .= "
+	// <tr>
+	// <td class='dataLabel' width='30%'>
+	// 	".$mod_strings['LBL_GROUP']." ".$defaultGroup['group']."
+	// </td>
+	// <td class='dataField' width='30%'>
+    // 		".$mod_strings['LBL_MODULE']." ".$app_list_strings['moduleList'][$defaultGroup['module']]."
+	// </td>
+	// <td class='dataLabel' width='40%'>
+	// 	<input type='submit' tabindex='1' class='button' onclick=\"this.form.remove_default_id.value='".$default_id."'; this.form.action.value='SaveConfig'; this.form.return_module.value='SecurityGroups'; this.form.return_action.value='config';\" value='".$mod_strings['LBL_REMOVE_BUTTON_LABEL']."'/>
+	// </td>
+	// </tr>";
     $defaultGroup_string .= "
 	<tr>
 	<td class='dataLabel' width='30%'>
 		".$mod_strings['LBL_GROUP']." ".$defaultGroup['group']."
 	</td>
 	<td class='dataField' width='30%'>
-		".$mod_strings['LBL_MODULE']." ".$app_list_strings['moduleList'][$defaultGroup['module']]."
+    		".$mod_strings['LBL_MODULE']." ".($app_list_strings['moduleList'][$defaultGroup['module']] ?? '')."
 	</td>
 	<td class='dataLabel' width='40%'>
 		<input type='submit' tabindex='1' class='button' onclick=\"this.form.remove_default_id.value='".$default_id."'; this.form.action.value='SaveConfig'; this.form.return_module.value='SecurityGroups'; this.form.return_action.value='config';\" value='".$mod_strings['LBL_REMOVE_BUTTON_LABEL']."'/>
 	</td>
 	</tr>";
+    // END STIC CUSTOM
 }
 $xtpl->assign("DEFAULT_GROUPS", $defaultGroup_string);
 

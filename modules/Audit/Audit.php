@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('modules/Audit/field_assoc.php');
 
+#[\AllowDynamicProperties]
 class Audit extends SugarBean
 {
     public $module_dir = "Audit";
@@ -107,7 +108,10 @@ class Audit extends SugarBean
 
     public function get_audit_list()
     {
-        global $focus, $genericAssocFieldsArray, $moduleAssocFieldsArray, $current_user, $timedate, $app_strings;
+        global $focus, $genericAssocFieldsArray, $moduleAssocFieldsArray, $current_user, $timedate, $app_strings, $dictionary;
+
+        $dictionary = $dictionary ?? [];
+
         $audit_list = array();
         if (!empty($_REQUEST['record'])) {
             $result = $focus->retrieve($_REQUEST['record']);
@@ -134,7 +138,7 @@ class Audit extends SugarBean
                         if (($field['name'] == 'before_value_string' || $field['name'] == 'after_value_string') &&
                                     (array_key_exists($row['field_name'], $genericAssocFieldsArray) || (!empty($moduleAssocFieldsArray[$focus->object_name]) && array_key_exists($row['field_name'], $moduleAssocFieldsArray[$focus->object_name])))
                                    ) {
-                            $temp_list[$field['name']] = Audit::getAssociatedFieldName($row['field_name'], $row[$field['name']]);
+                            $temp_list[$field['name']] = (new Audit())->getAssociatedFieldName($row['field_name'], $row[$field['name']]);
                         } else {
                             $temp_list[$field['name']] = $row[$field['name']];
                         }

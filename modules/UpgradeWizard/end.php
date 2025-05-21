@@ -250,10 +250,10 @@ $mod_strings = return_module_language($current_language, 'UpgradeWizard');
 $stop = false;
 
 $httpHost = $_SERVER['HTTP_HOST'];  // cn: 8472 - HTTP_HOST includes port in some cases
-if ($colon = strpos($httpHost, ':')) {
-    $httpHost = substr($httpHost, 0, $colon);
+if ($colon = strpos((string) $httpHost, ':')) {
+    $httpHost = substr((string) $httpHost, 0, $colon);
 }
-$parsedSiteUrl = parse_url($sugar_config['site_url']);
+$parsedSiteUrl = parse_url((string) $sugar_config['site_url']);
 $host = ($parsedSiteUrl['host'] != $httpHost) ? $httpHost : $parsedSiteUrl['host'];
 
 // aw: 9747 - use SERVER_PORT for users who don't plug in the site_url at install correctly

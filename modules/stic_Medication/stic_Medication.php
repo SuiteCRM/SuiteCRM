@@ -22,6 +22,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class stic_Medication extends Basic
 {
     public $new_schema = true;

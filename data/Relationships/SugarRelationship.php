@@ -61,6 +61,7 @@ define('REL_ONE_ONE', 'one-to-one');
  *
  * @api
  */
+#[\AllowDynamicProperties]
 abstract class SugarRelationship
 {
     protected $def;
@@ -470,20 +471,42 @@ abstract class SugarRelationship
     {
         $GLOBALS['resavingRelatedBeans'] = true;
 
-        //Resave any bean not currently in the middle of a save operation
-        foreach (self::$beansToResave as $module => $beans) {
-            foreach ($beans as $bean) {
-                if (empty($bean->deleted) && empty($bean->in_save)) {
-                    $bean->save();
-                } else {
-                    // Bug 55942 save the in-save id which will be used to send workflow alert later
-                    if (isset($bean->id) && !empty($_SESSION['WORKFLOW_ALERTS'])) {
-                        $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+        // STIC Custom 20250408 JBL - Fix Uncaught Error when $beansToResave is not iterable
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        if (is_array(self::$beansToResave)) {
+        // END STIC Custom
+            //Resave any bean not currently in the middle of a save operation
+            foreach (self::$beansToResave as $module => $beans) {
+                foreach ($beans as $bean) {
+                    // STIC Custom 20250401 JBL - Fix Uncaught Error: Call to a member function save() on false
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                    if ($bean === false || empty($bean) || !is_object($bean)) {
+                        continue;
+                    }
+                    // END STIC Custom
+                    if (empty($bean->deleted) && empty($bean->in_save)) {
+                        $bean->save();
+                    } else {
+                        // Bug 55942 save the in-save id which will be used to send workflow alert later
+                        // STIC Custom 20250403 JBL - Fix Uncaught Error 
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                        // if (isset($bean->id) && !empty($_SESSION['WORKFLOW_ALERTS'])) {
+                        //     $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+                        // }
+                        if (isset($bean->id)) {
+                            if (!isset($_SESSION['WORKFLOW_ALERTS']) || !is_array($_SESSION['WORKFLOW_ALERTS'])) {
+                                $_SESSION['WORKFLOW_ALERTS'] = [];
+                            }
+                            $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+                        }
+                        // END STIC Custom
                     }
                 }
             }
+        // STIC Custom 20250408 JBL - Fix Uncaught Error when $beansToResave is not iterable
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
         }
-
+        // END STIC Custom
         $GLOBALS['resavingRelatedBeans'] = false;
 
         //Reset the list of beans that will need to be resaved

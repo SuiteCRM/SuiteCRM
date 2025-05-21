@@ -27,6 +27,7 @@ use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\Credentials\UserRefreshCredentials;
 use Google\Auth\CredentialsLoader;
 use Google\Auth\FetchAuthTokenCache;
+use Google\Auth\GetUniverseDomainInterface;
 use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Auth\OAuth2;
 use Google\AuthHandler\AuthHandlerFactory;
@@ -105,78 +106,110 @@ class Client
     /**
      * Construct the Google Client.
      *
-     * @param array $config
+     * @param array $config {
+     *     An array of required and optional arguments.
+     *
+     *     @type string $application_name
+     *           The name of your application
+     *     @type string $base_path
+     *           The base URL for the service. This is only accounted for when calling
+     *           {@see Client::authorize()} directly.
+     *     @type string $client_id
+     *           Your Google Cloud client ID found in https://developers.google.com/console
+     *     @type string $client_secret
+     *           Your Google Cloud client secret found in https://developers.google.com/console
+     *     @type string|array|CredentialsLoader $credentials
+     *           Can be a path to JSON credentials or an array representing those
+     *           credentials (@see Google\Client::setAuthConfig), or an instance of
+     *           {@see CredentialsLoader}.
+     *     @type string|array $scopes
+     *           {@see Google\Client::setScopes}
+     *     @type string $quota_project
+     *           Sets X-Goog-User-Project, which specifies a user project to bill
+     *           for access charges associated with the request.
+     *     @type string $redirect_uri
+     *     @type string $state
+     *     @type string $developer_key
+     *           Simple API access key, also from the API console. Ensure you get
+     *           a Server key, and not a Browser key.
+     *           **NOTE:** The universe domain is assumed to be "googleapis.com" unless
+     *           explicitly set. When setting an API ley directly via this option, there
+     *           is no way to verify the universe domain. Be sure to set the
+     *           "universe_domain" option if "googleapis.com" is not intended.
+     *     @type bool $use_application_default_credentials
+     *           For use with Google Cloud Platform
+     *           fetch the ApplicationDefaultCredentials, if applicable
+     *           {@see https://developers.google.com/identity/protocols/application-default-credentials}
+     *     @type string $signing_key
+     *     @type string $signing_algorithm
+     *     @type string $subject
+     *     @type string $hd
+     *     @type string $prompt
+     *     @type string $openid
+     *     @type bool $include_granted_scopes
+     *     @type string $login_hint
+     *     @type string $request_visible_actions
+     *     @type string $access_type
+     *     @type string $approval_prompt
+     *     @type array $retry
+     *           Task Runner retry configuration
+     *           {@see \Google\Task\Runner}
+     *     @type array $retry_map
+     *     @type CacheItemPoolInterface $cache
+     *           Cache class implementing {@see CacheItemPoolInterface}. Defaults
+     *           to {@see MemoryCacheItemPool}.
+     *     @type array $cache_config
+     *           Cache config for downstream auth caching.
+     *     @type callable $token_callback
+     *           Function to be called when an access token is fetched. Follows
+     *           the signature `function (string $cacheKey, string $accessToken)`.
+     *     @type \Firebase\JWT $jwt
+     *           Service class used in {@see Client::verifyIdToken()}. Explicitly
+     *           pass this in to avoid setting {@see \Firebase\JWT::$leeway}
+     *     @type bool $api_format_v2
+     *           Setting api_format_v2 will return more detailed error messages
+     *           from certain APIs.
+     *     @type string $universe_domain
+     *           Setting the universe domain will change the default rootUrl of the service.
+     *           If not set explicitly, the universe domain will be the value provided in the
+     *.          "GOOGLE_CLOUD_UNIVERSE_DOMAIN" environment variable, or "googleapis.com".
+     *  }
      */
     public function __construct(array $config = [])
     {
         $this->config = array_merge([
             'application_name' => '',
-
-            // Don't change these unless you're working against a special development
-            // or testing environment.
             'base_path' => self::API_BASE_PATH,
-
-            // https://developers.google.com/console
             'client_id' => '',
             'client_secret' => '',
-
-            // Can be a path to JSON credentials or an array representing those
-            // credentials (@see Google\Client::setAuthConfig), or an instance of
-            // Google\Auth\CredentialsLoader.
             'credentials' => null,
-            // @see Google\Client::setScopes
             'scopes' => null,
-            // Sets X-Goog-User-Project, which specifies a user project to bill
-            // for access charges associated with the request
             'quota_project' => null,
-
             'redirect_uri' => null,
             'state' => null,
-
-            // Simple API access key, also from the API console. Ensure you get
-            // a Server key, and not a Browser key.
             'developer_key' => '',
-
-            // For use with Google Cloud Platform
-            // fetch the ApplicationDefaultCredentials, if applicable
-            // @see https://developers.google.com/identity/protocols/application-default-credentials
             'use_application_default_credentials' => false,
             'signing_key' => null,
             'signing_algorithm' => null,
             'subject' => null,
-
-            // Other OAuth2 parameters.
             'hd' => '',
             'prompt' => '',
             'openid.realm' => '',
             'include_granted_scopes' => null,
+            'logger' => null,
             'login_hint' => '',
             'request_visible_actions' => '',
             'access_type' => 'online',
             'approval_prompt' => 'auto',
-
-            // Task Runner retry configuration
-            // @see Google\Task\Runner
             'retry' => [],
             'retry_map' => null,
-
-            // Cache class implementing Psr\Cache\CacheItemPoolInterface.
-            // Defaults to Google\Auth\Cache\MemoryCacheItemPool.
             'cache' => null,
-            // cache config for downstream auth caching
             'cache_config' => [],
-
-            // function to be called when an access token is fetched
-            // follows the signature function ($cacheKey, $accessToken)
             'token_callback' => null,
-
-            // Service class used in Google\Client::verifyIdToken.
-            // Explicitly pass this in to avoid setting JWT::$leeway
             'jwt' => null,
-
-            // Setting api_format_v2 will return more detailed error messages
-            // from certain APIs.
-            'api_format_v2' => false
+            'api_format_v2' => false,
+            'universe_domain' => getenv('GOOGLE_CLOUD_UNIVERSE_DOMAIN')
+                ?: GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN,
         ], $config);
 
         if (!is_null($this->config['credentials'])) {
@@ -210,6 +243,11 @@ class Client
             $this->setCache($this->config['cache']);
             unset($this->config['cache']);
         }
+
+        if (!is_null($this->config['logger'])) {
+            $this->setLogger($this->config['logger']);
+            unset($this->config['logger']);
+        }
     }
 
     /**
@@ -240,9 +278,10 @@ class Client
      * Helper wrapped around the OAuth 2.0 implementation.
      *
      * @param string $code code from accounts.google.com
+     * @param string $codeVerifier the code verifier used for PKCE (if applicable)
      * @return array access token
      */
-    public function fetchAccessTokenWithAuthCode($code)
+    public function fetchAccessTokenWithAuthCode($code, $codeVerifier = null)
     {
         if (strlen($code) == 0) {
             throw new InvalidArgumentException("Invalid code");
@@ -251,6 +290,9 @@ class Client
         $auth = $this->getOAuth2Service();
         $auth->setCode($code);
         $auth->setRedirectUri($this->getRedirectUri());
+        if ($codeVerifier) {
+            $auth->setCodeVerifier($codeVerifier);
+        }
 
         $httpHandler = HttpHandlerFactory::build($this->getHttpClient());
         $creds = $auth->fetchAuthToken($httpHandler);
@@ -279,7 +321,7 @@ class Client
      * @param ClientInterface $authHttp optional.
      * @return array access token
      */
-    public function fetchAccessTokenWithAssertion(ClientInterface $authHttp = null)
+    public function fetchAccessTokenWithAssertion(?ClientInterface $authHttp = null)
     {
         if (!$this->isUsingApplicationDefaultCredentials()) {
             throw new DomainException(
@@ -357,9 +399,10 @@ class Client
      * The authorization endpoint allows the user to first
      * authenticate, and then grant/deny the access request.
      * @param string|array $scope The scope is expressed as an array or list of space-delimited strings.
+     * @param array $queryParams Querystring params to add to the authorization URL.
      * @return string
      */
-    public function createAuthUrl($scope = null)
+    public function createAuthUrl($scope = null, array $queryParams = [])
     {
         if (empty($scope)) {
             $scope = $this->prepareScopes();
@@ -390,7 +433,7 @@ class Client
             'response_type' => 'code',
             'scope' => $scope,
             'state' => $this->config['state'],
-        ]);
+        ]) + $queryParams;
 
         // If the list of scopes contains plus.login, add request_visible_actions
         // to auth URL.
@@ -411,7 +454,7 @@ class Client
      * @param ClientInterface $http the http client object.
      * @return ClientInterface the http client object
      */
-    public function authorize(ClientInterface $http = null)
+    public function authorize(?ClientInterface $http = null)
     {
         $http = $http ?: $this->getHttpClient();
         $authHandler = $this->getAuthHandler();
@@ -423,6 +466,7 @@ class Client
         //   3b. If access token exists but is expired, try to refresh it
         //   4.  Check for API Key
         if ($this->credentials) {
+            $this->checkUniverseDomain($this->credentials);
             return $authHandler->attachCredentials(
                 $http,
                 $this->credentials,
@@ -432,6 +476,7 @@ class Client
 
         if ($this->isUsingApplicationDefaultCredentials()) {
             $credentials = $this->createApplicationDefaultCredentials();
+            $this->checkUniverseDomain($credentials);
             return $authHandler->attachCredentialsCache(
                 $http,
                 $credentials,
@@ -447,6 +492,7 @@ class Client
                     $scopes,
                     $token['refresh_token']
                 );
+                $this->checkUniverseDomain($credentials);
                 return $authHandler->attachCredentials(
                     $http,
                     $credentials,
@@ -498,6 +544,11 @@ class Client
      * token by calling `$client->getCache()->clear()`. (Use caution in this case,
      * as calling `clear()` will remove all cache items, including any items not
      * related to Google API PHP Client.)
+     *
+     * **NOTE:** The universe domain is assumed to be "googleapis.com" unless
+     * explicitly set. When setting an access token directly via this method, there
+     * is no way to verify the universe domain. Be sure to set the "universe_domain"
+     * option if "googleapis.com" is not intended.
      *
      * @param string|array $token
      * @throws InvalidArgumentException
@@ -992,7 +1043,8 @@ class Client
 
         $key = isset($config['installed']) ? 'installed' : 'web';
         if (isset($config['type']) && $config['type'] == 'service_account') {
-            // application default credentials
+            // @TODO(v3): Remove this, as it isn't accurate. ADC applies only to determining
+            // credentials based on the user's environment.
             $this->useApplicationDefaultCredentials();
 
             // set the information from the config
@@ -1291,5 +1343,24 @@ class Client
         ]);
 
         return new UserRefreshCredentials($scope, $creds);
+    }
+
+    private function checkUniverseDomain($credentials)
+    {
+        $credentialsUniverse = $credentials instanceof GetUniverseDomainInterface
+            ? $credentials->getUniverseDomain()
+            : GetUniverseDomainInterface::DEFAULT_UNIVERSE_DOMAIN;
+        if ($credentialsUniverse !== $this->getUniverseDomain()) {
+            throw new DomainException(sprintf(
+                'The configured universe domain (%s) does not match the credential universe domain (%s)',
+                $this->getUniverseDomain(),
+                $credentialsUniverse
+            ));
+        }
+    }
+
+    public function getUniverseDomain()
+    {
+        return $this->config['universe_domain'];
     }
 }

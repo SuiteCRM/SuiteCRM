@@ -47,6 +47,7 @@ require_once('modules/ModuleBuilder/parsers/ParserFactory.php') ;
 require_once('modules/ModuleBuilder/Module/StudioModuleFactory.php');
 require_once 'modules/ModuleBuilder/parsers/constants.php' ;
 
+#[\AllowDynamicProperties]
 class ModuleBuilderController extends SugarController
 {
     public $action_remap = array( ) ;
@@ -146,6 +147,7 @@ class ModuleBuilderController extends SugarController
 
     public function action_ViewTree()
     {
+        $mbt = null;
         require_once('modules/ModuleBuilder/MB/AjaxCompose.php') ;
         switch ($_REQUEST [ 'tree' ]) {
             case 'ModuleBuilder':
@@ -240,7 +242,7 @@ class ModuleBuilderController extends SugarController
             UnifiedSearchAdvanced::unlinkUnifiedSearchModulesFile();
 
             //bug 44269 - start
-            
+
             //clear workflow admin modules cache
             if (isset($_SESSION['get_workflow_admin_modules_for_user'])) {
                 unset($_SESSION['get_workflow_admin_modules_for_user']);
@@ -587,6 +589,7 @@ class ModuleBuilderController extends SugarController
 
     public function action_DeleteField()
     {
+        $module = null;
         require_once('modules/DynamicFields/FieldCases.php') ;
         $field = get_widget($_REQUEST [ 'type' ]) ;
         $field->name = $_REQUEST [ 'name' ] ;
@@ -607,7 +610,11 @@ class ModuleBuilderController extends SugarController
                 $df->setup($seed) ;
                 //Need to load the entire field_meta_data for some field types
                 $field = $df->getFieldWidget($moduleName, $field->name);
-                $field->delete($df) ;
+                // STIC Custom 20250506 JBL - Fix Uncaught Error: Call to a member function delete() on null
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $field->delete($df) ;
+                $field?->delete($df);
+                // END STIC Custom
 
                 $GLOBALS [ 'mod_strings' ]['LBL_ALL_MODULES'] = 'all_modules';
                 $_REQUEST['execute_sql'] = true;
@@ -621,7 +628,11 @@ class ModuleBuilderController extends SugarController
             $mb = new ModuleBuilder() ;
             $module = & $mb->getPackageModule($_REQUEST [ 'view_package' ], $_REQUEST [ 'view_module' ]) ;
             $field = $module->getField($field->name);
-            $field->delete($module) ;
+            // STIC Custom 20250506 JBL - Fix Uncaught Error: Call to a member function delete() on null
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $field->delete($module) ;
+            $field?->delete($module);
+            // END STIC Custom
             $mb->save() ;
         }
         $module->removeFieldFromLayouts($field->name);

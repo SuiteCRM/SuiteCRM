@@ -23,6 +23,7 @@
 require_once 'include/MVC/View/views/view.edit.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class stic_BookingsViewEdit extends ViewEdit
 {
 
@@ -38,7 +39,7 @@ class stic_BookingsViewEdit extends ViewEdit
         global $timedate, $current_user;
 
         // If the Bookings' EditView is launched from the Bookings' Calendar, retrieve start and end dates from there
-        if ($_REQUEST['return_module'] == 'stic_Bookings_Calendar' && $_REQUEST['start'] && $_REQUEST['end']) {
+        if (isset($_REQUEST['return_module'], $_REQUEST['start'], $_REQUEST['end']) && $_REQUEST['return_module'] == 'stic_Bookings_Calendar' && $_REQUEST['start'] && $_REQUEST['end']) {
             // Parse the dates received from the calendar
             $startDate = new DateTime($_REQUEST['start']);
             $this->bean->start_date = $timedate->to_display_date_time(date_format($startDate, 'Y-m-d H:i:s'), false, false, $current_user);
@@ -50,7 +51,7 @@ class stic_BookingsViewEdit extends ViewEdit
         } else {
             // If all_day is checked then remove the hours and minutes
             // and apply timezone to the dates
-            if ($this->bean->all_day == '1') {
+            if (isset($this->bean->all_day) && $this->bean->all_day == '1') {
                 $startDate = explode(' ', $this->bean->fetched_row['start_date']);
                 if ($startDate[1] > "12:00") {
                     $startDate = new DateTime($startDate[0]);
@@ -97,8 +98,7 @@ class stic_BookingsViewEdit extends ViewEdit
         // If the Bookings editview is launched from the "new" button in the Resources detailview Bookings subpanel, 
         // then add the resource into the new booking. Notice that stic_resources_id is only available in that case,
         // not when Bookings editview is launched from the "edit" button in an already existing booking in the subpanel.
-        if ($_REQUEST['return_module'] == 'stic_Resources' && $_REQUEST['stic_resources_id']) {
-
+        if (($_REQUEST['return_module'] ?? null) == 'stic_Resources' && !empty($_REQUEST['stic_resources_id'] ?? '')){
             // When creating a record from a subpanel, the record in the detailview will be set as the parent record of the new one, 
             // ie, it will be assigned to the flex related field if there is any. In this case, the new booking would have a resource
             // as a parent record, what is nonsense. So let's remove the assignment from the $_REQUEST array.
@@ -166,6 +166,10 @@ class stic_BookingsViewEdit extends ViewEdit
         $separator = get_number_separators();
         $thousandsSeparator = $separator[0];
         $decimalSeparator = $separator[1];
-        return number_format($str, 2, $decimalSeparator, $thousandsSeparator);
+        // STIC Custom 20250206 JBL - Avoid Uncaught TypeError in number_format
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // return number_format($str, 2, $decimalSeparator, $thousandsSeparator);
+        return number_format((float) $str, 2, $decimalSeparator, $thousandsSeparator);
+        // End STIC Custom
     }
 }

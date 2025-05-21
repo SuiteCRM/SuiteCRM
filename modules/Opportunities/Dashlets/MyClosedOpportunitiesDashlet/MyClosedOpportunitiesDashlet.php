@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once('include/Dashlets/Dashlet.php');
 
+#[\AllowDynamicProperties]
 class MyClosedOpportunitiesDashlet extends Dashlet
 {
     protected $total_opportunities;

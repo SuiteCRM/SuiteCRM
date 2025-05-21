@@ -64,7 +64,13 @@ $mod_strings = array(
     'LBL_MODULE_TITLE' => 'Cuentas de correo electrónico saliente',
     'LBL_HOMEPAGE_TITLE' => 'Mis cuentas de correo electrónico saliente',
     'LNK_NEW_RECORD' => 'Crear cuentas de correo electrónico saliente',
-    'LNK_LIST' => 'Ver cuentas de correo electrónico saliente',
+
+    'LNK_LIST_CREATE_NEW_PERSONAL' => 'Nueva Cuenta de Correo Electrónico Saliente Personal',
+    'LNK_LIST_CREATE_NEW_GROUP' => 'Nueva Cuenta de Correo Electrónico Saliente de Grupo',
+    'LNK_LIST_CREATE_SYSTEM_OVERRIDE_GROUP' => 'Nueva Cuenta de Correo Electrónico Saliente con Sobrecarga del Sistema',
+
+    'LNK_LIST' => 'Cuentas de Correo Electrónico Saliente',
+    'LNK_LIST_INBOUND_EMAIL_ACCOUNTS' => 'Cuentas de Correo Electrónico Entrante',
     'LBL_SEARCH_FORM_TITLE' => 'Buscar cuentas de correo electrónico saliente',
     'LBL_HISTORY_SUBPANEL_TITLE' => 'Ver Historial',
     'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Actividades',
@@ -76,16 +82,18 @@ $mod_strings = array(
     'LBL_SMTP_PORT' => 'Puerto SMTP',
     'LBL_SMTP_PROTOCOL' => 'Protocolo SMTP',
     'LBL_EDITVIEW_PANEL1' => 'Configuración de cuenta',
+    'LBL_OUTBOUND_CONFIGURATION' => 'Configuración de Salida',
+    'LBL_CONNECTION_CONFIGURATION' => 'Configuración del Servidor',
     'LBL_CHANGE_PASSWORD' => 'Cambiar contraseña',
     'LBL_SEND_TEST_EMAIL' => 'Enviar Correo de Prueba',
 
     // for outbound email dialog
     'LBL_MISSING_DEFAULT_OUTBOUND_SMTP_SETTINGS' => 'El administrador aún no ha configurado la cuenta saliente por defecto.  No es posible enviar un correo de prueba.',
     'LBL_MAIL_SMTPAUTH_REQ' => '¿Utilizar Autenticación SMTP?',
-    'LBL_MAIL_SMTPPASS' => 'Contraseña SMTP:',
-    'LBL_MAIL_SMTPPORT' => 'Puerto SMTP:',
-    'LBL_MAIL_SMTPSERVER' => 'Servidor SMTP:',
-    'LBL_MAIL_SMTPUSER' => 'Nombre de Usuario SMTP:',
+    'LBL_MAIL_SMTPPASS' => 'Contraseña',
+    'LBL_MAIL_SMTPPORT' => 'Puerto',
+    'LBL_MAIL_SMTPSERVER' => 'Servidor',
+    'LBL_MAIL_SMTPUSER' => 'Nombre de Usuario',
     'LBL_MAIL_SMTP_SETTINGS' => 'Especificación de Servidor SMTP',
     'LBL_CHOOSE_EMAIL_PROVIDER' => 'Elija su proveedor de Email:',
     'LBL_YAHOOMAIL_SMTPPASS' => 'Contraseña de Yahoo! Mail:',
@@ -102,4 +110,13 @@ $mod_strings = array(
     'LBL_MAIL_SMTPSSL' => 'Mail SMTP/SSL',
     'LBL_SMTP_FROM_NAME' => 'Nombre del remitente',
     'LBL_SMTP_FROM_ADDR' => 'Dirección del Remitente',
+    'LBL_REPLY_TO_NAME' => 'Nombre de "Responder a"',
+    'LBL_REPLY_TO_ADDR' => 'Dirección de "Responder a"',
+
+    'LBL_SECURITYGROUPS_SUBPANEL_TITLE' => 'Grupos de Seguridad',
+
+    'LBL_OWNER' => 'Propietario',
+    'LBL_OWNER_NAME' => 'Propietario',
+
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'Conexiones OAuth Externas',
 );

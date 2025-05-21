@@ -50,6 +50,7 @@ use SuiteCRM\Search\UI\SearchResultsController;
 /**
  * This abstract class offers the interface and utilities for other classes to be used as search engines.
  */
+#[\AllowDynamicProperties]
 abstract class SearchEngine
 {
     /**

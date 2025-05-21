@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/MVC/View/SugarView.php');
 require_once('modules/EmailMan/Forms.php');
 
+#[\AllowDynamicProperties]
 class ViewConfig extends SugarView
 {
     /**
@@ -93,6 +94,11 @@ class ViewConfig extends SugarView
         $focus->retrieveSettings(); //retrieve all admin settings.
         $GLOBALS['log']->info("Mass Emailer(EmailMan) ConfigureSettings view");
 
+
+        $useLegacyEmailConfig = $sugar_config['legacy_email_behaviour'] ?? false;
+
+        $this->ss->assign("legacyEmailConfigEnabled", $useLegacyEmailConfig);
+
         $this->ss->assign("MOD", $mod_strings);
         $this->ss->assign("APP", $app_strings);
 
@@ -119,64 +125,64 @@ class ViewConfig extends SugarView
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp type is not set for focus');
         }
-        
+
         $mailSmtpServer = null;
         if (isset($focus->settings['mail_smtpserver'])) {
             $mailSmtpServer = $focus->settings['mail_smtpserver'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp type is not set for focus');
         }
-        
+
         $mailSmtpPort = null;
         if (isset($focus->settings['mail_smtpport'])) {
             $mailSmtpPort = $focus->settings['mail_smtpport'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp port is not set for focus');
         }
-        
+
         $mailSmtpUser = null;
         if (isset($focus->settings['mail_smtpuser'])) {
             $mailSmtpUser = $focus->settings['mail_smtpuser'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp user is not set for focus');
         }
-        
+
         $mailSmtpAuthReq = null;
         if (isset($focus->settings['mail_smtpauth_req'])) {
             $mailSmtpAuthReq = $focus->settings['mail_smtpauth_req'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp auth req is not set for focus');
         }
-        
+
         $mailSmtpSsl = null;
         if (isset($focus->settings['mail_smtpssl'])) {
             $mailSmtpSsl = $focus->settings['mail_smtpssl'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp pass is not set for focus');
         }
-        
+
         $mailSmtpPass = null;
         if (isset($focus->settings['mail_smtppass'])) {
             $mailSmtpPass = $focus->settings['mail_smtppass'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail smtp pass is not set for focus');
         }
-        
+
         $mailSendType = null;
         if (isset($focus->settings['mail_sendtype'])) {
             $mailSendType = $focus->settings['mail_sendtype'];
         } else {
             LoggerManager::getLogger()->error('EmailMan view display error: mail send type is not set for focus');
         }
-        
+
         $mailAllowUserSend = null;
         if (isset($sugar_config['email_allow_send_as_user'])) {
             $mailAllowUserSend = $sugar_config['email_allow_send_as_user'];
         } else {
             LoggerManager::getLogger()->warn('EmailMan view display error: mail allow user send is not set for focus');
         }
-        
-        
+
+
         $this->ss->assign("mail_smtptype", $mailSmtpType);
         $this->ss->assign("mail_smtpserver", $mailSmtpServer);
         $this->ss->assign("mail_smtpport", $mailSmtpPort);
@@ -255,7 +261,7 @@ class ViewConfig extends SugarView
                 $emailEnableConfirmOptIn
             )
         );
-        
+
         ////	END USER EMAIL DEFAULTS
         ///////////////////////////////////////////////////////////////////////////////
 

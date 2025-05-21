@@ -147,11 +147,11 @@ class SepaReturns {
         // Recover the data of the returned receipt
         $receiptId = $receipt['OrgnlEndToEndId'];
         $GLOBALS['log']->debug('OrgnlEndToEndId: ' . $receiptId);
-        $returnCode = $receipt['StsRsnInf']['Rsn']['Cd'];
+        $returnCode = $receipt['StsRsnInf']['Rsn']['Cd'] ?? null;
         $GLOBALS['log']->debug('Cd: ' . $returnCode);
-        $amount = $receipt['OrgnlTxRef']['Amt']['InstdAmt'];
+        $amount = $receipt['OrgnlTxRef']['Amt']['InstdAmt'] ?? null;
         $GLOBALS['log']->debug('Amount: ' . $amount);
-        $debtor = $receipt['OrgnlTxRef']['Dbtr']['Nm'];
+        $debtor = $receipt['OrgnlTxRef']['Dbtr']['Nm'] ?? null;
         $GLOBALS['log']->debug('Debtor: ' . $debtor);
 
         // Set receiptId not case-sensitive

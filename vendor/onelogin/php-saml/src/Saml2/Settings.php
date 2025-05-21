@@ -122,7 +122,11 @@ class Settings
      * @throws Error If any settings parameter is invalid
      * @throws Exception If Settings is incorrectly supplied
      */
-    public function __construct(array $settings = null, $spValidationOnly = false)
+    // STIC Custom 20250304 JBL - Implicit nullable parameters are deprecated
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/315
+    // public function __construct(array $settings = null, $spValidationOnly = false)
+    public function __construct(?array $settings = null, $spValidationOnly = false)
+    // END STIC Custom    
     {
         $this->_spValidationOnly = $spValidationOnly;
         $this->_loadPaths();

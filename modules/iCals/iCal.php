@@ -58,9 +58,10 @@ require_once('modules/vCals/vCal.php');
 *
 * @see vCal
 */
+#[\AllowDynamicProperties]
 class iCal extends vCal
 {
-    const UTC_FORMAT = 'Ymd\THi00\Z';
+    public const UTC_FORMAT = 'Ymd\THi00\Z';
 
     /**
     * Constructor for the iCal class.
@@ -159,11 +160,15 @@ class iCal extends vCal
         $ical_array[] = array("DTSTAMP", $dtstamp);
         // STIC-Custom 20220315 AAM - Encoding the activity name to UTF8 in order to display special characters
         // $ical_array[] = array("SUMMARY", $task->name);
-        $ical_array[] = array("SUMMARY", utf8_encode($task->name));
+        // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+        // $ical_array[] = array("SUMMARY", utf8_encode($task->name));
+        $ical_array[] = array("SUMMARY", mb_convert_encoding($task->name, 'UTF-8', 'ISO-8859-1'));
+        // END STIC Custom JBL
         // END STIC
         $ical_array[] = array("UID", $task->id);
         if ($validDueDate) {
-            $iCalDueDate = str_replace("-", "", $task->date_due);
+            $iCalDueDate = str_replace("-", "", (string) $task->date_due);
             if (strlen($iCalDueDate) > 8) {
                 $iCalDueDate = substr($iCalDueDate, 0, 8);
             }
@@ -174,12 +179,20 @@ class iCal extends vCal
                 "DESCRIPTION:Project",
                 // STIC-Custom 20220315 AAM - Encoding the activity description to UTF8 in order to display special characters
                 // $task->project_name . vCal::EOL . vCal::EOL . $task->description
-                utf8_encode($task->project_name) . vCal::EOL . vCal::EOL . utf8_encode($task->description)
+                // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // utf8_encode($task->project_name) . vCal::EOL . vCal::EOL . utf8_encode($task->description)
+                mb_convert_encoding($task->project_name, 'UTF-8', 'ISO-8859-1') . vCal::EOL . vCal::EOL . mb_convert_encoding($task->description ?? '', 'UTF-8', 'ISO-8859-1')
+                // END STIC Custom JBL
             );
         } else {
             // STIC-Custom 20220315 AAM - Encoding the activity description to UTF8 in order to display special characters
             // $ical_array[] = array("DESCRIPTION", $task->description);
-            $ical_array[] = array("DESCRIPTION", utf8_encode($task->description));
+            // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+            // $ical_array[] = array("DESCRIPTION", utf8_encode($task->description));
+            $ical_array[] = array("DESCRIPTION", mb_convert_encoding($task->description ?? '', 'UTF-8', 'ISO-8859-1'));
+            // END STIC Custom JBL
             // END STIC
         }
         $ical_array[] = array(
@@ -306,14 +319,18 @@ class iCal extends vCal
                 $ical_array[] = array("BEGIN", "VEVENT");
                 // STIC-Custom 20220315 AAM - Encoding the activity name to UTF8 in order to display special characters
                 // $ical_array[] = array("SUMMARY", $event->name);
-                $ical_array[] = array("SUMMARY", utf8_encode($event->name));
+                // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $ical_array[] = array("SUMMARY", utf8_encode($event->name));
+                $ical_array[] = array("SUMMARY", mb_convert_encoding($event->name, 'UTF-8', 'ISO-8859-1'));
+                // END STIC Custom JBL
                 // END STIC
                 $ical_array[] = array(
                     "DTSTART;TZID=" . $user_bean->getPreference('timezone'),
                     str_replace(
                         "Z",
                         "",
-                        $timedate->tzUser($act->start_time, $current_user)->format(self::UTC_FORMAT)
+                        (string) $timedate->tzUser($act->start_time, $current_user)->format(self::UTC_FORMAT)
                     )
                 );
                 $ical_array[] = array(
@@ -321,13 +338,17 @@ class iCal extends vCal
                     str_replace(
                         "Z",
                         "",
-                        $timedate->tzUser($act->end_time, $current_user)->format(self::UTC_FORMAT)
+                        (string) $timedate->tzUser($act->end_time, $current_user)->format(self::UTC_FORMAT)
                     )
                 );
                 $ical_array[] = array("DTSTAMP", $dtstamp);
                 // STIC-Custom 20220315 AAM - Encoding the activity description to UTF8 in order to display special characters
                 // $ical_array[] = array("DESCRIPTION", $event->description);
-                $ical_array[] = array("DESCRIPTION", utf8_encode($event->description));
+                // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $ical_array[] = array("DESCRIPTION", utf8_encode($event->description ?? ''));
+                $ical_array[] = array("DESCRIPTION", mb_convert_encoding($event->description ?? '', 'UTF-8', 'ISO-8859-1'));
+                // END STIC Custom
                 // END STIC
                 $ical_array[] = array(
                     "URL;VALUE=URI",
@@ -403,7 +424,10 @@ class iCal extends vCal
                     $ical_array[] = array("ACTION", "DISPLAY");
                     // STIC-Custom 20220315 AAM - Encoding the activity description to UTF8 in order to display special characters
                     // $ical_array[] = array("DESCRIPTION", $event->name);
-                    $ical_array[] = array("DESCRIPTION", utf8_encode($event->name));
+                    // STIC Custom 20250304 JBL - Avoid Deprecated warning: Function utf8_encode() is deprecated since 8.2
+                    // $ical_array[] = array("DESCRIPTION", utf8_encode($event->name));
+                    $ical_array[] = array("DESCRIPTION", mb_convert_encoding($event->name, 'UTF-8', 'ISO-8859-1'));
+                    // END STIC Custom JBL
                     // END STIC
                     $ical_array[] = array("END", "VALARM");
                 }
@@ -608,6 +632,6 @@ class iCal extends vCal
 
         $str .= vCal::create_ical_string_from_array($ical_array, true);
 
-        return htmlspecialchars_decode(preg_replace("/&#([0-9]+)\\\\;/", '&#$1;', utf8_decode($str)));
+        return htmlspecialchars_decode(preg_replace("/&#([0-9]+)\\\\;/", '&#$1;', mb_convert_encoding($str, 'ISO-8859-1')));
     }
 }

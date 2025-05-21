@@ -40,9 +40,9 @@ class Container implements DefinitionContainerInterface
     protected $delegates = [];
 
     public function __construct(
-        DefinitionAggregateInterface $definitions = null,
-        ServiceProviderAggregateInterface $providers = null,
-        InflectorAggregateInterface $inflectors = null
+        ?DefinitionAggregateInterface $definitions = null,
+        ?ServiceProviderAggregateInterface $providers = null,
+        ?InflectorAggregateInterface $inflectors = null
     ) {
         $this->definitions = $definitions ?? new DefinitionAggregate();
         $this->providers   = $providers   ?? new ServiceProviderAggregate();
@@ -106,11 +106,25 @@ class Container implements DefinitionContainerInterface
         return $this;
     }
 
+    /**
+     * @template RequestedType
+     *
+     * @param class-string<RequestedType>|string $id
+     *
+     * @return RequestedType|mixed
+     */
     public function get($id)
     {
         return $this->resolve($id);
     }
 
+    /**
+     * @template RequestedType
+     *
+     * @param class-string<RequestedType>|string $id
+     *
+     * @return RequestedType|mixed
+     */
     public function getNew($id)
     {
         return $this->resolve($id, true);
@@ -139,7 +153,7 @@ class Container implements DefinitionContainerInterface
         return false;
     }
 
-    public function inflector(string $type, callable $callback = null): InflectorInterface
+    public function inflector(string $type, ?callable $callback = null): InflectorInterface
     {
         return $this->inflectors->add($type, $callback);
     }

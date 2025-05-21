@@ -9,7 +9,7 @@
             <h3><span>{$form_title}</span></h3>
         </td>
 
-        {assign var=keywords expr="array('class=\"button\"', 'class=\"button\"', 'class=button', '</form>')" value="array('class=\"button\"', 'class=\"button\"', 'class=button', '</form>')"}
+        {assign var=keywords value="array('class=\"button\"', 'class=\"button\"', 'class=button', '</form>')"}
         {assign var=match value=false}
 
         {foreach from=$keywords  item=left}

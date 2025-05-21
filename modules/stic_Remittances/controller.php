@@ -39,7 +39,7 @@ class stic_RemittancesController extends SugarController {
 
     public function action_loadSEPAReturns() {
         require_once 'modules/stic_Remittances/LoadSEPAReturns.php';
-        SepaReturns::loadSEPAReturns($this);
+        SepaReturns::loadSEPAReturns();
     }
 
     public function action_loadFile() {

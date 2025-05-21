@@ -52,12 +52,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Class ApiException
  * @package SuiteCRM\API\v8\Exception
  */
+#[\AllowDynamicProperties]
 class ApiException extends LangException
 {
-    const MSG_PREFIX = '[SuiteCRM] [API]';
-    const DEFAULT_CODE = 8000;
-    const HTTP_STATUS = 500;
-    const DETAIL_TEXT_LABEL = 'LBL_API_EXCEPTION_DETAIL';
+    public const MSG_PREFIX = '[SuiteCRM] [API]';
+    public const DEFAULT_CODE = 8000;
+    public const HTTP_STATUS = 500;
+    public const DETAIL_TEXT_LABEL = 'LBL_API_EXCEPTION_DETAIL';
     
     /**
      *
@@ -75,10 +76,14 @@ class ApiException extends LangException
      *
      * @param string $message
      * @param integer $code
-     * @param \Exception $previous
-     * @param LangText $langMessage
+     * @param \Exception|null $previous
+     * @param LangText|null $langMessage
      */
-    public function __construct($message = "", $code = 0, \Exception $previous = null, LangText $langMessage = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function __construct($message = "", $code = 0, \Exception $previous = null, LangText $langMessage = null)
+    public function __construct($message = "", $code = 0, ?\Exception $previous = null, ?LangText $langMessage = null)
+    // END STIC Custom
     {
         parent::__construct((self::MSG_PREFIX === $this::MSG_PREFIX ? $this::MSG_PREFIX : self::MSG_PREFIX . ' ' . $this::MSG_PREFIX) . ' ' . $message, $code ? $code : self::DEFAULT_CODE, $previous, $langMessage);
     }

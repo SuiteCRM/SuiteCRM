@@ -24,7 +24,7 @@ class LiteralArgument implements LiteralArgumentInterface
      */
     protected $value;
 
-    public function __construct($value, string $type = null)
+    public function __construct($value, ?string $type = null)
     {
         if (
             null === $type

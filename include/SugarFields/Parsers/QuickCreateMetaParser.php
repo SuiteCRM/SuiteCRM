@@ -98,8 +98,13 @@ class QuickCreateMetaParser extends MetaParser
                 $sugarAttrValue = $this->getTagAttribute("sugar", $tcols, "'slot[0-9]+b$'");
 
                 // If there wasn't any slot numbering/lettering then just default to expect label->vallue pairs
-                $sugarAttrLabel = count($sugarAttrLabel) != 0 ? $sugarAttrLabel : ($slot % 2 == 0) ? true : false;
-                $sugarAttrValue = count($sugarAttrValue) != 0 ? $sugarAttrValue : ($slot % 2 == 1) ? true : false;
+                // STIC Custom 20241113 JBL - Fix nested ternary operators without explicit parentheses
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+                // $sugarAttrLabel = count($sugarAttrLabel) != 0 ? $sugarAttrLabel : ($slot % 2 == 0) ? true : false;
+                // $sugarAttrValue = count($sugarAttrValue) != 0 ? $sugarAttrValue : ($slot % 2 == 1) ? true : false;
+                $sugarAttrLabel = (count($sugarAttrLabel) != 0 ? $sugarAttrLabel : ($slot % 2 == 0)) ? true : false;
+                $sugarAttrValue = (count($sugarAttrValue) != 0 ? $sugarAttrValue : ($slot % 2 == 1)) ? true : false;
+                // End Stic Custom
 
                 $slot++;
 

@@ -4,6 +4,7 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\MbWrapper;
 
 /**
@@ -24,7 +25,7 @@ namespace ZBateson\MbWrapper;
 class MbWrapper
 {
     /**
-     * @var array aliased charsets supported by mb_convert_encoding.
+     * @var array<string, string> aliased charsets supported by mb_convert_encoding.
      *      The alias is stripped of any non-alphanumeric characters (so CP367
      *      is equal to CP-367) when comparing.
      *      Some of these translations are already supported by
@@ -186,7 +187,7 @@ class MbWrapper
     ];
 
     /**
-     * @var array aliased charsets supported by iconv.
+     * @var array<string, string> aliased charsets supported by iconv.
      */
     public static $iconvAliases = [
         // iconv aliases -- a lot of these may already be supported
@@ -279,13 +280,6 @@ class MbWrapper
     ];
 
     /**
-     * @var string[] An array of encodings supported by the mb_* extension, as
-     *      returned by mb_list_encodings(), with the key set to the charset's
-     *      name afte
-     */
-    private static $mbListedEncodings;
-
-    /**
      * @var string[] cached lookups for quicker retrieval
      */
     protected $mappedMbCharsets = [
@@ -295,14 +289,21 @@ class MbWrapper
     ];
 
     /**
+     * @var string[] An array of encodings supported by the mb_* extension, as
+     *      returned by mb_list_encodings(), with the key set to the charset's
+     *      name afte
+     */
+    private static $mbListedEncodings;
+
+    /**
      * Initializes the static mb_* encoding array.
      */
     public function __construct()
     {
         if (self::$mbListedEncodings === null) {
-            $cs = mb_list_encodings();
+            $cs = \mb_list_encodings();
             $keys = $this->getNormalizedCharset($cs);
-            self::$mbListedEncodings = array_combine($keys, $cs);
+            self::$mbListedEncodings = \array_combine($keys, $cs);
         }
     }
 
@@ -316,12 +317,12 @@ class MbWrapper
     private function getNormalizedCharset($charset)
     {
         $upper = null;
-        if (is_array($charset)) {
-            $upper = array_map('strtoupper', $charset);
+        if (\is_array($charset)) {
+            $upper = \array_map('strtoupper', $charset);
         } else {
-            $upper = strtoupper($charset);
+            $upper = \strtoupper($charset);
         }
-        return preg_replace('/[^A-Z0-9]+/', '', $upper);
+        return \preg_replace('/[^A-Z0-9]+/', '', $upper);
     }
 
     /**
@@ -332,10 +333,8 @@ class MbWrapper
      * back to iconv if not.  If the source or destination character sets aren't
      * supported, a blank string is returned.
      *
-     * @param string $str
-     * @return string
      */
-    public function convert($str, $fromCharset, $toCharset)
+    public function convert(string $str, string $fromCharset, string $toCharset) : string
     {
         // there may be some mb-supported encodings not supported by iconv (on my libiconv for instance
         // HZ isn't supported), and so it may happen that failing an mb_convert_encoding, an iconv
@@ -347,15 +346,15 @@ class MbWrapper
 
         if ($str !== '') {
             if ($from !== false && $to === false) {
-                $str = mb_convert_encoding($str, 'UTF-8', $from);
-                return iconv('UTF-8', $this->getIconvAlias($toCharset) . '//TRANSLIT//IGNORE', $str);
+                $str = \mb_convert_encoding($str, 'UTF-8', $from);
+                return \iconv('UTF-8', $this->getIconvAlias($toCharset) . '//TRANSLIT//IGNORE', $str);
             } elseif ($from === false && $to !== false) {
-                $str = iconv($this->getIconvAlias($fromCharset), 'UTF-8//TRANSLIT//IGNORE', $str);
-                return mb_convert_encoding($str, $to, 'UTF-8');
+                $str = \iconv($this->getIconvAlias($fromCharset), 'UTF-8//TRANSLIT//IGNORE', $str);
+                return \mb_convert_encoding($str, $to, 'UTF-8');
             } elseif ($from !== false && $to !== false) {
-                return mb_convert_encoding($str, $to, $from);
+                return \mb_convert_encoding($str, $to, $from);
             }
-            return iconv(
+            return \iconv(
                 $this->getIconvAlias($fromCharset),
                 $this->getIconvAlias($toCharset) . '//TRANSLIT//IGNORE',
                 $str
@@ -369,52 +368,39 @@ class MbWrapper
      *
      * Either uses mb_check_encoding, or iconv if it's not a supported mb
      * encoding.
-     *
-     * @param type $str
-     * @param type $charset
      */
-    public function checkEncoding($str, $charset)
+    public function checkEncoding(string $str, string $charset) : bool
     {
         $mb = $this->getMbCharset($charset);
         if ($mb !== false) {
-            return mb_check_encoding($str, $mb);
+            return \mb_check_encoding($str, $mb);
         }
         $ic = $this->getIconvAlias($charset);
-        return (@iconv($ic, $ic, $str) !== false);
+        return (@\iconv($ic, $ic, $str) !== false);
     }
 
     /**
      * Uses either mb_strlen or iconv_strlen to return the number of characters
      * in the passed $str for the given $charset
-     *
-     * @param string $str
-     * @param string $charset
-     * @return int
      */
-    public function getLength($str, $charset)
+    public function getLength(string $str, string $charset) : int
     {
         $mb = $this->getMbCharset($charset);
         if ($mb !== false) {
-            return mb_strlen($str, $mb);
+            return \mb_strlen($str, $mb);
         }
-        return iconv_strlen($str, $this->getIconvAlias($charset));
+        return \iconv_strlen($str, $this->getIconvAlias($charset) . '//TRANSLIT//IGNORE');
     }
 
     /**
      * Uses either mb_substr or iconv_substr to create and return a substring of
      * the passed $str.
-     *
-     * @param string $str
-     * @param string $charset
-     * @param int $start
-     * @param int $length
-     * @return string
      */
-    public function getSubstr($str, $charset, $start, $length = null)
+    public function getSubstr(string $str, string $charset, int $start, ?int $length = null) : string
     {
         $mb = $this->getMbCharset($charset);
         if ($mb !== false) {
-            return mb_substr($str, $start, $length, $mb);
+            return \mb_substr($str, $start, $length, $mb);
         }
         $ic = $this->getIconvAlias($charset);
         if ($ic === 'CP1258') {
@@ -424,12 +410,10 @@ class MbWrapper
             return $this->convert($this->getSubstr($str, 'UTF-8', $start, $length), 'UTF-8', $ic);
         }
         if ($length === null) {
-            $length = iconv_strlen($str, $ic);
+            $length = \iconv_strlen($str, $ic . '//TRANSLIT//IGNORE');
         }
-        return iconv_substr($str, $start, $length, $ic);
+        return \iconv_substr($str, $start, $length, $ic . '//TRANSLIT//IGNORE');
     }
-
-
 
     /**
      * Looks up a charset from mb_list_encodings and identified aliases,
@@ -439,16 +423,14 @@ class MbWrapper
      *
      * On success, the method will return the charset name as accepted by mb_*.
      *
-     * @param string $cs
-     * @param bool $mbSupported
      * @return string|bool
      */
-    private function getMbCharset($cs)
+    private function getMbCharset(string $cs)
     {
         $normalized = $this->getNormalizedCharset($cs);
-        if (array_key_exists($normalized, self::$mbListedEncodings)) {
+        if (\array_key_exists($normalized, self::$mbListedEncodings)) {
             return self::$mbListedEncodings[$normalized];
-        } elseif (array_key_exists($normalized, self::$mbAliases)) {
+        } elseif (\array_key_exists($normalized, self::$mbAliases)) {
             return self::$mbAliases[$normalized];
         }
         return false;
@@ -458,13 +440,12 @@ class MbWrapper
      * Looks up the passed charset in self::$iconvAliases, returning the mapped
      * charset if applicable.  Otherwise returns charset.
      *
-     * @param string $cs
      * @return string the mapped charset (if mapped) or $cs otherwise
      */
-    private function getIconvAlias($cs)
+    private function getIconvAlias(string $cs) : string
     {
         $normalized = $this->getNormalizedCharset($cs);
-        if (array_key_exists($normalized, self::$iconvAliases)) {
+        if (\array_key_exists($normalized, self::$iconvAliases)) {
             return static::$iconvAliases[$normalized];
         }
         return $cs;

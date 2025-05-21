@@ -8,6 +8,7 @@ require_once('modules/jjwg_Markers/jjwg_Markers_sugar.php');
 require_once('modules/jjwg_Maps/jjwg_Maps.php');
 
 
+#[\AllowDynamicProperties]
 class jjwg_Markers extends jjwg_Markers_sugar
 {
 

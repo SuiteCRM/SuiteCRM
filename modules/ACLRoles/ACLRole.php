@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
+#[\AllowDynamicProperties]
 class ACLRole extends SugarBean
 {
     public $module_dir = 'ACLRoles';
@@ -122,7 +123,7 @@ class ACLRole extends SugarBean
      * @param GUID $user_id
      * @return array a list of ACLRole Names
      */
-    public function getUserRoleNames($user_id)
+    public static function getUserRoleNames($user_id)
     {
         $user_roles = sugar_cache_retrieve("RoleMembershipNames_".$user_id);
 

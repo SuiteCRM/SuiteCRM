@@ -282,7 +282,8 @@ $dictionary['Note'] = array(
                 'name' => 'show_preview',
                 'type' => 'bool',
                 'source' => 'non-db',
-                'reportable' => false
+                'reportable' => false,
+                'mass_update' => false
             ],
 
          'contact_name'=>

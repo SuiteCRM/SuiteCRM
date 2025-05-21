@@ -46,6 +46,7 @@ namespace SuiteCRM\Utility;
  *
  * Keeps the standard location in one place
  */
+#[\AllowDynamicProperties]
 class Paths
 {
     /**

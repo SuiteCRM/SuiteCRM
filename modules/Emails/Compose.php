@@ -111,7 +111,7 @@ function generateComposeDataPackage($data, $forFullCompose = true)
         $namePlusEmail = '';
         if (isset($data['to_email_addrs'])) {
             $namePlusEmail = $data['to_email_addrs'];
-            $namePlusEmail = from_html(str_replace("&nbsp;", " ", $namePlusEmail));
+            $namePlusEmail = from_html(str_replace("&nbsp;", " ", (string) $namePlusEmail));
         } else {
             if (isset($bean->full_name)) {
                 $namePlusEmail = from_html($bean->full_name) . " <" . from_html($bean->emailAddress->getPrimaryAddress($bean)) . ">";
@@ -138,7 +138,7 @@ function generateComposeDataPackage($data, $forFullCompose = true)
         if ($bean->module_dir == 'KBDocuments') {
             require_once("modules/Emails/EmailUI.php");
             $subject = $bean->kbdocument_name;
-            $article_body = str_replace('/' . $GLOBALS['sugar_config']['cache_dir'] . 'images/', $GLOBALS['sugar_config']['site_url'] . '/' . $GLOBALS['sugar_config']['cache_dir'] . 'images/', KBDocument::get_kbdoc_body_without_incrementing_count($bean->id));
+            $article_body = str_replace('/' . $GLOBALS['sugar_config']['cache_dir'] . 'images/', $GLOBALS['sugar_config']['site_url'] . '/' . $GLOBALS['sugar_config']['cache_dir'] . 'images/', (string) KBDocument::get_kbdoc_body_without_incrementing_count($bean->id));
             $body = from_html($article_body);
             $attachments = KBDocument::get_kbdoc_attachments_for_newemail($bean->id);
             $attachments = $attachments['attachments'];
@@ -306,7 +306,7 @@ function getQuotesRelatedData($data)
     $return['toAddress'] = $email->to_addrs;
     $ret = array();
     $ret['uid'] = $emailId;
-    $ret = EmailUI::getDraftAttachments($ret);
+    $ret = (new EmailUI())->getDraftAttachments($ret);
     $return['attachments'] = $ret['attachments'];
     $return['email_id'] = $emailId;
     $return['parent_type'] = $email->parent_type;

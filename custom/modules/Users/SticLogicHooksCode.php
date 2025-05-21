@@ -46,7 +46,7 @@ class UsersLogicHooks
             global $sugar_config;
 
             $_COOKIE['SticVersion'] = $sugar_config['sinergiacrm_version'];
-            setcookie('SticVersion', $_COOKIE['SticVersion'], time() + 999999999, '/');
+            setcookie('SticVersion', $_COOKIE['SticVersion'], ['expires' => time() + 999999999, 'path' => '/']);
         }
     }
 }

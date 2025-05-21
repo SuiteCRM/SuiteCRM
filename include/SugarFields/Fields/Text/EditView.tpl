@@ -52,11 +52,23 @@
 {{/if}}
 
 
-<textarea  id='{{$idname}}' name='{{$idname}}'
-rows="{{if !empty($displayParams.rows)}}{{$displayParams.rows}}{{elseif !empty($vardef.rows)}}{{$vardef.rows}}{{else}}{{4}}{{/if}}"
-cols="{{if !empty($displayParams.cols)}}{{$displayParams.cols}}{{elseif !empty($vardef.cols)}}{{$vardef.cols}}{{else}}{{60}}{{/if}}"
-title='{{$vardef.help}}' tabindex="{{$tabindex}}" {{$displayParams.field}}
-{{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}} >{$value}</textarea>
+{{if isset($vardef.display) && $vardef.display == 'writeonly'}}
 
+    <textarea  id='{{$idname}}' name='{{$idname}}'
+    rows="{{if !empty($displayParams.rows)}}{{$displayParams.rows}}{{elseif !empty($vardef.rows)}}{{$vardef.rows}}{{else}}{{4}}{{/if}}"
+    cols="{{if !empty($displayParams.cols)}}{{$displayParams.cols}}{{elseif !empty($vardef.cols)}}{{$vardef.cols}}{{else}}{{60}}{{/if}}"
+    title='{{$vardef.help}}' tabindex="{{$tabindex}}" {{$displayParams.field}}
+    placeholder="{if !empty({{sugarvar key='value' string=true}})}{sugar_translate label='LBL_VALUE_SET_PLACEHOLDER'}{/if}"
+    {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}} ></textarea>
+
+{{else}}
+
+    <textarea  id='{{$idname}}' name='{{$idname}}'
+    rows="{{if !empty($displayParams.rows)}}{{$displayParams.rows}}{{elseif !empty($vardef.rows)}}{{$vardef.rows}}{{else}}{{4}}{{/if}}"
+    cols="{{if !empty($displayParams.cols)}}{{$displayParams.cols}}{{elseif !empty($vardef.cols)}}{{$vardef.cols}}{{else}}{{60}}{{/if}}"
+    title='{{$vardef.help}}' tabindex="{{$tabindex}}" {{$displayParams.field}}
+    {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}} >{$value}</textarea>
+
+{{/if}}
 
 {literal}{{$tinymce}}{/literal}

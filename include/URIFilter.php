@@ -10,6 +10,7 @@ namespace SuiteCRM;
  * Until we have comprehensive CSRF protection, we need to sanitize URLs in emails, etc.
  * to avoid CSRF attacks.
  */
+#[\AllowDynamicProperties]
 class URIFilter extends \HTMLPurifier_URIFilter
 {
     /** @var string $name */
@@ -66,7 +67,7 @@ class URIFilter extends \HTMLPurifier_URIFilter
         foreach ($this->allowed as $allow) {
             // must be equal to our domain or subdomain of our domain
             if ($uri->host == $allow
-                || substr($uri->host, -(strlen($allow) + 1)) == ".$allow"
+                || substr((string) $uri->host, -(strlen((string) $allow) + 1)) == ".$allow"
             ) {
                 return true;
             }

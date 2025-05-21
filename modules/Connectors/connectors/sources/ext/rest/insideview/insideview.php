@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 require_once('include/connectors/sources/ext/rest/rest.php');
+#[\AllowDynamicProperties]
 class ext_rest_insideview extends ext_rest
 {
     protected $_enable_in_wizard = false;

@@ -7,7 +7,7 @@ function survey_questions_display(Surveys $focus, $field, $value, $view)
     // More info: STIC#367
 
     // $hasResponses = !empty($focus->id) && $focus->get_linked_beans('surveys_surveyresponses');
-    if ($_POST["isDuplicate"] && $_POST["isDuplicate"] == "true") {
+    if (isset($_POST["isDuplicate"]) && $_POST["isDuplicate"] == "true") {
         $hasResponses = false;
     } else {
         $hasResponses = !empty($focus->id) && $focus->get_linked_beans('surveys_surveyresponses');
@@ -37,7 +37,8 @@ function survey_questions_display_detail(Surveys $focus, $field, $value, $view)
     );
     $smarty->assign('questions', $questions);
     $smarty->assign('message', '');
-    if ($view == 'EditView') {
+    $isDuplicate = $_REQUEST['isDuplicate'] ?? 'false';
+    if ($view == 'EditView' && isFalse($isDuplicate)) {
         $smarty->assign('message', $mod_strings['LBL_CANT_EDIT_RESPONDED']);
     }
     $smarty->assign('APP_LIST', $app_list_strings);
@@ -81,7 +82,7 @@ function survey_questions_display_edit(Surveys $focus, $field, $value, $view)
     $questionBean = BeanFactory::getBean('SurveyQuestions');
     $options = $questionBean->field_defs['type']['options'];
     $typeSelect = get_select_options_with_id($app_list_strings[$options], '');
-    $typeSelect = str_replace("\n", '', $typeSelect);
+    $typeSelect = str_replace("\n", '', (string) $typeSelect);
     $smarty->assign('question_type_options', $typeSelect);
     $html = $smarty->fetch(get_custom_file_if_exists('modules/Surveys/tpls/editsurveyquestions.tpl'));
 

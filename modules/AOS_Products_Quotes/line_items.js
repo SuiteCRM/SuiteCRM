@@ -326,7 +326,7 @@ function insertServiceLine(tableid, groupid) {
 
   x.insertCell().innerHTML = "<input type='text' name='service_product_list_price[" + servln + "]' id='service_product_list_price" + servln + "' maxlength='50' value='' title='' tabindex='116'   onblur='calculateLine(" + servln + ",\"service_\");' class='service_list_price'>";
 
-  x.insertCell().innerHTML = "<input type='text' name='service_product_discount[" + servln + "]' id='service_product_discount" + servln + "'  maxlength='50' value='' title='' tabindex='116' onblur='calculateLine(" + servln + ",\"service_\");' onblur='calculateLine(" + servln + ",\"service_\");' class='service_discount_text'><input type='hidden' name='service_product_discount_amount[" + servln + "]' id='service_product_discount_amount" + servln + "' value=''/>" + 
+  x.insertCell().innerHTML = "<input type='text' name='service_product_discount[" + servln + "]' id='service_product_discount" + servln + "'  maxlength='50' value='' title='' tabindex='116' onblur='calculateLine(" + servln + ",\"service_\");' class='service_discount_text'><input type='hidden' name='service_product_discount_amount[" + servln + "]' id='service_product_discount_amount" + servln + "' value=''/>" + 
                              "<select tabindex='116' name='service_discount[" + servln + "]' id='service_discount" + servln + "' onchange='calculateLine(" + servln + ",\"service_\");' class='service_discount_select'>" + discount_hidden + "</select>";
 
   x.insertCell().innerHTML = "<input type='text' name='service_product_unit_price[" + servln + "]' id='service_product_unit_price" + servln + "' maxlength='50' value='' title='' tabindex='116'   onblur='calculateLine(" + servln + ",\"service_\");' class='service_unit_price'>";
@@ -741,7 +741,7 @@ function calculateTotal(key)
 {
   if (typeof key === 'undefined') {  key = 'lineItems'; }
   var row = document.getElementById(key).getElementsByTagName('tbody');
-  if(key == 'lineItems') key = '';
+  if(key === 'lineItems') key = '';
   var length = row.length;
   var head = {};
   var tot_amt = 0;
@@ -825,6 +825,10 @@ function calculateTotal(key)
   set_value(key+'shipping_tax_amt',shippingtax_amt);
 
   tax += shippingtax_amt;
+
+  if (typeof tax === 'string'){
+    tax = Number(tax);
+  }
 
   set_value(key+'tax_amount',tax);
 

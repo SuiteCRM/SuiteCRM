@@ -44,6 +44,7 @@
  * Extends regular PHP DateTime with useful services
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarDateTime extends DateTime
 {
     // Recognized properties and their formats
@@ -108,7 +109,12 @@ class SugarDateTime extends DateTime
      * @return SugarDateTime
      * @see DateTime::createFromFormat
      */
-    public static function createFromFormat($format, $time, $timezone = null)
+    #[ReturnTypeWillChange]
+    // STIC Custom 20241113 JBL - Fix inherited function declaration compatibility
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public static function createFromFormat($format, $time, $timezone = null)
+    public static function createFromFormat($format, $time, $timezone = null) : DateTime|false
+    // END STIC Custom
     {
         if (empty($time) || empty($format)) {
             return false;
@@ -139,11 +145,15 @@ class SugarDateTime extends DateTime
      * @deprecated No longer necessary since PHP 5.2 is no longer supported.
      * @param string $format Format like in date()
      * @param string $time Time string to parse
-     * @param DateTimeZone $timezone TZ
+     * @param \DateTimeZone|null $timezone TZ
      * @return SugarDateTime
      * @see DateTime::createFromFormat
      */
-    protected static function _createFromFormat($format, $time, DateTimeZone $timezone = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected static function _createFromFormat($format, $time, DateTimeZone $timezone = null)
+    protected static function _createFromFormat($format, $time, ?DateTimeZone $timezone = null)
+    // END STIC Custom    
     {
         $res = new self();
         if (!empty($timezone)) {

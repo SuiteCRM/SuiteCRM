@@ -29,30 +29,28 @@ class NestedArray
      * Example:
      *
      * @code
-     * $link_options_1 = array('fragment' => 'x', 'attributes' => array('title' => t('X'), 'class' => array('a', 'b')));
-     * $link_options_2 = array('fragment' => 'y', 'attributes' => array('title' => t('Y'), 'class' => array('c', 'd')));
+     * $link_options_1 = ['fragment' => 'x', 'attributes' => ['title' => t('X'), 'class' => ['a', 'b']]];
+     * $link_options_2 = ['fragment' => 'y', 'attributes' => ['title' => t('Y'), 'class' => ['c', 'd']]];
      *
-     * // This results in array('fragment' => array('x', 'y'), 'attributes' =>
-     * // array('title' => array(t('X'), t('Y')), 'class' => array('a', 'b',
-     * // 'c', 'd'))).
+     * // This results in ['fragment' => ['x', 'y'], 'attributes' =>
+     * // ['title' => [t('X'), t('Y')], 'class' => ['a', 'b',
+     * // 'c', 'd']]].
      * $incorrect = array_merge_recursive($link_options_1, $link_options_2);
      *
-     * // This results in array('fragment' => 'y', 'attributes' =>
-     * // array('title' => t('Y'), 'class' => array('a', 'b', 'c', 'd'))).
+     * // This results in ['fragment' => 'y', 'attributes' =>
+     * // ['title' => t('Y'), 'class' => ['a', 'b', 'c', 'd']]].
      * $correct = NestedArray::mergeDeep($link_options_1, $link_options_2);
      * @endcode
      *
-     * @param array ...
-     *   Arrays to merge.
+     * @param mixed ...$params Arrays to merge.
      *
-     * @return array
-     *   The merged array.
+     * @return array The merged array.
      *
      * @see NestedArray::mergeDeepArray()
      */
-    public static function mergeDeep()
+    public static function mergeDeep(...$params)
     {
-        return self::mergeDeepArray(func_get_args());
+        return self::mergeDeepArray($params);
     }
 
     /**
@@ -64,7 +62,7 @@ class NestedArray
      *
      * The following are equivalent:
      * - NestedArray::mergeDeep($a, $b);
-     * - NestedArray::mergeDeepArray(array($a, $b));
+     * - NestedArray::mergeDeepArray([$a, $b]);
      *
      * The following are also equivalent:
      * - call_user_func_array('NestedArray::mergeDeep', $arrays_to_merge);
@@ -85,14 +83,14 @@ class NestedArray
         array $arrays,
         $preserveIntegerKeys = false
     ) {
-        $result = array();
+        $result = [];
         foreach ($arrays as $array) {
             foreach ($array as $key => $value) {
                 // Renumber integer keys as array_merge_recursive() does
                 // unless $preserveIntegerKeys is set to TRUE. Note that PHP
                 // automatically converts array keys that are integer strings
                 // (e.g., '1') to integers.
-                if (is_integer($key) && !$preserveIntegerKeys) {
+                if (is_int($key) && !$preserveIntegerKeys) {
                     $result[] = $value;
                 } elseif (isset($result[$key]) &&
                     is_array($result[$key]) &&
@@ -100,7 +98,7 @@ class NestedArray
                 ) {
                     // Recurse when both values are arrays.
                     $result[$key] = self::mergeDeepArray(
-                        array($result[$key], $value),
+                        [$result[$key], $value],
                         $preserveIntegerKeys
                     );
                 } else {

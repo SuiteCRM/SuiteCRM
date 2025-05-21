@@ -4,14 +4,18 @@ namespace Robo;
 
 use Composer\Autoload\ClassLoader;
 use League\Container\Container;
+use League\Container\ContainerAwareInterface;
 use League\Container\Definition\DefinitionInterface;
 use Psr\Container\ContainerInterface;
+use Robo\Collection\CollectionBuilder;
 use Robo\Common\ProcessExecutor;
+use Robo\Contract\BuilderAwareInterface;
 use Consolidation\Config\ConfigInterface;
 use Consolidation\Config\Loader\ConfigProcessor;
 use Consolidation\Config\Loader\YamlConfigLoader;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Application as SymfonyApplication;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Process\Process;
 
 /**
@@ -22,7 +26,7 @@ use Symfony\Component\Process\Process;
 class Robo
 {
     const APPLICATION_NAME = 'Robo';
-    const VERSION = '3.0.10';
+    const VERSION = '3.0.12';
 
     /**
      * The currently active container object, or NULL if not initialized yet.
@@ -497,5 +501,74 @@ class Robo
     public static function process(Process $process)
     {
         return ProcessExecutor::create(static::getContainer(), $process);
+    }
+
+    /**
+     * @param \Robo\Application $app
+     * @param string|object $handler
+     *
+     * @return null|object
+     */
+    public static function register($app, $handler)
+    {
+        $container = Robo::getContainer();
+        $instance = static::instantiate($handler);
+        if (!$instance) {
+            return;
+        }
+
+        // If the instance is a Symfony Command, register it with
+        // the application
+        if ($instance instanceof Command) {
+            $app->add($instance);
+            return $instance;
+        }
+
+        // Register commands for all of the public methods in the RoboFile.
+        $commandFactory = $container->get('commandFactory');
+        $commandList = $commandFactory->createCommandsFromClass($instance);
+        foreach ($commandList as $command) {
+            $app->add($command);
+        }
+        return $instance;
+    }
+
+    /**
+     * @param string|object $handler
+     *
+     * @return null|object
+     */
+    protected static function instantiate($handler)
+    {
+        $container = Robo::getContainer();
+
+        // Register the RoboFile with the container and then immediately
+        // fetch it; this ensures that all of the inflectors will run.
+        // If the command class is already an instantiated object, then
+        // just use it exactly as it was provided to us.
+        if (is_string($handler)) {
+            if (!class_exists($handler)) {
+                return;
+            }
+            $reflectionClass = new \ReflectionClass($handler);
+            if ($reflectionClass->isAbstract()) {
+                return;
+            }
+
+            $commandFileName = "{$handler}Commands";
+            Robo::addShared($container, $commandFileName, $handler);
+            $handler = $container->get($commandFileName);
+        }
+        // If the command class is a Builder Aware Interface, then
+        // ensure that it has a builder.  Every command class needs
+        // its own collection builder, as they have references to each other.
+        if ($handler instanceof BuilderAwareInterface) {
+            $builder = CollectionBuilder::create($container, $handler);
+            $handler->setBuilder($builder);
+        }
+        if ($handler instanceof ContainerAwareInterface) {
+            $handler->setContainer($container);
+        }
+        return $handler;
     }
 }

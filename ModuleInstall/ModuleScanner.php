@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+#[\AllowDynamicProperties]
 class ModuleScanner
 {
     private $manifestMap = array(
@@ -520,10 +521,10 @@ class ModuleScanner
     public function isConfigFile($file)
     {
         $real = realpath($file);
-        if ($real == realpath("config.php")) {
+        if ($real === realpath("config.php")) {
             return true;
         }
-        if (file_exists("config_override.php") && $real == realpath("config_override.php")) {
+        if (file_exists("config_override.php") && $real === realpath("config_override.php")) {
             return true;
         }
         return false;
@@ -602,12 +603,15 @@ class ModuleScanner
         }
         $contents = file_get_contents($file);
         if (!$this->isPHPFile($contents)) {
+            $issues[] = translate('ML_INVALID_PHP_FILE', 'Administration');
+            $this->issues['file'][$file] = $issues;
             return $issues;
         }
         $tokens = @token_get_all($contents);
         $checkFunction = false;
         $possibleIssue = '';
         $lastToken = false;
+        $return = false;
         foreach ($tokens as $index=>$token) {
             if (is_string($token[0])) {
                 switch ($token[0]) {
@@ -619,7 +623,16 @@ class ModuleScanner
                             $issues[] = $possibleIssue;
                         }
                         break;
+                    case ']':
+                        if ($checkFunction){
+                            $issues[] = $possibleIssue;
+                        }
                 }
+
+                if ($return && $checkFunction){
+                    $issues[] = $possibleIssue;
+                }
+
                 $checkFunction = false;
                 $possibleIssue = '';
             } else {
@@ -638,7 +651,8 @@ class ModuleScanner
                         $issues[]= translate('ML_INVALID_FUNCTION', 'Administration') . ' exit / die';
                         break;
                     case T_STRING:
-                        $token[1] = strtolower($token[1]);
+                    case T_CONSTANT_ENCAPSED_STRING:
+                        $token[1] = trim(strtolower($token[1]),'\'"');
                         if ($lastToken !== false && $lastToken[0] == T_NEW) {
                             if (!in_array($token[1], $this->classBlackList)) {
                                 break;
@@ -684,6 +698,10 @@ class ModuleScanner
                             }
                             if (in_array($token[1], $this->blackListExempt)) {
                                 break;
+                            }
+
+                            if ($lastToken[1] === 'return'){
+                                $return = true;
                             }
                         }
                         // no break
@@ -880,7 +898,7 @@ class ModuleScanner
             echo '<h2 class="error">' . ucfirst($type) . ' ' . translate('ML_ISSUES', 'Administration') . '</h2>';
             echo '<div id="details' . $type . '" >';
             foreach ($issues as $file => $issue) {
-                $file = preg_replace('/.*\//', '', $file);
+                $file = preg_replace('/.*\//', '', (string) $file);
                 echo '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">';
                 if (is_array($issue)) {
                     foreach ($issue as $i) {
@@ -908,7 +926,7 @@ class ModuleScanner
                     'Administration') . '</h2>';
             $message .= '<div id="details' . $type . '" >';
             foreach ($issues as $file => $issue) {
-                $file = preg_replace('/.*\//', '', $file);
+                $file = preg_replace('/.*\//', '', (string) $file);
                 $message .= '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">';
                 if (is_array($issue)) {
                     foreach ($issue as $i) {

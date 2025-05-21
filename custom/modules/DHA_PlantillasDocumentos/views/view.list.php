@@ -24,6 +24,7 @@
 require_once 'include/MVC/View/views/view.list.php';
 require_once 'SticInclude/Views.php';
 
+#[\AllowDynamicProperties]
 class DHA_PlantillasDocumentosViewList extends ViewList
 {
     public function __construct()

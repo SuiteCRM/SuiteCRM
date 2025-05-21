@@ -201,6 +201,9 @@ class ParallelExec extends BaseTask implements CommandInterface, PrintedInterfac
             if ($p->getExitCode() === 0) {
                 continue;
             }
+            if (trim($p->getErrorOutput())) {
+                $this->printTaskError("Error for {command} \n{output}", ['command' => $process->getCommandLine(), 'output' => $p->getErrorOutput()]);
+            }
             $errorMessage .= "'" . $p->getCommandLine() . "' exited with code " . $p->getExitCode() . " \n";
             $exitCode = max($exitCode, $p->getExitCode());
         }

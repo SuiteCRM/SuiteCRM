@@ -291,10 +291,12 @@ function smarty_function_sugar_button($params, &$smarty)
 
     $js_form = (empty($params['form_id'])) ? "var _form = (this.form) ? this.form : document.forms[0];" : "var _form = document.getElementById('{$params['form_id']}');";
 
-    $type = $params['id'];
+    $type = $params['id'] ?? '';
     $location = (empty($params['location'])) ? "" : "_".$params['location'];
 
-    $formName = $params['form_id'];
+    $formName = $params['form_id'] ?? '';
+
+    $output = '';
 
     if (!is_array($type)) {
         $module = $params['module'];

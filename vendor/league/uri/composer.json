@@ -2,9 +2,29 @@
     "name": "league/uri",
     "type": "library",
     "description" : "URI manipulation library",
-    "keywords": ["url", "uri", "rfc3986", "psr-7", "parse_url", "http", "https", "ws", "ftp", "data-uri"],
+    "keywords": [
+        "url",
+        "uri",
+        "rfc3986",
+        "rfc3987",
+        "rfc6570",
+        "psr-7",
+        "parse_url",
+        "http",
+        "https",
+        "ws",
+        "ftp",
+        "data-uri",
+        "file-uri",
+        "middleware",
+        "parse_str",
+        "query-string",
+        "querystring",
+        "hostname",
+        "uri-template"
+    ],
     "license": "MIT",
-    "homepage": "http://uri.thephpleague.com",
+    "homepage": "https://uri.thephpleague.com",
     "authors": [
         {
             "name" : "Ignace Nyamagana Butera",
@@ -13,41 +33,72 @@
         }
     ],
     "support": {
-        "forum": "https://groups.google.com/forum/#!forum/thephpleague",
+        "forum": "https://thephpleague.slack.com",
+        "docs": "https://uri.thephpleague.com",
         "issues": "https://github.com/thephpleague/uri/issues"
     },
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/nyamsprod"
+        }
+    ],
     "require": {
-        "ext-mbstring" : "*",
-        "ext-intl" : "*",
-        "ext-fileinfo": "*",
-        "jeremykendall/php-domain-parser": "4.0.3-alpha",
-        "php" : ">=5.5.9",
-        "psr/http-message": "^1.0"
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*",
+        "psr/http-message": "^1.0",
+        "league/uri-interfaces": "^2.3"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^1.9",
-        "phpunit/phpunit": "^4.0",
-        "zendframework/zend-diactoros": "^1.3"
+        "friendsofphp/php-cs-fixer": "^v3.3.2",
+        "nyholm/psr7": "^1.5",
+        "php-http/psr7-integration-tests": "^1.1",
+        "phpstan/phpstan": "^1.2.0",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0.0",
+        "phpstan/phpstan-strict-rules": "^1.1.0",
+        "phpunit/phpunit": "^9.5.10",
+        "psr/http-factory": "^1.0"
     },
     "autoload": {
         "psr-4": {
             "League\\Uri\\": "src"
-        },
-        "files": ["src/functions_include.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {
-            "League\\Uri\\Test\\": "test"
+            "LeagueTest\\Uri\\": "tests"
         }
     },
+    "conflict": {
+        "league/uri-schemes": "^1.0"
+    },
     "scripts": {
-        "test": "phpunit --coverage-text; php-cs-fixer fix -v --diff --dry-run;",
-        "phpunit": "phpunit --coverage-text",
-        "phpcs": "php-cs-fixer fix -v --diff --dry-run;"
+        "phpcs": "php-cs-fixer fix -v --diff --dry-run --allow-risky=yes --ansi",
+        "phpcs:fix": "php-cs-fixer fix -vvv --allow-risky=yes --ansi",
+        "phpstan": "phpstan analyse -l max -c phpstan.neon src --ansi --memory-limit=256M",
+        "phpunit": "XDEBUG_MODE=coverage phpunit --coverage-text",
+        "test": [
+            "@phpunit",
+            "@phpstan",
+            "@phpcs"
+        ]
+    },
+    "scripts-descriptions": {
+        "phpcs": "Runs coding style test suite",
+        "phpstan": "Runs complete codebase static analysis",
+        "phpunit": "Runs unit and functional testing",
+        "test": "Runs full test suite"
+    },
+    "suggest": {
+        "league/uri-components" : "Needed to easily manipulate URI objects",
+        "ext-intl" : "Needed to improve host validation",
+        "ext-fileinfo": "Needed to create Data URI from a filepath",
+        "psr/http-factory": "Needed to use the URI factory"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.2.x-dev"
+            "dev-master": "6.x-dev"
         }
     },
     "config": {

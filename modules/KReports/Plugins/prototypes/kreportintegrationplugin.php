@@ -31,7 +31,7 @@ if (!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 
 class kreportintegrationplugin {
 
-    var $pluginName = 'prototype';
+    public $pluginName = 'prototype';
 
     public function __construct() {
         

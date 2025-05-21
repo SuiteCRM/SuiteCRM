@@ -1,10 +1,11 @@
 <?php
 namespace Api\V8\JsonApi\Repository;
 
+#[\AllowDynamicProperties]
 class Sort
 {
-    const ORDER_BY_ASC = 'ASC';
-    const ORDER_BY_DESC = 'DESC';
+    public const ORDER_BY_ASC = 'ASC';
+    public const ORDER_BY_DESC = 'DESC';
 
     /**
      * We don't support multiple sorting. for now.

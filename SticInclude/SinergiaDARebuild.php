@@ -5,6 +5,7 @@
  *
  * This class is used to rebuild the Sinergia Data Analytics system.
  */
+#[\AllowDynamicProperties]
 class SinergiaDARebuild
 {
 
@@ -46,7 +47,7 @@ class SinergiaDARebuild
             require_once 'SticInclude/SinergiaDA.php';
 
             // Set the force request parameter
-            $_REQUEST['force'] = $_REQUEST['force'] == 1 ? true : false;
+            $_REQUEST['force'] = ($_REQUEST['force'] ?? null) == 1 ? true : false;
 
             // Create views via the ExternalReporting class
             $r = new ExternalReporting();

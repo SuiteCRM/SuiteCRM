@@ -45,6 +45,7 @@ use RuntimeException;
 use SuiteCRM\Utility\OperatingSystem;
 use SuiteCRM\Robo\Traits\RoboTrait;
 
+#[\AllowDynamicProperties]
 class CodeCoverageCommands extends Tasks
 {
     use RoboTrait;

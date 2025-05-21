@@ -45,6 +45,7 @@
  */
 
 
+#[\AllowDynamicProperties]
 class AM_TaskTemplates_sugar extends Basic
 {
     public $new_schema = true;

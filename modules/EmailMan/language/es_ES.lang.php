@@ -59,6 +59,7 @@ $mod_strings = array(
     'LBL_EMAIL_ENABLE_CONFIRM_OPT_IN' => 'Configuraciones de Autorización',
     'LBL_EMAIL_ENABLE_SEND_OPT_IN' => 'Enviar mensaje de autorización automáticamente',
     'LBL_EMAIL_CONFIRM_OPT_IN_TEMPLATE_ID' => 'Plantilla de e-mail de confirmación de autorización',
+    'LBL_LEGACY_EMAIL_COMPOSE_BEHAVIOR' => 'Habilitar el Comportamiento Antiguo de Redacción de Correo Electrónico',
     'LBL_EMAIL_OUTBOUND_CONFIGURATION' => 'Configuración de Correo Saliente',
     'LBL_EMAILS_PER_RUN' => 'Número de mensajes enviados por lote',
     'LBL_ID' => 'Identificación',

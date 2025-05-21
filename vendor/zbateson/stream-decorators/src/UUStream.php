@@ -4,11 +4,12 @@
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
+
 namespace ZBateson\StreamDecorators;
 
-use Psr\Http\Message\StreamInterface;
-use GuzzleHttp\Psr7\StreamDecoratorTrait;
 use GuzzleHttp\Psr7\BufferStream;
+use GuzzleHttp\Psr7\StreamDecoratorTrait;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 /**
@@ -46,15 +47,20 @@ class UUStream implements StreamInterface
     private $position = 0;
 
     /**
-     * @var boolean set to true when 'write' is called
+     * @var bool set to true when 'write' is called
      */
     private $isWriting = false;
+
+    /**
+     * @var StreamInterface $stream
+     */
+    private $stream;
 
     /**
      * @param StreamInterface $stream Stream to decorate
      * @param string $filename optional file name
      */
-    public function __construct(StreamInterface $stream, $filename = null)
+    public function __construct(StreamInterface $stream, ?string $filename = null)
     {
         $this->stream = $stream;
         $this->filename = $filename;
@@ -63,10 +69,8 @@ class UUStream implements StreamInterface
 
     /**
      * Overridden to return the position in the target encoding.
-     *
-     * @return int
      */
-    public function tell()
+    public function tell() : int
     {
         return $this->position;
     }
@@ -76,7 +80,7 @@ class UUStream implements StreamInterface
      *
      * @return null
      */
-    public function getSize()
+    public function getSize() : ?int
     {
         return null;
     }
@@ -88,17 +92,15 @@ class UUStream implements StreamInterface
      * @param int $whence
      * @throws RuntimeException
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET) : void
     {
         throw new RuntimeException('Cannot seek a UUStream');
     }
 
     /**
      * Overridden to return false
-     *
-     * @return boolean
      */
-    public function isSeekable()
+    public function isSeekable() : bool
     {
         return false;
     }
@@ -106,18 +108,16 @@ class UUStream implements StreamInterface
     /**
      * Finds the next end-of-line character to ensure a line isn't broken up
      * while buffering.
-     *
-     * @return string
      */
-    private function readToEndOfLine($length)
+    private function readToEndOfLine(int $length) : string
     {
         $str = $this->stream->read($length);
-        if ($str === false || $str === '') {
+        if ($str === '') {
             return $str;
         }
-        while (substr($str, -1) !== "\n") {
+        while (\substr($str, -1) !== "\n") {
             $chr = $this->stream->read(1);
-            if ($chr === false || $chr === '') {
+            if ($chr === '') {
                 break;
             }
             $str .= $chr;
@@ -128,38 +128,35 @@ class UUStream implements StreamInterface
     /**
      * Removes invalid characters from a uuencoded string, and 'BEGIN' and 'END'
      * line headers and footers from the passed string before returning it.
-     *
-     * @param string $str
-     * @return string
      */
-    private function filterAndDecode($str)
+    private function filterAndDecode(string $str) : string
     {
-        $ret = str_replace("\r", '', $str);
-        $ret = preg_replace('/[^\x21-\xf5`\n]/', '`', $ret);
+        $ret = \str_replace("\r", '', $str);
+        $ret = \preg_replace('/[^\x21-\xf5`\n]/', '`', $ret);
         if ($this->position === 0) {
             $matches = [];
-            if (preg_match('/^\s*begin\s+[^\s+]\s+([^\r\n]+)\s*$/im', $ret, $matches)) {
+            if (\preg_match('/^\s*begin\s+[^\s+]\s+([^\r\n]+)\s*$/im', $ret, $matches)) {
                 $this->filename = $matches[1];
             }
-            $ret = preg_replace('/^\s*begin[^\r\n]+\s*$/im', '', $ret);
+            $ret = \preg_replace('/^\s*begin[^\r\n]+\s*$/im', '', $ret);
         } else {
-            $ret = preg_replace('/^\s*end\s*$/im', '', $ret);
+            $ret = \preg_replace('/^\s*end\s*$/im', '', $ret);
         }
-        return convert_uudecode(trim($ret));
+        return \convert_uudecode(\trim($ret));
     }
 
     /**
      * Buffers bytes into $this->buffer, removing uuencoding headers and footers
      * and decoding them.
      */
-    private function fillBuffer($length)
+    private function fillBuffer(int $length) : void
     {
         // 5040 = 63 * 80, seems to be good balance for buffering in benchmarks
         // testing with a simple 'if ($length < x)' and calculating a better
         // size reduces speeds by up to 4x
         while ($this->buffer->getSize() < $length) {
             $read = $this->readToEndOfLine(5040);
-            if ($read === false || $read === '') {
+            if ($read === '') {
                 break;
             }
             $this->buffer->write($this->filterAndDecode($read));
@@ -168,10 +165,8 @@ class UUStream implements StreamInterface
 
     /**
      * Returns true if the end of stream has been reached.
-     *
-     * @return boolean
      */
-    public function eof()
+    public function eof() : bool
     {
         return ($this->buffer->eof() && $this->stream->eof());
     }
@@ -180,9 +175,8 @@ class UUStream implements StreamInterface
      * Attempts to read $length bytes after decoding them, and returns them.
      *
      * @param int $length
-     * @return string
      */
-    public function read($length)
+    public function read($length) : string
     {
         // let Guzzle decide what to do.
         if ($length <= 0 || $this->eof()) {
@@ -190,14 +184,14 @@ class UUStream implements StreamInterface
         }
         $this->fillBuffer($length);
         $read = $this->buffer->read($length);
-        $this->position += strlen($read);
+        $this->position += \strlen($read);
         return $read;
     }
 
     /**
      * Writes the 'begin' UU header line.
      */
-    private function writeUUHeader()
+    private function writeUUHeader() : void
     {
         $filename = (empty($this->filename)) ? 'null' : $this->filename;
         $this->stream->write("begin 666 $filename");
@@ -206,39 +200,34 @@ class UUStream implements StreamInterface
     /**
      * Writes the '`' and 'end' UU footer lines.
      */
-    private function writeUUFooter()
+    private function writeUUFooter() : void
     {
         $this->stream->write("\r\n`\r\nend\r\n");
     }
 
     /**
      * Writes the passed bytes to the underlying stream after encoding them.
-     *
-     * @param string $bytes
      */
-    private function writeEncoded($bytes)
+    private function writeEncoded(string $bytes) : void
     {
-        $encoded = preg_replace('/\r\n|\r|\n/', "\r\n", rtrim(convert_uuencode($bytes)));
+        $encoded = \preg_replace('/\r\n|\r|\n/', "\r\n", \rtrim(\convert_uuencode($bytes)));
         // removes ending '`' line
-        $this->stream->write("\r\n" . rtrim(substr($encoded, 0, -1)));
+        $this->stream->write("\r\n" . \rtrim(\substr($encoded, 0, -1)));
     }
 
     /**
      * Prepends any existing remainder to the passed string, then checks if the
      * string fits into a uuencoded line, and removes and keeps any remainder
      * from the string to write.  Full lines ready for writing are returned.
-     * 
-     * @param string $string
-     * @return string
      */
-    private function handleRemainder($string)
+    private function handleRemainder(string $string) : string
     {
         $write = $this->remainder . $string;
-        $nRem = strlen($write) % 45;
+        $nRem = \strlen($write) % 45;
         $this->remainder = '';
         if ($nRem !== 0) {
-            $this->remainder = substr($write, -$nRem);
-            $write = substr($write, 0, -$nRem);
+            $this->remainder = \substr($write, -$nRem);
+            $write = \substr($write, 0, -$nRem);
         }
         return $write;
     }
@@ -257,7 +246,7 @@ class UUStream implements StreamInterface
      * @param string $string
      * @return int the number of bytes written
      */
-    public function write($string)
+    public function write($string) : int
     {
         $this->isWriting = true;
         if ($this->position === 0) {
@@ -267,27 +256,23 @@ class UUStream implements StreamInterface
         if ($write !== '') {
             $this->writeEncoded($write);
         }
-        $written = strlen($string);
+        $written = \strlen($string);
         $this->position += $written;
         return $written;
     }
 
     /**
      * Returns the filename set in the UUEncoded header (or null)
-     *
-     * @return string
      */
-    public function getFilename()
+    public function getFilename() : string
     {
         return $this->filename;
     }
 
     /**
      * Sets the UUEncoded header file name written in the 'begin' header line.
-     *
-     * @param string $filename
      */
-    public function setFilename($filename)
+    public function setFilename(string $filename) : void
     {
         $this->filename = $filename;
     }
@@ -295,7 +280,7 @@ class UUStream implements StreamInterface
     /**
      * Writes out any remaining bytes and the UU footer.
      */
-    private function beforeClose()
+    private function beforeClose() : void
     {
         if (!$this->isWriting) {
             return;
@@ -309,24 +294,22 @@ class UUStream implements StreamInterface
     }
 
     /**
-     * Writes any remaining bytes out followed by the uu-encoded footer, then
-     * closes the stream.
-     * @return void
+     * @inheritDoc
      */
-    public function close()
+    public function close() : void
     {
         $this->beforeClose();
         $this->stream->close();
     }
 
     /**
-     * Writes any remaining bytes out followed by the uu-encoded footer, then
-     * detaches the stream.
-     * @return resource|null Underlying PHP stream, if any
+     * @inheritDoc
      */
     public function detach()
     {
         $this->beforeClose();
         $this->stream->detach();
+
+        return null;
     }
 }

@@ -51,6 +51,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * contains the incorrectly called action-method name
  *
  */
+#[\AllowDynamicProperties]
 class SyncInboundEmailAccountsInvalidSubActionArgumentsException extends Exception
 {
 
@@ -68,7 +69,11 @@ class SyncInboundEmailAccountsInvalidSubActionArgumentsException extends Excepti
      * @param int $code
      * @param Exception|null $previous
      */
-    public function __construct($message = "", $code = 0, \Exception $previous = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function __construct($message = "", $code = 0, \Exception $previous = null)
+    public function __construct($message = "", $code = 0, ?\Exception $previous = null)
+    // END STIC Custom
     {
         parent::__construct(
             ($message ? $message . " - " : "") .

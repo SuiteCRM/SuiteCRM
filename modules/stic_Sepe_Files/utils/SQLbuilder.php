@@ -65,7 +65,7 @@ class SQLbuilder {
     /**
      * Used to build the queries with COLOCACION = N
      */
-    const joinTablesNoCol = " 
+    public const joinTablesNoCol = " 
     INNER JOIN contacts_cstm ON
         contacts.id = contacts_cstm.id_c
     INNER JOIN stic_sepe_actions_contacts_c ON
@@ -76,7 +76,7 @@ class SQLbuilder {
     /**
      * Used to build the queries with COLOCACION = S
      */
-    const joinTablesCol = "
+    public const joinTablesCol = "
     INNER JOIN stic_job_applications_contacts_c ON 
         contacts.id = stic_job_applications_contacts_c.stic_job_applications_contactscontacts_ida
     INNER JOIN stic_job_applications ON 
@@ -95,7 +95,7 @@ class SQLbuilder {
     /**
      * Used to build the queries for SEPE incidents
      */
-    const joinTablesACCI = "
+    public const joinTablesACCI = "
     INNER JOIN contacts_cstm ON 
         contacts_cstm.id_c = contacts.id 
     INNER JOIN stic_sepe_incidents_contacts_c ON 

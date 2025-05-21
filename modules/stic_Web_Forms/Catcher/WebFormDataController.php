@@ -29,13 +29,13 @@ require_once __DIR__ . '/WebFormDataBO.php';
 class WebFormDataController
 {
     // Response constants
-    const RESPONSE_STATUS_OK = 0; // Status finished OK
-    const RESPONSE_STATUS_PENDING = 1; // Pending status
-    const RESPONSE_STATUS_ERROR = 2; // Status terminated with error
+    public const RESPONSE_STATUS_OK = 0; // Status finished OK
+    public const RESPONSE_STATUS_PENDING = 1; // Pending status
+    public const RESPONSE_STATUS_ERROR = 2; // Status terminated with error
 
-    const RESPONSE_TYPE_TXT = 0; // Text type response
-    const RESPONSE_TYPE_REDIRECTION = 1; // Redirect Response
-    const RESPONSE_TYPE_TEMPLATE = 2; // Template based response
+    public const RESPONSE_TYPE_TXT = 0; // Text type response
+    public const RESPONSE_TYPE_REDIRECTION = 1; // Redirect Response
+    public const RESPONSE_TYPE_TEMPLATE = 2; // Template based response
 
     // Specific controller
     protected $controller = null;
@@ -89,6 +89,7 @@ class WebFormDataController
             $this->lang = $_REQUEST['language'];
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Indicating language [{$this->lang}] from form.");
         } else {
+            $_SERVER["HTTP_ACCEPT_LANGUAGE"] =  $_SERVER["HTTP_ACCEPT_LANGUAGE"] ?? '';
             $http_lang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
             switch ($http_lang) {
                 case 'es':
@@ -102,7 +103,7 @@ class WebFormDataController
                     $this->lang = 'en_us';
                     break;
             }
-            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  ndicating language [{$_SERVER["HTTP_ACCEPT_LANGUAGE"]} -> {$http_lang} -> {$this->lang}] from browser parameter.");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  indicating language [{$_SERVER["HTTP_ACCEPT_LANGUAGE"]} -> {$http_lang} -> {$this->lang}] from browser parameter.");
         }
 
         $this->app_strings = return_application_language($this->lang); // Load application labels
@@ -189,7 +190,7 @@ class WebFormDataController
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  : Loading specific driver...");
         $actionDefParams = $this->bo->getActionDefParams();
 
-        if ($actionDefParams['webFormClass']) {
+        if (!empty($actionDefParams['webFormClass'])) {
             $webFormClass = $actionDefParams['webFormClass'];
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Loading controller [{$webFormClass}]...");
             $controllerName = "{$webFormClass}Controller";
@@ -239,7 +240,7 @@ class WebFormDataController
             // Received fields
             foreach ($_REQUEST as $key => $value) {
                 if (!strpos($key, '___') === false) {
-                    if (strpos($_REQUEST['req_id'], $key) === false) {
+                    if (strpos($_REQUEST['req_id'], (string) $key) === false) {
                         $formData[$key] = "<b>{$value}</b>";
                     } else {
                         $formData[$key . ' <span style="color:red;">(' . $msg['required'] . ')</span>'] = "<b>{$value}</b>";
@@ -347,11 +348,13 @@ class WebFormDataController
         // Try the answer
         if ($delegate) {
             // If we have to delegate the execution, return the response
-            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Delegating type response [{$response['type']}]...");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Delegating type response [" . ($response['type'] ?? null) . "]...");
             return $response;
         } else {
             // If we have to deal with the answer, we deal with it.
+            $response['type'] = $response['type'] ?? null;
             $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ":  Managing type response [{$response['type']}]...");
+            $response['data'] = $response['data'] ?? null;
             switch ($response['type']) {
                 case self::
                         RESPONSE_TYPE_TXT:echo $response['data'];
@@ -462,13 +465,15 @@ class WebFormDataController
         foreach ($fields as $field) {
             $prefixedName = "{$prefix}{$field}";
             // If the value received in $_REQUEST is an array is that it comes from a multiple field, in which case we process it to a valid string for this type of values
-            if (is_array($_REQUEST[$prefixedName])) {
+            if (is_array($_REQUEST[$prefixedName] ?? false)) {
                 $_REQUEST[$prefixedName] = '^' . join('^,^', $_REQUEST[$prefixedName]) . '^';
             }
             $destName = ($erasePrefix ? $field : $prefixedName);
 
             if (isset($_REQUEST[$prefixedName])) {
-                $ret[$destName] = filter_var($_REQUEST[$prefixedName], FILTER_SANITIZE_STRING);
+                // Avoid use of deprecated constant FILTER_SANITIZE_STRING
+                // $ret[$destName] = filter_var($_REQUEST[$prefixedName], FILTER_SANITIZE_STRING);
+                $ret[$destName] = strip_tags($_REQUEST[$prefixedName] ?? '');
             } else if (isset($default[$prefixedName])) {
                 $ret[$destName] = $default[$prefixedName];
             }

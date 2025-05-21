@@ -29,7 +29,7 @@ final class Warn
      *
      * @return void
      */
-    public static function warning(string $message): void
+    public static function warning($message)
     {
         self::reportWarning($message, false);
     }
@@ -43,7 +43,7 @@ final class Warn
      *
      * @return void
      */
-    public static function deprecation(string $message): void
+    public static function deprecation($message)
     {
         self::reportWarning($message, true);
     }
@@ -59,7 +59,7 @@ final class Warn
      *
      * @internal
      */
-    public static function setCallback(callable $callback = null): ?callable
+    public static function setCallback(callable $callback = null)
     {
         $previousCallback = self::$callback;
         self::$callback = $callback;
@@ -73,7 +73,7 @@ final class Warn
      *
      * @return void
      */
-    private static function reportWarning(string $message, bool $deprecation): void
+    private static function reportWarning($message, $deprecation)
     {
         if (self::$callback === null) {
             throw new \BadMethodCallException('The warning Reporter may only be called within a custom function or importer callback.');

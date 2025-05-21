@@ -72,7 +72,7 @@ class EAPMTest extends SuitePHPUnitFrameworkTestCase
 
         //test for record ID to verify that record is saved
         self::assertTrue(isset($eapm->id));
-        self::assertEquals(36, strlen($eapm->id));
+        self::assertEquals(36, strlen((string) $eapm->id));
 
         //test validated method finally after save
         self::assertEquals(null, $eapm->validated());

@@ -48,7 +48,7 @@
 
 //change directories to where this file is located.
 //this is to make sure it can find dce_config.php
-chdir(dirname(__FILE__));
+chdir(__DIR__);
 
 require_once('include/entryPoint.php');
 

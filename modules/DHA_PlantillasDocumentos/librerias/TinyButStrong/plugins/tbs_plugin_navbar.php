@@ -9,6 +9,7 @@ Version 1.0.6, on 2008-01-29, by Skrol29
 
 define('TBS_NAVBAR','tbsNavBar');
 
+#[\AllowDynamicProperties]
 class tbsNavBar {
 
 	function OnInstall() {

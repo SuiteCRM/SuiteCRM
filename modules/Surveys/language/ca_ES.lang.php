@@ -40,6 +40,7 @@
 
 $mod_strings = array(
     'LBL_ASSIGNED_TO_ID'                                     => 'ID Usuari Assignat',
+    'LBL_ADD_OPTION'                                         => 'Afegir nova opció',
     'LBL_ASSIGNED_TO_NAME'                                   => 'Assignat a',
     'LBL_SECURITYGROUPS'                                     => 'Grups de Seguretat',
     'LBL_SECURITYGROUPS_SUBPANEL_TITLE'                      => 'Grups de Seguretat',
@@ -91,6 +92,7 @@ $mod_strings = array(
     'LBL_SURVEYS_SURVEYQUESTIONS_FROM_SURVEYQUESTIONS_TITLE' => 'Preguntes de l\'enquesta',
     'LBL_SURVEYS_SURVEYRESPONSES_FROM_SURVEYRESPONSES_TITLE' => 'Respostes a enquestes',
     'LBL_SHOW_RESPONSES'                                     => 'Mostrar Respostes',
+    'LBL_HIDE_RESPONSES'                                     => 'Amagar Respostes',
     'LBL_SURVEY_QUESTION'                                    => 'Question',
     'LBL_SURVEY_TEXT'                                        => 'Text',
     'LBL_SURVEY_TYPE'                                        => 'Tipus',
@@ -101,6 +103,7 @@ $mod_strings = array(
     'LBL_SURVEY_DISTINCT'                                    => 'Enquestes diferents enviades:',
     'LBL_SUBMIT'                                             => 'Envia',
     'LBL_STARS'                                              => 'Estrelles',
+    'LBL_SURVEY_CLOSE_RESPONSE'                              => 'Gràcies pel vostre interès, però aquesta enquesta ja està tancada.',
 
     // STIC-Custom 20240814 ART - Thank you message in surveys
     // https://github.com/SinergiaTIC/SinergiaCRM/pull/339
