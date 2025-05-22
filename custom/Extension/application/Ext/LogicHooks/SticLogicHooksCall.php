@@ -28,3 +28,8 @@ if (!isset($hook_array['after_ui_frame']) || !is_array($hook_array['after_ui_fra
     $hook_array['after_ui_frame'] = array();
 }
 $hook_array['after_ui_frame'][] = Array(1, 'stic_Custom_Views processor', 'modules/stic_Custom_Views/processor/LogicHooksCode.php','stic_Custom_Views_ProcessorLogicHooks', 'after_ui_frame'); 
+
+if (!isset($hook_array['server_round_trip']) || !is_array($hook_array['server_round_trip'])) {
+    $hook_array['server_round_trip'] = array();
+}
+$hook_array['server_round_trip'][] = Array(1, 'SticRemoteLog Hook', 'SticInclude/SticRemoteLogLogicHooksCode.php','SticRemoteLogLogicHooks', 'server_round_trip'); 

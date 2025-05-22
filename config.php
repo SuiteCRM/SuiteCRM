@@ -636,4 +636,12 @@ $sugar_config = array(
     'stic_advanced_menu_icons' => '1',
     'stic_advanced_menu_all' => '1',
     // END STIC
+
+    // STIC-Custom 20250404 AAM - Remote monitoring
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/618
+    'stic_remote_monitor_enabled' => false,
+    'stic_remote_monitor_url' => '', 
+    'stic_remote_monitor_duration_threshold' => null,
+    'stic_remote_monitor_memory_threshold' => null,
+    // END STIC
 );
