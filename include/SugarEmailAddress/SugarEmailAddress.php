@@ -496,7 +496,11 @@ class SugarEmailAddress extends SugarBean
                   WHERE 
                     id = {$_id} AND
                     deleted = 0";
-            $result = $db->query($query);
+            // STIC CUSTOM - 20250519 - JCH - DONT RUN QUERY
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/647
+            // $result = $db->query($query); 
+            // STIC CUSTOM
+
             if (!$result) {
                 $GLOBALS['log']->warn("Undefined behavior: Missing error information about email save (1)");
             }
