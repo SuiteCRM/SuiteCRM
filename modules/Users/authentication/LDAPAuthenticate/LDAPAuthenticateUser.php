@@ -42,6 +42,15 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+// STIC CUSTOM - 20250512 - JCH -  Prepare for LDAPAuthenticateUser.php
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/638
+// If there is a custom version of this file, use it instead
+if(file_exists('custom/modules/Users/authentication/LDAPAuthenticate/LDAPAuthenticateUser.php')){
+    require_once('custom/modules/Users/authentication/LDAPAuthenticate/LDAPAuthenticateUser.php');
+    die();
+}
+// END STIC CUSTOM
+
 /**
  * This file is where the user authentication occurs. No redirection should happen in this file.
  *

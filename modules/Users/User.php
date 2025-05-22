@@ -747,12 +747,31 @@ class User extends Person implements EmailInterface
 
         // Init a couple of vars for later use
         $saveUserWithoutPassword = false;
-        $saveUserAndPassword = false;
+        // STIC Custom - 20250512 - JCH - Prepare for LDAP Customization
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/638
+        // $saveUserAndPassword = false;
+
+        // // We won't be validating the password in these two cases:
+        // // 1- The user didn't fill the required password fields, or one of them
+        // // 2- None of the password fields are set, therefore we might be in a MassUpdate or Import action.
+        // if ((
+        //         isset($_POST['old_password']) && $_POST['old_password'] == '' &&
+        //         isset($_POST['new_password']) && $_POST['new_password'] == '' &&
+        //         isset($_POST['confirm_new_password']) && $_POST['confirm_new_password'] == ''
+        //     ) || (
+        //         !isset($_POST['old_password']) || 
+        //         !isset($_POST['new_password']) || 
+        //         !isset($_POST['confirm_new_password'])
+        //     )
+        // ) 
+        
+        $saveUserAndPassword = $_REQUEST['LDAP_user'] ?: false;
 
         // We won't be validating the password in these two cases:
         // 1- The user didn't fill the required password fields, or one of them
         // 2- None of the password fields are set, therefore we might be in a MassUpdate or Import action.
         if ((
+                !$saveUserAndPassword &&
                 isset($_POST['old_password']) && $_POST['old_password'] == '' &&
                 isset($_POST['new_password']) && $_POST['new_password'] == '' &&
                 isset($_POST['confirm_new_password']) && $_POST['confirm_new_password'] == ''
@@ -762,6 +781,7 @@ class User extends Person implements EmailInterface
                 !isset($_POST['confirm_new_password'])
             )
         ) 
+        // END STIC Custom
         {
             $saveUserWithoutPassword = true;
         // If the required password fields are set and aren't empty, we proceed on validating
