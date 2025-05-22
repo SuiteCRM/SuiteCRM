@@ -1,274 +1,453 @@
-<wsdl:definitions xmlns:apachesoap="http://xml.apache.org/xml-soap" 
-   xmlns:impl="urn:http.ws.incinc.lacaixa.es" 
-   xmlns:intf="urn:http.ws.incinc.lacaixa.es" 
-   xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
-   xmlns:tns1="http://xml.apache.org/axis/wsdd/providers/java" 
-   xmlns:tns2="http://model.portal.liferay.com" 
-   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
-   xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
-   xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:http.ws.incinc.lacaixa.es">
-   <!--
-WSDL created by Apache Axis version: 1.4
-Built on Apr 22, 2006 (06:55:48 PDT)
--->
-   <wsdl:types>
-      <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xml.apache.org/axis/wsdd/providers/java">
-         <import namespace="http://model.portal.liferay.com"/>
-         <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
-         <complexType name="es.lacaixa.incinc.ws.to.ComunesEntrada">
-            <sequence>
-               <element name="clave" nillable="true" type="soapenc:string"/>
-               <element name="idUsuario" nillable="true" type="soapenc:string"/>
-               <element name="idioma" nillable="true" type="soapenc:string"/>
-            </sequence>
-         </complexType>
-      </schema>
-      <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://model.portal.liferay.com">
-         <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
-         <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
-         <complexType name="salComun">
-            <sequence>
-               <element name="codRespuesta" nillable="true" type="soapenc:string"/>
-               <element name="fechaRespuesta" nillable="true" type="soapenc:string"/>
-               <element name="idUsuario" nillable="true" type="soapenc:string"/>
-               <element name="msgRespuesta" nillable="true" type="soapenc:string"/>
-               <element name="tipoRespuesta" nillable="true" type="soapenc:string"/>
-            </sequence>
-         </complexType>
-         <complexType name="salidaConsultaBeneficiarioV1">
-            <sequence>
-               <element name="beneficiarioApellido1" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioApellido2" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioCarnetsConducir" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioCertificadoDiscapacidad" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioColectivos" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDerivacion" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionBarrio" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionCP" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionEscalera" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionMunicipio" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionNombreVia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionNumA" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionNumB" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionPais" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionPiso" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionPoblacion" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionProvincia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionPuerta" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDireccionTipoVia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDisponibilidadViajar" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDocumento" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioDocumentoTipo" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioEMail" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioEntidadReferencia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioFechaIncorporacion" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioFechaNacimiento" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioGenero" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioGradoDiscapacidad" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioGrupoReferencia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioId" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioIdTecnicoReferencia" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioIdiomaComunicaciones" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioLopdConsentimiento" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioNacionalidad" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioNombre" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioNumHijos" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioNumHijosDiscapacitados" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioNumPersonasACargo" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioObservaciones" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioOcupacionSolicitada" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioOcupacionesNoQuiere" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioProximidadGeografica" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioPuestoTrabajo" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioSituacionLaboral" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioTelefonoFijo" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioTelefonoMovil" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioTiempoInscrOficTrabajo" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioTipoJornada" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioVehiculoPropio" nillable="true" type="soapenc:string"/>
-               <element name="beneficiarioVehiculoUtilizacion" nillable="true" type="soapenc:string"/>
-               <element name="salidaComun" nillable="true" type="tns2:salComun"/>
-            </sequence>
-         </complexType>
-         <complexType name="salidaAltaBeneficiarioV1">
-            <sequence>
-               <element name="idAltaBeneficiario" nillable="true" type="soapenc:string"/>
-               <element name="salidaComun" nillable="true" type="tns2:salComun"/>
-            </sequence>
-         </complexType>
-         <complexType name="salidaModificacionBeneficiarioV1">
-            <sequence>
-               <element name="idModificacionBeneficiario" nillable="true" type="soapenc:string"/>
-               <element name="salidaComun" nillable="true" type="tns2:salComun"/>
-            </sequence>
-         </complexType>
-      </schema>
-   </wsdl:types>
-   <wsdl:message name="altaBeneficiarioV1Response">
-      <wsdl:part name="altaBeneficiarioV1Return" type="tns2:salidaAltaBeneficiarioV1"/>
-   </wsdl:message>
-   <wsdl:message name="consultaBeneficiarioV1Response">
-      <wsdl:part name="consultaBeneficiarioV1Return" type="tns2:salidaConsultaBeneficiarioV1"/>
-   </wsdl:message>
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="urn:http.ws.incinc.lacaixa.es" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="urn:http.ws.incinc.lacaixa.es" xmlns:intf="urn:http.ws.incinc.lacaixa.es" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://xml.apache.org/axis/wsdd/providers/java" xmlns:tns2="http://model.portal.liferay.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://xml.apache.org/axis/wsdd/providers/java" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.portal.liferay.com"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="es.lacaixa.incinc.ws.to.ComunesEntrada">
+    <sequence>
+     <element name="clave" nillable="true" type="soapenc:string"/>
+     <element name="idUsuario" nillable="true" type="soapenc:string"/>
+     <element name="idioma" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema targetNamespace="http://model.portal.liferay.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="salComun">
+    <sequence>
+     <element name="codRespuesta" nillable="true" type="soapenc:string"/>
+     <element name="fechaRespuesta" nillable="true" type="soapenc:string"/>
+     <element name="idUsuario" nillable="true" type="soapenc:string"/>
+     <element name="msgRespuesta" nillable="true" type="soapenc:string"/>
+     <element name="tipoRespuesta" nillable="true" type="soapenc:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="salidaConsultaBeneficiarioV1">
+    <sequence>
+     <element name="beneficiarioApellido1" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioApellido2" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioCarnetsConducir" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioCertificadoDiscapacidad" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioColectivos" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDerivacion" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionBarrio" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionCP" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionEscalera" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionMunicipio" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionNombreVia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionNumA" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionNumB" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionPais" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionPiso" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionPoblacion" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionProvincia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionPuerta" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDireccionTipoVia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDisponibilidadViajar" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDocumento" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioDocumentoTipo" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioEMail" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioEntidadReferencia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioEspecificarOcupaciones" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioFechaIncorporacion" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioFechaNacimiento" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioGenero" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioGradoDiscapacidad" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioGrupoReferencia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioId" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioIdTecnicoReferencia" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioIdiomaComunicaciones" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioLopdConsentimiento" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioNacionalidadMultiseleccion" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioNombre" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioNumHijos" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioNumHijosDiscapacitados" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioNumPersonasACargo" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioObservaciones" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioOcupacionSolicitada" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioOcupacionesNoQuiere" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioPais" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioPrestacionEconomica" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioProximidadGeografica" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioPuestoTrabajo" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioSituacionLaboral" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioTelefonoFijo" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioTelefonoMovil" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioTiempoInscrOficTrabajo" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioTiempoViajeAsumible" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioTipoJornada" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioVehiculoPropio" nillable="true" type="soapenc:string"/>
+     <element name="beneficiarioVehiculoUtilizacion" nillable="true" type="soapenc:string"/>
+     <element name="salidaComun" nillable="true" type="tns2:salComun"/>
+    </sequence>
+   </complexType>
+   <complexType name="salidaAltaBeneficiarioV1">
+    <sequence>
+     <element name="idAltaBeneficiario" nillable="true" type="soapenc:string"/>
+     <element name="salidaComun" nillable="true" type="tns2:salComun"/>
+    </sequence>
+   </complexType>
+   <complexType name="salidaModificacionBeneficiarioV1">
+    <sequence>
+     <element name="idModificacionBeneficiario" nillable="true" type="soapenc:string"/>
+     <element name="salidaComun" nillable="true" type="tns2:salComun"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
    <wsdl:message name="modificacionBeneficiarioV1Request">
+
       <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
       <wsdl:part name="beneficiarioGrupoReferencia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioEntidadReferencia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioIdTecnicoReferencia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDerivacion" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDocumentoTipo" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDocumento" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioNombre" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioApellido1" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioApellido2" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionTipoVia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionNombreVia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionCP" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionNumA" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionNumB" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionEscalera" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionPiso" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionPuerta" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionBarrio" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionPais" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionProvincia" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionMunicipio" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDireccionPoblacion" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioTelefonoFijo" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioTelefonoMovil" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioEMail" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioGenero" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioFechaNacimiento" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNacionalidad" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioPais" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioIdiomaComunicaciones" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioColectivos" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioFechaIncorporacion" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioObservaciones" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioNumHijos" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioNumHijosDiscapacitados" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioNumPersonasACargo" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioGradoDiscapacidad" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioCertificadoDiscapacidad" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioSituacionLaboral" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioPrestacionEconomica" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioTiempoInscrOficTrabajo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioFormacionCarnetsConducir" type="xsd:string"/>
-      <wsdl:part name="beneficiarioOcupacionSolicitada" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioPuestoTrabajo" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioTipoJornada" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioProximidadGeografica" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioDisponibilidadViajar" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioCarnetsConducir" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioVehiculoPropio" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioVehiculoUtilizacion" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTiempoViajeAsumible" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioOcupacionSolicitada" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioEspecificarOcupaciones" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioOcupacionesNoQuiere" type="xsd:string"/>
+
       <wsdl:part name="beneficiarioLopdConsentimiento" type="xsd:string"/>
+
       <wsdl:part name="idBeneficiario" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNacionalidadMultiseleccion" type="xsd:string"/>
+
    </wsdl:message>
+
    <wsdl:message name="consultaBeneficiarioV1Request">
+
       <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
       <wsdl:part name="idBeneficiario" type="xsd:string"/>
+
    </wsdl:message>
-   <wsdl:message name="altaBeneficiarioV1Request">
-      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
-      <wsdl:part name="beneficiarioGrupoReferencia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioEntidadReferencia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioIdTecnicoReferencia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDerivacion" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDocumentoTipo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDocumento" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNombre" type="xsd:string"/>
-      <wsdl:part name="beneficiarioApellido1" type="xsd:string"/>
-      <wsdl:part name="beneficiarioApellido2" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionTipoVia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionNombreVia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionCP" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionNumA" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionNumB" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionEscalera" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionPiso" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionPuerta" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionBarrio" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionPais" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionProvincia" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionMunicipio" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDireccionPoblacion" type="xsd:string"/>
-      <wsdl:part name="beneficiarioTelefonoFijo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioTelefonoMovil" type="xsd:string"/>
-      <wsdl:part name="beneficiarioEMail" type="xsd:string"/>
-      <wsdl:part name="beneficiarioGenero" type="xsd:string"/>
-      <wsdl:part name="beneficiarioFechaNacimiento" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNacionalidad" type="xsd:string"/>
-      <wsdl:part name="beneficiarioIdiomaComunicaciones" type="xsd:string"/>
-      <wsdl:part name="beneficiarioColectivos" type="xsd:string"/>
-      <wsdl:part name="beneficiarioFechaIncorporacion" type="xsd:string"/>
-      <wsdl:part name="beneficiarioObservaciones" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNumHijos" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNumHijosDiscapacitados" type="xsd:string"/>
-      <wsdl:part name="beneficiarioNumPersonasACargo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioGradoDiscapacidad" type="xsd:string"/>
-      <wsdl:part name="beneficiarioCertificadoDiscapacidad" type="xsd:string"/>
-      <wsdl:part name="beneficiarioSituacionLaboral" type="xsd:string"/>
-      <wsdl:part name="beneficiarioTiempoInscrOficTrabajo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioFormacionCarnetsConducir" type="xsd:string"/>
-      <wsdl:part name="beneficiarioOcupacionSolicitada" type="xsd:string"/>
-      <wsdl:part name="beneficiarioPuestoTrabajo" type="xsd:string"/>
-      <wsdl:part name="beneficiarioTipoJornada" type="xsd:string"/>
-      <wsdl:part name="beneficiarioProximidadGeografica" type="xsd:string"/>
-      <wsdl:part name="beneficiarioDisponibilidadViajar" type="xsd:string"/>
-      <wsdl:part name="beneficiarioVehiculoPropio" type="xsd:string"/>
-      <wsdl:part name="beneficiarioVehiculoUtilizacion" type="xsd:string"/>
-      <wsdl:part name="beneficiarioOcupacionesNoQuiere" type="xsd:string"/>
-      <wsdl:part name="beneficiarioLopdConsentimiento" type="xsd:string"/>
-   </wsdl:message>
+
    <wsdl:message name="modificacionBeneficiarioV1Response">
+
       <wsdl:part name="modificacionBeneficiarioV1Return" type="tns2:salidaModificacionBeneficiarioV1"/>
+
    </wsdl:message>
+
+   <wsdl:message name="altaBeneficiarioV1Request">
+
+      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
+      <wsdl:part name="beneficiarioGrupoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioEntidadReferencia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioIdTecnicoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDerivacion" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDocumentoTipo" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDocumento" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNombre" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioApellido1" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioApellido2" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionTipoVia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionNombreVia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionCP" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionNumA" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionNumB" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionEscalera" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionPiso" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionPuerta" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionBarrio" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionPais" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionProvincia" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionMunicipio" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDireccionPoblacion" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTelefonoFijo" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTelefonoMovil" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioEMail" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioGenero" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioFechaNacimiento" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioPais" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioIdiomaComunicaciones" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioColectivos" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioFechaIncorporacion" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioObservaciones" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNumHijos" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNumHijosDiscapacitados" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNumPersonasACargo" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioGradoDiscapacidad" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioCertificadoDiscapacidad" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioSituacionLaboral" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioPrestacionEconomica" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTiempoInscrOficTrabajo" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioPuestoTrabajo" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTipoJornada" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioProximidadGeografica" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioDisponibilidadViajar" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioCarnetsConducir" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioVehiculoPropio" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioVehiculoUtilizacion" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioTiempoViajeAsumible" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioOcupacionSolicitada" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioEspecificarOcupaciones" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioOcupacionesNoQuiere" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioLopdConsentimiento" type="xsd:string"/>
+
+      <wsdl:part name="beneficiarioNacionalidadMultiseleccion" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="altaBeneficiarioV1Response">
+
+      <wsdl:part name="altaBeneficiarioV1Return" type="tns2:salidaAltaBeneficiarioV1"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="consultaBeneficiarioV1Response">
+
+      <wsdl:part name="consultaBeneficiarioV1Return" type="tns2:salidaConsultaBeneficiarioV1"/>
+
+   </wsdl:message>
+
    <wsdl:portType name="BeneficiarioServiceSoap">
+
       <wsdl:operation name="consultaBeneficiarioV1" parameterOrder="entrada idBeneficiario">
+
          <wsdl:input message="impl:consultaBeneficiarioV1Request" name="consultaBeneficiarioV1Request"/>
+
          <wsdl:output message="impl:consultaBeneficiarioV1Response" name="consultaBeneficiarioV1Response"/>
+
       </wsdl:operation>
-      <wsdl:operation name="altaBeneficiarioV1" parameterOrder="entrada beneficiarioGrupoReferencia beneficiarioEntidadReferencia beneficiarioIdTecnicoReferencia beneficiarioDerivacion beneficiarioDocumentoTipo beneficiarioDocumento beneficiarioNombre beneficiarioApellido1 beneficiarioApellido2 beneficiarioDireccionTipoVia beneficiarioDireccionNombreVia beneficiarioDireccionCP beneficiarioDireccionNumA beneficiarioDireccionNumB beneficiarioDireccionEscalera beneficiarioDireccionPiso beneficiarioDireccionPuerta beneficiarioDireccionBarrio beneficiarioDireccionPais beneficiarioDireccionProvincia beneficiarioDireccionMunicipio beneficiarioDireccionPoblacion beneficiarioTelefonoFijo beneficiarioTelefonoMovil beneficiarioEMail beneficiarioGenero beneficiarioFechaNacimiento beneficiarioNacionalidad beneficiarioIdiomaComunicaciones beneficiarioColectivos beneficiarioFechaIncorporacion beneficiarioObservaciones beneficiarioNumHijos beneficiarioNumHijosDiscapacitados beneficiarioNumPersonasACargo beneficiarioGradoDiscapacidad beneficiarioCertificadoDiscapacidad beneficiarioSituacionLaboral beneficiarioTiempoInscrOficTrabajo beneficiarioFormacionCarnetsConducir beneficiarioOcupacionSolicitada beneficiarioPuestoTrabajo beneficiarioTipoJornada beneficiarioProximidadGeografica beneficiarioDisponibilidadViajar beneficiarioVehiculoPropio beneficiarioVehiculoUtilizacion beneficiarioOcupacionesNoQuiere beneficiarioLopdConsentimiento">
+
+      <wsdl:operation name="altaBeneficiarioV1" parameterOrder="entrada beneficiarioGrupoReferencia beneficiarioEntidadReferencia beneficiarioIdTecnicoReferencia beneficiarioDerivacion beneficiarioDocumentoTipo beneficiarioDocumento beneficiarioNombre beneficiarioApellido1 beneficiarioApellido2 beneficiarioDireccionTipoVia beneficiarioDireccionNombreVia beneficiarioDireccionCP beneficiarioDireccionNumA beneficiarioDireccionNumB beneficiarioDireccionEscalera beneficiarioDireccionPiso beneficiarioDireccionPuerta beneficiarioDireccionBarrio beneficiarioDireccionPais beneficiarioDireccionProvincia beneficiarioDireccionMunicipio beneficiarioDireccionPoblacion beneficiarioTelefonoFijo beneficiarioTelefonoMovil beneficiarioEMail beneficiarioGenero beneficiarioFechaNacimiento beneficiarioPais beneficiarioIdiomaComunicaciones beneficiarioColectivos beneficiarioFechaIncorporacion beneficiarioObservaciones beneficiarioNumHijos beneficiarioNumHijosDiscapacitados beneficiarioNumPersonasACargo beneficiarioGradoDiscapacidad beneficiarioCertificadoDiscapacidad beneficiarioSituacionLaboral beneficiarioPrestacionEconomica beneficiarioTiempoInscrOficTrabajo beneficiarioPuestoTrabajo beneficiarioTipoJornada beneficiarioProximidadGeografica beneficiarioDisponibilidadViajar beneficiarioCarnetsConducir beneficiarioVehiculoPropio beneficiarioVehiculoUtilizacion beneficiarioTiempoViajeAsumible beneficiarioOcupacionSolicitada beneficiarioEspecificarOcupaciones beneficiarioOcupacionesNoQuiere beneficiarioLopdConsentimiento beneficiarioNacionalidadMultiseleccion">
+
          <wsdl:input message="impl:altaBeneficiarioV1Request" name="altaBeneficiarioV1Request"/>
+
          <wsdl:output message="impl:altaBeneficiarioV1Response" name="altaBeneficiarioV1Response"/>
+
       </wsdl:operation>
-      <wsdl:operation name="modificacionBeneficiarioV1" parameterOrder="entrada beneficiarioGrupoReferencia beneficiarioEntidadReferencia beneficiarioIdTecnicoReferencia beneficiarioDerivacion beneficiarioDocumentoTipo beneficiarioDocumento beneficiarioNombre beneficiarioApellido1 beneficiarioApellido2 beneficiarioDireccionTipoVia beneficiarioDireccionNombreVia beneficiarioDireccionCP beneficiarioDireccionNumA beneficiarioDireccionNumB beneficiarioDireccionEscalera beneficiarioDireccionPiso beneficiarioDireccionPuerta beneficiarioDireccionBarrio beneficiarioDireccionPais beneficiarioDireccionProvincia beneficiarioDireccionMunicipio beneficiarioDireccionPoblacion beneficiarioTelefonoFijo beneficiarioTelefonoMovil beneficiarioEMail beneficiarioGenero beneficiarioFechaNacimiento beneficiarioNacionalidad beneficiarioIdiomaComunicaciones beneficiarioColectivos beneficiarioFechaIncorporacion beneficiarioObservaciones beneficiarioNumHijos beneficiarioNumHijosDiscapacitados beneficiarioNumPersonasACargo beneficiarioGradoDiscapacidad beneficiarioCertificadoDiscapacidad beneficiarioSituacionLaboral beneficiarioTiempoInscrOficTrabajo beneficiarioFormacionCarnetsConducir beneficiarioOcupacionSolicitada beneficiarioPuestoTrabajo beneficiarioTipoJornada beneficiarioProximidadGeografica beneficiarioDisponibilidadViajar beneficiarioVehiculoPropio beneficiarioVehiculoUtilizacion beneficiarioOcupacionesNoQuiere beneficiarioLopdConsentimiento idBeneficiario">
+
+      <wsdl:operation name="modificacionBeneficiarioV1" parameterOrder="entrada beneficiarioGrupoReferencia beneficiarioEntidadReferencia beneficiarioIdTecnicoReferencia beneficiarioDerivacion beneficiarioDocumentoTipo beneficiarioDocumento beneficiarioNombre beneficiarioApellido1 beneficiarioApellido2 beneficiarioDireccionTipoVia beneficiarioDireccionNombreVia beneficiarioDireccionCP beneficiarioDireccionNumA beneficiarioDireccionNumB beneficiarioDireccionEscalera beneficiarioDireccionPiso beneficiarioDireccionPuerta beneficiarioDireccionBarrio beneficiarioDireccionPais beneficiarioDireccionProvincia beneficiarioDireccionMunicipio beneficiarioDireccionPoblacion beneficiarioTelefonoFijo beneficiarioTelefonoMovil beneficiarioEMail beneficiarioGenero beneficiarioFechaNacimiento beneficiarioPais beneficiarioIdiomaComunicaciones beneficiarioColectivos beneficiarioFechaIncorporacion beneficiarioObservaciones beneficiarioNumHijos beneficiarioNumHijosDiscapacitados beneficiarioNumPersonasACargo beneficiarioGradoDiscapacidad beneficiarioCertificadoDiscapacidad beneficiarioSituacionLaboral beneficiarioPrestacionEconomica beneficiarioTiempoInscrOficTrabajo beneficiarioPuestoTrabajo beneficiarioTipoJornada beneficiarioProximidadGeografica beneficiarioDisponibilidadViajar beneficiarioCarnetsConducir beneficiarioVehiculoPropio beneficiarioVehiculoUtilizacion beneficiarioTiempoViajeAsumible beneficiarioOcupacionSolicitada beneficiarioEspecificarOcupaciones beneficiarioOcupacionesNoQuiere beneficiarioLopdConsentimiento idBeneficiario beneficiarioNacionalidadMultiseleccion">
+
          <wsdl:input message="impl:modificacionBeneficiarioV1Request" name="modificacionBeneficiarioV1Request"/>
+
          <wsdl:output message="impl:modificacionBeneficiarioV1Response" name="modificacionBeneficiarioV1Response"/>
+
       </wsdl:operation>
+
    </wsdl:portType>
+
    <wsdl:binding name="Portlet_IncorporaWS_BeneficiarioSoapBinding" type="impl:BeneficiarioServiceSoap">
+
       <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
       <wsdl:operation name="consultaBeneficiarioV1">
+
          <wsdlsoap:operation soapAction=""/>
+
          <wsdl:input name="consultaBeneficiarioV1Request">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:input>
+
          <wsdl:output name="consultaBeneficiarioV1Response">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:output>
+
       </wsdl:operation>
+
       <wsdl:operation name="altaBeneficiarioV1">
+
          <wsdlsoap:operation soapAction=""/>
+
          <wsdl:input name="altaBeneficiarioV1Request">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:input>
+
          <wsdl:output name="altaBeneficiarioV1Response">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:output>
+
       </wsdl:operation>
+
       <wsdl:operation name="modificacionBeneficiarioV1">
+
          <wsdlsoap:operation soapAction=""/>
+
          <wsdl:input name="modificacionBeneficiarioV1Request">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:input>
+
          <wsdl:output name="modificacionBeneficiarioV1Response">
+
             <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:http.ws.incinc.lacaixa.es" use="encoded"/>
+
          </wsdl:output>
+
       </wsdl:operation>
+
    </wsdl:binding>
+
    <wsdl:service name="BeneficiarioServiceSoapService">
+
       <wsdl:port binding="impl:Portlet_IncorporaWS_BeneficiarioSoapBinding" name="Portlet_IncorporaWS_Beneficiario">
-         <wsdlsoap:address location="https://pre.intranet.incorpora.org:445/Incorpora/services/Portlet_IncorporaWS_Beneficiario"/>
+
+         <wsdlsoap:address location="http://intranet-incorpora.fundacionlacaixa.org/Incorpora/services/Portlet_IncorporaWS_Beneficiario"/>
+
       </wsdl:port>
+
    </wsdl:service>
+
 </wsdl:definitions>

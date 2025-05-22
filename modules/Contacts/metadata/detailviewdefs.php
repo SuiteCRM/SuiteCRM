@@ -970,6 +970,21 @@ array (
         array (
           0 => 
           array (
+            'name' => 'inc_country_origin_c',
+            'studio' => 'visible',
+            'label' => 'LBL_INC_COUNTRY_ORIGIN',
+          ),
+          1 => 
+          array (
+            'name' => 'inc_nationality_c',
+            'studio' => 'visible',
+            'label' => 'LBL_INC_NATIONALITY',
+          ),
+        ),
+        3 => 
+        array (
+          0 => 
+          array (
             'name' => 'inc_collectives_c',
             'studio' => 'visible',
             'label' => 'LBL_INC_COLLECTIVES',
@@ -981,7 +996,7 @@ array (
             'label' => 'LBL_INC_DERIVATION',
           ),
         ),
-        3 => 
+        4 => 
         array (
           0 => 
           array (
@@ -995,7 +1010,7 @@ array (
             'label' => 'LBL_INC_DISABILITY_CERT_ID',
           ),
         ),
-        4 => 
+        5 => 
         array (
           0 => 
           array (
@@ -1003,14 +1018,8 @@ array (
             'studio' => 'visible',
             'label' => 'LBL_INC_ECONOMIC_BENEFITS',
           ),
-          1 => 
-          array (
-            'name' => 'inc_nationality_c',
-            'studio' => 'visible',
-            'label' => 'LBL_INC_NATIONALITY',
-          ),
         ),
-        5 => 
+        6 => 
         array (
           0 => 
           array (
@@ -1023,7 +1032,7 @@ array (
             'label' => 'LBL_INC_DISABLED_CHILDREN',
           ),
         ),
-        6 => 
+        7 => 
         array (
           0 => 
           array (
@@ -1037,7 +1046,7 @@ array (
             'label' => 'LBL_INC_REQUESTED_WORKDAY',
           ),
         ),
-        7 => 
+        8 => 
         array (
           0 => 
           array (
@@ -1052,7 +1061,7 @@ array (
             'label' => 'LBL_INC_COMMUNICATIONS_LANGUAGE',
           ),
         ),
-        8 => 
+        9 => 
         array (
           0 => 
           array (
@@ -1066,7 +1075,7 @@ array (
             'label' => 'LBL_INC_MAX_COMMUTING_TIME',
           ),
         ),
-        9 => 
+        10 => 
         array (
           0 => 
           array (
@@ -1080,7 +1089,7 @@ array (
             'label' => 'LBL_INC_OWN_VEHICLE',
           ),
         ),
-        10 => 
+        11 => 
         array (
           0 => 
           array (
@@ -1095,7 +1104,7 @@ array (
             'label' => 'LBL_INC_TRAVEL_AVAILABILITY',
           ),
         ),
-        11 => 
+        12 => 
         array (
           0 => 
           array (
@@ -1109,7 +1118,7 @@ array (
             'label' => 'LBL_INC_EMPLOY_OFFICE_REG_TIME',
           ),
         ),
-        12 => 
+        13 => 
         array (
           0 => 
           array (
@@ -1118,7 +1127,7 @@ array (
             'label' => 'LBL_INC_REQUESTED_EMPLOYMENT',
           ),
         ),
-        13 => 
+        14 => 
         array (
           0 => 
           array (
@@ -1127,7 +1136,7 @@ array (
             'label' => 'LBL_INC_REQUESTED_EMPLOYMENT_DET',
           ),
         ),
-        14 => 
+        15 => 
         array (
           0 => 
           array (

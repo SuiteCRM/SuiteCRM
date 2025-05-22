@@ -5,8 +5,8 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema targetNamespace="http://xml.apache.org/axis/wsdd/providers/java" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://xml.apache.org/xml-soap"/>
-   <import namespace="http://model.portal.liferay.com"/>
    <import namespace="urn:http.ws.incinc.lacaixa.es"/>
+   <import namespace="http://model.portal.liferay.com"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="es.lacaixa.incinc.ws.to.ComunesEntrada">
     <sequence>
@@ -17,8 +17,8 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
   </schema>
   <schema targetNamespace="urn:http.ws.incinc.lacaixa.es" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
    <import namespace="http://xml.apache.org/xml-soap"/>
+   <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
    <import namespace="http://model.portal.liferay.com"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="ArrayOf_xsd_anyType">
@@ -30,9 +30,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
   </schema>
   <schema targetNamespace="http://xml.apache.org/xml-soap" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="urn:http.ws.incinc.lacaixa.es"/>
    <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
    <import namespace="http://model.portal.liferay.com"/>
-   <import namespace="urn:http.ws.incinc.lacaixa.es"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="Vector">
     <sequence>
@@ -41,9 +41,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
   </schema>
   <schema targetNamespace="http://model.portal.liferay.com" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
    <import namespace="http://xml.apache.org/xml-soap"/>
    <import namespace="urn:http.ws.incinc.lacaixa.es"/>
+   <import namespace="http://xml.apache.org/axis/wsdd/providers/java"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="salComun">
     <sequence>
@@ -130,123 +130,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="consultaEmpresaV1Response">
-
-      <wsdl:part name="consultaEmpresaV1Return" type="tns2:salidaConsultaEmpresaV1"/>
-
-   </wsdl:message>
-
    <wsdl:message name="altaEmpresaV1Response">
 
       <wsdl:part name="altaEmpresaV1Return" type="tns2:salidaAltaEmpresaV1"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="modificacionEmpresaV1Request">
-
-      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
-
-      <wsdl:part name="empresaCIF" type="xsd:string"/>
-
-      <wsdl:part name="empresaNombreComercial" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionTipoVia" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionNombreVia" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionCP" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionNumA" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionNumB" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionEscalera" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionPiso" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionPuerta" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionBarrio" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionPais" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionProvincia" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionMunicipio" type="xsd:string"/>
-
-      <wsdl:part name="empresaDireccionPoblacion" type="xsd:string"/>
-
-      <wsdl:part name="empresaEstado" type="xsd:string"/>
-
-      <wsdl:part name="empresaGrupoReferencia" type="xsd:string"/>
-
-      <wsdl:part name="empresaEntidadReferencia" type="xsd:string"/>
-
-      <wsdl:part name="empresaTecnicoReferencia" type="xsd:string"/>
-
-      <wsdl:part name="empresaModalidad" type="xsd:string"/>
-
-      <wsdl:part name="empresaNumTrabajadores" type="xsd:string"/>
-
-      <wsdl:part name="empresaSectorActividad" type="xsd:string"/>
-
-      <wsdl:part name="empresaCNAE_N1" type="xsd:string"/>
-
-      <wsdl:part name="empresaCNAE_N2" type="xsd:string"/>
-
-      <wsdl:part name="empresaCNAE_N3" type="xsd:string"/>
-
-      <wsdl:part name="empresaOcupaciones" type="xsd:string"/>
-
-      <wsdl:part name="empresaTipo" type="xsd:string"/>
-
-      <wsdl:part name="empresaAmbitoConvenio" type="xsd:string"/>
-
-      <wsdl:part name="empresaObservaciones" type="xsd:string"/>
-
-      <wsdl:part name="empresaTelefono" type="xsd:string"/>
-
-      <wsdl:part name="empresaFax" type="xsd:string"/>
-
-      <wsdl:part name="empresaEmail" type="xsd:string"/>
-
-      <wsdl:part name="empresaIdiomaContacto" type="xsd:string"/>
-
-      <wsdl:part name="empresaOrigenCaptacion" type="xsd:string"/>
-
-      <wsdl:part name="empresaFechaContacto" type="xsd:string"/>
-
-      <wsdl:part name="empresaPersonaContactoTelefono" type="xsd:string"/>
-
-      <wsdl:part name="empresaPersonaContactoNombre" type="xsd:string"/>
-
-      <wsdl:part name="empresaPersonaContactoCargo" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioDisponible" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioFirmadoCon" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioFechaInicio" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioEmpFirmanteNombre" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioEmpFirmanteCargo" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioIncorporaNombre" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioIncorporaCargo" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioAmbito" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioAportDisponible" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioAportImporte" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioAportConceptos" type="xsd:string"/>
-
-      <wsdl:part name="empresaConvenioAportFecha" type="xsd:string"/>
-
-      <wsdl:part name="idEmpresa" type="xsd:string"/>
 
    </wsdl:message>
 
@@ -362,11 +248,125 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="modificacionEmpresaV1Request">
+
+      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
+      <wsdl:part name="empresaCIF" type="xsd:string"/>
+
+      <wsdl:part name="empresaNombreComercial" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionTipoVia" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionNombreVia" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionCP" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionNumA" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionNumB" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionEscalera" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionPiso" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionPuerta" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionBarrio" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionPais" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionProvincia" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionMunicipio" type="xsd:string"/>
+
+      <wsdl:part name="empresaDireccionPoblacion" type="xsd:string"/>
+
+      <wsdl:part name="empresaEstado" type="xsd:string"/>
+
+      <wsdl:part name="empresaGrupoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="empresaEntidadReferencia" type="xsd:string"/>
+
+      <wsdl:part name="empresaTecnicoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="empresaModalidad" type="xsd:string"/>
+
+      <wsdl:part name="empresaNumTrabajadores" type="xsd:string"/>
+
+      <wsdl:part name="empresaSectorActividad" type="xsd:string"/>
+
+      <wsdl:part name="empresaCNAE_N1" type="xsd:string"/>
+
+      <wsdl:part name="empresaCNAE_N2" type="xsd:string"/>
+
+      <wsdl:part name="empresaCNAE_N3" type="xsd:string"/>
+
+      <wsdl:part name="empresaOcupaciones" type="xsd:string"/>
+
+      <wsdl:part name="empresaTipo" type="xsd:string"/>
+
+      <wsdl:part name="empresaAmbitoConvenio" type="xsd:string"/>
+
+      <wsdl:part name="empresaObservaciones" type="xsd:string"/>
+
+      <wsdl:part name="empresaTelefono" type="xsd:string"/>
+
+      <wsdl:part name="empresaFax" type="xsd:string"/>
+
+      <wsdl:part name="empresaEmail" type="xsd:string"/>
+
+      <wsdl:part name="empresaIdiomaContacto" type="xsd:string"/>
+
+      <wsdl:part name="empresaOrigenCaptacion" type="xsd:string"/>
+
+      <wsdl:part name="empresaFechaContacto" type="xsd:string"/>
+
+      <wsdl:part name="empresaPersonaContactoTelefono" type="xsd:string"/>
+
+      <wsdl:part name="empresaPersonaContactoNombre" type="xsd:string"/>
+
+      <wsdl:part name="empresaPersonaContactoCargo" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioDisponible" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioFirmadoCon" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioFechaInicio" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioEmpFirmanteNombre" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioEmpFirmanteCargo" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioIncorporaNombre" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioIncorporaCargo" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioAmbito" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioAportDisponible" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioAportImporte" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioAportConceptos" type="xsd:string"/>
+
+      <wsdl:part name="empresaConvenioAportFecha" type="xsd:string"/>
+
+      <wsdl:part name="idEmpresa" type="xsd:string"/>
+
+   </wsdl:message>
+
    <wsdl:message name="consultaEmpresaV1Request">
 
       <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
 
       <wsdl:part name="idEmpresa" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="consultaEmpresaV1Response">
+
+      <wsdl:part name="consultaEmpresaV1Return" type="tns2:salidaConsultaEmpresaV1"/>
 
    </wsdl:message>
 
@@ -462,7 +462,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:Portlet_IncorporaWS_EmpresaSoapBinding" name="Portlet_IncorporaWS_Empresa">
 
-         <wsdlsoap:address location="https://pre.intranet.incorpora.org:445/Incorpora/services/Portlet_IncorporaWS_Empresa"/>
+         <wsdlsoap:address location="http://intranet-incorpora.fundacionlacaixa.org/Incorpora/services/Portlet_IncorporaWS_Empresa"/>
 
       </wsdl:port>
 

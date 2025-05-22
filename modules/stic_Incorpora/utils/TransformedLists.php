@@ -85,11 +85,12 @@ $stic_genders_list = array(
     'MUJER' => 'female',
 );
 
-$stic_incorpora_nationality_list = array (
-    'extranjero' => 'extranjero',
-    'espanola' => 'nacional',
-    '**not_listed**' => 'extranjero',
-);
+// Removed in API update 20250513
+// $stic_incorpora_nationality_list = array (
+//     'extranjero' => 'extranjero',
+//     'espanola' => 'nacional',
+//     '**not_listed**' => 'extranjero',
+// );
 
 $stic_incorpora_yesno_list = array (
     '0' => 'NO',

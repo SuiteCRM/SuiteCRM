@@ -122,6 +122,7 @@ $mod_strings['LBL_INC_CHILDREN'] = 'Nombre de fills/es (Incorpora)';
 $mod_strings['LBL_INC_COLLECTIVES'] = 'Col·lectius (Incorpora)';
 $mod_strings['LBL_INC_COMMUNICATIONS_LANGUAGE'] = 'Idioma comunicacions (Incorpora)';
 $mod_strings['LBL_INC_COUNTRY'] = 'País (Incorpora)';
+$mod_strings['LBL_INC_COUNTRY_ORIGIN'] = "País d'origen (Incorpora)";
 $mod_strings['LBL_INC_DERIVATION'] = 'Derivació (Incorpora)';
 $mod_strings['LBL_INC_DISABILITY_CERT_ID'] = 'Id Certificat discapacitat (Incorpora)';
 $mod_strings['LBL_INC_DISABILITY_DEGREE'] = 'Grau de discapacitat (Incorpora)';

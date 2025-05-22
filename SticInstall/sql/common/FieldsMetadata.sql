@@ -125,6 +125,7 @@ INSERT INTO `fields_meta_data` (`id`, `custom_module`, `name`) VALUES
 ('Contactsinc_collectives_c', 'Contacts', 'inc_collectives_c'),
 ('Contactsinc_communications_language_c', 'Contacts', 'inc_communications_language_c'),
 ('Contactsinc_country_c', 'Contacts', 'inc_country_c'),
+('Contactsinc_country_origin_c', 'Contacts', 'inc_country_origin_c'),
 ('Contactsinc_derivation_c', 'Contacts', 'inc_derivation_c'),
 ('Contactsinc_disability_cert_id_c', 'Contacts', 'inc_disability_cert_id_c'),
 ('Contactsinc_disability_degree_c', 'Contacts', 'inc_disability_degree_c'),

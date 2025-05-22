@@ -88,87 +88,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="modificacionOfertaV1Request">
-
-      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
-
-      <wsdl:part name="ofertaNombre" type="xsd:string"/>
-
-      <wsdl:part name="ofertaGrupoReferencia" type="xsd:string"/>
-
-      <wsdl:part name="ofertaEntidadReferencia" type="xsd:string"/>
-
-      <wsdl:part name="ofertaIdTecnicoReferencia" type="xsd:string"/>
-
-      <wsdl:part name="ofertaEmpresaOfertante" type="xsd:string"/>
-
-      <wsdl:part name="ofertaCnoN1" type="xsd:string"/>
-
-      <wsdl:part name="ofertaCnoN2" type="xsd:string"/>
-
-      <wsdl:part name="ofertaCnoN3" type="xsd:string"/>
-
-      <wsdl:part name="fechaRecepcion" type="xsd:string"/>
-
-      <wsdl:part name="puestosTrabajo" type="xsd:string"/>
-
-      <wsdl:part name="ofertaPais" type="xsd:string"/>
-
-      <wsdl:part name="ofertaProvincia" type="xsd:string"/>
-
-      <wsdl:part name="ofertaMunicipio" type="xsd:string"/>
-
-      <wsdl:part name="ofertaPoblacion" type="xsd:string"/>
-
-      <wsdl:part name="fechaIniContrato" type="xsd:string"/>
-
-      <wsdl:part name="fechaIniInscripcion" type="xsd:string"/>
-
-      <wsdl:part name="fechaFinInscripcion" type="xsd:string"/>
-
-      <wsdl:part name="tipoContrato" type="xsd:string"/>
-
-      <wsdl:part name="ofertaDuracionContrato" type="xsd:string"/>
-
-      <wsdl:part name="ofertaDuracionContratoDet" type="xsd:string"/>
-
-      <wsdl:part name="tipoJornada" type="xsd:string"/>
-
-      <wsdl:part name="ofertaHorasSemanales" type="xsd:string"/>
-
-      <wsdl:part name="origenCaptacion" type="xsd:string"/>
-
-      <wsdl:part name="colectivo" type="xsd:string"/>
-
-      <wsdl:part name="funcionesTareas" type="xsd:string"/>
-
-      <wsdl:part name="idOferta" type="xsd:string"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="modificacionOfertaV1Response">
-
-      <wsdl:part name="modificacionOfertaV1Return" type="tns2:salidaModificacionOfertaV1"/>
-
-   </wsdl:message>
-
    <wsdl:message name="altaOfertaV1Response">
 
       <wsdl:part name="altaOfertaV1Return" type="tns2:salidaAltaOfertaV1"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="consultaOfertaV1Response">
-
-      <wsdl:part name="consultaOfertaV1Return" type="tns2:salidaConsultaOfertaV1"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="consultaOfertaV1Request">
-
-      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
-
-      <wsdl:part name="idOferta" type="xsd:string"/>
 
    </wsdl:message>
 
@@ -225,6 +147,84 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
       <wsdl:part name="colectivo" type="xsd:string"/>
 
       <wsdl:part name="funcionesTareas" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="modificacionOfertaV1Response">
+
+      <wsdl:part name="modificacionOfertaV1Return" type="tns2:salidaModificacionOfertaV1"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="consultaOfertaV1Request">
+
+      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
+      <wsdl:part name="idOferta" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="consultaOfertaV1Response">
+
+      <wsdl:part name="consultaOfertaV1Return" type="tns2:salidaConsultaOfertaV1"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="modificacionOfertaV1Request">
+
+      <wsdl:part name="entrada" type="tns1:es.lacaixa.incinc.ws.to.ComunesEntrada"/>
+
+      <wsdl:part name="ofertaNombre" type="xsd:string"/>
+
+      <wsdl:part name="ofertaGrupoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="ofertaEntidadReferencia" type="xsd:string"/>
+
+      <wsdl:part name="ofertaIdTecnicoReferencia" type="xsd:string"/>
+
+      <wsdl:part name="ofertaEmpresaOfertante" type="xsd:string"/>
+
+      <wsdl:part name="ofertaCnoN1" type="xsd:string"/>
+
+      <wsdl:part name="ofertaCnoN2" type="xsd:string"/>
+
+      <wsdl:part name="ofertaCnoN3" type="xsd:string"/>
+
+      <wsdl:part name="fechaRecepcion" type="xsd:string"/>
+
+      <wsdl:part name="puestosTrabajo" type="xsd:string"/>
+
+      <wsdl:part name="ofertaPais" type="xsd:string"/>
+
+      <wsdl:part name="ofertaProvincia" type="xsd:string"/>
+
+      <wsdl:part name="ofertaMunicipio" type="xsd:string"/>
+
+      <wsdl:part name="ofertaPoblacion" type="xsd:string"/>
+
+      <wsdl:part name="fechaIniContrato" type="xsd:string"/>
+
+      <wsdl:part name="fechaIniInscripcion" type="xsd:string"/>
+
+      <wsdl:part name="fechaFinInscripcion" type="xsd:string"/>
+
+      <wsdl:part name="tipoContrato" type="xsd:string"/>
+
+      <wsdl:part name="ofertaDuracionContrato" type="xsd:string"/>
+
+      <wsdl:part name="ofertaDuracionContratoDet" type="xsd:string"/>
+
+      <wsdl:part name="tipoJornada" type="xsd:string"/>
+
+      <wsdl:part name="ofertaHorasSemanales" type="xsd:string"/>
+
+      <wsdl:part name="origenCaptacion" type="xsd:string"/>
+
+      <wsdl:part name="colectivo" type="xsd:string"/>
+
+      <wsdl:part name="funcionesTareas" type="xsd:string"/>
+
+      <wsdl:part name="idOferta" type="xsd:string"/>
 
    </wsdl:message>
 
@@ -320,7 +320,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:Portlet_IncorporaWS_OfertaSoapBinding" name="Portlet_IncorporaWS_Oferta">
 
-         <wsdlsoap:address location="https://pre.intranet.incorpora.org:445/Incorpora/services/Portlet_IncorporaWS_Oferta"/>
+         <wsdlsoap:address location="http://intranet-incorpora.fundacionlacaixa.org/Incorpora/services/Portlet_IncorporaWS_Oferta"/>
 
       </wsdl:port>
 

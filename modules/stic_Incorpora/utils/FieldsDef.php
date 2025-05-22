@@ -357,10 +357,13 @@ $contactDef = array(
         1 => 'date',
         'required' => true,
     ),
+    'inc_country_origin_c' => array(
+        0 => 'beneficiarioPais',
+        'required' => true,
+    ),
     'inc_nationality_c' => array(
-        0 => 'beneficiarioNacionalidad',
-        1 => 'transformedList',
-        2 => 'stic_incorpora_nationality_list',
+        0 => 'beneficiarioNacionalidadMultiseleccion',
+        1 => 'multienum',
         'required' => true,
     ),
     'inc_communications_language_c' => array(
