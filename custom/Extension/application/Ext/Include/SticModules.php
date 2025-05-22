@@ -61,6 +61,7 @@ $moduleList[] = 'stic_Journal';
 $moduleList[] = 'stic_Training';
 $moduleList[] = 'stic_Work_Experience';
 $moduleList[] = 'stic_Skills';
+$moduleList[] = 'stic_Group_Opportunities';
 
 // Bean names for custom modules
 // Although they should be singular ModuleBuilder outputs them in plural and we keep them this way
