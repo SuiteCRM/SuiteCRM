@@ -6156,7 +6156,9 @@ function isSelfRequest($endpoint) : bool {
      // Get the list of valid custom entry points
     $customEntryPoints = getCustomEntryPoints();
     // Check if the endpoint matches a URL of the form "$siteURL/index.php?entryPoint={entry_point_name}"
-    $entryPointPattern = "/^" . preg_quote($siteUrl, '/') . "\/index.php\?entryPoint=(" . implode('|', $customEntryPoints) . ")$/i";
+    $siteUrl = rtrim($GLOBALS['sugar_config']['site_url'], '/'); // removes trailing slash if present
+    $entryPointPattern = "/^" . preg_quote($siteUrl, '/') . "\/index.php\?entryPoint=(" . implode('|', $customEntryPoints) . ")(?:&.*)?$/i";
+
     if (preg_match($entryPointPattern, $endpoint)) {
         return false; // It matches a valid custom entry point URL
     }
