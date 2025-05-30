@@ -214,7 +214,7 @@ abstract class ImportDataSource implements Iterator
     public function writeError($error, $fieldName, $fieldValue)
     {
         $fp = sugar_fopen(ImportCacheFiles::getErrorFileName(), 'a');
-        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount));
+        fputcsv($fp, array($error,$fieldName,$fieldValue,$this->_rowsCount), ',', '"', '\\');
         fclose($fp);
 
         if (!$this->_rowCountedForErrors) {
@@ -245,7 +245,7 @@ abstract class ImportDataSource implements Iterator
         $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'a');
         $statusData = array($this->_rowsCount,$this->_errorCount,$this->_dupeCount,
                             $this->_createdCount,$this->_updatedCount,$this->_sourcename);
-        fputcsv($fp, $statusData);
+        fputcsv($fp, $statusData, ',', '"', '\\');
         fclose($fp);
     }
 
@@ -255,7 +255,7 @@ abstract class ImportDataSource implements Iterator
     public function markRowAsDuplicate($field_names=array())
     {
         $fp = sugar_fopen(ImportCacheFiles::getDuplicateFileName(), 'a');
-        fputcsv($fp, $this->_currentRow);
+        fputcsv($fp, $this->_currentRow, ',', '"', '\\');
         fclose($fp);
 
         //if available, grab the column number based on passed in field_name
@@ -294,7 +294,7 @@ abstract class ImportDataSource implements Iterator
 
         //add the row (with or without stylings) to the list view, this will get displayed to the user as a list of duplicates
         $fdp = sugar_fopen(ImportCacheFiles::getDuplicateFileDisplayName(), 'a');
-        fputcsv($fdp, $this->_currentRow);
+        fputcsv($fdp, $this->_currentRow, ',', '"', '\\');
         fclose($fdp);
 
         //increment dupecount
@@ -325,12 +325,11 @@ abstract class ImportDataSource implements Iterator
         $fpNoErrors = sugar_fopen(ImportCacheFiles::getErrorRecordsWithoutErrorFileName(), 'a');
 
         //Write records only for download without error message.
-        fputcsv($fpNoErrors, $rowData);
+        fputcsv($fpNoErrors, $rowData, ',', '"', '\\');
 
         //Add the error message to the first column
         array_unshift($rowData, $errorMessage);
-        fputcsv($fp, $rowData);
-
+        fputcsv($fp, $rowData, ',', '"', '\\');
         fclose($fp);
         fclose($fpNoErrors);
     }

@@ -97,7 +97,7 @@ class SugarRestJSON extends SugarRest{
             if (!isset($data['application_name']) && isset($data['application'])){
                 $data['application_name'] = $data['application'];
             }
-			$res = call_user_func_array(array( $this->implementation, $method),$data);
+			$res = $this->implementation->{$method}(...array_values($data));
 			$GLOBALS['log']->info('End: SugarRestJSON->serve');
 			return $res;
 		} // else

@@ -48,6 +48,7 @@ require_once('include/MVC/View/SugarView.php');
  * Main SugarCRM controller
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarController
 {
     /**

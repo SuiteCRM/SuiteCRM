@@ -149,7 +149,7 @@ class PackageManagerDisplay
      * @param String active_form - the form to display first
      * @return String - a string of html which will be used to display the forms
      */
-    public function buildPatchDisplay($form1, $hidden_fields, $form_action, $types = array('module'), $active_form = 'form1')
+    public static function buildPatchDisplay($form1, $hidden_fields, $form_action, $types = array('module'), $active_form = 'form1')
     {
         global $current_language;
         $mod_strings = return_module_language($current_language, "Administration");
@@ -344,7 +344,7 @@ class PackageManagerDisplay
      * @param String modify_field - the field to update when the radio button is changed
      * @return String - a form used to display the license
      */
-    public function getLicenseDisplay($license_file, $form_action, $next_step, $zipFile, $type, $manifest, $modify_field)
+    public static function getLicenseDisplay($license_file, $form_action, $next_step, $zipFile, $type, $manifest, $modify_field)
     {
         global $current_language;
         $mod_strings = return_module_language($current_language, "Administration");

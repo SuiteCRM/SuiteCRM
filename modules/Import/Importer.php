@@ -849,7 +849,6 @@ class Importer
             case E_NOTICE:
                 $message = "NOTICE: [$errno] $errstr on line $errline in file $errfile<br />\n";
                 break;
-            case E_STRICT:
             case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 // don't worry about these

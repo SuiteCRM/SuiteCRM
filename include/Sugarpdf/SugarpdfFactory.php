@@ -60,7 +60,7 @@ class SugarpdfFactory
      * @param array $sugarpdf_object_map
      * @return a|null|Sugarpdf
      */
-    public function loadSugarpdf($type, $module = null, $bean = null, $sugarpdf_object_map = array())
+    public static function loadSugarpdf($type, $module = null, $bean = null, $sugarpdf_object_map = array())
     {
 
         // set $type = 'default' by default
@@ -135,7 +135,7 @@ class SugarpdfFactory
      *
      * @return a valid Sugarpdf
      */
-    public function _buildFromFile($file, &$bean, $sugarpdf_object_map, $type, $module)
+    private static function _buildFromFile($file, &$bean, $sugarpdf_object_map, $type, $module)
     {
         require_once($file);
         //try ModuleSugarpdfType first then try SugarpdfType if that fails then use Sugarpdf
@@ -160,7 +160,7 @@ class SugarpdfFactory
      *
      * @return Sugarpdf
      */
-    public function _buildClass($class, &$bean, $sugarpdf_object_map)
+    private static function _buildClass($class, &$bean, $sugarpdf_object_map)
     {
         $sugarpdf = new $class($bean, $sugarpdf_object_map);
         //$sugarpdf->init($bean, $sugarpdf_object_map);

@@ -320,6 +320,7 @@ $GLOBALS['_transient']['static']['nusoap_base']['globalDebugLevel'] = 0;
 
 * @access   public
 */
+#[\AllowDynamicProperties]
 class nusoap_base
 {
     /**
@@ -2568,6 +2569,7 @@ class nusoap_xmlschema extends nusoap_base
     */
     public function serializeTypeDef($type)
     {
+        $str = '';
         //print "in sTD() for type $type<br>";
         if ($typeDef = $this->getTypeDef($type)) {
             $str .= '<'.$type;
@@ -2605,6 +2607,7 @@ class nusoap_xmlschema extends nusoap_base
     */
     public function typeToForm($name, $type)
     {
+        $buffer = '';
         // get typedef
         if ($typeDef = $this->getTypeDef($type)) {
             // if struct

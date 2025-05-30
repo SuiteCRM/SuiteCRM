@@ -115,7 +115,7 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
         $action = 'DetailView';
         if($module === "Emails"){
             $email = BeanFactory::getBean($module, $record);
-            if($email->status === "draft"){
+            if($email !== false && $email->status === "draft"){
                 $action = 'DetailDraftView';
             }
         }

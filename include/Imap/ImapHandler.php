@@ -515,6 +515,10 @@ class ImapHandler implements ImapHandlerInterface
     public function expunge()
     {
         $this->logCall(__FUNCTION__, func_get_args());
+        if (!$this->getStream()) {
+            $this->log('IMAP get Setream error in expunge');
+            return false;
+        }
         $ret = imap_expunge($this->getStream());
         if (!$ret) {
             $this->log('IMAP expunge error');
@@ -818,7 +822,7 @@ class ImapHandler implements ImapHandlerInterface
      * @param int $options
      * @return bool Returns TRUE on success or FALSE on failure.
      */
-    public function setFlagFull($sequence, $flag, $options = NIL)
+    public function setFlagFull($sequence, $flag, $options = null)
     {
         $this->logCall(__FUNCTION__, func_get_args());
         $ret = imap_setflag_full($this->getStream(), $sequence, $flag, $options);
@@ -925,7 +929,8 @@ class ImapHandler implements ImapHandlerInterface
 
             if ($sortOrder === 0) {
                 // Ascending order
-                if ($offset === "end") {
+                // Avoid TypeError $offset is int
+                if ($offset === 0) {
                     $firstMsg = $totalMsgs - (int)$pageSize;
                     $lastMsg = $totalMsgs;
                 } elseif ($offset <= 0) {
@@ -937,7 +942,8 @@ class ImapHandler implements ImapHandlerInterface
                 }
             } else {
                 // Descending order
-                if ($offset === "end") {
+                // Avoid TypeError $offset is int
+                if ($offset === 0) {
                     $firstMsg = 1;
                     $lastMsg = $firstMsg + (int)$pageSize;
                 } elseif ($offset <= 0) {
@@ -986,7 +992,8 @@ class ImapHandler implements ImapHandlerInterface
             $lastSequenceNumber = $mailboxInfo['Nmsgs'] = count($emailSortedHeaders);
 
             // paginate
-            if ($offset === "end") {
+            // Avoid TypeError $offset is int
+            if ($offset === 0) {
                 $offset = $lastSequenceNumber - $pageSize;
             } elseif ($offset <= 0) {
                 $offset = 0;

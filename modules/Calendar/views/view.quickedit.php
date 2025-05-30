@@ -51,7 +51,7 @@ class CalendarViewQuickEdit extends SugarView
     {
         $this->bean = $this->view_object_map['currentBean'];
 
-        if ($this->bean->ACLAccess('Save')) {
+        if ($this->bean !== false && $this->bean->ACLAccess('Save')) {
             $this->editable = 1;
         } else {
             $this->editable = 0;

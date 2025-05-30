@@ -826,7 +826,7 @@ class SugarBean
         $final_query = '';
         $final_query_rows = '';
         $subpanel_list = array();
-        if (method_exists($subpanel_def ?? '', 'isCollection')) {
+        if ((is_object($subpanel_def) || is_string($subpanel_def)) && method_exists($subpanel_def, 'isCollection')) {
             if ($subpanel_def->isCollection()) {
                 if ($subpanel_def->load_sub_subpanels() === false) {
                     $subpanel_list = array();
@@ -3819,7 +3819,13 @@ class SugarBean
                         $localTable .= '_cstm';
                     }
                     global $beanFiles, $beanList;
-                    require_once($beanFiles[$beanList[$joinModule]]);
+                    $moduleClass = $beanList[$joinModule] ?? '';
+                    $filePath = $beanFiles[$moduleClass] ?? '';
+                    if (!empty($filePath)) {
+                        require_once($filePath);
+                    } else {
+                        $GLOBALS['log']->fatal("Unable to load module $joinModule");
+                    }
                     $rel_mod = new $beanList[$joinModule]();
                     $nameField = "$joinTableAlias.name";
                     if (isset($rel_mod->field_defs['name'])) {
@@ -6110,7 +6116,7 @@ class SugarBean
         if ($current_user->isAdmin() || !$this->bean_implements('ACL')) {
             return true;
         }
-        $view = strtolower($view);
+        $view = strtolower((string) $view);
         switch ($view) {
             case 'list':
             case 'index':

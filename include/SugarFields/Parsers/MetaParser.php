@@ -62,8 +62,7 @@ class MetaParser
 
 
 
-
-    public function parse()
+    public function parse($filePath)
     {
         return "NOT AVAILABLE";
     }
@@ -359,7 +358,7 @@ class MetaParser
             return $javascript;
         }
 
-        return $this->parseDelimiters($javascript);
+        return static::parseDelimiters($javascript);
     }
 
     public static function parseDelimiters($javascript)

@@ -70,7 +70,7 @@
     {assign var="hideTable" value=true}
     <div class="list view listViewEmpty">
         {if $displayEmptyDataMesssages}
-            {if strlen($query) == 0}
+            {if strlen((string)$query) == 0}
                 {capture assign="createLink"}<a
                     href="?module={$pageData.bean.moduleDir}&action=EditView&return_module={$pageData.bean.moduleDir}&return_action=DetailView">{$APP.LBL_CREATE_BUTTON_LABEL}</a>{/capture}
                 {capture assign="importLink"}<a

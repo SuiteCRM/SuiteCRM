@@ -45,7 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("include/JSON.php");
 
-
+#[\AllowDynamicProperties]
 class SugarEmailAddress extends SugarBean
 {
     const ERR_INVALID_REQUEST_NO_USER_PROFILE_PAGE_SAVE_ACTION = 1;
@@ -555,6 +555,9 @@ class SugarEmailAddress extends SugarBean
         }
 
         if (isset($bean->email1) && !isset($bean->fetched_row['email1'])) {
+            if ($bean->fetched_row === false) {
+                $bean->fetched_row = [];
+            }
             $bean->fetched_row['email1'] = $bean->email1;
         }
 

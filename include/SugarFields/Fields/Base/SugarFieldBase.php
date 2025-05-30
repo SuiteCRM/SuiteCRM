@@ -363,7 +363,7 @@ class SugarFieldBase
                 return $funcName(
                     $parentFieldArray,
                     $vardef['name'],
-                    $parentFieldArray[strtoupper($vardef['name'])],
+                    is_array($parentFieldArray) ? ($parentFieldArray[strtoupper($vardef['name'] ?? '')] ?? null) : null,
                     $displayType
                 );
             } else {

@@ -48,12 +48,12 @@ $module_menu = array();
 if ($GLOBALS['current_user']->isAdminForModule('Users')
 ) {
     $module_menu = array(
-        array("index.php?module=Users&action=EditView&return_module=Users&return_action=DetailView", $mod_strings['LNK_NEW_USER'], "Create"),
-        array("index.php?module=Users&action=EditView&usertype=group&return_module=Users&return_action=DetailView", $mod_strings['LNK_NEW_GROUP_USER'], "Create_Group_User")
+        array("index.php?module=Users&action=EditView&return_module=Users&return_action=DetailView", $mod_strings['LNK_NEW_USER'] ?? '', "Create"),
+        array("index.php?module=Users&action=EditView&usertype=group&return_module=Users&return_action=DetailView", $mod_strings['LNK_NEW_GROUP_USER'] ?? '', "Create_Group_User")
     );
-    $module_menu[] = array("index.php?module=Users&action=ListView&return_module=Users&return_action=DetailView", $mod_strings['LNK_USER_LIST'], "List");
+    $module_menu[] = array("index.php?module=Users&action=ListView&return_module=Users&return_action=DetailView", $mod_strings['LNK_USER_LIST'] ?? '', "List");
 
-    $module_menu[] = array("index.php?module=Import&action=Step1&import_module=Users&return_module=Users&return_action=index", $mod_strings['LNK_IMPORT_USERS'], "Import", 'Contacts');
+    $module_menu[] = array("index.php?module=Import&action=Step1&import_module=Users&return_module=Users&return_action=index", $mod_strings['LNK_IMPORT_USERS'] ?? '', "Import", 'Contacts');
 }
 
 $sg_mod_strings = return_module_language($current_language, 'SecurityGroups');
@@ -68,5 +68,5 @@ if (is_admin($current_user)) {
 }
 
 $module_menu[]= array("index.php?module=InboundEmail&action=index", $mod_strings['LNK_LIST_INBOUND_EMAIL_ACCOUNTS'] ?? '',"List");
-$module_menu[]= array("index.php?module=OutboundEmailAccounts&action=index", $mod_strings['LNK_LIST_OUTBOUND_EMAIL_ACCOUNTS'],"List");
-$module_menu[]= array("index.php?module=ExternalOAuthConnection&action=index", $mod_strings['LNK_EXTERNAL_OAUTH_CONNECTIONS'],"List");
+$module_menu[]= array("index.php?module=OutboundEmailAccounts&action=index", $mod_strings['LNK_LIST_OUTBOUND_EMAIL_ACCOUNTS'] ?? '',"List");
+$module_menu[]= array("index.php?module=ExternalOAuthConnection&action=index", $mod_strings['LNK_EXTERNAL_OAUTH_CONNECTIONS'] ?? '',"List");

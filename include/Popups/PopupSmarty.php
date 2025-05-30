@@ -432,7 +432,11 @@ class PopupSmarty extends ListViewSmarty
 
         if (isset($_REQUEST['request_data'])) {
             $request_data = json_decode(html_entity_decode($_REQUEST['request_data']), true);
-            $_POST['field_to_name'] = $_REQUEST['field_to_name'] = array_keys($request_data['field_to_name_array']);
+            if (isset($request_data['field_to_name_array']) && is_array($request_data['field_to_name_array'])) {
+                $_POST['field_to_name'] = $_REQUEST['field_to_name'] = array_keys($request_data['field_to_name_array']);
+            } else {
+                $_POST['field_to_name'] = $_REQUEST['field_to_name'] = [];
+            }
         }
 
         /**

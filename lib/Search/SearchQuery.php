@@ -186,7 +186,11 @@ class SearchQuery implements JsonSerializable
             return $default;
         }
 
-        $value = filter_var($array[$key], $filter);
+        if ($filter === null) {
+            $value = $array[$key];
+        } else {
+            $value = filter_var($array[$key], $filter);
+        }
 
         if ($value === false) {
             return $default;

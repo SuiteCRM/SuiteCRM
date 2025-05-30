@@ -264,7 +264,7 @@ interface ImapHandlerInterface
      * @param int $options
      * @return bool Returns TRUE on success or FALSE on failure.
      */
-    public function setFlagFull($sequence, $flag, $options = NIL);
+    public function setFlagFull($sequence, $flag, $options = null);
 
     /**
      *

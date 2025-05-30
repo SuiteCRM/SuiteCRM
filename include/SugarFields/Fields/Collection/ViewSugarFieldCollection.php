@@ -40,7 +40,7 @@
 
 require_once('include/SugarFields/Fields/Collection/SugarFieldCollection.php');
 
-
+#[\AllowDynamicProperties]
 class ViewSugarFieldCollection
 {
     public $ss; // Sugar Smarty Object

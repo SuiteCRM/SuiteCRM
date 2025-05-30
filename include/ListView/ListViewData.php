@@ -181,6 +181,7 @@ class ListViewData
         if (!isset($_REQUEST['module'])) {
             LoggerManager::getLogger()->warn('Undefined index: module');
         }
+        $baseName = (string) ($baseName ?? '');
 
         $module = (!empty($listviewName)) ? $listviewName: (isset($_REQUEST['module']) ? $_REQUEST['module'] : null);
         $this->var_name = $module .'2_'. strtoupper($baseName) . ($id?'_'.$id:'');
@@ -248,6 +249,9 @@ class ListViewData
      */
     public function getListViewData($seed, $where, $offset=-1, $limit = -1, $filter_fields=array(), $params=array(), $id_field = 'id', $singleSelect=true, $id = null)
     {
+        if ($seed == null) {
+            return null;
+        }
         global $current_user;
         require_once 'include/SearchForm/SearchForm2.php';
         SugarVCR::erase($seed->module_dir);
@@ -516,7 +520,7 @@ class ListViewData
         $queryString = '';
 
         if (isset($_REQUEST["searchFormTab"]) && $_REQUEST["searchFormTab"] == "advanced_search" ||
-            isset($_REQUEST["type_basic"]) && (count($_REQUEST["type_basic"]) > 1 || $_REQUEST["type_basic"][0] != "") ||
+            isset($_REQUEST["type_basic"]) && is_array($_REQUEST["type_basic"]) && (count($_REQUEST["type_basic"]) > 1 || $_REQUEST["type_basic"][0] != "") ||
             isset($_REQUEST["module"]) && $_REQUEST["module"] == "MergeRecords") {
             $queryString = "-advanced_search";
         } else {
@@ -538,7 +542,7 @@ class ListViewData
                     $field_name .= "_basic";
                     if (isset($_REQUEST[$field_name])  && (!is_array($basicSearchField) || !isset($basicSearchField['type']) || $basicSearchField['type'] == 'text' || $basicSearchField['type'] == 'name')) {
                         // Ensure the encoding is UTF-8
-                        $queryString = htmlentities($_REQUEST[$field_name], null, 'UTF-8');
+                        $queryString = htmlentities($_REQUEST[$field_name], ENT_QUOTES, 'UTF-8');
                         break;
                     }
                 }

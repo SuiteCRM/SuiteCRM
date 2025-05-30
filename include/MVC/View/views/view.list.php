@@ -43,7 +43,7 @@ require_once('include/MVC/View/SugarView.php');
 require_once('include/ListView/ListViewSmarty.php');
 
 require_once('modules/MySettings/StoreQuery.php');
-
+#[\AllowDynamicProperties]
 class ViewList extends SugarView
 {
     /**

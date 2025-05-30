@@ -133,7 +133,7 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             $camplog->related_type = $lead->module_dir;
             $camplog->activity_type = "lead";
             $camplog->target_type = $lead->module_dir;
-            $campaign_log->activity_date=$timedate->now();
+            $camplog->activity_date=$timedate->now();
             $camplog->target_id    = $lead->id;
             if (isset($marketing_data['id'])) {
                 $camplog->marketing_id = $marketing_data['id'];
@@ -193,13 +193,25 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
                     continue;
                 }
                     
-                if ($first_iteration) {
-                    $first_iteration = false;
-                    $query_string .= $first_char;
+                if (is_array($value)) {
+                    foreach ($value as $multiple) {
+                        if ($first_iteration) {
+                            $first_iteration = false;
+                            $query_string .= $first_char;
+                        } else {
+                            $query_string .= '&';
+                        }
+                        $query_string .= "{$param}=" . urlencode($multiple);
+                    }
                 } else {
-                    $query_string .= "&";
+                    if ($first_iteration) {
+                        $first_iteration = false;
+                        $query_string .= $first_char;
+                    } else {
+                        $query_string .= '&';
+                    }
+                    $query_string .= "{$param}=" . urlencode($value);
                 }
-                $query_string .= "{$param}=".urlencode($value);
             }
             if (empty($lead)) {
                 if ($first_iteration) {
