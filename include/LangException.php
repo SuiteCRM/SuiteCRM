@@ -72,7 +72,7 @@ class LangException extends Exception implements LangExceptionInterface
      * @param Exception|null $previous (Throwable)
      * @param \SuiteCRM\LangText|null $langMessage
      */
-    public function __construct($message = "", $code = 0, Exception $previous = null, LangText $langMessage = null)
+    public function __construct($message = "", $code = 0, ?Exception $previous = null, ?LangText $langMessage = null)
     {
         parent::__construct($message, $code, $previous);
         $this->langMessage = $langMessage;

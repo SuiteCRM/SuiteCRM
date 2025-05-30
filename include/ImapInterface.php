@@ -64,5 +64,5 @@ interface ImapInterface
      *
      * @return resource or <b>FALSE</b> on error.
      */
-    public function open($mailbox, $username, $password, $options = 0, $n_retries = 0, array $params = null);
+    public function open($mailbox, $username, $password, $options = 0, $n_retries = 0, ?array $params = null);
 }

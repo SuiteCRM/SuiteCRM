@@ -83,7 +83,7 @@ class updatePortal
      * @param $altEmailBody
      * @param SugarBean|null $relatedBean
      */
-    public function sendEmail($emailTo, $emailSubject, $emailBody, $altEmailBody, SugarBean $relatedBean = null)
+    public function sendEmail($emailTo, $emailSubject, $emailBody, $altEmailBody, ?SugarBean $relatedBean = null)
     {
         require_once 'modules/Emails/Email.php';
         require_once 'include/SugarPHPMailer.php';

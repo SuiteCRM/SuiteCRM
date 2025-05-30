@@ -62,7 +62,7 @@ class PDFConfigurator
      * PDFConfigurator constructor.
      * @param Configurator|null $configurator
      */
-    public function __construct(Configurator $configurator = null)
+    public function __construct(?Configurator $configurator = null)
     {
         if ($configurator === null) {
             $configurator = new Configurator();

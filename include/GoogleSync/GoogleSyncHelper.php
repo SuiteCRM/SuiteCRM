@@ -66,7 +66,7 @@ class GoogleSyncHelper
      *
      * @return string push, pull, skip, or false on error
      */
-    public function singleEventAction(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    public function singleEventAction(?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
     {
         if (empty($meeting) && empty($event)) {
             return false;

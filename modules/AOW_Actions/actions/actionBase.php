@@ -38,7 +38,7 @@ class actionBase
         return array();
     }
 
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         return '';
     }

@@ -310,7 +310,7 @@ class InboundEmail extends SugarBean
      * @param MailMimeParser|null $mailParser
      * @throws ImapHandlerException
      */
-    public function __construct(ImapHandlerInterface $imapHandler = null, MailMimeParser $mailParser = null)
+    public function __construct(?ImapHandlerInterface $imapHandler = null, ?MailMimeParser $mailParser = null)
     {
         global $sugar_config;
 
@@ -342,7 +342,7 @@ class InboundEmail extends SugarBean
      * @return ImapHandlerInterface
      * @throws ImapHandlerException
      */
-    public function getImap(ImapHandlerInterface $imap = null)
+    public function getImap(?ImapHandlerInterface $imap = null)
     {
         if (null === $this->imap) {
             if (null === $imap) {

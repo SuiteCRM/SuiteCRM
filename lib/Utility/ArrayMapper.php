@@ -193,7 +193,7 @@ class ArrayMapper
      *
      * @return array
      */
-    public function map(array $keys = null)
+    public function map(?array $keys = null)
     {
         if (is_array($this->mappable)) {
             $this->mapArray($this->mappable, $keys);
@@ -239,7 +239,7 @@ class ArrayMapper
      * @param array      $array
      * @param array|null $keys
      */
-    private function mapArray(array $array, array $keys = null)
+    private function mapArray(array $array, ?array $keys = null)
     {
         if ($keys === null) {
             $keys = array_keys($array);
@@ -258,7 +258,7 @@ class ArrayMapper
      * @param object     $obj
      * @param array|null $keys
      */
-    private function mapObject($obj, array $keys = null)
+    private function mapObject($obj, ?array $keys = null)
     {
         if ($keys === null) {
             $keys = array_keys(get_object_vars($obj));

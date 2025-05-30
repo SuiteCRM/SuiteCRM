@@ -457,7 +457,7 @@ class ACLAction extends SugarBean
     /**
      * static function hasAccess($is_owner=false, $access = 0){
      */
-    public static function hasAccess($is_owner = false, $in_group = false, $access = 0, ACLAction $action = null)
+    public static function hasAccess($is_owner = false, $in_group = false, $access = 0, ?ACLAction $action = null)
     {
         /**
          * if($access != 0 && $access == ACL_ALLOW_ALL || ($is_owner && $access == ACL_ALLOW_OWNER))return true;

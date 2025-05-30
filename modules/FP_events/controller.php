@@ -591,7 +591,7 @@ class FP_eventsController extends SugarController
     }
 
     //handles sending the emails
-    public function sendEmail($emailTo, $emailSubject, $emailToname, $emailBody, $altemailBody, SugarBean $relatedBean = null, $attachments = array())
+    public function sendEmail($emailTo, $emailSubject, $emailToname, $emailBody, $altemailBody, ?SugarBean $relatedBean = null, $attachments = array())
     {
         $emailObj = BeanFactory::newBean('Emails');
         $defaults = $emailObj->getSystemDefaultEmail();

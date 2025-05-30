@@ -55,8 +55,7 @@ interface SuiteEditorInterface
      *
      * @param SuiteEditorSettings $settings (optional) preferred an associative array or object
      */
-    public function setup(SuiteEditorSettings $settings = null);
-
+    public function setup(?SuiteEditorSettings $settings = null);
     /**
      * generate an output which contains the editor
      *

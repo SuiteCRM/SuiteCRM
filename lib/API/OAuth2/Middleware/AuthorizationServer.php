@@ -123,7 +123,7 @@ class AuthorizationServer implements EmitterAwareInterface
         ScopeRepositoryInterface $scopeRepository,
         $privateKey,
         $publicKey,
-        ResponseTypeInterface $responseType = null
+        ?ResponseTypeInterface $responseType = null
     ) {
         $this->clientRepository = $clientRepository;
         $this->accessTokenRepository = $accessTokenRepository;
@@ -159,7 +159,7 @@ class AuthorizationServer implements EmitterAwareInterface
      * @param null|\DateInterval $accessTokenTTL
      * @throws \Exception
      */
-    public function enableGrantType(GrantTypeInterface $grantType, \DateInterval $accessTokenTTL = null)
+    public function enableGrantType(GrantTypeInterface $grantType, ?\DateInterval $accessTokenTTL = null)
     {
         if ($accessTokenTTL instanceof \DateInterval === false) {
             $accessTokenTTL = new \DateInterval('PT1H');

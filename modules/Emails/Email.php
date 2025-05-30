@@ -540,7 +540,7 @@ class Email extends Basic
      *
      * @param \Email|null $email
      */
-    protected function createTempEmailAtSend(Email $email = null)
+    protected function createTempEmailAtSend(?Email $email = null)
     {
         $this->tempEmailAtSend = $email ? $email : BeanFactory::newBean('Emails');
         if (!$this->tempEmailAtSend->date_sent_received) {
@@ -2947,10 +2947,10 @@ class Email extends Basic
      * @return boolean True on success
      */
     public function send(
-        SugarPHPMailer $mail = null,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
-        InboundEmail $ie = null,
-        Email $tempEmail = null,
+        ?SugarPHPMailer $mail = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?InboundEmail $ie = null,
+        ?Email $tempEmail = null,
         $check_notify = false,
         $options = "\\Seen"
     ) {
@@ -3079,7 +3079,7 @@ class Email extends Basic
      */
     public function sendFromOutbound(
         OutboundEmailAccounts $outboundEmailAccount,
-        SugarPHPMailer $mail = null
+        ?SugarPHPMailer $mail = null
     ) {
         global $mod_strings, $app_strings, $sugar_config, $locale;
 
@@ -3185,7 +3185,7 @@ class Email extends Basic
     protected function saveAndStoreInSent(
         SugarPHPMailer $mail,
         InboundEmail $ie,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
         $check_notify = false,
         $options = "\\Seen"
     ) {
