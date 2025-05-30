@@ -114,6 +114,6 @@ class SugarFieldEmailBody extends SugarFieldBase
             LoggerManager::getLogger()->warn('Vardef has no value');
         }
 
-        return utf8_decode($vardef['value']);
+        return mb_convert_encoding($vardef['value'], 'ISO-8859-1', 'UTF-8');
     }
 }
