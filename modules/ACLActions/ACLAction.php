@@ -408,20 +408,21 @@ class ACLAction extends SugarBean
         }
 
         //only set the session variable if it was a full list;
+        $_SESSION['ACL'] ??= [];
+        $_SESSION['ACL'][$user_id] ??= [];
         if (empty($category) && empty($action)) {
-            if (!isset($_SESSION['ACL'])) {
-                $_SESSION['ACL'] = array();
-            }
             $_SESSION['ACL'][$user_id] = $selected_actions;
         } elseif (empty($action) && !empty($category)) {
+            // This if is redundant
             if (!empty($type)) {
-                $selectedActionCategoryType = isset($selected_actions[$category][$type]) ? $selected_actions[$category][$type] : null;
-                $_SESSION['ACL'][$user_id][$category][$type] = $selectedActionCategoryType;
+                $_SESSION['ACL'][$user_id][$category] ??= [];
+                $_SESSION['ACL'][$user_id][$category][$type] = $selected_actions[$category][$type] ?? null;
             }
-            $selectedActionCategory = isset($selected_actions[$category]) ? $selected_actions[$category] : null;
-            $_SESSION['ACL'][$user_id][$category] = $selectedActionCategory;
+            $_SESSION['ACL'][$user_id][$category] = $selected_actions[$category] ?? null;
         } elseif (!empty($action) && !empty($category) && !empty($type)) {
-            $_SESSION['ACL'][$user_id][$category][$type][$action] = $selected_actions[$category][$action];
+            $_SESSION['ACL'][$user_id][$category] ??= [];
+            $_SESSION['ACL'][$user_id][$category][$type] ??=[];
+            $_SESSION['ACL'][$user_id][$category][$type][$action] = $selected_actions[$category][$action] ?? null;
         }
 
         // Sort by translated categories

@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Tab representation
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarTab
 {
     public function __construct($type='singletabmenu')

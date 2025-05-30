@@ -178,7 +178,7 @@ class History implements HistoryInterface
         $retries = 0;
 
         $now = TimeDate::getInstance()->getNow();
-        $new_file = null;
+        $new_file = '';
         for ($retries = 0; !file_exists($new_file) && $retries < 5; $retries++) {
             $now->modify("+1 second");
             $time = $now->__get('ts');

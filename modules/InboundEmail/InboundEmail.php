@@ -3243,7 +3243,7 @@ class InboundEmail extends SugarBean
             $useSsl = true;
         }
 
-        $exServ = explode('::', $this->service);
+        $exServ = explode('::', (string) $this->service);
         if (!isset($exServ[1])) {
             LoggerManager::getLogger()->warn('incorrect service given: ' . $this->service);
             $service = '/';
@@ -6950,8 +6950,12 @@ class InboundEmail extends SugarBean
         /** @var User $owner */
         $owner = BeanFactory::getBean('Users', $createdBy);
 
-        $emailSignatures = $owner->getPreference('account_signatures', 'Emails') ?? '';
-        $emailSignatures = sugar_unserialize(base64_decode($emailSignatures));
+        if ($owner === false) {
+            $emailSignatures = [];
+        } else {
+            $emailSignatures = $owner->getPreference('account_signatures', 'Emails') ?? '';
+            $emailSignatures = sugar_unserialize(base64_decode($emailSignatures));
+        }
 
         $signatureId = $emailSignatures[$inboundEmailId] ?? '';
 

@@ -1004,7 +1004,7 @@ class EmailsController extends SugarController
 
         // Check that the from address is the same as the inbound email account
         $isFromAddressTheSame = false;
-        if ($inboundEmailStoredOptions['from_addr'] === $requestedEmail->from_addr) {
+        if (($inboundEmailStoredOptions['from_addr'] ?? '') === $requestedEmail->from_addr) {
             $isFromAddressTheSame = true;
         }
 
@@ -1012,7 +1012,7 @@ class EmailsController extends SugarController
         // settings. If there is not an outbound email id in the stored options then we should try
         // and use the system account, provided that the user is allowed to use to the system account.
         $outboundEmailAccount = new OutboundEmail();
-        if (empty($inboundEmailStoredOptions['outbound_email'])) {
+        if (empty($inboundEmailStoredOptions['outbound_email'] ?? '')) {
             $outboundEmailAccount->getSystemMailerSettings();
         } else {
             $outboundEmailAccount->retrieve($inboundEmailStoredOptions['outbound_email']);

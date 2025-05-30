@@ -702,7 +702,7 @@ class JsChart extends SugarChart
     public function getXMLChartProperties($xmlStr)
     {
         $props = array();
-        $xml = new SimpleXMLElement($xmlstr);
+        $xml = new SimpleXMLElement($xmlStr);
         foreach ($xml->properties->children() as $properties) {
             $props[$properties->getName()] = $properties;
         }

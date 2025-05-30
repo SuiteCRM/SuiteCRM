@@ -1085,7 +1085,7 @@ HTML;
         }
 
         // subscribed accounts
-        $showFolders = sugar_unserialize(base64_decode($user->getPreference('showFolders', 'Emails')));
+        $showFolders = sugar_unserialize(base64_decode((string) $user->getPreference('showFolders', 'Emails')));
 
         // general settings
         $emailSettings = $user->getPreference('emailSettings', 'Emails');
@@ -1233,7 +1233,7 @@ HTML;
     /**
      * Generates cache folder structure
      */
-    public function preflightEmailCache($cacheRoot)
+    public static function preflightEmailCache($cacheRoot)
     {
         // base
         if (!file_exists($cacheRoot)) {
@@ -1312,7 +1312,7 @@ HTML;
         $rootNode->dynamicloadfunction = '';
         $rootNode->expanded = true;
         $rootNode->dynamic_load = true;
-        $showFolders = sugar_unserialize(base64_decode($user->getPreference('showFolders', 'Emails')));
+        $showFolders = sugar_unserialize(base64_decode((string) $user->getPreference('showFolders', 'Emails')));
 
         if (empty($showFolders)) {
             $showFolders = array();
@@ -1326,7 +1326,7 @@ HTML;
                 if (in_array($personalAccount->id, $showFolders)) {
                     // check for cache value
                     $cacheRoot = sugar_cached("modules/Emails/{$personalAccount->id}");
-                    $this->preflightEmailCache($cacheRoot);
+                    self::preflightEmailCache($cacheRoot);
 
                     if ($this->validCacheFileExists($personalAccount->id, 'folders', "folders.php")) {
                         $mailboxes = $this->getMailBoxesFromCacheValue($personalAccount);
@@ -1373,7 +1373,7 @@ HTML;
             if (in_array($groupAccount->id, $showFolders)) {
                 // check for cache value
                 $cacheRoot = sugar_cached("modules/Emails/{$groupAccount->id}");
-                $this->preflightEmailCache($cacheRoot);
+                self::preflightEmailCache($cacheRoot);
                 //$groupAccount->connectMailserver();
 
                 if ($this->validCacheFileExists($groupAccount->id, 'folders', "folders.php")) {

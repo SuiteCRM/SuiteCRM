@@ -294,14 +294,19 @@ function sugar_file_get_contents($filename, $use_include_path = false, $context 
  */
 function sugar_touch($filename, $time = null, $atime = null)
 {
-    if (!empty($atime) && !empty($time)) {
-        $result = @touch($filename, $time, $atime);
-    } elseif (!empty($time)) {
-        $result = @touch($filename, $time);
-    } else {
-        $result = @touch($filename);
+    // We need to check if is a local file, it can be a stream wrapper (ex: upload://myfile.txt)
+    // touch is only available in local files
+    $result = false;
+    if (is_string($filename) && !empty($filename) && 
+        stream_is_local($filename)) {
+        if (!empty($atime) && !empty($time)) {
+            $result = @touch($filename, $time, $atime);
+        } elseif (!empty($time)) {
+            $result = @touch($filename, $time);
+        } else {
+            $result = @touch($filename);
+        }
     }
-
     if (!$result) {
         $GLOBALS['log']->error("File $filename cannot be touched");
 

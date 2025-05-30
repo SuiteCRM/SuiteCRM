@@ -79,12 +79,12 @@ class ImportViewLast extends ImportView
         $dupeCount    = 0;
         $createdCount = 0;
         $updatedCount = 0;
-        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'r');
-        
+        $fp = sugar_fopen(ImportCacheFiles::getStatusFileName(), 'rb');
+
         // Read the data if we successfully opened file
         if ($fp !== false) {
             // Read rows 1 by 1 and add the info
-            while ($row = fgetcsv($fp, 8192)) {
+            while ($row = fgetcsv($fp, 8192, ',', '"', '\\')) {
                 $count         += (int) $row[0];
                 $errorCount    += (int) $row[1];
                 $dupeCount     += (int) $row[2];
@@ -93,7 +93,7 @@ class ImportViewLast extends ImportView
             }
             fclose($fp);
         }
-        
+
         $this->ss->assign("showUndoButton", false);
         if ($createdCount > 0) {
             $this->ss->assign("showUndoButton", true);

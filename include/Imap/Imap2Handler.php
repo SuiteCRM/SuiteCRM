@@ -549,6 +549,10 @@ class Imap2Handler implements ImapHandlerInterface
     public function expunge()
     {
         $this->logCall(__FUNCTION__, func_get_args());
+        if (!$this->getStream()) {
+            $this->log('IMAP get Setream error in expunge');
+            return false;
+        }
         $ret = imap2_expunge($this->getStream());
         if (!$ret) {
             $this->log('IMAP expunge error');
@@ -1167,7 +1171,8 @@ class Imap2Handler implements ImapHandlerInterface
             $lastSequenceNumber = $mailboxInfo['Nmsgs'] = is_countable($emailSortedHeaders) ? count($emailSortedHeaders) : 0;
 
             // paginate
-            if ($offset === "end") {
+            // Avoid TypeError $offset is int
+            if ($offset === 0) {
                 $offset = $lastSequenceNumber - $pageSize;
             } elseif ($offset <= 0) {
                 $offset = 0;

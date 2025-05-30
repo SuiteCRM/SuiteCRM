@@ -86,7 +86,7 @@ class SugarFieldMultienum extends SugarFieldEnum
     public function save(&$bean, $params, $field, $properties, $prefix = '')
     {
         if (isset($params[$prefix.$field])) {
-            if ($params[$prefix.$field][0] === '' && !empty($params[$prefix.$field][1])) {
+            if (($params[$prefix.$field][0] ?? '') === '' && !empty($params[$prefix.$field][1])) {
                 unset($params[$prefix.$field][0]);
             }
 

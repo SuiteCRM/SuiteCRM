@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewData.php');
 require_once('include/MassUpdate.php');
 
+#[\AllowDynamicProperties]
 class ListViewDisplay
 {
     public static $listViewCounter = 0;
@@ -168,8 +169,9 @@ class ListViewDisplay
 
         $this->fillDisplayColumnsWithVardefs();
 
-        $this->process($file, $data, $seed->object_name);
-
+        if ($seed?->object_name != null) {
+            $this->process($file, $data, $seed->object_name);
+        }
         return true;
     }
 

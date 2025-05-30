@@ -309,7 +309,7 @@ class SugarHtml
         $_str = ltrim(substr($code, $offset + 1));
 
         preg_match("/^[$\w]+/", $_str, $statement);
-        $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0];
+        $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0]??'';
         $_left = strlen($statement[0] ?? '');
 
         $_right = strpos($code, $_smarty_closing, $offset);

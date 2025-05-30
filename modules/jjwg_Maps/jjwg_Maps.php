@@ -973,16 +973,16 @@ class jjwg_Maps extends jjwg_Maps_sugar
                 @$aInfo = array(
                     'address' => $address,
                     'status' => 'APPROXIMATE',
-                    'lat' => $resultsGeography['location']['lat'],
-                    'lng' => $resultsGeography['location']['lng']
+                    'lat' => $resultsGeography['location']['lat'] ?? null,
+                    'lng' => $resultsGeography['location']['lng'] ?? null
                 );
             } else {
                 // Return address info
                 @$aInfo = array(
                     'address' => $address,
                     'status' => $googlemaps['status'],
-                    'lat' => $resultsGeography['location']['lat'],
-                    'lng' => $resultsGeography['location']['lng']
+                    'lat' => $resultsGeography['location']['lat'] ?? null,
+                    'lng' => $resultsGeography['location']['lng'] ?? null
                 );
             }
         }

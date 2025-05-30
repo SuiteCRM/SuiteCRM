@@ -1593,7 +1593,7 @@ abstract class DBManager
             return $this->convert($this->quoted($value), "datetime");
         }
         if ($this->isNumericType($type)) {
-            return 0 + $value; // ensure it's numeric
+            return is_numeric($value) ? 0 + $value : 0; // ensure it's numeric
         }
 
         return $this->quoted($value);
