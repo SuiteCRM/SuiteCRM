@@ -57,7 +57,7 @@ class actionCreateRecord extends actionBase
      * @param array $params
      * @return string
      */
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         global $app_list_strings;
 

@@ -229,7 +229,7 @@ class AOR_Chart extends Basic
         return $img;
     }
 
-    public function buildChartHTML(array $reportData, array $fields, $index = 0, $chartType = AOR_Report::CHART_TYPE_PCHART, AOR_Field $mainGroupField = null)
+    public function buildChartHTML(array $reportData, array $fields, $index = 0, $chartType = AOR_Report::CHART_TYPE_PCHART, ?AOR_Field $mainGroupField = null)
     {
         switch ($chartType) {
             case AOR_Report::CHART_TYPE_PCHART:
@@ -263,7 +263,7 @@ class AOR_Chart extends Basic
         return false;
     }
 
-    private function buildChartHTMLRGraph(array $reportData, array $fields, AOR_Field $mainGroupField = null)
+    private function buildChartHTMLRGraph(array $reportData, array $fields, ?AOR_Field $mainGroupField = null)
     {
         $html = '';
         if (!in_array($this->type, $this->getValidChartTypes())) {
@@ -664,8 +664,7 @@ EOF;
         return $label;
     }
 
-
-    private function getRGraphGroupedBarChartData($reportData, $xName, $yName, AOR_Field $mainGroupField = null)
+    private function getRGraphGroupedBarChartData($reportData, $xName, $yName, ?AOR_Field $mainGroupField = null)
     {
 
 

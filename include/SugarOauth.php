@@ -147,9 +147,9 @@
          */
         public function getAccessToken(
             $url,
-            Zend_Oauth_Token_Request $token = null,
+            ?Zend_Oauth_Token_Request $token = null,
             $httpMethod = null,
-            Zend_Oauth_Http_AccessToken $request = null
+            ?Zend_Oauth_Http_AccessToken $request = null
         ) {
             $this->setAccessTokenUrl($url);
             $this->_last = $token = parent::getAccessToken($_REQUEST, $this->makeRequestToken());

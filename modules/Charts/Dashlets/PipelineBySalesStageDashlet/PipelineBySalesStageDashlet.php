@@ -67,7 +67,7 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        ?array $options = null
     ) {
         global $timedate;
 

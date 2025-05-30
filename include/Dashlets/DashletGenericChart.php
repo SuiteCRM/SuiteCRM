@@ -106,7 +106,7 @@ abstract class DashletGenericChart extends Dashlet
      */
     public function __construct(
         $id,
-        array $options = null
+        ?array $options = null
         ) {
         $dashletData = [];
         parent::__construct($id);

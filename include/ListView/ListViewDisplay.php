@@ -560,7 +560,7 @@ class ListViewDisplay
      *
      * @return string HTML
      */
-    protected function buildMergeLink(array $modules_array = null, $loc = 'top')
+    protected function buildMergeLink(?array $modules_array = null, $loc = 'top')
     {
         if (empty($modules_array)) {
             require('modules/MailMerge/modules_array.php');

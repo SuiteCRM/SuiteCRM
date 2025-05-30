@@ -1379,7 +1379,7 @@ class AOR_Report extends Basic
         SugarBean $module,
         $type,
         $query = array(),
-        SugarBean $rel_module = null
+        ?SugarBean $rel_module = null
     ) {
 
         // Alias to keep lines short

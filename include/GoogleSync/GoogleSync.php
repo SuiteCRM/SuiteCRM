@@ -68,7 +68,7 @@ class GoogleSync extends GoogleSyncBase
      *
      * @return string The combined title
      */
-    protected function getTitle(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function getTitle(?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
     {
         $title = '';
         $meetingTitle = isset($meeting) ? $meeting->name : null;
@@ -97,7 +97,7 @@ class GoogleSync extends GoogleSyncBase
      * @throws GoogleSyncException if $action is invalid.
      * @throws GoogleSyncException if something else fails.
      */
-    protected function doAction($action, Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function doAction($action, ?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
     {
         $title = $this->getTitle($meeting, $event);
 
@@ -201,7 +201,7 @@ class GoogleSync extends GoogleSyncBase
      *
      * @return string|bool 'push(_delete)', 'pull(_delete)', 'skip', false (on error)
      */
-    protected function pushPullSkip(Meeting $meeting = null, Google\Service\Calendar\Event $event = null)
+    protected function pushPullSkip(?Meeting $meeting = null, ?Google\Service\Calendar\Event $event = null)
     {
         if (empty($meeting) && empty($event)) {
             throw new GoogleSyncException('Missing Parameter, You must pass at least one event');

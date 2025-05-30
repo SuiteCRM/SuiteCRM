@@ -52,7 +52,7 @@ class actionSendEmail extends actionBase
         return array('modules/AOW_Actions/actions/actionSendEmail.js');
     }
 
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         global $app_list_strings;
         $email_templates_arr = get_bean_select_array(true, 'EmailTemplate', 'name', '', 'name');
