@@ -65,7 +65,7 @@ class StateCheckerDirectoryIterator extends RecursiveFilterIterator
         parent::__construct($path);
     }
 
-    public function accept()
+    public function accept() : bool
     {
         return $this->current()->isReadable() && $this->current()->isDir();
     }
