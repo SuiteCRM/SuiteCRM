@@ -106,7 +106,7 @@ class DataResponse implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $response = [
             'type' => $this->getType(),

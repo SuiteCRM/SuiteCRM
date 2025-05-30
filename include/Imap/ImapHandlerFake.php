@@ -512,7 +512,7 @@ class ImapHandlerFake implements ImapHandlerInterface
      * @return array
      * @throws Exception
      */
-    public function getMessageList(?string $filterCriteria, $sortCriteria, $sortOrder, int $offset, int $pageSize, array &$mailboxInfo, array $columns): array
+    public function getMessageList(?string $filterCriteria, $sortCriteria, $sortOrder, int $offset, int $pageSize, array &$mailboxInfo, array $columns, string $auth_type): array
     {
         return $this->fakes->call('getMessageList', [$filterCriteria, $sortCriteria, $sortOrder, $offset, $pageSize, $mailboxInfo, $columns]);
     }
