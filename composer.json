@@ -19,7 +19,7 @@
   "config": {
     "vendor-dir": "vendor",
     "platform": {
-      "php": "7.4.0"
+      "php": "8.0.0"
     },
     "optimize-autoloader": true,
     "sort-packages": true,
@@ -33,7 +33,7 @@
     "ext-imap": "Needed for emails module"
   },
   "require": {
-    "php": ">=7.4.0",
+    "php": "^8.0",
     "ext-curl": "*",
     "ext-gd": "*",
     "ext-json": "*",
@@ -43,15 +43,15 @@
     "consolidation/robo": "^3.0",
     "elasticsearch/elasticsearch": "^7.13",
     "ezyang/htmlpurifier": "^4.10",
-    "google/apiclient": "^2.7",
-    "google/recaptcha": "^1.1",
+    "google/apiclient": "^2.18",
+    "google/recaptcha": "^1.3",
     "gymadarasz/ace": "^1.2",
     "gymadarasz/imagesloaded": "^4.1",
     "javanile/php-imap2": "^0.1.10",
     "justinrainbow/json-schema": "^5.2",
     "league/oauth2-client": "^2.6",
     "league/oauth2-server": "^8.4",
-    "monolog/monolog": "^1.23",
+    "monolog/monolog": "^2.9",
     "nesbot/carbon": "^2.0.0",
     "onelogin/php-saml": "3.4.1",
     "paragonie/random_compat": "^2.0",

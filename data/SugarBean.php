@@ -2771,7 +2771,7 @@ class SugarBean
 
         foreach ($this->field_defs as $field => $data) {
             if (!$dbOnly || !isset($data['source']) || $data['source'] == 'db') {
-                if (!$stringOnly || is_string($this->$field)) {
+                if (!$stringOnly || (isset($this->$field) && is_string($this->$field))) {
                     if ($upperKeys) {
                         if (!isset($cache[$field])) {
                             $cache[$field] = strtoupper($field);
@@ -3352,7 +3352,7 @@ class SugarBean
 
     /**
      * This function handles create the email notifications email.
-     * @param string $notify_user the user to send the notification email to
+     * @param User $notify_user the user to send the notification email to
      * @return SugarPHPMailer
      */
     public function create_notification_email($notify_user)
@@ -5958,7 +5958,7 @@ class SugarBean
      * @param $relate_values
      * @param bool $check_duplicates
      * @param bool $do_update
-     * @param null $data_values
+     * @param array $data_values
      */
     public function set_relationship(
         $table,

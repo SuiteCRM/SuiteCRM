@@ -43,7 +43,7 @@ include_once __DIR__ . '/../../../vendor/autoload.php';
 // Prevent errors from being echoed out to the client
 // We MUST use the exceptions instead to pass the errors object
 // back to the client
-ini_set('error_reporting', ~E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+ini_set('error_reporting', ~E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 
 chdir(__DIR__.'/../../../');
 
