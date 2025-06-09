@@ -167,9 +167,13 @@ if ($type === 'bounce') {
 if (!empty($_REQUEST['external_oauth_connection_id'])) {
     $externalOauthConnection = BeanFactory::getBean('ExternalOAuthConnection', $_REQUEST['external_oauth_connection_id']);
 
-    if ($externalOauthConnection->type !== $focus->type) {
+    if(!isValidOauthConnection($focus, $externalOauthConnection)){
         SugarApplication::appendErrorMessage($mod_strings['LBL_TYPE_DIFFERENT']);
-        SugarApplication::redirect('index.php?module=InboundEmail&action=EditView&is_personal=1&type=personal');
+        if($focus->id) {
+            SugarApplication::redirect("index.php?module=InboundEmail&action=EditView&record={$focus->id}");
+        }else{
+            SugarApplication::redirect("index.php?module=InboundEmail&action=index");
+        }
         return;
     }
 }
@@ -530,4 +534,23 @@ function syncSugarFoldersWithBeanChanges($fieldName, $focus)
             }
             break;
     }
+}
+
+/**
+ * Determines if the inbound mailbox type is valid for the related External Oauth Connection type
+ *
+ * @param $inboundAccount
+ * @param $externalOauthConnection
+ * @return bool
+ */
+
+function isValidOauthConnection($inboundAccount, $externalOauthConnection): bool
+{
+    if($inboundAccount->type === "bounce" && $externalOauthConnection->type === "group"){
+        return true;
+    }
+    if ($inboundAccount->type !== $externalOauthConnection->type) {
+        return false;
+    }
+    return true;
 }
