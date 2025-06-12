@@ -142,7 +142,7 @@ if (!empty($_REQUEST['display'])) {
     if ($_SESSION['log_file_size'] == $cur_size) {
         echo $mod_strings['LBL_LOG_NOT_CHANGED'].'<br>';
     } else {
-        $fp = sugar_fopen($logFile, 'r');
+        $fp = sugar_fopen($logFile, 'rb');
         fseek($fp, $pos, SEEK_END);
         echo '<pre>';
         while ($line = fgets($fp)) {

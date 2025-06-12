@@ -292,7 +292,7 @@ class PackageManagerComm
      *
      * @param document_id	the document the user has clicked on
      */
-    public function downloadedDocumentation($document_id)
+    public static function downloadedDocumentation($document_id)
     {
         self::initialize();
         //check for fault

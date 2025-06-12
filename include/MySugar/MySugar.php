@@ -161,6 +161,9 @@ class MySugar
                 $current_user->setPreference('dashlets', $dashlets, 0, $this->type);
             }
 
+            if (!file_exists($dashlets[$id]['fileLocation'])) {
+                return;
+            }
             require_once($dashlets[$id]['fileLocation']);
             $dashlet = new $dashlets[$id]['className']($id, (isset($dashlets[$id]['options']) ? $dashlets[$id]['options'] : array()));
             if (!empty($_REQUEST['configure']) && $_REQUEST['configure']) { // save settings

@@ -535,7 +535,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
             if (!isset($current_offset) || empty($current_offset)) {
                 $current_offset=0;
             }
-            $start_record = $current_offset + 1;
+            $start_record = (int)$current_offset + 1;
 
             if (!is_numeric($col_count)) {
                 $col_count = 20;

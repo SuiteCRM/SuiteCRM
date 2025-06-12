@@ -52,7 +52,7 @@ class actionSendEmail extends actionBase
         return array('modules/AOW_Actions/actions/actionSendEmail.js');
     }
 
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         global $app_list_strings;
         $email_templates_arr = get_bean_select_array(true, 'EmailTemplate', 'name', '', 'name');
@@ -406,7 +406,7 @@ class actionSendEmail extends actionBase
                     $idName = $bean_arr['id_name'];
                     if (isset($bean->field_defs[$idName]) && ($bean->field_defs[$idName]['source'] ?? '') != 'non-db') {
                         if (!isset($object_arr[$bean_arr['module']])) {
-                            $object_arr[$bean_arr['module']] = $bean->$idName;
+                            $object_arr[$bean_arr['module']] = $bean->$idName ?? '';
                         }
                     }
                 }

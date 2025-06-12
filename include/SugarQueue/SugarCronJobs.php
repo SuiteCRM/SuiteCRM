@@ -48,6 +48,7 @@ require_once 'modules/Schedulers/Scheduler.php';
  * CRON driver for job queue
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarCronJobs
 {
     /**
@@ -135,7 +136,7 @@ class SugarCronJobs
             $this->markLastRun();
             return true;
         } else {
-            $ts = file_get_contents($this->lockfile);
+            $ts = (int) file_get_contents($this->lockfile);
             $this->markLastRun();
             $now = time();
             if ($now - $ts < $this->min_interval) {

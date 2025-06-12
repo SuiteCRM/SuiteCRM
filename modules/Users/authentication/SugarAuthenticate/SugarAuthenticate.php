@@ -174,7 +174,7 @@ class SugarAuthenticate
             $authenticated_user_language = $GLOBALS['current_user']->getPreference('language') ?? $_REQUEST['ck_login_language_20'] ?? $sugar_config['default_language'];
         }
 
-        if (str_contains($sugar_config['disabled_languages'], $authenticated_user_language)){
+        if (!empty($sugar_config['disabled_languages']) && str_contains($sugar_config['disabled_languages'], $authenticated_user_language)){
             $authenticated_user_language = $sugar_config['default_language'];
         }
 

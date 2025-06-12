@@ -769,12 +769,12 @@ class AOW_WorkFlow extends Basic
                     $field = $data['id_name'];
                     $condition->field = $data['id_name'];
                 }
-                $field = $condition_bean->$field;
-
+                $field = $condition_bean->$field ?? null;
                 if (in_array($data['type'], $dateFields)) {
                     $field = strtotime($field);
                 }
 
+                $type = '';
                 switch ($condition->value_type) {
                     case 'Field':
                         $data = $condition_bean->field_defs[$value];

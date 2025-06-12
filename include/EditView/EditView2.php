@@ -389,16 +389,18 @@ class EditView
     public function render()
     {
         $totalWidth = 0;
-        foreach ($this->defs['templateMeta']['widths'] as $col => $def) {
-            foreach ($def as $k => $value) {
-                $totalWidth += $value;
+        if(isset($this->defs['templateMeta']['widths']) && is_array($this->defs['templateMeta']['widths'])) {
+            foreach ($this->defs['templateMeta']['widths'] as $col => $def) {
+                foreach ($def as $k => $value) {
+                    $totalWidth += $value;
+                }
             }
-        }
 
-        // calculate widths
-        foreach ($this->defs['templateMeta']['widths'] as $col => $def) {
-            foreach ($def as $k => $value) {
-                $this->defs['templateMeta']['widths'][$col][$k] = round($value / ($totalWidth / 100), 2);
+            // calculate widths
+            foreach ($this->defs['templateMeta']['widths'] as $col => $def) {
+                foreach ($def as $k => $value) {
+                    $this->defs['templateMeta']['widths'][$col][$k] = round($value / ($totalWidth / 100), 2);
+                }
             }
         }
 
@@ -422,51 +424,53 @@ class EditView
         static $itemCount = 100; //Start the generated tab indexes at 100 so they don't step on custom ones.
 
         /* loop all the panels */
-        foreach ($this->defs['panels'] as $key => $p) {
-            $panel = array();
+        if (is_array($this->defs['panels'])) {
+            foreach ($this->defs['panels'] as $key => $p) {
+                $panel = array();
 
-            if (!is_array($this->defs['panels'][$key])) {
-                $this->sectionPanels[strtoupper($key)] = $p;
-            } else {
-                foreach ($p as $row => $rowDef) {
-                    $columnsInRows = is_countable($rowDef) ? count($rowDef) : 0;
-                    $columnsUsed = 0;
-                    foreach ($rowDef as $col => $colDef) {
-                        $panel[$row][$col] = is_array($p[$row][$col])
-                            ? array('field' => $p[$row][$col])
-                            : array('field' => array('name' => $p[$row][$col]));
+                if (!is_array($this->defs['panels'][$key])) {
+                    $this->sectionPanels[strtoupper($key)] = $p;
+                } else {
+                    foreach ($p as $row => $rowDef) {
+                        $columnsInRows = is_countable($rowDef) ? count($rowDef) : 0;
+                        $columnsUsed = 0;
+                        foreach ($rowDef as $col => $colDef) {
+                            $panel[$row][$col] = is_array($p[$row][$col])
+                                ? array('field' => $p[$row][$col])
+                                : array('field' => array('name' => $p[$row][$col]));
 
-                        $panel[$row][$col]['field']['tabindex'] =
-                            (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
-                                ? $p[$row][$col]['tabindex']
-                                : '0';
+                            $panel[$row][$col]['field']['tabindex'] =
+                                (isset($p[$row][$col]['tabindex']) && is_numeric($p[$row][$col]['tabindex']))
+                                    ? $p[$row][$col]['tabindex']
+                                    : '0';
 
-                        if ($columnsInRows < $maxColumns) {
-                            if ($col == $columnsInRows - 1) {
-                                $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
-                            } else {
-                                $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
-                                $columnsUsed = $panel[$row][$col]['colspan'];
+                            if ($columnsInRows < $maxColumns) {
+                                if ($col == $columnsInRows - 1) {
+                                    $panel[$row][$col]['colspan'] = 2 * $maxColumns - ($columnsUsed + 1);
+                                } else {
+                                    $panel[$row][$col]['colspan'] = floor(($maxColumns * 2 - $columnsInRows) / $columnsInRows);
+                                    $columnsUsed = $panel[$row][$col]['colspan'];
+                                }
                             }
-                        }
 
-                        //Set address types to have colspan value of 2 if colspan is not already defined
-                        if (is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan'])) {
-                            $panel[$row][$col]['colspan'] = 2;
-                        }
+                            //Set address types to have colspan value of 2 if colspan is not already defined
+                            if (is_array($colDef) && !empty($colDef['hideLabel']) && !isset($panel[$row][$col]['colspan'])) {
+                                $panel[$row][$col]['colspan'] = 2;
+                            }
 
-                        $itemCount++;
+                            $itemCount++;
+                        }
                     }
+
+                    $panel = $this->getPanelWithFillers($panel);
+
+                    $this->sectionPanels[strtoupper($key)] = $panel;
                 }
 
-                $panel = $this->getPanelWithFillers($panel);
 
-                $this->sectionPanels[strtoupper($key)] = $panel;
-            }
-
-
-            $panelCount++;
-        } //foreach
+                $panelCount++;
+            } //foreach
+        }
     }
 
     /**
@@ -938,7 +942,8 @@ class EditView
         //if popup select add panel if user is a member of multiple groups to metadataFile
         global $sugar_config;
         if(isset($sugar_config['securitysuite_popup_select']) && $sugar_config['securitysuite_popup_select'] == true
-            && (empty($this->focus->fetched_row['id']) || ($_REQUEST['isDuplicate'] ?? false) === true) && $this->focus->module_dir != "Users" && $this->focus->module_dir != "SugarFeed") {
+            // $_REQUEST['isDuplicate'] can never be === true cause it comes as a string from $_REQUEST
+            && (empty($this->focus->fetched_row['id']) || ($_REQUEST['isDuplicate'] ?? false) == true) && $this->focus->module_dir != "Users" && $this->focus->module_dir != "SugarFeed") {
 
             //there are cases such as uploading an attachment to an email template where the request module may
             //not be the same as the current bean module. If that happens we can just skip it

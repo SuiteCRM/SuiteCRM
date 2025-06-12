@@ -630,7 +630,7 @@ class SearchForm
                     if (isset($data['enabled']) && $data['enabled'] == false) {
                         continue;
                     }
-                    $data['name'] = $data['name'] . '_' . $this->parsedView;
+                    $data['name'] = ($data['name'] ?? '') . '_' . $this->parsedView;
                     $this->formData[] = array('field' => $data);
                     $this->fieldDefs[$data['name']] = $data;
                 } else {

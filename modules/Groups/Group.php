@@ -50,7 +50,6 @@ class Group extends User
     // User attribute overrides
     public $status			= 'Group';
     public $password		= ''; // to disallow logins
-    public $default_team;
     public $importable = false;
 
 

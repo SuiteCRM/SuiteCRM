@@ -59,7 +59,7 @@ class SuiteEditorDirectHTML implements SuiteEditorInterface
      *
      * @param SuiteEditorSettings $settings
      */
-    public function setup(SuiteEditorSettings $settings = null)
+    public function setup(?SuiteEditorSettings $settings = null)
     {
         $this->settings = $settings;
     }

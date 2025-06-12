@@ -72,7 +72,7 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
             foreach ($module->field_defs as $name => $arr) {
                 if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || (isset($arr['type']) && $arr['type'] == 'id') || (isset($arr['type']) && $arr['type'] == 'link'))) {
                     if (!isset($arr['reportable']) || $arr['reportable']) {
-                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'], $module->module_dir);
+                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'] ?? '', $module->module_dir);
                     }
                 }
             } //End loop.

@@ -446,7 +446,7 @@ class ImapHandlerFake implements ImapHandlerInterface
      * @param int $options
      * @return bool Returns TRUE on success or FALSE on failure.
      */
-    public function setFlagFull($sequence, $flag, $options = NIL)
+    public function setFlagFull($sequence, $flag, $options = null)
     {
         return $this->fakes->call('setFlagFull', [$sequence, $flag, $options]);
     }
@@ -512,7 +512,7 @@ class ImapHandlerFake implements ImapHandlerInterface
      * @return array
      * @throws Exception
      */
-    public function getMessageList(?string $filterCriteria, $sortCriteria, $sortOrder, int $offset, int $pageSize, array &$mailboxInfo, array $columns): array
+    public function getMessageList(?string $filterCriteria, $sortCriteria, $sortOrder, int $offset, int $pageSize, array &$mailboxInfo, array $columns, string $auth_type): array
     {
         return $this->fakes->call('getMessageList', [$filterCriteria, $sortCriteria, $sortOrder, $offset, $pageSize, $mailboxInfo, $columns]);
     }

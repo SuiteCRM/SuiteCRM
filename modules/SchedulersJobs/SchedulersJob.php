@@ -285,7 +285,7 @@ class SchedulersJob extends Basic
     {
         $GLOBALS['log']->info("Resolving job {$this->id} as $resolution: $message");
         if ($resolution == self::JOB_FAILURE) {
-            $this->failure_count++;
+            $this->failure_count = (int)$this->failure_count + 1;
             if ($this->requeue && $this->retry_count > 0) {
                 // retry failed job
                 $this->status = self::JOB_STATUS_QUEUED;
@@ -518,7 +518,8 @@ class SchedulersJob extends Basic
             }
             $func = $exJob[1];
             $GLOBALS['log']->debug("----->SchedulersJob calling function: $func");
-            set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+            // In PHP8+ old E_STRICT are E_WARNING, E_DEPRECATED or errors
+            set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE);
             if (!is_callable($func)) {
                 $this->resolveJob(self::JOB_FAILURE, sprintf(translate('ERR_CALL', 'SchedulersJobs'), $func));
             }
@@ -544,7 +545,8 @@ class SchedulersJob extends Basic
         } elseif ($exJob[0] == 'url') {
             if (function_exists('curl_init')) {
                 $GLOBALS['log']->debug('----->SchedulersJob firing URL job: '.$exJob[1]);
-                set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE & ~E_STRICT);
+                // In PHP8+ old E_STRICT are E_WARNING, E_DEPRECATED or errors
+                set_error_handler(array($this, "errorHandler"), E_ALL & ~E_NOTICE);
                 if ($this->fireUrl($exJob[1])) {
                     restore_error_handler();
                     $this->resolveJob(self::JOB_SUCCESS);

@@ -323,7 +323,7 @@ EOREGEX
             $stop_at = $token_count;
         }
 
-        $out = false;
+        $out = [];
 
         for ($token_number = $start_at;$token_number<$stop_at;++$token_number) {
             $token = trim($tokens[$token_number]);
@@ -438,6 +438,9 @@ EOREGEX
                     case 'HELP':
                         $token_category = $upper; /* set the category in case these get subclauses
                                           in a future version of MySQL */
+                        if (!isset($out[$upper])) {
+                            $out[$upper] = [];
+                        }
                         $out[$upper][0] = $upper;
                         continue 2;
                     break;
@@ -446,10 +449,16 @@ EOREGEX
                     case 'LOCK':
                         if ($token_category == "") {
                             $token_category = $upper;
+                            if (!isset($out[$upper])) {
+                                $out[$upper] = [];
+                            }
                             $out[$upper][0] = $upper;
                         } else {
                             $token = 'LOCK IN SHARE MODE';
                             $skip_next=true;
+                            if (!isset($out['OPTIONS'])) {
+                                $out['OPTIONS'] = [];
+                            }
                             $out['OPTIONS'][] = $token;
                         }
                         continue 2;
@@ -471,6 +480,9 @@ EOREGEX
                     case 'DROP':
                         if ($token_category != 'ALTER') {
                             $token_category = $upper;
+                            if (!isset($out[$upper])) {
+                                $out[$upper] = [];
+                            }
                             $out[$upper][0] = $upper;
                             continue 2;
                         }
@@ -478,6 +490,9 @@ EOREGEX
 
                     case 'FOR':
                         $skip_next=true;
+                        if (!isset($out['OPTIONS'])) {
+                            $out['OPTIONS'] = [];
+                        }
                         $out['OPTIONS'][] = 'FOR UPDATE';
                         continue 2;
                     break;
@@ -496,6 +511,9 @@ EOREGEX
 
                     case 'START':
                         $token = "BEGIN";
+                        if (!isset($out[$upper])) {
+                            $out[$upper] = [];
+                        }
                         $out[$upper][0] = $upper;
                         $skip_next = true;
                     break;
@@ -535,6 +553,9 @@ EOREGEX
                     case 'SQL_CACHE':
                     case 'SQL_NO_CACHE':
                     case 'SQL_CALC_FOUND_ROWS':
+                        if (!isset($out['OPTIONS'])) {
+                            $out['OPTIONS'] = [];
+                        }
                         $out['OPTIONS'][] = $upper;
                         continue 2;
                     break;
@@ -542,6 +563,9 @@ EOREGEX
                     case 'WITH':
                         if ($token_category == 'GROUP') {
                             $skip_next=true;
+                            if (!isset($out['OPTIONS'])) {
+                                $out['OPTIONS'] = [];
+                            }
                             $out['OPTIONS'][] = 'WITH ROLLUP';
                             continue 2;
                         }
@@ -561,13 +585,16 @@ EOREGEX
                 }
 
             if ($prev_category === $token_category) {
+                if (!isset($out[$token_category])) {
+                    $out[$token_category] = [];
+                }
                 $out[$token_category][] = $token;
             }
 
             $prev_category = $token_category;
         }
 
-        if (!$out) {
+        if (empty($out)) {
             return false;
         }
 
@@ -778,13 +805,14 @@ EOREGEX
         $last = array_pop($stripped);
         if (!$alias && $last['expr_type'] == 'colref') {
             $prev = array_pop($stripped);
-            if ($prev['expr_type'] == 'operator' ||
-                   $prev['expr_type'] == 'const' ||
-                   $prev['expr_type'] == 'function' ||
-                   $prev['expr_type'] == 'expression' ||
-                   #$prev['expr_type'] == 'aggregate_function' ||
-                   $prev['expr_type'] == 'subquery' ||
-                   $prev['expr_type'] == 'colref') {
+            if (!empty($prev) && 
+                ($prev['expr_type'] == 'operator' ||
+                $prev['expr_type'] == 'const' ||
+                $prev['expr_type'] == 'function' ||
+                $prev['expr_type'] == 'expression' ||
+                #$prev['expr_type'] == 'aggregate_function' ||
+                $prev['expr_type'] == 'subquery' ||
+                $prev['expr_type'] == 'colref')) {
                 $alias = $last['base_expr'];
 
                 #remove the last token

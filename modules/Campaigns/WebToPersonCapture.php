@@ -297,13 +297,25 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
                     continue;
                 }
 
-                if ($first_iteration) {
-                    $first_iteration = false;
-                    $query_string .= $first_char;
+                if (is_array($value)) {
+                    foreach ($value as $multiple) {
+                        if ($first_iteration) {
+                            $first_iteration = false;
+                            $query_string .= $first_char;
+                        } else {
+                            $query_string .= '&';
+                        }
+                        $query_string .= "{$param}=" . urlencode($multiple);
+                    }
                 } else {
-                    $query_string .= '&';
+                    if ($first_iteration) {
+                        $first_iteration = false;
+                        $query_string .= $first_char;
+                    } else {
+                        $query_string .= '&';
+                    }
+                    $query_string .= "{$param}=" . urlencode($value);
                 }
-                $query_string .= "{$param}=".urlencode($value);
             }
             if (empty($person)) {
                 if ($first_iteration) {

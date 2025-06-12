@@ -46,6 +46,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Generic chart
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarChart
 {
     private $db;
@@ -815,6 +816,7 @@ class SugarChart
 
     public function getDashletScript($id, $xmlFile="")
     {
+        global $sugar_config, $current_user, $current_language;
         $xmlFile = (!$xmlFile) ? $sugar_config['tmp_dir']. $current_user->id . '_' . $this->id . '.xml' : $xmlFile;
         $chartStringsXML = $GLOBALS['sugar_config']['tmp_dir'].'chart_strings.' . $current_language .'.lang.xml';
 

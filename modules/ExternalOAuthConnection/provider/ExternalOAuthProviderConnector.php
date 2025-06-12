@@ -168,10 +168,14 @@ abstract class ExternalOAuthProviderConnector implements ExternalOAuthProviderCo
 
         $options = array_merge_recursive($options, $this->getRefreshTokenRequestOptions($config));
 
-        return $provider->getAccessToken(
-            $this->getRefreshTokenRequestGrant($config),
-            $options
-        );
+        try {
+            return $provider->getAccessToken(
+                $this->getRefreshTokenRequestGrant($config),
+                $options
+            );
+        } catch (IdentityProviderException $e) {
+            return null;
+        }
     }
 
     /**

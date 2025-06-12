@@ -37,7 +37,7 @@ class actionModifyRecord extends actionCreateRecord
         return parent::loadJS();
     }
 
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         require_once("modules/AOW_WorkFlow/aow_utils.php");
 

@@ -84,10 +84,10 @@ class SearchResults
     public function __construct(
         array $hits,
         $groupedByModule = true,
-        float $searchTime = null,
-        int $total = null,
-        array $scores = null,
-        array $options = null
+        ?float $searchTime = null,
+        ?int $total = null,
+        ?array $scores = null,
+        ?array $options = null
     ) {
         $this->hits = $hits;
         $this->scores = $scores;

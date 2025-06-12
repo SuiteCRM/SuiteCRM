@@ -108,8 +108,10 @@ EOF;
                         break;
                     case "Rating":
                     case "Scale":
-                        $data[$questionId]['chartData'][$questionResponse->answer]++;
-                        $data[$questionId]['responses'][$questionResponse->answer]['count']++;
+                        if (!empty($questionResponse->answer)) {
+                            $data[$questionId]['chartData'][$questionResponse->answer]++;
+                            $data[$questionId]['responses'][$questionResponse->answer]['count']++;
+                        }
                         break;
                     case "Textbox":
                     case "Text":

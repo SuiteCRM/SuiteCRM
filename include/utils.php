@@ -1639,11 +1639,8 @@ function create_guid()
     $microTime = microtime();
     list($a_dec, $a_sec) = explode(' ', $microTime);
 
-    $dec_hex_number = $a_dec * 1000000;
-
-    $dec_hex = dechex($dec_hex_number);
-
-    $sec_hex = dechex($a_sec);
+    $dec_hex = dechex((int) $a_dec * 1000000);
+    $sec_hex = dechex((int) $a_sec);
 
     ensure_length($dec_hex, 5);
     ensure_length($sec_hex, 6);
@@ -1892,7 +1889,8 @@ function get_select_options_with_id_separate_key($label_list, $key_list, $select
         $key_list = array();
     }
     //create the type dropdown domain and set the selected value if $opp value already exists
-    foreach ($key_list as $option_key => $option_value) {
+    $key_list_array = is_array($key_list) ? $key_list : [$key_list];
+    foreach ($key_list_array as $option_key => $option_value) {
         $selected_string = '';
 
         if (is_string($selected_key)) {
@@ -2680,7 +2678,7 @@ function purify_html(?string $value, array $extraOptions = []): string {
 
     $sanitizer = new SuiteCRM\HtmlSanitizer($extraOptions);
 
-    $cleanedValue = htmlentities($sanitizer->clean($value, true));
+    $cleanedValue = htmlentities($sanitizer->clean((string) $value, true));
     $decoded = html_entity_decode($cleanedValue);
     $doubleDecoded = html_entity_decode($decoded);
 
@@ -5187,6 +5185,7 @@ function unencodeMultienum($string)
     if (is_array($string)) {
         return $string;
     }
+    $string = (string) ($string ?? '');
     if (substr($string, 0, 1) == '^' && substr($string, -1) == '^') {
         $string = substr(substr($string, 1), 0, strlen($string) - 2);
     }
@@ -5253,7 +5252,7 @@ function create_export_query_relate_link_patch($module, $searchFields, $where)
             $join = $seed->$fieldLink->getJoin($params, true);
             $join_table_alias = 'join_' . $field['name'];
             if (isset($field['db_concat_fields'])) {
-                $db_field = DBManager::concat($join_table_alias, $field['db_concat_fields']);
+                $db_field = $seed->db->concat($join_table_alias, $field['db_concat_fields']);
                 $where = preg_replace('/' . $field['name'] . '/', $db_field, (string) $where);
             } else {
                 $where = preg_replace('/(^|[\s(])' . $field['name'] . '/', '${1}' . $join_table_alias . '.' . $field['rname'], (string) $where);

@@ -91,7 +91,7 @@ class DocumentSoap
             $revision->file_mime_type = $this->upload_file->getMimeSoap($revision->filename);
             $revision->file_ext = $this->upload_file->file_ext;
             //$revision->document_name = ;
-            $revision->revision = $document['revision'];
+            $revision->revision = $document['revision'] ?? "";
             $revision->document_id = $document['id'];
             $revision->save();
 

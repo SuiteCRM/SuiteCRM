@@ -89,7 +89,7 @@ class DynamicField
     /**
      *
      */
-    public function deleteCache()
+    public static function deleteCache()
     {
     }
 

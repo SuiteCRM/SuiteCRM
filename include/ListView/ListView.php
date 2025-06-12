@@ -46,6 +46,7 @@ require_once('include/EditView/SugarVCR.php');
  * ListView - list of many objects
  * @api
  */
+#[\AllowDynamicProperties]
 class ListView
 {
     public $local_theme= null;
@@ -1199,8 +1200,8 @@ class ListView
         /*fixes an issue with deletes when doing a search*/
         foreach (array_merge($_GET, $_POST) as $name=>$value) {
             //echo ("$name = $value <br/>");
-                if (!empty($value) && $name != 'sort_order' //&& $name != ListView::getSessionVariableName($html_varName,"ORDER_BY")
-                        && $name != ListView::getSessionVariableName($html_varName, "offset")
+                if (!empty($value) && $name != 'sort_order' //&& $name != $this->getSessionVariableName($html_varName,"ORDER_BY")
+                        && $name != $this->getSessionVariableName($html_varName, "offset")
                         /*&& substr_count($name, "ORDER_BY")==0*/ && !in_array($name, $blockVariables)) {
                     if (is_array($value)) {
                         foreach ($value as $valuename=>$valuevalue) {
@@ -1238,7 +1239,7 @@ class ListView
             }
         }
 
-        $baseurl .= "&".ListView::getSessionVariableName($html_varName, "offset")."=";
+        $baseurl .= "&".$this->getSessionVariableName($html_varName, "offset")."=";
         $cache[$html_varName] = $baseurl;
         return $baseurl;
     }

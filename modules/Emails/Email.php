@@ -540,7 +540,7 @@ class Email extends Basic
      *
      * @param \Email|null $email
      */
-    protected function createTempEmailAtSend(Email $email = null)
+    protected function createTempEmailAtSend(?Email $email = null)
     {
         $this->tempEmailAtSend = $email ? $email : BeanFactory::newBean('Emails');
         if (!$this->tempEmailAtSend->date_sent_received) {
@@ -1022,9 +1022,10 @@ class Email extends Basic
                 $object_arr= array('Contacts' => '123');
             }
             $object_arr['Users'] = $current_user->id;
-            $this->description_html = EmailTemplate::parse_template($this->description_html, $object_arr);
-            $this->name = EmailTemplate::parse_template($this->name, $object_arr);
-            $this->description = EmailTemplate::parse_template($this->description, $object_arr);
+            $emailTemplate = BeanFactory::newBean('EmailTemplates');
+            $this->description_html = $emailTemplate->parse_template($this->description_html, $object_arr);
+            $this->name = $emailTemplate->parse_template($this->name, $object_arr);
+            $this->description = $emailTemplate->parse_template($this->description, $object_arr);
             $this->description = html_entity_decode((string) $this->description, ENT_COMPAT, 'UTF-8');
             if ($this->type != 'draft' && $this->status != 'draft') {
                 $this->id = create_guid();
@@ -1413,7 +1414,8 @@ class Email extends Basic
                 if (!class_exists('aCase')) {
                 } else {
                     $c = BeanFactory::newBean('Cases');
-                    if ($caseId = InboundEmail::getCaseIdFromCaseNumber($mail->Subject, $c)) {
+                    $inboundEmail = BeanFactory::newBean('InboundEmail');
+                    if ($caseId = $inboundEmail->getCaseIdFromCaseNumber($mail->Subject, $c)) {
                         $c->retrieve($caseId);
                         $c->load_relationship('emails');
                         $c->emails->add($this->id);
@@ -2945,10 +2947,10 @@ class Email extends Basic
      * @return boolean True on success
      */
     public function send(
-        SugarPHPMailer $mail = null,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
-        InboundEmail $ie = null,
-        Email $tempEmail = null,
+        ?SugarPHPMailer $mail = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?InboundEmail $ie = null,
+        ?Email $tempEmail = null,
         $check_notify = false,
         $options = "\\Seen"
     ) {
@@ -3077,7 +3079,7 @@ class Email extends Basic
      */
     public function sendFromOutbound(
         OutboundEmailAccounts $outboundEmailAccount,
-        SugarPHPMailer $mail = null
+        ?SugarPHPMailer $mail = null
     ) {
         global $mod_strings, $app_strings, $sugar_config, $locale;
 
@@ -3183,7 +3185,7 @@ class Email extends Basic
     protected function saveAndStoreInSent(
         SugarPHPMailer $mail,
         InboundEmail $ie,
-        NonGmailSentFolderHandler $nonGmailSentFolder = null,
+        ?NonGmailSentFolderHandler $nonGmailSentFolder = null,
         $check_notify = false,
         $options = "\\Seen"
     ) {
@@ -4464,7 +4466,7 @@ eoq;
                 // just make sure are there any default 'from' address set? (validation)
 
                 if (!isset($defaultEmail['email']) || !$defaultEmail['email']) {
-                    throw new EmailException("No system default 'from' email address", NO_DEFAULT_FROM_ADDR);
+                    throw new EmailException("No system default 'from' email address", EmailException::NO_DEFAULT_FROM_ADDR);
                 }
 
                 // use the default one
@@ -4479,7 +4481,7 @@ eoq;
                 // just make sure are there any default 'from' address set? (validation)
 
                 if (!isset($defaultEmail['name']) || !$defaultEmail['name']) {
-                    throw new EmailException("No system default 'from' name", NO_DEFAULT_FROM_NAME);
+                    throw new EmailException("No system default 'from' name", EmailException::NO_DEFAULT_FROM_NAME);
                 }
 
                 // use the default one

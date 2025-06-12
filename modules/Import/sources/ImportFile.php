@@ -126,7 +126,7 @@ class ImportFile extends ImportDataSource
         }
 
 
-        $this->_fp         = sugar_fopen($filename, 'r');
+        $this->_fp         = sugar_fopen($filename, 'rb'); // Ensure compatibility Windows/Linux
         $this->_sourcename   = $filename;
         $this->_deleteFile = $deleteFile;
         $this->_delimiter  = (empty($delimiter) ? ',' : $delimiter);
@@ -216,12 +216,15 @@ class ImportFile extends ImportDataSource
                 return false;
             }
         } else {
-            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure);
+            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure, '\\');
             if ($row !== false && $row != array(null)) {
                 $this->_currentRow = $row;
             } else {
                 return false;
             }
+        }
+        if(!is_array($this->_currentRow)) {
+            return false;
         }
 
         global $locale;

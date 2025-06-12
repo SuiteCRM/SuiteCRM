@@ -330,6 +330,8 @@ function getModuleField(
     global $beanFiles;
     global $beanList;
 
+    static $sfh;
+
     // use the mod_strings for this module
     $mod_strings = return_module_language($current_language, $module);
 
@@ -437,8 +439,6 @@ function getModuleField(
         }
 
         // load SugarFieldHandler to render the field tpl file
-        static $sfh;
-
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');
             $sfh = new SugarFieldHandler();

@@ -250,6 +250,7 @@ class Call extends SugarBean
     {
         $reminderData = $reminders;
         $uninvited = array();
+        $reminders ??= [];
         foreach ($reminders as $r => $reminder) {
             foreach ($reminder['invitees'] as $i => $invitee) {
                 switch ($invitee['module']) {

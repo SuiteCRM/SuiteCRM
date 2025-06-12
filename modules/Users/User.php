@@ -47,6 +47,7 @@ require_once __DIR__ . '/../../include/EmailInterface.php';
 require_once __DIR__ . '/../Emails/EmailUI.php';
 
 // User is used to store customer information.
+#[\AllowDynamicProperties]
 class User extends Person implements EmailInterface
 {
 
@@ -110,6 +111,8 @@ class User extends Person implements EmailInterface
     );
     public $emailAddress;
     public $new_schema = true;
+
+    public $default_team;
 
     /**
      * @var bool
@@ -1297,7 +1300,7 @@ EOQ;
         $result = $db->limitQuery($query, 0, 1, false);
         if (!empty($result)) {
             $row = $db->fetchByAssoc($result);
-            if (!$checkPasswordMD5 || self::checkPasswordMD5($password, $row['user_hash'])) {
+            if ($row !== false && (!$checkPasswordMD5 || self::checkPasswordMD5($password, $row['user_hash']))) {
                 return $row;
             }
         }

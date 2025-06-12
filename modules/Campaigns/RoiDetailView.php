@@ -147,9 +147,9 @@ $campaign_id = $focus->id;
             $opp_query1 .= " and deleted=0";
             $camp_result1=$focus->db->query($camp_query1);
             $camp_data1=$focus->db->fetchByAssoc($camp_result1);
-            
-   if (unformat_number($focus->impressions) > 0) {
-       $cost_per_impression= unformat_number($focus->actual_cost)/unformat_number($focus->impressions);
+
+   if ((float)unformat_number($focus->impressions) > 0) {
+       $cost_per_impression= (float)unformat_number($focus->actual_cost)/(float)unformat_number($focus->impressions);
    } else {
        $cost_per_impression = format_number(0);
    }
@@ -158,9 +158,9 @@ $campaign_id = $focus->id;
        $camp_data1['click_thru_link']=0;
    }
    $click_thru_links = $camp_data1['click_thru_link'];
-   
-   if ($click_thru_links >0) {
-       $cost_per_click_thru= unformat_number($focus->actual_cost)/unformat_number($click_thru_links);
+
+   if ((float)unformat_number($click_thru_links) >0) {
+       $cost_per_click_thru= (float)unformat_number($focus->actual_cost)/(float)unformat_number($click_thru_links);
    } else {
        $cost_per_click_thru = format_number(0);
    }

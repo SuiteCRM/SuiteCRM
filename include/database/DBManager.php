@@ -1593,7 +1593,7 @@ abstract class DBManager
             return $this->convert($this->quoted($value), "datetime");
         }
         if ($this->isNumericType($type)) {
-            return 0 + $value; // ensure it's numeric
+            return is_numeric($value) ? 0 + $value : 0; // ensure it's numeric
         }
 
         return $this->quoted($value);
@@ -3031,7 +3031,7 @@ abstract class DBManager
      * @param array|null $field_filter Array of filter names to be inspected (NULL means all fields)
      * @return array
      */
-    public function getDataChanges(SugarBean &$bean, array $field_filter = null)
+    public function getDataChanges(SugarBean &$bean, ?array $field_filter = null)
     {
         $bean->fixUpFormatting();
         $changed_values = array();
@@ -3982,7 +3982,7 @@ abstract class DBManager
      * @param mixed[]|null $configOptions
      * @param boolean $dieOnError
      */
-    abstract public function connect(array $configOptions = null, $dieOnError = false);
+    abstract public function connect(?array $configOptions = null, $dieOnError = false);
 
     /**
      * Generates sql for create table statement for a bean.

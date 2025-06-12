@@ -81,7 +81,11 @@ class templateParser
                     $translatedVals = array();
 
                     foreach ($mVals as $mVal) {
-                        $translatedVals[] = translate($field_def['options'], $focus->module_dir, $mVal);
+                        $translated = translate($field_def['options'], $focus->module_dir, $mVal);
+                        if (is_array($translated)) {
+                            $translated = implode(", ", $translated);
+                        }
+                        $translatedVals[] = $translated;
                     }
 
                     $repl_arr[$key . "_" . $fieldName] = implode(", ", $translatedVals);
@@ -117,7 +121,7 @@ class templateParser
                     $repl_arr[$key . "_" . $fieldName] = html_entity_decode((string) $focus->{$fieldName},
                         ENT_COMPAT, 'UTF-8');
                 } elseif ($field_def['type'] == 'decimal' || $field_def['type'] == 'float') {
-                    if ($_REQUEST['entryPoint'] == 'formLetter') {
+                    if (!empty($_REQUEST['entryPoint']) && $_REQUEST['entryPoint'] == 'formLetter') {
                         $value = formatDecimalInConfigSettings($focus->$fieldName, true);
                     } else {
                         $value = formatDecimalInConfigSettings($focus->$fieldName, false);

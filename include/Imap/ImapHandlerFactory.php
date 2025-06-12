@@ -194,7 +194,7 @@ class ImapHandlerFactory
      * @return ImapHandlerInterface
      * @throws ImapHandlerException
      */
-    public function getImapHandler(string $testSettings = null, string $handlerType = 'native' )
+    public function getImapHandler(?string $testSettings = null, string $handlerType = 'native' )
     {
         if (null === $this->interfaceObject) {
             global $sugar_config, $log;

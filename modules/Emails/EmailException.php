@@ -50,5 +50,6 @@ class EmailException extends Exception
 {
     public const NO_DEFAULT_FROM_ADDR = 10;
     public const NO_DEFAULT_FROM_EMAIL = 20;
+    public const NO_DEFAULT_FROM_NAME = 25;
     public const NO_PROBLEM_MSG_FOUND = 30;
 }

@@ -151,7 +151,7 @@ class SugarWidgetFieldName extends SugarWidgetFieldVarchar
         }
 
         if (! empty($layout_def['table_alias'])) {
-            $comps = preg_split("/([fl])/", $localeNameFormat, null, PREG_SPLIT_DELIM_CAPTURE);
+            $comps = preg_split("/([fl])/", $localeNameFormat, -1, PREG_SPLIT_DELIM_CAPTURE);
             $name = array();
             foreach ($comps as $val) {
                 if ($val == 'f') {

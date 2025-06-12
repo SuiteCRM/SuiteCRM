@@ -139,7 +139,7 @@ class SearchThrowableHandler
                 $message = $mod_strings['LBL_ELASTIC_SEARCH_EXCEPTION_DEFAULT'];
         }
 
-        return $message;
+        return $message ?? '';
     }
 
     /**

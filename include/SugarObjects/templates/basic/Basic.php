@@ -39,7 +39,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-
+ #[\AllowDynamicProperties]
 class Basic extends SugarBean
 {
     /**

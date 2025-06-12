@@ -52,6 +52,7 @@ if (file_exists('custom/include/Sugarpdf/sugarpdf_config.php')) {
 require_once('include/tcpdf/tcpdf.php');
 require_once('include/Sugarpdf/SugarpdfHelper.php');
 
+#[\AllowDynamicProperties]
 class Sugarpdf extends TCPDF
 {
     /**

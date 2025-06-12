@@ -70,7 +70,7 @@ class DocumentResponse implements \JsonSerializable
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $response = [
             'data' => $this->getData()

@@ -61,7 +61,7 @@ class ParseRules
      * Return Array of rules to run
      *
      */
-    public function getRules()
+    public static function getRules()
     {
         $rules = array();
         $rules[] = array("class"=>"UndefinedVardefRule", "file"=>"include/SugarFields/Parsers/Rules/UndefinedVardefRule.php");

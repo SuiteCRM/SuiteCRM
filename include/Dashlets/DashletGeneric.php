@@ -312,14 +312,16 @@ class DashletGeneric extends Dashlet
         if (!is_array($this->filters)) {
             // use defaults
             $this->filters = array();
-            foreach ($this->searchFields as $name => $params) {
-                if (!empty($params['default'])) {
-                    $this->filters[$name] = $params['default'];
+            if (is_array($this->searchFields)) {
+                foreach ($this->searchFields as $name => $params) {
+                    if (!empty($params['default'])) {
+                        $this->filters[$name] = $params['default'];
+                    }
                 }
             }
         }
         foreach ($this->filters as $name=>$params) {
-            if (!empty($params)) {
+            if (!empty($params) && $this->seedBean != null) {
                 if ($name == 'assigned_user_id' && $this->myItemsOnly) {
                     continue;
                 } // don't handle assigned user filter if filtering my items only
@@ -373,7 +375,7 @@ class DashletGeneric extends Dashlet
         }
 
         if ($this->myItemsOnly) {
-            array_push($returnArray, $this->seedBean->table_name . '.' . "assigned_user_id = '" . $current_user->id . "'");
+            array_push($returnArray, ($this->seedBean?->table_name ?? "") . '.' . "assigned_user_id = '" . $current_user->id . "'");
         }
 
         return $returnArray;
@@ -381,6 +383,9 @@ class DashletGeneric extends Dashlet
 
     protected function loadCustomMetadata()
     {
+        if ($this->seedBean == null) {
+            return;
+        }
         $dashletData = [];
         $customMetadata = 'custom/modules/'.$this->seedBean->module_dir.'/metadata/dashletviewdefs.php';
         if (file_exists($customMetadata)) {
@@ -439,7 +444,7 @@ class DashletGeneric extends Dashlet
         $this->lvs->displayColumns = $displayColumns;
 
 
-        $this->lvs->lvd->setVariableName($this->seedBean->object_name, array());
+        $this->lvs->lvd->setVariableName($this->seedBean?->object_name, array());
         $lvdOrderBy = $this->lvs->lvd->getOrderBy(); // has this list been ordered, if not use default
 
         $nameRelatedFields = array();
@@ -479,7 +484,11 @@ class DashletGeneric extends Dashlet
                 }
             }
             // assign a baseURL w/ the action set as DisplayDashlet
-            foreach ($this->lvs->data['pageData']['urls'] as $type => $url) {
+            $urls = $this->lvs?->data['pageData']['urls'] ?? [];
+            if (!is_array($urls)) {
+                $urls = [];
+            }
+            foreach ($urls as $type => $url) {
                 // awu Replacing action=DisplayDashlet with action=DynamicAction&DynamicAction=DisplayDashlet
                 if ($type == 'orderBy') {
                     $this->lvs->data['pageData']['urls'][$type] = preg_replace('/(action=.*&)/Ui', 'action=DynamicAction&DynamicAction=displayDashlet&', (string) $url);
@@ -568,6 +577,9 @@ class DashletGeneric extends Dashlet
      */
     public function addCustomFields()
     {
+        if ($this->seedBean == null) {
+            return;
+        }
         foreach ($this->seedBean->field_defs as $fieldName => $def) {
             if (!empty($def['type']) && $def['type'] == 'html') {
                 continue;

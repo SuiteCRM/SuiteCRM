@@ -57,7 +57,7 @@ class actionCreateRecord extends actionBase
      * @param array $params
      * @return string
      */
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         global $app_list_strings;
 
@@ -288,7 +288,7 @@ class actionCreateRecord extends actionBase
                                 } else {
                                     $dateToUse = $params['value'][$key][0];
                                     $bean->retrieve($bean->id);
-                                    $date = $timedate->fromUser($bean->$dateToUse)->asDB();
+                                    $date = $timedate->fromUser($bean->$dateToUse)?->asDB();
                                 }
 
                                 if ($params['value'][$key][1] !== 'now') {

@@ -302,7 +302,7 @@ function rtf2text($filename)
                         // We need to check whether the stack contains \ucN control word. If it does,
                         // we should remove the N characters from the output stream.
                         case "u":
-                            $toText .= html_entity_decode("&#x".dechex($param).";");
+                            $toText .= html_entity_decode("&#x".dechex((int) $param).";");
                             $ucDelta = @$stack[$j]["uc"];
                             if ($ucDelta > 0) {
                                 $i += $ucDelta;

@@ -116,13 +116,15 @@ class ListViewSmarty extends ListViewDisplay
         }
         global $odd_bg, $even_bg, $hilite_bg, $app_strings, $sugar_config;
 
-        $seedClass = get_parent_class($this->seed);
-        if (in_array($seedClass, array('Company', 'Person'), true)) {
-            $configurator = new Configurator();
-            if ($configurator->isConfirmOptInEnabled()) {
-                $sendConfirmOptInEmailToPersonAndCompany = $this->buildSendConfirmOptInEmailToPersonAndCompany();
-                if (!in_array($sendConfirmOptInEmailToPersonAndCompany, $this->actionsMenuExtraItems, true)) {
-                    $this->actionsMenuExtraItems[] = $this->buildSendConfirmOptInEmailToPersonAndCompany();
+        if ($this->seed != null) {
+            $seedClass = get_parent_class($this->seed);
+            if (in_array($seedClass, array('Company', 'Person'), true)) {
+                $configurator = new Configurator();
+                if ($configurator->isConfirmOptInEnabled()) {
+                    $sendConfirmOptInEmailToPersonAndCompany = $this->buildSendConfirmOptInEmailToPersonAndCompany();
+                    if (!in_array($sendConfirmOptInEmailToPersonAndCompany, $this->actionsMenuExtraItems, true)) {
+                        $this->actionsMenuExtraItems[] = $this->buildSendConfirmOptInEmailToPersonAndCompany();
+                    }
                 }
             }
         }

@@ -377,7 +377,7 @@ class FormulaCalculator
         }
 
         if (($params = $this->evaluateFunctionParams("divide", $text, $childItems)) != null) {
-            return $this->parseFloat($params[0]) / $this->parseFloat($params[1]);
+            return (empty($params[1]) || $this->parseFloat($params[1]) == 0) ? INF : ($this->parseFloat($params[0]) / $this->parseFloat($params[1]));
         }
 
         if (($params = $this->evaluateFunctionParams("power", $text, $childItems)) != null) {

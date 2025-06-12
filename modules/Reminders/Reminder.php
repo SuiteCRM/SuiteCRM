@@ -107,6 +107,7 @@ class Reminder extends Basic
         $db = DBManagerFactory::getInstance();
 
         $savedReminderIds = array();
+        $remindersData ??= [];
         foreach ($remindersData as $reminderData) {
             if (isset($_POST['isDuplicate']) && $_POST['isDuplicate']) {
                 $reminderData->id = '';

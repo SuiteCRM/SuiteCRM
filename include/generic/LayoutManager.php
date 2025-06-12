@@ -349,7 +349,7 @@ class LayoutManager
         //#27426
         $fieldDef = $this->getFieldDef($widget_def);
         if (!empty($fieldDef) &&  !empty($fieldDef['type']) && strtolower(trim($fieldDef['type'])) == 'multienum') {
-            $widget_def['fields']  = sugarArrayMerge($widget_def['fields'], $fieldDef);
+            $widget_def['fields']  = sugarArrayMerge($widget_def['fields'] ?? [], $fieldDef);
             $widget_def['fields']['module']  = $label;
         }
         //end
