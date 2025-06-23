@@ -5073,3 +5073,13 @@ function convertReportDateTimeToDB(dateValue, timeValue) {
   }
   return '';
 }
+
+
+$(document).ready(function(){
+  $('button#searchbutton').on('click', function() {
+      // Set focus in global search input
+      setTimeout(() => {
+          $(this).parent('li').find('input#query_string').focus();
+      }, 200);
+  });
+})
