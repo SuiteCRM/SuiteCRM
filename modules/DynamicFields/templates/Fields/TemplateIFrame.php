@@ -61,10 +61,22 @@ class TemplateIFrame extends TemplateURL
     public function get_xtpl_detail()
     {
         $value = parent::get_xtpl_detail();
-        $value .= "BLAH BLAH";
-        return $value;
-    }
+        // STIC-Custom ART 20241203 - Height defined in iframe field not respected
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/502
+        // $value .= "BLAH BLAH";
+        // return $value;
     
+        // Gets the height value from the updated vardef or the default value
+        $height = !empty($this->height) ? $this->height : $this->ext4;
+    
+        // Returns an array with the required data
+        return [
+            'value' => $value,
+            'height' => $height,
+        ];
+        // END STIC-Custom
+    }
+
     public function get_field_def()
     {
         $def = parent::get_field_def();

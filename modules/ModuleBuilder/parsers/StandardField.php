@@ -166,6 +166,14 @@ class StandardField extends DynamicField
                     }
                 }
             }
+
+            // STIC-Custom ART 20241203 - Height defined in iframe field not respected
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/502
+            // Updates the height in the standard fields
+            if($field->type == 'iframe' && ($field->ext4 != $currdef["height"]) || !isset($currdef["height"])) {
+                $this->custom_def["height"] = (isset($field->ext4) && is_numeric($field->ext4)) ? $field->ext4 : $currdef["height"];
+            }
+            // END STIC-Custom
         }
         
         if (isset($this->custom_def["duplicate_merge_dom_value"]) && !isset($this->custom_def["duplicate_merge"])) {
