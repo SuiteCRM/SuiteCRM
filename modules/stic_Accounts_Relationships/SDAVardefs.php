@@ -35,6 +35,7 @@
  * @param string label          Label of the virtual field (includes the 'LBL_' prefix)
  * @param string description    Description of the virtual field (includes the 'LBL_' prefix)
  * @param string type           Data type of the virtual field (e.g., 'numeric', 'text', 'date')
+ * @param string aggregations   Comma-separated list of supported aggregations (e.g., 'sum,avg,max,min,count,count_distinct,none')
  * @param int    precision      Precision for numeric fields (number of decimal places)
  * @param int    hidden         Visibility flag (0 = visible to all, 1 = visible only to administrators in SDA)
  * @param string expression     SQL expression to calculate the virtual field value
@@ -48,6 +49,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_SDA_ACTIVE_CURRENT_YEAR_MINUS_0_DESCRIPTION',
         'type' => 'text',
         'precision' => 0,
+        'aggregations' => 'count,count_distinct,none',
         'hidden' => 0,
         'expression' => "CASE
             WHEN (m.start_date IS NULL OR m.start_date <= LAST_DAY(CONCAT(YEAR(CURDATE()),'-12-31')))
@@ -61,6 +63,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_SDA_ACTIVE_CURRENT_YEAR_MINUS_1_DESCRIPTION',
         'type' => 'text',
         'precision' => 0,
+        'aggregations' => 'count,count_distinct,none',
         'hidden' => 0,
         'expression' => "CASE
             WHEN (m.start_date IS NULL OR m.start_date <= LAST_DAY(CONCAT(YEAR(CURDATE())-1,'-12-31')))
@@ -74,6 +77,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_SDA_ACTIVE_CURRENT_YEAR_MINUS_2_DESCRIPTION',
         'type' => 'text',
         'precision' => 0,
+        'aggregations' => 'count,count_distinct,none',
         'hidden' => 0,
         'expression' => "CASE
             WHEN (m.start_date IS NULL OR m.start_date <= LAST_DAY(CONCAT(YEAR(CURDATE())-2,'-12-31')))
@@ -87,6 +91,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_SDA_ACTIVE_CURRENT_YEAR_MINUS_3_DESCRIPTION',
         'type' => 'text',
         'precision' => 0,
+        'aggregations' => 'count,count_distinct,none',
         'hidden' => 0,
         'expression' => "CASE
             WHEN (m.start_date IS NULL OR m.start_date <= LAST_DAY(CONCAT(YEAR(CURDATE())-3,'-12-31')))
@@ -100,6 +105,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_SDA_ACTIVE_CURRENT_YEAR_MINUS_4_DESCRIPTION',
         'type' => 'text',
         'precision' => 0,
+        'aggregations' => 'count,count_distinct,none',
         'hidden' => 0,
         'expression' => "CASE
             WHEN (m.start_date IS NULL OR m.start_date <= LAST_DAY(CONCAT(YEAR(CURDATE())-4,'-12-31')))

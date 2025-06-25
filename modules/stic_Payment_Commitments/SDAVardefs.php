@@ -36,6 +36,7 @@
  * @param string description    Description of the virtual field (includes the 'LBL_' prefix)
  * @param string type           Data type of the virtual field (e.g., 'numeric', 'text', 'date')
  * @param int    precision      Precision for numeric fields (number of decimal places)
+ * @param string aggregations   Comma-separated list of supported aggregations (e.g., 'sum,avg,max,min,count,count_distinct,none')
  * @param int    hidden         Visibility flag (0 = visible to all, 1 = visible only to administrators in SDA)
  * @param string expression     SQL expression to calculate the virtual field value
  *
@@ -48,6 +49,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_1_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(m.expected_payments_detail, '|', 1)",
     ),
@@ -56,6 +58,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_2_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 2), '|', -1)",
     ),
@@ -64,6 +67,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_3_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 3), '|', -1)",
     ),
@@ -72,6 +76,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_4_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 4), '|', -1)",
     ),
@@ -80,6 +85,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_5_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 5), '|', -1)",
     ),
@@ -88,6 +94,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_6_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 6), '|', -1)",
     ),
@@ -96,6 +103,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_7_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 7), '|', -1)",
     ),
@@ -104,6 +112,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_8_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 8), '|', -1)",
     ),
@@ -112,6 +121,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_9_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 9), '|', -1)",
     ),
@@ -120,6 +130,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_10_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 10), '|', -1)",
     ),
@@ -128,6 +139,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_11_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 11), '|', -1)",
     ),
@@ -136,6 +148,7 @@ $SDAVirtualFields = array(
         'description' => 'LBL_EXPECTED_PAYMENTS_MONTH_12_DESCRIPTION',
         'type' => 'numeric',
         'precision' => 2,
+        'aggregations' => 'sum,avg,max,min,count,count_distinct,none',
         'hidden' => 0,
         'expression' => "SUBSTRING_INDEX(SUBSTRING_INDEX(m.expected_payments_detail, '|', 12), '|', -1)",
     ),
