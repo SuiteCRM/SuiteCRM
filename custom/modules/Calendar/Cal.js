@@ -491,6 +491,18 @@ CAL.load_create_form = function (params) {
                     SugarWidgetScheduler.update_time();
                     enableQS(false);
                     disableOnUnloadEditView();
+                    if (typeof SUGAR.loadDynamicEnum === 'undefined') {
+
+                        $.getScript('include/SugarFields/Fields/Dynamicenum/SugarFieldDynamicenum.js')
+                            .done(function() {
+                                CAL.initializeDynamicEnumFields();
+                            })
+                            .fail(function() {
+                                console.error('No se pudo cargar SugarFieldDynamicenum.js');
+                            });
+                    } else {
+                        CAL.initializeDynamicEnumFields();
+                    }
                 }, 500);
                 ajaxStatus.hideStatus();
             } else {
@@ -515,6 +527,89 @@ CAL.load_create_form = function (params) {
     }
     YAHOO.util.Connect.asyncRequest("POST", url, callback, CAL.toURI(data));
 };
+
+CAL.initializeDynamicEnumFields = function() {
+    
+    function getParentEnumFromVardef(fieldId, callback) {
+
+        YAHOO.util.Connect.asyncRequest(
+            'GET',
+            'index.php?module=Calendar&action=getFieldVardef&field=' + fieldId + '&to_pdf=1', 
+            {
+                success: function(o) {
+                    try {
+                        var jsonStr = o.responseText;
+                        if (jsonStr.indexOf('<!DOCTYPE') !== -1) {
+                            jsonStr = jsonStr.substring(0, jsonStr.indexOf('<!DOCTYPE'));
+                        }
+                                                
+                        var response = YAHOO.lang.JSON.parse(jsonStr);
+
+                        if (response.vardef && response.vardef.parentenum) {
+                            callback(response.vardef.parentenum);
+                        } else {
+                            callback(null);
+                        }
+                    } catch (e) {
+                        console.error("Error parsing vardef response:", e);
+                        console.error("Error details:", e.message);
+                        callback(null);
+                    }
+                },
+                failure: function(o) {
+                    console.error("Failed to get vardef for field:", fieldId);
+                    callback(null);
+                }
+            }
+        );
+    }
+
+    var dynamicFields = document.querySelectorAll('div[type="dynamicenum"] select');
+    
+    dynamicFields.forEach(function(dynamicField) {
+        var dynamicFieldId = dynamicField.id;
+        
+        getParentEnumFromVardef(dynamicFieldId, function(parentFieldId) {
+            if (parentFieldId) {
+                
+                if (typeof de_entries === 'undefined') {
+                    window.de_entries = new Array();
+                }
+                
+                var initDynamicEnum = function() {
+                    loadDynamicEnum(parentFieldId, dynamicFieldId);
+                };
+                
+                var parentField = document.getElementById(parentFieldId);
+                if (parentField) {
+                    parentField.removeEventListener('change', initDynamicEnum); 
+                    parentField.addEventListener('change', initDynamicEnum);
+                }
+                
+                initDynamicEnum();
+                
+                if (SUGAR.ajaxUI && SUGAR.ajaxUI.hist_loaded) {
+                    initDynamicEnum();
+                }
+            }
+        });
+    });
+};
+
+if (typeof YAHOO !== 'undefined') {
+    YAHOO.util.Event.onDOMReady(function() {
+        CAL.initializeDynamicEnumFields();
+    });
+}
+
+if (typeof CAL !== 'undefined' && CAL.load) {
+    var originalLoadFunction = CAL.load;
+    CAL.load = function() {
+        originalLoadFunction.apply(this, arguments);
+        CAL.initializeDynamicEnumFields();
+    };
+}
+
 CAL.full_form = function () {
     var e = document.createElement("input");
     e.setAttribute("type", "hidden");

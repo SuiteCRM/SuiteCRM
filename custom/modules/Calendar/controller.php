@@ -53,4 +53,27 @@ class CustomCalendarController extends CalendarController
         }
 
     }
+    /**
+     * This action is triggered when there are dynamic enums in the EditView, 
+     * and the parent enum needs to be retrieved from the vardef definition of the module.
+     */ 
+    function action_getFieldVardef() {
+    
+        $this->view = 'json';
+        header('Content-Type: application/json');
+        
+        $fieldName = $_REQUEST['field'];
+        
+        $module = $_REQUEST['record_module'] ?? null;
+
+        $bean = BeanFactory::newBean($module);
+        $vardef = isset($bean->field_defs[$fieldName]) ? $bean->field_defs[$fieldName] : null;
+        
+        echo json_encode(array(
+            'success' => true,
+            'vardef' => $vardef
+        ));
+        
+        exit();
+    }    
 }
