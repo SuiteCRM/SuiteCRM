@@ -311,10 +311,9 @@ class stic_EventsUtils
             } else {
                 $sessionBean->assigned_user_id = $user;
             }
+            
             if (isset($_REQUEST['responsible_id']) && $_REQUEST['responsible_id'] != '') {
                 $sessionBean->contact_id_c = $_REQUEST['responsible_id'];
-            } else {
-                $sessionBean->contact_id_c = $user;
             }
 
             if (isset($_REQUEST['color']) && $_REQUEST['color'] != '') {
