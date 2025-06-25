@@ -126,104 +126,112 @@ class CheckHoursWorkedInPreviousWeek extends DataCheckFunction
             } else {
                 $assignedUser = BeanFactory::getBean('Users', $wcAssignedUser);
             }
+            
             // If the user is not empty and has not been previously validated
             if (!empty($assignedUser) && !in_array($assignedUser->id, $validatedUsers)) 
             {
+                // Add the user id to the validated users array
+                array_push($validatedUsers, $assignedUser->id);      
                 $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Validating the next users: {$assignedUser->name}.");
+                
+                // Check if the user has the Time Tracker and Work Calendar option activated
+                $isActivateTimeTracker = $assignedUser->stic_clock_c == '1';
+                $isActivateWorkCalendar = $assignedUser->stic_work_calendar_c == '1';
+                if ($isActivateTimeTracker && $isActivateWorkCalendar) {
 
-                // Manage the counter
-                $count++; 
+                    // Manage the counter
+                    $count++; 
 
-                // get the durations of both modules
-                $ttDuration = $row['ttDuration'];
-                $wcDuration = $row['wcDuration'];
-
-                if (!empty($ttDuration) && !empty($wcDuration)) 
-                {
-                    // Calculate the upper and lower allowed difference
-                    $lowerDifference = ($lowerMarginPercent === false) ? 0 : $wcDuration * ($lowerMarginPercent/100);
-                    $upperDifference = ($upperMarginPercent === false) ? 0 : $wcDuration * ($upperMarginPercent/100);
+                    // get the durations of both modules
+                    $ttDuration = $row['ttDuration'];
+                    $wcDuration = $row['wcDuration'];
                     
-                    // Get the difference between the two durations
-                    $difference = $wcDuration - $ttDuration;
-                    
-                    if (   ($difference > 0 && $difference > $lowerDifference) 
-                        || ($difference < 0 && $difference > $upperDifference)) 
+                    $error = 0;
+                    if (!empty($ttDuration) && !empty($wcDuration)) 
                     {
+                        // Calculate the upper and lower allowed difference
+                        $lowerDifference = ($lowerMarginPercent === false) ? 0 : $wcDuration * ($lowerMarginPercent/100);
+                        $upperDifference = ($upperMarginPercent === false) ? 0 : $wcDuration * ($upperMarginPercent/100);
+                        
+                        // Get the difference between the two durations
+                        $difference = $wcDuration - $ttDuration;
+                        
+                        if (   ($difference > 0 && $difference > $lowerDifference) 
+                            || ($difference < 0 && $difference > $upperDifference)) 
+                        {
+                            $errorMsg = $this->getLabel('HOURS_NOT_MATCH') . $assignedUser->name;
+                            $error = 1;
+                        }
+                    } else {
                         $errorMsg = $this->getLabel('HOURS_NOT_MATCH') . $assignedUser->name;
                         $error = 1;
                     }
-                } else {
-                    $errorMsg = $this->getLabel('HOURS_NOT_MATCH') . $assignedUser->name;
-                    $error = 1;
-                }
 
-                if ($error == 1) 
-                {
-                    // Manage the counter
-                    $errors++;
-                    
-                    // Create the validation result
-                    if (!empty($errorMsg)) 
+                    if ($error == 1) 
                     {
-                        $dateFormat = $current_user->getUserDateTimePreferences();
-                        $weekAgoDate = new DateTime();
-                        $weekAgoDate->modify('-1 week');
-                        $weekAgoDate = $weekAgoDate->format($dateFormat["date"]);
-                        $oneDayAgoDate = new DateTime();
-                        $oneDayAgoDate->modify('-1 day');
-                        $oneDayAgoDate = $oneDayAgoDate->format($dateFormat["date"]);
+                        // Manage the counter
+                        $errors++;
+                        
+                        // Create the validation result
+                        if (!empty($errorMsg)) 
+                        {
+                            $dateFormat = $current_user->getUserDateTimePreferences();
+                            $weekAgoDate = new DateTime();
+                            $weekAgoDate->modify('-1 week');
+                            $weekAgoDate = $weekAgoDate->format($dateFormat["date"]);
+                            $oneDayAgoDate = new DateTime();
+                            $oneDayAgoDate->modify('-1 day');
+                            $oneDayAgoDate = $oneDayAgoDate->format($dateFormat["date"]);
 
-                        $errorMsg .= '<br /><br />';
-                        $errorMsg .= '<a style="text-decoration:none" href="' . $sugar_config["site_url"] . '/index.php?module=stic_Time_Tracker&action=index&query=true&searchFormTab=advanced_search&assigned_user_id_advanced=' . $assignedUser->id . '&start_date_advanced_range_choice=between&start_range_start_date_advanced=' . $weekAgoDate .'&end_range_start_date_advanced=' . $oneDayAgoDate.'"><span class="suitepicon suitepicon-action-list-maps" style="font-size:12px">&nbsp;&nbsp;</span><span> - ' . $this->getLabel("STIC_TIME_TRACKER_LIST_VIEW") . '</span></a><br />';
-                        $errorMsg .= '<a style="text-decoration:none" href="' . $sugar_config["site_url"] . '/index.php?module=stic_Work_Calendar&action=index&query=true&searchFormTab=advanced_search&assigned_user_id_advanced=' . $assignedUser->id . '&start_date_advanced_range_choice=between&start_range_start_date_advanced=' . $weekAgoDate .'&end_range_start_date_advanced=' . $oneDayAgoDate.'"><span class="suitepicon suitepicon-action-list-maps" style="font-size:12px">&nbsp;&nbsp;</span><span> - ' . $this->getLabel("STIC_WORK_CALENDAR_LIST_VIEW") . '</span></a><br />';
-                        $errorMsg .= '<br />';
+                            $errorMsg .= '<br /><br />';
+                            $errorMsg .= '<a style="text-decoration:none" href="' . $sugar_config["site_url"] . '/index.php?module=stic_Time_Tracker&action=index&query=true&searchFormTab=advanced_search&assigned_user_id_advanced=' . $assignedUser->id . '&start_date_advanced_range_choice=between&start_range_start_date_advanced=' . $weekAgoDate .'&end_range_start_date_advanced=' . $oneDayAgoDate.'"><span class="suitepicon suitepicon-action-list-maps" style="font-size:12px">&nbsp;&nbsp;</span><span> - ' . $this->getLabel("STIC_TIME_TRACKER_LIST_VIEW") . '</span></a><br />';
+                            $errorMsg .= '<a style="text-decoration:none" href="' . $sugar_config["site_url"] . '/index.php?module=stic_Work_Calendar&action=index&query=true&searchFormTab=advanced_search&assigned_user_id_advanced=' . $assignedUser->id . '&start_date_advanced_range_choice=between&start_range_start_date_advanced=' . $weekAgoDate .'&end_range_start_date_advanced=' . $oneDayAgoDate.'"><span class="suitepicon suitepicon-action-list-maps" style="font-size:12px">&nbsp;&nbsp;</span><span> - ' . $this->getLabel("STIC_WORK_CALENDAR_LIST_VIEW") . '</span></a><br />';
+                            $errorMsg .= '<br />';
 
-                        $validationResultMsg = '<span style="color:red;">' . $errorMsg . '</span>';                        
-                        $data = array(
-                            'name' => $this->getLabel('NAME'),
-                            'stic_validation_actions_id' => $actionBean->id,
-                            'log' => '<div>' . $validationResultMsg . '</div>',
-                            'parent_type' => $this->functionDef['module'],
-                            'parent_id' => $assignedUser->id,
-                            'reviewed' => 'no',   
-                            'assigned_user_id' => $assignedUser->id,
-                        );
-                        $this->logValidationResult($data);
+                            $validationResultMsg = '<span style="color:red;">' . $errorMsg . '</span>';                        
+                            $data = array(
+                                'name' => $this->getLabel('NAME'),
+                                'stic_validation_actions_id' => $actionBean->id,
+                                'log' => '<div>' . $validationResultMsg . '</div>',
+                                'parent_type' => $this->functionDef['module'],
+                                'parent_id' => $assignedUser->id,
+                                'reviewed' => 'no',   
+                                'assigned_user_id' => $assignedUser->id,
+                            );
+                            $this->logValidationResult($data);
 
-                        $info['subject'] = $this->getLabel('EMAIL_SUBJECT');
-                        $info['errorMsg'] = $errorMsg;
-                        $info['module'] = $this->functionDef["module"];                        
-                        sendEmailToEmployeeAndResponsible($assignedUser, $row, $info);
-                    }
+                            $info['subject'] = $this->getLabel('EMAIL_SUBJECT');
+                            $info['errorMsg'] = $errorMsg;
+                            $info['module'] = $this->functionDef["module"];                        
+                            sendEmailToEmployeeAndResponsible($assignedUser, $row, $info);
+                        }
 
-                    // Report_always
-                    global $current_user;
-                    if (!$count && $actionBean->report_always) {
-                        $errorMsg = $this->getLabel('NO_ROWS');
-                        $data = array(
-                            'name' => $errorMsg,
-                            'stic_validation_actions_id' => $actionBean->id,
-                            'log' => '<div>' . $errorMsg . '</div>',
-                            'reviewed' => 'not_necessary',              
-                            'assigned_user_id' => $current_user->id, // In this message we indicate the administrator user
-                        );
-                        $this->logValidationResult($data);
-                    } else if (!$errors && $actionBean->report_always) {
-                        $errorMsg = $this->getLabel('NO_ERRORS');
-                        $data = array(
-                            'name' => $errorMsg,
-                            'stic_validation_actions_id' => $actionBean->id,
-                            'log' => '<div>' . $errorMsg . '</div>',
-                            'reviewed' => 'not_necessary',       
-                            'assigned_user_id' => $current_user->id, // In this message we indicate the administrator user            
-                        );
-                        $this->logValidationResult($data);
-                    }
-                    $error = 0;
-                }
-                // Add the user id to the validated users array
-                array_push($validatedUsers, $assignedUser->id);                
+                        // Report_always
+                        global $current_user;
+                        if (!$count && $actionBean->report_always) {
+                            $errorMsg = $this->getLabel('NO_ROWS');
+                            $data = array(
+                                'name' => $errorMsg,
+                                'stic_validation_actions_id' => $actionBean->id,
+                                'log' => '<div>' . $errorMsg . '</div>',
+                                'reviewed' => 'not_necessary',              
+                                'assigned_user_id' => $current_user->id, // In this message we indicate the administrator user
+                            );
+                            $this->logValidationResult($data);
+                        } else if (!$errors && $actionBean->report_always) {
+                            $errorMsg = $this->getLabel('NO_ERRORS');
+                            $data = array(
+                                'name' => $errorMsg,
+                                'stic_validation_actions_id' => $actionBean->id,
+                                'log' => '<div>' . $errorMsg . '</div>',
+                                'reviewed' => 'not_necessary',       
+                                'assigned_user_id' => $current_user->id, // In this message we indicate the administrator user            
+                            );
+                            $this->logValidationResult($data);
+                        }
+                        $error = 0;
+                    }    
+                }      
             }
         }
         
