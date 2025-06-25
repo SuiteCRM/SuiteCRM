@@ -214,6 +214,8 @@ class ImportFile extends ImportDataSource
             if (!empty($this->_encoding)) {
                 // Convert all values to UTF-8 for display and import purposes
                 $this->_currentRow[$key] = $locale->translateCharset($value, $this->_encoding);
+                // Update the variable because it will be used later
+                $value = $this->_currentRow[$key];
             }
 
             $this->_currentRow[$key] = securexss($value);

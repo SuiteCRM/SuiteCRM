@@ -249,6 +249,10 @@ class ImportFile extends ImportDataSource
             if (!empty($this->_encoding)) {
                 // Convert all values to UTF-8 for display and import purposes
                 $this->_currentRow[$key] = $locale->translateCharset($value, $this->_encoding);
+                // STIC-Custom 20250609 MHP - Update the variable because it will be used later
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/671
+                $value = $this->_currentRow[$key];
+                // END STIC-Custom
             }
 
             $this->_currentRow[$key] = securexss($value);
