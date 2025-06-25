@@ -135,9 +135,13 @@ class BreadCrumbStack
                 //if this item already exists in the stack then update the found items
                 //to visible = 0 and add our new item to the stack
                 $item = $this->stack[$this->stackMap[$row['item_id']]];
-                if (!empty($item['id']) && $row['id'] != $item['id']) {
-                    $this->makeItemInvisible($item['id'], 0);
-                }
+                // STIC-Custom 20250128 ART - Tracker Module
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+                // Prevent the database record from being replaced
+                // if (!empty($item['id']) && $row['id'] != $item['id']) {
+                //     $this->makeItemInvisible($item['id'], 0);
+                // }
+                // END STIC-Custom
                 $this->popItem($item['item_id']);
             }
             //If we reach the max count, shift the first element off the stack

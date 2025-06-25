@@ -2026,8 +2026,6 @@ $app_strings = array(
 
     'LBL_NO_IMAGE' => 'Sin Imagen',
 
-    'LBL_MODULE' => 'Módulo',
-
     //adding a label for address copy from left
     'LBL_COPY_ADDRESS_FROM_LEFT' => 'Copiar dirección de la izquierda:',
     'LBL_SAVE_AND_CONTINUE' => 'Guardar y Continuar',
@@ -2044,17 +2042,17 @@ $app_strings = array(
     'ERR_UNDEFINED_METRIC' => 'Error: No se puede establecer el valor de métrica definido',
     'ERR_STORE_FILE_MISSING' => 'Error: No se puede encontrar el archivo de la aplicación de la tienda',
 
-    'LBL_MONITOR_ID' => 'Monitor de Id',
-    'LBL_USER_ID' => 'ID Usuario',
-    'LBL_MODULE_NAME' => 'Nombre de Módulo',
-    'LBL_ITEM_ID' => 'Ítem Id',
-    'LBL_ITEM_SUMMARY' => 'Ítem resumen',
+    'LBL_MONITOR_ID' => 'Id del Monitor',
+    'LBL_USER_ID' => 'Id del Usuario',
+    'LBL_MODULE' => 'Módulo',
+    'LBL_ITEM_ID' => 'Id del Elemento',
+    'LBL_ITEM_SUMMARY' => 'Resumen del Elemento',
     'LBL_ACTION' => 'Acción',
-    'LBL_SESSION_ID' => 'Sesión Id',
+    'LBL_SESSION_ID' => 'Id de la Sesión',
     'LBL_BREADCRUMBSTACK_CREATED' => 'BreadCrumbStack creado por el usuario id {0}',
     'LBL_VISIBLE' => 'Dato visible',
-    'LBL_DATE_LAST_ACTION' => 'Fecha de última acción',
-
+    'LBL_DATE_LAST_ACTION' => 'Fecha',
+    
     //jc:#12287 - For javascript validation messages
     'MSG_IS_NOT_BEFORE' => 'no antes de',
     'MSG_IS_MORE_THAN' => 'es más que',

@@ -136,6 +136,34 @@ class SugarAuthenticate
         $_SESSION['login_password'] = $password;
         if (empty($_SESSION['login_error'])) {
             $_SESSION['login_error'] = translate('ERR_INVALID_PASSWORD', 'Users');
+
+            // STIC-Custom 20250612 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // Track the login failed of the user
+            // Get the instance of the TrackerManager
+            $trackerManager = TrackerManager::getInstance();
+        
+            // Get the tracker monitor
+            $monitor = $trackerManager->getMonitor('tracker');
+        
+            // If the monitor exists, set its values
+            if ($monitor) {
+                // Set the date and time of the login
+                $monitor->setValue('date_modified', $GLOBALS['timedate']->nowDb());
+        
+                // Set the user ID, assigned user ID, module name, action, item ID, item summary, visibility and session ID
+                $monitor->setValue('user_id', $usr_id);
+                $monitor->setValue('assigned_user_id', $usr_id);
+                $monitor->setValue('module_name', 'Users');
+                $monitor->setValue('action', 'login_failed');
+                $monitor->setValue('item_id', $usr_id);
+                $monitor->setValue('item_summary', $username);
+                $monitor->setValue('visible', true);
+                $monitor->setValue('session_id', $monitor->getSessionId());
+        
+                // Save the monitor to the database
+                $trackerManager->saveMonitor($monitor, true, true);
+            }
         }
 
         return false;

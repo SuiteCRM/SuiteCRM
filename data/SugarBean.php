@@ -3520,7 +3520,35 @@ class SugarBean
             $monitor->setValue('item_id', $this->id);
             $monitor->setValue('item_summary', $this->get_summary_text());
             $monitor->setValue('visible', $this->tracker_visibility);
-            $trackerManager->saveMonitor($monitor);
+
+            // STIC-Custom 20241014 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // $trackerManager->saveMonitor($monitor);
+
+            // Track the bean as saved, updated or deleted
+            if (empty($this->fetched_row['id'])) {
+                // If the bean is new (has no ID), mark it as saved
+                $monitor->action = 'save';
+            } else if ($current_view == 'deleted') {
+                // If the bean is marked as deleted, mark it as deleted in the monitor
+                $monitor->action = 'deleted';
+                // Set the item summary to the bean's name
+                $monitor->item_summary = $this->name;
+            } else {
+                // If the bean is neither new nor deleted, it must have been updated
+                $monitor->action = 'update';
+            }
+
+            // Save the monitor to the database excluding modules that are not understandable as a record
+            $excludedModules = ['SugarFeed', 'AOW_Processed', 'SchedulersJobs', 'Import'];
+            // Untrack the innecesary information
+            if (!in_array($monitor->module_name, $excludedModules)) {
+                $trackerManager->saveMonitor($monitor, true, true);
+            } else {
+                // If not, mark as not visible
+                $monitor->setValue('visible', false);
+            }
+            // END STIC Custom
         }
     }
 
@@ -5361,6 +5389,13 @@ class SugarBean
             $tracker = BeanFactory::newBean('Trackers');
             $tracker->makeInvisibleForAll($id);
 
+            // STIC-Custom 20241014 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // If we aren't in setup mode and we have a current user and module, then we track it as deleted
+            if (isset($GLOBALS['current_user']) && isset($this->module_dir)) {
+                $this->track_view($current_user->id, $this->module_dir, 'deleted');
+            }
+            // END STIC Custom
 
             $this->deleteFiles();
 

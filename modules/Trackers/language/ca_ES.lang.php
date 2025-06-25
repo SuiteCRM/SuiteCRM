@@ -53,4 +53,7 @@ $mod_strings = array(
 
     //Administration related labels
     'LBL_MODULE_NAME' => 'Monitoratge',
+
+    'LBL_ASCENDING' => 'Ascendent',
+    'LBL_DESCENDING' => 'Descendent',
 );

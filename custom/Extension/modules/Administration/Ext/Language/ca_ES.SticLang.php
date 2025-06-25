@@ -93,5 +93,7 @@ $mod_strings['LBL_CONFIGURE_GROUP_TABS'] = 'Agrupació de subpanells';
 $mod_strings['LBL_CONFIGURE_GROUP_TABS_DESC'] = "Configuració de l'agrupació dels subpanells a les vistes de detall";
 
 // Altres cadenes
+$mod_strings['LBL_TRACKERS_TITLE'] = 'Monitoratge';
+$mod_strings['LBL_TRACKERS_DESCRIPTION'] = "Registre de les sessions d'usuari i de les accions sobre els registres.";
 $mod_strings['LBL_ADMIN_ACTIONS'] = "Accions d'Administració";
 $mod_strings['ERR_SYS_GEN_PWD_TPL_NOT_SELECTED'] = "Indiqueu la plantilla de correu que es farà servir quan el sistema generi la contrasenya d'un nou usuari.";

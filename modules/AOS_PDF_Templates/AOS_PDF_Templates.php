@@ -65,6 +65,10 @@ class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
     public static function loadTabModules()
     {
         global $app_list_strings;
+        // STIC-Custom 20250128 ART - Tracker Module
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+        global $current_user;
+        // END STIC-Custom
         include_once 'modules/MySettings/TabController.php';
         $controller = new TabController();
         $currentTabs = $controller->get_system_tabs();
@@ -78,6 +82,14 @@ class AOS_PDF_Templates extends AOS_PDF_Templates_sugar
                 $modules[$key] = (isset($app_list_strings['moduleList'][$key])) ? $app_list_strings['moduleList'][$key] : $key;
             }
         }
+        // STIC-Custom 20250128 ART - Tracker Module
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+        // Generate pdf document of the Trackers module if the user is admin
+        if ($current_user->is_admin) {
+            // Include 'Trackers' module in the list
+            $modules['Trackers'] = $app_list_strings['moduleList']['Trackers'];
+        }
+        // END STIC-Custom
 
         asort($modules);
         return $modules;

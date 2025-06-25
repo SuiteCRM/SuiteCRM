@@ -1971,8 +1971,6 @@ $app_strings = array(
 
     'LBL_NO_IMAGE' => 'No Image',
 
-    'LBL_MODULE' => 'Module',
-
     //adding a label for address copy from left
     'LBL_COPY_ADDRESS_FROM_LEFT' => 'Copy address from left:',
     'LBL_SAVE_AND_CONTINUE' => 'Save and Continue',
@@ -1991,7 +1989,11 @@ $app_strings = array(
 
     'LBL_MONITOR_ID' => 'Monitor Id',
     'LBL_USER_ID' => 'User Id',
-    'LBL_MODULE_NAME' => 'Module Name',
+    // STIC-Custom 20241029 JAR - Tracker Module
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+    //'LBL_MODULE_NAME' => 'Module Name',
+    'LBL_MODULE' => 'Module',
+    //END STIC Custom 
     'LBL_ITEM_ID' => 'Item Id',
     'LBL_ITEM_SUMMARY' => 'Item Summary',
     'LBL_ACTION' => 'Action',

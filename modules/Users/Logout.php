@@ -62,6 +62,36 @@ if (isset($_COOKIE[session_name()])) {
 }
 
 //Update the tracker_sessions table
+// STIC-Custom 20241014 ART - Tracker Module
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+// Track the logout of the current user
+if ($action === 'Logout') {
+    // Get the instance of the TrackerManager
+    $trackerManager = TrackerManager::getInstance();
+
+    // Get the tracker monitor
+    $monitor = $trackerManager->getMonitor('tracker');
+
+    // If the monitor exists, set its values
+    if ($monitor) {
+        // Set the date and time of the logout
+        $monitor->setValue('date_modified', $GLOBALS['timedate']->nowDb());
+
+        // Set the user ID, assigned user ID, module name, action, item ID, item summary, visibility and session ID
+        $monitor->setValue('user_id', $current_user->id);
+        $monitor->setValue('assigned_user_id', $current_user->id);
+        $monitor->setValue('module_name', 'Users');
+        $monitor->setValue('action', 'logout');
+        $monitor->setValue('item_id', $current_user->id);
+        $monitor->setValue('item_summary', $current_user->full_name .' - Logout');
+        $monitor->setValue('visible', true);
+        $monitor->setValue('session_id', $monitor->getSessionId());
+
+        // Save the monitor to the database
+        $trackerManager->saveMonitor($monitor, true, true);
+    }
+}
+// END STIC Custom
 // clear out the authenticating flag
 session_destroy();
 

@@ -102,8 +102,13 @@ class Importer
         // Increase the max_execution_time since this step can take awhile
         ini_set("max_execution_time", max($sugar_config['import_max_execution_time'], 3600));
 
-        // stop the tracker
-        TrackerManager::getInstance()->pause();
+        // STIC-Custom 20250613 ART - Tracker Module
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+        // Active the tracker to display imported records
+        // // stop the tracker
+        // TrackerManager::getInstance()->pause();
+        //END STIC Custom
+
 
         // set the default locale settings
         $this->ifs = $this->getFieldSanitizer();

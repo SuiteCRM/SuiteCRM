@@ -93,5 +93,7 @@ $mod_strings['LBL_CONFIGURE_GROUP_TABS'] = 'Subpanel grouping';
 $mod_strings['LBL_CONFIGURE_GROUP_TABS_DESC'] = 'Configure how subpanels are grouped in the detail views';
 
 // Other strings
+$mod_strings['LBL_TRACKERS_TITLE'] = 'Tracker';
+$mod_strings['LBL_TRACKERS_DESCRIPTION'] = 'Logging of user sessions and record actions.';
 $mod_strings['LBL_ADMIN_ACTIONS'] = 'Admin actions';
 $mod_strings['ERR_SYS_GEN_PWD_TPL_NOT_SELECTED'] = 'Set the email template that will be sent when the system generates the password of a new user.';

@@ -3558,6 +3558,16 @@ $app_list_strings['stic_group_opportunities_doc_status_list']['requested'] = 'So
 $app_list_strings['stic_group_opportunities_doc_status_list']['delivered'] = 'Lliurada';
 $app_list_strings['stic_group_opportunities_doc_status_list']['validated'] = 'Validada';
 
+// Monitoratge: Accions
+$app_list_strings['trackers_actions_list']['save'] = 'Registre creat';
+$app_list_strings['trackers_actions_list']['detailview'] = 'Registre accedit';
+$app_list_strings['trackers_actions_list']['editview'] = 'Registre en edició';
+$app_list_strings['trackers_actions_list']['listview'] = 'Registres llistats';
+$app_list_strings['trackers_actions_list']['update'] = 'Registre modificat';
+$app_list_strings['trackers_actions_list']['deleted'] = 'Registre esborrat';
+$app_list_strings['trackers_actions_list']['login_ok'] = 'Usuari connectat';
+$app_list_strings['trackers_actions_list']['login_failed'] = 'Inici de sessió erroni';
+$app_list_strings['trackers_actions_list']['logout'] = 'Usuari desconnectat';
 
 // Modificacions del core de SuiteCRM
 

@@ -52,6 +52,11 @@ $dictionary['Tracker'] = array(
             'isnull' => 'false',
             'auto_increment' => true,
             'reportable'=>true,
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'monitor_id'=>array(
             'name' => 'monitor_id',
@@ -59,6 +64,11 @@ $dictionary['Tracker'] = array(
             'type' => 'id',
             'required'=>true,
             'reportable'=>false,
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'user_id'=>array(
             'name' => 'user_id',
@@ -66,11 +76,25 @@ $dictionary['Tracker'] = array(
             'type' => 'varchar',
             'len' => '36',
             'isnull' => 'false',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'module' => 'Users',
+            'id' => 'user_id',
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'module_name'=>array(
             'name' => 'module_name',
             'vname' => 'LBL_MODULE_NAME',
-            'type' => 'varchar',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // 'type' => 'varchar',
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'type' => 'enum',
+            'options' => 'moduleList',
+            'inline_edit' => 0,
+            // END STIC-Custom
             'len' => '255',
             'isnull' => 'false',
         ),
@@ -80,26 +104,52 @@ $dictionary['Tracker'] = array(
             'type' => 'varchar',
             'len' => '36',
             'isnull' => 'false',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'item_summary'=>array(
             'name' => 'item_summary',
             'vname' => 'LBL_ITEM_SUMMARY',
-            'type' => 'varchar',
             'len' => '255',
             'isnull' => 'false',
+            // STIC-Custom 20250613 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // 'type' => 'varchar',
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            'type' => 'html',
+            // END STIC-Custom
         ),
         'date_modified'=>array(
             'name' => 'date_modified',
             'vname' => 'LBL_DATE_LAST_ACTION',
             'type' => 'datetime',
             'isnull' => 'false',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'options' => 'date_range_search_dom',
+            'enable_range_search' => true,
+            'dbType' => 'datetimecombo',
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'action'=>array(
             'name' => 'action',
             'vname' => 'LBL_ACTION',
-            'type' => 'varchar',
             'len' => '255',
             'isnull' => 'false',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // 'type' => 'varchar',
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'type' => 'enum',
+            'options' => 'trackers_actions_list',
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'session_id'=>array(
             'name' => 'session_id',
@@ -107,9 +157,12 @@ $dictionary['Tracker'] = array(
             'type' => 'varchar',
             'len' => '36',
             'isnull' => 'true',
-            'exportable' => false
-
-
+            'exportable' => false,
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'visible'=>array(
             'name' => 'visible',
@@ -117,6 +170,11 @@ $dictionary['Tracker'] = array(
             'type' => 'bool',
             'len' => '1',
             'default' => '0',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'deleted' =>array(
             'name' => 'deleted',
@@ -124,7 +182,12 @@ $dictionary['Tracker'] = array(
             'type' => 'bool',
             'default' => '0',
             'reportable'=>false,
-            'comment' => 'Record deletion indicator'
+            'comment' => 'Record deletion indicator',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'assigned_user_link'=>array(
             'name' => 'assigned_user_link',
@@ -135,6 +198,11 @@ $dictionary['Tracker'] = array(
             'module'=>'Users',
             'bean_name'=>'User',
             'source'=>'non-db',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
         'monitor_id_link'=>array(
             'name' => 'monitor_id_link',
@@ -145,6 +213,11 @@ $dictionary['Tracker'] = array(
             'module'=>'TrackerPerfs',
             'bean_name'=>'TrackerPerf',
             'source'=>'non-db',
+            // STIC-Custom 20241016 ART - Tracker Module
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+            // We add the properties, since in extension does not pick them up and then they disappear 
+            'inline_edit' => 0,
+            // END STIC-Custom
         ),
     ) ,
 
@@ -210,3 +283,11 @@ $dictionary['Tracker'] = array(
            )
     ),
 );
+
+// STIC-Custom 20241029 ART - Tracker Module
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+// Set special values for SuiteCRM base fields
+VardefManager::createVardef('Trackers', 'Tracker', array('assignable'));
+$dictionary['Tracker']['fields']['assigned_user_id']['inline_edit'] = 0; // Assigned user can not edit inline in this module
+$dictionary['Tracker']['fields']['assigned_user_name']['inline_edit'] = 0; // Assigned user can not edit inline in this module
+// END STIC-Custom

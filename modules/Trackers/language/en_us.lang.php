@@ -53,4 +53,10 @@ $mod_strings = array(
 
     //Administration related labels
     'LBL_MODULE_NAME' => 'Trackers',
+
+    // STIC-Custom 20250613 ART - Tracker Module
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/211
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
+    // END STIC-Custom
 );

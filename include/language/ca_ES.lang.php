@@ -2008,8 +2008,6 @@ $app_strings = array(
 
     'LBL_NO_IMAGE' => 'Sense Imatge',
 
-    'LBL_MODULE' => 'Mòdul',
-
     //adding a label for address copy from left
     'LBL_COPY_ADDRESS_FROM_LEFT' => 'Copiar adreça de l\'esquerra:',
     'LBL_SAVE_AND_CONTINUE' => 'Desa i continua',
@@ -2026,16 +2024,16 @@ $app_strings = array(
     'ERR_UNDEFINED_METRIC' => 'Error: No s\'ha pogut establir un valor per una mètrica no definida',
     'ERR_STORE_FILE_MISSING' => 'Error: No s\'ha pogut trobar l\'arxiu d\'implementació d\'Emmagatzemament',
 
-    'LBL_MONITOR_ID' => 'Id de Monitor',
-    'LBL_USER_ID' => 'Id d\'Usuari',
-    'LBL_MODULE_NAME' => 'Nom de Mòdul',
-    'LBL_ITEM_ID' => 'Id d\'Element',
-    'LBL_ITEM_SUMMARY' => 'Resum d\'Element',
+    'LBL_MONITOR_ID' => 'Id del Monitor',
+    'LBL_USER_ID' => "Id de l'Usuari",
+    'LBL_MODULE' => 'Mòdul',
+    'LBL_ITEM_ID' => "Id de l'Element",
+    'LBL_ITEM_SUMMARY' => "Resum de l'Element",
     'LBL_ACTION' => 'Acció',
-    'LBL_SESSION_ID' => 'Id de Sessió',
+    'LBL_SESSION_ID' => 'Id de la Sessió',
     'LBL_BREADCRUMBSTACK_CREATED' => 'Pluja d\'idees creada per l\'usuari {0}',
-    'LBL_VISIBLE' => 'Registre Visible',
-    'LBL_DATE_LAST_ACTION' => 'Data de la Última Acció',
+    'LBL_VISIBLE' => 'Registre visible',
+    'LBL_DATE_LAST_ACTION' => 'Data',
 
     //jc:#12287 - For javascript validation messages
     'MSG_IS_NOT_BEFORE' => 'no és abans de',

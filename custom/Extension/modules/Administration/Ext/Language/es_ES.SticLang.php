@@ -93,5 +93,7 @@ $mod_strings['LBL_CONFIGURE_GROUP_TABS'] = 'Agrupación de subpaneles';
 $mod_strings['LBL_CONFIGURE_GROUP_TABS_DESC'] = 'Configuración de la agrupación de los subpaneles en las vistas de detalle';
 
 // Otras cadenas
+$mod_strings['LBL_TRACKERS_TITLE'] = 'Monitorización';
+$mod_strings['LBL_TRACKERS_DESCRIPTION'] = 'Registro de las sesiones de usuario y de las acciones sobre registros.';
 $mod_strings['LBL_ADMIN_ACTIONS'] = 'Acciones de Administración';
 $mod_strings['ERR_SYS_GEN_PWD_TPL_NOT_SELECTED'] = 'Especificar la plantilla de correo que se usará cuando el sistema genere la contraseña de un nuevo usuario.';

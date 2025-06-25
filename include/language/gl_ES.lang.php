@@ -2026,8 +2026,6 @@ $app_strings = array(
 
     'LBL_NO_IMAGE' => 'Sen Imaxe',
 
-    'LBL_MODULE' => 'Módulo',
-
     //adding a label for address copy from left
     'LBL_COPY_ADDRESS_FROM_LEFT' => 'Copiar enderezo da esquerda:',
     'LBL_SAVE_AND_CONTINUE' => 'Gardar e Continuar',
@@ -2044,16 +2042,16 @@ $app_strings = array(
     'ERR_UNDEFINED_METRIC' => 'Erro: non se pode establecer o valor de métrica definido',
     'ERR_STORE_FILE_MISSING' => 'Erro: non se pode encontrar o arquivo da aplicación da tenda',
 
-    'LBL_MONITOR_ID' => 'Monitor de Id',
-    'LBL_USER_ID' => 'ID Usuario',
-    'LBL_MODULE_NAME' => 'Nome de Módulo',
-    'LBL_ITEM_ID' => 'Ítem Id',
-    'LBL_ITEM_SUMMARY' => 'Ítem resumo',
+    'LBL_MONITOR_ID' => 'Id do Monitor',
+    'LBL_USER_ID' => 'Id do Usuario',
+    'LBL_MODULE' => 'Módulo',
+    'LBL_ITEM_ID' => 'Id do Elemento',
+    'LBL_ITEM_SUMMARY' => 'Resumo do Elemento',
     'LBL_ACTION' => 'Acción',
-    'LBL_SESSION_ID' => 'Sesión Id',
+    'LBL_SESSION_ID' => 'Id da Sesión',
     'LBL_BREADCRUMBSTACK_CREATED' => 'BreadCrumbStack creado polo usuario id {0}',
     'LBL_VISIBLE' => 'Dato visible',
-    'LBL_DATE_LAST_ACTION' => 'Data de última acción',
+    'LBL_DATE_LAST_ACTION' => 'Data',
 
     //jc:#12287 - For javascript validation messages
     'MSG_IS_NOT_BEFORE' => 'non antes de',
