@@ -383,6 +383,15 @@ class PaymentController extends WebFormDataController {
             $tpvSys->setParameter("DS_MERCHANT_COF_INI", "S");
             $tpvSys->setParameter("DS_MERCHANT_COF_TYPE", "R");
 
+            
+            // Check if first_payment_date is set and if it is in d/m/Y format (if payment is from event), in this case we convert it to Y-m-d
+            if (!empty($PCBean->first_payment_date) && preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $PCBean->first_payment_date)) {               
+                $dateObj = DateTime::createFromFormat('d/m/Y', $PCBean->first_payment_date);
+                if ($dateObj !== false) {
+                    $PCBean->first_payment_date = $dateObj->format('Y-m-d');
+                }
+            }
+            
             // If the first payment date is today, the operation is processed as a payment with the amount indicated in the form,
             // if it is a future date, the amount is 0
             if ($PCBean->first_payment_date > date('Y-m-d')) {
