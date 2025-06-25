@@ -119,7 +119,7 @@ class stic_Work_Calendar extends Basic
         }      
 
         // Set weekday field
-        if ($this->start_date != $this->fetched_row['start_date']) {
+        if (isset($this->fetched_row['start_date']) && $this->start_date != $this->fetched_row['start_date']) {
             $this->weekday = date('w', strtotime($startDateInTZ));
         }
 
