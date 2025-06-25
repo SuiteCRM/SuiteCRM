@@ -1399,3 +1399,11 @@ a#nonprofitized_by {
 .desktop-toolbar{
   z-index: 0; 
 }
+
+// Create a pseudo-disabled class to preserve data sending
+.pseudo-disabled {
+  background-color: #eee !important;
+  opacity: 1 !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}

@@ -282,9 +282,11 @@ function setEnabledStatus(elementId, clearField) {
     $("#" + elementId, $form)
       .prop("readonly", false);
     $("#" + elementId, $form)
-      .prop("disabled", false);
+    .removeClass("pseudo-disabled")
+    .off('.pseudoDisabled'); // delete all pseudoDisabled events
     $("#" + elementId, $form).parent().find("button")
-      .prop("disabled", false);
+    .removeClass("pseudo-disabled")
+    .off('.pseudoDisabled'); // delete all pseudoDisabled events
   }
   $("#" + elementId, $form)
     .closest(".edit-view-row-item")
@@ -318,9 +320,18 @@ function setDisabledStatus(elementId, clearField) {
     $("#" + elementId, $form)
       .prop("readonly", true);
     $("#" + elementId, $form)
-      .prop("disabled", true);
+      .addClass("pseudo-disabled")
+      .off('.pseudoDisabled') // delete all pseudoDisabled events
+      .on('mousedown.pseudoDisabled mouseup.pseudoDisabled focus.pseudoDisabled click.pseudoDisabled change.pseudoDisabled keydown.pseudoDisabled keyup.pseudoDisabled', function (e) {
+        e.preventDefault()
+        e.stopPropagation();
+      });
     $("#" + elementId, $form).parent().find("button")
-      .prop("disabled", true);
+    .addClass("pseudo-disabled")
+    .on('mousedown.pseudoDisabled mouseup.pseudoDisabled focus.pseudoDisabled click.pseudoDisabled change.pseudoDisabled keydown.pseudoDisabled keyup.pseudoDisabled', function (e) {
+      e.preventDefault()
+      e.stopPropagation();
+    });
   }
   $("#" + elementId, $form)
     .closest(".edit-view-row-item")
