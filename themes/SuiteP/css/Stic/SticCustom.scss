@@ -1400,6 +1400,23 @@ a#nonprofitized_by {
   z-index: 0; 
 }
 
+// Currency type values must be aligned to the right
+.detail-view-field[type="currency"] {
+  text-align: right !important;
+}
+
+.edit-view-field[type="currency"]{
+  input {
+    text-align: right !important;
+  }
+}
+
+span.totals{
+  input[type="text"] {
+    text-align: right !important;
+  }
+}
+
 // Create a pseudo-disabled class to preserve data sending
 .pseudo-disabled {
   background-color: #eee !important;
