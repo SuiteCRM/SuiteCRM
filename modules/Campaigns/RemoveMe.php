@@ -89,12 +89,57 @@ if (!empty($_REQUEST['identifier'])) {
 
         //no opt out for users.
         if (preg_match('/^[0-9A-Za-z\-]*$/', (string) $id) && $module != 'Users') {
-            //record this activity in the campaing log table..
-            $query = "UPDATE email_addresses SET email_addresses.opt_out = 1 WHERE EXISTS(SELECT 1 FROM email_addr_bean_rel ear WHERE ear.bean_id = '$id' AND ear.deleted=0 AND email_addresses.id = ear.email_address_id)";
-            $status=$db->query($query);
-            if ($status) {
-                echo "*";
+
+            // STIC-Custom 202410617 MHP - Audit in email_addresses_audit table the unsubscription action through the campaign email 
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/277
+            // //record this activity in the campaing log table..
+            // $query = "UPDATE email_addresses SET email_addresses.opt_out = 1 WHERE EXISTS(SELECT 1 FROM email_addr_bean_rel ear WHERE ear.bean_id = '$id' AND ear.deleted=0 AND email_addresses.id = ear.email_address_id)";
+            // $status=$db->query($query);
+            // if ($status) {
+            //     echo "*";
+            // }
+
+            // SELECT the email_address_id from the emails related to the user who is unsubscribing
+            $query = "SELECT email_address_id FROM email_addr_bean_rel WHERE deleted = 0 AND bean_id = '$id';";
+            $result = $db->query($query);
+            
+            if (!empty($result->num_rows))
+            {    
+                while ($row = $db->fetchByAssoc($result)) {
+                    $emailAddressesID[] = "'" . $row['email_address_id'] . "'" ;
+                }
+                $emailsCondition = implode(", ", $emailAddressesID);
+                $query = "SELECT id, opt_out FROM `email_addresses` WHERE opt_out != '1' AND `id` IN ($emailsCondition);"; 
+                $result = $db->query($query);
+
+                if (!empty($result->num_rows))
+                {
+                    // Retrieve the opt-out value for each email and, if the value has changed, insert the audit log
+                    while ($row = $db->fetchByAssoc($result)) 
+                    {
+                        $newId = create_guid();
+                        $emailAddressId = $row['id'];
+                        $query = "INSERT INTO email_addresses_audit
+                            (id, parent_id, date_created, created_by, field_name, data_type, before_value_string, after_value_string, before_value_text, after_value_text) VALUES
+                            ('$newId', '$emailAddressId', UTC_TIMESTAMP(), '1', 'opt_out','bool','0','1',NULL,NULL)";
+
+                        $result2 = $db->query($query);
+                        if (!$result2) {
+                            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Error inserting the corresponding record with parent_id = $id into the email_addresses_audit table");
+                        }
+                    }
+                
+                    //record this activity in the campaing log table..
+                    $query = "UPDATE email_addresses SET email_addresses.opt_out = 1 WHERE EXISTS(SELECT 1 FROM email_addr_bean_rel ear WHERE ear.bean_id = '$id' AND ear.deleted=0 AND email_addresses.id = ear.email_address_id)";
+                    $status=$db->query($query);
+                    if ($status) {
+                        echo "*";
+                    }
+                }
+            } else {
+                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": No emails associated with the contact with id = '$id' have been found");
             }
+            // END STIC-Custom
         }
     }
     //Print Confirmation Message.
