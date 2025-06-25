@@ -32,7 +32,7 @@ class ExternalReporting
     private $versionPrefix = 'sda';
 
     // Fields that we always exclude in our operations
-    private $evenExcludedFields = ['template_ddown_c', 'currency_name', 'assigned_user_id', 'parent_name', 'deleted', 'created_by', 'created_by_name', 'created_by_link', 'modified_user_link', 'modified_by_name', 'jjwg_maps_address_c', 'jjwg_maps_geocode_status_c', 'jjwg_maps_lat_c', 'jjwg_maps_lng_c'];
+    private $evenExcludedFields = ['template_ddown_c', 'currency_name', 'assigned_user_id', 'parent_name', 'deleted', 'created_by', 'created_by_name', 'created_by_link', 'modified_user_link', 'modified_by_name'];
 
     // Modules that we always included, although they are hidden in the CRM
     private $evenIncludedModules = [];
@@ -74,6 +74,17 @@ class ExternalReporting
         'stic_Validation_Results',
         'stic_Custom_Views',
     ];
+
+    // Autorelationships that we always exclude. 
+    // We use the module && field name instead of the relationship name, because the iteration is done through the fields and not through the relationships
+
+    private $evenExcludedAutoRelationships = [
+        'Contacts:reports_to_link',
+        'Users:reports_to_link',
+        
+    ];
+    // Autorleationships that we always include
+
     private $viewPrefix;
     private $listViewPrefix;
     private $maxNonAdminUsers;
@@ -81,6 +92,7 @@ class ExternalReporting
     private $baseHostname;
     private $sdaSettings = [];
     private $langCode;
+    private $autoRelationshipsRegistered = []; // Array to store all modules auto relationships already registered for use in ACLs
 
     public function __construct()
     {
@@ -152,7 +164,7 @@ class ExternalReporting
 
         // Check number of non-admin users enabled
         // Get configured limit for non-admin user processing
-        if (is_numeric($sugar_config['stic_sinergiada']['max_users_processed'])) {
+        if (is_numeric($sugar_config['stic_sinergiada']['max_users_processed'] ?? null)) {
             $maxNonAdminUsers = $sugar_config['stic_sinergiada']['max_users_processed'];
             $normalUsersEnabled = $db->query("SELECT
                                                     distinct u.id
@@ -226,12 +238,16 @@ class ExternalReporting
 
         natsort($modulesList);
 
-        // Get & populate users ACL metadata (must run after $modulesList is created)
-        $this->getAndSaveUserACL($modulesList);
-
         foreach ($modulesList as $moduleName) {
             // Reset module index list
             unset($indexesToCreate);
+
+            // Reset auto relationships
+            $autoRelationships = [];
+
+            // View creation query
+            $createViewQuery = [];
+
             $moduleStart = microtime(true);
             // If $onlyIncludeModule is set, only this module will be processed and others will be ignored for debugging purposes).
             if ($moduleName != $onlyIncludeModule && !empty($onlyIncludeModule)) {
@@ -310,7 +326,7 @@ class ExternalReporting
             // Process the content of the field according to the type
             foreach ($moduleBean->getFieldDefinitions() as $fieldK => $fieldV) {
                 // We reset certain variables to avoid errors
-                unset($fieldSrc, $relatedModuleName, $secureName, $edaAggregations, $sdaHiddenField, $excludeColumnFromMetadada);
+                unset($fieldSrc, $relatedModuleName, $secureName, $edaAggregations, $sdaHiddenField, $excludeColumnFromMetadada, $isAutoRelationship);
 
                 // To avoid exceptional cases where the table name is defined in uppercase
                 // (like in the relationship between Contacts and Cases) we convert the table name to lowercase
@@ -352,7 +368,7 @@ class ExternalReporting
                 switch ($moduleName) {
                     case 'Cases':
                         // exclude this field because there is another with same name
-                        if ($fieldV['id_name'] == 'account_id') {
+                        if (($fieldV['id_name'] ?? null) == 'account_id') {
                             continue 2;
                         }
                         break;
@@ -422,16 +438,46 @@ class ExternalReporting
                                 $joinLabel = translate($joinModuleRelLabel, $fieldV['module'] ?? '');
                                 $joinLabel = empty($joinLabel) || $joinLabel == $joinModuleRelLabel ? $txModuleName : $joinLabel;
 
-                                $res = $this->createRelateLeftJoin($fieldV, $tableName, $joinLabel);
+                                // Check if the relationship is an autorelationship & prepare autorelationship data for use later
+                                if (($fieldV['module'] ?? null) == $moduleName) {
+                                    
+                                    // Check if the autorelationship is excluded & skip it if it is
+                                    if(in_array("{$fieldV['module']}:{$fieldV['link']}", $this->evenExcludedAutoRelationships)){
+                                        continue 2;
+                                    }
+
+                                    $fieldV['isAutoRelationship'] = true;
+                                    $fieldV['rLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE', $fieldV['module']);
+                                    $fieldV['lLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_L_TITLE', $fieldV['module']);
+                                    $fieldV['autoRelJoinModuleRelLabel'] = 'LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE';
+                                    $autoRelationships[$fieldV['link']] = $fieldV;
+                                    $this->autoRelationshipsRegistered[$fieldV['link']] = $fieldV['table'];
+                                }
+
+                                $res = $this->createRelateLeftJoin($fieldV, $tableName, $joinLabel, ($fieldV['isAutoRelationship'] ?? null));
 
                                 if (empty($res)) {
                                     continue 2;
                                 }
 
                                 $fieldSrc = " IFNULL({$res['field']},'') ";
-                                $leftJoins .= "\n\t{$res['leftJoin']} ";
+
+                                // Prepare parent_id field for autorelationships
+                                if (isset($res['fieldForAutoRelationshipsNSide'])) {
+                                    $autoRelationships[$fieldV['link']]['parentIdfieldSrc'] = ", IFNULL({$res['fieldForAutoRelationshipsNSide']},'') as parent_id";
+                                }
+
+                                // Common left join for all relationships
+                                if (!empty($res['leftJoin'])) {
+                                    $leftJoins .= "\n\t{$res['leftJoin']} ";
+                                }
 
                                 $fieldV['alias'] = substr($fieldV['id_name'], 0, 64);
+
+                                // Inner join for autorelationships N side
+                                if (!empty($res['innerJoinForAutoRelationshipsNSide'])) {
+                                    $autoRelationships[$fieldV['link']]['innerJoin'] = "{$res['innerJoinForAutoRelationshipsNSide']} ";
+                                }
 
                                 if (in_array($fieldV['alias'], $usedAlias)) {
                                     $relName = $fieldV['link'];
@@ -645,9 +691,18 @@ class ExternalReporting
                     case 'currency':
                     case 'float':
                         $fieldV['alias'] = $fieldV['name'];
+
+                        if ($fieldV['type'] == 'float' && in_array($fieldV['name'], ['jjwg_maps_lat_c', 'jjwg_maps_lng_c'])) {
+                            // We use a specific configuration for the latitude and longitude fields of the JJWG Maps module
+                            $decConfig = '11,8';
+                        } else {
+                            $decConfig = '20,4';
+                        }
+
                         // Numeric type columns are converted to decimal to ensure they remain in this type in the view,
                         // avoiding errors in min and max aggregations due to ordering
-                        $fieldSrc = "CONVERT(IFNULL({$fieldPrefix}.{$fieldV['name']},''), decimal(20,4)  ) AS {$fieldName}";
+                        $fieldSrc = "CONVERT(IFNULL({$fieldPrefix}.{$fieldV['name']},''), decimal({$decConfig})  ) AS {$fieldName}";
+
                         break;
 
                     default:
@@ -664,7 +719,7 @@ class ExternalReporting
                     case 'int':
                     case 'currency':
                     case 'float':
-                        $edaType = 'numeric';
+                        $edaType = !in_array($fieldV['name'], ['jjwg_maps_lat_c', 'jjwg_maps_lng_c']) ? 'numeric' : 'coordinate';
                         $edaPrecision = $fieldV['type'] == 'currency' ? 2 : 0;
                         $edaPrecision = $fieldV['precision'] ?? $edaPrecision;
                         break;
@@ -823,6 +878,28 @@ class ExternalReporting
                 ]
             );
 
+            // Add auto relationships metadata if exists
+            unset($qualifiedLabel);
+            if (!empty($autoRelationships)) {
+                foreach ($autoRelationships as $key => $value) {
+                    if ($txModuleName != $value['rLabel']) {
+                        $qualifiedLabel = "{$txModuleName} ({$value['rLabel']})";
+                    } else {
+                        $qualifiedLabel = "{$txModuleName} ({$value['label']})";
+                    }
+
+                    $this->addMetadataRecord(
+                        'sda_def_tables',
+                        [
+                            'table' => "{$this->viewPrefix}_{$tableName}_{$key}",
+                            'label' => $qualifiedLabel,
+                            'description' => addslashes($qualifiedLabel),
+                        ]
+
+                    );
+                }
+            }
+
             // Sql Header. Depending on the value of the SDA_MODE_MODE setting we create tables or views mysql
             if (
                 in_array($moduleName, $this->sdaSettings['publishAsTable'])
@@ -895,22 +972,53 @@ class ExternalReporting
             // Create WHERE
             $createViewQueryWhere = " WHERE m.deleted = 0 ";
 
-            // We create the SQL instruction with the pieces created above
-            $createViewQuery = "{$createViewQueryHeader}  {$createViewQueryFields} {$createViewQueryFrom} {$createViewQueryLeftJoins} {$createViewQueryWhere}";
+            // Create Group By
+            $createViewQueryGroupBy = " GROUP BY m.id ";
 
-            if (!$db->query($createViewQuery)) {
-                $lastSQLError = array_pop(explode(':', $db->last_error));
+            // Create the SQL instruction with the pieces created above for main module view
+            $createViewQuery[] = "{$createViewQueryHeader}  {$createViewQueryFields} {$createViewQueryFrom} {$createViewQueryLeftJoins} {$createViewQueryWhere} {$createViewQueryGroupBy}";
 
-                $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$lastSQLError}] running Query: [{$createViewQuery}]");
+            // Process autorelationships
+            if (!empty($autoRelationships)) {
+                foreach ($autoRelationships as $key => $value) {
+                    // Set mode for autorelationships (table or view) according to the module settings
+                    if (
+                        in_array($moduleName, $this->sdaSettings['publishAsTable'])
+                        || (!empty($this->sdaSettings['publishAsTable'][0]) && $this->sdaSettings['publishAsTable'][0] == '1')
+                    ) {
+                        $mode = 'TABLE';
+                    } else {
+                        $mode = 'VIEW';
+                    }
 
-                $this->info .= "<div class='error' style='color:red;'>ERROR: <textarea style='width:100%;height:300px;border:1px solid red;'> {$createViewQuery} </textarea>({$lastSQLError})</div>";
-                $this->info .= "[FATAL: Unable to create view $viewName]";
+                    // Create the SQL instruction with some modifications for each autorelationship view
+                    $createViewQuery[] = "CREATE OR REPLACE {$mode} {$viewName}_{$key} AS
+                    SELECT   {$createViewQueryFields} {$value['parentIdfieldSrc']}
+                    {$createViewQueryFrom}
+                    {$createViewQueryLeftJoins} {$value['innerJoin']}
+                    {$createViewQueryWhere}";
 
-            } else {
-                $this->info .= '<div style="color:green;">OK: <textarea style="width:100%;height:300px;border:1px solid green;">' . $createViewQuery . '</textarea>  </div>';
-                $this->info .= '<div style="font-size:80%"><b>Listas creadas:</b> ' . join(' | ', array_unique($listNames)) . '</div>';
-            };
+                }
 
+                // Add sda_def_columns metadata record for auto relationships
+                $this->cloneColumnRecordsForAutorelationships($autoRelationships);
+            }
+
+            foreach ($createViewQuery as $query) {
+                // Execute the query
+                if (!$db->query($query)) {
+                    $lastSQLError = array_pop(explode(':', $db->last_error));
+
+                    $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$lastSQLError}] running Query: [{$query}]");
+
+                    $this->info .= "<div class='error' style='color:red;'>ERROR: <textarea style='width:100%;height:300px;border:1px solid red;'> {$query} </textarea>({$lastSQLError})</div>";
+                    $this->info .= "[FATAL: Unable to create view $viewName]";
+
+                } else {
+                    $this->info .= '<div style="color:green;">OK: <textarea style="width:100%;height:300px;border:1px solid green;">' . $query . '</textarea>  </div>';
+                    $this->info .= '<div style="font-size:80%"><b>Listas creadas:</b> ' . join(' | ', array_unique($listNames)) . '</div>';
+                };
+            }
             $this->info .= "<h2>Base fields</h2>";
             $this->info .= print_r($fieldList['base'] ?? '', true);
             $this->info .= "<h2>Custom fields</h2>";
@@ -928,8 +1036,14 @@ class ExternalReporting
             });</script>";
         }
 
+        // Get & populate users ACL metadata (must run after $modulesList is created)
+        $this->getAndSaveUserACL($modulesList);
+
         // We create the views Join Multienum, right now that we already have all the views and the complete metadata table.
         $this->createMultiEnumJoinViews();
+
+        // Clone the permissions records for autorelationships
+        $this->clonePermissionRecordsForAutorelationships();
 
         $this->checkSdaColumns();
         $this->checkSdaTablesInViews();
@@ -939,7 +1053,7 @@ class ExternalReporting
         }
 
         $this->info .= '<script>
-        // Selecciona todos los elementos li con el atributo module
+        // select all li elements with the attribute module
         var liElements = document.querySelectorAll("li[module]");
 
         // Recorre todos los elementos li seleccionados
@@ -1089,15 +1203,24 @@ class ExternalReporting
      * it creates a LEFT JOIN based on whether the current module is the left or right side of the relationship.
      * If no join table is used, it checks if the relationship is a one-to-many relationship for the
      * current table and builds the join accordingly. If no suitable relationship is found, it does not return a join.
+     * 
      *
      * @param array $field The field array containing information about the current field
      * @param string $tableName The name of the table being processed
      * @param string $tableLabel The label of the other side relationships
+     * @param bool $isAutoRelationship Indicates if the relationship is an auto relationship
      *
-     * @return array|null An array containing the 'field' and 'leftJoin' information, or null if no join is created
+     * @return array|null Returns an associative array containing:
+     *                    - 'field': The field to be used in the SELECT clause.
+     *                    - 'leftJoin': The LEFT JOIN SQL clause.
+     *                    - 'innerJoinForAutoRelationshipsNSide': (Optional) INNER JOIN clause for
+     *                      auto-relationships on the N-side.
+     *                    - 'fieldForAutoRelationshipsNSide': (Optional) Field for auto-relationships
+     *                      on the N-side.
+     *                    Returns null if no valid relationship is found.
      */
 
-    private function createRelateLeftJoin($field, $tableName, $tableLabel)
+    private function createRelateLeftJoin($field, $tableName, $tableLabel, $isAutoRelationship = false)
     {
         $db = DBManagerFactory::getInstance();
 
@@ -1113,24 +1236,59 @@ class ExternalReporting
             if (!empty($rel['lhs_module']) && !empty($field['module']) && $rel['lhs_module'] == $field['module']) {
                 // Current module is on the left side
 
-                // Add metadata record
-                $this->addMetadataRecord(
-                    'sda_def_relationships',
-                    [
-                        'id' => $field['link'],
-                        'source_table' => "{$this->viewPrefix}_{$rel['rhs_table']}",
-                        'source_column' => $field['id_name'],
-                        'target_table' => "{$this->viewPrefix}_{$field['table']}",
-                        'target_column' => 'id',
-                        'info' => 'link_lhs',
-                        'label' => "{$field['label']}|{$tableLabel}",
-                    ]
-                );
+                // Check if the relationship is an auto relationship to compose the target table name
+                if ($isAutoRelationship !== true) {
+                    // if not an auto relationship
+                    $targetTable = "{$this->viewPrefix}_{$field['table']}";
+                    $label = "{$field['label']}|{$tableLabel}";
 
-                return [
-                    'field' => "{$rel['join_table']}.{$rel['join_key_lhs']}",
-                    'leftJoin' => " LEFT JOIN {$rel['join_table']} ON {$rel['join_table']}.{$rel['join_key_rhs']}=m.id AND {$rel['join_table']}.deleted=0 ",
-                ];
+                    // Add metadata record
+                    $this->addMetadataRecord(
+                        'sda_def_relationships',
+                        [
+                            'id' => $field['link'],
+                            'source_table' => "{$this->viewPrefix}_{$rel['rhs_table']}",
+                            'source_column' => $field['id_name'],
+                            'target_table' => $targetTable,
+                            'target_column' => 'id',
+                            'info' => 'link_lhs' . ($isAutoRelationship ? '_auto_relationship' : ''),
+                            'label' => $label,
+                        ]
+                    );
+
+                    return [
+                        'field' => "{$rel['join_table']}.{$rel['join_key_lhs']}",
+                        'leftJoin' => " LEFT JOIN {$rel['join_table']} ON {$rel['join_table']}.{$rel['join_key_rhs']}=m.id AND {$rel['join_table']}.deleted=0 ",
+                    ];
+                } else {
+                    // if an auto relationship
+                    $targetTable = "{$this->viewPrefix}_{$field['table']}_{$field['link']}";
+                    $label = "{$tableLabel} ({$field['rLabel']})|{$tableLabel}";
+                    $label = "{$tableLabel}|{$tableLabel} ({$field['rLabel']})";
+
+                    // Add metadata record
+                    $this->addMetadataRecord(
+                        'sda_def_relationships',
+                        [
+                            'id' => $field['link'],
+                            'source_table' => $targetTable,
+                            'source_column' => 'parent_id',
+                            'target_table' => "{$this->viewPrefix}_{$rel['rhs_table']}",
+                            'target_column' => 'id',
+                            'info' => 'link_lhs' . ($isAutoRelationship ? '_auto_relationship' : ''),
+                            'label' => $label,
+                        ]
+                    );
+
+                    return [
+                        'field' => " NULL ",
+                        'leftJoin' => "  ",
+                        'innerJoinForAutoRelationshipsNSide' => " INNER JOIN {$rel['join_table']} ON {$rel['join_table']}.{$rel['join_key_lhs']}=m.id AND {$rel['join_table']}.deleted=0 ",
+                        'fieldForAutoRelationshipsNSide' => "{$rel['join_table']}.{$rel['join_key_rhs']}",
+                    ];
+
+                }
+
             } elseif (!empty($rel['rhs_module']) && !empty($field['module']) && $rel['rhs_module'] == $field['module']) {
                 // Current module is on the right side
 
@@ -1213,7 +1371,7 @@ class ExternalReporting
 
         $fieldsAvailable = array();
         //Iterate through the view definition panels
-        foreach ($viewdefs[$moduleName]['DetailView']['panels'] as $panel) {
+        foreach (($viewdefs[$moduleName]['DetailView']['panels'] ?? []) as $panel) {
             foreach ($panel as $row) {
                 foreach ($row as $fieldArray) {
                     if (isset($fieldArray['name'])) {
@@ -1501,6 +1659,9 @@ class ExternalReporting
             }
         }
 
+        // Add the default language to the config values
+        $tmpConfigValues['default_language'] = substr($sugar_config['default_language'], 0, 2);
+
         // Add each gathered config value to the metadata record
         foreach ($tmpConfigValues as $key => $value) {
             $this->addMetadataRecord('sda_def_config', [
@@ -1528,7 +1689,7 @@ class ExternalReporting
         // Get the current list or return if not exists
         $currentList = $app_list_strings[$listName] ?? null;
         if (!$currentList) {
-            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "The referenced dropdown list [{$listName}] is not available. Ommited");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "The referenced dropdown list [{$listName}] is not available. Ommited");
             return;
         }
 
@@ -1999,6 +2160,56 @@ class ExternalReporting
         } else {
             $this->info .= "Error al ejecutar la consulta.";
             $GLOBALS['log']->debug('Línea ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error al ejecutar la consulta: $missingTables");
+        }
+    }
+
+    /**
+     * Clones sda_def_columns metadata records for auto-relationships.
+     *
+     * This method iterates over the provided auto-relationships and clones the existing metadata columns records
+     * from base view for each autorelationship view. It updates the table name in the cloned records
+     * to reflect the new relationship.
+     *
+     * @param array $autoRelationships Array of auto-relationship in the module
+     */
+    public function cloneColumnRecordsForAutorelationships($autoRelationships)
+    {
+        $db = DBManagerFactory::getInstance();
+        foreach ($autoRelationships as $relationship) {
+            $this->info .= "<li>{$relationship['source_table']} -> {$relationship['target_table']}</li>";
+            $query = "SELECT * FROM sda_def_columns WHERE `table` = '{$this->viewPrefix}_{$relationship['table']}'";
+            $result = $db->query($query);
+            while ($row = $db->fetchByAssoc($result)) {
+                $row['table'] = "{$this->viewPrefix}_{$relationship['table']}_{$relationship['link']}";
+                $this->addMetadataRecord('sda_def_columns', $row);
+            }
+        }
+
+    }
+
+
+
+    /**
+     * Clones permission records for auto-relationships.
+     *
+     * This method iterates through the registered auto-relationships and clones
+     * the permission records from the `sda_def_permissions` table for each
+     * relationship. The cloned records will have their `table` field updated to
+     * include the relationship name and their `id` field set to null.
+     *
+     * @return void
+     */
+    public function clonePermissionRecordsForAutorelationships()
+    {
+        $db = DBManagerFactory::getInstance();
+        foreach ($this->autoRelationshipsRegistered as $relationship => $table) {
+            $query = "SELECT * FROM sda_def_permissions WHERE `table` = '{$this->viewPrefix}_{$table}'";
+            $result = $db->query($query);
+            while ($row = $db->fetchByAssoc($result)) {
+                $row['table'] = "{$this->viewPrefix}_{$table}_{$relationship}";
+                $row['id'] = null;
+                $this->addMetadataRecord('sda_def_permissions', $row);
+            }
         }
     }
 
