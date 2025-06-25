@@ -88,8 +88,14 @@ class DataParser
                         }
                         break;
 
-                    case 'multienum': //TODO cómo pasar todos los parámetros 82,34,23 no funciona
-                        $incData[$incField[0]] = explode(',', str_replace('^', '', $bean->$beanField))[0];
+                    case 'multienum': 
+                        // Some multienum fields are only accepted with a single value for New or Edit type sync.
+                        if (!isset($incField['altaMultienum']) || !$incField['altaMultienum']) {
+                            $incData[$incField[0]] = explode(',', str_replace('^', '', $bean->$beanField))[0];
+                        } else {
+                            $incData[$incField[0]] =str_replace('^', '', $bean->$beanField);
+                        }
+
                         break;
 
                     // case 'yesno':

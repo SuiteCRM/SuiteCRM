@@ -365,6 +365,7 @@ $contactDef = array(
         0 => 'beneficiarioNacionalidadMultiseleccion',
         1 => 'multienum',
         'required' => true,
+        'altaMultienum' => true,
     ),
     'inc_communications_language_c' => array(
         0 => 'beneficiarioIdiomaComunicaciones',
@@ -452,6 +453,7 @@ $contactDef = array(
     'inc_economic_benefits_c' => array(
         0 => 'beneficiarioPrestacionEconomica',
         1 => 'multienum',
+        'altaMultienum' => true,
     ),
     'inc_max_commuting_time_c' => array(
         0 => 'beneficiarioTiempoViajeAsumible',

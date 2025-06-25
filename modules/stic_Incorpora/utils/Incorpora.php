@@ -214,8 +214,9 @@ class Incorpora
         try {
             $this->logMsg = array();
             $soapFunction = $this->soapFunctionsEdit;
+            // From now on, during edit sync, the ID field should be sorted too
+            $record[$this->editIdField] = $recordID;
             $sortedRecord = $this->sortSoapParams($this->soapClient->__getFunctions(), $soapFunction, $record);
-            $sortedRecord[$this->editIdField] = $recordID;
             $data = array_values($sortedRecord);
             $GLOBALS['log']->fatal(__METHOD__ . ' ' . __LINE__ . ' ' . 'Sending New record Incorpora', $sortedRecord);
             $response = $this->soapClient->$soapFunction($this->authParams, ...$data);
