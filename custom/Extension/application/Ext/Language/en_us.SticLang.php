@@ -422,6 +422,7 @@ $app_list_strings['stic_catalonia_counties_list']['garraf'] = 'Garraf';
 $app_list_strings['stic_catalonia_counties_list']['garrigues'] = 'Garrigues';
 $app_list_strings['stic_catalonia_counties_list']['garrotxa'] = 'Garrotxa';
 $app_list_strings['stic_catalonia_counties_list']['girones'] = 'Gironès';
+$app_list_strings['stic_catalonia_counties_list']['lluçanes'] = 'Lluçanès';
 $app_list_strings['stic_catalonia_counties_list']['maresme'] = 'Maresme';
 $app_list_strings['stic_catalonia_counties_list']['moianes'] = 'Moianès';
 $app_list_strings['stic_catalonia_counties_list']['montsia'] = 'Montsià';

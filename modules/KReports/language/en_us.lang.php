@@ -47,7 +47,6 @@ $mod_strings = array(
     'LBL_LIST_CHART_LAYOUT' => 'Chart layout',
     'LBL_LIST_DATEENTERED' => 'Date created',
     'LBL_LIST_DATEMODIFIED' => 'Date modified',
-    'LBL_SEARCHING' => 'Searching...',
     'LBL_AUTH_CHECK' => 'Authorization check',
     'LBL_AUTH_FULL' => 'On all nodes',
     'LBL_AUTH_TOP' => 'Top node only',
@@ -419,7 +418,7 @@ $mod_strings = array(
     'LBL_CHARFIXEDVALUE' => 'Fixed value',
     'LBL_PLANNEREXPORTPOPUP_NODENAME' => 'Nodename',
     
-    // for the Viualization
+    // for the Visualization
     'LBL_VISUALIZATION' => 'Visualize',
     'LBL_VISUALIZATIONPLUGIN' => 'Type',
     'LBL_VISUALIZATIONTOOLBAR_LAYOUT' => 'Layout',
@@ -635,7 +634,7 @@ $mod_strings = array(
     
     'LBL_KSNAPSHOTS' => 'Snapshots',
     'LBL_KSNAPSHOT' => 'Snapshot', 
-    'LBL_TAKING_SNAPSHOT' => 'Taking snapshot ... ',
+    'LBL_TAKING_SNAPSHOT' => 'Taking snapshot...',
 
     // STIC-Custom 20230710 AAM - Improving export to LPO
     // STIC#1010

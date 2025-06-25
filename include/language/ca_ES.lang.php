@@ -46,7 +46,6 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 $app_list_strings = array(
-//e.g. auf Deutsch 'Contacts'=>'Contakten',
     'language_pack_name' => 'Català (Catalan) - ca_ES',
     'moduleList' => array(
         'Home' => 'Inici',
@@ -59,7 +58,7 @@ $app_list_strings = array(
         'Notes' => 'Notes',
         'Calls' => 'Trucades',
         'TemplateSectionLine' => 'Línia de secció de plantilla',
-        'Calls_Reschedule' => 'Replanificar Trucada',
+        'Calls_Reschedule' => 'Replanifica la trucada',
         'Emails' => 'Correus electrònics',
         'EAPM' => 'EAPM',
         'Meetings' => 'Reunions',
@@ -72,7 +71,7 @@ $app_list_strings = array(
         'Feeds' => 'Fonts RSS',
         'iFrames' => 'Portal',
         'TimePeriods' => 'Administració de Períodes de Temps',
-        'ContractTypes' => 'Tipus de Contracte',
+        'ContractTypes' => 'Tipus de Contractes',
         'Schedulers' => 'Planificacions',
         'Project' => 'Projectes',
         'ProjectTask' => 'Tasques de Projecte',
@@ -83,7 +82,7 @@ $app_list_strings = array(
         'Connectors' => 'Configuració de Connectors',
         'Roles' => 'Rols',
         'Notifications' => 'Notificacions',
-        'Sync' => 'Sincronitzar',
+        'Sync' => 'Sincronitzacions',
         'Users' => 'Usuaris',
         'Employees' => 'Empleats',
         'Administration' => 'Administració',
@@ -94,9 +93,9 @@ $app_list_strings = array(
         'Queues' => 'Cues',
         'EmailMarketing' => 'Màrqueting per correu electrònic',
         'EmailTemplates' => 'Plantilles de correu electrònic',
-        'ProspectLists' => 'Llistes de Public Objectiu',
-        'SavedSearch' => 'Recerques Guardades',
-        'UpgradeWizard' => 'Assistent d\'Actualitzacions',
+        'ProspectLists' => 'Llistes de Públic Objectiu',
+        'SavedSearch' => 'Cerques desades',
+        'UpgradeWizard' => "Assistent d'actualització",
         'Trackers' => 'Monitoratge',
         'TrackerSessions' => 'Sessions de Monitoratge',
         'TrackerQueries' => 'Consultes de Monitoratge',
@@ -105,10 +104,10 @@ $app_list_strings = array(
         'SugarFeed' => 'Feed de SuiteCRM',
         'SugarFavorites' => 'Favorits de SuiteCRM',
 
-        'OAuthKeys' => 'Claus del consumidor OAuth',
-        'OAuthTokens' => 'Tokens d\'OAuth',
-        'OAuth2Clients' => 'OAuth Clients',
-        'OAuth2Tokens' => 'Tokens d\'OAuth',
+        'OAuthKeys' => 'Claus OAuth',
+        'OAuthTokens' => 'Tokens OAuth',
+        'OAuth2Clients' => 'Clients OAuth',
+        'OAuth2Tokens' => 'Tokens OAuth',
     ),
 
     'moduleListSingular' => array(
@@ -145,7 +144,7 @@ $app_list_strings = array(
 
     'checkbox_dom' => array(
         '' => '',
-        '1' => 'Si',
+        '1' => 'Sí',
         '2' => 'No',
     ),
     'account_type_dom' => array(
@@ -157,65 +156,65 @@ $app_list_strings = array(
         'Investor' => 'Inversor',
         'Partner' => 'Soci',
         'Press' => 'Premsa',
-        'Prospect' => 'Perspectives',
+        'Prospect' => 'Prospector',
         'Reseller' => 'Revenedor',
-        'Other' => 'Altre',
+        'Other' => 'Altres',
     ),
     'industry_dom' => array(
         '' => '',
         'Apparel' => 'Tèxtil',
         'Banking' => 'Banca',
-        'Biotechnology' => 'Biotecnología',
+        'Biotechnology' => 'Biotecnologia',
         'Chemicals' => 'Química',
         'Communications' => 'Comunicacions',
         'Construction' => 'Construcció',
-        'Consulting' => 'Consultoría',
+        'Consulting' => 'Consultoria',
         'Education' => 'Educació',
-        'Electronics' => 'Electronica',
-        'Energy' => 'Energía',
+        'Electronics' => 'Electrònica',
+        'Energy' => 'Energia',
         'Engineering' => 'Enginyeria',
         'Entertainment' => 'Entretenimient',
         'Environmental' => 'Medi ambient',
         'Finance' => 'Finances',
         'Government' => 'Govern',
         'Healthcare' => 'Sanitat',
-        'Hospitality' => 'Caritat',
-        'Insurance' => 'Seguros',
+        'Hospitality' => 'Atenció social',
+        'Insurance' => 'Assegurances',
         'Machinery' => 'Maquinària',
         'Manufacturing' => 'Fabricació',
-        'Media' => 'Mitjans de Comunicació',
+        'Media' => 'Mitjans de comunicació',
         'Not For Profit' => 'Sense ànim de lucre',
         'Recreation' => 'Lleure',
-        'Retail' => 'Minoristes',
-        'Shipping' => 'Trameses',
+        'Retail' => 'Venda minorista',
+        'Shipping' => 'Enviaments',
         'Technology' => 'Tecnologia',
         'Telecommunications' => 'Telecomunicacions',
         'Transportation' => 'Transport',
-        'Utilities' => 'Serveis Públics',
-        'Other' => 'Altre',
+        'Utilities' => 'Serveis públics',
+        'Other' => 'Altres',
     ),
-    'lead_source_default_key' => 'Self Generated',
+    'lead_source_default_key' => 'Autogenerada',
     'lead_source_dom' => array(
         '' => '',
-        'Cold Call' => 'Trucada en Fred',
-        'Existing Customer' => 'Client Existent',
-        'Self Generated' => 'Auto Generat',
+        'Cold Call' => 'Trucada freda',
+        'Existing Customer' => 'Client existent',
+        'Self Generated' => 'Autogenerat',
         'Employee' => 'Empleat',
         'Partner' => 'Soci',
-        'Public Relations' => 'Relacions Públiques',
+        'Public Relations' => 'Relacions públiques',
         'Direct Mail' => 'Correu directe',
         'Conference' => 'Conferència',
         'Trade Show' => 'Exposició',
-        'Web Site' => 'Lloc Web',
+        'Web Site' => 'Web',
         'Word of mouth' => 'Recomanació',
         'Email' => 'Correu electrònic',
         'Campaign' => 'Campanya',
-        'Other' => 'Altre',
+        'Other' => 'Altres',
     ),
     'language_dom' => array(
         'af' => 'Africà',
-        'ar-EG' => 'Àrab, Egipte',
-        'ar-SA' => 'Àrab, Aràbia Saudita',
+        'ar-EG' => 'Àrab (Egipte)',
+        'ar-SA' => 'Àrab (Aràbia Saudita)',
         'az' => 'Àzeri',
         'bg' => 'Búlgar',
         'bn' => 'Bengalí',
@@ -225,21 +224,21 @@ $app_list_strings = array(
         'cs' => 'Txec',
         'da' => 'Danès',
         'de' => 'Alemany',
-        'de-CH' => 'Alemany, Suïssa',
+        'de-CH' => 'Alemany (Suïssa)',
         'el' => 'Grec',
-        'en-GB' => 'Anglès, Regne Unit',
-        'en-US' => 'Anglès, Estats Units',
-        'es-ES' => 'Espanyol',
-        'es-MX' => 'Espanyol, Mèxic',
-        'es-PY' => 'Espanyol, Paraguai',
-        'es-VE' => 'Espanyol, Veneçuela',
+        'en-GB' => 'Anglès (Regne Unit)',
+        'en-US' => 'Anglès (Estats Units)',
+        'es-ES' => 'Espanyol (Espanya)',
+        'es-MX' => 'Espanyol (Mèxic)',
+        'es-PY' => 'Espanyol (Paraguai)',
+        'es-VE' => 'Espanyol (Veneçuela)',
         'et' => 'Estonià',
         'eu' => 'Basc',
         'fa' => 'Persa',
         'fi' => 'Filipí',
         'fil' => 'Finlandès',
         'fr' => 'Francès',
-        'fr-CA' => 'Francès, Canadà',
+        'fr-CA' => 'Francès (Canadà)',
         'gu-IN' => 'Gujarati',
         'he' => 'Hebreu',
         'hi' => 'Hindi',
@@ -258,8 +257,8 @@ $app_list_strings = array(
         'nl' => 'Holandès',
         'pcm' => 'Nigèria Pidgin',
         'pl' => 'Polonès',
-        'pt-BR' => 'Portuguès, Brasil',
-        'pt-PT' => 'Portuguès',
+        'pt-BR' => 'Portuguès (Brasil)',
+        'pt-PT' => 'Portuguès (Portugal)',
         'ro' => 'Romanès',
         'ru' => 'Rus',
         'si-LK' => 'Singalès',
@@ -278,59 +277,59 @@ $app_list_strings = array(
         'yo' => 'Ioruba',
         'zh-CN' => 'Xinès simplificat',
         'zh-TW' => 'Xinès tradicional',
-        'other' => 'Altre',
+        'other' => 'Altres',
     ),
     'opportunity_type_dom' => array(
         '' => '',
-        'Existing Business' => 'Negocis Existents',
-        'New Business' => 'Nous Negocis',
+        'Existing Business' => 'Negocis existents',
+        'New Business' => 'Negocis nous',
     ),
     'roi_type_dom' => array(
         'Revenue' => 'Ingressos',
         'Investment' => 'Inversió',
-        'Expected_Revenue' => 'Ingressos Esperats',
+        'Expected_Revenue' => 'Ingressos esperats',
         'Budget' => 'Pressupost',
 
     ),
-    //Note:  do not translate opportunity_relationship_type_default_key
-//       it is the key for the default opportunity_relationship_type_dom value
-    'opportunity_relationship_type_default_key' => 'Principal encarregat de prendre decisions',
+    // Note: do not translate opportunity_relationship_type_default_key
+    // it is the key for the default opportunity_relationship_type_dom value
+    'opportunity_relationship_type_default_key' => 'Primary Decision Maker',
     'opportunity_relationship_type_dom' => array(
         '' => '',
-        'Primary Decision Maker' => 'Prenedor de Decisió Principal',
-        'Business Decision Maker' => 'Prenedor de Decisió de Negoci',
-        'Business Evaluator' => 'Avaluador de Negoci',
-        'Technical Decision Maker' => 'Prenedor de Decisió Tècnica',
-        'Technical Evaluator' => 'Avaluador Tècnic',
-        'Executive Sponsor' => 'Patrocinador Executiu',
+        'Primary Decision Maker' => 'Decisor principal',
+        'Business Decision Maker' => 'Decisor de negoci',
+        'Business Evaluator' => 'Avaluador de negoci',
+        'Technical Decision Maker' => 'Decisor tècnic',
+        'Technical Evaluator' => 'Avaluador tècnic',
+        'Executive Sponsor' => 'Patrocinador executiu',
         'Influencer' => 'Influenciador',
-        'Other' => 'Altre',
+        'Other' => 'Altres',
     ),
-    //Note:  do not translate case_relationship_type_default_key
-//       it is the key for the default case_relationship_type_dom value
+    // Note: do not translate case_relationship_type_default_key
+    // it is the key for the default case_relationship_type_dom value
     'case_relationship_type_default_key' => 'Primary Contact',
     'case_relationship_type_dom' => array(
         '' => '',
-        'Primary Contact' => 'Contacte Principal',
-        'Alternate Contact' => 'Contacte Alternatiu',
+        'Primary Contact' => 'Contacte principal',
+        'Alternate Contact' => 'Contacte alternatiu',
     ),
     'payment_terms' => array(
         '' => '',
         'Net 15' => '15 dies',
         'Net 30' => '30 dies',
     ),
-    'sales_stage_default_key' => 'Prospecció',
+    'sales_stage_default_key' => 'Prospecting',
     'sales_stage_dom' => array(
-        'Prospecting' => 'Perspectives',
+        'Prospecting' => 'Prospecció',
         'Qualification' => 'Qualificació',
-        'Needs Analysis' => 'Necesita Análisis',
-        'Value Proposition' => 'Proposta de Valor',
-        'Id. Decision Makers' => 'Identificar els prenedors de decisions',
-        'Perception Analysis' => 'Anàlisis de Percepció',
+        'Needs Analysis' => 'Necessita anàlisi',
+        'Value Proposition' => 'Proposta de valor',
+        'Id. Decision Makers' => 'Identificació dels decisors',
+        'Perception Analysis' => 'Anàlisi de percepció',
         'Proposal/Price Quote' => 'Proposta/Pressupost',
         'Negotiation/Review' => 'Negociació/Revisió',
-        'Closed Won' => 'Guanyat',
-        'Closed Lost' => 'Perdut',
+        'Closed Won' => 'Tancat guanyat',
+        'Closed Lost' => 'Tancat perdut',
     ),
     'sales_probability_dom' => // keys must be the same as sales_stage_dom
         array(
@@ -357,7 +356,7 @@ $app_list_strings = array(
         'Mr.' => 'Sr.',
         'Ms.' => 'Sra.',
         'Mrs.' => 'Sra.',
-        'Miss' => 'Senyora',
+        'Miss' => 'Sra.',
         'Dr.' => 'Dr.',
         'Prof.' => 'Prof.',
     ),
@@ -382,34 +381,34 @@ $app_list_strings = array(
         'Medium' => 'Mitja',
         'Low' => 'Baixa',
     ),
-    'task_status_default' => 'No Iniciat',
+    'task_status_default' => 'Not Started',
     'task_status_dom' => array(
-        'Not Started' => 'No Iniciada',
-        'In Progress' => 'En Progrés',
+        'Not Started' => 'No iniciada',
+        'In Progress' => 'En progrés',
         'Completed' => 'Completada',
-        'Pending Input' => 'Pendent d\'Informació',
+        'Pending Input' => "Pendent d'informació",
         'Deferred' => 'Ajornada',
     ),
-    'meeting_status_default' => 'Planificat',
+    'meeting_status_default' => 'Planned',
     'meeting_status_dom' => array(
         'Planned' => 'Planificada',
         'Held' => 'Realitzada',
-        'Not Held' => 'No Realitzada',
+        'Not Held' => 'No realitzada',
     ),
     'extapi_meeting_password' => array(
         'WebEx' => 'WebEx',
     ),
     'meeting_type_dom' => array(
-        'Other' => 'Altre',
+        'Other' => 'Altres',
         'Sugar' => 'SuiteCRM',
     ),
-    'call_status_default' => 'Planificat',
+    'call_status_default' => 'Planned',
     'call_status_dom' => array(
         'Planned' => 'Planificada',
         'Held' => 'Realitzada',
-        'Not Held' => 'No Realitzada',
+        'Not Held' => 'No realitzada',
     ),
-    'call_direction_default' => 'Sortida',
+    'call_direction_default' => 'Outbound',
     'call_direction_dom' => array(
         'Inbound' => 'Entrant',
         'Outbound' => 'Sortint',
@@ -418,7 +417,7 @@ $app_list_strings = array(
         '' => '',
         'New' => 'Nou',
         'Assigned' => 'Assignat',
-        'In Process' => 'En Procés',
+        'In Process' => 'En procés',
         'Converted' => 'Convertit',
         'Recycled' => 'Reciclat',
         'Dead' => 'Mort',
@@ -442,8 +441,8 @@ $app_list_strings = array(
     ),
     'employee_status_dom' => array(
         'Active' => 'Actiu',
-        'Terminated' => 'Acomiadat',
-        'Leave of Absence' => 'Excedència',
+        'Terminated' => 'Baixa',
+        'Leave of Absence' => 'En excedència',
     ),
     'messenger_type_dom' => array(
         '' => '',
@@ -451,36 +450,34 @@ $app_list_strings = array(
         'Yahoo!' => 'Yahoo!',
         'AOL' => 'AOL',
     ),
+    'project_task_priority_default' => 'Medium',
     'project_task_priority_options' => array(
         'High' => 'Alta',
         'Medium' => 'Mitja',
         'Low' => 'Baixa',
     ),
-    'project_task_priority_default' => 'Mitja',
-
     'project_task_status_options' => array(
-        'Not Started' => 'No Iniciada',
-        'In Progress' => 'En Progrés',
+        'Not Started' => 'No iniciada',
+        'In Progress' => 'En progrés',
         'Completed' => 'Completada',
-        'Pending Input' => 'Pendent d\'Informació',
+        'Pending Input' => "Pendent d'informació",
         'Deferred' => 'Ajornada',
     ),
     'project_task_utilization_options' => array(
-        '0' => 'Cap',
+        '0' => '0',
         '25' => '25',
         '50' => '50',
         '75' => '75',
         '100' => '100',
     ),
-
+    'project_status_default' => 'Draft',
     'project_status_dom' => array(
-        'Draft' => 'Borrador',
-        'In Review' => 'En Revisió',
+        'Draft' => 'Esborrany',
+        'In Review' => 'En revisió',
         'Underway' => 'En procés',
-        'On_Hold' => 'En Espera',
-        'Completed' => 'Completada',
+        'On_Hold' => 'En espera',
+        'Completed' => 'Completat',
     ),
-    'project_status_default' => 'Borrador',
 
     'project_duration_units_dom' => array(
         'Days' => 'Dies',
@@ -488,35 +485,30 @@ $app_list_strings = array(
     ),
 
     'activity_status_type_dom' => array(
-        '' => '--Cap--',
+        '' => '',
         'active' => 'Actiu',
         'inactive' => 'Inactiu',
     ),
 
-    // Note:  do not translate record_type_default_key
-    //        it is the key for the default record_type_module value
-    'record_type_default_key' => 'Comptes',
+    // Note: do not translate record_type_default_key
+    // it is the key for the default record_type_module value
+    'record_type_default_key' => 'Accounts',
     'record_type_display' => array(
         '' => '',
         'Accounts' => 'Comptes',
         'Opportunities' => 'Oportunitats',
         'Cases' => 'Casos',
         'Leads' => 'Clients Potencials',
-        'Contacts' => 'Contactes', // cn (11/22/2005) added to support Emails
-
+        'Contacts' => 'Contactes',
         'Bugs' => 'Incidències',
         'Project' => 'Projectes',
-
         'Prospects' => 'Públic Objectiu',
         'ProjectTask' => 'Tasques de Projecte',
-
         'Tasks' => 'Tasques',
-
-        'AOS_Contracts' => 'Contracte',
-        'AOS_Invoices' => 'Factura',
-        'AOS_Quotes' => 'Pressupost',
-        'AOS_Products' => 'Producte',
-
+        'AOS_Contracts' => 'Contractes',
+        'AOS_Invoices' => 'Factures',
+        'AOS_Quotes' => 'Pressupostos',
+        'AOS_Products' => 'Productes',
     ),
 // PR 4606
     'record_type_display_notes' => array(
@@ -526,21 +518,18 @@ $app_list_strings = array(
         'Campaigns' => 'Campanyes',
         'Tasks' => 'Tasques',
         'Emails' => 'Correu electrònic',
-
         'Bugs' => 'Incidències',
         'Project' => 'Projectes',
         'ProjectTask' => 'Tasques de Projecte',
         'Prospects' => 'Públic Objectiu',
         'Cases' => 'Casos',
         'Leads' => 'Clients Potencials',
-
         'Meetings' => 'Reunions',
         'Calls' => 'Trucades',
-
-        'AOS_Contracts' => 'Contracte',
-        'AOS_Invoices' => 'Factura',
-        'AOS_Quotes' => 'Pressupost',
-        'AOS_Products' => 'Producte',
+        'AOS_Contracts' => 'Contractes',
+        'AOS_Invoices' => 'Factures',
+        'AOS_Quotes' => 'Pressupostos',
+        'AOS_Products' => 'Productes',
     ),
 
     'parent_type_display' => array(
@@ -548,28 +537,23 @@ $app_list_strings = array(
         'Contacts' => 'Contactes',
         'Tasks' => 'Tasques',
         'Opportunities' => 'Oportunitats',
-
         'Bugs' => 'Incidències',
         'Cases' => 'Casos',
         'Leads' => 'Clients Potencials',
-
         'Project' => 'Projectes',
         'ProjectTask' => 'Tasques de Projecte',
-
         'Prospects' => 'Públic Objectiu',
-        
-        'AOS_Contracts' => 'Contracte',
-        'AOS_Invoices' => 'Factura',
-        'AOS_Quotes' => 'Pressupost',
-        'AOS_Products' => 'Producte', 
-
+        'AOS_Contracts' => 'Contractes',
+        'AOS_Invoices' => 'Factures',
+        'AOS_Quotes' => 'Pressupostos',
+        'AOS_Products' => 'Productes', 
     ),
     'parent_line_items' => array(
         'AOS_Quotes' => 'Pressupostos',
         'AOS_Invoices' => 'Factures',
         'AOS_Contracts' => 'Contractes',
     ),
-    'issue_priority_default_key' => 'Mitja',
+    'issue_priority_default_key' => 'Medium',
     'issue_priority_dom' => array(
         'Urgent' => 'Urgent',
         'High' => 'Alta',
@@ -583,10 +567,10 @@ $app_list_strings = array(
         'Duplicate' => 'Duplicat',
         'Closed' => 'Tancat',
         'Out of Date' => 'Caducat',
-        'Invalid' => 'No Vàlid',
+        'Invalid' => 'Invàlid',
     ),
 
-    'issue_status_default_key' => 'Nou',
+    'issue_status_default_key' => 'New',
     'issue_status_dom' => array(
         'New' => 'Nou',
         'Assigned' => 'Assignat',
@@ -595,7 +579,7 @@ $app_list_strings = array(
         'Rejected' => 'Refusat',
     ),
 
-    'bug_priority_default_key' => 'Mitja',
+    'bug_priority_default_key' => 'Medium',
     'bug_priority_dom' => array(
         'Urgent' => 'Urgent',
         'High' => 'Alta',
@@ -607,12 +591,12 @@ $app_list_strings = array(
         '' => '',
         'Accepted' => 'Acceptat',
         'Duplicate' => 'Duplicat',
-        'Fixed' => 'Preu Fix',
+        'Fixed' => 'Resolt',
         'Out of Date' => 'Caducat',
-        'Invalid' => 'No Vàlid',
-        'Later' => 'Posposat',
+        'Invalid' => 'Invàlid',
+        'Later' => 'Ajornat',
     ),
-    'bug_status_default_key' => 'Nou',
+    'bug_status_default_key' => 'New',
     'bug_status_dom' => array(
         'New' => 'Nou',
         'Assigned' => 'Assignat',
@@ -620,8 +604,9 @@ $app_list_strings = array(
         'Pending' => 'Pendent',
         'Rejected' => 'Refusat',
     ),
-    'bug_type_default_key' => 'Incidències',
+    'bug_type_default_key' => 'Bug',
     'bug_type_dom' => array(
+        'Bug' => 'Incidència',
         'Defect' => 'Defecte',
         'Feature' => 'Característica',
     ),
@@ -635,9 +620,9 @@ $app_list_strings = array(
     'source_dom' => array(
         '' => '',
         'Internal' => 'Intern',
-        'Forum' => 'Foro',
+        'Forum' => 'Fòrum',
         'Web' => 'Web',
-        'InboundEmail' => 'Correu electrònic entrant',
+        'InboundEmail' => 'Correu electrònic',
     ),
 
     'product_category_default_key' => '',
@@ -913,7 +898,7 @@ $app_list_strings = array(
 
     'document_status_dom' => array(
         'Active' => 'Actiu',
-        'Draft' => 'Borrador',
+        'Draft' => 'Esborrany',
         'FAQ' => 'Preguntes freqüents',
         'Expired' => 'Caducat',
         'Under Review' => 'En Revisió',
@@ -2110,7 +2095,7 @@ $app_strings = array(
     'LBL_MINUTES' => 'Minuts',
     'LBL_MERIDIEM' => 'Meridiem',
     'LBL_DATE' => 'Data',
-    'LBL_DASHLET_CONFIGURE_AUTOREFRESH' => 'Auto-Refrescar',
+    'LBL_DASHLET_CONFIGURE_AUTOREFRESH' => 'Autorefrescar',
 
     'LBL_DURATION_DAY' => 'dia',
     'LBL_DURATION_HOUR' => 'hora',
@@ -2125,8 +2110,8 @@ $app_strings = array(
     'LBL_ENTER_VALID_YEAR' => 'Indiqueu un any vàlid',
 
     //File write error label
-    'ERR_FILE_WRITE' => 'Error: No es pot escriure el fitxer {0}. Si us plau, comprovi els permisos del sistema i del servidor web.',
-    'ERR_FILE_NOT_FOUND' => 'Error: No es pot llegir el fitxer {0}. Si us plau, comprovi els permisos del sistema i del servidor web.',
+    'ERR_FILE_WRITE' => 'Error: No es pot escriure el fitxer {0}. Comproveu els permisos del sistema i del servidor web.',
+    'ERR_FILE_NOT_FOUND' => 'Error: No es pot llegir el fitxer {0}. Comproveu els permisos del sistema i del servidor web.',
 
     'LBL_AND' => 'I',
 
@@ -2989,10 +2974,10 @@ $app_list_strings ['emailTemplates_type_list_no_workflow'] = array(
 // knowledge base
 $app_list_strings['moduleList']['AOK_KnowledgeBase'] = 'Base de Coneixement'; // Shows in the ALL menu entries
 $app_list_strings['moduleList']['AOK_Knowledge_Base_Categories'] = 'Categories Base de coneixement'; // Shows in the ALL menu entries
-$app_list_strings['aok_status_list']['Draft'] = 'Borrador';
+$app_list_strings['aok_status_list']['Draft'] = 'Esborrany';
 $app_list_strings['aok_status_list']['Expired'] = 'Caducat';
-$app_list_strings['aok_status_list']['In_Review'] = 'En Revisió';
-//$app_list_strings['aok_status_list']['Published'] = 'Published';
+$app_list_strings['aok_status_list']['In_Review'] = 'En revisió';
+//$app_list_strings['aok_status_list']['Published'] = 'Publicat';
 $app_list_strings['aok_status_list']['published_private'] = 'Privat';
 $app_list_strings['aok_status_list']['published_public'] = 'Públic';
 
@@ -3178,10 +3163,10 @@ $app_list_strings['aos_quotes_type_dom']['Prospect'] = 'Perspectives';
 $app_list_strings['aos_quotes_type_dom']['Reseller'] = 'Revenedor';
 $app_list_strings['aos_quotes_type_dom']['Other'] = 'Altre';
 $app_list_strings['template_ddown_c_list'][''] = '';
-$app_list_strings['quote_stage_dom']['Draft'] = 'Borrador';
+$app_list_strings['quote_stage_dom']['Draft'] = 'Esborrany';
 $app_list_strings['quote_stage_dom']['Negotiation'] = 'Negociació';
 $app_list_strings['quote_stage_dom']['Delivered'] = 'Enviat';
-$app_list_strings['quote_stage_dom']['On Hold'] = 'En Espera';
+$app_list_strings['quote_stage_dom']['On Hold'] = 'En espera';
 $app_list_strings['quote_stage_dom']['Confirmed'] = 'Confirmat';
 $app_list_strings['quote_stage_dom']['Closed Accepted'] = 'Tancat Acceptat';
 $app_list_strings['quote_stage_dom']['Closed Lost'] = 'Perdut';
@@ -3702,16 +3687,16 @@ $app_list_strings['pdf_page_size_dom']['Letter'] = 'Carta';
 $app_list_strings['pdf_page_size_dom']['Legal'] = 'Legal';
 $app_list_strings['pdf_orientation_dom']['Portrait'] = 'Retrat';
 $app_list_strings['pdf_orientation_dom']['Landscape'] = 'Paisatge';
-$app_list_strings['run_when_dom']['When True'] = 'Avaluar al desar'; // PR 6143
-$app_list_strings['run_when_dom']['Once True'] = 'Perpetu - (camp ha auditar)';
+$app_list_strings['run_when_dom']['When True'] = 'Avalua al desar'; // PR 6143
+$app_list_strings['run_when_dom']['Once True'] = 'Perpetu - (camp a auditar)';
 $app_list_strings['sa_status_list']['Complete'] = 'Completa';
-$app_list_strings['sa_status_list']['In_Review'] = 'En Revisió';
+$app_list_strings['sa_status_list']['In_Review'] = 'En revisió';
 $app_list_strings['sa_status_list']['Issue_Resolution'] = 'Resolució del problema';
 $app_list_strings['sa_status_list']['Pending_Apttus_Submission'] = 'Registre d\'Apptus Pendent';
 $app_list_strings['sharedGroupRule']['none'] = 'Sense Accés';
 $app_list_strings['sharedGroupRule']['view'] = 'Només visualització';
-$app_list_strings['sharedGroupRule']['view_edit'] = 'Veure i Editar';
-$app_list_strings['sharedGroupRule']['view_edit_delete'] = 'Veure, Editar i Borrar';
+$app_list_strings['sharedGroupRule']['view_edit'] = 'Veure i editar';
+$app_list_strings['sharedGroupRule']['view_edit_delete'] = 'Veure, editar i esborrar';
 $app_list_strings['moduleList']['SharedSecurityRulesFields'] = 'Compartir camps de normes de seguretat';
 $app_list_strings['moduleList']['SharedSecurityRules'] = 'Compartir camps de normes de seguretat';
 $app_list_strings['moduleList']['SharedSecurityRulesActions'] = 'Compartir accions de camps de normes de seguretat';
@@ -3723,7 +3708,7 @@ $app_list_strings['aow_condition_type_list']['Field'] = 'Camp';
 $app_list_strings['aow_condition_type_list']['Any_Change'] = 'Qualsevol canvi';
 $app_list_strings['aow_condition_type_list']['SecurityGroup'] = 'En el Grup de Seguretat';
 $app_list_strings['aow_condition_type_list']['currentUser'] = 'Usuari actiu';
-$app_list_strings['aow_condition_type_list']['Date'] = 'Fecha';
+$app_list_strings['aow_condition_type_list']['Date'] = 'Data';
 $app_list_strings['aow_condition_type_list']['Multi'] = 'Un de';
 
 
@@ -3732,18 +3717,18 @@ $app_list_strings['moduleList']['Surveys'] = 'Enquestes';
 $app_list_strings['moduleList']['SurveyQuestionResponses'] = 'Respostes a pregunta d\'enquesta';
 $app_list_strings['moduleList']['SurveyQuestions'] = 'Preguntes de l\'enquesta';
 $app_list_strings['moduleList']['SurveyQuestionOptions'] = 'Opcions de pregunta d\'enquesta';
-$app_list_strings['survey_status_list']['Draft'] = 'Borrador';
+$app_list_strings['survey_status_list']['Draft'] = 'Esborrany';
 $app_list_strings['survey_status_list']['Public'] = 'Públic';
 $app_list_strings['survey_status_list']['Closed'] = 'Tancat';
 $app_list_strings['surveys_question_type']['Text'] = 'Text';
 $app_list_strings['surveys_question_type']['Textbox'] = 'Quadre de text';
-$app_list_strings['surveys_question_type']['Checkbox'] = 'Casilla de Verificación';
+$app_list_strings['surveys_question_type']['Checkbox'] = 'Casella de verificació';
 $app_list_strings['surveys_question_type']['Radio'] = 'Ràdio';
 $app_list_strings['surveys_question_type']['Dropdown'] = 'Llista desplegable';
 $app_list_strings['surveys_question_type']['Multiselect'] = 'Multi-selecció';
 $app_list_strings['surveys_question_type']['Matrix'] = 'Matriu';
 $app_list_strings['surveys_question_type']['DateTime'] = 'Data i hora';
-$app_list_strings['surveys_question_type']['Date'] = 'Fecha';
+$app_list_strings['surveys_question_type']['Date'] = 'Data';
 $app_list_strings['surveys_question_type']['Scale'] = 'Escala';
 $app_list_strings['surveys_question_type']['Rating'] = 'Puntuació';
 $app_list_strings['surveys_matrix_options'][0] = 'Satisfet';
