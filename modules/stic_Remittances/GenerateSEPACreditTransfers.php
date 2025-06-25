@@ -116,6 +116,10 @@ function generateSEPACreditTransfers($remittance)
 
     $result = $db->query($sqlPayments);
 
+    // Error and warning messages
+    $errorMsg = '';
+    $warningMsg = '';
+
     // We process the payments obtained and prepare them for the remittance
     while ($paymentResult = $db->fetchByAssoc($result)) {
 
