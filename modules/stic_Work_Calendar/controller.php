@@ -283,7 +283,8 @@ class stic_Work_CalendarController extends SugarController
         }
         if (!empty($searchdefs) && !empty($searchFields)) {
             $searchForm = new SearchForm($seed, $module);
-            $searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl');
+            $displayView = explode("_", $current_query_by_page_array["searchFormTab"])[0] ?? 'basic';               
+            $searchForm->setup($searchdefs, $searchFields, 'SearchFormGeneric.tpl', $displayView);
             $searchForm->populateFromArray($current_query_by_page_array, $searchForm->displayView);
             $where_clauses_arr = $searchForm->generateSearchWhere(true, $module);
             if (count($where_clauses_arr) > 0) {
