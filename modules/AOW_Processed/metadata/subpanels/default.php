@@ -32,11 +32,11 @@ $subpanel_layout = array(
     'where' => '',
 
     'list_fields' => array(
-        'parent_name'=>array(
+        'custom_parent_name'=>array(
             'vname' => 'LBL_BEAN',
             'target_record_key' => 'parent_id',
             'target_module_key'=>'parent_type',
-            'widget_class' => 'SubPanelDetailViewLink',
+            'widget_class' => 'SubPanelDynamicParentNameLink',
             'sortable'=>false,
             'width' => '15%',
         ),
