@@ -253,12 +253,15 @@ function generateSEPACreditTransfers($remittance)
         $remittance->bean->save();
 
         // Set 'remitted' status in all payments included in the remittance
-        $db->query("UPDATE stic_payments SET status = 'remitted' WHERE id IN
-                        (
-                            select  rp.stic_payments_stic_remittancesstic_payments_idb FROM stic_payments_stic_remittances_c rp
-                            WHERE rp.stic_payments_stic_remittancesstic_remittances_ida = '{$remittance->bean->id}'
-                            AND rp.deleted=0
-                        )"
+        $db->query("UPDATE
+                        stic_payments sp
+                    JOIN stic_payments_stic_remittances_c spsrc ON
+                        sp.id = spsrc.stic_payments_stic_remittancesstic_payments_idb
+                    SET
+                        sp.status = 'remitted'
+                    WHERE
+                        spsrc.stic_payments_stic_remittancesstic_remittances_ida = '{$remittance->bean->id}'
+                        AND spsrc.deleted = 0;"
         );
 
         $fileName = $remittance->bean->name . '_' . date('YmdHis') . '.xml';

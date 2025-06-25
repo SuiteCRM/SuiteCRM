@@ -290,18 +290,14 @@ function generateSEPADirectDebits($remittance)
 
         // Set 'remitted' status in all payments included in the remittance
         $db->query("UPDATE
-                        stic_payments
+                        stic_payments sp
+                    JOIN stic_payments_stic_remittances_c spsrc ON
+                        sp.id = spsrc.stic_payments_stic_remittancesstic_payments_idb
                     SET
-                        status = 'remitted'
+                        sp.status = 'remitted'
                     WHERE
-                        id IN (
-                        select
-                            spsrc.stic_payments_stic_remittancesstic_payments_idb
-                        FROM
-                            stic_payments_stic_remittances_c spsrc
-                        WHERE
-                            spsrc.stic_payments_stic_remittancesstic_remittances_ida = '{$remittance->bean->id}'
-                            AND spsrc.deleted = 0)"
+                        spsrc.stic_payments_stic_remittancesstic_remittances_ida = '{$remittance->bean->id}'
+                        AND spsrc.deleted = 0;"
         );
 
         // Remittance data

@@ -47,22 +47,18 @@ class stic_RemittancesUtils
             global $current_user;
 
             $sql = "UPDATE
-                    stic_payments
-                SET
-                    status = 'paid',
-                    date_modified = DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d %H:%i:%s'),
-                    modified_user_id = '{$current_user->id}'
-                WHERE
-                    id IN (
-                    SELECT
-                        stic_payments_stic_remittancesstic_payments_idb
-                    FROM
-                        stic_payments_stic_remittances_c spsrc
+                        stic_payments sp
+                    JOIN stic_payments_stic_remittances_c spsrc ON
+                        sp.id = spsrc.stic_payments_stic_remittancesstic_payments_idb
+                    SET
+                        sp.status = 'paid',
+                        sp.date_modified = DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d %H:%i:%s'),
+                        sp.modified_user_id = '{$current_user->id}'
                     WHERE
                         spsrc.deleted = 0
-                        AND spsrc.stic_payments_stic_remittancesstic_remittances_ida = '{$remittanceBean->id}')
-                    AND status != 'paid'
-                    AND deleted = 0";
+                        AND spsrc.stic_payments_stic_remittancesstic_remittances_ida = '{$remittanceBean->id}'
+                        AND sp.status != 'paid'
+                        AND sp.deleted = 0;";
 
             $GLOBALS['log']->debug(__METHOD__ . ": Payment status update SQL [{$sql}]");
 
