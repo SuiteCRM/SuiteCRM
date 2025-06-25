@@ -765,7 +765,12 @@ class User extends Person implements EmailInterface
         //     )
         // ) 
         
-        $saveUserAndPassword = $_REQUEST['LDAP_user'] ?: false;
+        // STIC-Custom EPS 20250528 Error importing users
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/662
+        // $saveUserAndPassword = $_REQUEST['LDAP_user'] ?: false;
+        $ldapUser = $_REQUEST['LDAP_user'] ?? null;
+        $saveUserAndPassword = $ldapUser ?: false;
+        // END STIC-Custom 
 
         // We won't be validating the password in these two cases:
         // 1- The user didn't fill the required password fields, or one of them
