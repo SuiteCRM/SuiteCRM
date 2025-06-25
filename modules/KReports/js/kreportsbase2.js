@@ -494,6 +494,45 @@ var bM = function (e, bH) {
                                             })
                                         );
                                         break;
+                                    // STIC-Custom EPS 20241220 - equals & notequal must show multi-select also
+                                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/523
+                                    case "equals":
+                                    case "notequal":
+                                        if (e.record.data.type == 'multienum'){
+                                            e.column.setEditor(
+                                                new Ext.form.ComboBox({
+                                                    typeAhead: false,
+                                                    editable: false,
+                                                    triggerAction: "all",
+                                                    lazyRender: true,
+                                                    multiSelect: true,
+                                                    queryMode: "local",
+                                                    store: K.kreports.whereOperators.ay,
+                                                    displayField: "text",
+                                                    valueField: "value",
+                                                    listConfig: { minWidth: 200, resizable: true },
+                                                })
+                                            );
+                                        }
+                                        else {
+                                            e.column.setEditor(
+                                                new Ext.form.ComboBox({
+                                                    typeAhead: true,
+                                                    editable: true,
+                                                    forceSelection: true,
+                                                    triggerAction: "all",
+                                                    lazyRender: true,
+                                                    multiSelect: false,
+                                                    queryMode: "local",
+                                                    store: K.kreports.whereOperators.ay,
+                                                    displayField: "text",
+                                                    valueField: "value",
+                                                    listConfig: { minWidth: 200, resizable: true },
+                                                })
+                                            );
+                                        }
+                                        break;
+                                    // END STIC-Custom
                                     default:
                                         e.column.setEditor(
                                             new Ext.form.ComboBox({
@@ -655,6 +694,31 @@ var aL = function (e) {
                             case "contains":
                             case "notcontains":
                                 break;
+                            // STIC-Custom EPS 20241220 - equals & notequal must show multi-select also
+                            // https://github.com/SinergiaTIC/SinergiaCRM/pull/523
+                            case "equals":
+                            case "notequal":
+                                if (e.record.data.type == 'multienum') {
+                                    var cR = e.column.getEditor().getStore();
+                                    var dc = "";
+                                    for (var i = 0; i < e.value.length; i++) {
+                                        if (i > 0) dc += ", ";
+                                        var cr = cR.findRecord("value", e.value[i]);
+                                        if (cr) dc += cr.get("text");
+                                        else dc += e.value[i];
+                                    }
+                                    e.record.set(e.column.id, dc);
+                                    e.record.set(e.column.id + "key", e.value);
+                                }
+                                else {
+                                    e.record.set(e.column.id + "key", e.value);
+                                    e.record.set(
+                                        e.column.id,
+                                        K.kreports.whereOperators.ay.getAt(K.kreports.whereOperators.ay.find("value", e.value)).get("text")
+                                    );   
+                                }
+                                break;
+                            // END STIC-Custom    
                             default:
                                 e.record.set(e.column.id + "key", e.value);
                                 e.record.set(
