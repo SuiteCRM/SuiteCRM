@@ -4,6 +4,9 @@ SUGAR.util.getAdditionalDetails = function(bean, id) {
     //var title = '<div class="qtip-title-text">' + id + '</div>' + '<div class="qtip-title-buttons">' + '</div>';
     var body = '';
 
+    // Check if we're in a popup window
+    var isPopup = window.location.href.indexOf('action=Popup') !== -1;
+
     // Create an instance of qTip2 and configure it with the initial content.
     $(document).qtip({
       content: {
@@ -26,6 +29,15 @@ SUGAR.util.getAdditionalDetails = function(bean, id) {
               // Parse string as JSON
               var parsedData = JSON.parse(data);
               var contentDiv = $('<div/>').html(parsedData.body);
+              
+              // If we're in a popup, disable all links
+              if (isPopup) {
+                contentDiv.find('a').each(function() {
+                  var $link = $(this);
+                  var text = $link.text();
+                  $link.replaceWith('<span class="disabled-link">' + text + '</span>');
+                });
+              }
         
               var titleDiv = contentDiv.find("h2").remove().html();
               var tryContent = contentDiv.clone().find("h2").remove().end().html();
@@ -42,8 +54,13 @@ SUGAR.util.getAdditionalDetails = function(bean, id) {
       },
       position: {
         my: 'top right',
-        at: 'top left',
+        at: 'bottom left',
         target: $('#adspan_' + id + ' span'),
+        viewport: $(window),
+        adjust: {
+          method: 'flip shift',
+          resize: true
+        }
       },
       show: {
         event: 'mouseenter',
@@ -62,7 +79,14 @@ SUGAR.util.getAdditionalDetails = function(bean, id) {
         color: 'blue',
         textAlign: 'left',
         border: { width: 1, radius: 3 },
-        tip: 'rightTop',
+        tip: {
+          corner: true,
+          mimic: false,
+          width: 8,
+          height: 8,
+          border: true,
+          offset: 0
+        },
         classes: {
           tooltip: 'ui-widget',
           tip: 'ui-widget',
