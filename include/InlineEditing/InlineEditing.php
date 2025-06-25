@@ -609,7 +609,11 @@ function convertDateUserToDB($value)
 
 function checkAccess($bean)
 {
-    if ($bean->ACLAccess('EditView')) {
+    // STIC Custom 20250520 JBL - Fix Error: Call to a member function on false
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/661
+    // if ($bean->ACLAccess('EditView')) {
+    if ($bean !== false && $bean->ACLAccess('EditView')) {
+    // END STIC Custom
         return true;
     }
     return false;

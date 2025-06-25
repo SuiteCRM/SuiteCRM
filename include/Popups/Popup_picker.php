@@ -67,9 +67,16 @@ class Popup_Picker
         }
         if (empty($popupMeta)) {
             if (!empty($_REQUEST['metadata']) && $_REQUEST['metadata'] != 'undefined') { // if custom metadata is requested
-                require_once('modules/' . $currentModule . '/metadata/' . $_REQUEST['metadata'] . '.php');
+                // STIC-Custom 20250529 MHP - Avoid requiring files that do not exist, such as modules/Home/metadata/popupdefs.php
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/661
+                if (file_exists('modules/' . $currentModule . '/metadata/' . $_REQUEST['metadata'] . '.php')) {
+                    require_once('modules/' . $currentModule . '/metadata/' . $_REQUEST['metadata'] . '.php');
+                }
             } else {
-                require_once('modules/' . $currentModule . '/metadata/popupdefs.php');
+                if (file_exists('modules/' . $currentModule . '/metadata/popupdefs.php')) {
+                    require_once('modules/' . $currentModule . '/metadata/popupdefs.php');
+                }
+                // END STIC-Custom
             }
         }
         $this->_popupMeta = $popupMeta;

@@ -73,7 +73,11 @@ class ImportViewStep4 extends SugarView
         // Check to be sure we are getting an import file that is in the right place
         $uploadFile = "upload://".basename((string) $_REQUEST['tmp_file']);
         if (!file_exists($uploadFile)) {
-            trigger_error($mod_strings['LBL_CANNOT_OPEN'], E_USER_ERROR);
+            // STIC-Custom 20250529 MHP - Replace the deprecated trigger_error function with sugar_die function
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/661
+            // trigger_error($mod_strings['LBL_CANNOT_OPEN'], E_USER_ERROR);
+            sugar_die($mod_strings['LBL_CANNOT_OPEN']);
+            // END STIC-Custom
         }
 
         // Open the import file
@@ -81,11 +85,19 @@ class ImportViewStep4 extends SugarView
 
         //Ensure we have a valid file.
         if (!$importSource->fileExists()) {
-            trigger_error($mod_strings['LBL_CANNOT_OPEN'], E_USER_ERROR);
+            // STIC-Custom 20250529 MHP - Replace the deprecated trigger_error function with sugar_die function
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/661
+            // trigger_error($mod_strings['LBL_CANNOT_OPEN'], E_USER_ERROR);
+            sugar_die($mod_strings['LBL_CANNOT_OPEN']);
+            // END STIC-Custom
         }
 
         if (!ImportCacheFiles::ensureWritable()) {
-            trigger_error($mod_strings['LBL_ERROR_IMPORT_CACHE_NOT_WRITABLE'], E_USER_ERROR);
+            // STIC-Custom 20250529 MHP - Replace the deprecated trigger_error function with sugar_die function
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/661
+            // trigger_error($mod_strings['LBL_ERROR_IMPORT_CACHE_NOT_WRITABLE'], E_USER_ERROR);
+            sugar_die($mod_strings['LBL_ERROR_IMPORT_CACHE_NOT_WRITABLE']);
+            // END STIC-Custom
         }
 
         $importer = new Importer($importSource, $this->bean);

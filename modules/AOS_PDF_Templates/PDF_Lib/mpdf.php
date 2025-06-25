@@ -21199,7 +21199,7 @@ public $aliasNbPgHex;
     }
     if ($w) {
         if (strpos($w, '%') && !$this->ignore_table_percents) {
-            $c['wpercent'] = $w + 0;
+            $c['wpercent'] = (int)$w + 0;
         }	// makes 80% -> 80
         elseif (!strpos($w, '%') && !$this->ignore_table_widths) {
             $c['w'] = $this->ConvertSize($w, $this->blk[$this->blklvl]['inner_width'], $this->FontSize, false);

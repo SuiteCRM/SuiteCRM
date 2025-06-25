@@ -26,6 +26,7 @@ require_once __DIR__ . '/DonationPaymentController.php';
 /**
  * Class that controls the flow for donation forms
  */
+#[AllowDynamicProperties]
 class DonationController extends WebFormDataController
 {
     protected $version = 1; // Allows you to use the same logic for forms generated with different versions of the assistant

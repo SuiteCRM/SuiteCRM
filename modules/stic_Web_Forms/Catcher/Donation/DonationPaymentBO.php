@@ -23,6 +23,7 @@
 
 require_once __DIR__ . "/../Include/Payment/PaymentBO.php";
 
+#[AllowDynamicProperties]
 class DonationPaymentBO extends PaymentBO
 {
     /**
