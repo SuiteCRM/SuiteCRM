@@ -464,7 +464,7 @@ $app_list_strings = array(
     'project_task_status_options' => array(
         'Not Started' => 'No Iniciada',
         'In Progress' => 'En Progreso',
-        'Completed' => 'Completeda',
+        'Completed' => 'Completada',
         'Pending Input' => 'Pendiente de Información',
         'Deferred' => 'Retrasada',
     ),
