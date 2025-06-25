@@ -127,6 +127,24 @@ class SearchForm
     public function setup($searchdefs, $searchFields = array(), $tpl = 'SubpanelSearchFormGeneric.tpl', $displayView = 'basic_search', $listViewDefs = array())
     {
         $this->searchdefs = isset($searchdefs[$this->module]) ? $searchdefs[$this->module] : null;
+
+        // STIC Custom 20250528 JBL - Show options list in "Modified By" and "Created By" filters 
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/664
+        if (isset($this->searchdefs['layout'])) {
+            foreach ($this->searchdefs['layout'] as $layoutType => $fields) {
+                foreach ($fields as $key => $field) {
+                    if (isset($field['type']) && $field['type'] == "assigned_user_name") {
+                        $this->searchdefs['layout'][$layoutType][$key]['type'] = "enum";
+                        $this->searchdefs['layout'][$layoutType][$key]['function'] = array (
+                            'name' => 'get_user_array',
+                            'params' => array(false),
+                        );
+                    }
+                }
+            }
+        }
+        // END STIC Custom
+
         $this->tpl = $tpl;
         //used by advanced search
         $this->listViewDefs = $listViewDefs;
