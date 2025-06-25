@@ -124,5 +124,5 @@ $mod_strings = array(
     'LBL_SESSION_NAME_INFO' => 'O nome da sesión pode incluir un contador numérico utilizando o parámetro {{$counter}}. Exemplo: se se indica ol valor "Sesión {{$counter}}", as sesións denominaranse "Sesión 1", "Sesión 2", etc.',
     'LBL_SESSION_COLOR_EMPTY_INFO' => 'Se non se informa o campo, asignaráselles ás sesións a cor que aparece no evento.',
 
-    'LBL_STIC_CAMPAIGNS_NOTIFICATION_FROM_STIC_EVENTS_TITLE' => 'Notificaciones',
+    'LBL_STIC_CAMPAIGNS_NOTIFICATION_FROM_STIC_EVENTS_TITLE' => 'Notificacións',
 );

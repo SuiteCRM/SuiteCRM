@@ -56,7 +56,7 @@ $app_list_strings['dha_plantillasdocumentos_status_dom']['Expired'] = 'Expirado'
 $app_list_strings['dha_plantillasdocumentos_status_dom']['Canceled'] = 'Cancelado';
 
 $app_list_strings['dha_plantillasdocumentos_category_dom'][''] = '';
-$app_list_strings['dha_plantillasdocumentos_category_dom']['VENDAS'] = 'Vendas';
+$app_list_strings['dha_plantillasdocumentos_category_dom']['VENTAS'] = 'Vendas';
 $app_list_strings['dha_plantillasdocumentos_category_dom']['MARKETING'] = 'Marketing';
 $app_list_strings['dha_plantillasdocumentos_category_dom']['ACTIVIDADES'] = 'Actividades';
 $app_list_strings['dha_plantillasdocumentos_category_dom']['CALLCENTER'] = 'Call center';
@@ -65,7 +65,7 @@ $app_list_strings['dha_plantillasdocumentos_category_dom']['ADMINISTRACION'] = '
 $app_list_strings['dha_plantillasdocumentos_category_dom']['COLABORACION'] = 'Colaboración';
 $app_list_strings['dha_plantillasdocumentos_category_dom']['CONFIGURACION'] = 'Configuración';
 $app_list_strings['dha_plantillasdocumentos_category_dom']['SOPORTE'] = 'Soporte';
-$app_list_strings['dha_plantillasdocumentos_category_dom']['OUTROS'] = 'Outros';
+$app_list_strings['dha_plantillasdocumentos_category_dom']['OTROS'] = 'Outros';
 
 $app_list_strings['dha_plantillasdocumentos_subcategory_dom'][''] = '';
 

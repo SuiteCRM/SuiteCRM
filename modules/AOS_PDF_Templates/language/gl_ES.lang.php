@@ -100,6 +100,6 @@ $mod_strings = array(
     'LBL_DETAILVIEW_PANEL1' => 'Marxes',
     'LBL_PAGE_SIZE' => 'Tamaño de Páxina',
     'LBL_ORIENTATION' => 'Orientación',
-    'LBL_CHECKBOX_TRUE' => 'Verdadero',
+    'LBL_CHECKBOX_TRUE' => 'Verdadeiro',
     'LBL_CHECKBOX_FALSE' => 'Falso',
 );

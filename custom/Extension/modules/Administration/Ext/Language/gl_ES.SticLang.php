@@ -89,7 +89,7 @@ $mod_strings['LBL_STIC_MENU_COMMAND_EXPAND'] = 'Expandir árbore';
 $mod_strings['LBL_STIC_MENU_COMMAND_COLLAPSE'] = 'Contraer árbore';
 
 // Cadenas de SuiteCRM modificadas
-$mod_strings['LBL_CONFIGURE_GROUP_TABS'] = 'Configurar a agrupación de subpaneis';
+$mod_strings['LBL_CONFIGURE_GROUP_TABS'] = 'Agrupación de subpaneis';
 $mod_strings['LBL_CONFIGURE_GROUP_TABS_DESC'] = 'Configurar o xeito en que se agrupan os subpaneis na vista de detalle';
 
 // Otras cadenas

@@ -56,6 +56,7 @@ $mod_strings = array(
     'LBL_HOMEPAGE_TITLE' => 'Os meus Resultados da Validación',
     'LNK_NEW_RECORD' => 'Crear Resultado da Validación',
     'LNK_LIST' => 'Ver Resultados de Validación',
+    'LNK_IMPORT_STIC_VALIDATION_RESULTS' => 'Importar Resultados de Validación',
     'LBL_SEARCH_FORM_TITLE' => 'Buscar Resultados da Validación',
     'LBL_HISTORY_SUBPANEL_TITLE' => 'Historial',
     'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Actividades',

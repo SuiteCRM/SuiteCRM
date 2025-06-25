@@ -63,19 +63,19 @@ $mod_strings['LBL_STIC_NOTIFICATION_PROSPECT_LIST_NAMES_C'] = 'Listas de Públic
 $mod_strings['LBL_NOTIFICATION_PROSPECT_LIST_ID'] = 'Listas de Público Obxectivo';
 $mod_strings['LBL_NOTIFICATION_TEMPLATE_ID'] = 'Plantilla de correo';
 $mod_strings['LBL_NOTIFICATION_EMAIL_TEMPLATE_NAME'] = 'Plantilla de correo';
-$mod_strings['LBL_NOTIFICATION_OUTBOUND_EMAIL_ID'] = 'Correo saliente';
+$mod_strings['LBL_NOTIFICATION_OUTBOUND_EMAIL_ID'] = 'Correo saínte';
 $mod_strings['LBL_NOTIFICATION_INBOUND_EMAIL_ID'] = 'Usar buzón';
-$mod_strings['LBL_NOTIFICATION_FROM_NAME'] = 'Remitente (nombre)';
+$mod_strings['LBL_NOTIFICATION_FROM_NAME'] = 'Remitente (nome)';
 $mod_strings['LBL_NOTIFICATION_FROM_ADDR'] = 'Remitente (dirección)';
-$mod_strings['LBL_NOTIFICATION_REPLY_TO_NAME'] = 'Responder a (nombre)';
+$mod_strings['LBL_NOTIFICATION_REPLY_TO_NAME'] = 'Responder a (nome)';
 $mod_strings['LBL_NOTIFICATION_REPLY_TO_ADDR'] = 'Responder a (dirección)';
 
-$mod_strings['LBL_NOTIFICATION_INFORMATION_PANEL'] = 'Notificaciones';
+$mod_strings['LBL_NOTIFICATION_INFORMATION_PANEL'] = 'Notificacións';
 
-$mod_strings['LBL_FLEX_RELATE_HELP'] = 'Registro del que se desea realizar la notificación. Puede ser un evento o una subvención.';
-$mod_strings['LBL_NOTIFICATION_PROSPECT_LIST_ID_HELP'] = "La notificación se enviará a los miembros de las listas de público objetivo seleccionadas, que deben ser del tipo 'Por defecto'.";
-$mod_strings['LBL_NOTIFICATION_TEMPLATE_ID_HELP'] = "La plantilla de correo electrónico debe ser del tipo 'Notificación' y se pueden incluir en ella campos del registro asociado a la notificación (el evento o la subvención).";
-$mod_strings['LBL_NOTIFICATION_OUTBOUND_EMAIL_ID_HELP'] = "Cuenta de correo que se utilizará para enviar la notificación. Se puede configurar en el apartado 'Correo electrónico saliente' del área de Adminstración.";
-$mod_strings['LBL_NOTIFICATION_INBOUND_EMAIL_ID_HELP'] = "Buzón de correo donde recibir los mensajes de error que se puedan producir tras el envío. Se puede configurar en el apartado 'Correo electrónico entrante' del área de Administración.";
+$mod_strings['LBL_FLEX_RELATE_HELP'] = 'Rexistro do que se desexa realizar a notificación. Pode ser un evento ou unha subvención.';
+$mod_strings['LBL_NOTIFICATION_PROSPECT_LIST_ID_HELP'] = "A notificación enviarase aos membros das listas de público obxectivo seleccionadas, que deben ser do tipo 'Por defecto'.";
+$mod_strings['LBL_NOTIFICATION_TEMPLATE_ID_HELP'] = "A plantilla de correo electrónico debe ser do tipo 'Notificación' e pódense incluir nela campos do rexistro asociado á notificación (o evento ou a subvención).";
+$mod_strings['LBL_NOTIFICATION_OUTBOUND_EMAIL_ID_HELP'] = "Conta de correo que se utilizará para enviar a notificación. Pódese configurar no apartado 'Correo electrónico saínte' da área de Adminstración.";
+$mod_strings['LBL_NOTIFICATION_INBOUND_EMAIL_ID_HELP'] = "Buzón de correo onde recibir as mensaxes de erro que se poidan producir tralo envío. Pódese configurar no apartado 'Correo electrónico entrante' da área de Administración.";
 
-$mod_strings['LBL_NOTIFICATION_NEW_INFO'] = "Al guardar la notificación los correos a enviar se añadirán automáticamente a la cola de envío.";
+$mod_strings['LBL_NOTIFICATION_NEW_INFO'] = "Ao gardar a notificación, os correos a enviar engadiranse automaticamente á cola de envío.";

@@ -103,7 +103,7 @@ $mod_strings = array (
   'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_NOT_CREATED_TITLE' => 'Listado de rexistros non creados',
   'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_NOT_CREATED_TEXT' => 'Os rexistros non foron creados por solapamento con outros rexistros existentes de tipos incompatibles.',
   'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_RECORDS_NOT_CREATED_TEXT2' => 'A continuación lístanse os rexistros non creados dos diferentes usuarios.',
-  'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_BUTTON_CONTINUE_WITH_EMPLOYEES' => 'Continuar con los mismos Empleados seleccionados',
+  'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_BUTTON_CONTINUE_WITH_EMPLOYEES' => 'Continuar cos mesmos Empregados seleccionados',
   'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_BUTTON_EMPLOYEES' => 'Ir a Empregados',
   'LBL_PERIODIC_WORK_CALENDAR_SUMMARY_BUTTON_WOK_CALENDAR' => 'Ir a Calendario laboral',
 

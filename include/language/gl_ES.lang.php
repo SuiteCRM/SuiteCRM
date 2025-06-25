@@ -2095,7 +2095,7 @@ $app_strings = array(
     'LBL_DESCRIPTION' => 'Descrición',
 
     'LBL_YESTERDAY' => 'onte',
-    'LBL_NOW' => 'ahora',
+    'LBL_NOW' => 'agora',
     'LBL_TODAY' => 'hoxe',
     'LBL_TOMORROW' => 'mañá',
     'LBL_NEXT_WEEK' => 'a semana que ven',
@@ -3847,13 +3847,13 @@ $app_strings['LBL_SEARCH_PREV'] = 'Anterior';
 $app_strings['LBL_SEARCH_NEXT'] = 'Seguinte';
 $app_strings['LBL_SEARCH_PAGE'] = 'Páxina ';
 $app_strings['LBL_SEARCH_OF'] = ' de '; // Usage: Page 1 of 5
-$app_strings['LBL_USE_ADVANCED_SEARCH'] = 'Utilizar la búsqueda avanzada';
-$app_strings['LBL_USE_BASIC_SEARCH'] = 'Utilizar la búsqueda básica';
+$app_strings['LBL_USE_ADVANCED_SEARCH'] = 'Utilizar a búsqueda avanzada';
+$app_strings['LBL_USE_BASIC_SEARCH'] = 'Utilizar a búsqueda básica';
 
 // PDF Engines
 $app_strings['LBL_LEGACY_MPDF_ENGINE'] = 'Motor MPDF obsoleto';
 $app_strings['LBL_TCPDF_ENGINE'] = 'Motor TCPDF';
 
-$app_strings['ERR_INVALID_FILE_NAME'] = 'El nombre del fichero no es válido:';
-$app_strings['LBL_LOGGER_VALID_FILENAME_CHARACTERS'] = 'Solo puede contener caracteres alfanuméricos, el punto (.), el guion (-) o el guion bajo (_).';
-$app_strings['LBL_LOGGER_INVALID_FILENAME'] = 'El nombre del fichero de importación no es válido';
+$app_strings['ERR_INVALID_FILE_NAME'] = 'O nome do ficheiro non é válido:';
+$app_strings['LBL_LOGGER_VALID_FILENAME_CHARACTERS'] = 'Só pode conter caracteres alfanuméricos, o punto (.), o guion (-) ou o guion baixo (_).';
+$app_strings['LBL_LOGGER_INVALID_FILENAME'] = 'O nome do ficheiro de importación non é válido';

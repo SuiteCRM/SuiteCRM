@@ -34,5 +34,6 @@ $mod_strings['LBL_ABOUT_SINERGIACRM_KREPORTER'] = 'Kreporter de Christian Knoll'
 $mod_strings['LBL_ABOUT_SINERGIACRM_MAIL_MERGE'] = 'Mail Merge Reports de Izertis';
 $mod_strings['LBL_ABOUT_SINERGIACRM_OTHER'] = 'Outras librarías de código aberto que se atopan nas carpetas <i>/vendor</i> e <i>/SticInclude/vendor</i>. A información de licenza destas librarías pódese atopar nos seus propios ficheiros.';
 
+
 // SinergiaDA
-$mod_strings['LBL_STIC_SINERGIADA_NOT_ALLOWED'] = 'Non tes acceso a SinergiaDA activado. Contacte co administrador.';
+$mod_strings['LBL_STIC_SINERGIADA_NOT_ALLOWED'] = 'No tiene habilitado el acceso a SinergiaDA. Contacte con el administrador.'; 

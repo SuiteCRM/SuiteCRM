@@ -209,7 +209,7 @@ $mod_strings = array(
     'LBL_FILE_UPLOAD_WIDGET_HELP' => 'Seleccione un arquivo que conteña datos separados por un delimitador, xa sexa por comas ou por tabulacións. Recoméndase arquivos .csv.',
     'LBL_ERROR_IMPORT_CACHE_NOT_WRITABLE' => 'O directorio caché de importaciones non ten permisos de escritura',
     'LBL_ADD_FIELD_HELP' => 'Utilice esta opción para agregar un valor a un campo en todos os rexistros creados e/ou actualizados. Seleccione o campo e logo escriba ou seleccione un valor para ese campo na columna valor predeterminado.',
-    'LBL_MISSING_HEADER_ROW' => 'Non se encontrou cabeceira',
+    'LBL_MISSING_HEADER_ROW' => 'No se ha podido reconocer la primera fila del fichero como una cabecera válida.<br /><br />Para conseguir una cabecera válida puede ir al paso 1 del proceso de validación y descargar la plantilla de importación de registros.<br /><br />En caso de que sea una importación multimódulo, puede descargar la plantilla de importación de cada uno de los módulos y copiar los campos necesarios de cada módulo en una única cabecera.',
     'LBL_CANCEL' => 'Cancelar',
     'LBL_SELECT_DS_INSTRUCTION' => '¿Listo para empezar a importar? Seleccione a orixe de datos que desexa importar.',
     'LBL_SELECT_UPLOAD_INSTRUCTION' => 'Seleccione un arquivo do seu ordenador que conteña os datos que desexa importar, ou descargue a plantilla para dispoñer dun exemplo para a creación do arquivo de importación.',
@@ -234,6 +234,7 @@ $mod_strings = array(
     'LBL_ACTION_TYPE_CREATE_RECORDS' => 'Este proceso de validación só se utiliza para realizar unha importación cuxa acción sexa do tipo: <span style="font-weight:bold;">Crear rexistros',
     'LBL_FILE_HEADER' => 'Encabezado do ficheiro:',    
     'LBL_HEADER_REQUIRED' => 'É obrigatorio que a <span style="font-weight:bold;">primeira fila do ficheiro de importación sexa unha cabeceira</span> co nome dos diferentes campos que se van importar.',
+    'LBL_EMPTY_PUBLISH' => 'No hay ningún mapeo de campos disponible.',
     'LBL_REQUIRED_FIELDS' => 'Faltan campos obrigatorios',    
     'LBL_GENERATE_ID_HELP' => 'Ao validar un ficheiro que contén datos de diferentes módulos, recomendamos xerar un ID para cada rexistro do ficheiro para poder utilizalo para importar outros módulos relacionados.',
     'LBL_GENERATE_ID_HELP_2' => 'Este ID pódese xerar nunha nova columna ou en calquera das columnas do ficheiro. Se se selecciona unha columna existente, crearase o ID para aqueles rexistros que non teñan ningún valor na columna seleccionada.',
@@ -257,7 +258,7 @@ $mod_strings = array(
     'LBL_MULTIMODULE_HELP' => 'No caso de que o ficheiro conteña información doutros módulos, pode continuar validando eses módulos antes de corrixir os datos do ficheiro de importación.',
     'LBL_MULTIMODULE_HELP_2' => 'Xa que a información da sección <span style="font-weight:bold;">Os valores duplicados dentro do ficheiro</span> non é permanente, cópiaa para que poida comprobar se hai duplicados valores unha vez finalizado o proceso de validación.',    
     'LBL_SELECT_MODULE' => 'Seleccionar módulo',
-    'LBL_DUPLICATE_RECORD' => 'Duplicado',
+    'LBL_ERROR_DUPLICATE_RECORD' => 'Duplicado',
 );
 
 global $timedate;
