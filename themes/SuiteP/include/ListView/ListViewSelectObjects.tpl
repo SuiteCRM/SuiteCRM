@@ -44,9 +44,13 @@
 <script>
 {literal}
     $(document).ready(function () {
-        setInterval(function () {
+        // STIC-Custom 20250128 JBL - Avoiding repeated executions of toggleSelected
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/???
+        // setInterval(function () {
+        setTimeout(function () {
+        // END STIC-Custom
             sListView.toggleSelected();
-        }, 100);
+        }, 100); 
     });
 {/literal}
 </script>
