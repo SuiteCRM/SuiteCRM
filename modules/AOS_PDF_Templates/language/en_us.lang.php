@@ -99,4 +99,6 @@ $mod_strings = array(
     'LBL_DETAILVIEW_PANEL1' => 'Margins',
     'LBL_PAGE_SIZE' => 'Page Size',
     'LBL_ORIENTATION' => 'Orientation',
+    'LBL_CHECKBOX_TRUE' => 'True',
+    'LBL_CHECKBOX_FALSE' => 'False',
 );
