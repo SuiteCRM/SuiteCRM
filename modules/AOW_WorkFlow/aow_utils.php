@@ -471,7 +471,13 @@ function getModuleField(
         }
         // hack to disable one of the js calls in this control
         if (isset($vardef['function']) && ($vardef['function'] == 'getCurrencyDropDown' || $vardef['function']['name'] == 'getCurrencyDropDown')) {
-            $contents .= "{literal}<script>function CurrencyConvertAll() { return; }</script>{/literal}";
+            $excludeCases = [
+                $_REQUEST['action'] === 'DownloadPDF' || $_REQUEST['action'] === 'Export',
+            ];
+
+            if (!in_array(true, $excludeCases, true)) {
+                $contents .= "{literal}<script>function CurrencyConvertAll() { return; }</script>{/literal}";
+            }
         }
 
         // Save it to the cache file
