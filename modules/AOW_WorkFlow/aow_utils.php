@@ -851,19 +851,43 @@ function getRoundRobinUser($users, $id)
     $file = create_cache_directory('modules/AOW_WorkFlow/Users/') . $id . 'lastUser.cache.php';
 
     if (isset($_SESSION['lastuser'][$id]) && $_SESSION['lastuser'][$id] != '') {
-        $users_by_key = array_flip($users); // now keys are values
-        $key = $users_by_key[$_SESSION['lastuser'][$id]] + 1;
-        if (!empty($users[$key])) {
-            return $users[$key];
-        }
+        $lastUserId = $_SESSION['lastuser'][$id];
+
+        return getNextUserId($lastUserId, $users);
     } elseif (is_file($file)) {
         require_once($file);
         if (isset($lastUser['User']) && $lastUser['User'] != '') {
-            $users_by_key = array_flip($users); // now keys are values
-            $key = $users_by_key[$lastUser['User']] + 1;
-            if (!empty($users[$key])) {
-                return $users[$key];
-            }
+            $lastUserId = $lastUser['User'];
+
+            return getNextUserId($lastUserId, $users);
+        }
+    }
+
+    return $users[0];
+}
+
+function checkUserStatus($user): bool
+{
+    $employeeInactiveStatus = 'Inactive';
+
+    return $user->status === $employeeInactiveStatus;
+}
+
+function checkUserEmployeeStatus($user): bool
+{
+    $employeeTerminatedStatus = 'Terminated';
+    $employeeAbsenceStatus = 'Leave of Absence';
+
+    return $user->employee_status === $employeeTerminatedStatus || $user->employee_status === $employeeAbsenceStatus;
+}
+
+function getNextUserId($userId, $users): string
+{
+    $usersByKey = array_flip($users);
+    $key = $usersByKey[$userId] + 1;
+    if ($key < count($usersByKey)) {
+        if (!empty($users[$key])) {
+            return $users[$key];
         }
     }
 
