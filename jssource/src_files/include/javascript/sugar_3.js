@@ -604,6 +604,15 @@ function isBefore(value1, value2) {
   return d2 >= d1;
 }
 
+function isAfter(value1, value2) {
+  var d1 = getDateObject(value1);
+  var d2 = getDateObject(value2);
+  if (typeof(d2) == 'boolean') {
+    return true; // similar behavior: let it pass if d2 is not set
+  }
+  return d1 > d2;
+}
+
 function isValidEmail(emailStr) {
 
   if (emailStr.length == 0) {
@@ -1005,6 +1014,7 @@ function validate_form(formname, startsWith) {
               }
               break;
             case 'int':
+            case 'range':
               if (!isInteger(trim(form[validate[formname][i][nameIndex]].value))) {
                 isError = true;
                 add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " + validate[formname][i][msgIndex]);
@@ -1127,10 +1137,23 @@ function validate_form(formname, startsWith) {
                     if (trim(date1).length != 0 && !isBefore(date1, date2)) {
 
                       isError = true;
-                      //jc:#12287 - adding translation for the is not before message
                       add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + "(" + date1 + ") " + SUGAR.language.get('app_strings', 'MSG_IS_NOT_BEFORE') + ' ' + date2);
                     }
                   }
+                }
+                break;
+              case 'isafter':
+                compareTo = form[validate[formname][i][compareToIndex]];
+                if (typeof compareTo != 'undefined') {
+                    if (trim(compareTo.value) != '' || (validate[formname][i][allowblank] != 'true')) {
+                        date2 = trim(compareTo.value);
+                        date1 = trim(form[validate[formname][i][nameIndex]].value);
+
+                        if (trim(date1).length != 0 && !isAfter(date1, date2)) {
+                            isError = true;
+                            add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex] + "(" + date1 + ") " + SUGAR.language.get('app_strings', 'MSG_IS_NOT_AFTER') + ' ' + date2);
+                        }
+                    }
                 }
                 break;
               case 'less':
