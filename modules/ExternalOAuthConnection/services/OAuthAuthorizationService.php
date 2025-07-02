@@ -253,7 +253,7 @@ class OAuthAuthorizationService
         }
 
         if(time() > $expireTimeStamp) {
-            $this->log('fatal', 'OAuthAuthorizationService::hasConnectionTokenExpired', 'Access token has expired');
+            $this->log('debug', 'OAuthAuthorizationService::hasConnectionTokenExpired', 'Access token has expired');
             return [
                 'expired' => true,
                 'refreshToken' => true,
