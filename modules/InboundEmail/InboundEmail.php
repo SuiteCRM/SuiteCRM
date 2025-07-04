@@ -4124,34 +4124,29 @@ class InboundEmail extends SugarBean
      *
      * @param $uid
      * @param string $type the type of text processed, either 'PLAIN' or 'HTML'
-     * @param null $structure
-     * @param null $fullHeader
      * @param bool $clean_email
-     * @param string $bcOffset
      * @return string UTF-8 encoded version of the requested message text
      */
     public function getMessageTextWithUid(
         $uid,
         $type = null,
-        $structure = null,
-        $fullHeader = null,
-        $clean_email = true,
-        $bcOffset = ''
-    ) {
+        $clean_email = true
+    ): ?string
+    {
         $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
 
         if (!empty($type) && strtolower($type) === 'text/plain') {
             $emailMessage = $this->mailParser->parse($emailBody, false)->getTextContent();
             $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
             $emailMessage = $this->customGetMessageText($emailMessage);
-            return SugarCleaner::cleanHtml($emailMessage, false);
+            return $emailMessage ? SugarCleaner::cleanHtml($emailMessage, $clean_email) : $emailMessage;
         }
 
         $emailMessage = $this->mailParser->parse($emailBody, false)->getHtmlContent();
         $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
         $emailMessage = $this->customGetMessageText($emailMessage);
 
-        return SugarCleaner::cleanHtml($emailMessage, $clean_email);
+        return $emailMessage ? SugarCleaner::cleanHtml($emailMessage, $clean_email) : $emailMessage;
     }
 
     /**
@@ -5532,24 +5527,14 @@ class InboundEmail extends SugarBean
                 $this->imagePrefix = 'cid:';
             }
 
-            $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
-            $contentType = $this->mailParser->parse($emailBody, false)->getHeaderValue('Content-Type');
-
-            if (!empty($contentType) && strtolower($contentType) === 'text/plain') {
-                $email->description = $this->getMessageTextWithUid(
-                    $uid,
-                    $contentType,
-                    $structure = null,
-                    $fullHeader = null,
-                    true
-                );
-            }
+            $email->description = $this->getMessageTextWithUid(
+                $uid,
+                'text/plain'
+            );
 
             $email->description_html = $this->getMessageTextWithUid(
                 $uid,
-                $structure->subtype,
-                $structure,
-                $fullHeader,
+                null,
                 $clean_email
             );
 
@@ -5802,25 +5787,13 @@ class InboundEmail extends SugarBean
 
                 $oldPrefix = $this->imagePrefix;
 
-                $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
-                $contentType = $this->mailParser->parse($emailBody, false)->getHeaderValue('Content-Type');
-
-                if (!empty($contentType) && strtolower($contentType) === 'text/plain') {
-                    $email->description = $this->getMessageTextWithUid(
-                        $uid,
-                        $contentType,
-                        $structure = null,
-                        $fullHeader = null,
-                        true
-                    );
-                }
+                $email->description = $this->getMessageTextWithUid(
+                    $uid,
+                    'text/plain'
+                );
 
                 $email->description_html = $this->getMessageTextWithUid(
-                    $uid,
-                    $contentType,
-                    $structure = null,
-                    $fullHeader = null,
-                    true
+                    $uid
                 );
             } else {
                 $log->warn('Missing viewdefs in request');
