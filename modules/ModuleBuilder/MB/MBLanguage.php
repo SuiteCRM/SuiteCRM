@@ -128,6 +128,11 @@ class MBLanguage
     public function getModStrings($language='en_us')
     {
         $language .= '.lang.php';
+
+        if(isset($this->strings['_override_'. $language])){
+            $this->strings[$language] = array_replace($this->strings[$language],$this->strings['_override_'. $language]);
+        }
+
         if (!empty($this->strings[$language]) && $language != 'en_us.lang.php') {
             return sugarLangArrayMerge($this->strings['en_us.lang.php'], $this->strings[$language]);
         }
