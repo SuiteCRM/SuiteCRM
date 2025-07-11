@@ -63,7 +63,9 @@ class SugarFieldWysiwyg extends SugarFieldBase {
         $config = [];
         $config['height'] = 250;
         $config['menubar'] = false;
-        $config['plugins']  = 'code, table, link, image, wordcount';
+        if ($vardef["custom_module"] != "AOS_PDF_Templates") {
+            $config['plugins']  = 'code, table, link, image, wordcount';
+        }
         if ($form_name !== '') {
             $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
         } else {
