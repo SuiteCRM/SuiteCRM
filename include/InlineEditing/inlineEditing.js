@@ -473,6 +473,15 @@ function handleSave(field, id, module, type) {
         parent_type = $("#parent_type").val();
     }
     var output_value = saveFieldHTML(field, module, id, value, parent_type);
+    
+    // Add hidden input field in detail view for dynamicenum filters
+    if(view == 'DetailView')
+    {
+        if(type == 'enum' || type == 'multienum' || type == 'dynamicenum'){
+            output_value ='<input type="hidden" class="sugar_field" id="'+field+'" value="'+value+'">' + output_value;
+        }
+    }
+
     // If the field type is email, we don't want to handle linebreaks in the output.
     if (field === "email1") {
         setValueClose(output_value, false);
