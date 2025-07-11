@@ -49,9 +49,9 @@
       var questionIndex = target.data('question-index');
       var list = target.closest('td').find('ul');
       var html = "<li>"
-        + "<input type='hidden' class='survey_question_options_id' name='survey_questions_options_id[" + questionIndex + "][]'/>"
-        + "<input type='hidden' class='survey_question_options_deleted' name='survey_questions_options_deleted[" + questionIndex + "][]' value='0'/>"
-        + "<input class='survey_question_options' name='survey_questions_options[" + questionIndex + "][]' type='text'/>"
+        + "<input type='hidden' class='survey_question_options_id' name='survey_question_options_id[" + questionIndex + "][]'/>"
+        + "<input type='hidden' class='survey_question_options_deleted' name='survey_question_options_deleted[" + questionIndex + "][]' value='0'/>"
+        + "<input class='survey_question_options' name='survey_question_options[" + questionIndex + "][]' type='text'/>"
         + "<button type='button' class='button deleteQuestionOption'><span class='suitepicon suitepicon-action-clear'></span></button>"
         + "</li>";
       var item = $(html);
