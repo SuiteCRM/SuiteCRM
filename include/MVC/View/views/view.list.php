@@ -316,11 +316,11 @@ class ViewList extends SugarView
             || (file_exists('custom/modules/' . $this->module . '/SearchForm.html')
                 && !file_exists('custom/modules/' . $this->module . '/metadata/searchdefs.php'))
         ) {
-            require_once('include/SearchForm/SearchForm.php');
+            require_once(get_custom_file_if_exists('include/SearchForm/SearchForm.php'));
             $this->searchForm = new SearchForm($this->module, $this->seed);
         } else {
             $this->use_old_search = false;
-            require_once('include/SearchForm/SearchForm2.php');
+            require_once(get_custom_file_if_exists('include/SearchForm/SearchForm2.php'));
 
             $searchMetaData = SearchForm::retrieveSearchDefs($this->module);
 
