@@ -534,6 +534,14 @@ class AOW_WorkFlow extends Basic
                             $field = 'DATE('.$field.')';
                             $value = 'Curdate()';
                         }
+                    } else if($params[0] == 'anniversary'){
+                        if($sugar_config['dbconfig']['db_type'] == 'mssql') { 
+                            $value = 'CAST(FORMAT(getDate(),"1980-%m-%d") as date)'; 
+                            $field = "CAST(FORMAT('.$field.','1980-%m-%d') as date)"; 
+                        } else { 
+                            $value = 'DATE(date_format(curdate(),"1980-%m-%d"))'; 
+                            $field = 'DATE(date_format('.$field.',"1980-%m-%d"))'; 
+                        }
                     } else {
                         if (isset($params[0]) && $params[0] == 'today') {
                             if ($sugar_config['dbconfig']['db_type'] == 'mssql') {
@@ -811,6 +819,10 @@ class AOW_WorkFlow extends Basic
                             $dateType = 'date';
                             $value = date('Y-m-d');
                             $field = strtotime(date('Y-m-d', $field));
+                        } else if($params[0] == 'anniversary'){
+                            $dateType = 'date'; 
+                            $value = date('1980-m-d');
+                            $field = strtotime(date('1980-m-d', $field));
                         } else {
                             if ($params[0] == 'today') {
                                 $dateType = 'date';
