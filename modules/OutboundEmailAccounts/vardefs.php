@@ -283,6 +283,7 @@ $dictionary["OutboundEmailAccounts"] = [
             'importable' => false,
             'exportable' => false,
             'unified_search' => false,
+            'autocomplete' => 'new-password',            
         ],
         'mail_smtpauth_req' => [
             'name' => 'mail_smtpauth_req',

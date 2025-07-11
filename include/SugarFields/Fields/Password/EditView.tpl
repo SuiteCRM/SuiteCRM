@@ -48,4 +48,5 @@
        value='{{if isset($vardef.display) && $vardef.display == 'writeonly'}}{{else}}{{sugarvar key='value'}}{{/if}}'
        title='{{$vardef.help}}'
        tabindex='{{$tabindex}}'
+       autocomplete='{{$vardef.autocomplete}}'
        {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}>
