@@ -60,7 +60,7 @@ class UploadStream
      * @static
      * @return bool is allowed stream or not
      */
-    public static function getSuhosinStatus()
+    public static function getSuhosinStatus(): bool
     {
         // looks like suhosin patch doesn't block protocols, only suhosin extension (tested on FreeBSD)
         // if suhosin is not installed it is okay for us
@@ -119,7 +119,7 @@ class UploadStream
      * Get upload directory
      * @return string
      */
-    public static function getDir()
+    public static function getDir(): string
     {
         if (empty(self::$upload_dir)) {
             self::$upload_dir = rtrim($GLOBALS['sugar_config']['upload_dir'], '/\\');
@@ -138,7 +138,7 @@ class UploadStream
      * Check if upload dir is writable
      * @return bool
      */
-    public static function writable()
+    public static function writable(): bool
     {
         return is_writable(self::getDir());
     }
@@ -146,7 +146,7 @@ class UploadStream
     /**
      * Register the stream
      */
-    public static function register()
+    public static function register() : void
     {
         stream_wrapper_register(self::STREAM_NAME, self::class);
     }
@@ -156,7 +156,7 @@ class UploadStream
      * @param string $path Upload stream path (with upload://)
      * @return string FS path
      */
-    public static function path($path)
+    public static function path($path): ?string
     {
         $path = substr($path, strlen(self::STREAM_NAME) + 3); // cut off upload://
         $path = str_replace("\\", "/", $path); // canonicalize path
@@ -173,7 +173,7 @@ class UploadStream
      * @param bool $writable
      * @return boolean
      */
-    public static function ensureDir($path, $writable = true)
+    public static function ensureDir($path, $writable = true): bool
     {
         $path = self::path($path);
         if (!is_dir($path)) {
@@ -182,13 +182,7 @@ class UploadStream
 
         return true;
     }
-
-    public function dir_closedir()
-    {
-        closedir($this->dirp);
-    }
-
-    public function dir_opendir($path, $options)
+    public function dir_opendir($path, $options): bool
     {
         $this->dirp = opendir(self::path($path));
 
@@ -202,20 +196,20 @@ class UploadStream
 
     public function dir_rewinddir()
     {
-        return rewinddir($this->dirp);
+        rewinddir($this->dirp);
     }
 
-    public function mkdir($path, $mode, $options)
+    public function mkdir($path, $mode, $options): bool
     {
         return mkdir(self::path($path), $mode, ($options & STREAM_MKDIR_RECURSIVE) != 0);
     }
 
-    public function rename($path_from, $path_to)
+    public function rename($path_from, $path_to): bool
     {
         return rename(self::path($path_from), self::path($path_to));
     }
 
-    public function rmdir($path, $options)
+    public function rmdir($path, $options): bool
     {
         return rmdir(self::path($path));
     }
@@ -225,29 +219,29 @@ class UploadStream
         return $this->fp;
     }
 
-    public function stream_close()
+    public function stream_close(): bool
     {
         fclose($this->fp);
 
         return true;
     }
 
-    public function stream_eof()
+    public function stream_eof(): bool
     {
         return feof($this->fp);
     }
 
-    public function stream_flush()
+    public function stream_flush(): bool
     {
         return fflush($this->fp);
     }
 
-    public function stream_lock($operation)
+    public function stream_lock($operation): bool
     {
         return flock($this->fp, $operation);
     }
 
-    public function stream_open($path, $mode)
+    public function stream_open($path, $mode): bool
     {
         $fullpath = self::path($path);
         if (empty($fullpath)) {
@@ -274,12 +268,12 @@ class UploadStream
         return fread($this->fp, $count);
     }
 
-    public function stream_seek($offset, $whence = SEEK_SET)
+    public function stream_seek($offset, $whence = SEEK_SET): bool
     {
         return fseek($this->fp, $offset, $whence) == 0;
     }
 
-    public function stream_set_option($option, $arg1, $arg2)
+    public function stream_set_option($option, $arg1, $arg2): bool
     {
         return true;
     }
@@ -299,7 +293,7 @@ class UploadStream
         return fwrite($this->fp, $data);
     }
 
-    public function unlink($path)
+    public function unlink($path): bool
     {
         unlink(self::path($path));
 
@@ -311,7 +305,81 @@ class UploadStream
         return @stat(self::path($path));
     }
 
-    public static function move_uploaded_file($upload, $path)
+    /**
+    * Sets metadata on the stream.
+    *
+    * WARNING: Do not call this method directly! It will be called internally by
+    * PHP itself when one of the following functions is called on a stream URL:
+    *
+    * @param string $uri
+    *   A string containing the URI to the file to set metadata on.
+    * @param int $option
+    *   One of:
+    *   - STREAM_META_TOUCH: The method was called in response to touch().
+    *   - STREAM_META_OWNER_NAME: The method was called in response to chown()
+    *     with string parameter.
+    *   - STREAM_META_OWNER: The method was called in response to chown().
+    *   - STREAM_META_GROUP_NAME: The method was called in response to chgrp().
+    *   - STREAM_META_GROUP: The method was called in response to chgrp().
+    *   - STREAM_META_ACCESS: The method was called in response to chmod().
+    * @param mixed $value
+    *   If option is:
+    *   - STREAM_META_TOUCH: Array consisting of two arguments of the touch()
+    *     function.
+    *   - STREAM_META_OWNER_NAME or STREAM_META_GROUP_NAME: The name of the owner
+    *     user/group as string.
+    *   - STREAM_META_OWNER or STREAM_META_GROUP: The value of the owner
+    *     user/group as integer.
+    *   - STREAM_META_ACCESS: The argument of the chmod() as integer.
+    *
+    * @return bool
+    *   Returns TRUE on success or FALSE on failure. If $option is not
+    *   implemented, FALSE should be returned.
+    *
+    * @see touch()
+    * @see chmod()
+    * @see chown()
+    * @see chgrp()
+    * @link http://php.net/manual/streamwrapper.stream-metadata.php
+    * @author Chris001 <chris NOSPAM at espacenetworks dot com>
+    */
+    public function stream_metadata(string $uri, int $option, $value): bool
+    {
+        $target = self::path($uri);
+        $return = FALSE;
+        switch ($option) {
+            case STREAM_META_TOUCH:
+                if (!empty($value)) {
+                    $return = touch($target, $value[0], $value[1]);
+                }
+                else {
+                    $return = touch($target);
+                }
+                break;
+
+            case STREAM_META_OWNER_NAME:
+            case STREAM_META_OWNER:
+                $return = chown($target, $value);
+                break;
+
+            case STREAM_META_GROUP_NAME:
+            case STREAM_META_GROUP:
+                $return = chgrp($target, $value);
+                break;
+
+            case STREAM_META_ACCESS:
+                $return = chmod($target, $value);
+                break;
+        }
+        if ($return) {
+            // For convenience clear the file status cache of the underlying file,
+            // since metadata operations are often followed by file status checks.
+            clearstatcache(TRUE, $target);
+        }
+        return $return;
+    }
+
+    public static function move_uploaded_file($upload, $path): bool
     {
         return move_uploaded_file($upload, self::path($path));
     }
