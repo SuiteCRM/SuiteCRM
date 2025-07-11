@@ -306,6 +306,10 @@ class MBPackage
     {
         $this->loadModules();
         require_once 'include/utils/php_zip_utils.php';
+        $folder = $this->getBuildDir();
+        if (file_exists($folder) && !rmdir_recursive($folder)){
+            $GLOBALS['log']->error('Line '.__LINE__.': '.__METHOD__.':  Could not delete folder: ' . $folder);
+        };
         $path = $this->getBuildDir() . '/SugarModules';
         if ($clean && file_exists($path)) {
             rmdir_recursive($path);
