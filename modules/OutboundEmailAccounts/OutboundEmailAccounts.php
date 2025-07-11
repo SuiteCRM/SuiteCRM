@@ -406,6 +406,7 @@ HTML;
         $adminNotifyFromAddress = $admin->settings['notify_fromaddress'];
         isValidEmailAddress($adminNotifyFromAddress);
         $adminNotifyFromName = $admin->settings['notify_fromname'];
+        $mailbox_id = $_POST["record"];
         $html = <<<HTML
 			<input id="sendTestOutboundEmailSettingsBtn" type="button" class="button" value="{$APP['LBL_EMAIL_TEST_OUTBOUND_SETTINGS']}" onclick="testOutboundSettings();">
 			<script type="text/javascript" src="cache/include/javascript/sugar_grp_yui_widgets.js"></script>
@@ -507,6 +508,7 @@ HTML;
 					var smtpServer = document.getElementById('mail_smtpserver').value;
 					var smtpPort = document.getElementById('mail_smtpport').value;
 					var smtpssl  = document.getElementById('mail_smtpssl').value;
+	                var mailbox_id = '$mailbox_id';
 					var mailsmtpauthreq = document.getElementById('mail_smtpauth_req');
 					var mail_sendtype = 'SMTP';
                                                                 var adminNotifyFromAddress = document.getElementById('smtp_from_addr').value ? document.getElementById('smtp_from_addr').value :'$adminNotifyFromName';
@@ -521,6 +523,7 @@ HTML;
 						"mail_smtppass=" + trim(document.getElementById('mail_smtppass').value) + "&" +
 						"outboundtest_to_address=" + toAddress + '&' +
 						'outboundtest_from_address=' + adminNotifyFromAddress + '&' +
+						'mailbox_id=' + mailbox_id + '&' +
 						'mail_from_name=' + adminNotifyFromName;
 					//YAHOO.util.Connect.asyncRequest("POST", "index.php?action=EmailUIAjax&module=Emails&emailUIAction=testOutbound&to_pdf=true&sugar_body_only=true", callbackOutboundTest, postDataString);
 					YAHOO.util.Connect.asyncRequest("POST", "index.php?action=testOutboundEmail&module=EmailMan&to_pdf=true&sugar_body_only=true", callbackOutboundTest, postDataString);

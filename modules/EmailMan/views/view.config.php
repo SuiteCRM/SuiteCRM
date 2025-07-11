@@ -182,7 +182,10 @@ class ViewConfig extends SugarView
             LoggerManager::getLogger()->warn('EmailMan view display error: mail allow user send is not set for focus');
         }
 
+        $oe = new OutboundEmail();
+        $oe = $oe->getSystemMailerSettings();
 
+        $this->ss->assign("mailbox_id", $oe->id);
         $this->ss->assign("mail_smtptype", $mailSmtpType);
         $this->ss->assign("mail_smtpserver", $mailSmtpServer);
         $this->ss->assign("mail_smtpport", $mailSmtpPort);
