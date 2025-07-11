@@ -64,15 +64,15 @@ $layout_defs['Accounts'] = array(
             ),
 
             'collection_list' => array(
+		'meetings' => array(
+                    'module' => 'Meetings',
+                    'subpanel_name' => 'ForActivities',
+                    'get_subpanel_data' => 'meetings',
+                ),
                 'tasks' => array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForActivities',
                     'get_subpanel_data' => 'tasks',
-                ),
-                'meetings' => array(
-                    'module' => 'Meetings',
-                    'subpanel_name' => 'ForActivities',
-                    'get_subpanel_data' => 'meetings',
                 ),
                 'calls' => array(
                     'module' => 'Calls',
@@ -99,15 +99,15 @@ $layout_defs['Accounts'] = array(
             ),
 
             'collection_list' => array(
+		'meetings' => array(
+                    'module' => 'Meetings',
+                    'subpanel_name' => 'ForHistory',
+                    'get_subpanel_data' => 'meetings',
+                ),
                 'tasks' => array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForHistory',
                     'get_subpanel_data' => 'tasks',
-                ),
-                'meetings' => array(
-                    'module' => 'Meetings',
-                    'subpanel_name' => 'ForHistory',
-                    'get_subpanel_data' => 'meetings',
                 ),
                 'calls' => array(
                     'module' => 'Calls',
