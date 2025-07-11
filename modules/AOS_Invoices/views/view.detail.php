@@ -26,7 +26,7 @@ class AOS_InvoicesViewDetail extends ViewDetail
     {
         global $app_list_strings;
 
-        $sql = "SELECT id, name FROM aos_pdf_templates WHERE deleted = 0 AND type='AOS_Invoices' AND active = 1";
+        $sql = "SELECT id, name FROM aos_pdf_templates WHERE deleted = 0 AND type='AOS_Invoices' AND active = 1 order by name";
 
         $res = $this->bean->db->query($sql);
         $app_list_strings['template_ddown_c_list'] = array();
