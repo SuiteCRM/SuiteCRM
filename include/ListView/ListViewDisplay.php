@@ -206,6 +206,13 @@ class ListViewDisplay
                         }
                     }
                 }
+                if ( isset($this->seed->field_defs[strtolower($columnName)]['type']) &&
+                     strtolower($this->seed->field_defs[strtolower($columnName)]['type']) == 'url' ) {
+                     preg_match_all ("|{(.*)}|U",$this->seed->field_defs[strtolower($columnName)]['default'],$out  );
+                     foreach ( $out[1] as  $key ) {
+                         $filter_fields[strtolower($key)] = true;
+                     }
+                }
             }
             foreach ($this->searchColumns as $columnName => $def) {
                 $filter_fields[strtolower($columnName)] = true;
