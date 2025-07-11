@@ -108,9 +108,19 @@ function requestToUserParameters($reportBean = null)
             }
 
             $condition = BeanFactory::getBean('AOR_Conditions', $_REQUEST['parameter_id'][$key]);
+            $flow_bean = BeanFactory::newBean($reportBean->report_module);
+            $modulePathArray = unserialize(base64_decode($condition->module_path));
+            $rel_module = $reportBean->report_module;
+            foreach ($modulePathArray as $relate){
+                $flow_bean->load_relationship($relate);
+                if ($flow_bean->$relate) {
+                    $rel_module = $flow_bean->$relate->getRelatedModuleName();
+                    $flow_bean = BeanFactory::newBean($rel_module);
+                }
+            }
             $value = $_REQUEST['parameter_value'][$key];
             if ($reportBean && $condition && !array_key_exists($value, $app_list_strings['date_time_period_list'])) {
-                $value = fixUpFormatting($reportBean->report_module, $condition->field, $value);
+                $value = fixUpFormatting($rel_module, $condition->field, $value);
             }
 
             $params[$parameterId] = array(
