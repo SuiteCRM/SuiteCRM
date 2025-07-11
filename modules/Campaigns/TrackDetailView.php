@@ -105,7 +105,7 @@ if (isset($focus->campaign_type) && $focus->campaign_type == "NewsLetter") {
 
 
     $smarty->assign("OBJECTIVE", nl2br($focus->objective));
-    $smarty->assign("CONTENT", nl2br($focus->content));
+    $smarty->assign("CONTENT", nl2br($focus->campaign_content));
     $smarty->assign("DATE_MODIFIED", $focus->date_modified);
     $smarty->assign("DATE_ENTERED", $focus->date_entered);
 

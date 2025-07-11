@@ -174,7 +174,7 @@ function ConvertItems(id)  {ldelim}
         array(
           0 =>
           array(
-            'name' => 'content',
+            'name' => 'campaign_content',
             'displayParams' =>
             array(
               'rows' => 8,
