@@ -98,6 +98,7 @@ $entry_point_registry = array(
     'sendConfirmOptInEmail' => array('file' => 'include/entryPointConfirmOptInConnector.php', 'auth' => true),
     'saveGoogleApiKey' => array('file' => 'modules/Users/entryPointSaveGoogleApiKey.php', 'auth' => true),
     'setImapTestSettings' => ['file' => 'include/Imap/ImapTestSettingsEntry.php', 'auth' => true],
+    'queryWebServerFromCLI' => ['file' => 'include/entryPointQueryWebServerFromCLI.php', 'auth' => false],
     'redirectToExternalOAuth' => ['file' => 'modules/ExternalOAuthConnection/entrypoint/redirectToExternalOAuth.php', 'auth' => true],
     'setExternalOAuthToken' => ['file' => 'modules/ExternalOAuthConnection/entrypoint/setExternalOAuthToken.php', 'auth' => true],
 );
