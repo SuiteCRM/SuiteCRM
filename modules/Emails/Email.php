@@ -812,7 +812,9 @@ class Email extends Basic
         $fromaddress,
         $toaddress,
         $mail_sendtype = 'smtp',
-        $fromname = ''
+        $fromname = '',
+        $authType = 'no_auth',
+        $externalOAuthConnectionId = ''
     ) {
         global $current_user, $app_strings;
         $mod_strings = return_module_language($GLOBALS['current_language'], 'Emails'); //Called from EmailMan as well.
@@ -821,22 +823,14 @@ class Email extends Basic
         if ($mail->Mailer == 'smtp') {
             $mail->Host = $mailserver_url;
             $mail->Port = $port;
-            if (isset($ssltls) && !empty($ssltls)) {
-                $mail->protocol = "ssl://";
-                if ($ssltls == 1) {
-                    $mail->SMTPSecure = 'ssl';
-                } // if
-                if ($ssltls == 2) {
-                    $mail->SMTPSecure = 'tls';
-                } // if
-            } else {
-                $mail->protocol = "tcp://";
-            }
-            if ($smtp_auth_req) {
-                $mail->SMTPAuth = true;
-                $mail->Username = $smtp_username;
-                $mail->Password = $smtppassword;
-            }
+
+            $mail->setSecureProtocol($ssltls ?? false);
+            $mail->initSMTPAuth(
+                $authType ?? '',
+                $externalOAuthConnectionId ?? '',
+                $smtp_username ?? '',
+                $smtppassword ?? ''
+            );
         } else {
             $mail->Mailer = 'sendmail';
         }
@@ -2789,18 +2783,14 @@ class Email extends Basic
             $mail->Mailer = "smtp";
             $mail->Host = $oe->mail_smtpserver;
             $mail->Port = $oe->mail_smtpport;
-            if ($oe->mail_smtpssl == 1) {
-                $mail->SMTPSecure = 'ssl';
-            } // if
-            if ($oe->mail_smtpssl == 2) {
-                $mail->SMTPSecure = 'tls';
-            } // if
 
-            if ($oe->mail_smtpauth_req) {
-                $mail->SMTPAuth = true;
-                $mail->Username = $oe->mail_smtpuser;
-                $mail->Password = $oe->mail_smtppass;
-            }
+            $mail->setSecureProtocol($oe->mail_smtpssl);
+            $mail->initSMTPAuth(
+                $oe->auth_type ?? '',
+                $oe->external_oauth_connection_id ?? '',
+                $oe->mail_smtpuser ?? '',
+                $oe->mail_smtppass ?? '',
+            );
         } else {
             $mail->Mailer = "sendmail";
         }
@@ -2842,18 +2832,14 @@ class Email extends Basic
             $mail->Mailer = "smtp";
             $mail->Host = $oe->mail_smtpserver;
             $mail->Port = $oe->mail_smtpport;
-            if ($oe->mail_smtpssl == 1) {
-                $mail->SMTPSecure = 'ssl';
-            } // if
-            if ($oe->mail_smtpssl == 2) {
-                $mail->SMTPSecure = 'tls';
-            } // if
 
-            if ($oe->mail_smtpauth_req) {
-                $mail->SMTPAuth = true;
-                $mail->Username = $oe->mail_smtpuser;
-                $mail->Password = $oe->mail_smtppass;
-            }
+            $mail->setSecureProtocol($oe->mail_smtpssl);
+            $mail->initSMTPAuth(
+                $oe->auth_type ?? '',
+                $oe->external_oauth_connection_id ?? '',
+                $oe->mail_smtpuser ?? '',
+                $oe->mail_smtppass ?? '',
+            );
         } else {
             $mail->Mailer = "sendmail";
         }
@@ -3295,15 +3281,12 @@ class Email extends Basic
      */
     public function getSystemDefaultEmail()
     {
-        $email = array();
 
-        $r1 = $this->db->query('SELECT config.value FROM config WHERE name=\'fromaddress\'');
-        $r2 = $this->db->query('SELECT config.value FROM config WHERE name=\'fromname\'');
-        $a1 = $this->db->fetchByAssoc($r1);
-        $a2 = $this->db->fetchByAssoc($r2);
+        $oe = new OutboundEmail();
+        $oe = $oe->getSystemMailerSettings();
 
-        $email['email'] = $a1['value'];
-        $email['name'] = $a2['value'];
+        $email['email'] = $oe->smtp_from_addr ?? '';
+        $email['name'] = $oe->smtp_from_name ?? '';
 
         return $email;
     }
@@ -3419,7 +3402,7 @@ class Email extends Basic
                 );
             }
         }
-        
+
         if (empty($this->contact_id) && !empty($this->parent_id) && !empty($this->parent_type) && $this->parent_type === 'Contacts' && !empty($this->parent_name)) {
             $this->contact_id = $this->parent_id;
             $this->contact_name = $this->parent_name;
