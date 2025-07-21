@@ -1017,7 +1017,11 @@ class SugarController
                 require_once($this->entry_point_registry[$entryPoint]['file']);
                 $this->_processed = true;
                 $this->view = '';
+            } else {
+                $this->no_action();
             }
+        } elseif (isset($_REQUEST['entryPoint'])) {
+            $this->no_action();
         }
     }
 
