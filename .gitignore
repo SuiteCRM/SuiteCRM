@@ -126,3 +126,7 @@ codeception.yml
 .env
 .env.test
 .env.dev
+
+# Allow PaymentBridge module
+!custom/modules/PaymentBridge/
+!custom/modules/PaymentBridge/**
