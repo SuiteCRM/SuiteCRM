@@ -3797,6 +3797,8 @@ $app_strings['LBL_VALUE_SET_PLACEHOLDER'] = 'Value set. Enter new value to overr
 $app_strings['ERR_IMAP_OAUTH_CONNECTION_ERROR'] = 'Not able to connect using OAuth login with Inbound Email server. For connection: ';
 $app_strings['WARN_OAUTH_TOKEN_SESSION_EXPIRED'] = 'Your IMAP OAuth session has expired, please login again in the connection: ';
 
+$app_strings['ERR_OAUTH_CONNECTION_ERROR'] = 'Not able to connect using OAuth login. For connection: ';
+
 $app_strings['LBL_KEY'] = 'Key';
 $app_strings['LBL_VALUE'] = 'Value';
 $app_strings['LBL_OPTIONAL'] = 'Optional';

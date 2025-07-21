@@ -268,6 +268,59 @@ class OAuthAuthorizationService
         ];
     }
 
+    public function refreshExpiredOAuthToken(string $oAuthConnectionId): void
+    {
+        /** @var ExternalOAuthConnection $oauthConnection */
+        $oauthConnection = BeanFactory::getBean('ExternalOAuthConnection', $oAuthConnectionId);
+
+        $hasExpiredFeedback = $this->hasConnectionTokenExpired($oauthConnection);
+        $refreshToken = $hasExpiredFeedback['refreshToken'] ?? false;
+        if ($refreshToken === true) {
+            $refreshTokenFeedback = $this->refreshConnectionToken($oauthConnection);
+
+            if ($refreshTokenFeedback['success'] === false) {
+                $message = $this->getOAuthRefreshTokenErrorMessage(
+                    $refreshTokenFeedback['reLogin'],
+                    $oauthConnection,
+                    $oAuthConnectionId
+                );
+                displayAdminError($message);
+            }
+        }
+    }
+
+    /**
+     * Get refersh token error messages
+     * @param $reLogin
+     * @param ExternalOAuthConnection $oauthConnection
+     * @param string $oAuthConnectionId
+     * @return string
+     */
+    public function getOAuthRefreshTokenErrorMessage(
+        $reLogin,
+        ExternalOAuthConnection $oauthConnection,
+        string $oAuthConnectionId
+    ): string {
+        $message = translate('ERR_OAUTH_CONNECTION_ERROR');
+        $linkAction = 'DetailView';
+
+        if ($reLogin === true) {
+            $linkAction = 'EditView';
+            $message = translate('WARN_OAUTH_TOKEN_SESSION_EXPIRED');
+        }
+
+        $oauthConnectionName = $oauthConnection->name;
+
+        $hasAccess = $oauthConnection->ACLAccess('edit') ?? false;
+        if ($hasAccess === true) {
+            $message .= " <a href=\"index.php?module=ExternalOAuthConnection&action=$linkAction&record=$oAuthConnectionId\">$oauthConnectionName</a>.";
+        } else {
+            $message .= $oauthConnectionName . '.';
+        }
+
+        return $message;
+    }
+
     /**
      * Map token to bean fields array
      * @param string $providerId

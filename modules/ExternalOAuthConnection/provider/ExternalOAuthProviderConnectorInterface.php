@@ -42,6 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
 interface ExternalOAuthProviderConnectorInterface
@@ -142,4 +143,12 @@ interface ExternalOAuthProviderConnectorInterface
      * @return string
      */
     public function getAccessTokenRequestGrant(array $providerConfig): string;
+
+    /**
+     * Get Provider
+     * @param string $requestClientId
+     * @param string $requestClientSecret
+     * @return AbstractProvider|null
+     */
+    public function getProvider(string $requestClientId, string $requestClientSecret): ?AbstractProvider;
 }
