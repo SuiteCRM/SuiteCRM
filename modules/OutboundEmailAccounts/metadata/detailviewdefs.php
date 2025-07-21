@@ -37,7 +37,8 @@ $viewdefs ['OutboundEmailAccounts'] = [
                         files="modules/OutboundEmailAccounts/js/fields.js,
                                modules/OutboundEmailAccounts/js/owner_toggle.js,
                                modules/OutboundEmailAccounts/js/panel_toggle.js,
-                               modules/OutboundEmailAccounts/js/smtp_auth_toggle.js"}
+                               modules/OutboundEmailAccounts/js/smtp_auth_toggle.js,
+                               modules/OutboundEmailAccounts/js/auth_type_fields_toggle.js"}
                 </script>
             ',
         ],
@@ -57,16 +58,20 @@ $viewdefs ['OutboundEmailAccounts'] = [
             ],
             'lbl_connection_configuration' => [
                 [
-                    'mail_smtpserver',
-                    'mail_smtpauth_req',
-                ],
-                [
-                    'mail_smtpssl',
+                    'auth_type',
                     'mail_smtpuser',
                 ],
                 [
-                    'mail_smtpport',
+                    'mail_smtpserver',
+                    'external_oauth_connection_name',
+                ],
+                [
+                    'mail_smtpssl',
                     '',
+                ],
+                [
+                    'mail_smtpport',
+                    ''
                 ],
             ],
             'lbl_outbound_configuration' => [

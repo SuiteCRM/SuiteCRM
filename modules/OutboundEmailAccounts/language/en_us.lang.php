@@ -118,5 +118,12 @@ $mod_strings = array(
     'LBL_OWNER' => 'Owner',
     'LBL_OWNER_NAME' => 'Owner',
 
-    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'External OAuth Connections'
+    'LBL_AUTH_TYPE' => 'Auth Type',
+
+    'LBL_EXTERNAL_OAUTH_CONNECTION' => 'External OAuth Connection',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_ID' => 'External OAuth Connection id',
+    'LBL_EXTERNAL_OAUTH_CONNECTION_NAME' => 'External OAuth Connection',
+    'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'External OAuth Connections',
+
+    'LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS' => 'System Outbound Email Account already exists. Please remove it before creating a new one.',
 );
