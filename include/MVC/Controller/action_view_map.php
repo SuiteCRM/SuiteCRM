@@ -57,6 +57,7 @@ $action_view_map['modulelistmenu']= 'modulelistmenu';
 $action_view_map['favorites']= 'favorites';
 $action_view_map['ajaxui']= 'ajaxui';
 $action_view_map['noaccess']= 'noaccess';
+$action_view_map['errors']= 'errors';
 
 // SugarPDF
 $action_view_map['sugarpdf']= 'sugarpdf';
