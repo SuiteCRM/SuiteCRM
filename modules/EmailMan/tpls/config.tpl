@@ -98,105 +98,48 @@ function change_state(radiobutton) {
 								<br />&nbsp;
 							</td>
 						</tr>
-						<tr class="{$OUTBOUND_TYPE_CLASS}">
-							<td width="20%" scope="row">{$MOD.LBL_MAIL_SENDTYPE}</td>
-							<td width="30%">
-								<select id="mail_sendtype" name="mail_sendtype" onChange="notify_setrequired(document.ConfigureSettings); SUGAR.user.showHideGmailDefaultLink(this);" tabindex="1">{$mail_sendtype_options}</select>
-							</td>
-							<td scope="row">&nbsp;</td>
-							<td >&nbsp;</td>
-						</tr>
+                        <tr>
+                            <td width="25%" scope="row">
+                                {$MOD.LBL_SYSTEM_OUTBOUND_EMAIL_ACCOUNT}
+                            </td>
+                            {if empty($system_outbound_email_id)}
+                                <td width="30%">
+                                    {sugar_link
+                                    module="OutboundEmailAccounts"
+                                    label=$APP.LBL_CREATE_BUTTON_LABEL
+                                    action='Edit'
+                                    class="btn btn-sm btn-primary"
+                                    extraparams="type=system"
+                                    }
+                                </td>
+                            {/if}
+                            {if !empty($system_outbound_email_id)}
+                                <td width="30%">
+                                    {sugar_link
+                                    module="OutboundEmailAccounts"
+                                    record=$system_outbound_email_id
+                                    label=$system_outbound_email_name
+                                    action='DetailView'
+                                    }
+                                </td>
+                            {/if}
+                            <td></td>
+                        </tr>
+
+
 						<tr>
-							<td width="20%" scope="row">{$MOD.LBL_NOTIFY_FROMNAME} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-							<td width="30%" > <input id='notify_fromname' name='notify_fromname' tabindex='1' size='25' maxlength='128' type="text" value="{$notify_fromname}"></td>
-						</tr>
-						<tr>
-							<td width="20%" scope="row">{$MOD.LBL_NOTIFY_FROMADDRESS} <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-							<td width="30%"><input id='notify_fromaddress' name='notify_fromaddress' tabindex='1' size='25' maxlength='128' type="text" value="{$notify_fromaddress}"></td>
-						</tr>
-						<tr>
-							<td align="left" scope="row" colspan="4">{$MOD.LBL_CHOOSE_EMAIL_PROVIDER}</td>
-						</tr>
-						<tr>
-							<td colspan="4">
-								<div id="smtpButtonGroup" class="yui-buttongroup">
-				<span id="gmail" class="yui-button yui-radio-button{if $mail_smtptype == 'gmail'} yui-button-checked{/if}">
-					<span class="first-child">
-						<button type="button" name="mail_smtptype" value="gmail" class="btn btn-danger">
-							&nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_GMAIL}&nbsp;&nbsp;&nbsp;&nbsp;
-						</button>
-					</span>
-				</span>
-									<span id="yahoomail" class="yui-button yui-radio-button{if $mail_smtptype == 'yahoomail'} yui-button-checked{/if}">
-					<span class="first-child">
-						<button type="button" name="mail_smtptype" value="yahoomail" class="btn btn-danger">
-							&nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_YAHOO}&nbsp;&nbsp;&nbsp;&nbsp;
-						</button>
-					</span>
-				</span>
-									<span id="exchange" class="yui-button yui-radio-button{if $mail_smtptype == 'exchange'} yui-button-checked{/if}">
-					<span class="first-child">
-						<button type="button" name="mail_smtptype" value="exchange" class="btn btn-danger">
-							&nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_EXCHANGE}&nbsp;&nbsp;&nbsp;&nbsp;
-						</button>
-					</span>
-				</span>
-									<span id="other" class="yui-button yui-radio-button{if $mail_smtptype == 'other' || empty($mail_smtptype)} yui-button-checked{/if}">
-					<span class="first-child">
-						<button type="button" name="mail_smtptype" value="other" class="btn btn-danger">
-							&nbsp;&nbsp;&nbsp;&nbsp;{$APP.LBL_SMTPTYPE_OTHER}&nbsp;&nbsp;&nbsp;&nbsp;
-						</button>
-					</span>
-				</span>
-								</div>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="4">
+							<td colspan="2">
 								<div id="smtp_settings">
-									<table width="100%" cellpadding="0" cellspacing="0">
-										<tr id="mailsettings1">
-											<td width="20%" scope="row"><span id="mail_smtpserver_label">{$MOD.LBL_MAIL_SMTPSERVER}</span> <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-											<td width="30%" ><input type="text" id="mail_smtpserver" name="mail_smtpserver" tabindex="1" size="25" maxlength="255" value="{$mail_smtpserver}"></td>
-											<td width="20%" scope="row"><span id="mail_smtpport_label">{$MOD.LBL_MAIL_SMTPPORT}</span> <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-											<td width="30%" ><input type="text" id="mail_smtpport" name="mail_smtpport" tabindex="1" size="5" maxlength="5" value="{$mail_smtpport}"></td>
-										</tr>
-										<tr id="mailsettings2">
-											<td scope="row"><span id='mail_smtpauth_req_label'>{$MOD.LBL_MAIL_SMTPAUTH_REQ}</span></td>
-											<td >
-												<input id='mail_smtpauth_req' name='mail_smtpauth_req' type="checkbox" class="checkbox" value="1" tabindex='1'
-													   onclick="notify_setrequired(document.ConfigureSettings);" {$mail_smtpauth_req}>
-											</td>
-											<td width="15%" scope="row"><span id="mail_smtpssl_label">{$APP.LBL_EMAIL_SMTP_SSL_OR_TLS}</span></td>
-											<td width="35%" >
-												<select id="mail_smtpssl" name="mail_smtpssl" tabindex="501" onchange="setDefaultSMTPPort();" >{$MAIL_SSL_OPTIONS}</select>
-											</td>
-										</tr>
-										<tr id="smtp_auth1">
-											<td width="20%" scope="row"><span id="mail_smtpuser_label">{$MOD.LBL_MAIL_SMTPUSER}</span> <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-											<td width="30%" ><input type="text" id="mail_smtpuser" name="mail_smtpuser" size="25" maxlength="255" value="{$mail_smtpuser}" tabindex='1' ></td>
-											<td width="20%">&nbsp;</td>
-											<td width="30%">&nbsp;</td>
-										</tr>
-										<tr id="smtp_auth2">
-											<td width="20%" scope="row"><span id="mail_smtppass_label">{$MOD.LBL_MAIL_SMTPPASS}</span> <span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></td>
-											<td width="30%" >
-												<input type="password" id="mail_smtppass" name="mail_smtppass" size="25" maxlength="255" tabindex='1'>
-												<a href="javascript:void(0)" id='mail_smtppass_link' onClick="SUGAR.util.setEmailPasswordEdit('mail_smtppass')" style="display: none">{$APP.LBL_CHANGE_PASSWORD}</a>
-											</td>
-											<td width="20%">&nbsp;</td>
-											<td width="30%">&nbsp;</td>
-										</tr>
-									</table>
+
 									<table width="100%" cellpadding="0" cellspacing="0">
 										<tr id="mail_allow_user">
-											<td width="20%" scope="row">
+											<td width="25%" scope="row">
 												{$MOD.LBL_ALLOW_DEFAULT_SELECTION}&nbsp;
 												<img border="0" class="inlineHelpTip" onclick="return SUGAR.util.showHelpTips(this,'{$MOD.LBL_ALLOW_DEFAULT_SELECTION_HELP}','','','dialogHelpPopup')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
 											</td>
 											<td width="30%">
 												<input type='hidden' id="notify_allow_default_outbound_hidden_input" name='notify_allow_default_outbound' value='0'>
-												<input id="notify_allow_default_outbound" name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" {$notify_allow_default_outbound_on}>
+												<input id="notify_allow_default_outbound" name='notify_allow_default_outbound' value="2" tabindex='1' class="checkbox" type="checkbox" style="margin-top: 10px;" {$notify_allow_default_outbound_on}>
 											</td>
 										</tr>
 										<tr class="legacy-compose-option" {if isset($legacyEmailConfigEnabled)}style="display:none"{/if}>
@@ -214,13 +157,6 @@ function change_state(radiobutton) {
 									</table>
 								</div>
 							</td>
-						</tr>
-						<tr><td colspan="4">&nbsp;</tr>
-						<tr>
-							<td width="15%"><input type="button" class="btn btn-info" value="{$APP.LBL_EMAIL_TEST_OUTBOUND_SETTINGS}" onclick="testOutboundSettings();">&nbsp;</td>
-							<td width="15%">&nbsp;</td>
-							<td width="40%">&nbsp;</td>
-							<td width="40%">&nbsp;</td>
 						</tr>
 					</table>
 				</div>

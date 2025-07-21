@@ -51,6 +51,32 @@ class OutboundEmailAccountsController extends SugarController
             $this->bean->type = $type;
         }
 
+        if (empty($this->bean) && $type === 'system' && !is_admin($GLOBALS['current_user'])) {
+            $this->hasAccess = false;
+            $this->view = 'noaccess';
+            return;
+        }
+
+        $oe = new OutboundEmail();
+        $oe = $oe->getSystemEmail();
+        if (empty($this->bean->id) && $type === 'system' && $oe !== null) {
+            $this->hasAccess = false;
+            $this->view = 'errors';
+            $this->errors = [
+                translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
+            ];
+            return;
+        }
+
+        if ($type === 'system' && $oe !== null && $oe->id !== $this->bean->id) {
+            $this->hasAccess = false;
+            $this->view = 'errors';
+            $this->errors = [
+                translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
+            ];
+            return;
+        }
+
         if (empty($_REQUEST['record']) && $type === 'user') {
             $this->hasAccess = true;
             return;
@@ -82,6 +108,19 @@ class OutboundEmailAccountsController extends SugarController
              if (!empty($this->bean->fetched_row['user_id'])) {
                  $this->bean->user_id = $this->bean->fetched_row['user_id'];
              }
+        }
+
+        $oe = new OutboundEmail();
+        $oe = $oe->getSystemEmail();
+        $type = $this->bean->type;
+
+        if ($type === 'system' && $oe !== null && $oe->id !== $this->bean->id) {
+            $this->hasAccess = false;
+            $this->view = 'errors';
+            $this->errors = [
+                translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
+            ];
+            return;
         }
 
         if ($isNewRecord && empty($this->bean->user_id)) {
