@@ -200,6 +200,7 @@ $dictionary['ExternalOAuthProvider'] = [
             'vname' => 'LBL_AUTHORIZE_URL_OPTIONS',
             'type' => 'stringmap',
             'dbType' => 'text',
+            'default' => '{"prompt":"login"}',
             'show_keys' => true,
             'required' => false,
             'reportable' => false,
