@@ -717,6 +717,12 @@ $app_list_strings = array(
         'oauth' => 'OAuth',
     ],
 
+    'dom_outbound_email_auth_types' => [
+        'no_auth' => 'No Auth',
+        'basic' => 'Basic Auth',
+        'oauth' => 'OAuth',
+    ],
+
     'dom_external_oauth_connection_types' => [
         'personal' => 'Personal',
         'group' => 'Group',
