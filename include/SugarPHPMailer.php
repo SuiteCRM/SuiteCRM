@@ -132,18 +132,13 @@ class SugarPHPMailer extends PHPMailer
             $this->Mailer = 'smtp';
             $this->Host = $oe->mail_smtpserver;
             $this->Port = $oe->mail_smtpport;
-            if ($oe->mail_smtpssl == 1) {
-                $this->SMTPSecure = 'ssl';
-            } // if
-            if ($oe->mail_smtpssl == 2) {
-                $this->SMTPSecure = 'tls';
-            } // if
-
-            if ($oe->mail_smtpauth_req) {
-                $this->SMTPAuth = true;
-                $this->Username = $oe->mail_smtpuser;
-                $this->Password = $oe->mail_smtppass;
-            }
+            $this->setSecureProtocol($oe->mail_smtpssl);
+            $this->initSMTPAuth(
+                $oe->auth_type ?? '',
+                $oe->external_oauth_connection_id ?? '',
+                $oe->mail_smtpuser ?? '',
+                $oe->mail_smtppass ?? '',
+            );
         } else {
             $this->Mailer = 'sendmail';
         }
@@ -166,20 +161,79 @@ class SugarPHPMailer extends PHPMailer
             $this->Mailer = 'smtp';
             $this->Host = $oe->mail_smtpserver;
             $this->Port = $oe->mail_smtpport;
-            if ($oe->mail_smtpssl == 1) {
-                $this->SMTPSecure = 'ssl';
-            } // if
-            if ($oe->mail_smtpssl == 2) {
-                $this->SMTPSecure = 'tls';
-            } // if
-            if ($oe->mail_smtpauth_req) {
-                $this->SMTPAuth = true;
-                $this->Username = $oe->mail_smtpuser;
-                $this->Password = $oe->mail_smtppass;
-            }
+            $this->setSecureProtocol($oe->mail_smtpssl);
+            $this->initSMTPAuth(
+                $oe->auth_type ?? '',
+                $oe->external_oauth_connection_id ?? '',
+                $oe->mail_smtpuser ?? '',
+                $oe->mail_smtppass ?? '',
+            );
         } else {
             $this->Mailer = 'sendmail';
         }
+    }
+
+    public function initSMTPAuth(
+        string $authType,
+        string $externalOAuthConnectionId,
+        string $smtpUser,
+        string $smtpPass,
+    ): void {
+
+        if ($authType === 'oauth') {
+            $this->initOAuth(
+                $authType,
+                $externalOAuthConnectionId,
+                $smtpUser,
+            );
+            return;
+        }
+
+        if ($authType === 'basic') {
+            $this->SMTPAuth = true;
+            $this->Username = $smtpUser;
+            $this->Password = $smtpPass;
+        }
+    }
+
+    public function initOAuth(
+        string $authType,
+        string $externalOAuthConnectionId,
+        string $smtpUser
+    ): void
+    {
+        if ($authType !== 'oauth') {
+            return;
+        }
+
+        $this->isSMTP();
+        $this->SMTPAuth = true;
+
+        $this->AuthType = 'XOAUTH2';
+
+        $oAuthConnectionId = $externalOAuthConnectionId;
+
+        require_once 'modules/ExternalOAuthConnection/services/OAuthAuthorizationService.php';
+        $oAuth = new OAuthAuthorizationService();
+
+        $oAuth->refreshExpiredOAuthToken($oAuthConnectionId);
+
+        /** @var ExternalOAuthConnection $oauthConnection */
+        $oauthConnection = BeanFactory::getBean('ExternalOAuthConnection', $oAuthConnectionId);
+        $providerId = $oauthConnection->external_oauth_provider_id;
+
+        $oauthConfig = new \PHPMailer\PHPMailer\OAuth([
+            'provider' => $oAuth?->getProvider($providerId)?->getProvider($oauthConnection->client_id, $oauthConnection->client_secret),
+            'clientId' => $oauthConnection->client_id,
+            'refreshToken' => $oauthConnection->refresh_token,
+            'clientSecret' => $oauthConnection->client_secret,
+            'userName' => $smtpUser
+        ]);
+
+        $this->setOAuth(
+            $oauthConfig
+        );
+
     }
 
     /**
@@ -469,7 +523,7 @@ eoq;
             $ret = parent::send();
             $this->exceptions =  $saveExceptionsState;
         } catch (Exception $e) {
-            $phpMailerExceptionMsg=$e->errorMessage(); //Pretty error messages from PHPMailer
+            $phpMailerExceptionMsg =$e->getMessage(); //Pretty error messages from PHPMailer
             if ($phpMailerExceptionMsg) {
                 $GLOBALS['log']->error("send: PHPMailer Exception: { $phpMailerExceptionMsg }");
             }
@@ -490,4 +544,18 @@ eoq;
         */
         return $ret;
     }
+
+    public function setSecureProtocol($smtpSsl): void
+    {
+        $this->protocol = ($smtpSsl) ? "ssl://" : "tcp://";
+        if ($smtpSsl == 1) {
+            $this->protocol = "ssl://";
+            $this->SMTPSecure = 'ssl';
+        }
+        if ($smtpSsl == 2) {
+            $this->protocol = "ssl://";
+            $this->SMTPSecure = 'tls';
+        }
+    }
+
 } // end class definition
