@@ -481,7 +481,10 @@ class SugarAuthenticate
      */
     public function redirectToLogin(SugarApplication $app)
     {
+        $epCheck = explode('ep/', $_SERVER['REQUEST_URI']);
+        $base = count($epCheck) > 1 ? $epCheck[0] : '';
+
         $loginVars = $app->createLoginVars();
-        SugarApplication::redirect('index.php?action=Login&module=Users' . $loginVars);
+        SugarApplication::redirect($base . 'index.php?action=Login&module=Users' . $loginVars);
     }
 }
