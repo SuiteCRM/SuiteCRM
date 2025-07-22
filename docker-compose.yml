@@ -17,38 +17,65 @@ services:
     networks:
       - suitecrm-network
 
-  # PHP Application
+  # PHP Application with Mobile Real Estate
   suitecrm:
     build:
       context: .
       dockerfile: Dockerfile.suitecrm
-    container_name: suitecrm-app
+    container_name: suitecrm-mobile
     ports:
       - "8082:80"
     volumes:
-      - ./SuiteCRM:/var/www/html
+      - ./:/var/www/html
       - ./cobol-integration:/var/www/cobol-integration
+      - suitecrm_uploads:/var/www/html/upload
+      - suitecrm_cache:/var/www/html/cache
     environment:
       DATABASE_HOST: mysql
       DATABASE_NAME: suitecrm
       DATABASE_USER: suitecrm
       DATABASE_PASSWORD: suitecrm_pass
+      SITE_URL: http://localhost:8082
+      COBOL_HOST: cobol-gateway
+      COBOL_PORT: 8080
+      COBOL_WEBSOCKET: ws://cobol-gateway:8081
     depends_on:
       - mysql
+      - cobol-gateway
     networks:
       - suitecrm-network
 
-  # COBOL Calculation Service
-  cobol-engine:
+  # COBOL Gateway Service
+  cobol-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: cobol-gateway
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./cobol/programs:/app/programs
+      - ./cobol/data:/app/data
+    environment:
+      NODE_ENV: production
+      COBOL_PORT: 8080
+      COBOL_WS_PORT: 8081
+    networks:
+      - suitecrm-network
+
+  # COBOL Runtime Container
+  cobol-runtime:
     build:
       context: .
       dockerfile: Dockerfile.cobol
-    container_name: cobol-calculation-engine
-    ports:
-      - "3001:3000"
-      - "8081:8080"
+    container_name: cobol-runtime
+    volumes:
+      - ./cobol/programs:/cobol/programs
+      - ./cobol/data:/cobol/data
+      - cobol_workdir:/cobol/work
     environment:
-      NODE_ENV: development
+      COBOL_ENV: production
     networks:
       - suitecrm-network
 
@@ -61,27 +88,11 @@ services:
     networks:
       - suitecrm-network
 
-  # API Gateway
-  api-gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile.gateway
-    container_name: suitecrm-api-gateway
-    ports:
-      - "80:80"
-    environment:
-      SUITECRM_URL: http://suitecrm
-      COBOL_ENGINE_URL: http://cobol-engine:3000
-      REDIS_URL: redis://redis:6379
-    depends_on:
-      - suitecrm
-      - cobol-engine
-      - redis
-    networks:
-      - suitecrm-network
-
 volumes:
   mysql_data:
+  suitecrm_uploads:
+  suitecrm_cache:
+  cobol_workdir:
 
 networks:
   suitecrm-network:
