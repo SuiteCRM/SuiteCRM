@@ -215,7 +215,7 @@ ProcessImport = new function()
                             + "&import_module={$_REQUEST['import_module']}"
                             + "&has_header=" +  document.getElementById("importstepdup").has_header.value ;
                         if ( ProcessImport.fileCount >= ProcessImport.fileTotal ) {
-                        	YAHOO.SUGAR.MessageBox.updateProgress(1,'{$mod_strings['LBL_IMPORT_COMPLETED']}');
+                        	YAHOO.SUGAR.MessageBox.updateProgress(100,'{$mod_strings['LBL_IMPORT_COMPLETED']}');
                         	SUGAR.util.hrefURL(locationStr);
                         }
                         else {
@@ -238,7 +238,7 @@ ProcessImport = new function()
         );
         var move = 0;
         if ( this.fileTotal > 0 ) {
-            move = this.fileCount/this.fileTotal;
+            move = (this.fileCount/this.fileTotal) * 100;
         }
         YAHOO.SUGAR.MessageBox.updateProgress( move,
             "{$mod_strings['LBL_IMPORT_RECORDS']} " + ((this.fileCount * this.recordThreshold) + 1)
