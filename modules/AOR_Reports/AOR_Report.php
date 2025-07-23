@@ -1333,10 +1333,11 @@ class AOR_Report extends Basic
                     unset($query['id_select'][$table_alias]);
                 }
 
-                if ($field->group_by == 1) {
+                if ($field->field_function != null) {
+                    $unique = $field->group_by == 1 ? 'DISTINCT ' : '';
+                    $select_field = $field->field_function . '(' . $unique . $select_field . ')';
+                } elseif ($field->group_by == 1) {
                     $query['group_by'][] = $select_field;
-                } elseif ($field->field_function != null) {
-                    $select_field = $field->field_function . '(' . $select_field . ')';
                 } else {
                     $query['second_group_by'][] = $select_field;
                 }
