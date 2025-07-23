@@ -40,8 +40,7 @@ $viewdefs ['OutboundEmailAccounts'] = [
                                modules/OutboundEmailAccounts/js/ssl_port_set.js,
                                modules/OutboundEmailAccounts/js/panel_toggle.js,
                                modules/OutboundEmailAccounts/js/owner_toggle.js,
-                               modules/OutboundEmailAccounts/js/auth_type_fields_toggle.js,
-                               modules/OutboundEmailAccounts/js/smtp_auth_toggle.js"}
+                               modules/OutboundEmailAccounts/js/auth_type_fields_toggle.js"}
                 </script>
             ',
         ],
