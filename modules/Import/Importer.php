@@ -52,7 +52,7 @@ require_once('modules/Import/ImportDuplicateCheck.php');
 class Importer
 {
     /**
-     * @var ImportFieldSanitizer
+     * @var ImportFieldSanitize
      */
     protected $ifs;
 
@@ -62,27 +62,27 @@ class Importer
     protected $defaultUserCurrency;
 
     /**
-     * @var importColumns
+     * @var array
      */
     protected $importColumns;
 
     /**
-     * @var importSource
+     * @var ImportDataSource
      */
     protected $importSource;
 
     /**
-     * @var $isUpdateOnly
+     * @var bool
      */
     protected $isUpdateOnly;
 
     /**
-     * @var  $bean
+     * @var  SugarBean
      */
     protected $bean;
 
     /**
-     * @var sugarToExternalSourceFieldMap
+     * @var array
      */
     protected $sugarToExternalSourceFieldMap = array();
 
@@ -97,7 +97,7 @@ class Importer
         $this->bean = $bean;
 
         // use our own error handler
-        set_error_handler(array('Importer','handleImportErrors'), E_ALL);
+        set_error_handler(array('Importer','handleImportErrors'), E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_WARNING & ~E_NOTICE);
 
         // Increase the max_execution_time since this step can take awhile
         ini_set("max_execution_time", max($sugar_config['import_max_execution_time'], 3600));
