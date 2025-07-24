@@ -144,6 +144,16 @@ class SugarPHPMailer extends PHPMailer
         }
     }
 
+    public function setSystemFromAddress(): void
+    {
+        require_once 'include/OutboundEmail/OutboundEmail.php';
+        $oe = new OutboundEmail();
+        $oe = $oe->getSystemMailerSettings();
+
+        $this->From = $oe->smtp_from_addr ?? '';
+        $this->FromName = $oe->smtp_from_name ?? '';
+    }
+
     /**
      * Prefills mailer for system
      */

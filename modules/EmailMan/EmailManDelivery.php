@@ -81,8 +81,7 @@ if (isset($admin->settings['massemailer_email_copy'])) {
 $emailsPerSecond = 10;
 
 $mail->setMailerForSystem();
-$mail->From = "no-reply@example.com";
-$mail->FromName = "no-reply";
+$mail->setSystemFromAddress();
 $mail->ContentType = "text/html";
 
 $campaign_id = null;
@@ -226,32 +225,29 @@ do {
                 $mail->Mailer = 'smtp';
                 $mail->Host = $outboundEmailAccount->mail_smtpserver;
                 $mail->Port = $outboundEmailAccount->mail_smtpport;
-                if ($outboundEmailAccount->mail_smtpssl == 1) {
-                    $mail->SMTPSecure = 'ssl';
-                } elseif ($outboundEmailAccount->mail_smtpssl == 2) {
-                    $mail->SMTPSecure = 'tls';
-                } else {
-                    $mail->SMTPSecure = '';
-                }
-                if ($outboundEmailAccount->mail_smtpauth_req) {
-                    $mail->SMTPAuth = true;
-                    $mail->Username = $outboundEmailAccount->mail_smtpuser;
-                    $mail->Password = $outboundEmailAccount->mail_smtppass;
-                } else {
-                    $mail->SMTPAuth = false;
-                    $mail->Username = '';
-                    $mail->Password = '';
-                }
+
+                $mail->setSecureProtocol($ssltls ?? false);
+                $mail->initSMTPAuth(
+                    $outboundEmailAccount->auth_type ?? '',
+                    $outboundEmailAccount->external_oauth_connection_id ?? '',
+                    $outboundEmailAccount->mail_smtpuser ?? '',
+                    $outboundEmailAccount->mail_smtppass ?? '',
+                );
             } else {
                 $mail->Mailer = 'sendmail';
             }
 
-            $mail->oe->mail_smtpauth_req = $outboundEmailAccount->mail_smtpauth_req;
-            $mail->oe->mail_smtpuser = $outboundEmailAccount->mail_smtpuser;
-            $mail->oe->mail_smtppass = $outboundEmailAccount->mail_smtppass;
-            $mail->oe->mail_smtpserver = $outboundEmailAccount->mail_smtpserver;
-            $mail->oe->mail_smtpport = $outboundEmailAccount->mail_smtpport;
-            $mail->oe->mail_smtpssl = $outboundEmailAccount->mail_smtpssl;
+            $mail->oe->auth_type = $outboundEmailAccount->auth_type ?? '';
+            $mail->oe->external_oauth_connection_id = $outboundEmailAccount->external_oauth_connection_id ?? '';
+            $mail->oe->mail_smtpauth_req = $outboundEmailAccount->mail_smtpauth_req ?? '';
+            $mail->oe->mail_smtpuser = $outboundEmailAccount->mail_smtpuser ?? '';
+            $mail->oe->mail_smtppass = $outboundEmailAccount->mail_smtppass ?? '';
+            $mail->oe->mail_smtpserver = $outboundEmailAccount->mail_smtpserver ?? '';
+            $mail->oe->mail_smtpport = $outboundEmailAccount->mail_smtpport ?? '';
+            $mail->oe->mail_smtpssl = $outboundEmailAccount->mail_smtpssl ?? '';
+
+            $mail->FromName = $outboundEmailAccount->smtp_from_name ?? $outboundEmailAccount->mail_smtpuser;
+            $mail->From = $outboundEmailAccount->smtp_from_address ?? $outboundEmailAccount->mail_smtpuser;
         }
 
         if ((empty($row['related_confirm_opt_in']) || $row['related_confirm_opt_in'] == '0')) {
