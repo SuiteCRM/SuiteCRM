@@ -52,6 +52,14 @@ global $mod_strings;
 global $app_list_strings;
 global $app_strings;
 global $current_user;
+global $sugar_config;
+
+$testMaxTimeout = 30; // seconds
+if (isset($sugar_config['outbound_email_test_max_timeout']) && is_numeric($sugar_config['outbound_email_test_max_timeout'])) {
+    $testMaxTimeout = (int)$sugar_config['outbound_email_test_max_timeout'];
+}
+
+ini_set('max_execution_time', $testMaxTimeout);
 
 $json = getJSONobj();
 $pass = '';
