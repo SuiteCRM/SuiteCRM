@@ -61,15 +61,6 @@ class EmailManController extends SugarController
             $_REQUEST['mail_sendtype'] = "SMTP";
         }
 
-        // save Outbound settings  #Bug 20033 Ensure data for Outbound email exists before trying to update the system mailer.
-        if (isset($_REQUEST['mail_sendtype']) && empty($_REQUEST['campaignConfig'])) {
-            $oe = new OutboundEmail();
-            $oe->populateFromPost();
-            $oe->saveSystem();
-        }
-
-
-
         $focus = BeanFactory::newBean('Administration');
 
         if (isset($_POST['tracking_entities_location_type'])) {
