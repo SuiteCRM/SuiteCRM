@@ -781,6 +781,7 @@ class SugarApplication
      * @param null $domain
      * @param bool $secure
      * @param bool $httponly
+     * @param string $samesite
      */
     public static function setCookie(
         $name,
@@ -789,7 +790,8 @@ class SugarApplication
         $path = null,
         $domain = null,
         $secure = false,
-        $httponly = true
+        $httponly = true,
+        $samesite = null
     ) {
         if (isSSL()) {
             $secure = true;
@@ -811,8 +813,18 @@ class SugarApplication
             }
         }
 
+        $defaultCookieSameSite = ini_get('session.cookie_samesite');
+        if ($samesite === null) {
+            if(empty($defaultCookieSameSite)) {
+                $samesite = 'Strict';
+            } else {
+                $samesite = $defaultCookieSameSite;
+            }
+        }
+
         if (!headers_sent()) {
-            setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
+            setcookie($name, $value, ['expires' => $expire, 'path' => $path, 'domain' => $domain, 
+                                      'secure' => $secure, 'httponly' => $httponly, 'samesite' => $samesite]);
         }
 
         $_COOKIE[$name] = $value;
