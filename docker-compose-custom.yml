@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: suitecrm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: suitecrm_root
+      MYSQL_DATABASE: suitecrm
+      MYSQL_USER: suitecrm
+      MYSQL_PASSWORD: suitecrm_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - suitecrm-network
+
+  # PHP Application with Custom Modules
+  suitecrm:
+    build:
+      context: .
+      dockerfile: Dockerfile.suitecrm
+    container_name: suitecrm-custom
+    ports:
+      - "8082:80"
+    volumes:
+      - ./:/var/www/html
+      - suitecrm_uploads:/var/www/html/upload
+      - suitecrm_cache:/var/www/html/cache
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_NAME: suitecrm
+      DATABASE_USER: suitecrm
+      DATABASE_PASSWORD: suitecrm_pass
+      SITE_URL: http://localhost:8082
+    depends_on:
+      - mysql
+    networks:
+      - suitecrm-network
+
+volumes:
+  mysql_data:
+  suitecrm_uploads:
+  suitecrm_cache:
+
+networks:
+  suitecrm-network:
+    driver: bridge

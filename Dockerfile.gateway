@@ -1,16 +1,23 @@
-FROM node:16-alpine
+FROM ubuntu:22.04
 
 # Install GnuCOBOL and dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     gnucobol \
-    gnucobol-dev \
+    curl \
+    ca-certificates \
     gcc \
     g++ \
     make \
-    libc-dev \
-    gmp-dev \
-    db-dev \
-    ncurses-dev
+    build-essential \
+    libgmp-dev \
+    libdb-dev \
+    libncurses5-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 16 (not 18, to maintain compatibility)
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
 WORKDIR /app

@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Enable Apache modules
-RUN a2enmod rewrite headers proxy proxy_http
+RUN a2enmod rewrite headers proxy proxy_http proxy_wstunnel
 
 # Configure PHP
 COPY php.ini /usr/local/etc/php/
@@ -37,7 +37,7 @@ COPY php.ini /usr/local/etc/php/
 WORKDIR /var/www/html
 
 # Copy SuiteCRM files
-COPY ./SuiteCRM /var/www/html
+COPY . /var/www/html
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
