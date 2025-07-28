@@ -108,12 +108,6 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
             throw new RuntimeException('Access Denied');
         }
 
-        if ($this->auth_type === 'basic') {
-            $this->mail_smtpauth_req = 1;
-        } else {
-            $this->mail_smtpauth_req = 0;
-        }
-
         $this->keepWriteOnlyFieldValues();
 
         if (!$this->mail_smtppass && $this->id) {
@@ -128,6 +122,22 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
             }
         }
         $this->mail_smtppass = $this->mail_smtppass ? blowfishEncode(blowfishGetKey('OutBoundEmail'), $this->mail_smtppass) : null;
+
+        if ($this->auth_type === 'basic') {
+            $this->mail_smtpauth_req = 1;
+            $this->external_oauth_connection_id = '';
+        }
+
+        if ($this->auth_type === 'no_auth') {
+            $this->mail_smtppass = '';
+            $this->mail_smtpauth_req = 0;
+            $this->external_oauth_connection_id = '';
+        }
+
+        if ($this->auth_type === 'oauth') {
+            $this->mail_smtppass = '';
+            $this->mail_smtpauth_req = 0;
+        }
 
         $this->smtp_from_name = trim($this->smtp_from_name);
         $this->smtp_from_addr = trim($this->smtp_from_addr);
