@@ -46,23 +46,23 @@
     
     <h3>{$MOD.LBL_MASS_UPDATE_TEXT}</h3>
     <br />
-    <form id="MassUpdateDates" name="MassUpdateDates" method="POST">
+    <form id="MassUpdateDates" name="MassUpdateDates" method="POST" onsubmit="return checkRequiredOperator();">
 		<input type="hidden" id="module" name="module" value="stic_Work_Calendar">
 		<input type="hidden" id="action" name="action" value="runMassUpdateDates">
 		<input type="hidden" id="selectedIDs" name="selectedIDs" value="{$selectedIDs}">
         
-        <table  style='width:40%; margin:1%; padding:5%;'>
+        <table style='width:50%;'>
             <tr>
-                <th>
+                <th style='width:30%;'>
                     {$MOD.LBL_MASS_UPDATE_DATES_FIELD}
                 </th>
-                <th>
-                    {$MOD.LBL_MASS_UPDATE_DATES_OPERADOR}
+                <th style='width:20%;'>
+                    {$MOD.LBL_MASS_UPDATE_DATES_OPERADOR}<span class="required">{$APP.LBL_REQUIRED_SYMBOL}</span></h3>
                 </th>
-                <th>
+                <th style='width:25%;'>
                     {$MOD.LBL_MASS_UPDATE_DATES_HORAS}
                 </th>
-                <th>
+                <th style='width:25%;'>
                     {$MOD.LBL_MASS_UPDATE_DATES_MINUTES}
                 </th>
            </tr>        
@@ -71,7 +71,7 @@
                     <h3>{$MOD.LBL_START_DATE}:</h3>
                 </td>                    
                 <td>
-                    <select name="start_date_operator">
+                    <select id="start_date_operator" name="start_date_operator">
                         <option label="" value="" selected> </option>
                         <option label="=" value="=">=</option>
                         <option label="+" value="+">+</option>
@@ -79,7 +79,8 @@
                     </select>
                 </td>        
                 <td>
-                    <select name="start_date_hours">
+                    <select id="start_date_hours" name="start_date_hours" disabled>
+                        <option label="" value=""></option>                    
                         <option label="00" value="0">00</option>            
                         <option label="01" value="1">01</option>
                         <option label="02" value="2">02</option>
@@ -107,7 +108,8 @@
                     </select>
                 </td>
                 <td>
-                    <select name="start_date_minutes">
+                    <select id="start_date_minutes" name="start_date_minutes" disabled>
+                        <option label="" value=""></option>                         
                         <option label="00" value="0">00</option>                    
                         <option label="01" value="1">01</option>
                         <option label="02" value="2">02</option>
@@ -177,7 +179,7 @@
                     <h3>{$MOD.LBL_END_DATE}:</h3>
                 </td>        
                 <td>
-                    <select name="end_date_operator">
+                    <select id="end_date_operator" name="end_date_operator">
                         <option label="" value="" selected> </option>                
                         <option label="=" value="=">=</option>
                         <option label="+" value="+">+</option>
@@ -185,7 +187,8 @@
                     </select>
                 </td>        
                 <td>
-                    <select name="end_date_hours">
+                    <select id="end_date_hours" name="end_date_hours" disabled>
+                        <option label="" value=""></option>              
                         <option label="00" value="0">00</option>                    
                         <option label="01" value="1">01</option>
                         <option label="02" value="2">02</option>
@@ -213,7 +216,8 @@
                     </select>
                 </td>
                 <td>
-                    <select name="end_date_minutes">
+                    <select id="end_date_minutes" name="end_date_minutes" disabled>
+                        <option label="" value=""></option>
                         <option label="00" value="0">00</option>                    
                         <option label="01" value="1">01</option>
                         <option label="02" value="2">02</option>
@@ -276,7 +280,13 @@
                         <option label="59" value="59">59</option>
                     </select>
                 </td>
-            </tr>            
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td id='errorMsg' colspan="3">
+                </td>
+           </tr>               
         </table>
         <br /><br />
 		<div id="cal-edit-buttons" class="ft">
@@ -287,3 +297,98 @@
 		</div>        
     </form>
 </div>
+
+<script>
+        const LBL_OPERATOR_REQUIRED = "{$MOD.LBL_OPERATOR_REQUIRED}";
+        const LBL_HOUR_OR_MINUTES_REQUIRED = "{$MOD.LBL_HOUR_OR_MINUTES_REQUIRED}";
+    {literal}
+        const errorTd = document.getElementById('errorMsg');
+
+        const startDateOperator = document.getElementById("start_date_operator");
+        const startDateHour = document.getElementById("start_date_hours");
+        const startDateMinutes = document.getElementById("start_date_minutes");
+
+        startDateOperator.addEventListener("change", function() 
+        {
+            if (startDateOperator.value == '') {
+                startDateHour.disabled = true;
+                startDateMinutes.disabled = true;
+            } else {
+                startDateHour.disabled = false;
+                startDateMinutes.disabled = false;
+            }
+        });
+
+        startDateHour.addEventListener("click", function () {
+            setEnabled(startDateHour);
+        }); 
+        startDateMinutes.addEventListener("click", function () {
+            setEnabled(startDateMinutes);
+        });
+
+        const endDateOperator = document.getElementById("end_date_operator");
+        const endDateHour = document.getElementById("end_date_hours");
+        const endDateMinutes = document.getElementById("end_date_minutes");
+
+        endDateOperator.addEventListener("change", function() 
+        {
+            if (endDateOperator.value == '') {
+                endDateHour.disabled = true;
+                endDateMinutes.disabled = true;
+            } else {
+                endDateHour.disabled = false;
+                endDateMinutes.disabled = false;
+            }
+        });
+
+        endDateHour.addEventListener("click", function () {
+            setEnabled(endDateHour);
+        }); 
+        endDateMinutes.addEventListener("click", function () {
+            setEnabled(endDateMinutes);
+        });
+
+        debugger;
+        function checkRequiredOperator() 
+        {
+
+            if (startDateOperator.value == '' && endDateOperator.value  == '') {
+                errorTd.textContent = LBL_OPERATOR_REQUIRED;
+                errorTd.style.color = 'red';
+                return false;
+            }
+
+            error = false;
+            if ((startDateOperator.value != '') && (startDateHour.value == '' || startDateMinutes.value  == '')) {
+                errorTd.textContent = LBL_HOUR_OR_MINUTES_REQUIRED;
+                errorTd.style.color = 'red';
+                if (startDateHour.value == '') {startDateHour.style.backgroundColor="red";}
+                if (startDateMinutes.value == '') {startDateMinutes.style.backgroundColor="red";}
+                error = true;
+            }
+
+            if ((endDateOperator.value != '') && (endDateHour.value == '' || endDateMinutes.value == '' )) {
+                errorTd.textContent = LBL_HOUR_OR_MINUTES_REQUIRED;
+                errorTd.style.color = 'red';
+                if (endDateHour.value == '') {setDisabled(endDateHour)}
+                if (endDateMinutes.value == '') {setDisabled(endDateMinutes)}
+                error = true;
+            }
+
+            if (error) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function setDisabled(elem) {
+            elem.style.backgroundColor="red";
+        }
+        
+        function setEnabled(elem) {
+            elem.style.backgroundColor = '';
+        }
+    {/literal}
+
+</script>

@@ -38,8 +38,9 @@ class stic_Work_CalendarViewMassUpdateDatesForm extends SugarView {
 
         SticViews::display($this);		
 
-		// IDs of the selected records
-		$this->ss->assign('selectedIDs', $_REQUEST['uid']);
+		global $mod_strings;
+        $this->ss->assign('MOD', $mod_strings);
+		$this->ss->assign('selectedIDs', $_REQUEST['uid']); // IDs of the selected records
         $this->ss->display('modules/stic_Work_Calendar/tpls/massUpdateDatesForm.tpl');
     }
 }
