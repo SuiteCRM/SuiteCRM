@@ -69,7 +69,12 @@ $viewdefs ['OutboundEmailAccounts'] = [
                 ],
                 [
                     'mail_smtpssl',
-                    'external_oauth_connection_name',
+                    [
+                        'name' => 'external_oauth_connection_name',
+                        'displayParams' => [
+                            'initial_filter' => '{if $fields.type.value === "system"}&type="+"group"+"{/if}',
+                        ],
+                    ],
                 ],
                 [
                     'mail_smtpport',
