@@ -296,6 +296,12 @@ $app_list_strings = array(
         'Dr.' => 'Dr.',
         'Prof.' => 'Prof.',
     ),
+
+    'redirect_uri_type_dom' => [
+        'pretty_url' => 'Pretty URL (/ep/)',
+        'query_string' => 'Query String (index.php?entryPoint=)'
+    ],
+
     //time is in seconds; the greater the time the longer it takes;
     'reminder_max_time' => 90000,
     'reminder_time_options' => array(

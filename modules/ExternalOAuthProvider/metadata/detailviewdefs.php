@@ -95,7 +95,7 @@ $viewdefs[$module_name]['DetailView'] = [
             ],
             [
                 'redirect_uri',
-                ''
+                'redirect_uri_type'
             ],
         ],
         'lbl_extra' => [
