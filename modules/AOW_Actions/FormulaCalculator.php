@@ -890,7 +890,18 @@ class FormulaCalculator
             // Set TZ to user's TZ
             global $timedate, $current_user;
             $date = $timedate->fromDb($date);
-            $date = $timedate->tzUser($date, $current_user);
+            // STIC-Custom PCS 20240113 Calculate datetime according to user preferences in mass update
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/539
+            // $date = $timedate->tzUser($date, $current_user);
+            $isMassUpdate = isset($_REQUEST['action']) && $_REQUEST['action'] === 'MassUpdate';
+            if ($isMassUpdate) {
+                // Create a new DateTime with the timezone preference of the user
+                $userTZ = new DateTimeZone($current_user->getPreference('timezone'));
+                $date->setTimezone($userTZ);
+            } else {
+                $date = $timedate->tzUser($date, $current_user);
+            }
+            // END STIC-Custom
             return $date->format('Y-m-d H:i:s');
         } else { // In this case the WF is run by the cron
             global $current_user, $timedate;
