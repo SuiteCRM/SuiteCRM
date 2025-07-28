@@ -217,7 +217,10 @@ array(
                     0 => array(
                         'name' => 'product_image',
                         'label' => 'LBL_PRODUCT_IMAGE',
-                        'customCode' => '<img src="{$fields.product_image.value}" style="max-width: 160px;" height="160"/>',
+                        // STIC Custom 20250722 JBL - Treat product image as image
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/740
+                        // 'customCode' => '<img src="{$fields.product_image.value}" style="max-width: 160px;" height="160"/>',
+                        // END STIC Custom
                     ),
                     1 => array(
                         'name' => 'assigned_user_name',
