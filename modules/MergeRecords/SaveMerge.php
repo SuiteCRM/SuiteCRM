@@ -84,6 +84,26 @@ foreach ($focus->merge_bean->column_fields as $field) {
             }
             $value = encodeMultienumValue($value);
         }
+        // STIC Custom 20250610 JBL - Copy Image merging records
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/672
+        if (isset($focus->merge_bean->field_name_map[$field]['type']) && $focus->merge_bean->field_name_map[$field]['type'] == 'image') {
+            if (is_array($_POST['merged_ids'])) {
+                foreach ($_POST['merged_ids'] as $id) {
+                    require_once $focus->merge_bean_file_path;
+                    $mergeSource = new $focus->merge_bean_class();
+                    if ($mergeSource->retrieve($id) && $mergeSource->$field == $value) {
+                        // Copy image
+                        $source_file = "upload/{$mergeSource->id}_{$field}";
+                        $target_file = "upload/{$focus->merge_bean->id}_{$field}";
+                        if (file_exists($source_file)) {
+                            copy($source_file, $target_file);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        // END STIC Custom
         $focus->merge_bean->$field = $value;
     } elseif (isset($focus->merge_bean->field_name_map[$field]['type']) && $focus->merge_bean->field_name_map[$field]['type'] == 'bool') {
         $focus->merge_bean->$field = 0;
