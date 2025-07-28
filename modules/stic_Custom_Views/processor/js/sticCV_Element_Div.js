@@ -30,6 +30,10 @@ var sticCV_Element_Div = class sticCV_Element_Div {
     this.$element = $element;
   }
 
+  exists() {
+    return (this.$element?.length??0) > 0;
+  }
+
   show(show = true) {
     return this.applyAction({ action: "visible", value: show });
   }

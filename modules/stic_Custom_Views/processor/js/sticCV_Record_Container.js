@@ -36,6 +36,10 @@ var sticCV_Record_Container = class sticCV_Record_Container {
     this.content = null;
   }
 
+  exists() {
+    return (this.container?.exists()??false) && (this.header?.exists()??false) && (this.content?.exists()??false);
+  }
+
   show(show = true, automatically = false) {
     if (automatically) {
       return this.applyAction({ action: "visible_auto", value: show, element_section: "container" });

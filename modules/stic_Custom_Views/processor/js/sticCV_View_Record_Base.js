@@ -122,11 +122,11 @@ var sticCV_View_Record_Base = class sticCV_View_Record_Base {
   applyAction(action) {
     switch (action.type) {
       case "field_modification":
-        return this.field(action.element).applyAction(action);
+        return this.field(action.element).exists() ? this.field(action.element).applyAction(action) : false;
       case "panel_modification":
-        return this.panel(action.element).applyAction(action);
+        return this.panel(action.element).exists() ? this.panel(action.element).applyAction(action) : false;
       case "tab_modification":
-        return this.tab(action.element).applyAction(action);
+        return this.tab(action.element).exists() ? this.tab(action.element).applyAction(action) : false;
     }
   }
 

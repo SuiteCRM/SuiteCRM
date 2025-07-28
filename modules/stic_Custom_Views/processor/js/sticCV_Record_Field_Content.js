@@ -69,7 +69,7 @@ var sticCV_Record_Field_Content = class sticCV_Record_Field_Content extends stic
     this.$fieldText = this.$element.find(".sugar_field");
 
     this.$readonlyLabel = this.$element.parent().find(".stic-ReadonlyInput");
-    if (this.field.customView.view == "editview" || this.field.customView.view == "quickcreate") {
+    if (this.exists() && (this.field.customView.view == "editview" || this.field.customView.view == "quickcreate")) {
       // Create $readonlyLabel
       var classes = this.$element.attr("class").replace(/\bhidden\b/g, "").replace(/\s+/g, " ").trim();
       if (this.$readonlyLabel.length == 0 && this.$element.length > 0) {
