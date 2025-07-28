@@ -88,7 +88,7 @@ class OutboundEmailAccountsController extends SugarController
     }
 
     public function action_save() {
-        global $current_user;
+        global $current_user, $mod_strings;
         $isNewRecord = (empty($this->bean->id) || $this->bean->new_with_id);
 
         $this->bean->mail_sendtype = 'SMTP';
@@ -114,13 +114,27 @@ class OutboundEmailAccountsController extends SugarController
         $oe = $oe->getSystemEmail();
         $type = $this->bean->type;
 
-        if ($type === 'system' && $oe !== null && $oe->id !== $this->bean->id) {
-            $this->hasAccess = false;
-            $this->view = 'errors';
-            $this->errors = [
-                translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
-            ];
-            return;
+        if ($type === 'system') {
+            if ($oe !== null && $oe->id !== $this->bean->id){
+                $this->hasAccess = false;
+                $this->view = 'errors';
+                $this->errors = [
+                    translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
+                ];
+                return;
+            }
+
+            $oauth = null;
+
+            if ($_REQUEST['auth_type'] === 'oauth') {
+                $oauth = BeanFactory::getBean('ExternalOAuthConnection', $_REQUEST['external_oauth_connection_id']);
+            }
+
+            if ($oauth !== null && $oauth->type !== 'group') {
+                SugarApplication::appendErrorMessage($mod_strings['LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_IS_NOT_GROUP']);
+                SugarApplication::redirect('index.php?module=OutboundEmailAccounts&action=DetailView&record=' . $this->bean->id);
+                return;
+            }
         }
 
         if ($isNewRecord && empty($this->bean->user_id)) {
