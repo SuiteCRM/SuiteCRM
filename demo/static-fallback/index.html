@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MobileRealEstate CRM - Demo Fallback Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .demo-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4CAF50, #2196F3, #9C27B0);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .demo-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .demo-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+            text-align: center;
+        }
+
+        .demo-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .demo-description {
+            color: #666;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MobileRealEstate CRM</h1>
+        <p class="subtitle">Demo Fallback Suite - Always Ready for Presentation</p>
+        
+        <div class="demo-grid">
+            <a href="property-capture.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">📸</span>
+                <h2 class="demo-title">Property Capture</h2>
+                <p class="demo-description">
+                    Mobile-first property capture with simulated camera and GPS functionality. 
+                    Shows real-time validation and image processing.
+                </p>
+            </a>
+
+            <a href="payment-processing.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">💳</span>
+                <h2 class="demo-title">Payment Processing</h2>
+                <p class="demo-description">
+                    COBOL-powered payment gateway demo with animated transaction flow 
+                    and mainframe response visualization.
+                </p>
+            </a>
+
+            <a href="transaction-dashboard.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">📊</span>
+                <h2 class="demo-title">Transaction Dashboard</h2>
+                <p class="demo-description">
+                    Real-time analytics dashboard with animated charts, KPIs, 
+                    and transaction monitoring capabilities.
+                </p>
+            </a>
+
+            <a href="mortgage-calculator.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">🏠</span>
+                <h2 class="demo-title">Mortgage Calculator</h2>
+                <p class="demo-description">
+                    Interactive mortgage calculator with amortization schedules, 
+                    payment breakdowns, and comparison tools.
+                </p>
+            </a>
+
+            <a href="mainframe-sync.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">🖥️</span>
+                <h2 class="demo-title">Mainframe Sync</h2>
+                <p class="demo-description">
+                    Visualize real-time data synchronization between modern CRM 
+                    and legacy mainframe systems.
+                </p>
+            </a>
+
+            <a href="mobile-app.html" class="demo-card">
+                <span class="status-badge">Ready</span>
+                <span class="demo-icon">📱</span>
+                <h2 class="demo-title">Mobile App Preview</h2>
+                <p class="demo-description">
+                    Complete mobile app experience simulation with touch gestures 
+                    and responsive interactions.
+                </p>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p><span class="live-indicator"></span> All demos are self-contained and work offline</p>
+            <p>© 2024 MobileRealEstate CRM - Enterprise Real Estate Management</p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive flair
+        document.querySelectorAll('.demo-card').forEach(card => {
+            card.addEventListener('mouseenter', function(e) {
+                const icon = this.querySelector('.demo-icon');
+                icon.style.transform = 'scale(1.2)';
+                icon.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function(e) {
+                const icon = this.querySelector('.demo-icon');
+                icon.style.transform = 'scale(1)';
+            });
+        });
+
+        // Preload demos for instant access
+        const demos = [
+            'property-capture.html',
+            'payment-processing.html',
+            'transaction-dashboard.html',
+            'mortgage-calculator.html',
+            'mainframe-sync.html',
+            'mobile-app.html'
+        ];
+
+        demos.forEach(demo => {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = demo;
+            document.head.appendChild(link);
+        });
+    </script>
+</body>
+</html>

@@ -15,10 +15,13 @@ class COBOLPaymentService
     {
         global $sugar_config;
         
+        // Include COBOL WebSocket configuration
+        require_once __DIR__ . '/../../../config/cobol_websocket.php';
+        
         $this->cobolHost = $sugar_config['cobol_host'] ?? 'localhost';
-        $this->cobolPort = $sugar_config['cobol_port'] ?? 8080;
+        $this->cobolPort = $sugar_config['cobol_rest_port'] ?? $sugar_config['cobol_port'] ?? 8080;
         $this->cobolTimeout = $sugar_config['cobol_timeout'] ?? 30;
-        $this->websocketUrl = $sugar_config['cobol_websocket'] ?? 'ws://localhost:8081';
+        $this->websocketUrl = $sugar_config['cobol_websocket_url'] ?? 'ws://localhost:8081';
     }
     
     /**

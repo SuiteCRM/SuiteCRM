@@ -17,8 +17,9 @@ const logger = winston.createLogger({
 });
 
 // WebSocket server configuration
+const wsPort = process.env.COBOL_WS_PORT || process.env.WEBSOCKET_PORT || 8081;
 const wss = new WebSocket.Server({ 
-    port: 8080,
+    port: wsPort,
     perMessageDeflate: false
 });
 
@@ -450,7 +451,7 @@ exec('cobc -x -o transaction-stream transaction-stream.cob', (error) => {
 });
 
 // Start WebSocket server
-logger.info('WebSocket server started on port 8080');
+logger.info(`WebSocket server started on port ${wsPort}`);
 logger.info('Ready for transaction stream connections');
 
 // Graceful shutdown

@@ -63,37 +63,89 @@ function executeCOBOL(operation, data) {
     return new Promise((resolve, reject) => {
         const program = COBOL_PROGRAMS[operation];
         
-        if (!program || !fs.existsSync(program)) {
-            reject(new Error(`COBOL program not found: ${operation}`));
+        // Check if we should use mock service
+        const useMock = process.env.USE_MOCK_COBOL === 'true' || !program || !fs.existsSync(program);
+        
+        if (useMock) {
+            // Use mock service as fallback
+            console.log(`Using mock COBOL service for ${operation}`);
+            const mockUrl = `http://localhost:8090/cobol/${operation}`;
+            
+            const http = require('http');
+            const postData = data;
+            
+            const options = {
+                hostname: 'localhost',
+                port: 8090,
+                path: `/cobol/${operation}`,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain',
+                    'Content-Length': Buffer.byteLength(postData)
+                }
+            };
+            
+            const req = http.request(options, (res) => {
+                let output = '';
+                
+                res.on('data', (chunk) => {
+                    output += chunk;
+                });
+                
+                res.on('end', () => {
+                    if (res.statusCode === 200) {
+                        resolve(output);
+                    } else {
+                        reject(new Error(`Mock service returned ${res.statusCode}`));
+                    }
+                });
+            });
+            
+            req.on('error', (e) => {
+                // If mock service fails, try actual COBOL
+                if (program && fs.existsSync(program)) {
+                    runActualCOBOL();
+                } else {
+                    reject(new Error(`COBOL program not found and mock service unavailable: ${operation}`));
+                }
+            });
+            
+            req.write(postData);
+            req.end();
             return;
         }
         
-        const cobol = spawn(program, [], {
-            env: { ...process.env, COBOL_DATA: data }
-        });
+        // Run actual COBOL program
+        runActualCOBOL();
         
-        let output = '';
-        let error = '';
-        
-        cobol.stdout.on('data', (data) => {
-            output += data.toString();
-        });
-        
-        cobol.stderr.on('data', (data) => {
-            error += data.toString();
-        });
-        
-        cobol.on('close', (code) => {
-            if (code === 0) {
-                resolve(output.trim());
-            } else {
-                reject(new Error(error || `COBOL program exited with code ${code}`));
-            }
-        });
-        
-        // Send input data to COBOL program
-        cobol.stdin.write(data);
-        cobol.stdin.end();
+        function runActualCOBOL() {
+            const cobol = spawn(program, [], {
+                env: { ...process.env, COBOL_DATA: data }
+            });
+            
+            let output = '';
+            let error = '';
+            
+            cobol.stdout.on('data', (data) => {
+                output += data.toString();
+            });
+            
+            cobol.stderr.on('data', (data) => {
+                error += data.toString();
+            });
+            
+            cobol.on('close', (code) => {
+                if (code === 0) {
+                    resolve(output.trim());
+                } else {
+                    reject(new Error(error || `COBOL program exited with code ${code}`));
+                }
+            });
+            
+            // Send input data to COBOL program
+            cobol.stdin.write(data);
+            cobol.stdin.end();
+        }
     });
 }
 
@@ -416,12 +468,33 @@ function mapCOBOLStatus(code) {
     return statusMap[code] || 'UNKNOWN';
 }
 
+// Start mock service if enabled
+if (process.env.USE_MOCK_COBOL === 'true') {
+    const mockService = spawn('node', [path.join(__dirname, 'mock-cobol-service.js')], {
+        env: { ...process.env, MOCK_PORT: '8090' },
+        detached: false
+    });
+    
+    mockService.stdout.on('data', (data) => {
+        console.log(`Mock Service: ${data}`);
+    });
+    
+    mockService.stderr.on('data', (data) => {
+        console.error(`Mock Service Error: ${data}`);
+    });
+    
+    console.log('Started mock COBOL service on port 8090');
+}
+
 // Start server
 initializeCOBOL();
 
 app.listen(PORT, () => {
     console.log(`COBOL Gateway Server running on port ${PORT}`);
     console.log(`WebSocket server running on port ${WS_PORT}`);
+    if (process.env.USE_MOCK_COBOL === 'true') {
+        console.log('Using mock COBOL service for demo');
+    }
 });
 
 // Graceful shutdown

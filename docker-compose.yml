@@ -54,13 +54,16 @@ services:
     ports:
       - "8080:8080"
       - "8081:8081"
+      - "8090:8090"
     volumes:
       - ./cobol/programs:/app/programs
       - ./cobol/data:/app/data
+      - ./cobol/gateway:/app
     environment:
       NODE_ENV: production
       COBOL_PORT: 8080
       COBOL_WS_PORT: 8081
+      USE_MOCK_COBOL: "true"
     networks:
       - suitecrm-network
 

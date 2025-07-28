@@ -50,7 +50,7 @@ This integration brings native COBOL mainframe support to SuiteCRM, enabling sea
 3. **Access the system**:
    - SuiteCRM: http://localhost:8080
    - COBOL API: http://localhost:3000
-   - WebSocket: ws://localhost:8080
+   - WebSocket: ws://localhost:8081
 
 ## Architecture
 
@@ -155,7 +155,7 @@ Add to `config_override.php`:
 // COBOL Service Configuration
 $sugar_config['cobol_services'] = array(
     'api_endpoint' => 'http://localhost:3000',
-    'websocket_endpoint' => 'ws://localhost:8080',
+    'websocket_endpoint' => 'ws://localhost:8081',
     'timeout' => 30,
     'retry_attempts' => 3,
 );

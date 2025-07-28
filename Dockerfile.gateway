@@ -26,7 +26,7 @@ WORKDIR /app
 COPY cobol/gateway/package*.json ./
 RUN npm install
 
-COPY cobol/gateway/cobol-gateway.js ./
+COPY cobol/gateway/*.js ./
 COPY cobol/programs /app/programs
 
 # Compile COBOL programs

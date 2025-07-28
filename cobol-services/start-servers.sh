@@ -9,7 +9,7 @@ node server.js &
 API_PID=$!
 
 # Start WebSocket server
-echo "Starting WebSocket server on port 8080..."
+echo "Starting WebSocket server on port 8081..."
 node websocket-server.js &
 WS_PID=$!
 
