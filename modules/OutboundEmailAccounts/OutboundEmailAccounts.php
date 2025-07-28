@@ -460,6 +460,15 @@ HTML;
 				};
 
 				function testOutboundSettingsDialog() {
+                    
+                    var notifyFromAddress = document.getElementById('smtp_from_addr') && document.getElementById('smtp_from_addr').value;
+                    var notifyFromName = document.getElementById('smtp_from_name') && document.getElementById('smtp_from_name').value;
+                    
+                    if (!notifyFromAddress || !notifyFromName) {
+						overlay("{$APP['ERR_INVALID_REQUIRED_FIELDS']}", "{$APP['LBL_EMAIL_SETTINGS_FROM_ADDR_NOT_SET']}", 'alert');
+						return;
+					}
+                    
 					// lazy load dialogue
 					if(!EmailMan.testOutboundDialog) {
 						EmailMan.testOutboundDialog = new YAHOO.widget.Dialog("testOutboundDialog", {
