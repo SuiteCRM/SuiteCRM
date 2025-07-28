@@ -21,26 +21,15 @@
  *
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
-class stic_Custom_Views_ProcessorLogicHooks
-{
-    public function after_ui_frame($event, $arguments)
-    {
-        require_once 'modules/stic_Custom_Views/processor/stic_Custom_Views_Processor.php';
 
-        $action = strtolower($GLOBALS['action']);
-        $view = $action;
-        $module = $GLOBALS['module'];
-        if ($action == "subpanelcreates") {
-            $view = "quickcreate";
-            $module = $_POST["target_module"];
-        } else if ($action == "popup") {
-            $view = "quickcreate";
-        }
-        
-        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . 'after_ui_frame; Module:'.$module.'; View:'.$view);
-        $processor = new stic_Custom_Views_Processor($module, $view);
-        echo $processor->getHtmlScriptForCustomViews();
-
-        return "";
-    }
+ if (!defined('sugarEntry') || !sugarEntry) {
+  die('Not A Valid Entry Point');
 }
+
+require_once 'modules/stic_Custom_Views/processor/stic_Custom_Views_Processor.php';
+
+$module = "Calls";
+$view = "quickcreate";
+
+$processor = new stic_Custom_Views_Processor($module, $view);
+echo $processor->getHtmlScriptForCustomViews();

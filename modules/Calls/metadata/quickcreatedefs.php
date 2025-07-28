@@ -201,6 +201,7 @@ array (
         0 => 
         array (
           'file' => 'modules/Reminders/Reminders.js',
+          'file' => 'modules/Calls/sticCV_quickcreate.php',          
         ),
       ),
       'maxColumns' => '2',
