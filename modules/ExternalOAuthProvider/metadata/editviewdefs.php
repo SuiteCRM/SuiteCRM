@@ -93,7 +93,7 @@ $viewdefs['ExternalOAuthProvider'] = [
                 ],
                 [
                     'redirect_uri',
-                    ''
+                    'redirect_uri_type'
                 ],
             ],
             'lbl_extra' => [

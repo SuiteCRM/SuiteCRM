@@ -73,6 +73,7 @@ class ExternalOAuthProvider extends Basic
     public $expires_in_mapping;
     public $refresh_token_mapping;
     public $token_type_mapping;
+    public $redirect_uri_type;
 
 
     /**
@@ -322,11 +323,14 @@ class ExternalOAuthProvider extends Basic
         global $sugar_config;
 
         $siteUrl = $sugar_config['site_url'] ?? '';
-
         $siteUrl = str_ireplace('index.php', '', (string) $siteUrl);
         $siteUrl = rtrim($siteUrl, " \t\n\r\0\x0B\/");
 
-        return $siteUrl . '/ep/setExternalOAuthToken';
+        if ($this->redirect_uri_type === 'pretty_url') {
+            return $siteUrl . '/ep/setExternalOAuthToken';
+        }
+
+        return $siteUrl . '/index.php?entryPoint=setExternalOAuthToken';
     }
 
     /**
