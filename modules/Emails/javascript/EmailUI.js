@@ -273,21 +273,25 @@
           },
           {key: 'messages', label: '', formatter: "messageDisplay", className: 'yui-cstm-cntrd-liner'}];
 
-          var query = "index.php?module=Emails&action=EmailUIAjax&to_pdf=true&emailUIAction=retrieveAllOutbound" + (user ? '&user=' + user : '');
-          this.obDataSource = new YAHOO.util.DataSource(query);
-          this.obDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-          this.obDataSource.responseSchema = {
+          // STIC-Custom 20250523 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/657
+          // Remove this deprecated code as it is not necessary to list SMTP accounts when entering mail settings from the user profile
+          // Removing it prevents a system-override outgoing email account from being incorrectly created if the "Users may send as this account's identity" option is disabled on the general email account.
+          // var query = "index.php?module=Emails&action=EmailUIAjax&to_pdf=true&emailUIAction=retrieveAllOutbound" + (user ? '&user=' + user : '');
+          // this.obDataSource = new YAHOO.util.DataSource(query);
+          // this.obDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+          // this.obDataSource.responseSchema = {
   
-            resultsList: "outbound_account_list",
-            fields: ['id', 'name', 'is_editable', 'mail_smtpserver', 'type', 'errors']
-          };
+          //   resultsList: "outbound_account_list",
+          //   fields: ['id', 'name', 'is_editable', 'mail_smtpserver', 'type', 'errors']
+          // };
   
-          this.outboundAccountsSettingsTable = new YAHOO.widget.DataTable("outboundAccountsTable", this.obAccntsColumnDefs, this.obDataSource);
+          // this.outboundAccountsSettingsTable = new YAHOO.widget.DataTable("outboundAccountsTable", this.obAccntsColumnDefs, this.obDataSource);
   
   
-          this.outboundAccountsSettingsTable.subscribe("rowMouseoverEvent", this.outboundAccountsSettingsTable.onEventHighlightRow);
-          this.outboundAccountsSettingsTable.subscribe("rowMouseoutEvent", this.outboundAccountsSettingsTable.onEventUnhighlightRow);
-          this.outboundAccountsSettingsTable.subscribe("postRenderEvent", this.rebuildMailerOptions);
+          // this.outboundAccountsSettingsTable.subscribe("rowMouseoverEvent", this.outboundAccountsSettingsTable.onEventHighlightRow);
+          // this.outboundAccountsSettingsTable.subscribe("rowMouseoutEvent", this.outboundAccountsSettingsTable.onEventUnhighlightRow);
+          // this.outboundAccountsSettingsTable.subscribe("postRenderEvent", this.rebuildMailerOptions);
+          // END STIC-Custom
       }
     },
     /**

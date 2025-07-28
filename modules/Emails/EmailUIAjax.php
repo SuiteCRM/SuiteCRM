@@ -1261,16 +1261,20 @@ eoq;
         ///////////////////////////////////////////////////////////////////////////
         ////    INBOUND EMAIL ACCOUNTS
 
-        case "retrieveAllOutbound":
-            $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: retrieveAllOutbound");
-            global $current_user;
-            $oe = new OutboundEmail();
-            $outbounds = $oe->getUserMailers($current_user);
-            $results = array('outbound_account_list' => $outbounds, 'count' => is_countable($outbounds) ? count($outbounds) : 0);
-            $out = $json->encode($results, false);
-            echo $out;
+        // STIC-Custom 20250523 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/657
+        // Remove this deprecated code as it is not necessary to list SMTP accounts when entering mail settings from the user profile
+        // Removing it prevents a system-override outgoing email account from being incorrectly created if the "Users may send as this account's identity" option is disabled on the general email account.
+        // case "retrieveAllOutbound":
+        //     $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: retrieveAllOutbound");
+        //     global $current_user;
+        //     $oe = new OutboundEmail();
+        //     $outbounds = $oe->getUserMailers($current_user);
+        //     $results = array('outbound_account_list' => $outbounds, 'count' => is_countable($outbounds) ? count($outbounds) : 0);
+        //     $out = $json->encode($results, false);
+        //     echo $out;
 
-            break;
+        //     break;
+        // END STIC-Custom
 
         case "editOutbound":
             $GLOBALS['log']->debug("********** EMAIL 2.0 - Asynchronous - at: editOutbound");
