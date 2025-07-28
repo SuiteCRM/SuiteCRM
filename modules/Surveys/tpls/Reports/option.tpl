@@ -37,8 +37,12 @@
           tooltipsEvent: 'onmousemove',
           labels: chartLabels,
             {/literal}
-            {if $question.chartData|@array_values|@max < 10}
-          numyticks: max,
+            {* STIC Custom 20250711 JBL - Avoid error in max with invalid args *}
+            {* https://github.com/SinergiaTIC/SinergiaCRM/pull/722 *}
+            {* {if $question.chartData|@array_values|@max < 10} *}
+            {if $question.chartData && is_array($question.chartData) && $question.chartData|@count > 0 && $question.chartData|@array_values|@max < 10}
+            {* END STIC Custom *}
+        numyticks: max,
           ylabelsCount: max,
           ymax: max,
             {/if}
