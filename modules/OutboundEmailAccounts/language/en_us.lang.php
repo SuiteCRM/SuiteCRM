@@ -126,4 +126,5 @@ $mod_strings = array(
     'LNK_EXTERNAL_OAUTH_CONNECTIONS' => 'External OAuth Connections',
 
     'LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS' => 'System Outbound Email Account already exists. Please remove it before creating a new one.',
+    'LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_IS_NOT_GROUP' => 'System Outbound Email, if type "OAuth", must use a Group External OAuth Connection',
 );
