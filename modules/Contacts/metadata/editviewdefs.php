@@ -615,16 +615,6 @@ array (
           1 => 
           array (
             'name' => 'account_name',
-            'displayParams' => 
-            array (
-              'key' => 'billing',
-              'copy' => 'primary',
-              'billingKey' => 'primary',
-              'additionalFields' => 
-              array (
-                'phone_office' => 'phone_work',
-              ),
-            ),
           ),
         ),
         3 => 
