@@ -263,6 +263,11 @@ var outboundEmailFields = function () {
         },
 
         setRequired: function (field, fieldType, formName, required) {
+
+            var $editView = $('#EditView');
+            if (!$editView || !$editView.length) {
+                return;
+            }
             configureValidation(this.formName, this.name, required);
 
             this.setRequiredIndicator(field, required);
