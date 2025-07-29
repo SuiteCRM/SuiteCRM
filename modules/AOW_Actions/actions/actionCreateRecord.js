@@ -293,7 +293,7 @@ function show_mrModuleFields(ln){
 
         var callback = {
             success: function(result) {
-                cr_module[ln] = result.responseText;
+                cr_module[ln] = result.responseText.trim();
             }
         };
 
