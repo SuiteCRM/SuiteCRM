@@ -193,8 +193,20 @@ class EmailTemplateParser
             return '';
         }
 
-        $parts = explode($charUnderscore, ltrim($variable, $charVariable));
-        list($moduleName, $attribute) = [array_shift($parts), implode($charUnderscore, $parts)];
+        // STIC-Custom 20250624 MHP - Get the module name correctly
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/696
+        // $parts = explode($charUnderscore, ltrim($variable, $charVariable));
+        // list($moduleName, $attribute) = [array_shift($parts), implode($charUnderscore, $parts)];
+        if ($this->campaign->campaign_type == 'Notification')
+        {
+            $variable = ltrim($variable, $charVariable);
+            $moduleName = strtolower($this->module->object_name);
+            $attribute = substr($variable, strlen($moduleName . '_'));
+        } else {
+            $parts = explode($charUnderscore, ltrim($variable, $charVariable));
+            list($moduleName, $attribute) = [array_shift($parts), implode($charUnderscore, $parts)];
+        }
+        // END STIC-Custom
 
         /* Leads/Prospects/Users have a special variable naming scheme.
         $contact_xxx for leads/prospects and $contact_user_xxx for users */
