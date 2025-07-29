@@ -25,7 +25,7 @@ if(!defined('sugarEntry') || !sugarEntry) die('Not A Valid Entry Point');
 require_once('modules/DHA_PlantillasDocumentos/DHA_DocumentTemplatesCalculatedFields_base.php');
 
 // El prefijo "Custom" en el nombre de la clase no es imprescindible, a menos que ya exista otra clase para el modulo en /modules y �sta tenga que descender de la que ya existe (el funcionamiento es igual que con otras clases de Sugar)
-class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_DocumentTemplatesCalculatedFields {
+class Opportunities_DocumentTemplatesCalculatedFields extends DHA_DocumentTemplatesCalculatedFields {
 
 
    ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +164,7 @@ class CustomOpportunities_DocumentTemplatesCalculatedFields extends DHA_Document
       }      
       $this->SetCalcValue('last-meeting-name', $last_meeting_name); 
       $this->SetCalcValue('last-meeting-location', $last_meeting_location); 
-      $this->SetCalcValue('last-meeting-status', $app_list_strings['meeting_status_dom'][$last_meeting_status]);
+      $this->SetCalcValue('last-meeting-status', $app_list_strings['meeting_status_dom'][$last_meeting_status] ?? '');
       $this->SetCalcValue('last-meeting-date_start', $last_meeting_date_start); 
       $this->SetCalcValue('last-meeting-date_end', $last_meeting_date_end); 
       $this->SetCalcValue('last-meeting-duration_hours', $last_meeting_duration_hours);
