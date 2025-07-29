@@ -539,6 +539,7 @@ class Importer
             case 'enum':
             case 'dynamicenum':
             case 'multienum':
+                $rowValue = html_entity_decode($rowValue, ENT_QUOTES);      
                 $returnValue = $this->ifs->$fieldtype($rowValue, $fieldDef);
 
                 // try the default value on fail

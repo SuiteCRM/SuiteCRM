@@ -412,6 +412,10 @@ class Importer
             case 'enum':
             case 'dynamicenum':
             case 'multienum':
+                // STIC-Custom 20250620 MHP - Decode HTML entities to check if the value exists in the associated drop-down list
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/707
+                $rowValue = html_entity_decode($rowValue, ENT_QUOTES);
+                // END STIC-Custom
                 $returnValue = $this->ifs->$fieldtype($rowValue, $fieldDef);
 
                 // try the default value on fail
