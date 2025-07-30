@@ -114,27 +114,8 @@ class OutboundEmailAccountsController extends SugarController
         $oe = $oe->getSystemEmail();
         $type = $this->bean->type;
 
-        if ($type === 'system') {
-            if ($oe !== null && $oe->id !== $this->bean->id){
-                $this->hasAccess = false;
-                $this->view = 'errors';
-                $this->errors = [
-                    translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
-                ];
-                return;
-            }
-
-            $oauth = null;
-
-            if ($_REQUEST['auth_type'] === 'oauth') {
-                $oauth = BeanFactory::getBean('ExternalOAuthConnection', $_REQUEST['external_oauth_connection_id']);
-            }
-
-            if ($oauth !== null && $oauth->type !== 'group') {
-                SugarApplication::appendErrorMessage($mod_strings['LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_IS_NOT_GROUP']);
-                SugarApplication::redirect('index.php?module=OutboundEmailAccounts&action=DetailView&record=' . $this->bean->id);
-                return;
-            }
+        if ($type === 'user'){
+            $type = 'personal';
         }
 
         if ($isNewRecord && empty($this->bean->user_id)) {
@@ -144,6 +125,34 @@ class OutboundEmailAccountsController extends SugarController
 
         if (!$isNewRecord && !empty($this->bean->user_id) && empty($this->bean->assigned_user_id)) {
             $this->bean->assigned_user_id = $this->bean->user_id;
+        }
+
+        $authType = $_REQUEST['auth_type'] ?? '';
+
+        $oauth = null;
+        if ($authType === 'oauth' || ($_REQUEST['auth_type'] ?? '') === 'oauth') {
+            $oauth = BeanFactory::getBean('ExternalOAuthConnection', $_REQUEST['external_oauth_connection_id']);
+        }
+
+        if ($type === 'system' && $oe !== null && $oe->id !== $this->bean->id) {
+            $this->hasAccess = false;
+            $this->view = 'errors';
+            $this->errors = [
+                translate('LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_EXISTS', 'OutboundEmailAccounts'),
+            ];
+            return;
+        }
+
+        if ($type === 'system' && $oauth !== null && $oauth->type !== 'group') {
+            SugarApplication::appendErrorMessage($mod_strings['LBL_ERROR_OUTBOUND_EMAIL_SYSTEM_IS_NOT_GROUP']);
+            SugarApplication::redirect('index.php?module=OutboundEmailAccounts&action=DetailView&record=' . $this->bean->id);
+            return;
+        }
+
+        if ($type !== 'system' && $oauth !== null && $oauth->type !== $type) {
+            SugarApplication::appendErrorMessage($mod_strings['LBL_ERROR_OUTBOUND_EMAIL_CONNECTION_TYPE_MISMATCH']);
+            SugarApplication::redirect('index.php?module=OutboundEmailAccounts&action=DetailView&record=' . $this->bean->id);
+            return;
         }
 
         parent::action_save();
