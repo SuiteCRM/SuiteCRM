@@ -115,8 +115,11 @@
 							</script>
 
 						</div></td>
-
-						<td><div id="save_button_div"><input id="wiz_submit_button" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button" onclick="this.form.action.value='WizardMarketingSave'; this.form.module.value='Campaigns'; $('#show_wizard_summary').val('1'); " type="submit" name="button" value="{$APP.LBL_NEXT_BUTTON_LABEL}" ></div>
+						<!-- STIC-Custom 20250701 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/710-->
+						<!-- Validate email fields in the Email Marketing form -->
+						<!-- <td><div id="save_button_div"><input id="wiz_submit_button" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button" onclick="this.form.action.value='WizardMarketingSave'; this.form.module.value='Campaigns'; $('#show_wizard_summary').val('1'); " type="submit" name="button" value="{$APP.LBL_NEXT_BUTTON_LABEL}" ></div> -->
+							<td><div id="save_button_div"><input id="wiz_submit_button" title="{$APP.LBL_SAVE_BUTTON_TITLE}" accessKey="{$APP.LBL_SAVE_BUTTON_KEY}" class="button" onclick="wizardEmailMarketingValidate(); this.form.action.value='WizardMarketingSave'; this.form.module.value='Campaigns'; $('#show_wizard_summary').val('1'); " type="submit" name="button" value="{$APP.LBL_NEXT_BUTTON_LABEL}" ></div>
+						<!-- END STIC-Custom -->
 						</td>
 
 						<td><div id="next_button_div"><input id="wiz_next_button" type='button' title="{$APP.LBL_NEXT_BUTTON_LABEL}" class="button" onclick="javascript:onNextClick();" name="button" value="{$APP.LBL_NEXT_BUTTON_LABEL}"></div></td>
@@ -131,7 +134,25 @@
 
 	<script type="text/javascript">
 		{literal}
+		// STIC-Custom 20250701 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/710
+		// Validate email fields in the Email Marketing form 
+		function wizardEmailMarketingValidate() 
+		{
+			var marketingName = document.getElementById('marketing_name').value;
+			var inboundEmail = document.getElementById('inbound_email_id').value;
+			var starDate = document.getElementById('date_start_date').value;
+			var startHours = document.getElementById('date_start_hours').value;
+			var startMinutes = document.getElementById('date_start_minutes').value;
+			var fromAddress = document.getElementById("from_addr").value;
+			var replyAddress = document.getElementById("reply_addr").value;
 
+			if ((!marketingName) || (!inboundEmail) || (!starDate) || (!startHours) || (!startMinutes) 
+				|| (!isValidEmail(fromAddress)) || (!isValidEmail(replyAddress))) {
+				event.preventDefault();
+				check_form('wizform');
+			}
+		}
+		// END STIC-Custom
 
 		var uploadFormCallback = function() {
 			console.log('override this..');
@@ -1589,6 +1610,11 @@ function determine_back(){
 addToValidate('wizform', 'marketing_name', 'alphanumeric', true,  document.getElementById('marketing_name').title);
 //addToValidate('wizform', 'date_start', 'alphanumeric', true,  document.getElementById('date_start').title);
 addToValidate('wizform', 'inbound_email_id', 'alphanumeric', true,  document.getElementById('inbound_email_id').title);
+// STIC-Custom 20250701 MHP - https://github.com/SinergiaTIC/SinergiaCRM/pull/710
+// Validate email fields in the Email Marketing form
+addToValidate('wizform','from_addr','email',true,SUGAR.language.get('app_strings', 'ERR_INVALID_EMAIL_ADDRESS'));
+addToValidate('wizform','reply_addr','email',false,SUGAR.language.get('app_strings', 'ERR_INVALID_EMAIL_ADDRESS'));
+// END STIC-Custom
 
 
 {literal}

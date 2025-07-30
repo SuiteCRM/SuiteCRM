@@ -154,7 +154,8 @@
                                         class="required">{APP.LBL_REQUIRED_SYMBOL}</span></span></td>
                             <td><span><input name='from_name' id='from_name' tabindex='2' size='25' maxlength='100'
                                         type="text" value="{FROM_NAME}"></span></td>
-                            <td scope="row"><span>{MOD.LBL_FROM_ADDR}</span></td>
+                            <td scope="row"><span>{MOD.LBL_FROM_ADDR}</span> <span
+                                class="required">{APP.LBL_REQUIRED_SYMBOL}</span></td>
                             <td class="datafield"><span><input name='from_addr' id='from_addr'
                                         title='{MOD.LBL_FROM_ADDR}' tabindex='2' size='25' maxlength='100' type="text"
                                         value="{FROM_ADDR}"></span></td>
@@ -296,8 +297,16 @@
     // Call the onchange function of the outbound_email_id field to preload the values ​​of the selected element when creating a new marketing email
     // It is used to differentiate when we are loading the view or when the user has changed the value of the outgoing account
     var onReady = 1;
-    $(document).ready(function() {
-        $('select[name="outbound_email_id"]').change(); // Dispara el evento `change`
+    $(document).ready(function() 
+    {
+        // Trigger the `change` event
+        $('select[name="outbound_email_id"]').change();
+
+        // Add format validations for email fields
+        addToValidate('EditView','time_start','time',true,SUGAR.language.get('app_strings', 'ERR_INVALID_VALUE'));
+        addToValidate('EditView','from_addr','email',true,SUGAR.language.get('app_strings', 'ERR_INVALID_EMAIL_ADDRESS'));
+        addToValidate('EditView','reply_to_addr','email',false,SUGAR.language.get('app_strings', 'ERR_INVALID_EMAIL_ADDRESS'));
+
     });
     // END STIC-Custom
     var from_emails = new Array({ FROM_EMAILS });
