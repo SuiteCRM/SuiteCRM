@@ -121,13 +121,16 @@ array(
                         'studio' => 'visible',
                         'label' => 'LBL_SEGMENTATION',
                     ),
-                    1 => '',
-                ),
-                8 => array(
-                    0 => array(
+                    1 => array(
                         'name' => 'destination',
                         'studio' => 'visible',
                         'label' => 'LBL_DESTINATION',
+                    ),
+                ),
+                8 => array(
+                    0 => array(
+                        'name' => 'stic_bookings_stic_payment_commitments_name',
+                        'label' => 'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE',
                     ),
                     1 => array(
                         'name' => 'stic_payment_commitments_project_name',

@@ -40,7 +40,7 @@ class stic_Bookings_CalendarViewList extends ViewList
 
     public function display()
     {
-        global $mod_strings, $current_user, $app_strings, $sugar_config;
+        global $mod_strings, $current_user, $app_strings, $sugar_config, $timedate;
         SticViews::display($this);
 
         $initialCalendarDate = $_REQUEST['start_date'] ?? '';
@@ -62,6 +62,10 @@ class stic_Bookings_CalendarViewList extends ViewList
         $lang = json_encode($lang[0]);
         echo <<<SCRIPT
         <script>lang = $lang;</script>
+    SCRIPT;
+        $start_weekday = $GLOBALS['current_user']->get_first_day_of_week();
+        echo <<<SCRIPT
+        <script>start_weekday = $start_weekday;</script>
     SCRIPT;
 
         // Retrieve user configuration for the availability mode
@@ -87,14 +91,13 @@ class stic_Bookings_CalendarViewList extends ViewList
         $this->ss->assign('MOD', $mod_strings);
         $this->ss->assign('APP', $app_strings);
         $this->ss->assign('RESOURCESGROUP', $resources['resourcesArrayByGroup']);
-        $resourcesArrayJson = json_encode($resources['resourcesArray']);
+
+        $resourcesArrayJson = json_encode($resources['resourcesArrayNoPlaces']);
         echo <<<SCRIPT
         <script>resourcesGroupArray = $resourcesArrayJson;</script>
     SCRIPT;
 
-        echo '<link href="' . getJSPath('SticInclude/vendor/fullcalendar/lib/main.min.css') . '" rel="stylesheet"/>';
-        echo getVersionedScript("SticInclude/vendor/fullcalendar/lib/main.min.js");
-        echo getVersionedScript("SticInclude/vendor/fullcalendar/lib/locales-all.min.js");
+        echo getVersionedScript("SticInclude/vendor/fullcalendar/index.global.min.js");
         echo getVersionedScript("modules/stic_Bookings_Calendar/Utils.js");
 
         $this->ss->display("modules/stic_Bookings_Calendar/tpls/filter.tpl");

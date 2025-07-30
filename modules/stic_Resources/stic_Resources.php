@@ -64,3 +64,6 @@ class stic_Resources extends Basic
         return false;
     }
 }
+class stic_Places extends stic_Resources{
+    
+}

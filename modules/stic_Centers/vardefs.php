@@ -318,6 +318,16 @@ $dictionary['stic_Centers'] = array(
             'side' => 'right',
             'vname' => 'LBL_STIC_JOURNAL_STIC_CENTERS_FROM_STIC_JOURNAL_TITLE',
         ),
+        'stic_resources_stic_centers' => array(
+            'name' => 'stic_resources_stic_centers',
+            'type' => 'link',
+            'relationship' => 'stic_resources_stic_centers',
+            'source' => 'non-db',
+            'module' => 'stic_Resources',
+            'bean_name' => 'false',
+            'side' => 'right',
+            'vname' => 'LBL_STIC_RESOURCES_STIC_CENTERS_FROM_STIC_RESOURCES_TITLE',
+        ),
     ),
     'relationships' => array(
     ),

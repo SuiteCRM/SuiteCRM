@@ -131,6 +131,7 @@ $mod_strings = array(
     'LBL_STIC_PAYMENT_COMMITMENTS_CAMPAIGNS_FROM_CAMPAIGNS_TITLE' => 'Campanya',
     'LBL_STIC_PAYMENTS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_PAYMENTS_TITLE' => 'Pagaments',
     'LBL_STIC_PAYMENT_COMMITMENTS_STIC_REGISTRATIONS_FROM_STIC_REGISTRATIONS_TITLE' => 'Inscripcions',
+    'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE' => 'Reserva',
     'LBL_BANK_ACCOUNT_SHOULD_BE_EMPTY_ERROR' => "Si s'indica un compte bancari el mitjà de pagament ha de ser domiciliació o transferència emesa.",
     'LBL_NO_BANK_ACCOUNT_ERROR' => 'Si el mitjà de pagament és domiciliació o transferència emesa cal indicar un compte bancari vàlid.',
     'LBL_MUST_RELATE_TO_AN_ACCOUNT_OR_A_CONTACT' => 'Cal indicar una (i només una) persona o organització.',

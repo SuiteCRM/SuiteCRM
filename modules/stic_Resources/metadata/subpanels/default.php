@@ -76,6 +76,18 @@ $subpanel_layout = array(
             'width' => '10%',
             'default' => true,
         ),
+        'amount_day_occupied' => array(
+            'type' => 'decimal',
+            'vname' => 'LBL_AMOUNT_DAY_OCCUPIED',
+            'width' => '10%',
+            'default' => true,
+        ),
+        'amount_copayment' => array(
+            'type' => 'decimal',
+            'vname' => 'LBL_AMOUNT_COPAYMENT',
+            'width' => '10%',
+            'default' => true,
+        ),   
         'assigned_user_name' => array(
             'link' => true,
             'type' => 'relate',
@@ -87,6 +99,15 @@ $subpanel_layout = array(
             'target_module' => 'Users',
             'target_record_key' => 'assigned_user_id',
         ),
+        'close_button' => [
+            'widget_class' => 'SubPanelCloseButtonstic_Resources',
+            'vname' => 'LBL_LIST_CLOSE',
+            'record_id' => '{stic_resources_stic_bookings_stic_resources_ida}',
+            'link' => true,
+            'sortable' => false,
+            'default' => true,
+                'width' => '1%',
+        ],
         'edit_button' => array(
             'vname' => 'LBL_EDIT_BUTTON',
             'widget_class' => 'SubPanelEditButton',

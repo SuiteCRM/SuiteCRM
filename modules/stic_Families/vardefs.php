@@ -257,6 +257,17 @@ $dictionary['stic_Families'] = array(
             'side' => 'right',
             'vname' => 'LBL_STIC_GRANTS_STIC_FAMILIES_FROM_STIC_GRANTS_TITLE',
         ), 
+        'stic_bookings_stic_families' => array (
+            'name' => 'stic_bookings_stic_families',
+            'type' => 'link',
+            'relationship' => 'stic_bookings_stic_families',
+            'source' => 'non-db',
+            'module' => 'stic_Bookings',
+            'bean_name' => 'stic_Bookings',
+            'side' => 'right',
+            'vname' => 'LBL_STIC_BOOKINGS_STIC_FAMILIES_FROM_STIC_BOOKINGS_TITLE',
+        ), 
+
     ),
     'relationships' => array(),
     'optimistic_locking' => true,

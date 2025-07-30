@@ -839,11 +839,42 @@ $dictionary['stic_Payment_Commitments'] = array(
             'side' => 'right',
             'vname' => 'LBL_STIC_PAYMENT_COMMITMENTS_STIC_REGISTRATIONS_FROM_STIC_REGISTRATIONS_TITLE',
         ),
+        'stic_bookings_stic_payment_commitments' => array(
+            'name' => 'stic_bookings_stic_payment_commitments',
+            'type' => 'link',
+            'relationship' => 'stic_bookings_stic_payment_commitments',
+            'source' => 'non-db',
+            'module' => 'stic_Bookings',
+            'bean_name' => 'stic_Bookings',
+            'vname' => 'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE',
+            'id_name' => 'stic_bookings_stic_payment_commitmentsstic_bookings_ida',
+        ),
+        'stic_bookings_stic_payment_commitments_name' => array(
+            'name' => 'stic_bookings_stic_payment_commitments_name',
+            'type' => 'relate',
+            'source' => 'non-db',
+            'vname' => 'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE',
+            'save' => true,
+            'id_name' => 'stic_bookings_stic_payment_commitmentsstic_bookings_ida',
+            'link' => 'stic_bookings_stic_payment_commitments',
+            'table' => 'stic_bookings',
+            'module' => 'stic_Bookings',
+            'rname' => 'name',
+        ),
+        'stic_bookings_stic_payment_commitmentsstic_bookings_ida' => array(
+            'name' => 'stic_bookings_stic_payment_commitmentsstic_bookings_ida',
+            'type' => 'link',
+            'relationship' => 'stic_bookings_stic_payment_commitments',
+            'source' => 'non-db',
+            'reportable' => false,
+            'side' => 'left',
+            'vname' => 'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE',
+        ),
     ),
     'relationships' => array(
     ),
     'optimistic_locking' => 1,
-    'unified_search' => true,    
+    'unified_search' => true,
     'unified_search_default_enabled' => true,
 );
 if (!class_exists('VardefManager')) {
@@ -865,7 +896,7 @@ while ($i <= 12) {
     $positions = $i == 1 ? 1 : 2;
 
     $mainQuery = "CAST(SUBSTRING(SUBSTRING_INDEX(expected_payments_detail, '|', {$i}), LENGTH(SUBSTRING_INDEX(expected_payments_detail, '|', {$i} - 1)) + {$positions}) AS DECIMAL(10,2))";
-    
+
     $dictionary['stic_Payment_Commitments']['fields']['expected_payments_month_' . $i] = array(
         'name' => 'expected_payments_month_' . $i,
         'vname' => 'LBL_EXPECTED_PAYMENTS_MONTH_' . $i,

@@ -112,9 +112,7 @@ class stic_Bookings_CalendarDashlet extends DashletGeneric
         <script>resourcesGroupArray = $resourcesArrayJson;</script>
     SCRIPT;
 
-        echo '<link href="' . getJSPath('SticInclude/vendor/fullcalendar/lib/main.min.css') . '" rel="stylesheet"/>';
-        echo getVersionedScript("SticInclude/vendor/fullcalendar/lib/main.min.js");
-        echo getVersionedScript("SticInclude/vendor/fullcalendar/lib/locales-all.min.js");
+        echo getVersionedScript("SticInclude/vendor/fullcalendar/index.global.min.js");
         echo $ss->fetch("modules/stic_Bookings_Calendar/tpls/calendar.tpl");
 
         echo getVersionedScript("modules/stic_Bookings_Calendar/Utils.js");

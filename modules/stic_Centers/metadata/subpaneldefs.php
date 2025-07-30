@@ -37,7 +37,7 @@ $layout_defs[$module_name]['subpanel_setup']['securitygroups'] = array(
 );
 
 // Projects subpanel
-$layout_defs[$module_name]["subpanel_setup"]['stic_centers_project'] = array (
+$layout_defs[$module_name]["subpanel_setup"]['stic_centers_project'] = array(
     'order' => 100,
     'module' => 'Project',
     'subpanel_name' => 'default',
@@ -45,106 +45,112 @@ $layout_defs[$module_name]["subpanel_setup"]['stic_centers_project'] = array (
     'sort_by' => 'name',
     'title_key' => 'LBL_STIC_CENTERS_PROJECT_FROM_PROJECT_TITLE',
     'get_subpanel_data' => 'stic_centers_project',
-    'top_buttons' => 
-    array (
-      0 => 
-      array (
-        'widget_class' => 'SubPanelTopButtonQuickCreate',
-      ),
-      1 => 
-      array (
-        'widget_class' => 'SubPanelTopSelectButton',
-        'mode' => 'MultiSelect',
-      ),
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
     ),
-  );
+);
 
 // Contacts subpanel
-$layout_defs[$module_name]["subpanel_setup"]['stic_centers_contacts'] = array (
-  'order' => 300,
-  'module' => 'Contacts',
-  'subpanel_name' => 'SticDefault',
-  'sort_order' => 'asc',
-  'sort_by' => 'name',
-  'title_key' => 'LBL_STIC_CENTERS_CONTACTS_FROM_CONTACTS_TITLE',
-  'get_subpanel_data' => 'stic_centers_contacts',
-  'top_buttons' => 
-  array (
-    0 => 
-    array (
-      'widget_class' => 'SubPanelTopButtonQuickCreate',
+$layout_defs[$module_name]["subpanel_setup"]['stic_centers_contacts'] = array(
+    'order' => 300,
+    'module' => 'Contacts',
+    'subpanel_name' => 'SticDefault',
+    'sort_order' => 'asc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_STIC_CENTERS_CONTACTS_FROM_CONTACTS_TITLE',
+    'get_subpanel_data' => 'stic_centers_contacts',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
     ),
-    1 => 
-    array (
-      'widget_class' => 'SubPanelTopSelectButton',
-      'mode' => 'MultiSelect',
-    ),
-  ),
 );
 
 // Contacts Relationships subpanel
-$layout_defs[$module_name]["subpanel_setup"]['stic_centers_stic_contacts_relationships'] = array (
-  'order' => 400,
-  'module' => 'stic_Contacts_Relationships',
-  'subpanel_name' => 'default',
-  'sort_order' => 'asc',
-  'sort_by' => 'name',
-  'title_key' => 'LBL_STIC_CENTERS_STIC_CONTACTS_RELATIONSHIPS_FROM_STIC_CONTACTS_RELATIONSHIPS_TITLE',
-  'get_subpanel_data' => 'stic_centers_stic_contacts_relationships',
-  'top_buttons' => 
-  array (
-    0 => 
-    array (
-      'widget_class' => 'SubPanelTopButtonQuickCreate',
+$layout_defs[$module_name]["subpanel_setup"]['stic_centers_stic_contacts_relationships'] = array(
+    'order' => 400,
+    'module' => 'stic_Contacts_Relationships',
+    'subpanel_name' => 'default',
+    'sort_order' => 'asc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_STIC_CENTERS_STIC_CONTACTS_RELATIONSHIPS_FROM_STIC_CONTACTS_RELATIONSHIPS_TITLE',
+    'get_subpanel_data' => 'stic_centers_stic_contacts_relationships',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
     ),
-    1 => 
-    array (
-      'widget_class' => 'SubPanelTopSelectButton',
-      'mode' => 'MultiSelect',
-    ),
-  ),
 );
 
 // Events subpanel
-$layout_defs[$module_name]["subpanel_setup"]['stic_centers_stic_events'] = array (
-  'order' => 200,
-  'module' => 'stic_Events',
-  'subpanel_name' => 'default',
-  'sort_order' => 'asc',
-  'sort_by' => 'name',
-  'title_key' => 'LBL_STIC_CENTERS_STIC_EVENTS_FROM_STIC_EVENTS_TITLE',
-  'get_subpanel_data' => 'stic_centers_stic_events',
-  'top_buttons' => 
-  array (
-    0 => 
-    array (
-      'widget_class' => 'SubPanelTopButtonQuickCreate',
+$layout_defs[$module_name]["subpanel_setup"]['stic_centers_stic_events'] = array(
+    'order' => 200,
+    'module' => 'stic_Events',
+    'subpanel_name' => 'default',
+    'sort_order' => 'asc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_STIC_CENTERS_STIC_EVENTS_FROM_STIC_EVENTS_TITLE',
+    'get_subpanel_data' => 'stic_centers_stic_events',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
     ),
-    1 => 
-    array (
-      'widget_class' => 'SubPanelTopSelectButton',
-      'mode' => 'MultiSelect',
-    ),
-  ),
 );
 
 // Journal subpanel
 $layout_defs[$module_name]["subpanel_setup"]['stic_journal_stic_centers'] = array(
-  'order' => 100,
-  'module' => 'stic_Journal',
-  'subpanel_name' => 'default',
-  'sort_order' => 'desc',
-  'sort_by' => 'name',
-  'title_key' => 'LBL_STIC_JOURNAL_STIC_CENTERS_FROM_STIC_JOURNAL_TITLE',
-  'get_subpanel_data' => 'stic_journal_stic_centers',
-  'top_buttons' => array(
-      0 => array(
-          'widget_class' => 'SubPanelTopButtonQuickCreate',
-      ),
-      1 => array(
-          'widget_class' => 'SubPanelTopSelectButton',
-          'mode' => 'MultiSelect',
-      ),
-  ),
+    'order' => 100,
+    'module' => 'stic_Journal',
+    'subpanel_name' => 'default',
+    'sort_order' => 'desc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_STIC_JOURNAL_STIC_CENTERS_FROM_STIC_JOURNAL_TITLE',
+    'get_subpanel_data' => 'stic_journal_stic_centers',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
+    ),
 );
-
+// Resources subpanel
+$layout_defs[$module_name]["subpanel_setup"]['stic_resources_stic_centers'] = array(
+    'order' => 100,
+    'module' => 'stic_Resources',
+    'subpanel_name' => 'default',
+    'sort_order' => 'asc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_STIC_RESOURCES_STIC_CENTERS_FROM_STIC_RESOURCES_TITLE',
+    'get_subpanel_data' => 'stic_resources_stic_centers',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopCreateButton',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
+    ),
+);

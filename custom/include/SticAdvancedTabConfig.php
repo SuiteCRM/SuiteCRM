@@ -260,6 +260,12 @@ if (empty($GLOBALS["SticTabStructure"])) {
                 2 => array(
                     'id' => 'stic_Bookings_Calendar',
                 ),
+                3 => array(
+                    'id' => 'stic_Places',
+                ),
+                4 => array(
+                    'id' => 'stic_Bookings_Places_Calendar',
+                ),
             ),
         ),
         7 => array(

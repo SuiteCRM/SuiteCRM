@@ -53,7 +53,7 @@ class stic_ResourcesViewEdit extends ViewEdit
 
         // Write here you custom code
 
-        // echo getVersionedScript("modules/stic_Resources/Utils.js");
+        echo getVersionedScript("modules/stic_Resources/Utils.js");
     }
 
 }

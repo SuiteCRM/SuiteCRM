@@ -84,6 +84,7 @@ class stic_Bookings_CalendarController extends SugarController
             $filteredResources = explode(',', $_REQUEST['filteredResources']);
         }
 
+
         // Get the data to be displayed in the calendar according to stic_bookings_calendar_availability_mode param
         $calendarItems = array();
         if ($availabilityMode == "true") {
@@ -91,10 +92,17 @@ class stic_Bookings_CalendarController extends SugarController
         } else {
             $calendarItems = $this->getBookedResources($startDate, $endDate, $filteredResources);
         }
-
+        
         // Convert calendar items into calendar printable objects.
         $calendarObjects = array();
         foreach ($calendarItems as $calendarItem) {
+            if (
+                isset($_REQUEST['module']) && $_REQUEST['module'] === 'stic_Bookings_Calendar' &&
+                isset($calendarItem['resourceType']) && $calendarItem['resourceType'] === 'place'
+            ) {
+                continue;
+            }
+
             $calendarObject = new CalendarObject($calendarItem, $userTimeZone);
             // If the CalendarObject is in-bounds, add it to the output.
             // Probably we don't need this here because we are filtering the bookings before, but we leave it just in case.
@@ -138,17 +146,19 @@ class stic_Bookings_CalendarController extends SugarController
      * @param String $start_date
      * @param String $end_date
      * @param Array $filteredResources
-     * @return void
+     * @return array
      */
-    private function getBookedResources($start_date, $end_date, $filteredResources)
+    protected function getBookedResources($start_date, $end_date, $filteredResources)
     {
         global $current_user;
         $resourcesBean = BeanFactory::getBean('stic_Resources');
         $resources = $resourcesBean->get_full_list('name');
         $bookedResources = array();
-        $query = "stic_bookings.end_date >= '$start_date' AND stic_bookings.start_date <= '$end_date' AND stic_bookings.status != 'cancelled'";
-
-        foreach ($resources as $resource) {
+        $query = "stic_bookings.end_date >= '$start_date' 
+                AND stic_bookings.start_date <= '$end_date' 
+                AND stic_bookings.place_booking = 0 
+                AND stic_bookings.status != 'cancelled'";
+      foreach ($resources as $resource) {
             if (!$filteredResources || in_array($resource->id, $filteredResources)) {
                 $relBeans = $resource->get_linked_beans(
                     'stic_resources_stic_bookings',
@@ -168,6 +178,7 @@ class stic_Bookings_CalendarController extends SugarController
                         'id' => $relBean->id,
                         'recordId' => $relBean->id,
                         'resourceId' => $resource->id,
+                        'resourceType'=> $resource->type,
                         // 'backgroundColor' => $resource->color,
                         // 'borderColor' => $resource->color,
                         'allDay' => $relBean->all_day,
@@ -190,7 +201,7 @@ class stic_Bookings_CalendarController extends SugarController
      * @param Array $filteredResources
      * @return array()
      */
-    private function getResourcesAvailability($start_date, $end_date, $filteredResources)
+    protected function getResourcesAvailability($start_date, $end_date, $filteredResources)
     {
         $resourcesAvailability = array();
         if (empty($filteredResources) || !is_array($filteredResources)) {
@@ -238,12 +249,31 @@ class stic_Bookings_CalendarController extends SugarController
             $db = DBManagerFactory::getInstance();
             $res = $db->query($query);
             $row = $db->fetchByAssoc($res);
-            $startDate = $row['date_availability'];
-
-            $lastDate = $row['date_availability'];
-            while ($row = $db->fetchByAssoc($res)) {
-                if (strtotime($row['date_availability']) - strtotime($lastDate) > 15 * 60) {
-                    // 15 mins has passed
+            if (!empty($row)) {
+                $startDate = $row['date_availability'];
+                $lastDate = $row['date_availability'];
+                
+                while ($row = $db->fetchByAssoc($res)) {
+                    if (strtotime($row['date_availability']) - strtotime($lastDate) > 15 * 60) {
+                        // 15 mins has passed
+                        $resourcesAvailability[] = array(
+                            'title' => $resourceBean->name,
+                            'resourceName' => $resourceBean->name,
+                            'module' => $resourceBean->module_name,
+                            'recordId' => $resourceBean->id,
+                            'resourceId' => $resourceBean->id,
+                            'start' => $startDate,
+                            'end' => $lastDate,
+                            // Classname is defined this way in order to paint each calendar object using the resource's color
+                            'className' => 'id-' . $resourceBean->id,
+                        );
+                        $startDate = $row['date_availability'];
+                        $lastDate = $row['date_availability'];
+                    } else {
+                        $lastDate = $row['date_availability'];
+                    }
+                }                
+                if ($startDate != $lastDate) {
                     $resourcesAvailability[] = array(
                         'title' => $resourceBean->name,
                         'resourceName' => $resourceBean->name,
@@ -255,28 +285,44 @@ class stic_Bookings_CalendarController extends SugarController
                         // Classname is defined this way in order to paint each calendar object using the resource's color
                         'className' => 'id-' . $resourceBean->id,
                     );
-                    $startDate = $row['date_availability'];
-                    $lastDate = $row['date_availability'];
-
-                } else {
-                    $lastDate = $row['date_availability'];
                 }
-            }
-            if ($startDate != $lastDate) {
-                $resourcesAvailability[] = array(
-                    'title' => $resourceBean->name,
-                    'resourceName' => $resourceBean->name,
-                    'module' => $resourceBean->module_name,
-                    'recordId' => $resourceBean->id,
-                    'resourceId' => $resourceBean->id,
-                    'start' => $startDate,
-                    'end' => $lastDate,
-                    // Classname is defined this way in order to paint each calendar object using the resource's color
-                    'className' => 'id-' . $resourceBean->id,
-                );
             }
             
         }
         return $resourcesAvailability;
+    }
+    
+    /**
+     * Validates if a date string is in the expected format
+     *
+     * @param string $date Date string to validate
+     * @param string $format Format to validate against
+     * @return bool
+     */
+    protected function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) === $date;
+    }
+
+    /**
+     * Returns an array of dates between start and end dates
+     *
+     * @param string $startDate Start date (YYYY-MM-DD)
+     * @param string $endDate End date (YYYY-MM-DD)
+     * @return array
+     */
+    protected function getDatesArray($startDate, $endDate)
+    {
+        $dates = array();
+        $current = strtotime($startDate);
+        $end = strtotime($endDate);
+
+        while ($current <= $end) {
+            $dates[] = date('Y-m-d', $current);
+            $current = strtotime('+1 day', $current);
+        }
+
+        return $dates;
     }
 }

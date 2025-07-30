@@ -68,6 +68,34 @@ class stic_BookingsViewDetail extends ViewDetail
                 $endDate = $timedate->asUserDate($endDate, false, $current_user);
                 $this->bean->end_date = $endDate;
             }
+
+            if (!empty($this->bean->fetched_row['planned_start_date'])) {
+                $plannedStartDate = explode(' ', $this->bean->fetched_row['planned_start_date']);
+                if ($plannedStartDate[1] > "12:00") {
+                    $plannedStartDate = $timedate->fromDbDate($plannedStartDate[0]);
+                    $plannedStartDate = $plannedStartDate->modify("next day");
+                    $plannedStartDate = $timedate->asUserDate($plannedStartDate, false, $current_user);
+                    $this->bean->planned_start_date = $plannedStartDate;
+                } else {
+                    $plannedStartDate = $timedate->fromDbDate($plannedStartDate[0]);
+                    $plannedStartDate = $timedate->asUserDate($plannedStartDate, false, $current_user);
+                    $this->bean->planned_start_date = $plannedStartDate;
+                }
+            }
+
+            if(!empty($this->bean->fetched_row['planned_end_date'])){
+                $plannedEndDate = explode(' ', $this->bean->fetched_row['planned_end_date']);
+                if ($plannedEndDate[1] > "12:00") {
+                    $plannedEndDate = $timedate->fromDbDate($plannedEndDate[0]);
+                    $plannedEndDate = $timedate->asUserDate($plannedEndDate, false, $current_user);
+                    $this->bean->planned_end_date = $plannedEndDate;
+                } else {
+                    $plannedEndDate = $timedate->fromDbDate($plannedEndDate[0]);
+                    $plannedEndDate = $plannedEndDate->modify("previous day");
+                    $plannedEndDate = $timedate->asUserDate($plannedEndDate, false, $current_user);
+                    $this->bean->planned_end_date = $plannedEndDate;
+                }
+            }
         }
 
         parent::preDisplay();
@@ -84,9 +112,6 @@ class stic_BookingsViewDetail extends ViewDetail
         parent::display();
 
         SticViews::display($this);
-
         echo getVersionedScript("modules/stic_Bookings/Utils.js");
-
     }
-
 }

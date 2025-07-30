@@ -78,6 +78,7 @@ $mod_strings = array(
     'LBL_STIC_FAMILIES_STIC_ASSESSMENTS_FROM_STIC_ASSESSMENTS_TITLE' => 'Valoraciones',
     'LBL_STIC_FAMILIES_STIC_GOALS_FROM_STIC_GOALS_TITLE' => 'Objetivos',
     'LBL_STIC_GRANTS_STIC_FAMILIES_FROM_STIC_GRANTS_TITLE' => 'Ayudas',
+    'LBL_STIC_BOOKINGS_STIC_FAMILIES_FROM_STIC_BOOKINGS_TITLE' => 'Reservas',
     'LBL_START_DATE_ERROR' => 'La fecha de alta debe ser igual o anterior a la fecha de baja.',
     'LBL_END_DATE_ERROR' => 'La fecha de baja debe ser igual o posterior a la fecha de alta.',
 );

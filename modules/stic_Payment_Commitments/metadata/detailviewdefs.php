@@ -187,6 +187,14 @@ array(
                 ),
                 13 => array(
                     0 => array(
+                        'name' => 'stic_bookings_stic_payment_commitments_name',
+                        'label' => 'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE',
+                    ),
+                    1 => '',
+                ),
+
+                14 => array(
+                    0 => array(
                         'name' => 'in_kind_donation',
                         'label' => 'LBL_IN_KIND_DONATION',
                     ),
@@ -196,7 +204,7 @@ array(
                         'label' => 'LBL_TRANSACTION_TYPE',
                     ),
                 ),
-                14 => array(
+                15 => array(
                     0 => 'description',
                 ),
             ),
@@ -227,5 +235,3 @@ array(
         ),
     ),
 );
-
-?>

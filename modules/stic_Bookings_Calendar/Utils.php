@@ -30,35 +30,46 @@ class stic_Bookings_CalendarUtils
     public static function getAllResources()
     {
         global $app_list_strings, $current_language, $sugar_config;
-        // In order to display the Calendar in the Dashlet, we need to retrieve the mod_strings manually from 
-        // the module using this function
+    
         $mod_strings = return_module_language($current_language, 'stic_Bookings_Calendar');
-
-        // In this case, only $GLOBALS['current_user'] works in the Home page
         $filteredResources = $GLOBALS['current_user']->getPreference('stic_bookings_calendar_filtered_resources');
-
+    
         $resourcesBean = BeanFactory::getBean('stic_Resources');
         $resourcesBeans = $resourcesBean->get_full_list('name');
-
+    
         $resourcesArrayByGroup = array();
         $resourcesArray = array();
+        $resourcesArrayNoPlaces = array();
+    
         foreach ($resourcesBeans as $resource) {
-            $color = $resource->color ? $resource->color : $sugar_config['stic_bookings_calendar_default_event_color'];
+            $color = $resource->color ?: $sugar_config['stic_bookings_calendar_default_event_color'];
+    
             $resourceObject = array(
                 "id" => $resource->id,
                 "name" => $resource->name,
                 "color" => $color,
                 "fontColor" => self::getContrastColor($color),
-                "selected" => in_array($resource->id, $filteredResources ? $filteredResources : array()),
+                "selected" => in_array($resource->id, $filteredResources ?: array()),
             );
+    
+            $type = $resource->type ?: 'no_type_assigned';
+    
             $resourcesArray[] = $resourceObject;
-            $resourcesArrayByGroup[$resource->type ? $resource->type : 'no_type_assigned'][] = $resourceObject;
+    
+            if ($type !== 'place') {
+                $resourcesArrayNoPlaces[] = $resourceObject;
+                $resourcesArrayByGroup[$type][] = $resourceObject;
+            }
         }
+    
         ksort($resourcesArrayByGroup);
-        return array('resourcesArray' => $resourcesArray, 'resourcesArrayByGroup' => $resourcesArrayByGroup);
-
+    
+        return array(
+            'resourcesArray' => $resourcesArray,
+            'resourcesArrayNoPlaces' => $resourcesArrayNoPlaces,
+            'resourcesArrayByGroup' => $resourcesArrayByGroup,
+        );
     }
-
     /**
      * This function requires a color and returns the most contrasted color, black or white. 
      * This is used to choose the font color for the resource in the calendar.

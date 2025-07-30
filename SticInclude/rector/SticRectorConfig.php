@@ -200,7 +200,7 @@ return static function (RectorConfig $rectorConfig): void {
         'Tasks', 'TemplateSectionLine', 'Trackers', 'UpgradeWizard', 'UserPreferences', 'Users', 'iCals',
         'jjwg_Address_Cache', 'jjwg_Areas', 'jjwg_Maps', 'jjwg_Markers', 'vCals',
         'stic_Accounts_Relationships','stic_Assessments','stic_Attendances','stic_Bookings',
-        'stic_Bookings_Calendar','stic_Centers','stic_Contacts_Relationships','stic_Custom_View_Actions','stic_Custom_View_Conditions',
+        'stic_Bookings_Calendar','stic_Bookings_Places_Calendar','stic_Centers','stic_Contacts_Relationships','stic_Custom_View_Actions','stic_Custom_View_Conditions',
         'stic_Custom_View_Customizations','stic_Custom_Views','stic_Events','stic_Families','stic_FollowUps','stic_Goals',
         'stic_Grants','stic_Group_Opportunities','stic_Import_Validation','stic_Incorpora','stic_Incorpora_Locations','stic_Job_Applications',
         'stic_Job_Offers','stic_Journal','stic_Medication','stic_Medication_Log','stic_Payment_Commitments','stic_Payments',

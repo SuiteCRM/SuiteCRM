@@ -31,4 +31,10 @@ $mod_strings = array(
     'LBL_AVAILABILITY_MODE_BUTTON_DISABLED' => 'Mostrar reservas',
     'LBL_AVAILABILITY_MODE_BUTTON_HELP' => 'Para mostrar la disponibilidad debe seleccionarse por lo menos un recurso.',
     'LBL_MOBILE_BUTTON' => 'Móvil',
+
+    'LBL_TODAY' => 'Hoy',
+    'LBL_MONTH' => 'Mes',
+    'LBL_WEEK' => 'Semana',
+    'LBL_DAY' =>  'Día',
+    'LBL_LIST' => 'Lista',
 );

@@ -46,7 +46,7 @@ class stic_ResourcesViewDetail extends ViewDetail
 
         SticViews::display($this);
 
-        // echo getVersionedScript("modules/stic_Resources/Utils.js");
+        echo getVersionedScript("modules/stic_Resources/Utils.js");
 
         // Write here you custom code
 

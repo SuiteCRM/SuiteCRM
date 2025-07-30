@@ -62,12 +62,12 @@ array(
                     0 => 'name',
                     1 => 'assigned_user_name',
                 ),
-                1 => array(
+                1=> array(
                     0 => array(
                         'name' => 'code',
-                        'label' => 'LBL_CODE',
                     ),
-                    1 => '',
+                    1 => array(
+                    ),
                 ),
                 2 => array(
                     0 => array(
@@ -79,12 +79,23 @@ array(
                 ),
                 3 => array(
                     0 => array(
+                        'name' => 'stic_bookings_stic_families_name',
+                    ),
+                    1 => array(
+                        'name' => 'stic_bookings_stic_payment_commitments_name',
+                    ),
+                ),
+                4 => array(
+                    0 => array(
                         'name' => 'all_day',
                         'label' => 'LBL_ALL_DAY',
                     ),
-                    1 => '',
+                    1 => array(
+                        'name' => 'place_booking',
+                        'label' => 'LBL_PLACE_BOOKING',
+                    ),
                 ),
-                4 => array(
+                5 => array(
                     0 => array(
                         'name' => 'start_date',
                         'label' => 'LBL_START_DATE',
@@ -94,7 +105,17 @@ array(
                         'label' => 'LBL_END_DATE',
                     ),
                 ),
-                5 => array(
+                6 => array(
+                    0 => array(
+                        'name' => 'planned_start_date',
+                        'label' => 'LBL_PLANNED_START_DATE',
+                    ),
+                    1 => array(
+                        'name' => 'planned_end_date',
+                        'label' => 'LBL_PLANNED_END_DATE',
+                    ),
+                ),
+                7 => array(
                     0 => array(
                         'name' => 'status',
                         'label' => 'LBL_STATUS',
@@ -105,7 +126,17 @@ array(
                         'label' => 'LBL_FLEX_RELATE',
                     ),
                 ),
-                6 => array(
+                8 => array(
+                    0 => array(
+                        'name' => 'total_amount',
+                        'label' => 'LBL_TOTAL_AMOUNT',
+                    ),
+                    1 => array(
+                        'name' => 'copayment_amount',
+                        'label' => 'LBL_TOTAL_COPAYMENT_AMOUNT',
+                    ),
+                ),
+                9 => array(
                     0 => 'description',
                 ),
             ),

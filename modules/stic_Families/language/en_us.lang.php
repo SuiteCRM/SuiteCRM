@@ -78,6 +78,7 @@ $mod_strings = array(
     'LBL_STIC_FAMILIES_STIC_ASSESSMENTS_FROM_STIC_ASSESSMENTS_TITLE' => 'Assessments',
     'LBL_STIC_FAMILIES_STIC_GOALS_FROM_STIC_GOALS_TITLE' => 'Goals',
     'LBL_STIC_GRANTS_STIC_FAMILIES_FROM_STIC_GRANTS_TITLE' => 'Grants',
+    'LBL_STIC_BOOKINGS_STIC_FAMILIES_FROM_STIC_BOOKINGS_TITLE' => 'Bookings',
     'LBL_START_DATE_ERROR' => 'Start date must be equal or before End date (if exists).',
     'LBL_END_DATE_ERROR' => 'End date must be equal or after Start date (if exists).',
 );

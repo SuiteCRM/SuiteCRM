@@ -61,6 +61,8 @@ $moduleList[] = 'stic_Journal';
 $moduleList[] = 'stic_Training';
 $moduleList[] = 'stic_Work_Experience';
 $moduleList[] = 'stic_Skills';
+$moduleList[] = 'stic_Bookings_Places_Calendar';
+$moduleList[] = 'stic_Places';
 $moduleList[] = 'stic_Group_Opportunities';
 
 // Bean names for custom modules
@@ -109,6 +111,8 @@ $beanList['stic_Custom_View_Customizations'] = 'stic_Custom_View_Customizations'
 $beanList['stic_Custom_View_Conditions'] = 'stic_Custom_View_Conditions';
 $beanList['stic_Custom_View_Actions'] = 'stic_Custom_View_Actions';
 $beanList['stic_Group_Opportunities'] = 'stic_Group_Opportunities';
+$beanList['stic_Bookings_Places_Calendar'] = 'stic_Bookings_Places_Calendar';
+$beanList['stic_Places'] = 'stic_Places';
 
 // Location of custom modules main class files
 $beanFiles['stic_Accounts_Relationships'] = 'modules/stic_Accounts_Relationships/stic_Accounts_Relationships.php';
@@ -155,6 +159,8 @@ $beanFiles['stic_Custom_View_Customizations'] = 'modules/stic_Custom_View_Custom
 $beanFiles['stic_Custom_View_Conditions'] = 'modules/stic_Custom_View_Conditions/stic_Custom_View_Conditions.php';
 $beanFiles['stic_Custom_View_Actions'] = 'modules/stic_Custom_View_Actions/stic_Custom_View_Actions.php';
 $beanFiles['stic_Group_Opportunities'] = 'modules/stic_Group_Opportunities/stic_Group_Opportunities.php';
+$beanFiles['stic_Bookings_Places_Calendar'] = 'modules/stic_Bookings_Places_Calendar/stic_Bookings_Places_Calendar.php';
+$beanFiles['stic_Places'] = 'modules/stic_Resources/stic_Resources.php';
 
 
 // Modules in $modInvisList are hidden in the main menu, in reporting and as subpanels

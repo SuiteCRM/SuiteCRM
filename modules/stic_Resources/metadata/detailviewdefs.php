@@ -50,7 +50,11 @@ array(
                     'newTab' => true,
                     'panelDefault' => 'expanded',
                 ),
-                'LBL_DETAILVIEW_PANEL1' => array(
+                'LBL_PANEL_PLACES' => array(
+                    'newTab' => false,
+                    'panelDefault' => 'expanded',
+                ),
+                'LBL_PANEL_RECORD_DETAILS' => array(
                     'newTab' => true,
                     'panelDefault' => 'expanded',
                 ),
@@ -103,10 +107,62 @@ array(
                     ),
                 ),
                 5 => array(
-                    0 => 'description',
+                    0 => array(
+                        'name' => 'stic_resources_project_name',
+                    ),
+                    1 => array(
+                        'name' => 'stic_resources_stic_centers_name',
+                    ),
                 ),
+                6 => array(
+                    0 => 'description',
+                )),
+            'LBL_PANEL_PLACES' => array(
+                0 => array(
+                    0 => array(
+                        'name' => 'place_type',
+                        'studio' => 'visible',
+                        'label' => 'LBL_PLACE_TYPE',
+                    ),
+                    1 => array(
+                        'name' => 'user_type',
+                        'studio' => 'visible',
+                        'label' => 'LBL_USER_TYPE',
+                    ),
+                ),
+                1 => array(
+                    0 => array(
+                        'name' => 'gender',
+                        'studio' => 'visible',
+                        'label' => 'LBL_GENDER',
+                    ),
+                    1 => array(
+                    ),
+                ),
+                2 => array(
+                    0 => array(
+                        'name' => 'amount_day_occupied',
+                        'studio' => 'visible',
+                        'label' => 'LBL_AMOUNT_DAY_OCCUPIED',
+                    ),
+                    1 => array(
+                        'name' => 'amount_day_unoccupied',
+                        'studio' => 'visible',
+                        'label' => 'LBL_AMOUNT_DAY_UNOCCUPIED',
+                    ),
+                ),
+                3 => array(
+                    0 => array(
+                        'name' => 'amount_copayment',
+                        'studio' => 'visible',
+                        'label' => 'LBL_AMOUNT_COPAYMENT',
+                    ),
+                    1 => array(
+                    ),
+                ),
+
             ),
-            'lbl_detailview_panel1' => array(
+            'LBL_PANEL_RECORD_DETAILS' => array(
                 0 => array(
                     0 => array(
                         'name' => 'created_by_name',

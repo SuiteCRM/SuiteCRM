@@ -131,6 +131,7 @@ $mod_strings = array(
     'LBL_STIC_PAYMENT_COMMITMENTS_CAMPAIGNS_FROM_CAMPAIGNS_TITLE' => 'Campaign',
     'LBL_STIC_PAYMENTS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_PAYMENTS_TITLE' => 'Payments',
     'LBL_STIC_PAYMENT_COMMITMENTS_STIC_REGISTRATIONS_FROM_STIC_REGISTRATIONS_TITLE' => 'Registrations',
+    'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE' => 'Booking',
     'LBL_PAYMENT_METHOD_BANK_ACCOUNT_ERROR' => 'Payment method should be direct debit or transfer issued when a bank account is provided.',
     'LBL_NO_BANK_ACCOUNT_ERROR' => 'If payment method is direct debit or transfer issued a valid bank account must be set.',
     'LBL_MUST_RELATE_TO_AN_ACCOUNT_OR_A_CONTACT' => 'One (and only one) contact or account is required.',

@@ -35,6 +35,12 @@ array(
                 'default' => true,
                 'width' => '10%',
             ),
+            'place_booking' => array(
+                'name' => 'place_booking',
+                'type' => 'bool',
+                'default' => true,
+                'width' => '10%',
+            ),
             'status' => array(
                 'name' => 'status',
                 'default' => true,
@@ -108,6 +114,12 @@ array(
             ),
             'code' => array(
                 'name' => 'code',
+                'default' => true,
+                'width' => '10%',
+            ),
+            'place_booking' => array(
+                'name' => 'place_booking',
+                'type' => 'bool',
                 'default' => true,
                 'width' => '10%',
             ),

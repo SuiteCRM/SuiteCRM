@@ -131,6 +131,7 @@ $mod_strings = array(
     'LBL_STIC_PAYMENT_COMMITMENTS_CAMPAIGNS_FROM_CAMPAIGNS_TITLE' => 'Campaña',
     'LBL_STIC_PAYMENTS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_PAYMENTS_TITLE' => 'Pagos',
     'LBL_STIC_PAYMENT_COMMITMENTS_STIC_REGISTRATIONS_FROM_STIC_REGISTRATIONS_TITLE' => 'Inscricións',
+    'LBL_STIC_BOOKINGS_STIC_PAYMENT_COMMITMENTS_FROM_STIC_BOOKINGS_TITLE' => 'Reserva',
     'LBL_BANK_ACCOUNT_SHOULD_BE_EMPTY_ERROR' => 'Se se indica unha conta bancaria, o medio de pago debe ser domiciliación ou transferencia emitida.',
     'LBL_NO_BANK_ACCOUNT_ERROR' => 'Se o medio de pago `´e domiciliación ou transferencia emitida, é necesario indicar unha conta bancaria válida.',
     'LBL_MUST_RELATE_TO_AN_ACCOUNT_OR_A_CONTACT' => 'Hai que indicar unha (e só unha) persoa ou organización.',

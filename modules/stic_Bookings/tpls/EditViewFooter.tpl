@@ -21,16 +21,68 @@
  *}
 {* This template is showed both in Bookings' ListView and Bookings Calendar reservations popups *}
 
-<h2>{$MOD.LBL_RESOURCES}</h2>
+<h2 id="resourcesTitle">{$MOD.LBL_RESOURCES}  <button id="openCenterPopup" type="button" class="button">{$MOD.LBL_CENTERS_BUTTON}</button>
+</h2>
+
+<div class="filter-box">
+    <div id="resourceSearchFields" class="filter-content">
+        <div id="selectedCentersContainer">
+            <div id="selectedCentersList"></div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-item">
+                <label for="resourcePlaceUserType">{$MOD.LBL_RESOURCES_USER_TYPE}</label>
+                <select id="resourcePlaceUserType" name="resourcePlaceUserType" multiple></select>
+            </div>
+            
+            <div class="filter-item">
+                <label for="resourcePlaceType">{$MOD.LBL_RESOURCES_PLACE_TYPE}</label>
+                <select id="resourcePlaceType" name="resourcePlaceType" multiple></select>
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-item">
+                <label for="resourceGender">{$MOD.LBL_RESOURCES_GENDER}</label>
+                <select id="resourceGender" name="resourceGender" multiple></select>
+            </div>
+            
+            <div class="filter-item">
+                <label for="resourceName">{$MOD.LBL_RESOURCES_NAME}</label>
+                <input type="text" id="resourceName" name="resourceName">
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <div class="filter-item">
+                <label for="numberOfPlaces">{$MOD.LBL_NUMBER_OF_PLACES}</label>
+                <input type="number" id="numberOfPlaces" name="numberOfPlaces">
+            </div>
+        </div>
+        <div class="filter-actions grouped-buttons">
+            <button id="loadCenterResourcesButton" type="button" class="button">
+                {$MOD.LBL_ADD_BUTTON}
+            </button>
+            <button id="resetResourcesButton" type="button" class="button">
+                {$MOD.LBL_UNDO_BUTTON}
+            </button>
+            <button id="deleteResourcesButton" type="button" class="button">
+                {$APP.LBL_DELETE_BUTTON}
+            </button>
+            <span id="resourceCount"></span>
+        </div>
+    </div>
+</div>
+<br>
 <table id="resourceLine" class="resource-table">
     <tr>
-        <th class="resource_column resource_name">{$MOD.LBL_RESOURCES_NAME}</th>
-        <th class="resource_column">{$MOD.LBL_RESOURCES_CODE}</th>
-        <th class="resource_column">{$MOD.LBL_RESOURCES_STATUS}</th>
-        <th class="resource_column">{$MOD.LBL_RESOURCES_TYPE}</th>
-        <th class="resource_column">{$MOD.LBL_RESOURCES_COLOR}</th>
-        <th class="resource_column hidden-xs hidden-sm">{$MOD.LBL_RESOURCES_HOURLY_RATE}</th>
-        <th class="resource_column hidden-xs hidden-sm">{$MOD.LBL_RESOURCES_DAILY_RATE}</th>
+        {foreach from=$config_resource_fields key=field item=label}
+            <th class="resource_column {if $field eq 'name'}resource_name{/if}
+                {if $field eq 'hourly_rate' || $field eq 'daily_rate'}hidden-xs hidden-sm{/if}">
+                {$label}
+            </th>
+        {/foreach}
         <th class="resource_column"></th>
     </tr>
 </table>
@@ -39,6 +91,18 @@
 </div>
 <br>
 {literal}
+<script>
+$(document).ready(function() {
+    // Initialize Selectize on all multiple select elements
+    $('#stic_resources_places_gender_list, #stic_resources_places_type_list, #stic_resources_places_users_list').selectize({
+        plugins: ['remove_button'],
+        delimiter: ',',
+        persist: false,
+        allowEmptyOption: false,
+        create: false
+    });
+});
+</script>
     <style>
         .resource-table .resouce_data_group>input {
             width: calc(100% - 85px);
@@ -70,11 +134,71 @@
             border-color: grey !important;
         }
 
-        /* Responsive tables for firefox and bootstrap*/
-        @-moz-document url-prefix() {
-            fieldset {
-                display: table-cell;
-            }
+        .filter-box {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .filter-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .filter-item select,
+        .filter-item input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .filter-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* espaciado entre botones */
+            margin-top: 5px;
+        }
+        
+        #resourceCount {
+            font-weight: bold;
+        }
+        #numberOfPlaces {
+            width: 100px;
+        }
+        #resourceName {
+            height: 32px; 
+            box-sizing: border-box;
+            padding: 8px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 3px;
+            width: 90%;
+            font-size: 13px;
+        }
+
+        #selectedCentersContainer {
+            margin-bottom: 10px;
         }
     </style>
 {/literal}
