@@ -63,6 +63,11 @@ ini_set('max_execution_time', $testMaxTimeout);
 
 $json = getJSONobj();
 $pass = '';
+
+if (empty($_REQUEST['mail_smtppass'])) {
+    $_REQUEST['mail_smtppass'] = BeanFactory::getBean('OutboundEmailAccounts', $_REQUEST['record'])?->mail_smtppass ?? '';
+}
+
 if (!empty($_REQUEST['mail_smtppass'])) {
     $pass = $_REQUEST['mail_smtppass'];
 } elseif (isset($_REQUEST['mail_type'])) {

@@ -445,6 +445,7 @@ HTML;
         $adminNotifyFromAddress = $admin->settings['notify_fromaddress'];
         isValidEmailAddress($adminNotifyFromAddress);
         $adminNotifyFromName = $admin->settings['notify_fromname'];
+        $record = $_REQUEST['record'] ?? '';
         $html = <<<HTML
 			<input id="sendTestOutboundEmailSettingsBtn" type="button" class="button" value="{$APP['LBL_EMAIL_TEST_OUTBOUND_SETTINGS']}" onclick="testOutboundSettings();">
 			<script type="text/javascript" src="cache/include/javascript/sugar_grp_yui_widgets.js"></script>
@@ -557,6 +558,7 @@ HTML;
 					var smtpssl  = document.getElementById('mail_smtpssl').value;
 					var authType = document.getElementById('auth_type').value || 'no_auth';
 					var externalOauthConnectionId = document.getElementById('external_oauth_connection_id').value || '';
+                    var smtpPass = trim(document.getElementById('mail_smtppass').value);
 					var mail_sendtype = 'SMTP';
                                                                 var adminNotifyFromAddress = document.getElementById('smtp_from_addr').value ? document.getElementById('smtp_from_addr').value :'$adminNotifyFromName';
                                                                 var adminNotifyFromName = document.getElementById('smtp_from_name').value ? document.getElementById('smtp_from_name').value : '$adminNotifyFromAddress';
@@ -569,7 +571,8 @@ HTML;
 						"mail_external_oauth_connection_id=" + externalOauthConnectionId + "&" +
 						"mail_smtpauth_req=" + (authType === 'basic' ? 1 : 0) + "&" +
 						"mail_smtpuser=" + trim(document.getElementById('mail_smtpuser').value) + "&" +
-						"mail_smtppass=" + trim(document.getElementById('mail_smtppass').value) + "&" +
+						"mail_smtppass=" + smtpPass + "&" +
+						"record=" + '$record' + "&" +
 						"outboundtest_to_address=" + toAddress + '&' +
 						'outboundtest_from_address=' + adminNotifyFromAddress + '&' +
 						'mail_from_name=' + adminNotifyFromName;
