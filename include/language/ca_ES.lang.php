@@ -3838,3 +3838,6 @@ $app_strings['LBL_TCPDF_ENGINE'] = 'Motor TCPDF';
 $app_strings['ERR_INVALID_FILE_NAME'] = 'El nom del fitxer no és vàlid:';
 $app_strings['LBL_LOGGER_VALID_FILENAME_CHARACTERS'] = 'Només pot contenir caràcters alfanumèrics, el punt (.), el guionet (-) o el guió baix (_).';
 $app_strings['LBL_LOGGER_INVALID_FILENAME'] = "El nom del fitxer d'importació no és vàlid";
+
+$app_strings['LBL_PASSWORD_SET_NEW_VALUE_TO_RESET'] = 'Contrasenya establerta. Introduïu un valor per establir-ne una de nova.';
+$app_strings['LBL_VALUE_SET_PLACEHOLDER'] = 'Valor establert. Introduïu-ne un de nou per sobreescriure el valor actual.';

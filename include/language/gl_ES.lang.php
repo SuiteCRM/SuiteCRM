@@ -3855,3 +3855,6 @@ $app_strings['LBL_TCPDF_ENGINE'] = 'Motor TCPDF';
 $app_strings['ERR_INVALID_FILE_NAME'] = 'O nome do ficheiro non é válido:';
 $app_strings['LBL_LOGGER_VALID_FILENAME_CHARACTERS'] = 'Só pode conter caracteres alfanuméricos, o punto (.), o guion (-) ou o guion baixo (_).';
 $app_strings['LBL_LOGGER_INVALID_FILENAME'] = 'O nome do ficheiro de importación non é válido';
+
+$app_strings['LBL_PASSWORD_SET_NEW_VALUE_TO_RESET'] = 'Contraseña establecida. Introduzca un valor para establecer una nueva contraseña.';
+$app_strings['LBL_VALUE_SET_PLACEHOLDER'] = 'Valor establecido. Introduzca un nuevo valor para sobrescribir el valor actual.';

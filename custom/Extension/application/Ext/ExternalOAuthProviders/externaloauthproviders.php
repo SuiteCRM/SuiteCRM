@@ -2,7 +2,6 @@
 
 require_once 'custom/modules/ExternalOAuthConnection/provider/SticMicrosoftOAuthProviderConnector.php';
 require_once 'custom/modules/ExternalOAuthConnection/provider/SticGoogleOAuthProviderConnector.php';
-require_once 'custom/modules/ExternalOAuthConnection/provider/GoogleOAuthProviderConnector.php';
 
 $aux_external_oauth_providers = [
     'Stic Google' => [
@@ -10,9 +9,6 @@ $aux_external_oauth_providers = [
     ],
     'Stic Microsoft' => [
         'class' => 'SticMicrosoftOAuthProviderConnector'
-    ],
-    'Google' => [
-        'class' => 'GoogleOAuthProviderConnector'
     ],
 ];
 
