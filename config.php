@@ -375,6 +375,7 @@ $sugar_config = array(
         'ca_ES' => 'Català',
         'es_ES' => 'Español',
         'gl_ES' => 'Galego',
+        'eu_ES' => 'Euskera',
     ),
     'large_scale_test' => false,
     'lead_conv_activity_opt' => 'donothing',

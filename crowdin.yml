@@ -1,0 +1,9 @@
+files:
+  - source: '*es_ES.lang.php*'
+    translation: /%original_path%/%locale_with_underscore%.lang.php
+  - source: '*es_ES.SticLang.php*'
+    translation: /%original_path%/%locale_with_underscore%.SticLang.php
+  - source: '*es_ES.KReporterCore.php*'
+    translation: /%original_path%/%locale_with_underscore%.KReporterCore.php
+  - source: '*es_ES.MailMergeReports.php*'
+    translation: /%original_path%/%locale_with_underscore%.MailMergeReports.php

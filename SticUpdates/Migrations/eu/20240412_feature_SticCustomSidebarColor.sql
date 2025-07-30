@@ -1,0 +1,2 @@
+INSERT IGNORE INTO `stic_settings` (`id`, `name`, `date_entered`, `date_modified`, `modified_user_id`, `created_by`, `description`, `deleted`, `assigned_user_id`, `type`, `value`) VALUES 
+('a649b1ca-4ada-e40f-5e47-660fc8e8d7cb', 'GENERAL_CUSTOM_SUBTHEME_MODE', NOW(), NOW(), '1', '1', 'Indica el modo del subtema de SinergiaCRM:\r\n0 - Subtema claro\r\n1 - Subtema oscuro\r\nUna vez cambiado, se asignará el estilo SticCustom a todos los usuarios.', 0, '1', 'GENERAL', '1');

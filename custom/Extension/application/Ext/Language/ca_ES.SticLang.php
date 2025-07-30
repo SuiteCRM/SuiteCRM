@@ -516,6 +516,7 @@ $app_list_strings['stic_genders_list'][''] = '';
 $app_list_strings['stic_genders_list']['male'] = 'Masculí';
 $app_list_strings['stic_genders_list']['female'] = 'Femení';
 $app_list_strings['stic_genders_list']['other'] = 'Altres';
+$app_list_strings['stic_languages_list']['basque'] = 'Basc';
 
 // Idiomes
 $app_list_strings['stic_languages_list'][''] = '';

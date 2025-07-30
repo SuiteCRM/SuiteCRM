@@ -523,6 +523,7 @@ $app_list_strings['stic_languages_list'][''] = '';
 $app_list_strings['stic_languages_list']['catalan'] = 'Catalán';
 $app_list_strings['stic_languages_list']['spanish'] = 'Castelán';
 $app_list_strings['stic_languages_list']['galician'] = 'Galego';
+$app_list_strings['stic_languages_list']['basque'] = 'Vasco';
 
 // Canales de campañas
 $app_list_strings['stic_campaign_channels_list'][''] = '';
