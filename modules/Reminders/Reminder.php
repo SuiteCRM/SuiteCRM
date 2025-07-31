@@ -239,14 +239,19 @@ class Reminder extends Basic
                 $inviteeModuleId = $invitee->related_invitee_module_id;
                 $personBean = BeanFactory::getBean($inviteeModule, $inviteeModuleId);
                 // The original email reminders check the accept_status field in related users/leads/contacts etc. and filtered these users who not decline this event.
-                if ($checkDecline && !self::isDecline($event, $personBean)) {
-                    if (!empty($personBean->email1)) {
-                        $arr = array(
-                            'type' => $inviteeModule,
-                            'name' => $personBean->full_name,
-                            'email' => $personBean->email1,
-                        );
-                        $emails[] = $arr;
+
+                // Avoid sending the reminder to any guest if the guest does not already exist in the CRM, as it causes an error that prevents the “Run Email Reminder Notifications” task from finishing correctly
+                // Prevent a deleted contact, user, etc. from being deleted in order for the task to run
+                if($personBean != false) {
+                    if ($checkDecline && !self::isDecline($event, $personBean)) {
+                        if (!empty($personBean->email1)) {
+                            $arr = array(
+                                'type' => $inviteeModule,
+                                'name' => $personBean->full_name,
+                                'email' => $personBean->email1,
+                            );
+                            $emails[] = $arr;
+                        }
                     }
                 }
             }
@@ -265,7 +270,9 @@ class Reminder extends Basic
                 if ($eventBean) {
                     $remind_ts = $timedate->fromUser($eventBean->date_start)->modify("-{$reminderBean->timer_email} seconds")->ts;
                     $now_ts = $timedate->getNow()->ts;
-                    if ($now_ts >= $remind_ts) {
+                    // Do not send a reminder if the meeting has already taken place
+                    $event_ts = $timedate->fromUser($eventBean->date_start)->ts;
+                    if ($now_ts >= $remind_ts && $now_ts <= $event_ts) {
                         $reminders[$reminderBean->id] = $reminderBean;
                     }
                 } else {
