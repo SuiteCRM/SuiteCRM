@@ -212,6 +212,11 @@ class UserPreference extends SugarBean
 
         $user = $this->_userFocus;
 
+        // if we’re running under cron / php-cli, reload and bail
+        if (PHP_SAPI === 'cli') {
+            return $this->reloadPreferences($category);
+        }
+
         if ($user->object_name != 'User') {
             return;
         }
@@ -252,13 +257,13 @@ class UserPreference extends SugarBean
         $result = $db->query("SELECT contents FROM user_preferences WHERE assigned_user_id='$user->id' AND category = '" . $category . "' AND deleted = 0", false, 'Failed to load user preferences');
         $row = $db->fetchByAssoc($result);
         if ($row) {
-            if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
+            if (PHP_SAPI === 'cli' || $GLOBALS['current_user']->user_name === $user->user_name){
                 $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']));
             }
             $user->user_preferences[$category] = unserialize(base64_decode($row['contents']));
             return true;
         } else {
-            if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
+            if (PHP_SAPI === 'cli' || $GLOBALS['current_user']->user_name === $user->user_name){
                 $_SESSION[$user->user_name . '_PREFERENCES'][$category] = array();
             }
             $user->user_preferences[$category] = array();
