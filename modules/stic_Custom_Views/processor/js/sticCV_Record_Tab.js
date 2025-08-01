@@ -32,4 +32,8 @@ var sticCV_Record_Tab = class sticCV_Record_Tab extends sticCV_Record_Container 
     this.header = new sticCV_Record_Tab_Header(this);
     this.content = new sticCV_Record_Tab_Content(this);
   }
+
+  exists() {
+    return (this.header?.exists()??false) && (this.content?.exists()??false);
+  }
 };
