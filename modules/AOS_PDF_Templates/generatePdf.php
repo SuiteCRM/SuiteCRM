@@ -138,6 +138,8 @@ $footer = templateParser::parse_template($footer, $object_arr);
 
 $printable = str_replace("\n", "<br />", (string) $converted);
 
+ob_flush(); //Prior to using tcpdf to generate a pdf, the output buffer must be empty.
+
 if ($task === 'pdf' || $task === 'emailpdf') {
     $file_name = $mod_strings['LBL_PDF_NAME'] . "_" . str_replace(" ", "_", (string) $bean->name) . ".pdf";
 
