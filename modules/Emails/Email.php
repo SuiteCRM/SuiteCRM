@@ -4418,14 +4418,16 @@ eoq;
 
         // is from address in the request?
 
-        if (!isset($request['from_addr_name']) || !$request['from_addr_name']) {
-            $useDefaultFromAddressName = true;
-        }
+        if (!isset($request['from_addr'])) {
+            if (!isset($request['from_addr_name']) || !$request['from_addr_name']) {
+                $useDefaultFromAddressName = true;
+            }
 
-        // is from name in the request?
+            // is from name in the request?
 
-        if (!isset($request['from_addr_email']) || !$request['from_addr_email']) {
-            $useDefaultFromAddressEmail = true;
+            if (!isset($request['from_addr_email']) || !$request['from_addr_email']) {
+                $useDefaultFromAddressEmail = true;
+            }
         }
 
         // so, do we have to use any default data?
