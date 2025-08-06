@@ -1,0 +1,56 @@
+FROM php:8.1-apache
+
+# Install PHP extensions required by SuiteCRM
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libicu-dev \
+    libldap2-dev \
+    libgmp-dev \
+    unzip \
+    git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        gd \
+        mysqli \
+        pdo_mysql \
+        zip \
+        intl \
+        ldap \
+        gmp \
+        bcmath \
+        opcache \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Enable Apache modules
+RUN a2enmod rewrite headers proxy proxy_http
+
+# Configure PHP
+COPY php.ini /usr/local/etc/php/
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy SuiteCRM files
+COPY ./SuiteCRM /var/www/html
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 /var/www/html/cache \
+    && chmod -R 775 /var/www/html/custom \
+    && chmod -R 775 /var/www/html/modules \
+    && chmod -R 775 /var/www/html/upload \
+    && chmod 775 /var/www/html/config_override.php 2>/dev/null || true
+
+# Apache configuration
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]

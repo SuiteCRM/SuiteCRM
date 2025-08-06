@@ -1,0 +1,23 @@
+FROM nginx:alpine
+
+# Install Node.js for API gateway functionality
+RUN apk add --no-cache nodejs npm
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create directory for gateway scripts
+RUN mkdir -p /var/www/gateway
+
+# Set working directory
+WORKDIR /var/www/gateway
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost/health || exit 1
+
+# Expose port
+EXPOSE 80
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
