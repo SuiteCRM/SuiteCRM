@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Capture Demo - MobileRealEstate CRM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .mobile-container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .camera-view {
+            position: relative;
+            background: #000;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .camera-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: all;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+            border: 5px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .capture-btn:active {
+            transform: scale(0.95);
+        }
+
+        .capture-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #f44336;
+        }
+
+        .gps-info {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .property-form {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .photo-preview {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .photo-item {
+            position: relative;
+            padding-bottom: 100%;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .photo-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2196F3;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            margin: 20px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .simulated-image {
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%2387CEEB"/><stop offset="100%" style="stop-color:%23E0F6FF"/></linearGradient></defs><rect width="400" height="300" fill="url(%23sky)"/><rect x="50" y="100" width="150" height="150" fill="%23CD853F"/><polygon points="50,100 125,50 200,100" fill="%238B4513"/><rect x="80" y="150" width="40" height="60" fill="%234682B4"/><rect x="130" y="150" width="40" height="40" fill="%234682B4"/><rect x="250" y="120" width="120" height="130" fill="%23F5DEB3"/><polygon points="250,120 310,80 370,120" fill="%23A52A2A"/><rect x="270" y="170" width="30" height="50" fill="%238B4513"/><circle cx="350" cy="50" r="30" fill="%23FFD700"/><text x="200" y="280" font-family="Arial" font-size="16" fill="%23333" text-anchor="middle">Sample Property View</text></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back to Demos</button>
+    
+    <div class="mobile-container">
+        <div class="status-bar">
+            <span>9:41 AM</span>
+            <span>100% 🔋</span>
+        </div>
+        
+        <div class="app-header">
+            <h1>Property Capture</h1>
+            <p>Quick & Easy Property Documentation</p>
+        </div>
+        
+        <div class="camera-view" id="cameraView">
+            <div class="simulated-image" id="cameraFeed"></div>
+            <div class="camera-overlay">
+                <div class="gps-info">
+                    📍 <span id="gpsCoords">Acquiring GPS...</span>
+                </div>
+                <div class="camera-controls">
+                    <button class="capture-btn" id="captureBtn"></button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="property-form">
+            <div class="photo-preview" id="photoPreview">
+                <h3>Captured Photos</h3>
+                <div class="photo-grid" id="photoGrid"></div>
+            </div>
+            
+            <div class="form-group">
+                <label>Property Address</label>
+                <input type="text" id="address" placeholder="Enter property address">
+            </div>
+            
+            <div class="form-group">
+                <label>Property Type</label>
+                <select id="propertyType">
+                    <option value="">Select type</option>
+                    <option value="single-family">Single Family Home</option>
+                    <option value="condo">Condominium</option>
+                    <option value="townhouse">Townhouse</option>
+                    <option value="multi-family">Multi-Family</option>
+                    <option value="commercial">Commercial</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Listing Price</label>
+                <input type="text" id="price" placeholder="$0.00">
+            </div>
+            
+            <div class="form-group">
+                <label>Square Footage</label>
+                <input type="number" id="sqft" placeholder="0">
+            </div>
+            
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="notes" rows="3" placeholder="Additional property details..."></textarea>
+            </div>
+            
+            <button class="submit-btn" id="submitBtn">Submit Property</button>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            ✅ Property successfully captured and synced!
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Processing Property Data...</h2>
+            <p id="loadingStatus">Uploading images...</p>
+        </div>
+    </div>
+
+    <script>
+        // Simulated GPS coordinates
+        let gpsLat = 37.7749;
+        let gpsLng = -122.4194;
+        let capturedPhotos = [];
+        
+        // Simulate GPS acquisition
+        setTimeout(() => {
+            document.getElementById('gpsCoords').textContent = 
+                `${gpsLat.toFixed(4)}°N, ${Math.abs(gpsLng).toFixed(4)}°W`;
+        }, 2000);
+        
+        // Simulate GPS updates
+        setInterval(() => {
+            gpsLat += (Math.random() - 0.5) * 0.0001;
+            gpsLng += (Math.random() - 0.5) * 0.0001;
+            document.getElementById('gpsCoords').textContent = 
+                `${gpsLat.toFixed(4)}°N, ${Math.abs(gpsLng).toFixed(4)}°W`;
+        }, 5000);
+        
+        // Camera capture simulation
+        document.getElementById('captureBtn').addEventListener('click', function() {
+            // Animate capture
+            this.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 200);
+            
+            // Flash effect
+            const flash = document.createElement('div');
+            flash.style.position = 'absolute';
+            flash.style.top = '0';
+            flash.style.left = '0';
+            flash.style.right = '0';
+            flash.style.bottom = '0';
+            flash.style.background = 'white';
+            flash.style.pointerEvents = 'none';
+            flash.style.opacity = '0';
+            flash.style.transition = 'opacity 0.3s ease';
+            document.getElementById('cameraView').appendChild(flash);
+            
+            setTimeout(() => {
+                flash.style.opacity = '0.8';
+            }, 10);
+            
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                setTimeout(() => flash.remove(), 300);
+            }, 100);
+            
+            // Add photo to preview
+            const photoItem = document.createElement('div');
+            photoItem.className = 'photo-item';
+            photoItem.innerHTML = `<div class="simulated-image"></div>`;
+            document.getElementById('photoGrid').appendChild(photoItem);
+            
+            capturedPhotos.push({
+                timestamp: new Date().toISOString(),
+                gps: { lat: gpsLat, lng: gpsLng }
+            });
+            
+            document.getElementById('photoPreview').style.display = 'block';
+            
+            // Auto-fill address based on GPS (simulation)
+            if (capturedPhotos.length === 1) {
+                document.getElementById('address').value = '123 Market Street, San Francisco, CA 94105';
+            }
+        });
+        
+        // Price formatting
+        document.getElementById('price').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d]/g, '');
+            if (value) {
+                value = parseInt(value).toLocaleString();
+                e.target.value = '$' + value;
+            }
+        });
+        
+        // Submit form
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingStatus = document.getElementById('loadingStatus');
+            
+            loadingOverlay.style.display = 'flex';
+            
+            // Simulate upload process
+            const statuses = [
+                'Uploading images...',
+                'Processing property data...',
+                'Syncing with mainframe...',
+                'Generating property report...',
+                'Finalizing submission...'
+            ];
+            
+            let statusIndex = 0;
+            const statusInterval = setInterval(() => {
+                statusIndex++;
+                if (statusIndex < statuses.length) {
+                    loadingStatus.textContent = statuses[statusIndex];
+                } else {
+                    clearInterval(statusInterval);
+                    loadingOverlay.style.display = 'none';
+                    
+                    // Show success message
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Reset form after delay
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                        document.querySelector('.property-form').reset();
+                        document.getElementById('photoGrid').innerHTML = '';
+                        document.getElementById('photoPreview').style.display = 'none';
+                        capturedPhotos = [];
+                    }, 3000);
+                }
+            }, 1000);
+        });
+        
+        // Add some animation to the camera feed
+        setInterval(() => {
+            const feed = document.getElementById('cameraFeed');
+            feed.style.filter = `brightness(${0.9 + Math.random() * 0.2})`;
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mainframe Sync Visualization - MobileRealEstate CRM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #0c0;
+            transform: scale(1.05);
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 20px 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #0f0;
+            margin-bottom: 10px;
+        }
+
+        .sync-visualization {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 200px 1fr;
+            gap: 40px;
+            align-items: stretch;
+        }
+
+        .system-box {
+            border: 2px solid #0f0;
+            padding: 30px;
+            background: rgba(0, 255, 0, 0.02);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .system-header {
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .system-title {
+            font-size: 1.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: #0f0;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .data-stream {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .data-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+            animation: fadeIn 0.5s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sync-channel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .sync-status {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sync-metrics {
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .data-flow {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin: 20px 0;
+        }
+
+        .flow-particle {
+            position: absolute;
+            width: 40px;
+            height: 4px;
+            background: #0f0;
+            box-shadow: 0 0 10px #0f0;
+            opacity: 0;
+        }
+
+        .flow-left {
+            animation: flowLeft 2s infinite;
+        }
+
+        .flow-right {
+            animation: flowRight 2s infinite;
+        }
+
+        @keyframes flowLeft {
+            0% {
+                left: 0;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                left: -100px;
+                opacity: 0;
+            }
+        }
+
+        @keyframes flowRight {
+            0% {
+                right: 0;
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                right: -100px;
+                opacity: 0;
+            }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: rgba(0, 255, 0, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .console-output {
+            background: #000;
+            border: 1px solid #0f0;
+            padding: 15px;
+            margin-top: 20px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 0.85em;
+            font-family: 'Courier New', monospace;
+        }
+
+        .console-line {
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .timestamp {
+            color: rgba(0, 255, 0, 0.6);
+            margin-right: 10px;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+            }
+        }
+
+        .control-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .control-btn.active {
+            background: #0f0;
+            color: #000;
+        }
+
+        .error-state {
+            color: #f00 !important;
+            border-color: #f00 !important;
+        }
+
+        .error-state .status-indicator {
+            background: #f00;
+            animation: none;
+        }
+
+        .warning-state {
+            color: #ff0 !important;
+            border-color: #ff0 !important;
+        }
+
+        .warning-state .status-indicator {
+            background: #ff0;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← BACK</button>
+    
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+
+    <div class="container">
+        <div class="header">
+            <h1>MAINFRAME SYNCHRONIZATION MONITOR</h1>
+            <p>REAL-TIME DATA INTEGRATION SYSTEM</p>
+        </div>
+
+        <div class="sync-visualization">
+            <div class="system-box" id="modernSystem">
+                <div class="system-header">
+                    <h2 class="system-title">MODERN CRM</h2>
+                    <div class="system-status">
+                        <span class="status-indicator"></span>
+                        <span>SYSTEM ACTIVE</span>
+                    </div>
+                </div>
+                
+                <div class="data-stream" id="modernDataStream">
+                    <!-- Data items will be added dynamically -->
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">RECORDS/SEC</div>
+                        <div class="stat-value" id="modernRPS">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">QUEUE SIZE</div>
+                        <div class="stat-value" id="modernQueue">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">CPU USAGE</div>
+                        <div class="stat-value" id="modernCPU">0%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">MEMORY</div>
+                        <div class="stat-value" id="modernMem">0MB</div>
+                    </div>
+                </div>
+
+                <div class="console-output" id="modernConsole">
+                    <div class="console-line">
+                        <span class="timestamp">00:00:00</span> System initialized...
+                    </div>
+                </div>
+            </div>
+
+            <div class="sync-channel">
+                <div class="sync-status">
+                    <h3>SYNC STATUS</h3>
+                    <div class="sync-metrics">
+                        <div>LATENCY: <span id="latency">0ms</span></div>
+                        <div>THROUGHPUT: <span id="throughput">0KB/s</span></div>
+                        <div>UPTIME: <span id="uptime">00:00:00</span></div>
+                    </div>
+                </div>
+
+                <div class="data-flow" id="dataFlow">
+                    <!-- Flow particles will be added dynamically -->
+                </div>
+
+                <div class="sync-status">
+                    <h4>PROTOCOL</h4>
+                    <div>MQ Series</div>
+                    <div>Port: 1414</div>
+                </div>
+            </div>
+
+            <div class="system-box" id="mainframeSystem">
+                <div class="system-header">
+                    <h2 class="system-title">IBM MAINFRAME</h2>
+                    <div class="system-status">
+                        <span class="status-indicator"></span>
+                        <span>CICS ONLINE</span>
+                    </div>
+                </div>
+                
+                <div class="data-stream" id="mainframeDataStream">
+                    <!-- Data items will be added dynamically -->
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">TRANS/SEC</div>
+                        <div class="stat-value" id="mainframeTPS">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">BATCH JOBS</div>
+                        <div class="stat-value" id="mainframeBatch">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">MIPS USAGE</div>
+                        <div class="stat-value" id="mainframeMIPS">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">VSAM I/O</div>
+                        <div class="stat-value" id="mainframeIO">0</div>
+                    </div>
+                </div>
+
+                <div class="console-output" id="mainframeConsole">
+                    <div class="console-line">
+                        <span class="timestamp">00:00:00</span> CICS region started...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <h3>SYNC CONTROL</h3>
+        <button class="control-btn active" id="startBtn" onclick="toggleSync()">PAUSE SYNC</button>
+        <button class="control-btn" onclick="simulateError()">SIMULATE ERROR</button>
+        <button class="control-btn" onclick="simulateSurge()">TRAFFIC SURGE</button>
+        <button class="control-btn" onclick="resetSystem()">RESET</button>
+    </div>
+
+    <script>
+        let syncActive = true;
+        let uptimeSeconds = 0;
+        let errorMode = false;
+
+        // Matrix rain effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        // Data generation
+        const modernDataTypes = [
+            'CREATE_PROPERTY {id: 12345, address: "123 Market St"}',
+            'UPDATE_CLIENT {id: 67890, status: "ACTIVE"}',
+            'TRANSACTION_INIT {amount: 750000, type: "SALE"}',
+            'DOCUMENT_UPLOAD {type: "CONTRACT", size: "2.4MB"}',
+            'SCHEDULE_VIEWING {property: 12345, time: "14:30"}',
+            'CALCULATE_MORTGAGE {principal: 500000, rate: 6.5}',
+            'SYNC_CONTACTS {count: 25, source: "MOBILE"}',
+            'GENERATE_REPORT {type: "MONTHLY", format: "PDF"}'
+        ];
+
+        const mainframeDataTypes = [
+            'EXEC CICS LINK PROGRAM(PROPINQ)',
+            'CALL "COBPROP" USING WS-PROP-DATA',
+            'MOVE WS-TRANS-AMT TO TRANS-RECORD',
+            'PERFORM VALIDATE-MORTGAGE-CALC',
+            'WRITE VSAM-RECORD FROM WS-CLIENT',
+            'EXEC SQL SELECT * FROM DB2.PROPERTIES',
+            'COMPUTE WS-INTEREST-RATE ROUNDED',
+            'PERFORM BATCH-UPDATE-PROCESS'
+        ];
+
+        function addDataItem(streamId, dataArray, isMainframe = false) {
+            if (!syncActive && !errorMode) return;
+            
+            const stream = document.getElementById(streamId);
+            const item = document.createElement('div');
+            item.className = 'data-item';
+            
+            if (errorMode && Math.random() > 0.7) {
+                item.style.color = '#f00';
+                item.textContent = isMainframe ? 
+                    'ABEND S0C4 - PROTECTION EXCEPTION' : 
+                    'ERROR: Connection timeout';
+            } else {
+                item.textContent = dataArray[Math.floor(Math.random() * dataArray.length)];
+            }
+            
+            stream.insertBefore(item, stream.firstChild);
+            
+            // Keep only recent items
+            while (stream.children.length > 10) {
+                stream.removeChild(stream.lastChild);
+            }
+        }
+
+        function addConsoleLog(consoleId, message, isError = false) {
+            const console = document.getElementById(consoleId);
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            if (isError) line.style.color = '#f00';
+            
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            line.innerHTML = `<span class="timestamp">${time}</span> ${message}`;
+            
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+            
+            // Keep only recent logs
+            while (console.children.length > 20) {
+                console.removeChild(console.firstChild);
+            }
+        }
+
+        function createFlowParticle(direction) {
+            if (!syncActive) return;
+            
+            const flow = document.getElementById('dataFlow');
+            const particle = document.createElement('div');
+            particle.className = `flow-particle flow-${direction}`;
+            particle.style.top = Math.random() * 180 + 'px';
+            
+            flow.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        function updateMetrics() {
+            // Modern system metrics
+            document.getElementById('modernRPS').textContent = 
+                errorMode ? Math.floor(Math.random() * 10) : Math.floor(Math.random() * 50 + 100);
+            document.getElementById('modernQueue').textContent = 
+                errorMode ? Math.floor(Math.random() * 1000) : Math.floor(Math.random() * 100);
+            document.getElementById('modernCPU').textContent = 
+                (errorMode ? Math.floor(Math.random() * 50 + 50) : Math.floor(Math.random() * 30 + 20)) + '%';
+            document.getElementById('modernMem').textContent = 
+                Math.floor(Math.random() * 500 + 1500) + 'MB';
+            
+            // Mainframe metrics
+            document.getElementById('mainframeTPS').textContent = 
+                errorMode ? Math.floor(Math.random() * 20) : Math.floor(Math.random() * 80 + 150);
+            document.getElementById('mainframeBatch').textContent = 
+                Math.floor(Math.random() * 10 + 5);
+            document.getElementById('mainframeMIPS').textContent = 
+                errorMode ? Math.floor(Math.random() * 500 + 500) : Math.floor(Math.random() * 200 + 300);
+            document.getElementById('mainframeIO').textContent = 
+                Math.floor(Math.random() * 1000 + 2000);
+            
+            // Sync metrics
+            document.getElementById('latency').textContent = 
+                (errorMode ? Math.floor(Math.random() * 500 + 500) : Math.floor(Math.random() * 50 + 10)) + 'ms';
+            document.getElementById('throughput').textContent = 
+                (errorMode ? Math.floor(Math.random() * 50) : Math.floor(Math.random() * 200 + 300)) + 'KB/s';
+        }
+
+        function updateUptime() {
+            uptimeSeconds++;
+            const hours = Math.floor(uptimeSeconds / 3600);
+            const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+            const seconds = uptimeSeconds % 60;
+            document.getElementById('uptime').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function toggleSync() {
+            syncActive = !syncActive;
+            const btn = document.getElementById('startBtn');
+            btn.textContent = syncActive ? 'PAUSE SYNC' : 'RESUME SYNC';
+            btn.classList.toggle('active');
+            
+            addConsoleLog('modernConsole', syncActive ? 'Sync resumed' : 'Sync paused');
+            addConsoleLog('mainframeConsole', syncActive ? 'CICS LINK ACTIVE' : 'CICS LINK SUSPENDED');
+        }
+
+        function simulateError() {
+            errorMode = true;
+            document.getElementById('modernSystem').classList.add('error-state');
+            document.getElementById('mainframeSystem').classList.add('warning-state');
+            
+            addConsoleLog('modernConsole', 'ERROR: Connection lost', true);
+            addConsoleLog('mainframeConsole', 'ABEND S0C7 - DATA EXCEPTION', true);
+            
+            setTimeout(() => {
+                errorMode = false;
+                document.getElementById('modernSystem').classList.remove('error-state');
+                document.getElementById('mainframeSystem').classList.remove('warning-state');
+                
+                addConsoleLog('modernConsole', 'Connection restored');
+                addConsoleLog('mainframeConsole', 'CICS REGION RECOVERED');
+            }, 5000);
+        }
+
+        function simulateSurge() {
+            addConsoleLog('modernConsole', 'Traffic surge detected');
+            addConsoleLog('mainframeConsole', 'INCREASING CICS MAXTASK');
+            
+            // Increase data flow temporarily
+            const surgeInterval = setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    addDataItem('modernDataStream', modernDataTypes);
+                    addDataItem('mainframeDataStream', mainframeDataTypes, true);
+                    createFlowParticle('left');
+                    createFlowParticle('right');
+                }
+            }, 200);
+            
+            setTimeout(() => {
+                clearInterval(surgeInterval);
+                addConsoleLog('modernConsole', 'Traffic normalized');
+                addConsoleLog('mainframeConsole', 'CICS MAXTASK RESET');
+            }, 5000);
+        }
+
+        function resetSystem() {
+            location.reload();
+        }
+
+        // Start the simulation
+        setInterval(() => {
+            if (syncActive) {
+                addDataItem('modernDataStream', modernDataTypes);
+                addDataItem('mainframeDataStream', mainframeDataTypes, true);
+                
+                if (Math.random() > 0.5) createFlowParticle('left');
+                if (Math.random() > 0.5) createFlowParticle('right');
+            }
+        }, 1000);
+
+        setInterval(updateMetrics, 2000);
+        setInterval(updateUptime, 1000);
+
+        // Add periodic console logs
+        setInterval(() => {
+            if (syncActive && Math.random() > 0.7) {
+                const modernLogs = [
+                    'Batch processing completed',
+                    'Cache refreshed successfully',
+                    'API endpoint health check: OK',
+                    'Database connection pool: 25/50'
+                ];
+                const mainframeLogs = [
+                    'CICS STATISTICS COLLECTED',
+                    'VSAM BUFFER POOL TUNED',
+                    'DB2 BIND SUCCESSFUL',
+                    'JCL JOB0001 COMPLETED RC=0'
+                ];
+                
+                addConsoleLog('modernConsole', modernLogs[Math.floor(Math.random() * modernLogs.length)]);
+                addConsoleLog('mainframeConsole', mainframeLogs[Math.floor(Math.random() * mainframeLogs.length)]);
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

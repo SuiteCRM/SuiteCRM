@@ -1,0 +1,25 @@
+{
+  "name": "suitecrm-cobol-gateway",
+  "version": "1.0.0",
+  "description": "COBOL Gateway Server for SuiteCRM Real Estate Mobile",
+  "main": "cobol-gateway.js",
+  "scripts": {
+    "start": "node cobol-gateway.js",
+    "dev": "nodemon cobol-gateway.js",
+    "test": "jest",
+    "docker": "docker-compose up -d"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.13.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "jest": "^29.5.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

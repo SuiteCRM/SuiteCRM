@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f0f0f0"/>
+  
+  <!-- Sky gradient -->
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#87CEEB;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E0F6FF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="400" fill="url(#skyGradient)"/>
+  
+  <!-- Ground -->
+  <rect y="400" width="800" height="200" fill="#90EE90"/>
+  
+  <!-- House -->
+  <g transform="translate(200, 180)">
+    <!-- Main building -->
+    <rect x="50" y="120" width="300" height="200" fill="#D2691E" stroke="#8B4513" stroke-width="2"/>
+    
+    <!-- Roof -->
+    <path d="M 30 120 L 200 20 L 370 120 Z" fill="#8B0000" stroke="#5C0000" stroke-width="2"/>
+    
+    <!-- Chimney -->
+    <rect x="280" y="50" width="40" height="70" fill="#8B4513"/>
+    
+    <!-- Door -->
+    <rect x="175" y="220" width="50" height="100" fill="#654321"/>
+    <circle cx="215" cy="270" r="3" fill="#FFD700"/>
+    
+    <!-- Windows -->
+    <rect x="90" y="160" width="60" height="60" fill="#87CEEB" stroke="#4682B4" stroke-width="2"/>
+    <line x1="120" y1="160" x2="120" y2="220" stroke="#4682B4" stroke-width="2"/>
+    <line x1="90" y1="190" x2="150" y2="190" stroke="#4682B4" stroke-width="2"/>
+    
+    <rect x="250" y="160" width="60" height="60" fill="#87CEEB" stroke="#4682B4" stroke-width="2"/>
+    <line x1="280" y1="160" x2="280" y2="220" stroke="#4682B4" stroke-width="2"/>
+    <line x1="250" y1="190" x2="310" y2="190" stroke="#4682B4" stroke-width="2"/>
+  </g>
+  
+  <!-- Trees -->
+  <g transform="translate(100, 300)">
+    <rect x="15" y="60" width="20" height="40" fill="#8B4513"/>
+    <circle cx="25" cy="50" r="30" fill="#228B22"/>
+  </g>
+  
+  <g transform="translate(550, 280)">
+    <rect x="15" y="80" width="20" height="40" fill="#8B4513"/>
+    <circle cx="25" cy="70" r="35" fill="#228B22"/>
+  </g>
+  
+  <!-- Property placeholder text -->
+  <text x="400" y="550" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="#666">Property Image Placeholder</text>
+</svg>

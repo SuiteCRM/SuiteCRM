@@ -1,0 +1,24 @@
+{
+  "name": "cobol-financial-services",
+  "version": "1.0.0",
+  "description": "COBOL Financial Calculation Services for SuiteCRM",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build-cobol": "cobc -x -o financial-calc financial-calc.cob",
+    "test": "npm run build-cobol && node test-calculations.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0",
+    "express-rate-limit": "^7.1.5",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

@@ -1,0 +1,32 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CREDITCARD-WRAPPER.
+       AUTHOR. SUITECRM-REAL-ESTATE.
+       DATE-WRITTEN. 2025-01-27.
+      *****************************************************************
+      * WRAPPER FOR CREDITCARD PROGRAM TO WORK WITH GATEWAY
+      *****************************************************************
+       
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+       
+       DATA DIVISION.
+       WORKING-STORAGE SECTION.
+       01  WS-INPUT-DATA           PIC X(80).
+       01  WS-OUTPUT-DATA          PIC X(101).
+       01  WS-ENV-VAR              PIC X(80).
+       
+       PROCEDURE DIVISION.
+       MAIN-PROCESS.
+           ACCEPT WS-INPUT-DATA FROM SYSIN
+           
+           IF WS-INPUT-DATA = SPACES
+               ACCEPT WS-ENV-VAR FROM ENVIRONMENT "COBOL_DATA"
+               MOVE WS-ENV-VAR TO WS-INPUT-DATA
+           END-IF
+           
+           CALL 'CREDITCARD' USING WS-INPUT-DATA WS-OUTPUT-DATA
+           
+           DISPLAY WS-OUTPUT-DATA
+           
+           STOP RUN.

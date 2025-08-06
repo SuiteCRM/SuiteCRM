@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#2c5aa0"/>
+  
+  <!-- House Icon -->
+  <g fill="#ffffff">
+    <!-- Roof -->
+    <path d="M256 120 L380 220 L380 190 L360 175 L360 145 L340 145 L340 160 L256 90 L172 160 L172 190 L172 220 Z"/>
+    
+    <!-- House Body -->
+    <rect x="180" y="210" width="152" height="150" rx="5"/>
+    
+    <!-- Door -->
+    <rect x="235" y="290" width="42" height="70" fill="#2c5aa0"/>
+    
+    <!-- Windows -->
+    <rect x="200" y="240" width="40" height="40" fill="#2c5aa0" rx="3"/>
+    <rect x="272" y="240" width="40" height="40" fill="#2c5aa0" rx="3"/>
+    
+    <!-- Chart overlay (representing CRM analytics) -->
+    <g opacity="0.9">
+      <rect x="320" y="280" width="120" height="80" fill="#1a3d6e" rx="5"/>
+      <rect x="335" y="320" width="15" height="25" fill="#4caf50"/>
+      <rect x="355" y="310" width="15" height="35" fill="#ff9800"/>
+      <rect x="375" y="300" width="15" height="45" fill="#2196f3"/>
+      <rect x="395" y="315" width="15" height="30" fill="#9c27b0"/>
+    </g>
+  </g>
+  
+  <!-- CRM Text -->
+  <text x="256" y="410" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="#ffffff">CRM</text>
+</svg>

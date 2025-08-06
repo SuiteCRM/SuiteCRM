@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator - MobileRealEstate CRM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .calculator-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .calculator-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .calculator-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .calculator-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .calculator-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e1e8ed;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #71767b;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .result-value.primary {
+            color: #667eea;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .breakdown-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .breakdown-label {
+            font-size: 12px;
+            color: #71767b;
+            margin-bottom: 5px;
+        }
+
+        .breakdown-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .amortization-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .amortization-table {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .amortization-table th,
+        .amortization-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .amortization-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            position: sticky;
+            top: 0;
+        }
+
+        .save-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: rotate 1s linear infinite;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-body {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back to Demos</button>
+
+    <div class="calculator-container">
+        <div class="calculator-header">
+            <h1>Advanced Mortgage Calculator</h1>
+            <p>Calculate your monthly payments and see detailed amortization schedules</p>
+        </div>
+
+        <div class="calculator-body">
+            <div class="input-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Loan Details</h2>
+                
+                <div class="form-group">
+                    <label>Home Price</label>
+                    <input type="text" id="homePrice" value="$500,000">
+                </div>
+
+                <div class="form-group">
+                    <label>Down Payment</label>
+                    <input type="text" id="downPayment" value="$100,000">
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="downPaymentSlider" min="0" max="100" value="20">
+                        <div class="slider-value">
+                            <span>0%</span>
+                            <span id="downPaymentPercent">20%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Loan Term</label>
+                    <select id="loanTerm">
+                        <option value="15">15 years</option>
+                        <option value="30" selected>30 years</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Interest Rate (%)</label>
+                    <input type="number" id="interestRate" value="6.5" step="0.1">
+                    <div class="slider-container">
+                        <input type="range" class="slider" id="rateSlider" min="0" max="10" step="0.1" value="6.5">
+                        <div class="slider-value">
+                            <span>0%</span>
+                            <span id="ratePercent">6.5%</span>
+                            <span>10%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Property Tax (Annual)</label>
+                    <input type="text" id="propertyTax" value="$6,000">
+                </div>
+
+                <div class="form-group">
+                    <label>Home Insurance (Annual)</label>
+                    <input type="text" id="homeInsurance" value="$1,200">
+                </div>
+
+                <div class="form-group">
+                    <label>HOA Fees (Monthly)</label>
+                    <input type="text" id="hoaFees" value="$0">
+                </div>
+
+                <button class="calculate-btn" onclick="calculateMortgage()">Calculate Payment</button>
+            </div>
+
+            <div class="results-section">
+                <h2 style="margin-bottom: 20px; color: #333;">Payment Breakdown</h2>
+                
+                <div class="result-card">
+                    <div class="result-label">Monthly Payment</div>
+                    <div class="result-value primary" id="monthlyPayment">$0</div>
+                </div>
+
+                <div class="breakdown-grid">
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Principal & Interest</div>
+                        <div class="breakdown-value" id="principalInterest">$0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Property Tax</div>
+                        <div class="breakdown-value" id="monthlyPropertyTax">$0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">Home Insurance</div>
+                        <div class="breakdown-value" id="monthlyInsurance">$0</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="breakdown-label">HOA Fees</div>
+                        <div class="breakdown-value" id="monthlyHOA">$0</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">Payment Distribution</h3>
+                    <canvas id="paymentChart" width="300" height="300"></canvas>
+                </div>
+
+                <div class="result-card" style="margin-top: 20px;">
+                    <div class="result-label">Total Interest Paid</div>
+                    <div class="result-value" id="totalInterest">$0</div>
+                </div>
+
+                <div class="save-section">
+                    <p style="margin-bottom: 10px;">Save this calculation for your client</p>
+                    <button class="save-btn" onclick="saveCalculation()">Save to CRM</button>
+                    <button class="save-btn" onclick="emailCalculation()">Email Client</button>
+                    <button class="save-btn" onclick="printCalculation()">Print Report</button>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 0 40px 40px;">
+            <div class="amortization-preview">
+                <h3 style="margin-bottom: 15px;">Amortization Schedule (First 12 Months)</h3>
+                <table class="amortization-table" id="amortizationTable">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Payment</th>
+                            <th>Principal</th>
+                            <th>Interest</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="amortizationBody">
+                        <!-- Rows will be added dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Calculating...</h2>
+            <p>Generating amortization schedule</p>
+        </div>
+    </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+            }).format(amount);
+        }
+
+        // Parse currency input
+        function parseCurrency(str) {
+            return parseFloat(str.replace(/[^0-9.-]+/g, ''));
+        }
+
+        // Update sliders
+        document.getElementById('downPaymentSlider').addEventListener('input', function(e) {
+            const percent = e.target.value;
+            const homePrice = parseCurrency(document.getElementById('homePrice').value);
+            const downPayment = (homePrice * percent) / 100;
+            document.getElementById('downPayment').value = formatCurrency(downPayment);
+            document.getElementById('downPaymentPercent').textContent = percent + '%';
+        });
+
+        document.getElementById('rateSlider').addEventListener('input', function(e) {
+            document.getElementById('interestRate').value = e.target.value;
+            document.getElementById('ratePercent').textContent = e.target.value + '%';
+        });
+
+        // Update down payment percentage when amount changes
+        document.getElementById('downPayment').addEventListener('input', function(e) {
+            const downPayment = parseCurrency(e.target.value);
+            const homePrice = parseCurrency(document.getElementById('homePrice').value);
+            const percent = Math.round((downPayment / homePrice) * 100);
+            document.getElementById('downPaymentSlider').value = percent;
+            document.getElementById('downPaymentPercent').textContent = percent + '%';
+        });
+
+        // Format inputs on blur
+        ['homePrice', 'downPayment', 'propertyTax', 'homeInsurance', 'hoaFees'].forEach(id => {
+            document.getElementById(id).addEventListener('blur', function(e) {
+                const value = parseCurrency(e.target.value);
+                if (!isNaN(value)) {
+                    e.target.value = formatCurrency(value);
+                }
+            });
+        });
+
+        function calculateMortgage() {
+            // Show loading
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            setTimeout(() => {
+                const homePrice = parseCurrency(document.getElementById('homePrice').value);
+                const downPayment = parseCurrency(document.getElementById('downPayment').value);
+                const loanAmount = homePrice - downPayment;
+                const loanTerm = parseInt(document.getElementById('loanTerm').value);
+                const interestRate = parseFloat(document.getElementById('interestRate').value) / 100 / 12;
+                const numberOfPayments = loanTerm * 12;
+                const propertyTax = parseCurrency(document.getElementById('propertyTax').value) / 12;
+                const homeInsurance = parseCurrency(document.getElementById('homeInsurance').value) / 12;
+                const hoaFees = parseCurrency(document.getElementById('hoaFees').value);
+
+                // Calculate monthly payment (principal + interest)
+                const monthlyPI = loanAmount * (interestRate * Math.pow(1 + interestRate, numberOfPayments)) / 
+                                 (Math.pow(1 + interestRate, numberOfPayments) - 1);
+
+                const totalMonthlyPayment = monthlyPI + propertyTax + homeInsurance + hoaFees;
+
+                // Update results
+                document.getElementById('monthlyPayment').textContent = formatCurrency(totalMonthlyPayment);
+                document.getElementById('principalInterest').textContent = formatCurrency(monthlyPI);
+                document.getElementById('monthlyPropertyTax').textContent = formatCurrency(propertyTax);
+                document.getElementById('monthlyInsurance').textContent = formatCurrency(homeInsurance);
+                document.getElementById('monthlyHOA').textContent = formatCurrency(hoaFees);
+
+                // Calculate total interest
+                const totalInterest = (monthlyPI * numberOfPayments) - loanAmount;
+                document.getElementById('totalInterest').textContent = formatCurrency(totalInterest);
+
+                // Draw pie chart
+                drawPieChart(monthlyPI, propertyTax, homeInsurance, hoaFees);
+
+                // Generate amortization schedule
+                generateAmortizationSchedule(loanAmount, interestRate, monthlyPI);
+
+                // Hide loading
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }, 1000);
+        }
+
+        function drawPieChart(pi, tax, insurance, hoa) {
+            const canvas = document.getElementById('paymentChart');
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 100;
+
+            const total = pi + tax + insurance + hoa;
+            const data = [
+                { label: 'Principal & Interest', value: pi, color: '#667eea' },
+                { label: 'Property Tax', value: tax, color: '#764ba2' },
+                { label: 'Insurance', value: insurance, color: '#f093fb' },
+                { label: 'HOA', value: hoa, color: '#4facfe' }
+            ];
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let currentAngle = -Math.PI / 2;
+            data.forEach((segment, index) => {
+                const sliceAngle = (segment.value / total) * 2 * Math.PI;
+                
+                // Draw segment
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.lineTo(centerX, centerY);
+                ctx.fillStyle = segment.color;
+                ctx.fill();
+
+                // Draw label
+                const labelX = centerX + Math.cos(currentAngle + sliceAngle / 2) * (radius + 20);
+                const labelY = centerY + Math.sin(currentAngle + sliceAngle / 2) * (radius + 20);
+                
+                ctx.fillStyle = '#333';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(Math.round((segment.value / total) * 100) + '%', labelX, labelY);
+
+                currentAngle += sliceAngle;
+            });
+
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.6, 0, 2 * Math.PI);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        }
+
+        function generateAmortizationSchedule(loanAmount, monthlyRate, monthlyPayment) {
+            const tbody = document.getElementById('amortizationBody');
+            tbody.innerHTML = '';
+            
+            let balance = loanAmount;
+            
+            for (let month = 1; month <= 12; month++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = monthlyPayment - interestPayment;
+                balance -= principalPayment;
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${month}</td>
+                    <td>${formatCurrency(monthlyPayment)}</td>
+                    <td>${formatCurrency(principalPayment)}</td>
+                    <td>${formatCurrency(interestPayment)}</td>
+                    <td>${formatCurrency(balance)}</td>
+                `;
+            }
+        }
+
+        function saveCalculation() {
+            alert('Calculation saved to CRM! Property and mortgage details have been linked to the client profile.');
+        }
+
+        function emailCalculation() {
+            alert('Mortgage calculation report has been emailed to the client with a secure link to view full details.');
+        }
+
+        function printCalculation() {
+            window.print();
+        }
+
+        // Calculate on load with default values
+        window.addEventListener('load', calculateMortgage);
+    </script>
+</body>
+</html>

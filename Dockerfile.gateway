@@ -1,0 +1,46 @@
+FROM ubuntu:22.04
+
+# Install GnuCOBOL and dependencies
+RUN apt-get update && apt-get install -y \
+    gnucobol \
+    curl \
+    ca-certificates \
+    gcc \
+    g++ \
+    make \
+    build-essential \
+    libgmp-dev \
+    libdb-dev \
+    libncurses5-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 16 (not 18, to maintain compatibility)
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy gateway files
+COPY cobol/gateway/package*.json ./
+RUN npm install
+
+COPY cobol/gateway/*.js ./
+COPY cobol/programs /app/programs
+
+# Compile COBOL programs
+RUN for prog in /app/programs/*.cob; do \
+        cobc -x -o "${prog%.cob}" "$prog" || true; \
+    done
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+EXPOSE 8080 8081
+
+CMD ["node", "cobol-gateway.js"]

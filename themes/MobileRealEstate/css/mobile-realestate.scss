@@ -1,0 +1,491 @@
+// Mobile Real Estate Theme - Main Stylesheet
+// Optimized for touch devices and real estate workflows
+
+// Variables
+$primary-color: #2c5aa0;
+$secondary-color: #f39c12;
+$success-color: #27ae60;
+$danger-color: #e74c3c;
+$mobile-header-height: 60px;
+$touch-target-size: 44px;
+
+// Base Mobile Styles
+* {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+// Mobile Header
+.mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $mobile-header-height;
+    background: $primary-color;
+    color: white;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    
+    .menu-toggle {
+        width: $touch-target-size;
+        height: $touch-target-size;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        
+        .hamburger {
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: relative;
+            
+            &:before, &:after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 2px;
+                background: white;
+                left: 0;
+            }
+            
+            &:before { top: -8px; }
+            &:after { top: 8px; }
+        }
+    }
+    
+    .header-title {
+        flex: 1;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .quick-actions {
+        display: flex;
+        gap: 10px;
+        
+        .action-btn {
+            width: $touch-target-size;
+            height: $touch-target-size;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            
+            i { font-size: 20px; }
+        }
+    }
+}
+
+// Mobile Navigation
+.mobile-nav {
+    position: fixed;
+    top: $mobile-header-height;
+    left: -280px;
+    width: 280px;
+    height: calc(100% - #{$mobile-header-height});
+    background: white;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    z-index: 999;
+    
+    &.active {
+        left: 0;
+    }
+    
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #eee;
+        color: #333;
+        text-decoration: none;
+        
+        i {
+            width: 24px;
+            margin-right: 15px;
+            color: $primary-color;
+        }
+        
+        &:active {
+            background: #f5f5f5;
+        }
+    }
+}
+
+// Property Quick Capture
+.property-capture {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 900;
+    
+    .capture-fab {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: $secondary-color;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        font-size: 24px;
+        cursor: pointer;
+        
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+    
+    .capture-options {
+        position: absolute;
+        bottom: 70px;
+        right: 0;
+        display: none;
+        
+        &.active {
+            display: block;
+        }
+        
+        .option {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+            
+            &.camera { color: #3498db; }
+            &.voice { color: #e74c3c; }
+            &.location { color: #27ae60; }
+            &.qr { color: #9b59b6; }
+        }
+    }
+}
+
+// Property Cards (Mobile Optimized)
+.property-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    
+    .property-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        position: relative;
+        
+        .property-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: $success-color;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    }
+    
+    .property-details {
+        padding: 15px;
+        
+        .property-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: $primary-color;
+            margin-bottom: 5px;
+        }
+        
+        .property-address {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .property-features {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            color: #888;
+            
+            .feature {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                
+                i { color: $primary-color; }
+            }
+        }
+    }
+    
+    .property-actions {
+        display: flex;
+        border-top: 1px solid #eee;
+        
+        .action {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-right: 1px solid #eee;
+            cursor: pointer;
+            
+            &:last-child {
+                border-right: none;
+            }
+            
+            &:active {
+                background: #f5f5f5;
+            }
+            
+            i {
+                font-size: 20px;
+                color: $primary-color;
+            }
+            
+            span {
+                display: block;
+                font-size: 12px;
+                margin-top: 4px;
+                color: #666;
+            }
+        }
+    }
+}
+
+// COBOL Integration UI
+.cobol-payment-widget {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    
+    .payment-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        
+        .cobol-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    }
+    
+    .card-input {
+        position: relative;
+        margin-bottom: 15px;
+        
+        input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            
+            &:focus {
+                outline: none;
+                border-color: $primary-color;
+            }
+        }
+        
+        .card-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+    }
+    
+    .validation-status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        
+        &.valid {
+            color: $success-color;
+        }
+        
+        &.invalid {
+            color: $danger-color;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ddd;
+            border-top-color: $primary-color;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+    }
+}
+
+// Responsive Grid System
+.mobile-grid {
+    display: grid;
+    gap: 15px;
+    padding: 15px;
+    
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+    
+    @media (min-width: 481px) and (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    @media (min-width: 769px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+// Offline Mode Indicator
+.offline-indicator {
+    position: fixed;
+    top: $mobile-header-height;
+    left: 0;
+    right: 0;
+    background: #f39c12;
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+    
+    &.active {
+        transform: translateY(0);
+    }
+}
+
+// Animations
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+// Touch Feedback
+.touchable {
+    position: relative;
+    overflow: hidden;
+    
+    &:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.1);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    &:active:after {
+        width: 300px;
+        height: 300px;
+    }
+}
+
+// PWA Install Prompt
+.pwa-install-prompt {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    display: none;
+    animation: slideUp 0.3s ease;
+    
+    &.active {
+        display: block;
+    }
+    
+    .prompt-content {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: $primary-color;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .prompt-text {
+            flex: 1;
+            
+            h4 {
+                margin: 0 0 5px 0;
+                font-size: 16px;
+            }
+            
+            p {
+                margin: 0;
+                font-size: 14px;
+                color: #666;
+            }
+        }
+        
+        .install-btn {
+            background: $primary-color;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    }
+}

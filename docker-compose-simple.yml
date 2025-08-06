@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: suitecrm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: suitecrm_root
+      MYSQL_DATABASE: suitecrm
+      MYSQL_USER: suitecrm
+      MYSQL_PASSWORD: suitecrm_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - suitecrm-network
+
+  # PHP Application
+  suitecrm:
+    image: bitnami/suitecrm:latest
+    container_name: suitecrm-app
+    ports:
+      - "8082:8080"
+      - "8443:8443"
+    environment:
+      SUITECRM_DATABASE_HOST: mysql
+      SUITECRM_DATABASE_NAME: suitecrm
+      SUITECRM_DATABASE_USER: suitecrm
+      SUITECRM_DATABASE_PASSWORD: suitecrm_pass
+      SUITECRM_USERNAME: admin
+      SUITECRM_PASSWORD: admin123
+      SUITECRM_EMAIL: admin@example.com
+      ALLOW_EMPTY_PASSWORD: yes
+    depends_on:
+      - mysql
+    networks:
+      - suitecrm-network
+    volumes:
+      - suitecrm_data:/bitnami/suitecrm
+
+volumes:
+  mysql_data:
+  suitecrm_data:
+
+networks:
+  suitecrm-network:
+    driver: bridge

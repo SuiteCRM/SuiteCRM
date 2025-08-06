@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile App Preview - MobileRealEstate CRM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .phone-container {
+            width: 380px;
+            height: 800px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-bar {
+            background: white;
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            color: #000;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .status-bar .time {
+            font-weight: 600;
+        }
+
+        .status-bar .icons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .app-container {
+            height: calc(100% - 44px - 80px);
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: white;
+            border-top: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            color: #8e8e93;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: #007AFF;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+        }
+
+        /* Home Screen */
+        .home-screen {
+            display: block;
+        }
+
+        .user-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: #667eea;
+        }
+
+        .user-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            opacity: 0.9;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #8e8e93;
+        }
+
+        .recent-activities {
+            padding: 0 20px 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1c1c1e;
+        }
+
+        .activity-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        /* Other Screens */
+        .screen {
+            display: none;
+            height: 100%;
+            background: white;
+        }
+
+        .screen-header {
+            background: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .screen-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .properties-grid {
+            padding: 20px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .property-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .property-image {
+            height: 150px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .property-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .property-info {
+            padding: 15px;
+        }
+
+        .property-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .property-address {
+            color: #8e8e93;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .property-details {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Chat Screen */
+        .chat-list {
+            padding: 20px;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-item:hover {
+            background: #f8f8f8;
+            transform: translateX(5px);
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .chat-content {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .chat-message {
+            font-size: 14px;
+            color: #8e8e93;
+        }
+
+        .chat-meta {
+            text-align: right;
+        }
+
+        .chat-time {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .unread-badge {
+            background: #667eea;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-top: 5px;
+            margin-left: auto;
+        }
+
+        /* Tools Screen */
+        .tools-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .tool-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .tool-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .tool-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .tool-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.3s ease-out;
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transform: translateY(-100px);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+
+        /* Pull to refresh */
+        .pull-to-refresh {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-icon {
+            font-size: 24px;
+            color: #667eea;
+            animation: rotate 1s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back to Demos</button>
+
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <span class="time" id="phoneTime">9:41</span>
+                <div class="icons">
+                    <span>📶</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+
+            <div class="notification" id="notification">
+                <strong>New Property Alert!</strong><br>
+                123 Market St just listed at $850,000
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner"></div>
+
+            <div class="app-container" id="appContainer">
+                <!-- Home Screen -->
+                <div class="home-screen screen" id="homeScreen" style="display: block;">
+                    <div class="user-header">
+                        <div class="user-avatar">👤</div>
+                        <div class="user-name">Sarah Johnson</div>
+                        <div class="user-role">Senior Real Estate Agent</div>
+                    </div>
+
+                    <div class="quick-stats">
+                        <div class="stat-card" onclick="showNotification('Monthly stats updated!')">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Active Listings</div>
+                        </div>
+                        <div class="stat-card" onclick="showNotification('3 new leads today!')">
+                            <div class="stat-value">142</div>
+                            <div class="stat-label">Total Leads</div>
+                        </div>
+                        <div class="stat-card" onclick="showNotification('Great job this month!')">
+                            <div class="stat-value">$2.4M</div>
+                            <div class="stat-label">Monthly Sales</div>
+                        </div>
+                        <div class="stat-card" onclick="showNotification('5 viewings scheduled')">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Viewings Today</div>
+                        </div>
+                    </div>
+
+                    <div class="recent-activities">
+                        <h3 class="section-title">Recent Activities</h3>
+                        <div class="activity-item" onclick="showNotification('Opening property details...')">
+                            <div class="activity-icon">🏠</div>
+                            <div class="activity-content">
+                                <div class="activity-title">New listing added</div>
+                                <div class="activity-time">2 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item" onclick="showNotification('Opening client profile...')">
+                            <div class="activity-icon">👥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Client meeting scheduled</div>
+                                <div class="activity-time">15 minutes ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item" onclick="showNotification('Opening offer details...')">
+                            <div class="activity-icon">💰</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Offer received on Oak St</div>
+                                <div class="activity-time">1 hour ago</div>
+                            </div>
+                        </div>
+                        <div class="activity-item" onclick="showNotification('Opening document...')">
+                            <div class="activity-icon">📄</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Contract signed</div>
+                                <div class="activity-time">3 hours ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Properties Screen -->
+                <div class="screen" id="propertiesScreen">
+                    <div class="screen-header">
+                        <h2>Properties</h2>
+                    </div>
+                    <div class="properties-grid">
+                        <div class="property-card" onclick="showNotification('Opening property details...')">
+                            <div class="property-image">
+                                <div class="property-badge">New</div>
+                            </div>
+                            <div class="property-info">
+                                <div class="property-price">$850,000</div>
+                                <div class="property-address">123 Market Street, SF</div>
+                                <div class="property-details">
+                                    <div class="detail-item">🛏️ 3 beds</div>
+                                    <div class="detail-item">🚿 2 baths</div>
+                                    <div class="detail-item">📐 1,800 sqft</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property-card" onclick="showNotification('Opening property details...')">
+                            <div class="property-image">
+                                <div class="property-badge">Open House</div>
+                            </div>
+                            <div class="property-info">
+                                <div class="property-price">$1,200,000</div>
+                                <div class="property-address">456 Valencia Ave, SF</div>
+                                <div class="property-details">
+                                    <div class="detail-item">🛏️ 4 beds</div>
+                                    <div class="detail-item">🚿 3 baths</div>
+                                    <div class="detail-item">📐 2,400 sqft</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="property-card" onclick="showNotification('Opening property details...')">
+                            <div class="property-image">
+                                <div class="property-badge">Reduced</div>
+                            </div>
+                            <div class="property-info">
+                                <div class="property-price">$675,000</div>
+                                <div class="property-address">789 Mission Blvd, SF</div>
+                                <div class="property-details">
+                                    <div class="detail-item">🛏️ 2 beds</div>
+                                    <div class="detail-item">🚿 2 baths</div>
+                                    <div class="detail-item">📐 1,200 sqft</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Screen -->
+                <div class="screen" id="messagesScreen">
+                    <div class="screen-header">
+                        <h2>Messages</h2>
+                    </div>
+                    <div class="chat-list">
+                        <div class="chat-item" onclick="showNotification('Opening chat...')">
+                            <div class="chat-avatar">JD</div>
+                            <div class="chat-content">
+                                <div class="chat-name">John Davis</div>
+                                <div class="chat-message">Is the property still available?</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">2m</div>
+                                <div class="unread-badge">3</div>
+                            </div>
+                        </div>
+                        <div class="chat-item" onclick="showNotification('Opening chat...')">
+                            <div class="chat-avatar">MS</div>
+                            <div class="chat-content">
+                                <div class="chat-name">Mary Smith</div>
+                                <div class="chat-message">Thank you for the viewing!</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">15m</div>
+                                <div class="unread-badge">1</div>
+                            </div>
+                        </div>
+                        <div class="chat-item" onclick="showNotification('Opening chat...')">
+                            <div class="chat-avatar">RC</div>
+                            <div class="chat-content">
+                                <div class="chat-name">Robert Chen</div>
+                                <div class="chat-message">Can we schedule another viewing?</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">1h</div>
+                            </div>
+                        </div>
+                        <div class="chat-item" onclick="showNotification('Opening chat...')">
+                            <div class="chat-avatar">LW</div>
+                            <div class="chat-content">
+                                <div class="chat-name">Lisa Wang</div>
+                                <div class="chat-message">Documents are ready for signing</div>
+                            </div>
+                            <div class="chat-meta">
+                                <div class="chat-time">3h</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Screen -->
+                <div class="screen" id="toolsScreen">
+                    <div class="screen-header">
+                        <h2>Tools</h2>
+                    </div>
+                    <div class="tools-grid">
+                        <div class="tool-item" onclick="showNotification('Opening calculator...')">
+                            <div class="tool-icon">🧮</div>
+                            <div class="tool-name">Mortgage Calc</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening camera...')">
+                            <div class="tool-icon">📸</div>
+                            <div class="tool-name">Photo Capture</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening scanner...')">
+                            <div class="tool-icon">📄</div>
+                            <div class="tool-name">Doc Scanner</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening calendar...')">
+                            <div class="tool-icon">📅</div>
+                            <div class="tool-name">Schedule</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening maps...')">
+                            <div class="tool-icon">🗺️</div>
+                            <div class="tool-name">Area Maps</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening analytics...')">
+                            <div class="tool-icon">📊</div>
+                            <div class="tool-name">Analytics</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening contracts...')">
+                            <div class="tool-icon">📋</div>
+                            <div class="tool-name">Contracts</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening CRM...')">
+                            <div class="tool-icon">👥</div>
+                            <div class="tool-name">CRM Sync</div>
+                        </div>
+                        <div class="tool-item" onclick="showNotification('Opening settings...')">
+                            <div class="tool-icon">⚙️</div>
+                            <div class="tool-name">Settings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchScreen('homeScreen', this)">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('propertiesScreen', this)">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-label">Properties</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('messagesScreen', this)">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Messages</span>
+                </div>
+                <div class="nav-item" onclick="switchScreen('toolsScreen', this)">
+                    <span class="nav-icon">🛠️</span>
+                    <span class="nav-label">Tools</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update phone time
+        function updatePhoneTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('phoneTime').textContent = `${hours}:${minutes}`;
+        }
+        
+        updatePhoneTime();
+        setInterval(updatePhoneTime, 60000);
+
+        // Switch screens
+        function switchScreen(screenId, navItem) {
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            
+            setTimeout(() => {
+                // Hide all screens
+                document.querySelectorAll('.screen').forEach(screen => {
+                    screen.style.display = 'none';
+                });
+                
+                // Show selected screen with animation
+                const screen = document.getElementById(screenId);
+                screen.style.display = 'block';
+                screen.className = 'screen slide-in-right';
+                
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                navItem.classList.add('active');
+                
+                // Hide loading spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                
+                // Scroll to top
+                document.getElementById('appContainer').scrollTop = 0;
+            }, 300);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Simulate incoming notifications
+        const notifications = [
+            'New property match found!',
+            'Client John Davis sent a message',
+            'Viewing reminder: 2:30 PM today',
+            'Document signed by Mary Smith',
+            'Price reduced on Market St property',
+            'New lead from website inquiry'
+        ];
+
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+                showNotification(randomNotification);
+            }
+        }, 10000);
+
+        // Pull to refresh simulation
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        document.getElementById('appContainer').addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        document.getElementById('appContainer').addEventListener('touchmove', (e) => {
+            touchEndY = e.touches[0].clientY;
+            
+            if (touchEndY > touchStartY && document.getElementById('appContainer').scrollTop === 0) {
+                const pullDistance = touchEndY - touchStartY;
+                if (pullDistance > 50) {
+                    // Show refresh indicator
+                    showNotification('Refreshing...');
+                    setTimeout(() => {
+                        showNotification('Updated just now');
+                    }, 1000);
+                }
+            }
+        });
+
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update stats
+            const statValues = document.querySelectorAll('.stat-value');
+            if (Math.random() > 0.8) {
+                statValues[1].textContent = parseInt(statValues[1].textContent) + 1;
+            }
+        }, 5000);
+
+        // Add touch feedback
+        document.querySelectorAll('.stat-card, .activity-item, .property-card, .chat-item, .tool-item').forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            
+            item.addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

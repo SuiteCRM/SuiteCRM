@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 720" width="540" height="720">
+  <!-- Phone frame -->
+  <rect width="540" height="720" fill="#f5f5f5" rx="30" ry="30"/>
+  <rect x="20" y="20" width="500" height="680" fill="#ffffff" rx="20" ry="20"/>
+  
+  <!-- Status bar -->
+  <rect x="20" y="20" width="500" height="60" fill="#2c5aa0" rx="20" ry="20"/>
+  <rect x="20" y="60" width="500" height="20" fill="#2c5aa0"/>
+  <text x="50" y="55" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">9:41 AM</text>
+  <text x="470" y="55" font-family="Arial, sans-serif" font-size="16" text-anchor="end" fill="#ffffff">100%</text>
+  
+  <!-- App header -->
+  <rect x="20" y="80" width="500" height="80" fill="#2c5aa0"/>
+  <text x="270" y="130" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#ffffff">Property Details</text>
+  
+  <!-- Property image placeholder -->
+  <rect x="20" y="160" width="500" height="200" fill="#e0e0e0"/>
+  <text x="270" y="270" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#999">Property Image</text>
+  
+  <!-- Property info -->
+  <g transform="translate(40, 380)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="24" font-weight="bold">123 Main Street</text>
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="16" fill="#666">Residential • Single Family Home</text>
+    <text x="0" y="60" font-family="Arial, sans-serif" font-size="28" fill="#2c5aa0" font-weight="bold">$425,000</text>
+  </g>
+  
+  <!-- Property features -->
+  <g transform="translate(40, 480)">
+    <rect width="140" height="60" fill="#f0f0f0" rx="10" ry="10"/>
+    <text x="70" y="25" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">3</text>
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle">Bedrooms</text>
+  </g>
+  
+  <g transform="translate(190, 480)">
+    <rect width="140" height="60" fill="#f0f0f0" rx="10" ry="10"/>
+    <text x="70" y="25" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">2</text>
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle">Bathrooms</text>
+  </g>
+  
+  <g transform="translate(340, 480)">
+    <rect width="140" height="60" fill="#f0f0f0" rx="10" ry="10"/>
+    <text x="70" y="25" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle">1,850</text>
+    <text x="70" y="45" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle">Sq Ft</text>
+  </g>
+  
+  <!-- Action buttons -->
+  <g transform="translate(40, 570)">
+    <rect width="220" height="50" fill="#2c5aa0" rx="25" ry="25"/>
+    <text x="110" y="32" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" text-anchor="middle">Schedule Viewing</text>
+  </g>
+  
+  <g transform="translate(280, 570)">
+    <rect width="200" height="50" fill="#ffffff" stroke="#2c5aa0" stroke-width="2" rx="25" ry="25"/>
+    <text x="100" y="32" font-family="Arial, sans-serif" font-size="16" fill="#2c5aa0" text-anchor="middle">Save Property</text>
+  </g>
+  
+  <!-- Bottom navigation -->
+  <rect x="20" y="660" width="500" height="40" fill="#ffffff"/>
+  <line x1="20" y1="660" x2="520" y2="660" stroke="#e0e0e0" stroke-width="1"/>
+</svg>

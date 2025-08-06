@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Processing Demo - COBOL Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 0 0 20px #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .mainframe-window {
+            background: #000;
+            border: 2px solid #00ff00;
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        }
+
+        .terminal-header {
+            border-bottom: 1px solid #00ff00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .payment-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            padding: 20px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .process-btn {
+            width: 100%;
+            padding: 15px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .process-btn:hover {
+            background: #00cc00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+
+        .process-btn:active {
+            transform: scale(0.98);
+        }
+
+        .cobol-output {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .processing-animation {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .processing-animation .dots {
+            display: inline-block;
+            width: 60px;
+            text-align: left;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00ff00;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); }
+        }
+
+        .transaction-flow {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            margin: 0 10px;
+            position: relative;
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        .flow-step.active {
+            opacity: 1;
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5em;
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        .ascii-art {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 0.8em;
+            line-height: 1.2;
+        }
+
+        .error-text {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+
+        .success-text {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .warning-text {
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← BACK TO MENU</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>COBOL PAYMENT GATEWAY</h1>
+            <p>MAINFRAME TRANSACTION PROCESSOR V2.1</p>
+        </div>
+
+        <div class="mainframe-window">
+            <div class="terminal-header">
+                <span><span class="status-indicator"></span>SYSTEM ONLINE</span>
+                <span>TERMINAL: VT100</span>
+            </div>
+
+            <div class="ascii-art">
+<pre>
+ ____   ___  ____   ___  _     
+/ ___| / _ \| __ ) / _ \| |    
+| |   | | | |  _ \| | | | |    
+| |___| |_| | |_) | |_| | |___ 
+\____|\___/|____/ \___/|_____|
+                              
+PAYMENT PROCESSING SYSTEM
+</pre>
+            </div>
+
+            <div class="payment-form">
+                <div class="form-section">
+                    <h3>TRANSACTION DETAILS</h3>
+                    <div class="form-group">
+                        <label>TRANSACTION ID</label>
+                        <input type="text" id="transactionId" value="TXN-2024-001234" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>AMOUNT ($)</label>
+                        <input type="text" id="amount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>MERCHANT CODE</label>
+                        <input type="text" id="merchantCode" value="MRE-PROP-001">
+                    </div>
+                    <div class="form-group">
+                        <label>PROPERTY REF</label>
+                        <input type="text" id="propertyRef" placeholder="PROP-XXXXX">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>PAYMENT METHOD</h3>
+                    <div class="form-group">
+                        <label>CARD NUMBER</label>
+                        <input type="text" id="cardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                    </div>
+                    <div class="form-group">
+                        <label>EXPIRY (MM/YY)</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="password" id="cvv" placeholder="XXX" maxlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label>CARDHOLDER NAME</label>
+                        <input type="text" id="cardholderName" placeholder="JOHN DOE">
+                    </div>
+                </div>
+            </div>
+
+            <button class="process-btn" id="processBtn">EXECUTE TRANSACTION</button>
+
+            <div class="processing-animation" id="processingAnimation">
+                <p>PROCESSING<span class="dots">...</span></p>
+            </div>
+
+            <div class="transaction-flow">
+                <div class="flow-step" id="step1">
+                    <h4>VALIDATE</h4>
+                    <p>INPUT CHECK</p>
+                </div>
+                <div class="flow-step" id="step2">
+                    <h4>MAINFRAME</h4>
+                    <p>COBOL PROC</p>
+                </div>
+                <div class="flow-step" id="step3">
+                    <h4>AUTHORIZE</h4>
+                    <p>BANK API</p>
+                </div>
+                <div class="flow-step" id="step4">
+                    <h4>COMPLETE</h4>
+                    <p>CONFIRM</p>
+                </div>
+            </div>
+
+            <div class="cobol-output" id="cobolOutput">
+                <span class="blink">▮</span> READY FOR INPUT...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format card number input
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join('-') || value;
+            e.target.value = formattedValue;
+        });
+
+        // Format expiry input
+        document.getElementById('expiry').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Format amount input
+        document.getElementById('amount').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d.]/g, '');
+            e.target.value = value;
+        });
+
+        // Process transaction
+        document.getElementById('processBtn').addEventListener('click', async function() {
+            const output = document.getElementById('cobolOutput');
+            const processingAnimation = document.getElementById('processingAnimation');
+            const amount = document.getElementById('amount').value || '0.00';
+            const cardNumber = document.getElementById('cardNumber').value;
+            const propertyRef = document.getElementById('propertyRef').value || 'PROP-00000';
+            
+            // Clear output
+            output.innerHTML = '';
+            processingAnimation.style.display = 'block';
+
+            // Animate dots
+            let dots = 0;
+            const dotsInterval = setInterval(() => {
+                dots = (dots + 1) % 4;
+                document.querySelector('.dots').textContent = '.'.repeat(dots);
+            }, 500);
+
+            // Transaction flow steps
+            const steps = [
+                {
+                    step: 'step1',
+                    delay: 1000,
+                    output: `IDENTIFICATION DIVISION.
+PROGRAM-ID. PAYMENT-PROCESSOR.
+
+ENVIRONMENT DIVISION.
+CONFIGURATION SECTION.
+SOURCE-COMPUTER. IBM-MAINFRAME.
+OBJECT-COMPUTER. IBM-MAINFRAME.
+
+DATA DIVISION.
+WORKING-STORAGE SECTION.
+01 WS-TRANSACTION-ID    PIC X(15) VALUE '${document.getElementById('transactionId').value}'.
+01 WS-AMOUNT           PIC 9(10)V99 VALUE ${parseFloat(amount).toFixed(2)}.
+01 WS-TIMESTAMP        PIC X(26) VALUE '${new Date().toISOString()}'.
+
+<span class="success-text">✓ INPUT VALIDATION PASSED</span>`
+                },
+                {
+                    step: 'step2',
+                    delay: 2000,
+                    output: `
+PROCEDURE DIVISION.
+MAIN-PROCESS.
+    DISPLAY "INITIATING PAYMENT TRANSACTION...".
+    PERFORM VALIDATE-CARD-NUMBER.
+    PERFORM CHECK-MERCHANT-LIMITS.
+    PERFORM CALCULATE-FEES.
+    
+VALIDATE-CARD-NUMBER.
+    DISPLAY "VALIDATING CARD: ${cardNumber.replace(/\d(?=\d{4})/g, '*')}".
+    MOVE 'VALID' TO WS-CARD-STATUS.
+    
+CHECK-MERCHANT-LIMITS.
+    DISPLAY "CHECKING MERCHANT LIMITS...".
+    IF WS-AMOUNT <= 999999.99 THEN
+        DISPLAY "<span class="success-text">AMOUNT WITHIN LIMITS</span>"
+    END-IF.
+
+<span class="warning-text">⚡ CONNECTING TO MAINFRAME DB2...</span>
+<span class="success-text">✓ CONNECTION ESTABLISHED</span>`
+                },
+                {
+                    step: 'step3',
+                    delay: 3000,
+                    output: `
+CALCULATE-FEES.
+    COMPUTE WS-PROCESSING-FEE = WS-AMOUNT * 0.029 + 0.30.
+    DISPLAY "PROCESSING FEE: $" WS-PROCESSING-FEE.
+    
+CALL-BANK-API.
+    DISPLAY "CALLING AUTHORIZATION API...".
+    DISPLAY "ENDPOINT: https://api.bank.com/v2/authorize".
+    DISPLAY "METHOD: POST".
+    
+    MOVE 'AUTH-${Math.random().toString(36).substr(2, 9).toUpperCase()}' TO WS-AUTH-CODE.
+    
+<span class="success-text">HTTP 200 OK</span>
+<span class="success-text">AUTHORIZATION CODE: ${Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+<span class="success-text">✓ PAYMENT AUTHORIZED</span>`
+                },
+                {
+                    step: 'step4',
+                    delay: 4000,
+                    output: `
+FINALIZE-TRANSACTION.
+    DISPLAY "WRITING TO TRANSACTION LOG...".
+    
+    WRITE TRANSACTION-RECORD FROM WS-TRANSACTION-DATA.
+    
+    IF WS-FILE-STATUS = '00' THEN
+        DISPLAY "<span class="success-text">✓ TRANSACTION LOGGED SUCCESSFULLY</span>"
+    END-IF.
+    
+UPDATE-PROPERTY-RECORD.
+    DISPLAY "UPDATING PROPERTY: ${propertyRef}".
+    MOVE 'PAYMENT_RECEIVED' TO WS-PROPERTY-STATUS.
+    
+    DISPLAY "<span class="success-text">✓ PROPERTY RECORD UPDATED</span>".
+    
+STOP RUN.
+
+<span class="success-text">════════════════════════════════════════════════════════</span>
+<span class="success-text">TRANSACTION COMPLETED SUCCESSFULLY</span>
+<span class="success-text">════════════════════════════════════════════════════════</span>
+
+TRANSACTION SUMMARY:
+- TRANSACTION ID: ${document.getElementById('transactionId').value}
+- AMOUNT: $${parseFloat(amount).toFixed(2)}
+- PROPERTY: ${propertyRef}
+- STATUS: <span class="success-text">APPROVED</span>
+- PROCESSING TIME: 4.2 SECONDS
+- MAINFRAME RESPONSE: 200 OK
+
+<span class="blink">▮</span> READY FOR NEXT TRANSACTION...`
+                }
+            ];
+
+            // Execute steps
+            for (let i = 0; i < steps.length; i++) {
+                const stepData = steps[i];
+                document.getElementById(stepData.step).classList.add('active');
+                
+                await new Promise(resolve => setTimeout(resolve, stepData.delay));
+                
+                output.innerHTML += stepData.output + '\n\n';
+                output.scrollTop = output.scrollHeight;
+            }
+
+            clearInterval(dotsInterval);
+            processingAnimation.style.display = 'none';
+
+            // Generate new transaction ID for next transaction
+            setTimeout(() => {
+                const newId = 'TXN-2024-' + Math.floor(Math.random() * 900000 + 100000);
+                document.getElementById('transactionId').value = newId;
+            }, 2000);
+        });
+
+        // Add some mainframe authenticity
+        setInterval(() => {
+            const indicator = document.querySelector('.status-indicator');
+            indicator.style.background = indicator.style.background === 'rgb(255, 0, 0)' ? '#00ff00' : '#00ff00';
+        }, 5000);
+
+        // Auto-generate transaction ID on load
+        window.addEventListener('load', () => {
+            const transactionId = 'TXN-2024-' + Math.floor(Math.random() * 900000 + 100000);
+            document.getElementById('transactionId').value = transactionId;
+        });
+    </script>
+</body>
+</html>

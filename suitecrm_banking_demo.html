@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuiteCRM + COBOL Banking Integration Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: #534292;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .demo-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .demo-card h2 {
+            color: #534292;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #534292;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: #3f3470;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-bar {
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+        
+        .status-dot.offline {
+            background: #dc3545;
+        }
+        
+        .integration-info {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .integration-info h3 {
+            color: #534292;
+            margin-bottom: 10px;
+        }
+        
+        .integration-info ul {
+            margin-left: 20px;
+        }
+        
+        .integration-info li {
+            margin-bottom: 5px;
+        }
+        
+        .mobile-preview {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .mobile-device {
+            width: 300px;
+            height: 600px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            overflow-y: auto;
+        }
+        
+        .mobile-content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-bar">
+        <div class="status-indicator">
+            <span class="status-dot" id="suiteStatus"></span>
+            <span>SuiteCRM: <span id="suiteStatusText">Online</span></span>
+        </div>
+        <div class="status-indicator">
+            <span class="status-dot" id="cobolStatus"></span>
+            <span>COBOL Gateway: <span id="cobolStatusText">Online</span></span>
+        </div>
+        <div class="status-indicator">
+            <span class="status-dot" id="redisStatus"></span>
+            <span>Redis Queue: <span id="redisStatusText">Online</span></span>
+        </div>
+    </div>
+    
+    <div class="header">
+        <h1>SuiteCRM + COBOL Banking Integration</h1>
+        <p>Real Estate Mobile App with Legacy Banking System Integration</p>
+    </div>
+    
+    <div class="container">
+        <div class="integration-info">
+            <h3>Integration Features</h3>
+            <ul>
+                <li>Real-time COBOL mainframe connectivity via WebSocket</li>
+                <li>Mobile-optimized PWA for real estate agents</li>
+                <li>Secure payment processing through legacy banking systems</li>
+                <li>Redis queue for asynchronous transaction processing</li>
+                <li>Offline-capable with automatic sync</li>
+            </ul>
+        </div>
+        
+        <div class="demo-grid">
+            <!-- Property Payment Processing -->
+            <div class="demo-card">
+                <h2>🏡 Property Payment Processing</h2>
+                <form onsubmit="processPropertyPayment(event)">
+                    <div class="form-group">
+                        <label for="propertyId">Property ID</label>
+                        <input type="text" id="propertyId" value="PROP-2024-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="buyerName">Buyer Name</label>
+                        <input type="text" id="buyerName" placeholder="John Smith" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="earnestMoney">Earnest Money Amount</label>
+                        <input type="number" id="earnestMoney" value="5000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentCard">Payment Card</label>
+                        <input type="text" id="paymentCard" placeholder="4111 1111 1111 1111" maxlength="19" required>
+                    </div>
+                    <button type="submit">Process Payment via COBOL</button>
+                </form>
+                <div id="paymentResult" class="result"></div>
+            </div>
+            
+            <!-- Mortgage Pre-Qualification -->
+            <div class="demo-card">
+                <h2>💰 Mortgage Pre-Qualification</h2>
+                <form onsubmit="checkMortgageQualification(event)">
+                    <div class="form-group">
+                        <label for="clientId">Client ID</label>
+                        <input type="text" id="clientId" value="CLIENT-2024-042" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="propertyPrice">Property Price</label>
+                        <input type="number" id="propertyPrice" value="450000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="downPayment">Down Payment (%)</label>
+                        <input type="number" id="downPayment" value="20" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="creditScore">Credit Score</label>
+                        <input type="number" id="creditScore" value="720" min="300" max="850" required>
+                    </div>
+                    <button type="submit">Check Qualification</button>
+                </form>
+                <div id="mortgageResult" class="result"></div>
+            </div>
+            
+            <!-- Account Verification -->
+            <div class="demo-card">
+                <h2>🏦 Buyer Account Verification</h2>
+                <form onsubmit="verifyBuyerAccount(event)">
+                    <div class="form-group">
+                        <label for="buyerId">Buyer ID</label>
+                        <input type="text" id="buyerId" value="BUYER-2024-089" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankRouting">Bank Routing Number</label>
+                        <input type="text" id="bankRouting" placeholder="123456789" maxlength="9" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankAccount">Account Number</label>
+                        <input type="text" id="bankAccount" placeholder="1234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="verifyAmount">Verification Amount</label>
+                        <input type="number" id="verifyAmount" value="100000" required>
+                    </div>
+                    <button type="submit">Verify Funds via COBOL</button>
+                </form>
+                <div id="verifyResult" class="result"></div>
+            </div>
+            
+            <!-- Mobile App Preview -->
+            <div class="demo-card">
+                <h2>📱 Mobile Real Estate App</h2>
+                <div class="mobile-preview">
+                    <p style="margin-bottom: 20px;">Live mobile interface preview:</p>
+                    <iframe 
+                        src="index.php?module=RE_Properties&action=Mobile" 
+                        style="width: 100%; height: 600px; border: 2px solid #333; border-radius: 10px;"
+                        title="Mobile App Preview"
+                    ></iframe>
+                    <p style="margin-top: 20px;">
+                        <a href="index.php?module=RE_Properties&action=Mobile" target="_blank">
+                            Open in new window →
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // WebSocket connection to COBOL gateway
+        let cobolSocket = null;
+        
+        function connectWebSocket() {
+            try {
+                cobolSocket = new WebSocket('ws://localhost:8081');
+                
+                cobolSocket.onopen = function() {
+                    console.log('Connected to COBOL WebSocket');
+                    updateStatus('cobol', true);
+                };
+                
+                cobolSocket.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    console.log('COBOL message:', data);
+                    handleWebSocketMessage(data);
+                };
+                
+                cobolSocket.onclose = function() {
+                    console.log('COBOL WebSocket disconnected');
+                    updateStatus('cobol', false);
+                    // Reconnect after 5 seconds
+                    setTimeout(connectWebSocket, 5000);
+                };
+                
+                cobolSocket.onerror = function(error) {
+                    console.error('WebSocket error:', error);
+                    updateStatus('cobol', false);
+                };
+            } catch (error) {
+                console.error('Failed to connect WebSocket:', error);
+                updateStatus('cobol', false);
+            }
+        }
+        
+        function updateStatus(service, online) {
+            const dot = document.getElementById(service + 'Status');
+            const text = document.getElementById(service + 'StatusText');
+            
+            if (online) {
+                dot.classList.remove('offline');
+                text.textContent = 'Online';
+            } else {
+                dot.classList.add('offline');
+                text.textContent = 'Offline';
+            }
+        }
+        
+        async function checkServices() {
+            // Check SuiteCRM
+            try {
+                const response = await fetch('index.php?entryPoint=health');
+                updateStatus('suite', response.ok);
+            } catch {
+                updateStatus('suite', false);
+            }
+            
+            // Check COBOL Gateway
+            try {
+                const response = await fetch('http://localhost:8080/health');
+                updateStatus('cobol', response.ok);
+            } catch {
+                updateStatus('cobol', false);
+            }
+            
+            // Check Redis
+            try {
+                const response = await fetch('http://localhost:8080/api/redis-status');
+                updateStatus('redis', response.ok);
+            } catch {
+                updateStatus('redis', false);
+            }
+        }
+        
+        async function processPropertyPayment(event) {
+            event.preventDefault();
+            const result = document.getElementById('paymentResult');
+            result.style.display = 'none';
+            
+            const data = {
+                propertyId: document.getElementById('propertyId').value,
+                buyerName: document.getElementById('buyerName').value,
+                amount: document.getElementById('earnestMoney').value,
+                cardNumber: document.getElementById('paymentCard').value.replace(/\s/g, '')
+            };
+            
+            try {
+                // Send via WebSocket if connected
+                if (cobolSocket && cobolSocket.readyState === WebSocket.OPEN) {
+                    cobolSocket.send(JSON.stringify({
+                        action: 'process_payment',
+                        data: data
+                    }));
+                    
+                    result.className = 'result success';
+                    result.innerHTML = '<strong>Processing...</strong> Transaction sent to COBOL mainframe';
+                    result.style.display = 'block';
+                } else {
+                    // Fallback to HTTP
+                    const response = await fetch('http://localhost:8080/api/process-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const responseData = await response.json();
+                    result.className = responseData.success ? 'result success' : 'result error';
+                    result.innerHTML = `
+                        <strong>${responseData.success ? 'Payment Processed' : 'Payment Failed'}</strong><br>
+                        Transaction ID: ${responseData.transactionId || 'N/A'}<br>
+                        ${responseData.message || ''}
+                    `;
+                    result.style.display = 'block';
+                }
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = '<strong>Error:</strong> Unable to process payment';
+                result.style.display = 'block';
+            }
+        }
+        
+        async function checkMortgageQualification(event) {
+            event.preventDefault();
+            const result = document.getElementById('mortgageResult');
+            result.style.display = 'none';
+            
+            const propertyPrice = parseFloat(document.getElementById('propertyPrice').value);
+            const downPaymentPercent = parseFloat(document.getElementById('downPayment').value);
+            const loanAmount = propertyPrice * (1 - downPaymentPercent / 100);
+            
+            const data = {
+                clientId: document.getElementById('clientId').value,
+                loanAmount: loanAmount,
+                propertyPrice: propertyPrice,
+                creditScore: document.getElementById('creditScore').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/check-qualification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const responseData = await response.json();
+                result.className = responseData.qualified ? 'result success' : 'result error';
+                result.innerHTML = `
+                    <strong>${responseData.qualified ? 'Pre-Qualified' : 'Not Qualified'}</strong><br>
+                    Loan Amount: $${loanAmount.toLocaleString()}<br>
+                    Est. Monthly Payment: $${responseData.monthlyPayment || 'N/A'}<br>
+                    Interest Rate: ${responseData.interestRate || 'N/A'}%<br>
+                    ${responseData.message || ''}
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = '<strong>Error:</strong> Unable to check qualification';
+                result.style.display = 'block';
+            }
+        }
+        
+        async function verifyBuyerAccount(event) {
+            event.preventDefault();
+            const result = document.getElementById('verifyResult');
+            result.style.display = 'none';
+            
+            const data = {
+                buyerId: document.getElementById('buyerId').value,
+                routingNumber: document.getElementById('bankRouting').value,
+                accountNumber: document.getElementById('bankAccount').value,
+                verifyAmount: document.getElementById('verifyAmount').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/verify-buyer-funds', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const responseData = await response.json();
+                result.className = responseData.verified ? 'result success' : 'result error';
+                result.innerHTML = `
+                    <strong>${responseData.verified ? 'Funds Verified' : 'Verification Failed'}</strong><br>
+                    Bank: ${responseData.bankName || 'Unknown'}<br>
+                    Available Funds: ${responseData.sufficientFunds ? 'Sufficient' : 'Insufficient'}<br>
+                    ${responseData.message || ''}
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = '<strong>Error:</strong> Unable to verify account';
+                result.style.display = 'block';
+            }
+        }
+        
+        function handleWebSocketMessage(data) {
+            // Handle real-time updates from COBOL
+            if (data.type === 'payment_update') {
+                const result = document.getElementById('paymentResult');
+                result.className = data.status === 'approved' ? 'result success' : 'result error';
+                result.innerHTML = `
+                    <strong>Payment ${data.status === 'approved' ? 'Approved' : 'Declined'}</strong><br>
+                    Transaction ID: ${data.transactionId}<br>
+                    Authorization: ${data.authCode || 'N/A'}
+                `;
+                result.style.display = 'block';
+            }
+        }
+        
+        // Format card input
+        document.getElementById('paymentCard').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+        
+        // Initialize
+        connectWebSocket();
+        checkServices();
+        setInterval(checkServices, 10000);
+    </script>
+</body>
+</html>
