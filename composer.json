@@ -32,7 +32,10 @@
     "ext-imap": "Needed for emails module"
   },
   "require": {
-    "php": ">=7.4.0",
+    "php": ">=8.2",
+    "ext-ctype": "*",
+    "ext-iconv": "*",
+    "ext-redis": "*"
     "ext-curl": "*",
     "ext-gd": "*",
     "ext-json": "*",
