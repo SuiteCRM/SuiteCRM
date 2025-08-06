@@ -1561,7 +1561,7 @@ HTML;
         }
         if (file_exists($cache)) {
             include($cache); // profides $cacheFile
-            $metaOut = unserialize($cacheFile['out']);
+            $metaOut = unserialize($cacheFile['out'], ['allowed_classes' => false]);
             $meta = $metaOut['meta']['email'];
             if (isset($meta['attachments'])) {
                 $attachmentHtmlData = $meta['attachments'];
@@ -3391,9 +3391,7 @@ eoq;
             include($cacheFilePath); // provides $cacheFile
 
             if (isset($cacheFile[$key])) {
-                $ret = unserialize($cacheFile[$key]);
-
-                return $ret;
+                return unserialize($cacheFile[$key], ['allowed_classes' => false]);
             }
         } else {
             $GLOBALS['log']->debug("EMAILUI: cache file not found [ {$cacheFilePath} ] - creating blank cache file");

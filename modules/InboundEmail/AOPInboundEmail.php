@@ -150,7 +150,7 @@ class AOPInboundEmail extends InboundEmail
             $GLOBALS['log']->debug('InboundEmail created one case with number: '.$c->case_number);
             $createCaseTemplateId = $this->get_stored_options('create_case_email_template', "");
             if (!empty($this->stored_options)) {
-                $storedOptions = unserialize(base64_decode($this->stored_options));
+                $storedOptions = unserialize(base64_decode($this->stored_options), ['allowed_classes' => false]);
             }
             if (!empty($createCaseTemplateId)) {
                 $fromName = "";

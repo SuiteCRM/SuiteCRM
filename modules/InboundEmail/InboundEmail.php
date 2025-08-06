@@ -1572,7 +1572,7 @@ class InboundEmail extends SugarBean
                     flush();
                 } // while
                 fclose($fh);
-                $diff = unserialize($data);
+                $diff = unserialize($data, ['allowed_classes' => false]);
                 if (!empty($diff)) {
                     if ((is_countable($diff) ? count($diff) : 0) > 50) {
                         $newDiff = array_slice($diff, 50, is_countable($diff) ? count($diff) : 0, true);
@@ -2035,7 +2035,7 @@ class InboundEmail extends SugarBean
                     flush();
                 } // while
                 fclose($fh);
-                $results = unserialize($data);
+                $results = unserialize($data, ['allowed_classes' => false]);
             } // if
         } // if
         if (!$cacheDataExists) {
@@ -2964,7 +2964,7 @@ class InboundEmail extends SugarBean
 
             $focusUser = BeanFactory::newBean('Users');
             $focusUser->retrieve($groupId);
-            $mailerId = (isset($_REQUEST['outbound_email'])) ? $_REQUEST['outbound_email'] : "";
+            $mailerId = (isset($_REQUEST['outbound_email'])) ? $this->db->quote($_REQUEST['outbound_email']) : "";
 
             $oe = new OutboundEmail();
             if ($mailerId != "") {
@@ -4144,14 +4144,14 @@ class InboundEmail extends SugarBean
             $emailMessage = $this->mailParser->parse($emailBody, false)->getTextContent();
             $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
             $emailMessage = $this->customGetMessageText($emailMessage);
-            return SugarCleaner::cleanHtml($emailMessage, false);
+            return html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, false)));
         }
 
         $emailMessage = $this->mailParser->parse($emailBody, false)->getHtmlContent();
         $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
-        $emailMessage = $this->customGetMessageText($emailMessage);
+        $emailMessage = $this->customGetMessageText($emailMessage) ?? '';
 
-        return SugarCleaner::cleanHtml($emailMessage, $clean_email);
+        return html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, $clean_email)));
     }
 
     /**
@@ -5491,7 +5491,7 @@ class InboundEmail extends SugarBean
             ////	ASSIGN APPROPRIATE ATTRIBUTES TO NEW EMAIL OBJECT
             // handle UTF-8/charset encoding in the ***headers***
 
-            $email->name = $this->handleMimeHeaderDecode($header->subject);
+            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject));
             $email->type = 'inbound';
             if (!empty($unixHeaderDate)) {
                 $email->date_sent_received = $timedate->asUser($unixHeaderDate);
@@ -5709,7 +5709,7 @@ class InboundEmail extends SugarBean
             $fullHeader = $this->getImap()->fetchHeader($uid, FT_UID);
             $parsedFullHeader = $this->getImap()->rfc822ParseHeaders($fullHeader);
 
-            $email->name = $this->handleMimeHeaderDecode($parsedFullHeader->subject);
+            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject));
             $email->type = 'inbound';
 
             if (isset($request['metadata']['viewdefs'])) {
@@ -6347,7 +6347,7 @@ class InboundEmail extends SugarBean
             $port = $this->port ?? '143';
             $connectString = '{' . $this->server_url . ':' . $port . '/service=' . $protocol . $service . '}';
         }
-        
+
         $mbox = empty($mbox) ? $this->mailbox : $mbox;
         $connectString .= ($includeMbox) ? $mbox : "";
 
@@ -7503,7 +7503,7 @@ class InboundEmail extends SugarBean
             include($cache); // profides $cacheFile
             /** @var $cacheFile array */
 
-            $metaOut = unserialize($cacheFile['out']);
+            $metaOut = unserialize($cacheFile['out'], ['allowed_classes' => false]);
             $meta = $metaOut['meta']['email'];
             $email = BeanFactory::newBean('Emails');
 

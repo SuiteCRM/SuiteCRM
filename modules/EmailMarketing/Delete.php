@@ -60,7 +60,7 @@ if (!$focus->ACLAccess('Delete')) {
 $focus->mark_deleted($_REQUEST['record']);
 
 if (isset($_REQUEST['record'])) {
-    $query = "DELETE FROM emailman WHERE marketing_id ='" . $_REQUEST['record'] ."'";
+    $query = "DELETE FROM emailman WHERE marketing_id ='" . $focus->db->quote($_REQUEST['record']) ."'";
     $focus->db->query($query);
 }
 

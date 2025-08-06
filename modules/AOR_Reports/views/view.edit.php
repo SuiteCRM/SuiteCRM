@@ -82,10 +82,10 @@ class AOR_ReportsViewEdit extends ViewEdit
             $condition_name = BeanFactory::newBean('AOR_Conditions');
             $condition_name->retrieve($row['id']);
             if (!$condition_name->parenthesis) {
-                $condition_name->module_path = implode(":", unserialize(base64_decode($condition_name->module_path)));
+                $condition_name->module_path = implode(":", unserialize(base64_decode($condition_name->module_path),['allowed_classes' => false]));
             }
             if ($condition_name->value_type == 'Date') {
-                $condition_name->value = unserialize(base64_decode($condition_name->value));
+                $condition_name->value = unserialize(base64_decode($condition_name->value),['allowed_classes' => false]);
             }
             $condition_item = $condition_name->toArray();
 
@@ -115,7 +115,7 @@ class AOR_ReportsViewEdit extends ViewEdit
         while ($row = $this->bean->db->fetchByAssoc($result)) {
             $field_name = BeanFactory::newBean('AOR_Fields');
             $field_name->retrieve($row['id']);
-            $field_name->module_path = implode(":", unserialize(base64_decode($field_name->module_path)));
+            $field_name->module_path = implode(":", unserialize(base64_decode($field_name->module_path),['allowed_classes' => false]));
             $arr = $field_name->toArray();
 
 

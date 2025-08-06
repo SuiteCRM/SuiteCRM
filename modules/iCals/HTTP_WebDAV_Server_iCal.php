@@ -60,12 +60,21 @@ class HTTP_WebDAV_Server_iCal extends HTTP_WebDAV_Server
     public $http_spec = "";
 
     /**
+     * @var User $user_focus
+     */
+    public $user_focus = "";
+
+    public $vcal_type = "";
+    
+    /**
      * Constructor for the WebDAV srver
      */
     public function __construct()
     {
         $this->vcal_focus = new iCal();
         $this->user_focus = BeanFactory::newBean('Users');
+
+        parent::__construct();
     }
 
     /**
@@ -76,9 +85,7 @@ class HTTP_WebDAV_Server_iCal extends HTTP_WebDAV_Server
      */
     public function ServeICalRequest($base = false)
     {
-        global $sugar_config;
-        global $current_language;
-        global $log;
+        global $sugar_config, $log;
 
         if (empty($_REQUEST['type'])) {
             $_REQUEST['type'] = 'ics';
@@ -148,46 +155,22 @@ class HTTP_WebDAV_Server_iCal extends HTTP_WebDAV_Server
             $this->publish_key = $query_arr['key'];
         }
 
-
         // select user by email
         if (!empty($query_arr['user_id'])) {
             $this->user_focus->retrieve(clean_string($query_arr['user_id']));
-            $this->user_focus->loadPreferences();
+        } elseif (!empty($query_arr['email'])) {
+            $this->user_focus->retrieve_by_email_address(clean_string($query_arr['email']));
+        } elseif (!empty($query_arr['user_name'])) {
+            $this->user_focus->retrieve_by_string_fields(['user_name' => clean_string($query_arr['user_name'])]);
         } else {
-            if (isset($query_arr['password'])) {
-                $user = $this->user_focus;
-                $user->retrieve_by_string_fields(['user_name' => $query_arr['user_name']]);
-                if ($user->id === null
-                    && !$user::findUserPassword($user->user_name, md5($query_arr['password']))
-                ) {
-                    $this->http_status("401 not authorized");
-                    echo 'Invalid username or password';
-                    return;
-                }
-
-                $this->user_focus->authenticated = true;
-            } elseif (!empty($query_arr['email'])) {
-                // clean the string!
-                $query_arr['email'] = clean_string($query_arr['email']);
-                //get user info
-                $this->user_focus->retrieve_by_email_address($query_arr['email']);
-            } else {
-                if (!empty($query_arr['user_name'])) {
-                    // clean the string!
-                    $query_arr['user_name'] = clean_string($query_arr['user_name']);
-
-                    //get user info
-                    $arr = array('user_name' => $query_arr['user_name']);
-                    $this->user_focus->retrieve_by_string_fields($arr);
-                } else {
-                    $errorMessage = 'iCal Server - Invalid request.';
-                    $log->warning($errorMessage);
-                    print $errorMessage;
-                }
-            }
+            $errorMessage = 'iCal Server - Invalid request.';
+            $log->warning($errorMessage);
+            print $errorMessage;
         }
 
-        parent::ServeRequest();
+        $this->user_focus->loadPreferences();
+
+        $this->ServeRequest();
     }
 
 
@@ -204,37 +187,31 @@ class HTTP_WebDAV_Server_iCal extends HTTP_WebDAV_Server
      */
     public function http_GET()
     {
-        if ($this->vcal_type == 'vfb') {
+        if ((!isset($this->publish_key) || $this->publish_key !== $this->user_focus->getPreference('calendar_publish_key'))) {
+            $this->http_status("403 Forbidden");
+            ob_end_clean();
+
+            return;
+        }
+
+        if ($this->vcal_type === 'vfb') {
             $this->http_status("200 OK");
             ob_end_clean();
             echo $this->vcal_focus->get_vcal_freebusy($this->user_focus);
+        } elseif ($this->vcal_type === 'ics') {
+            $this->http_status("200 OK");
+            header('Content-Type: text/calendar; charset="' . $this->cal_charset . '"');
+            $result = mb_convert_encoding(html_entity_decode((string)$this->vcal_focus->getVcalIcal(
+                $this->user_focus,
+                $_REQUEST['num_months']
+            ), ENT_QUOTES, $this->cal_charset), $this->cal_encoding);
+            ob_end_clean();
+            echo $result;
         } else {
-            if ($this->vcal_type == 'ics') {
-                // DO HTTP AUTHORIZATION for iCal:
-                if (isset($this->publish_key)
-                    && $this->publish_key === $this->user_focus->getPreference('calendar_publish_key')
-                    || $this->user_focus->is_authenticated()
-                ) {
-                    $this->http_status("200 OK");
-                    header('Content-Type: text/calendar; charset="' . $this->cal_charset . '"');
-                    $result = mb_convert_encoding(html_entity_decode((string) $this->vcal_focus->getVcalIcal(
-                        $this->user_focus,
-                        $_REQUEST['num_months']
-                    ), ENT_QUOTES, $this->cal_charset), $this->cal_encoding);
-                    ob_end_clean();
-                    echo $result;
-
-                    return;
-                }
-
-                $this->http_status("401 not authorized");
-                header('WWW-Authenticate: Basic realm="SugarCRM iCal"');
-                echo 'Authorization required';
-            } else {
-                $this->http_status("404 Not Found");
-                ob_end_clean();
-            }
+            $this->http_status("404 Not Found");
+            ob_end_clean();
         }
+        
     }
 
     /**

@@ -196,7 +196,7 @@ function check_now($send_usage_info=true, $get_request_data=false, $response_dat
 
     if ($response_data || !$sclient->getError()) {
         $serializedResultData = sugarDecode($key, $encodedResult);
-        $resultData = unserialize($serializedResultData);
+        $resultData = unserialize($serializedResultData, ['allowed_classes' => false]);
         if ($response_data && empty($resultData)) {
             $resultData = array();
             $resultData['validation'] = 'invalid validation key';

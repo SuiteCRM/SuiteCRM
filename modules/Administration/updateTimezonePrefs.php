@@ -78,7 +78,7 @@ while ($row = $db->fetchByAssoc($result)) {
     $prefs = array();
     $newprefs = array();
 
-    $prefs = unserialize(base64_decode($row['user_preferences']));
+    $prefs = unserialize(base64_decode($row['user_preferences']), ['allowed_classes' => false]);
     $setTo = '';
     $alreadySet = '';
     if (!empty($prefs)) {

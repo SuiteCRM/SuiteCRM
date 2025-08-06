@@ -52,7 +52,7 @@ class UpgradeSavedSearch
         while ($row = DBManagerFactory::getInstance()->fetchByAssoc($result)) {
             $focus = BeanFactory::newBean('SavedSearch');
             $focus->retrieve($row['id']);
-            $contents = unserialize(base64_decode($focus->contents));
+            $contents = unserialize(base64_decode($focus->contents), ['allowed_classes' => false]);
             $has_team_name_saved = isset($contents['team_name_advanced']) || isset($contents['team_name_basic']) ? true : false;
             //If $contents['searchFormTab'] is set then this is coming from a 4.x saved search
             if (isset($contents['searchFormTab']) && $contents['searchFormTab'] == 'saved_views') {

@@ -389,7 +389,7 @@ class AOW_WorkFlow extends Basic
     public function build_query_where(AOW_Condition $condition, $module, $query = array())
     {
         global $beanList, $app_list_strings, $sugar_config, $timedate;
-        $path = unserialize(base64_decode($condition->module_path));
+        $path = unserialize(base64_decode($condition->module_path), ['allowed_classes' => false]);
 
         $condition_module = $module;
         $table_alias = $condition_module->table_name;
@@ -514,7 +514,7 @@ class AOW_WorkFlow extends Basic
                     return array();
                 case 'Date':
 
-                    $params = @unserialize(base64_decode($condition->value));
+                    $params = @unserialize(base64_decode($condition->value), ['allowed_classes' => false]);
                     if ($params === false) {
                         LoggerManager::getLogger()->error('Unserializable data given');
                         $params = [null];
@@ -737,7 +737,7 @@ class AOW_WorkFlow extends Basic
             $condition = BeanFactory::newBean('AOW_Conditions');
             $condition->retrieve($row['id']);
 
-            $path = unserialize(base64_decode($condition->module_path));
+            $path = unserialize(base64_decode($condition->module_path), ['allowed_classes' => false]);
 
             $condition_bean = $bean;
 
@@ -803,7 +803,7 @@ class AOW_WorkFlow extends Basic
                         break;
 
                     case 'Date':
-                        $params =  unserialize(base64_decode($value));
+                        $params =  unserialize(base64_decode($value), ['allowed_classes' => false]);
                         $dateType = 'datetime';
                         if ($params[0] == 'now') {
                             $value = date('Y-m-d H:i:s');
@@ -1043,7 +1043,7 @@ class AOW_WorkFlow extends Basic
 
 
                 $flow_action = new $action_name($action->id);
-                if (!$flow_action->run_action($bean, unserialize(base64_decode($action->parameters)), $in_save)) {
+                if (!$flow_action->run_action($bean, unserialize(base64_decode($action->parameters), ['allowed_classes' => false]), $in_save)) {
                     $pass = false;
                     $processed->aow_actions->add($action->id, array('status' => 'Failed'));
                 } else {

@@ -101,9 +101,8 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
 
             // check authentication
             if (!$this->_check_auth()) {
-                $this->http_status('401 Unauthorized');
-                header('WWW-Authenticate: Basic realm="'.($this->http_auth_realm).'"');
-
+                $this->http_status('403 Forbidden');
+                
                 return;
             }
 

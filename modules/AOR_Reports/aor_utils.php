@@ -185,7 +185,7 @@ function getConditionsAsParameters($report, $override = array())
             continue;
         }
 
-        $path = unserialize(base64_decode($condition->module_path));
+        $path = unserialize(base64_decode($condition->module_path),['allowed_classes' => false]);
         $field_module = $report->report_module;
         if ($path[0] != $report->report_module) {
             foreach ($path as $rel) {
@@ -196,7 +196,7 @@ function getConditionsAsParameters($report, $override = array())
             }
         }
 
-        $additionalConditions = unserialize(base64_decode($condition->value));
+        $additionalConditions = unserialize(base64_decode($condition->value),['allowed_classes' => false]);
 
 
         $value = isset($override[$condition->id]['value']) ? $override[$condition->id]['value'] : $value = $condition->value;

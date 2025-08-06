@@ -42,7 +42,7 @@ function display_email_lines($focus, $field, $value, $view)
 {
     global $app_list_strings;
     $aorEmailToList = $app_list_strings['aor_email_to_list'] ?? '';
-    $params = unserialize(base64_decode($value));
+    $params = unserialize(base64_decode($value),['allowed_classes' => false]);
 
     if ($view == 'EditView') {
         $html = '<script src="modules/AOR_Scheduled_Reports/emailRecipients.js"></script>';

@@ -559,7 +559,7 @@ class AOW_WorkFlowController extends SugarController
             $aow_action = BeanFactory::newBean('AOW_Actions');
             $aow_action->retrieve($_REQUEST['id']);
             $id = $aow_action->id;
-            $params = unserialize(base64_decode($aow_action->parameters ?? ''));
+            $params = unserialize(base64_decode($aow_action->parameters ?? ''), ['allowed_classes' => false]);
 
             if ($params === false) {
                 $params = [];
