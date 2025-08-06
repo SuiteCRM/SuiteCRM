@@ -57,13 +57,13 @@ function display_condition_lines($focus, $field, $value, $view)
                 while ($row = $focus->db->fetchByAssoc($result)) {
                     $condition_name = BeanFactory::newBean('AOW_Conditions');
                     $condition_name->retrieve($row['id']);
-                    $condition_name->module_path = unserialize(base64_decode($condition_name->module_path));
+                    $condition_name->module_path = unserialize(base64_decode($condition_name->module_path), ['allowed_classes' => false]);
                     if ($condition_name->module_path == '') {
                         $condition_name->module_path = $focus->flow_module;
                     }
                     $html .= "flow_fields = \"".trim(preg_replace('/\s+/', ' ', (string) getModuleFields(getRelatedModule($focus->flow_module, $condition_name->module_path[0]))))."\";";
                     if ($condition_name->value_type == 'Date') {
-                        $condition_name->value = unserialize(base64_decode($condition_name->value));
+                        $condition_name->value = unserialize(base64_decode($condition_name->value), ['allowed_classes' => false]);
                     }
                     $condition_item = json_encode($condition_name->toArray());
                     $html .= "loadConditionLine(".$condition_item.");";
@@ -88,13 +88,13 @@ function display_condition_lines($focus, $field, $value, $view)
             while ($row = $focus->db->fetchByAssoc($result)) {
                 $condition_name = BeanFactory::newBean('AOW_Conditions');
                 $condition_name->retrieve($row['id']);
-                $condition_name->module_path = unserialize(base64_decode($condition_name->module_path));
+                $condition_name->module_path = unserialize(base64_decode($condition_name->module_path), ['allowed_classes' => false]);
                 if (empty($condition_name->module_path)) {
                     $condition_name->module_path[0] = $focus->flow_module;
                 }
                 $html .= "flow_fields = \"".trim(preg_replace('/\s+/', ' ', (string) getModuleFields(getRelatedModule($focus->flow_module, $condition_name->module_path[0]))))."\";";
                 if ($condition_name->value_type == 'Date') {
-                    $condition_name->value = unserialize(base64_decode($condition_name->value));
+                    $condition_name->value = unserialize(base64_decode($condition_name->value), ['allowed_classes' => false]);
                 }
                 $condition_item = json_encode($condition_name->toArray());
                 $html .= "loadConditionLine(".$condition_item.");";

@@ -916,7 +916,7 @@ class PackageManager
                         $installed->manifest = base64_encode(serialize($serial_manifest));
                         $installed->save();
                     } else {
-                        $serial_manifest = unserialize(base64_decode($installed->manifest));
+                        $serial_manifest = unserialize(base64_decode($installed->manifest), ['allowed_classes' => false]);
                         $manifest = $serial_manifest['manifest'];
                     }
                     if (($upgrades_installed==0 || $uh->UninstallAvailable($installeds, $installed))

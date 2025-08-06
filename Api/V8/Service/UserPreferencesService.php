@@ -90,7 +90,7 @@ class UserPreferencesService
         $preferences = [];
         while ($row = $db->fetchByAssoc($result)) {
             $category = $row['category'];
-            $preferences[$category] = unserialize(base64_decode($row['contents']));
+            $preferences[$category] = unserialize(base64_decode($row['contents']), ['allowed_classes' => false]);
         }
         
         $dataResponse = new DataResponse('UserPreference', $params->getUserId());

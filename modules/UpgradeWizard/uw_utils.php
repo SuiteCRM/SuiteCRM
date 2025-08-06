@@ -3912,9 +3912,7 @@ function update_iframe_dashlets()
     $query = "SELECT id, contents, assigned_user_id FROM user_preferences WHERE deleted = 0 AND category = 'Home'";
     $result = $db->query($query, true, "Unable to update new default dashlets! ");
     while ($row = $db->fetchByAssoc($result)) {
-        $content = unserialize(base64_decode($row['contents']));
-        $assigned_user_id = $row['assigned_user_id'];
-        $record_id = $row['id'];
+        $content = unserialize(base64_decode($row['contents']), ['allowed_classes' => false]);
 
         $current_user = BeanFactory::newBean('Users');
         $current_user->retrieve($row['assigned_user_id']);

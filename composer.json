@@ -1,20 +1,19 @@
 {
-  "name": "salesagility/suitecrm",
+  "name": "suitecrm/suitecrm",
   "description": "SuiteCRM",
   "homepage": "https://suitecrm.com",
   "type": "project",
   "license": "GPL-3.0",
   "authors": [
     {
-      "name": "SalesAgility Ltd"
+      "name": "SuiteCRM Ltd"
     }
   ],
   "support": {
-    "issues": "https://github.com/salesagility/SuiteCRM/issues",
+    "issues": "https://github.com/suitecrm/SuiteCRM/issues",
     "wiki": "https://docs.suitecrm.com",
     "forum": "https://community.suitecrm.com",
-    "chat": "https://gitter.im/suitecrm/Lobby",
-    "source": "https://github.com/salesagility/SuiteCRM"
+    "source": "https://github.com/suitecrm/SuiteCRM"
   },
   "config": {
     "vendor-dir": "vendor",
@@ -42,7 +41,7 @@
     "consolidation/robo": "^3.0",
     "elasticsearch/elasticsearch": "^7.13",
     "ezyang/htmlpurifier": "^4.10",
-    "google/apiclient": "^2.7",
+    "google/apiclient": "^2.14",
     "google/recaptcha": "^1.1",
     "gymadarasz/ace": "^1.2",
     "gymadarasz/imagesloaded": "^4.1",
@@ -60,21 +59,17 @@
     "slim/slim": "^3.8",
     "smarty/smarty": "^4",
     "soundasleep/html2text": "~0.5",
-    "symfony/options-resolver": "^3.4",
-    "symfony/validator": "^3.4",
+    "symfony/options-resolver": "^5.4",
+    "symfony/validator": "^5.4",
     "symfony/yaml": "^5.2",
     "tecnickcom/tcpdf": "^6.4",
     "tedivm/jshrink": "^1.3",
     "tinymce/tinymce": "^5.10",
-    "vlucas/phpdotenv": "^3.5",
     "voku/anti-xss": "^4.0",
     "wikimedia/composer-merge-plugin": "^2.0",
     "zbateson/mail-mime-parser": "^2.2",
-    "zf1/zend-gdata": "^1.12",
-    "zf1/zend-loader": "^1.12",
-    "zf1/zend-oauth": "^1.12",
-    "zf1/zend-registry": "^1.12",
-    "zf1/zend-search-lucene": "^1.12"
+    "zf1s/zend-oauth": "^1.15",
+    "zf1s/zend-search-lucene": "^1.15"
   },
   "require-dev": {
     "browserstack/browserstack-local": "^1.1",
@@ -94,7 +89,8 @@
     "phpstan/phpstan": "^1.10",
     "phpunit/phpunit": "^9.5",
     "rector/rector": "^0.16.0",
-    "scssphp/scssphp": "^1.5"
+    "scssphp/scssphp": "^1.5",
+    "vlucas/phpdotenv": "^5.5"
   },
   "autoload": {
     "files": [

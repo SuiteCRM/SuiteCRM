@@ -558,7 +558,7 @@ class SugarApplication
             if ($dieIfInvalid) {
                 header("Cache-Control: no-cache, must-revalidate");
                 $ss = new Sugar_Smarty;
-                $ss->assign('host', $http_host[0]);
+                $ss->assign('host', securexss($http_host[0]));
                 $ss->assign('action', $this->controller->action);
                 $ss->assign('whiteListString', $whiteListString);
                 $ss->display('include/MVC/View/tpls/xsrf.tpl');
@@ -577,7 +577,7 @@ class SugarApplication
                         $whiteListString = "'" . implode("', '", $whiteListActions) . "'";
 
                         $ss = new Sugar_Smarty;
-                        $ss->assign('host', $http_ref['host']);
+                        $ss->assign('host', securexss($http_ref['host']));
                         $ss->assign('action', $this->controller->action);
                         $ss->assign('whiteListString', $whiteListString);
                         $ss->display('include/MVC/View/tpls/xsrf.tpl');

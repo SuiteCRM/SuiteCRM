@@ -216,7 +216,7 @@ class UserPreference extends SugarBean
             return;
         }
 
-        if (!$current_user->id || $user->user_name !== $current_user->user_name){
+        if (!$current_user->id || $user->user_name !== $current_user->user_name) {
             return $this->reloadPreferences($category);
         }
 
@@ -253,9 +253,9 @@ class UserPreference extends SugarBean
         $row = $db->fetchByAssoc($result);
         if ($row) {
             if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
-                $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']));
+                $_SESSION[$user->user_name . '_PREFERENCES'][$category] = unserialize(base64_decode($row['contents']), ['allowed_classes' => false]);
             }
-            $user->user_preferences[$category] = unserialize(base64_decode($row['contents']));
+            $user->user_preferences[$category] = unserialize(base64_decode($row['contents']), ['allowed_classes' => false]);
             return true;
         } else {
             if (!$GLOBALS['current_user']->id || $GLOBALS['current_user']->user_name === $user->user_name){
@@ -450,7 +450,7 @@ class UserPreference extends SugarBean
             $prefs = array();
             $newprefs = array();
 
-            $prefs = unserialize(base64_decode($row['user_preferences']));
+            $prefs = unserialize(base64_decode($row['user_preferences']), ['allowed_classes' => false]);
 
             if (!empty($sub_key)) {
                 if ($is_value_array) {

@@ -94,7 +94,7 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
         $vcal = BeanFactory::newBean('vCals');
         $user_bean = new User('1');
 
-        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SugarCRM//SugarCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\n";
+        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SuiteCRM//SuiteCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\n";
         $expectedEnd = "END:VFREEBUSY\r\nEND:VCALENDAR\r\n";
 
         $result = $vcal->get_freebusy_lines_cache($user_bean);
@@ -123,7 +123,7 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
         $vcal = BeanFactory::newBean('vCals');
         $user_focus = new User('1');
 
-        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SugarCRM//SugarCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\n";
+        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SuiteCRM//SuiteCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\n";
         $expectedEnd = "END:VFREEBUSY\r\nEND:VCALENDAR\r\n";
 
         $result = $vcal->get_vcal_freebusy($user_focus);
@@ -174,11 +174,11 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
 
     public function testcreate_ical_array_from_string(): void
     {
-        $iCalString = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SugarCRM//SugarCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\nDTSTART:2016-01-09 00:00:00\r\nDTEND:2016-03-09 00:00:00\r\nDTSTAMP:2016-01-10 11:07:15\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n";
+        $iCalString = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SuiteCRM//SuiteCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\nDTSTART:2016-01-09 00:00:00\r\nDTEND:2016-03-09 00:00:00\r\nDTSTAMP:2016-01-10 11:07:15\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n";
         $expected = array(
                         array('BEGIN', 'VCALENDAR'),
                         array('VERSION', '2.0'),
-                        array('PRODID', '-//SugarCRM//SugarCRM Calendar//EN'),
+                        array('PRODID', '-//SuiteCRM//SuiteCRM Calendar//EN'),
                         array('BEGIN', 'VFREEBUSY'),
                         array('ORGANIZER;CN= ', 'VFREEBUSY'),
                         array('DTSTART', '2016-01-09 00:00:00'),
@@ -193,11 +193,11 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
 
     public function testcreate_ical_string_from_array(): void
     {
-        $expected = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SugarCRM//SugarCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\nDTSTART:2016-01-09 00:00:00\r\nDTEND:2016-03-09 00:00:00\r\nDTSTAMP:2016-01-10 11:07:15\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n";
+        $expected = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SuiteCRM//SuiteCRM Calendar//EN\r\nBEGIN:VFREEBUSY\r\nORGANIZER;CN= :VFREEBUSY\r\nDTSTART:2016-01-09 00:00:00\r\nDTEND:2016-03-09 00:00:00\r\nDTSTAMP:2016-01-10 11:07:15\r\nEND:VFREEBUSY\r\nEND:VCALENDAR\r\n";
         $iCalArray = array(
                 array('BEGIN', 'VCALENDAR'),
                 array('VERSION', '2.0'),
-                array('PRODID', '-//SugarCRM//SugarCRM Calendar//EN'),
+                array('PRODID', '-//SuiteCRM//SuiteCRM Calendar//EN'),
                 array('BEGIN', 'VFREEBUSY'),
                 array('ORGANIZER;CN= ', 'VFREEBUSY'),
                 array('DTSTART', '2016-01-09 00:00:00'),
@@ -234,7 +234,7 @@ class vCalTest extends SuitePHPUnitFrameworkTestCase
         $meeting->location = 'test location';
         $meeting->description = 'test description';
 
-        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SugarCRM//SugarCRM Calendar//EN\r\nBEGIN:VEVENT\r\nUID:1\r\nORGANIZER;CN=:mailto:\r\nDTSTART:20160211T173000Z\r\nDTEND:20160211T173000Z\r\n";
+        $expectedStart = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SuiteCRM//SuiteCRM Calendar//EN\r\nBEGIN:VEVENT\r\nUID:1\r\nORGANIZER;CN=:mailto:\r\nDTSTART:20160211T173000Z\r\nDTEND:20160211T173000Z\r\n";
         $expectedEnd = "\r\nSUMMARY:test\r\nLOCATION:test location\r\nDESCRIPTION:test description\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
 
         $result = vCal::get_ical_event($meeting, $user);

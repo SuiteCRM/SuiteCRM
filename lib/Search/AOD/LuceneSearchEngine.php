@@ -103,7 +103,7 @@ class LuceneSearchEngine extends SearchEngine
         if (is_file($cachePath)) {
             $mTime = filemtime($cachePath);
             if ($mTime > (time() - 5 * 60)) {
-                $hits = unserialize(sugar_file_get_contents($cachePath));
+                $hits = unserialize(sugar_file_get_contents($cachePath), ['allowed_classes' => false]);
             }
         }
 

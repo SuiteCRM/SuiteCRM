@@ -91,7 +91,7 @@ class AOR_Scheduled_Reports extends basic
 
     public function get_email_recipients()
     {
-        $params = unserialize(base64_decode($this->email_recipients));
+        $params = unserialize(base64_decode($this->email_recipients),['allowed_classes' => false]);
 
         $emails = array();
         if (isset($params['email_target_type'])) {

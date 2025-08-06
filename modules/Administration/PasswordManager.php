@@ -203,7 +203,7 @@ if ($mail->Mailer == 'smtp' && $mail->Host == '') {
 
 $focus = BeanFactory::newBean('InboundEmail');
 $focus->checkImap();
-$storedOptions = unserialize(base64_decode($focus->stored_options));
+$storedOptions = unserialize(base64_decode($focus->stored_options), ['allowed_classes' => false]);
 $email_templates_arr = get_bean_select_array(true, 'EmailTemplate', 'name', '', 'name', true);
 $create_case_email_template = (isset($storedOptions['create_case_email_template'])) ? $storedOptions['create_case_email_template'] : "";
 $TMPL_DRPDWN_LOST = get_select_options_with_id($email_templates_arr, $res['lostpasswordtmpl']);

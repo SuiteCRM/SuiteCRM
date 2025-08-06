@@ -61,7 +61,7 @@ function display_field_lines($focus, $field, $value, $view)
                 while ($row = $focus->db->fetchByAssoc($result)) {
                     $field_name = BeanFactory::newBean('AOR_Fields');
                     $field_name->retrieve($row['id']);
-                    $field_name->module_path = unserialize(base64_decode($field_name->module_path));
+                    $field_name->module_path = unserialize(base64_decode($field_name->module_path),['allowed_classes' => false]);
                     $html .= "report_fields = \"".trim(preg_replace('/\s+/', ' ', (string) getModuleFields(getRelatedModule($focus->report_module, $field_name->module_path[0]))))."\";";
                     $field_item = json_encode($field_name->toArray());
                     $html .= "loadFieldLine(".$field_item.");";
