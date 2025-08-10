@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -39,59 +38,44 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+namespace SuiteCRM\Robo\Plugin\Commands;
+
 use SuiteCRM\Utility\Diagnostics;
+use SuiteCRM\Robo\Traits\RoboTrait;
+use \Robo\Tasks;
 
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
+class DiagnosticsCommands extends Tasks
+{
+    use RoboTrait;
+
+    // define public methods as commands
+
+    /**
+     * diagnosticsQuickReport
+     */
+    public function diagnosticsQuickReport() {
+
+        $this->say('Starting Diagnostics Quick Report');
+        $diags = new Diagnostics();
+        $this->say('Getting diagnostics info from Web Server...');
+        $webServerDiagnostics = $diags->QueryWebServerFromCLI();
+        if ($webServerDiagnostics === '') {
+            $this->yell('Getting diagnostics info from Web Server failed!');
+        }
+
+        $this->say('Getting diagnostics from CLI...');
+        $cliDiagnostics = $diags->buildQuickReport();
+        if (isset($cliDiagnostics['PHP Command-line (CLI)'])) {
+            if (is_array($webServerDiagnostics)) {
+                $webServerDiagnostics['PHP Command-line (CLI)'] = $cliDiagnostics['PHP Command-line (CLI)'];
+            } else {
+                $webServerDiagnostics = $cliDiagnostics; // use everything we got from local query if remote failed
+            }
+        }
+        print_r($webServerDiagnostics);
+        $this->say('QuickReport finished.');
+    }
+
+
+
 }
-
-global $mod_strings;
-global $app_list_strings;
-global $app_strings;
-global $theme;
-
-global $current_user;
-
-if (!is_admin($current_user)) {
-    sugar_die("Unauthorized access to administration.");
-}
-if (isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) && $GLOBALS['sugar_config']['hide_admin_diagnostics']) {
-    sugar_die("Unauthorized access to diagnostic tool.");
-}
-
-$db = DBManagerFactory::getInstance();
-if (empty($db)) {
-    $db = DBManagerFactory::getInstance();
-}
-
-echo getClassicModuleTitle(
-    "Administration",
-    array(
-            "<a href='index.php?module=Administration&action=index'>{$mod_strings['LBL_MODULE_NAME']}</a>",
-           translate('LBL_DIAGNOSTIC_TITLE')
-           ),
-    false
-        );
-
-global $currentModule;
-
-$GLOBALS['log']->info("Administration Diagnostic");
-
-$sugar_smarty = new Sugar_Smarty();
-$sugar_smarty->assign("MOD", $mod_strings);
-$sugar_smarty->assign("APP", $app_strings);
-
-$sugar_smarty->assign("RETURN_MODULE", "Administration");
-$sugar_smarty->assign("RETURN_ACTION", "index");
-$sugar_smarty->assign("DB_NAME", $db->dbName);
-
-$sugar_smarty->assign("MODULE", $currentModule);
-$sugar_smarty->assign("PRINT_URL", "index.php?".$GLOBALS['request_string']);
-
-
-$sugar_smarty->assign("ADVANCED_SEARCH_PNG", SugarThemeRegistry::current()->getImage('advanced_search', 'border="0"', null, null, '.gif', $app_strings['LNK_ADVANCED_FILTER']));
-$sugar_smarty->assign("BASIC_SEARCH_PNG", SugarThemeRegistry::current()->getImage('basic_search', 'border="0"', null, null, '.gif', $app_strings['LNK_BASIC_FILTER']));
-
-$sugar_smarty->assign("QuickReport", (new SuiteCRM\Utility\Diagnostics)->buildQuickReport());
-
-$sugar_smarty->display("modules/Administration/Diagnostic.tpl");
