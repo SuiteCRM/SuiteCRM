@@ -29,7 +29,8 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "suggest": {
-    "ext-imap": "Needed for emails module"
+    "ext-imap": "Needed for emails module",
+    "softcreatr/jsonpath": "Replaces the abandoned package flow/jsonpath for dev on PHP 8+",
   },
   "require": {
     "php": ">=7.4.0",
