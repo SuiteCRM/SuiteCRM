@@ -8,7 +8,7 @@ class IconRepository
     public const ICON_FIELDS = 'fields';
     public const ICON_RELATIONSHIPS = 'relationships';
     public const ICON_LAYOUTS = 'layouts';
-    public const ICON_SUBPANELS = 'labels';
+    public const ICON_SUBPANELS = 'subpanels';
 
     /**
      * @var array
