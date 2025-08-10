@@ -694,13 +694,11 @@ if (typeof('console') == 'undefined') {
           }
 
           // check where we are and do it if we are in field editor in module builder
-          if (
-            formname != "dropdown_form" && formname != "popup_form" &&
-            // user came from studio/fields layout by ajax urls
-            ((urlVars.module == 'ModuleBuilder' && urlVars.action == 'modulefields' && urlVars.view_package == 'studio') ||
-              // user refresh the page or came from direct url
-              (urlVars.module == 'ModuleBuilder' && urlVars.action == 'modulefield' && urlVars.view_package == ''))
-          ) {
+          if (formname != "dropdown_form" && formname != "popup_form" &&
+              // user came from studio/fields layout by ajax urls
+              ((urlVars.module == 'ModuleBuilder' && urlVars.action == 'modulefields' && urlVars.view_package == 'studio'))
+             ) 
+          {
             if(!(document.popup_form.action.value == 'CloneField')) {
               // switch on the preloader message
               ModuleBuilder.preloader.on();
