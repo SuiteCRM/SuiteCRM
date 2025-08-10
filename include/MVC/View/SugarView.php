@@ -143,7 +143,8 @@ class SugarView
      */
     public function __construct()
     {
-        LoggerManager::getLogger()->deprecated();
+        $deprecatedMessage = 'SugarView constructor is deprecated since version 7.11';
+        LoggerManager::getLogger()->deprecated($deprecatedMessage);
     }
 
     /**
