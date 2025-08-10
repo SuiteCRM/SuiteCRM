@@ -43,7 +43,7 @@
 		<tr>
 			<td>{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}: <input id="search_string" type="text" length="15" onKeyPress="javascript:if(event.keyCode==13)SUGAR.mySugar.searchDashlets(this.value,document.getElementById('search_category').value);"  title="{sugar_translate label='LBL_DASHLET_SEARCH' module='Home'}"/>
 			<input type="button" class="button" value="{sugar_translate label='LBL_SEARCH' module='Home'}" onClick="javascript:SUGAR.mySugar.searchDashlets(document.getElementById('search_string').value,document.getElementById('search_category').value);" />
-			<input type="button" class="button" value="{sugar_translate label='LBL_CLEAR' module='Home'}" onClick="javascript:SUGAR.mySugar.clearSearch();" />			
+			<input type="button" class="button" value="{sugar_translate label='LBL_CLEAR' module='Home'}" onClick="javascript:SUGAR.mySugar.clearSearch();" />
 			{if $moduleName == 'Home'}
 			<input type="hidden" id="search_category" value="module" />
 			{else}
@@ -75,7 +75,7 @@
 		<tr>
 		{/if}
 			<td width="50%" align="left"><a id="{$module.id}_icon" href="javascript:void(0)" onclick="{$module.onclick}" style="text-decoration:none">
-					<span class="suitepicon suitepicon-module-{$module.module_name|lower|replace:'_':'-'}"></span>
+					<span class="suitepicon suitepicon-module-{$module.icon}"></span>
 					<span id="mbLBLL" class="mbLBLL">{$module.title}</span></a><br /></td>
 		{if $rowCounter % 2 == 1}
 		</tr>
