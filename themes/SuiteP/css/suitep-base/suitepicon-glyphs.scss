@@ -85,6 +85,11 @@
 .suitepicon-action-megaphone:before {
     content: "\f11d";
 }
+
+.suitepicon.suitepicon-action-megaphone:after {
+    content: "\a";
+    white-space: pre;
+}
 .suitepicon-action-minus:before {
     content: "\f11e";
 }
@@ -355,6 +360,12 @@
 .suitepicon-dashlet-sugarnews:before {
     content: "\f177";
 }
+
+.suitepicon-dashlet-sugarnews:after {
+    content: "\a";
+    white-space: pre;
+}
+
 .suitepicon-display-folder-closed:before {
     content: "\f178";
 }
@@ -472,6 +483,12 @@
 .suitepicon-module-emails:before {
     content: "\f19e";
 }
+
+.suitepicon-module-emails:after {
+    content: "\a";
+    white-space: pre;
+}
+
 .suitepicon-module-existing-package:before {
     content: "\f19f";
 }
@@ -577,6 +594,12 @@
 .suitepicon-module-surveys:before {
     content: "\f1c1";
 }
+
+.suitepicon-module-surveys:after {
+    content: "\a";
+    white-space: pre;
+}
+
 .suitepicon-module-targets:before {
     content: "\f1c2";
 }
