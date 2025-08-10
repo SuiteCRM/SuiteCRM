@@ -1,7 +1,5 @@
 <?php
- if (!defined('sugarEntry') || !sugarEntry) {
-     die('Not A Valid Entry Point');
- }
+
 /**
  * Advanced OpenSales, Advanced, robust set of sales modules.
  * @package Advanced OpenSales for SugarCRM
@@ -24,6 +22,11 @@
  *
  * @author SalesAgility <info@salesagility.com>
  */
+
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
+
 $searchFields['AOS_Quotes'] =
     array(
         'name' => array( 'query_type'=>'default'),
