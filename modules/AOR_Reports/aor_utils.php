@@ -615,3 +615,22 @@ function convertToDateTime($value)
 
     return $dateTime;
 }
+
+/**
+ * Checks if the specified field in a module is of type "relate".
+ * @param string $module
+ * @param string $field
+ * @return bool
+ */
+function isFieldTypeRelate(string $module, string $field): bool
+{
+    $fieldBean = BeanFactory::getBean($module);
+
+    if (!$fieldBean) {
+        return false;
+    }
+
+    $fieldDefinition = $fieldBean->getFieldDefinition($field);
+
+    return isset($fieldDefinition['type']) &&  $fieldDefinition['type'] === 'relate';
+}
