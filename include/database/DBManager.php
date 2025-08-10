@@ -4131,6 +4131,22 @@ abstract class DBManager
         return trim(str_replace(array("\r", "\n"), " ", $sql));
     }
 
+
+    /**
+     * begin database transaction
+     */
+    abstract public function beginTransaction();
+
+    /**
+     * Commit a transaction
+     */
+    abstract public function commit();
+
+    /**
+     * rollback database transaction
+     */
+    abstract public function rollback();
+
     /**
      * @param $fields
      * @return string|string[]|null
