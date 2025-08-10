@@ -1343,11 +1343,34 @@ class AOR_Report extends Basic
                 }
 
                 if ($field->sort_by != '') {
-                    // If the field is a date, sort by the natural date and not the user-formatted date
-                    if ($data['type'] == 'date' || $data['type'] == 'datetime') {
-                        $query['sort_by'][] = $select_field_db . " " . $field->sort_by;
-                    } else {
-                        $query['sort_by'][] = $select_field . " " . $field->sort_by;
+                    // TN: #9794 fix issue sort for related fields.
+                    // Check if field type == id => it's related ID.
+                    $isRelatedField = false; // use this flag to make sure other is working fine.
+                    if($data['type'] == 'id' && !$field->field_function) { // is have a group function, use the default sort.
+                        foreach ($field_module->field_defs as $def) {
+                            if(isset($def['id_name']) && $def['id_name'] == $field->field && $def['type'] == 'relate' && (!isset($def['link']) || !$def['link'])) {
+                                $relBean = BeanFactory::newBean($def['module']);
+                                $relNames = $this->getRelatedDBFieldNameToSort($relBean, $def);
+                                if($relNames) {
+                                    $isRelatedField = true;
+                                    $relAlias = "custom_jt{$i}";
+                                    $query['join'][] = " LEFT JOIN $relBean->table_name as $relAlias ON $relAlias.id = $select_field AND $relAlias.deleted = 0 ";
+                                    foreach ($relNames as $relName) {
+                                        $query['sort_by'][] = "{$relAlias}.{$relName} {$field->sort_by} ";
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(!$isRelatedField){ // end #9794
+                        // If the field is a date, sort by the natural date and not the user-formatted date
+                        if ($data['type'] == 'date' || $data['type'] == 'datetime') {
+                            $query['sort_by'][] = $select_field_db . " " . $field->sort_by;
+                        } else {
+                            $query['sort_by'][] = $select_field . " " . $field->sort_by;
+                        }
                     }
                 }
 
@@ -1927,9 +1950,9 @@ class AOR_Report extends Basic
                 $query['where'][] = ') AND ';
             }
             $query['where'][] = $module->table_name . ".deleted = 0 " . $this->build_report_access_query(
-                $module,
-                $module->table_name
-            );
+                    $module,
+                    $module->table_name
+                );
         }
 
         if ($closure) {
@@ -1937,5 +1960,28 @@ class AOR_Report extends Basic
         }
 
         return $query;
+    }
+
+    /**
+     * get the DB column name of related field, which use to sort
+     *
+     * @param SugarBean $relBean
+     * @param string $relAlias
+     * @param $def
+     *
+     * @author: Trung Nguyen.
+     */
+    public function getRelatedDBFieldNameToSort(SugarBean $relBean, $def)
+    {
+        $rName = $def['rname'];
+        $dbName = [$rName];
+        $relFieldDefs = $relBean->field_defs;
+        // case alias fields.
+        if(isset($relFieldDefs[$rName]) && isset($relFieldDefs[$rName]['db_concat_fields'])
+            && is_array($relFieldDefs[$rName]['db_concat_fields'])
+            && count($relFieldDefs[$rName]['db_concat_fields'])) {
+            $dbName = array_values($relFieldDefs[$rName]['db_concat_fields']);
+        }
+        return $dbName;
     }
 }
