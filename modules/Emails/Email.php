@@ -1870,7 +1870,12 @@ class Email extends Basic
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r, false);
 
-        $this->description = $a['description'];
+        // BUG FIX - Fixes bug where draft editor would use incorrect version of the email body, losing formatting.
+        if ($this->status === 'draft') {
+            $this->description = $a['description_html'];
+        } else {
+            $this->description = $a['description'];
+        }
         $this->description_html = $a['description_html'];
         $this->raw_source = $a['raw_source'];
         $this->from_addr_name = $a['from_addr'];
