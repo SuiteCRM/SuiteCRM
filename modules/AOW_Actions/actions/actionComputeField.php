@@ -106,11 +106,17 @@ class actionComputeField extends actionBase
 
              for ($i = 0; $i < $formulasCount; $i++) {
                 if (array_key_exists($formulas[$i], $relateFields) && isset($relateFields[$formulas[$i]]['id_name'])) {
-                    $calcValue = $calculator->calculateFormula($formulaContents[$i]);
-                    $bean->{$relateFields[$formulas[$i]]['id_name']} = ( is_numeric($calcValue) ? (float)$calcValue : $calcValue );
+                    $bean->{$relateFields[$formulas[$i]]['id_name']} = $calculator->calculateFormula($formulaContents[$i]);
                 } else {
-                    $calcValue = $calculator->calculateFormula($formulaContents[$i]);
-                    $bean->{$formulas[$i]} = ( is_numeric($calcValue) ? (float)$calcValue : $calcValue );
+                    $value = $calculator->calculateFormula($formulaContents[$i]);
+                    $fieldType = $bean->field_defs[$formulas[$i]]['type'] ?? 'string';
+                    if (in_array($fieldType, ['float', 'decimal', 'currency'])) {
+                        $value = (float) $value;
+                    }
+                    elseif ($fieldType === 'int') {
+                        $value = (int) $value;
+                    }
+                    $bean->{$formulas[$i]} = $value;
                 }
             }
 
