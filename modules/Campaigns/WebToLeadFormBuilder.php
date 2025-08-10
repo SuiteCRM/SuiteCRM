@@ -116,6 +116,22 @@ HTML;
         $html = <<<HTML
 </form>
 <script type='text/javascript'>
+    var formHasAlreadyBeenSent = false;
+    /**
+     * Prevent multiple form submissions
+     *
+     * @return void
+     */
+    function lockMultipleSubmissions() {
+        if (formHasAlreadyBeenSent) {
+            console.log("Form is locked because it has already been sent.");
+            event.preventDefault();
+        }
+        formHasAlreadyBeenSent = true;
+    }
+    // Attach function to event
+    document.getElementById("WebToLeadForm").addEventListener("submit", lockMultipleSubmissions);
+
     function submit_form() {
         if (typeof(validateCaptchaAndSubmit) != 'undefined') {
             validateCaptchaAndSubmit();
