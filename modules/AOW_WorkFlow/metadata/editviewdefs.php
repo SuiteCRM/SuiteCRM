@@ -123,14 +123,20 @@ $viewdefs ['AOW_WorkFlow'] =
                 array(
                     0 =>
                     array(
-                        0 => 'condition_lines',
+                        0 => array(
+                            'name' => 'condition_lines',
+                            'hideLabel' => true,
+                        ),
                     ),
                 ),
                 'LBL_ACTION_LINES' =>
                 array(
                     0 =>
                     array(
-                        0 => 'action_lines',
+                        0 => array(
+                            'name' => 'action_lines',
+                            'hideLabel' => true,
+                        ),
                     ),
                 ),
             ),
