@@ -77,7 +77,7 @@ function getDurationMinutesOptions($focus, $field, $value, $view)
         }
 
         $html .=  'name="duration_minutes">';
-        $html .= get_select_options_with_id($focus->minutes_values, $focus->duration_minutes);
+        $html .= get_select_options_with_id($focus->minutes_values, (int)$focus->duration_minutes);
         $html .= '</select>';
         return $html;
     }
