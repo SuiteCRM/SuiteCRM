@@ -372,7 +372,7 @@ require_once 'include/HTTP_WebDAV_Server/Server.php';
             }
 
             // set freebusy members and save
-            $this->vcal_focus->content = $content;
+            $this->vcal_focus->campaign_content = $content;
             $this->vcal_focus->type = 'vfb';
             $this->vcal_focus->source = $this->source;
             $focus->date_modified = null;
