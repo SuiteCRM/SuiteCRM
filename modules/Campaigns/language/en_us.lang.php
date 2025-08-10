@@ -139,6 +139,7 @@ $mod_strings = array(
     //error messages.
     'ERR_SENDING_NOW' => 'Messages are being delivered , please try this later.',
 
+    'LBL_CAMPAIGN_INACTIVE_WIZARD' => 'Sending buttons will not show on inactive campaigns.',
     'LBL_TRACK_ROI_BUTTON_LABEL' => 'View ROI',
     'LBL_TRACK_DELETE_BUTTON_TITLE' => 'Delete Test Entries',
     'LBL_TRACK_DELETE_BUTTON_LABEL' => 'Delete Test Entries',
