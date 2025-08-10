@@ -292,7 +292,7 @@ class ImapHandler implements ImapHandlerInterface
         // }
         // $this->setStream($stream);
 
-        $this->setStream(@imap_open($mailbox, $username, $password, $options, $n_retries, $params));
+        $this->setStream(@imap_open($this->utf8_to_mutf7($mailbox), $username, $password, $options, $n_retries, $params));
 
 
         if (!$this->getStream()) {
@@ -326,7 +326,7 @@ class ImapHandler implements ImapHandlerInterface
     public function reopen($mailbox, $options = 0, $n_retries = 0)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_reopen($this->getStream(), $mailbox, $options, $n_retries);
+        $ret = imap_reopen($this->getStream(), $this->utf8_to_mutf7($mailbox), $options, $n_retries);
         if (!$ret) {
             $this->log('IMAP reopen error');
         }
@@ -482,9 +482,9 @@ class ImapHandler implements ImapHandlerInterface
         // BUG at: https://github.com/php/php-src/blob/master/ext/imap/php_imap.c#L1357
         // -->
         if (null === $internal_date) {
-            $ret = imap_append($this->getStream(), $mailbox, $message, $options);
+            $ret = imap_append($this->getStream(), $this->utf8_to_mutf7($mailbox), $message, $options);
         } else {
-            $ret = imap_append($this->getStream(), $mailbox, $message, $options, $internal_date);
+            $ret = imap_append($this->getStream(), $this->utf8_to_mutf7($mailbox), $message, $options, $internal_date);
         }
 
         if (!$ret) {
@@ -566,7 +566,7 @@ class ImapHandler implements ImapHandlerInterface
     public function createMailbox($mailbox)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_createmailbox($this->getStream(), $mailbox);
+        $ret = imap_createmailbox($this->getStream(), $this->utf8_to_mutf7($mailbox));
         if (!$ret) {
             $this->log('IMAP createMailbox error');
         }
@@ -601,7 +601,7 @@ class ImapHandler implements ImapHandlerInterface
     public function deleteMailbox($mailbox)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_deletemailbox($this->getStream(), $mailbox);
+        $ret = imap_deletemailbox($this->getStream(), $this->utf8_to_mutf7($mailbox));
         if (!$ret) {
             $this->log('IMAP deleteMailbox error');
         }
@@ -695,7 +695,7 @@ class ImapHandler implements ImapHandlerInterface
     public function getStatus($mailbox, $options)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_status($this->getStream(), $mailbox, $options);
+        $ret = imap_status($this->getStream(), $this->utf8_to_mutf7($mailbox), $options);
         $this->logReturn(__FUNCTION__, $ret);
 
         return $ret;
@@ -711,7 +711,7 @@ class ImapHandler implements ImapHandlerInterface
     public function mailCopy($msgList, $mailbox, $options = 0)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_mail_copy($this->getStream(), $msgList, $mailbox, $options);
+        $ret = imap_mail_copy($this->getStream(), $msgList, $this->utf8_to_mutf7($mailbox), $options);
         if (!$ret) {
             $this->log('IMAP mailCopy error');
         }
@@ -730,7 +730,7 @@ class ImapHandler implements ImapHandlerInterface
     public function mailMove($msgList, $mailbox, $options = 0)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_mail_move($this->getStream(), $msgList, $mailbox, $options);
+        $ret = imap_mail_move($this->getStream(), $msgList, $this->utf8_to_mutf7($mailbox), $options);
         if (!$ret) {
             $this->log('IMAP mailMove error');
         }
@@ -838,7 +838,7 @@ class ImapHandler implements ImapHandlerInterface
     public function subscribe($mailbox)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_subscribe($this->getStream(), $mailbox);
+        $ret = imap_subscribe($this->getStream(), $this->utf8_to_mutf7($mailbox));
         if (!$ret) {
             $this->log('IMAP subscribe error');
         }
@@ -855,7 +855,7 @@ class ImapHandler implements ImapHandlerInterface
     public function unsubscribe($mailbox)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_unsubscribe($this->getStream(), $mailbox);
+        $ret = imap_unsubscribe($this->getStream(), $this->utf8_to_mutf7($mailbox));
         if (!$ret) {
             $this->log('IMAP unsubscribe error');
         }
@@ -894,6 +894,22 @@ class ImapHandler implements ImapHandlerInterface
 
         return $ret;
     }
+    
+    /**
+     * Convert mailbox with special charaters, imap_utf7_encode not work as well
+     * @see http://www.faqs.org/rfcs/rfc2060.html chapiter 5.1.3
+     * @param $str
+     * @return utf7 modfiy imap implementation see RFC2060
+     */
+    public function utf8_to_mutf7($str)
+    {
+        $this->logCall(__FUNCTION__, func_get_args());
+        //$ret = imap_utf8_to_mutf7(utf8_encode($str));
+        $ret = imap_utf8_to_mutf7($str);
+        $this->logReturn(__FUNCTION__, $ret);
+        return $ret ;
+    }
+    
 
     /**
      * @param $stream
