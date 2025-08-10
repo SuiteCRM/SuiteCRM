@@ -92,21 +92,21 @@ formsWithFieldLogic=null;
 	</td>
 </tr>
 {if $range_search_option_enabled}
-<tr>	
+<tr>
     <td class='mbLBL'>{sugar_translate module="DynamicFields" label="COLUMN_TITLE_ENABLE_RANGE_SEARCH"}:</td>
     <td>
         <input type='checkbox' name='enable_range_search' value=1 {if !empty($vardef.enable_range_search) }checked{/if} {if $hideLevel > 5}disabled{/if} />
         {if $hideLevel > 5}<input type='hidden' name='enable_range_search' value='{$vardef.enable_range_search}'>{/if}
-    </td>	
+    </td>
 </tr>
 {/if}
-{*  
+{*
 <!-- REMOVING THIS FOR 6.0, but need to allow for people create auto_increment fields and have to add appropriate indexes if in strict mode.
 <tr>
     <td class='mbLBL'>Auto Increment:</td>
     <td>
-        <input type='checkbox' name='autoinc' id='autoinc' value=1 {if !empty($vardef.auto_increment) }checked{/if} 
-        {if $hideLevel > 2 || !$allowAutoInc} disabled{/if} 
+        <input type='checkbox' name='autoinc' id='autoinc' value=1 {if !empty($vardef.auto_increment) }checked{/if}
+        {if $hideLevel > 2 || !$allowAutoInc} disabled{/if}
         onclick="document.getElementById('auto_increment').value = this.checked;document.getElementById('autoinc_start_wrap').style.display = this.checked ? '' : 'none';">
         <input type='hidden' name='auto_increment' id='auto_increment' value='{if !empty($vardef.auto_increment) }true{else}false{/if}'>
     </td>
@@ -132,6 +132,6 @@ formsWithFieldLogic=null;
     </td>
 </tr>
 <script>
-	formsWithFieldLogic=new addToValidateFieldLogic('popup_form_id', 'int_min', 'int_max', 'int_default', 'int_len', 'int', 'Invalid Logic.');
+	formsWithFieldLogic=new addToValidateFieldLogic('popup_form_id', 'int_min', 'int_max', 'int_default', 'int_len', 'int', '{sugar_translate module="DynamicFields" label="LBL_ERR_LOGIC_INTEGER"}');
 </script>
 {include file="modules/DynamicFields/templates/Fields/Forms/coreBottom.tpl"}

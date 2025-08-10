@@ -102,4 +102,5 @@ $mod_strings = array(
     'COLUMN_TITLE_INLINE_EDIT_TEXT' => 'Inline Edit',
     'COLUMN_TITLE_PARENT_ENUM' => 'Parent DropDown',
     'LBL_INSERT_FIELD' => 'Insert Field',
+    'LBL_ERR_LOGIC_INTEGER' => 'Your value is not in the given range'
 );
