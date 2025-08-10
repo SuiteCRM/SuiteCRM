@@ -89,10 +89,10 @@ class EmailsControllerActionGetFromFields
         $ie->email = $email;
         $ieAccounts = $ie->retrieveAllByGroupIdWithGroupAccounts($this->currentUser->id);
         $accountSignatures = $this->currentUser->getPreference('account_signatures', 'Emails');
-        $showFolders = sugar_unserialize(base64_decode($this->currentUser->getPreference('showFolders', 'Emails')));
+        $showFolders = sugar_unserialize(base64_decode($this->currentUser->getPreference('showFolders', 'Emails'))) ?: [];
         $emailSignatures = $this->getEmailSignatures($accountSignatures);
         $defaultEmailSignature = $this->getDefaultSignatures();
-        $prependSignature = $this->currentUser->getPreference('signature_prepend');
+        $prependSignature = $this->currentUser->getPreference('signature_prepend') ?? false;
         $dataAddresses = $this->collector->collectDataAddressesFromIEAccounts(
             $ieAccounts,
             $showFolders,
@@ -103,7 +103,7 @@ class EmailsControllerActionGetFromFields
 
         $dataAddresses = $dataAddresses ?? [];
 
-        $this->addOutboundEmailAccounts($dataAddresses);
+        $this->addOutboundEmailAccounts($dataAddresses, $prependSignature, $defaultEmailSignature);
 
         $dataEncoded = json_encode(array('data' => $dataAddresses), JSON_UNESCAPED_UNICODE);
         $results = mb_convert_encoding($dataEncoded, 'ISO-8859-1');
@@ -178,7 +178,7 @@ class EmailsControllerActionGetFromFields
      * @param array $dataAddresses
      * @return void
      */
-    protected function addOutboundEmailAccounts(array &$dataAddresses): void
+    protected function addOutboundEmailAccounts(array &$dataAddresses, bool $prependSignature = false, array $defaultEmailSignature = []): void
     {
         /** @var OutboundEmailAccounts $outboundAccount */
         $outboundAccount = BeanFactory::newBean('OutboundEmailAccounts');
@@ -195,7 +195,7 @@ class EmailsControllerActionGetFromFields
             $replyToAddress = $userOutboundAccount->getReplyToAddress();
             $replyToName = $userOutboundAccount->getReplyToName();
             $type = $userOutboundAccount->type ?? '';
-            $signature = $userOutboundAccount->signature ?? '';
+            $signature = $defaultEmailSignature['signature_html'] ?? $userOutboundAccount->signature ?? '';
             $isPersonal = $type === 'user';
             $isGroup = $type === 'group';
             $entry = [
@@ -209,7 +209,7 @@ class EmailsControllerActionGetFromFields
                     'reply_to' => $replyToAddress,
                     'reply_to_name' => $replyToName
                 ],
-                'prepend' => false,
+                'prepend' => $prependSignature,
                 'isPersonalEmailAccount' => $isPersonal,
                 'isGroupEmailAccount' => $isGroup,
                 'emailSignatures' => [
