@@ -106,7 +106,7 @@ class ElasticSearchEngine extends SearchEngine
     {
         $searchStr = $query->getSearchString();
         $searchModules = SearchWrapper::getModules();
-        $indexes = implode(',', array_map('strtolower', $searchModules));
+        $indexes = (empty($query->getOption('module_only'))) ? implode(',', array_map('strtolower', $searchModules)) : $query->getOption('module_only');
 
         // Wildcard character required for Elasticsearch
         $wildcardBe = "*";
