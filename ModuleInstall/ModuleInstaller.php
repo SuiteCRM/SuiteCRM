@@ -1328,13 +1328,13 @@ class ModuleInstaller
     {
         global $beanList, $beanFiles;
         require_once('modules/DynamicFields/DynamicField.php');
-        $dyField = new DynamicField();
 
         foreach ($fields as $field) {
             $class = $beanList[ $field['module']];
             if (file_exists($beanFiles[$class])) {
                 require_once($beanFiles[$class]);
                 $mod = new $class();
+                $dyField = new DynamicField($field['module']);
                 $dyField->bean = $mod;
                 $dyField->module = $field['module'];
                 $dyField->deleteField($field['name']);
