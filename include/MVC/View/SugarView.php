@@ -557,6 +557,7 @@ class SugarView
                 $current_user->full_name == '' || !showFullName() ? $current_user->user_name : $current_user->full_name
             );
             $ss->assign("CURRENT_USER_ID", $current_user->id);
+            $ss->assign("IS_CURRENT_USER_ADMIN", is_admin($current_user));
 
             // get the last viewed records
             $favorites = BeanFactory::getBean('Favorites');
