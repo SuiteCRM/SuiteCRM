@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: suitecrm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: suitecrm_root
+      MYSQL_DATABASE: suitecrm
+      MYSQL_USER: suitecrm
+      MYSQL_PASSWORD: suitecrm_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - suitecrm-network
+
+  # PHP Application
+  suitecrm:
+    build:
+      context: .
+      dockerfile: Dockerfile.suitecrm
+    container_name: suitecrm-app
+    ports:
+      - "8082:80"
+    volumes:
+      - ./SuiteCRM:/var/www/html
+      - ./cobol-integration:/var/www/cobol-integration
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_NAME: suitecrm
+      DATABASE_USER: suitecrm
+      DATABASE_PASSWORD: suitecrm_pass
+    depends_on:
+      - mysql
+    networks:
+      - suitecrm-network
+
+  # COBOL Calculation Service
+  cobol-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.cobol
+    container_name: cobol-calculation-engine
+    ports:
+      - "3001:3000"
+      - "8081:8080"
+    environment:
+      NODE_ENV: development
+    networks:
+      - suitecrm-network
+
+  # Redis for Queue Management
+  redis:
+    image: redis:7-alpine
+    container_name: suitecrm-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - suitecrm-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    container_name: suitecrm-api-gateway
+    ports:
+      - "80:80"
+    environment:
+      SUITECRM_URL: http://suitecrm
+      COBOL_ENGINE_URL: http://cobol-engine:3000
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      - suitecrm
+      - cobol-engine
+      - redis
+    networks:
+      - suitecrm-network
+
+volumes:
+  mysql_data:
+
+networks:
+  suitecrm-network:
+    driver: bridge
