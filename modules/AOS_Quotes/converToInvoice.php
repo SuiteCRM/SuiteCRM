@@ -67,6 +67,7 @@
     }
     $rawRow['total_amount'] = format_number($rawRow['total_amount']);
     $invoice->populateFromRow($rawRow);
+    $invoice->populateDefaultValues();
     $invoice->process_save_dates =false;
     $invoice->save();
 
