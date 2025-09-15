@@ -140,6 +140,7 @@ class SearchResultsController extends Controller
         $smarty->assign('headers', $headers);
         $smarty->assign('results', $this->results);
         $smarty->assign('APP', $app_strings);
+        $smarty->assign('APP_CONFIG', $GLOBALS['sugar_config']);
         $moduleName = [];
         try {
             $hitsAsBeans = $this->results->getHitsAsBeans();
