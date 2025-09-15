@@ -247,7 +247,7 @@ class DashletGeneric extends Dashlet
                     $name = $widgetDef['name'] = 'modified_user_id';
                 }
                 //bug 39170 - end
-                if ($widgetDef['type']=='enum') {
+                if ($widgetDef['type']=='enum' || $widgetDef['type']=='multienum') {
                     $filterNotSelected = array(); // we need to have some value otherwise '' or null values make -none- to be selected by default
                 } else {
                     $filterNotSelected = '';
