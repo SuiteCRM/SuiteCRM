@@ -2004,6 +2004,7 @@ $app_strings = array(
 
     //jc:#12287 - For javascript validation messages
     'MSG_IS_NOT_BEFORE' => 'is not before',
+    'MSG_IS_NOT_AFTER' => 'is not after',
     'MSG_IS_MORE_THAN' => 'is more than',
     'MSG_SHOULD_BE' => 'should be',
     'MSG_OR_GREATER' => 'or greater',
