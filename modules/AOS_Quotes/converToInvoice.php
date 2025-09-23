@@ -67,6 +67,7 @@
     }
     $rawRow['total_amount'] = format_number($rawRow['total_amount']);
     $invoice->populateFromRow($rawRow);
+    $invoice->populateDefaultValues(false);  // Apply field defaults for empty fields
     $invoice->process_save_dates =false;
     $invoice->save();
 
@@ -107,6 +108,7 @@
         }
         $group_invoice = BeanFactory::newBean('AOS_Line_Item_Groups');
         $group_invoice->populateFromRow($row);
+        $group_invoice->populateDefaultValues(false);  // Apply field defaults for empty fields
         $group_invoice->save();
         $quoteToInvoiceGroupIds[$quoteGroupId] = $group_invoice->id;
     }
@@ -133,6 +135,7 @@
         $row['product_qty'] = format_number($row['product_qty']);
         $prod_invoice = BeanFactory::newBean('AOS_Products_Quotes');
         $prod_invoice->populateFromRow($row);
+        $prod_invoice->populateDefaultValues(false);  // Apply field defaults for empty fields
         $prod_invoice->save();
     }
     ob_clean();
