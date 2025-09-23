@@ -47,4 +47,38 @@ class QuotesCest
 
         $I->see('Quotes', '.module-title-text');
     }
+
+    /**
+     * @param \AcceptanceTester $I
+     *
+     * As an administrator I want to convert a Quote to Invoice and verify defaults are applied.
+     */
+    public function testQuoteToInvoiceConversion(AcceptanceTester $I)
+    {
+        $I->wantTo('Convert a Quote to Invoice and verify defaults are applied');
+
+        // Login and navigate
+        $I->loginAsAdmin();
+
+        // Create a Quote
+        $I->visitPage('AOS_Quotes', 'EditView');
+        $I->fillField('#name', 'Test Quote for Conversion');
+        // Fill required fields
+        $I->fillField('#billing_account', 'Test Account');
+        $I->click('Save');
+
+        // Wait for detail view
+        $I->waitForText('Test Quote for Conversion', 10);
+
+        // Convert to Invoice
+        $I->click('Convert to Invoice');
+
+        // Verify we're on Invoice edit page
+        $I->seeInCurrentUrl('module=AOS_Invoices');
+        $I->seeInCurrentUrl('action=EditView');
+
+        // Verify default values are present
+        $I->seeInField('#invoice_date', date('Y-m-d'));
+        $I->seeInField('#name', 'Test Quote for Conversion');
+    }
 }
