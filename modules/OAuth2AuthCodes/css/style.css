@@ -1,0 +1,185 @@
+/**
+ * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
+ * Copyright (C) 2025 SuiteCRM Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUITECRM, SUITECRM DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Supercharged by SuiteCRM" logo. If the display of the logos is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Supercharged by SuiteCRM".
+ */
+.oauth-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.oauth-app-logo {
+    height:40px;
+}
+.oauth-codes-authorization-row {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.oauth-codes-authorization-col {
+    float:none;
+    padding:1.5em;
+}
+.oauth-container {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #fff;
+    overflow: hidden;
+    margin-top: 0;
+}
+.oauth-footer {
+    background: #fff;
+}
+.oauth-header {
+    padding: 1em;
+    display: flex;
+    align-items: center;
+}
+.oauth-logo {
+    height: 40px;
+}
+.oauth-content {
+    padding: 2em;
+    padding-bottom: 1.5em;
+}
+.oauth-content-title {
+    margin-top: 0em;
+}
+.oauth-user {
+    font-size: 1.2em;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.oauth-user-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 0.5em;
+}
+.oauth-user-name {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    font-weight: bold;
+    line-height: 1;
+}
+.oauth-scopes ul {
+    margin: 0.5em 0 1em 1.5em;
+    padding: 0;
+}
+.oauth-actions {
+    margin-top: 3em;
+    display: flex;
+    justify-content: center;
+    font-size: .9em
+}
+.oauth-client-info {
+    display: flex;
+    justify-content: start;
+    margin-bottom: 2em;
+}
+.oauth-client-info-icon {
+    display: flex;
+    align-items: center;
+}
+.oauth-client-info-title {
+    font-weight: bold;
+}
+.oauth-client-info-description {
+    color: #555;
+}
+.oauth-grants-title {
+    margin-bottom: 0.8em;
+}
+.oauth-grant {
+    display: flex;
+    justify-content: start;
+}
+.oauth-grant:not(:last-child) {
+    margin-bottom: 0.8em;
+}
+.oauth-grant-icon {
+    display: flex;
+    align-items: center;
+}
+.oauth-grant-title {
+    font-weight: bold;
+}
+.oauth-grant-description {
+    color: #555;
+    font-size: 0.9em;
+}
+.oauth-footer-redirect {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.oauth-info {
+    font-size: 90%;
+    margin-top: .5em;
+    color: slategray;
+}
+.oauth-footer-redirect {
+    margin-top: 0.5em;
+    font-size: 0.9em;
+    color: #555;
+}
+.oauth-redirect-url {
+    font-family: monospace;
+    word-break: break-all;
+    margin-top: 0.2em;
+    font-weight: bold;
+}
+
+.oauth-page-footer {
+    position: relative !important;
+}
+
+.fill-dark svg g {
+    fill: black !important;
+}
+
+.stroke-dark  svg g {
+    stroke: black !important;
+}
+.stroke-white  svg g {
+    stroke: white !important;
+}
+.text-strong {
+    font-weight: bold;
+}
+
+
+@media (min-height: 400px) and (max-height: 649px) {
+    .oauth-page-footer {
+        position: relative !important;
+    }
+}
+
+@media (min-height: 650px) {
+    .oauth-page-footer {
+        position: absolute !important;
+    }
+}
+

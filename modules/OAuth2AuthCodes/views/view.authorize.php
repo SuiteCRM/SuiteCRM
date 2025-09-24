@@ -113,9 +113,17 @@ class Oauth2AuthCodesViewAuthorize extends SugarView
             echo SugarThemeRegistry::current()->getJS();
             echo SugarThemeRegistry::current()->getCSS();
             echo '<link rel="stylesheet" type="text/css" media="all" href="' . getJSPath('modules/Users/login.css') . '">';
+            $sugar_smarty->assign('cssStyles', get_custom_file_contents('modules/OAuth2AuthCodes/css/style.css'));
             $sugar_smarty->assign('oauth2authcode_logout', strpos($_SERVER['HTTP_REFERER'], 'action=Login') !== false);
             $sugar_smarty->assign('oauth2authcode_hash', $hash);
             $sugar_smarty->assign('scope', $authRequest->getScopes());
+            $sugar_smarty->assign('grants', [
+                ['icon' => 'oauth_module.svg', 'iconClass' => 'fill-dark', 'name' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS_DESC'],
+                ['icon' => 'oauth_user.svg', 'iconClass' => 'stroke-dark', 'name' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS_DESC']
+            ]);
+            $sugar_smarty->assign('user', [
+                'full_name' => $current_user->full_name ?? $current_user->name ?? $current_user->username ?? '',
+            ]);
             $sugar_smarty->assign('client', array(
                 'name' => $authRequest->getClient()->getName(),
                 'redirectUri' => $authRequest->getClient()->getRedirectUri()

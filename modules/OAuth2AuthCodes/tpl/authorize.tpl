@@ -26,14 +26,26 @@
  */
 
 *}
+
 <div class="p_login">
-    <div class="p_login_top">
-        <a title="SuiteCRM" href="index.php" style="background-image:url('{$LOGO_IMAGE}');background-size:auto 40px;width:auto;">SuiteCRM</a>
+    <style>{$cssStyles}</style>
+    <div class="p_login_top oauth-navbar" >
+        <div>
+            <img src="{$LOGO_IMAGE}" class="oauth-app-logo" alt="SuiteCRM"/>
+        </div>
+        <div class="oauth-user">
+            <div class="oauth-user-icon stroke-white">
+                {sugar_getimage name="oauth_user.svg" alt="Grant Type" class="oauth-logo" }
+            </div>
+            <div class="oauth-user-name">
+                {$user.full_name}
+            </div>
+        </div>
     </div>
-    <div class="p_login_middle bootstrap-container">
-        <div class="row">
-            <div class="center-block col-md-3" style="float:none;background-color:white;padding:2em;">
-                <p>{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_INFO"}</p>
+    <div class="p_login_middle bootstrap-container oauth-codes-authorization" style="margin-top:0;">
+        <div class="row oauth-codes-authorization-row">
+            <div class="center-block oauth-codes-authorization-col col-xs-12 col-sm-8 col-md-6 col-lg-6">
+
                 <form name="OAuthAuthorizeForm" method="POST" action="index.php" >
                     <input type='hidden' name='action' value='authorize'/>
                     <input type='hidden' name='module' value='OAuth2AuthCodes'/>
@@ -42,30 +54,96 @@
                     <input type='hidden' name='oauth2authcode_hash' value='{$oauth2authcode_hash}'/>
                     <input type='hidden' name='confirmed' value=''/>
 
-                    <p><strong>{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_CLIENT"}: {$client.name}</strong></p>
-                    <p><strong>{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_REDIRECT"}: {$client.redirectUri}</strong></p>
 
-                    <p class="text-center">
-                        <input type="button" class="button" value="{sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_AUTHORIZE_AND_SAVE'}"
-                        class="btn btn-lg btn-primary btn-block" style="white-space: normal;height:auto;"
-                        onclick="document.OAuthAuthorizeForm.confirmed.value='always'; document.OAuthAuthorizeForm.submit();">
-                        <input type="button" class="button" value="{sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_AUTHORIZE_ONCE'}"
-                        class="btn btn-lg btn-primary btn-block" style="white-space: normal;height:auto;"
-                        onclick="document.OAuthAuthorizeForm.confirmed.value='once'; document.OAuthAuthorizeForm.submit();">
-                        <input type="button" class="button" value="{sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_ABORT'}"
-                        class="btn btn-lg btn-secondary btn-block" style="white-space: normal;height:auto;"
-                        onclick="document.OAuthAuthorizeForm.confirmed.value='abort'; document.OAuthAuthorizeForm.submit();">
-                    </p>
+                    <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+                        <h2 class="oauth-content-title mt-0">{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_AUTHORIZE"} {$client.name}</h2>
+                    </div>
+                    <div class="oauth-container panel panel-primary">
+                        <div class="panel-body">
+                            <div class="oauth-content">
+                                <div class="oauth-grants-title text-strong">{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_CLIENT_INFO"}:</div>
+                                <div class="oauth-client-info">
+                                    <div class="oauth-client-info-icon fill-dark" style="margin-right: 1em;">
+                                        {sugar_getimage name="oauth_client.svg" alt="Grant Type" class="oauth-logo" }
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; margin-right: 1em;">
+                                        <div class="oauth-client-info-title">
+                                            {$client.name}
+                                        </div>
+                                        <div class="oauth-client-info-description">
+                                            {sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_CLIENT_INFO_DESCRIPTION"}
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="oauth-grants">
+                                    <div class="oauth-grants-title text-strong">{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_REQUESTED_PERMISSIONS"}:</div>
+
+                                    {foreach from=$grants item=grant}
+                                        <div class="oauth-grant">
+                                            <div class="oauth-grant-icon {$grant.iconClass}" style="margin-right: 1em;">
+                                                {sugar_getimage name=$grant.icon alt="Grant Type" class="oauth-logo" }
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; margin-right: 1em;">
+                                                <div class="oauth-grant-title">
+                                                    {sugar_translate module="OAuth2AuthCodes" label=$grant.name}
+                                                </div>
+                                                <div class="oauth-grant-description">
+                                                    {sugar_translate module="OAuth2AuthCodes" label=$grant.description}
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    {/foreach}
+
+
+                                </div>
+
+                                <div class="oauth-info">
+                                    <div class="text-strong">{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_NOTE"}</div>
+                                    <div>{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_INFO_1"}</div>
+                                    <div>{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_INFO_2"}</div>
+                                </div>
+
+                                <div class="oauth-actions">
+                                    <button class="btn btn-sm btn-default text-strong oauth-action-reject"
+                                            onclick="document.OAuthAuthorizeForm.confirmed.value='abort'; document.OAuthAuthorizeForm.submit();">
+                                        {sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_ABORT'}
+                                    </button>
+
+                                    <button class="btn btn-sm btn-info text-strong oauth-action-once"
+                                            onclick="document.OAuthAuthorizeForm.confirmed.value='once'; document.OAuthAuthorizeForm.submit();">
+                                        {sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_AUTHORIZE_ONCE'}
+                                    </button>
+
+                                    <button class="btn btn-sm btn-info text-strong oauth-action-always"
+                                            onclick="document.OAuthAuthorizeForm.confirmed.value='always'; document.OAuthAuthorizeForm.submit();">
+                                        {sugar_translate module='OAuth2AuthCodes' label='LBL_OAUTH_AUTHORIZE_AND_SAVE'}
+                                    </button>
+                                </div>
+                                <div class="oauth-footer-redirect">
+                                    <div class="oauth-redirect-description">
+                                        {sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_AUTHORIZING_WILL_REDIRECT"}
+                                    </div>
+                                    <div class="oauth-redirect-url">
+                                        {$client.redirectUri}
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
                 </form>
-                <p>
-                    <br/>
-                    <a title="Homepage" href="index.php">{sugar_translate module="OAuth2AuthCodes" label="LBL_OAUTH_BACK_TO_HOME"}</a>
-                </p>
             </div>
         </div>
     </div>
-    <div class="p_login_bottom">
+    <div class="p_login_bottom oauth-page-footer">
         <a id="admin_options">&copy; Supercharged by SuiteCRM</a>
         <a id="powered_by">&copy; Powered By SugarCRM</a>
     </div>
 </div>
+
+
