@@ -28,6 +28,14 @@
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
+
+use Api\Core\Loader\ContainerLoader;
+use League\OAuth2\Server\AuthorizationServer;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Slim\App;
+
+require_once get_custom_file_if_exists('modules/OAuth2AuthCodes/services/OAuthCodeGrantManager.php');
+
 /**
  * Class OAuth2AuthCodesController
  */
@@ -40,4 +48,53 @@ class OAuth2AuthCodesController extends SugarController
     {
         $this->view = 'authorize';
     }
+
+    public function action_authorize_confirm()
+    {
+        $this->view = 'ajax';
+
+        global $log;
+        $app = new App(ContainerLoader::configure());
+
+        /** @var AuthorizationServer $server */
+        $server = $app->getContainer()->get(AuthorizationServer::class);
+        $request = $app->getContainer()->get('request');
+        $response = $app->getContainer()->get('response');
+
+        $manager = new OAuthCodeGrantManager();
+
+        $manager->validateConfirmationRequest($request);
+
+        $authRequest = null;
+        try {
+            $authRequest = $manager->loadAuthorizationRequest($server, $request);
+        } catch (Exception $e) {
+        }
+
+        if ($authRequest === null) {
+            $log->error('No OAuth2 authorization in progress. Cannot load authorization request from session.');
+            throw new InvalidArgumentException($GLOBALS['mod_strings']['LBL_INVALID_REQUEST']);
+        }
+
+        if ($request->getParam('oauth2_authcode_logout') === '1') {
+            $log->info('Logging out user as part of OAuth2 authorization flow (oauth2_authcode_logout received).');
+            session_destroy();
+        }
+
+        $manager->cleanupSession();
+
+        try {
+            $authRequest->setAuthorizationApproved($request->getParam('confirmed') === 'always' || $request->getParam('confirmed') === 'once');
+            $response = $server->completeAuthorizationRequest($authRequest, $response);
+        } catch (OAuthServerException $exception) {
+            $response = $exception->generateHttpResponse($response);
+            sugar_cleanup();
+            // send response directly, because $app->respond($response) does not work due to some reason (?)
+            print($response);
+        }
+
+        sugar_cleanup();
+        $app->respond($response);
+    }
+
 }

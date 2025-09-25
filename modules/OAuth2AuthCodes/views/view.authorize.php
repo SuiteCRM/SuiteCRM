@@ -35,6 +35,8 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Api\V8\OAuth2\Entity\UserEntity;
 use Slim\App;
 
+require_once 'modules/OAuth2AuthCodes/services/OAuthCodeGrantManager.php';
+
 /**
 * Class Oauth2AuthCodesViewAuthorize
 */
@@ -61,6 +63,7 @@ class Oauth2AuthCodesViewAuthorize extends SugarView
      */
     public function display()
     {
+        global $log;
         $app = new App(ContainerLoader::configure());
          
         /** @var AuthorizationServer $server */
@@ -68,81 +71,26 @@ class Oauth2AuthCodesViewAuthorize extends SugarView
         $request  = $app->getContainer()->get('request');
         $response = $app->getContainer()->get('response');
 
-        if (
-            !isset($_SESSION['oauth2authcode']) ||
-            $request->getParam('confirmed') === null ||
-            $request->getParam('session_id') === null ||
-            $request->getParam('oauth2authcode_hash') === null ||
-            $request->getParam('oauth2authcode_hash') !== $_SESSION['oauth2authcode_hash'] ||
-            $request->getParam('session_id') !== session_id()
-        ) {
+        try {
+            $authRequest = $server->validateAuthorizationRequest($request);
+        } catch (OAuthServerException $exception) {
+            $log->error('OAuth2 Authorization Request validation failed: '.$exception->getMessage());
+            throw new \InvalidArgumentException($GLOBALS['mod_strings']['LBL_INVALID_REQUEST']);
+        }
+
+        if ($authRequest === null) {
+            throw new \InvalidArgumentException($GLOBALS['mod_strings']['LBL_INVALID_REQUEST']);
+        }
+
+        global $current_user;
+        $authRequest->setUser(new UserEntity($current_user->id));
+
+        /** @var \OAuth2AuthCodes $authCode */
+        $authCode = BeanFactory::newBean('OAuth2AuthCodes');
+
+        if ($authCode->is_scope_authorized($authRequest)) {
             try {
-                $authRequest = $server->validateAuthorizationRequest($request);
-            } catch (OAuthServerException $exception) {
-                sugar_die($GLOBALS['mod_strings']['LBL_INVALID_REQUEST'].": ".$exception->getMessage());
-            }
-
-            if ($authRequest === null) {
-                throw new \InvalidArgumentException($GLOBALS['mod_strings']['LBL_INVALID_REQUEST']);
-            }
-
-            global $current_user;
-            $authRequest->setUser(new UserEntity($current_user->id)); // an instance of UserEntityInterface
-
-            /** @var \OAuth2AuthCodes $authCode */
-            $authCode = BeanFactory::newBean('OAuth2AuthCodes');
-            if ($authCode->is_scope_authorized($authRequest)) {
-                try {
-                    $authRequest->setAuthorizationApproved(true);
-                    $response = $server->completeAuthorizationRequest($authRequest, $response);
-                } catch (OAuthServerException $exception) {
-                    $response = $exception->generateHttpResponse($response);
-                    sugar_cleanup();
-                    // send response directly, because $app->respond($response) does not work due to some reason (?)
-                    print($response);
-                }
-                sugar_cleanup();
-                $app->respond($response);
-            }
-
-            $_SESSION['oauth2authcode'] = serialize($authRequest);
-            $hash = md5($_SESSION['oauth2authcode']);
-            $_SESSION['oauth2authcode_hash'] = $hash;
-
-            $sugar_smarty = new Sugar_Smarty();
-            echo SugarThemeRegistry::current()->getJS();
-            echo SugarThemeRegistry::current()->getCSS();
-            echo '<link rel="stylesheet" type="text/css" media="all" href="' . getJSPath('modules/Users/login.css') . '">';
-            $sugar_smarty->assign('cssStyles', get_custom_file_contents('modules/OAuth2AuthCodes/css/style.css'));
-            $sugar_smarty->assign('oauth2authcode_logout', strpos($_SERVER['HTTP_REFERER'], 'action=Login') !== false);
-            $sugar_smarty->assign('oauth2authcode_hash', $hash);
-            $sugar_smarty->assign('scope', $authRequest->getScopes());
-            $sugar_smarty->assign('grants', [
-                ['icon' => 'oauth_module.svg', 'iconClass' => 'fill-dark', 'name' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS_DESC'],
-                ['icon' => 'oauth_user.svg', 'iconClass' => 'stroke-dark', 'name' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS_DESC']
-            ]);
-            $sugar_smarty->assign('user', [
-                'full_name' => $current_user->full_name ?? $current_user->name ?? $current_user->username ?? '',
-            ]);
-            $sugar_smarty->assign('client', array(
-                'name' => $authRequest->getClient()->getName(),
-                'redirectUri' => $authRequest->getClient()->getRedirectUri()
-            ));
-            $sugar_smarty->assign('session_id', session_id());
-            $sugar_smarty->assign('LOGO_IMAGE', SugarThemeRegistry::current()->getImageURL('company_logo.png'));
-
-            echo $sugar_smarty->fetch('modules/OAuth2AuthCodes/tpl/authorize.tpl');
-
-        } else {
-            $authRequest = unserialize($_SESSION['oauth2authcode'],['allowed_classes' => false]);
-            unset($_SESSION['oauth2authcode'], $_SESSION['oauth2authcode_hash']);
-
-            if($request->getParam('oauth2authcode_logout') === '1'){
-                session_destroy();
-            }
-
-            try {
-                $authRequest->setAuthorizationApproved($request->getParam('confirmed') === 'always' || $request->getParam('confirmed') === 'once' );
+                $authRequest->setAuthorizationApproved(true);
                 $response = $server->completeAuthorizationRequest($authRequest, $response);
             } catch (OAuthServerException $exception) {
                 $response = $exception->generateHttpResponse($response);
@@ -153,5 +101,41 @@ class Oauth2AuthCodesViewAuthorize extends SugarView
             sugar_cleanup();
             $app->respond($response);
         }
+
+        $hash = md5(serialize($authRequest));
+        $process_id = uniqid('', true);
+        $manager = new OAuthCodeGrantManager();
+        $manager->saveRequestToSession($request, $authRequest, $hash, $process_id);
+
+        $sugar_smarty = new Sugar_Smarty();
+        echo SugarThemeRegistry::current()->getJS();
+        echo SugarThemeRegistry::current()->getCSS();
+        echo '<link rel="stylesheet" type="text/css" media="all" href="' . getJSPath('modules/Users/login.css') . '">';
+
+        $sugar_smarty->assign('cssStyles', get_custom_file_contents('modules/OAuth2AuthCodes/css/style.css'));
+
+        $sugar_smarty->assign('oauth2_authcode_logout', strpos($_SERVER['HTTP_REFERER'], 'action=Login') !== false);
+        $sugar_smarty->assign('oauth2_authcode_hash', $hash);
+        $sugar_smarty->assign('oauth2_authcode_process_id', $process_id);
+        $sugar_smarty->assign('scope', $authRequest->getScopes());
+        $sugar_smarty->assign('grants', [
+            ['icon' => 'oauth_module.svg', 'iconClass' => 'fill-dark', 'name' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_MODULE_ACCESS_DESC'],
+            ['icon' => 'oauth_user.svg', 'iconClass' => 'stroke-dark', 'name' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS', 'description' => 'LBL_OAUTH2_GRANT_USER_DATA_ACCESS_DESC']
+        ]);
+
+        $sugar_smarty->assign('user', [
+            'full_name' => $current_user->full_name ?? $current_user->name ?? $current_user->username ?? '',
+        ]);
+
+        $sugar_smarty->assign('client', array(
+            'name' => $authRequest->getClient()->getName(),
+            'redirectUri' => $authRequest->getClient()->getRedirectUri()
+        ));
+
+        $sugar_smarty->assign('LOGO_IMAGE', SugarThemeRegistry::current()->getImageURL('company_logo.png'));
+
+        echo $sugar_smarty->fetch('modules/OAuth2AuthCodes/tpl/authorize.tpl');
     }
+
+
 }

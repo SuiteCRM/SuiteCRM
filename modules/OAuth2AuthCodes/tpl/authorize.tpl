@@ -47,11 +47,11 @@
             <div class="center-block oauth-codes-authorization-col col-xs-12 col-sm-8 col-md-6 col-lg-6">
 
                 <form name="OAuthAuthorizeForm" method="POST" action="index.php" >
-                    <input type='hidden' name='action' value='authorize'/>
+                    <input type='hidden' name='action' value='authorize_confirm'/>
                     <input type='hidden' name='module' value='OAuth2AuthCodes'/>
-                    <input type='hidden' name='oauth2authcode_logout' value='{$oauth2authcode_logout}'/>
-                    <input type='hidden' name='session_id' value='{$session_id}'/>
-                    <input type='hidden' name='oauth2authcode_hash' value='{$oauth2authcode_hash}'/>
+                    <input type='hidden' name='oauth2_authcode_logout' value='{$oauth2_authcode_logout}'/>
+                    <input type='hidden' name='oauth2_authcode_hash' value='{$oauth2_authcode_hash}'/>
+                    <input type='hidden' name='oauth2_authcode_process_id' value='{$oauth2_authcode_process_id}'/>
                     <input type='hidden' name='confirmed' value=''/>
 
 
