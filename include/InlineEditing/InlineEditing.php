@@ -89,7 +89,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
             $vardef['type'] = 'varchar';
         }
 
-        if (isset($vardef['precision'])) {
+        if ($vardef['type'] != 'decimal' && isset($vardef['precision'])) {
             unset($vardef['precision']);
         }
 
