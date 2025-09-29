@@ -51,6 +51,11 @@ class OAuth2TokensController extends SugarController
             $tokens = $this->bean->get_full_list();
             if ($tokens) {
                 foreach ($tokens as $token) {
+                    if (isTrue($_REQUEST['Delete'] ?? false)) {
+                        $token->mark_deleted($token->id);
+                        continue;
+                    }
+
                     $token->token_is_revoked = true;
                     $token->save();
                 }
@@ -58,6 +63,10 @@ class OAuth2TokensController extends SugarController
         } elseif (!empty($_REQUEST['mass'])) {
             foreach ($_REQUEST['mass'] as $id) {
                 $token = BeanFactory::getBean('OAuth2Tokens', $id);
+                if (isTrue($_REQUEST['Delete'] ?? false)) {
+                    $token->mark_deleted($token->id);
+                    continue;
+                }
                 $token->token_is_revoked = true;
                 $token->save();
             }
