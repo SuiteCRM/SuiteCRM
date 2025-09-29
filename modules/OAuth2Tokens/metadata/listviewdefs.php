@@ -54,6 +54,9 @@ $viewdefs[$module_name]['ListView'] = [
                 [
                     'customCode' => '<a onclick="bulkRevokeTokens()" title="{$MOD.LBL_REVOKE_TOKENS}">{$MOD.LBL_REVOKE_TOKENS}</a>'
                 ],
+                [
+                    'customCode' => '<input class="button" type="button" id="delete_button" name="Delete" value="{$MOD.LBL_REVOKE_AND_DELETE_BUTTON_LABEL}" onclick="return sListView.send_mass_update(\'selected\',\'{$APP.LBL_LISTVIEW_NO_SELECTED}\', 1)">',
+                ]
             ],
         ],
         'includes' => [
@@ -109,5 +112,12 @@ $listViewDefs[$module_name] = [
         'label' => 'LBL_REFRESH_TOKEN_EXPIRES',
         'default' => true,
         'sortable' => true,
+    ],
+    'revoke_and_delete' => [
+        'default' => true,
+        'sortable' => false,
+        'link' => true,
+        'align' => 'right',
+        'customCode' => '<button class="btn btn-sm btn-outline" style="padding:0; background-color: transparent; height: auto" onclick="if(confirm(\'{$MOD.LBL_DELETE_CONFIRMATION}\')) SUGAR.ajaxUI.go(\'index.php?module=OAuth2Tokens&action=Delete&record={$ID}&return_module=OAuth2Tokens\'); return false;" title="{$MOD.LBL_REVOKE_AND_DELETE_BUTTON_LABEL}"><span class="suitepicon suitepicon-action-delete" style="font-size: 1.1em"> </span></button>'
     ],
 ];

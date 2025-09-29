@@ -55,7 +55,7 @@ $mod_strings = array(
     'LBL_GRANT_TYPE'=> 'Grant type',
     'LBL_SCOPES'=> 'Scopes',
     'LBL_REVOKE_TOKEN'=> 'Revoke token',
-    'LBL_REVOKE_TOKENS'=> 'Revoke tokens',
+    'LBL_REVOKE_TOKENS'=> 'Revoke Tokens',
     'LBL_CLIENT_NAME'=> 'Client name',
     'LBL_USER' => 'Associated user',
     'LBL_IS_ACTIVE' => 'Active tokens only',
@@ -72,4 +72,6 @@ $mod_strings = array(
 
     'LBL_ACCESS_TOKEN' => 'Access token',
     'LBL_REFRESH_TOKEN' => 'Refresh token',
+    'LBL_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record? The client will not be granted an authorization code any more.',
+    'LBL_REVOKE_AND_DELETE_BUTTON_LABEL' => 'Revoke and Delete',
 );
