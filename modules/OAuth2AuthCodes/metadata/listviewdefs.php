@@ -33,6 +33,16 @@ $module_name = 'OAuth2AuthCodes';
 
 $viewdefs[$module_name]['ListView'] = [
     'templateMeta' => [
+        'form' => [
+            'actions' => [
+                [
+                    'customCode' => '<a href="javascript:void(0)" class="parent-dropdown-handler" id="delete_listview_top" onclick="return false;"><label class="selected-actions-label hidden-mobile">{$APP.LBL_BULK_ACTION_BUTTON_LABEL_MOBILE}</label><label class="selected-actions-label hidden-desktop">{$APP.LBL_BULK_ACTION_BUTTON_LABEL}<span class=\'suitepicon suitepicon-action-caret\'></span></label></a>',
+                ],
+                [
+                    'customCode' => '<input class="button" type="button" id="delete_button" name="Delete" value="{$MOD.LBL_DELETE}" onclick="return sListView.send_mass_update(\'selected\',\'{$APP.LBL_LISTVIEW_NO_SELECTED}\', 1)">',
+                ]
+            ],
+        ],
         'options' => [
             'hide_edit_link' => true,
         ]
@@ -70,6 +80,7 @@ $listViewDefs[$module_name] = [
         'default' => true,
         'sortable' => false,
         'link' => true,
-        'customCode' => '<input type="button" class="button" onclick="if(confirm(\'{$MOD.LBL_DELETE_CONFIRMATION}\')) SUGAR.ajaxUI.go(\'index.php?module=OAuth2AuthCodes&action=Delete&record={$ID}&return_module=OAuth2AuthCodes\'); return false;" value="{$MOD.LBL_DELETE_BUTTON_LABEL}" />'
+        'align' => 'right',
+        'customCode' => '<button class="btn btn-sm btn-outline" style="padding:0; background-color: transparent; height: auto" onclick="if(confirm(\'{$MOD.LBL_DELETE_CONFIRMATION}\')) SUGAR.ajaxUI.go(\'index.php?module=OAuth2AuthCodes&action=Delete&record={$ID}&return_module=OAuth2AuthCodes\'); return false;" title="{$MOD.LBL_DELETE_BUTTON_LABEL}"><span class="suitepicon suitepicon-action-delete" style="font-size: 1.1em"> </span></button>'
     ],
 ];

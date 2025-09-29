@@ -51,7 +51,9 @@ $mod_strings = [
     'LBL_OAUTH_INFO_2' => 'In case you do not know or do not trust the client, you should not grant access.',
     'LBL_OAUTH_BACK_TO_HOME' => '<< Click here to go back to the dashboard.',
     'LBL_INVALID_REQUEST' => 'Invalid request',
-    'LBL_DELETE_BUTTON_LABEL' => 'Revoke and delete',
+    'LBL_DELETE_BUTTON_LABEL' => 'Revoke and Delete',
+    'LBL_DELETE_BUTTON_TITLE' => 'Revoke and Delete',
+    'LBL_DELETE' => 'Revoke and Delete',
     'LBL_DELETE_CONFIRMATION' => 'Are you sure you want to delete this record? The client will not be granted an authorization code any more.',
 
     'LNK_OAUTH2_TOKEN_LIST'=> 'List OAuth2 Tokens',
