@@ -144,7 +144,7 @@ $mod_strings = array(
     'LBL_WEBFORMS_INCLUDES_REGISTRATION' => 'Incluir datos da inscrición',
     'LBL_WEBFORMS_INCLUDES_RECAPTCHA' => 'Incluir validación reCAPTCHA',
     'LBL_WEBFORMS_CHOOSE_RECAPTCHA' => 'Configuración de reCAPTCHA:',
-    'LBL_WEBFORMS_RECAPTCHA_HELP' => 'Para poder incluir validación reCAPTCHA no formulario é necesario telo correctamente configurado. Máis información en: <a href="https://wikisuite.sinergiacrm.org/index.php?title=Google_reCAPTCHA" target="_blank">https://wikisuite.sinergiacrm.org/index.php?title=Google_reCAPTCHA</a>',
+    'LBL_WEBFORMS_RECAPTCHA_HELP' => 'Para poder incluir validación reCAPTCHA no formulario é necesario telo correctamente configurado. Máis información en: <a href="https://wiki.sinergiatic.org/index.php?title=Google_reCAPTCHA" target="_blank">https://wiki.sinergiatic.org/index.php?title=Google_reCAPTCHA</a>',
     'LBL_WEBFORMS_MAKE_ACCOUNT_NAME_OPTIONAL' => 'Facer que o campo Nome da organización sexa opcional',
     'LBL_WEBFORMS_MAKE_CIF_REQUIRED' => 'Se se inclúen datos da organización, facer que o número de identificación sexa obrigatorio (útil para evitar duplicados)',
     'LBL_WEBFORMS_FIRST_HEADER' => 'Campos da primeira columna',

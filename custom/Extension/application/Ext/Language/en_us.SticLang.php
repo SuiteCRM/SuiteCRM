@@ -36,7 +36,7 @@ $app_strings['LBL_PRINT_AS_PDF'] = 'Generate PDF document';
 $app_strings['LBL_ADDITIONAL_DETAILS_ERROR_GENERAL_TITLE'] = 'An error has occurred';
 $app_strings['LBL_LIST_VIEW_SUBPANEL_BUTTON_TITLE'] = 'Show in list view';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED'] = 'Nonprofitized by SinergiaCRM';
-$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM has been developed by SinergiaTIC Association. The software is provided AS IS, without any warranty. Under the AGPLv3 license. For more information, visit <a href="https://www.sinergiacrm.org">SinergiaCRM website</a>.';
+$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM has been developed by SinergiaTIC Association. The software is provided AS IS, without any warranty. Under the AGPLv3 license. For more information, visit <a href="https://www.sinergiatic.org">SinergiaCRM website</a>.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC2'] = 'This program is free software. You are allowed to redistribute and/or modify it under the terms of the GNU Affero General Public License version 3, published by the Free Software Foundation, including any additional permissions indicated in the source code header.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC3'] = 'All names of other companies and products mentioned here may be trademarks of their respective associated companies.';
 

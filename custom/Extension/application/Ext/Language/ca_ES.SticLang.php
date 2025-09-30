@@ -35,7 +35,7 @@ $app_strings['LBL_IMPORT_VALIDATION'] = 'Valida la importació';
 $app_strings['LBL_ADDITIONAL_DETAILS_ERROR_GENERAL_TITLE'] = "S'ha produït un error";
 $app_strings['LBL_LIST_VIEW_SUBPANEL_BUTTON_TITLE'] = 'Mostra-ho a la vista de llista';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED'] = 'Deslucrativitzat per SinergiaCRM';
-$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM ha estat desenvolupat per l\'Associació SinergiaTIC. El programari es proporciona TAL COM ÉS, sense cap garantia. Sota llicència AGPLv3. Per a més informació, visiteu el <a href="https://www.sinergiacrm.org">web de SinergiaCRM</a>.';
+$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM ha estat desenvolupat per l\'Associació SinergiaTIC. El programari es proporciona TAL COM ÉS, sense cap garantia. Sota llicència AGPLv3. Per a més informació, visiteu el <a href="https://www.sinergiatic.org">web de SinergiaCRM</a>.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC2'] = 'Aquest programa és programari lliure. Podeu redistribuir-lo i/o modificar-lo segons els termes de la Llicència Pública General Affero de GNU versió 3, publicada per la Free Software Foundation, incloent-hi qualsevol permís addicional indicat a la capçalera del codi font.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC3'] = "Tots els noms d'altres empreses i productes esmentats poden ser marques registrades de les empreses amb les quals s'associen.";
 

@@ -37,7 +37,7 @@ global $current_user;
 // Prepare common Stic links (wiki, videos, forums)
 $sticElements = array(
     'stic_wiki' => array(
-        'linkinfo' => array($app_strings['LBL_STIC_WIKI_LINK'] => "javascript:void(window.open('https://wikisuite.sinergiacrm.org/'))"),
+        'linkinfo' => array($app_strings['LBL_STIC_WIKI_LINK'] => "javascript:void(window.open('https://wiki.sinergiatic.org/'))"),
         'submenu' => '',
     ),
     'stic_videos' => array(
@@ -45,7 +45,7 @@ $sticElements = array(
         'submenu' => '',
     ),
     'stic_forums' => array(
-        'linkinfo' => array($app_strings['LBL_STIC_FORUMS_LINK'] => "javascript:void(window.open('https://forums.sinergiacrm.org/'))"),
+        'linkinfo' => array($app_strings['LBL_STIC_FORUMS_LINK'] => "javascript:void(window.open('https://forums.sinergiatic.org/'))"),
         'submenu' => '',
     ),
 );

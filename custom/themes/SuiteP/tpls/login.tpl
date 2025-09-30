@@ -57,7 +57,7 @@
 
 	<div class="p_login_top">
 		
-		<a title="SinergiaCRM" target="_blank" href="https://www.sinergiacrm.org">SinergiaCRM</a>
+		<a title="SinergiaCRM" target="_blank" href="https://www.sinergiatic.org">SinergiaCRM</a>
 		
 	</div>
     

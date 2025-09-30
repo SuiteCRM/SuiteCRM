@@ -57,7 +57,7 @@ $mod_strings['LBL_LEADS_DELETED_SINCE_CREATED'] = '{0} interessats creats a trav
 $mod_strings['LBL_WEBFORMS_INCLUDES_RECAPTCHA'] = 'Inclou validació reCAPTCHA al formulari';
 $mod_strings['LBL_WEBFORMS_CHOOSE_RECAPTCHA'] = 'Configuració de reCAPTCHA:';
 $mod_strings['LBL_WEBFORMS_RECAPTCHA_KO_URL'] = "URL de redirecció en cas d'error de reCAPTCHA:";
-$mod_strings['LBL_WEBFORMS_RECAPTCHA_HELP'] = 'Per poder incloure validació reCAPTCHA al formulari cal tenir-lo correctament configurat. Més informació a: <a href="https://wikisuite.sinergiacrm.org/index.php?title=Google_reCAPTCHA" target="_blank">https://wikisuite.sinergiacrm.org/index.php?title=Google_reCAPTCHA</a>';
+$mod_strings['LBL_WEBFORMS_RECAPTCHA_HELP'] = 'Per poder incloure validació reCAPTCHA al formulari cal tenir-lo correctament configurat. Més informació a: <a href="https://wiki.sinergiatic.org/index.php?title=Google_reCAPTCHA" target="_blank">https://wiki.sinergiatic.org/index.php?title=Google_reCAPTCHA</a>';
 
 $mod_strings['LBL_STIC_NOTIFICATION_PROSPECT_LIST_NAMES_C'] = 'Llistes de Públic Objectiu';
 $mod_strings['LBL_NOTIFICATION_PROSPECT_LIST_ID'] = 'Llistes de Públic Objectiu';

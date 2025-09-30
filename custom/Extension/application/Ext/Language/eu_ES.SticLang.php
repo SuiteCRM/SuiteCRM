@@ -35,7 +35,7 @@ $app_strings['LBL_IMPORT_VALIDATION'] = 'Validar la importación';
 $app_strings['LBL_ADDITIONAL_DETAILS_ERROR_GENERAL_TITLE'] = 'Ha ocurrido un error';
 $app_strings['LBL_LIST_VIEW_SUBPANEL_BUTTON_TITLE'] = 'Ver en la vista de lista';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED'] = 'Deslucrativizado por SinergiaCRM';
-$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM ha sido desarrollado por la Asociación SinergiaTIC. El software se proporciona TAL CUAL ES, sin garantía de ningún tipo. Bajo la licencia AGPLv3. Para más información, visite el <a href="https://www.sinergiacrm.org">web de SinergiaCRM</a>.';
+$app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC1'] = 'SinergiaCRM ha sido desarrollado por la Asociación SinergiaTIC. El software se proporciona TAL CUAL ES, sin garantía de ningún tipo. Bajo la licencia AGPLv3. Para más información, visite el <a href="https://www.sinergiatic.org">web de SinergiaCRM</a>.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC2'] = 'Este programa es software libre. Se permite redistribuirlo y/o modificarlo bajo los términos de la Licencia Pública General Affero de GNU versión 3, publicada por la Free Software Foundation, incluyendo cualquier permiso adicional indicado en la cabecera del código fuente.';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED_DESC3'] = 'Todos los nombres de otras empresas y productos mencionados aquí pueden ser marcas registradas de sus respectivas compañías asociadas.';
 

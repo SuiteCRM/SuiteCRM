@@ -34,7 +34,7 @@
             <p>{$APP.LBL_STIC_UPDATE_ALERT_INFO}</p>
 
             <p>
-                <a class="btn btn-default btn-sm" href="https://forums.sinergiacrm.org/viewforum.php?f=17" target="_blank"
+                <a class="btn btn-default btn-sm" href="https://forums.sinergiatic.org/viewforum.php?f=17" target="_blank"
                     title="v.{$lastSticVersion} ">
                     <i class="glyphicon glyphicon-link" data-hasqtip="3"></i> {$APP.LBL_STIC_UPDATE_ALERT_LINK}
                 </a>

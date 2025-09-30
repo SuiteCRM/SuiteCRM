@@ -27,7 +27,7 @@ $mod_strings['LBL_DASHLET_STIC_NEWS'] = 'SinergiaCRM News';
 $mod_strings['LBL_ABOUT_SINERGIACRM_TITLE'] = 'SinergiaCRM - Open Source CRM for nonprofit organizations';
 $mod_strings['LBL_ABOUT_SINERGIACRM'] = 'About SinergiaCRM';
 $mod_strings['LBL_ABOUT_SINERGIACRM_1'] = 'SinergiaCRM is developed by SinergiaTIC Association based on SuiteCRM and published under the AGPLv3 open source license.';
-$mod_strings['LBL_ABOUT_SINERGIACRM_2'] = 'SinergiaCRM documentation is available in <a target="_blank" href="https://wikisuite.sinergiacrm.org">the wiki of the product</a>.';
+$mod_strings['LBL_ABOUT_SINERGIACRM_2'] = 'SinergiaCRM documentation is available in <a target="_blank" href="https://wiki.sinergiatic.org">the wiki of the product</a>.';
 
 $mod_strings['LBL_ABOUT_SINERGIACRM_CONTRIBUTORS'] = 'SinergiaCRM includes';
 $mod_strings['LBL_ABOUT_SINERGIACRM_KREPORTER'] = 'Kreporter by Christian Knoll';

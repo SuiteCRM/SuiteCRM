@@ -5,14 +5,14 @@
 # SinergiaCRM
 
 ![Version (latest by date)](https://img.shields.io/github/v/release/SinergiaTIC/SinergiaCRM?label=Version)
-[![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)](https://wikisuite.sinergiacrm.org)
+[![Wiki](https://img.shields.io/badge/Information-Wiki-lightgray)](https://wiki.sinergiatic.org)
 [![LICENSE](https://img.shields.io/badge/License-AGPL_v3-orange.svg)](./LICENSE.txt)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5)](https://twitter.com/SinergiaCRM)
 [![Twitter](https://img.shields.io/twitter/follow/sinergiacrm?style=social&label=Follow)](https://twitter.com/SinergiaCRM)
 [![YouTube](https://img.shields.io/badge/Youtube-FF0000)](https://www.youtube.com/@SinergiaCRM)
 
-[Website](https://www.sinergiacrm.org) | 
-[Manual de uso](https://wikisuite.sinergiacrm.org/index.php?title=Manual_de_SinergiaCRM) |
+[Website](https://www.sinergiatic.org) | 
+[Manual de uso](https://wiki.sinergiatic.org/index.php?title=Manual_de_SinergiaCRM) |
 [Manual de instalación](https://github.com/SinergiaTIC/SinergiaCRM/wiki)
 
 [Español](#Español) | [Català](#Català) | [English](#English)
@@ -22,7 +22,7 @@
 
 ## Acerca de SinergiaCRM
 
-[SinergiaCRM](https://www.sinergiacrm.org/es) es una iniciativa de la Asociación SinergiaTIC, una entidad sin ánimo de lucro cuya misión es potenciar la capacidad de las organizaciones no lucrativas de adoptar estratégicamente y utilizar eficientemente las Tecnologías de la Información y la Comunicación (TIC). SinergiaCRM se basa en [SuiteCRM](https://github.com/suitecrm/suitecrm), que a su vez deriva de SugarCRM CE.
+[SinergiaCRM](https://www.sinergiatic.org/es) es una iniciativa de la Asociación SinergiaTIC, una entidad sin ánimo de lucro cuya misión es potenciar la capacidad de las organizaciones no lucrativas de adoptar estratégicamente y utilizar eficientemente las Tecnologías de la Información y la Comunicación (TIC). SinergiaCRM se basa en [SuiteCRM](https://github.com/suitecrm/suitecrm), que a su vez deriva de SugarCRM CE.
 
 ## Seguridad
 
@@ -48,7 +48,7 @@ SinergiaCRM se distribuye bajo la [Licencia Pública General Affero de GNU (AGPL
 
 ## Quant a SinergiaCRM
 
-[SinergiaCRM](https://www.sinergiacrm.org/ca) és una iniciativa de l'Associació SinergiaTIC, una entitat sense ànim de lucre que té per missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC). SinergiaCRM es basa en [SuiteCRM](https://github.com/suitecrm/suitecrm), que a la vegada deriva de SugarCRM CE.
+[SinergiaCRM](https://www.sinergiatic.org/ca) és una iniciativa de l'Associació SinergiaTIC, una entitat sense ànim de lucre que té per missió potenciar la capacitat de les organitzacions no lucratives d'adoptar estratègicament i utilitzar eficientment les Tecnologies de la Informació i la Comunicació (TIC). SinergiaCRM es basa en [SuiteCRM](https://github.com/suitecrm/suitecrm), que a la vegada deriva de SugarCRM CE.
 
 ## Seguretat
 
@@ -74,7 +74,7 @@ SinergiaCRM es distribueix sota la [Llicència Pública General Affero de GNU (A
 
 ## About SinergiaCRM
 
-[SinergiaCRM](https://www.sinergiacrm.org) is an initiative of the SinergiaTIC Association, a non-profit organization that seeks to enhance the capacity of non-profit organizations to strategically adopt and efficiently use Information and Communication Technologies (ICT). SinergiaCRM is based on [SuiteCRM](https://github.com/suitecrm/suitecrm), which in turn is derived from SugarCRM CE.
+[SinergiaCRM](https://www.sinergiatic.org) is an initiative of the SinergiaTIC Association, a non-profit organization that seeks to enhance the capacity of non-profit organizations to strategically adopt and efficiently use Information and Communication Technologies (ICT). SinergiaCRM is based on [SuiteCRM](https://github.com/suitecrm/suitecrm), which in turn is derived from SugarCRM CE.
 
 ## Security
 
