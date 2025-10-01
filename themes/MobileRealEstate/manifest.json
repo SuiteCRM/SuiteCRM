@@ -1,0 +1,126 @@
+{
+  "name": "SuiteCRM Real Estate Mobile",
+  "short_name": "CRM Mobile",
+  "description": "Mobile CRM for Real Estate Professionals with COBOL Integration",
+  "start_url": "/index.php?module=RE_Properties&action=Mobile",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2c5aa0",
+  "icons": [
+    {
+      "src": "/themes/MobileRealEstate/images/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": [
+    {
+      "src": "/themes/MobileRealEstate/images/screenshot-1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/themes/MobileRealEstate/images/screenshot-2.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Property",
+      "short_name": "Add",
+      "description": "Quick capture a new property",
+      "url": "/index.php?module=RE_Properties&action=QuickCapture",
+      "icons": [
+        {
+          "src": "/themes/MobileRealEstate/images/add-property.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "View Properties",
+      "short_name": "Properties",
+      "description": "View all properties",
+      "url": "/index.php?module=RE_Properties&action=Mobile",
+      "icons": [
+        {
+          "src": "/themes/MobileRealEstate/images/properties.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "share_target": {
+    "action": "/index.php?module=RE_Properties&action=QuickCapture",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "url",
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Dashboard - Real-time Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f1419;
+            color: #e1e8ed;
+            min-height: 100vh;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #1d9bf0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #1a8cd8;
+            transform: scale(1.05);
+        }
+
+        .dashboard-header {
+            background: #15202b;
+            padding: 20px 40px;
+            border-bottom: 1px solid #2f3336;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(29, 155, 240, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #1d9bf0;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: #15202b;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: #1d9bf0;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1d9bf0, #794bc4, #f7346f);
+        }
+
+        .kpi-label {
+            font-size: 14px;
+            color: #71767b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .kpi-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .positive {
+            color: #00ba7c;
+        }
+
+        .negative {
+            color: #f91842;
+        }
+
+        .chart-container {
+            background: #15202b;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .time-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .time-btn {
+            background: transparent;
+            border: 1px solid #2f3336;
+            color: #71767b;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-btn.active {
+            background: #1d9bf0;
+            color: white;
+            border-color: #1d9bf0;
+        }
+
+        .chart-canvas {
+            height: 300px;
+            position: relative;
+        }
+
+        .transactions-table {
+            background: #15202b;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2f3336;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transaction-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            padding: 16px 24px;
+            border-bottom: 1px solid #2f3336;
+            transition: background 0.2s ease;
+            align-items: center;
+        }
+
+        .transaction-row:hover {
+            background: rgba(29, 155, 240, 0.05);
+        }
+
+        .transaction-property {
+            font-weight: 500;
+        }
+
+        .transaction-type {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .type-sale {
+            background: rgba(0, 186, 124, 0.2);
+            color: #00ba7c;
+        }
+
+        .type-rental {
+            background: rgba(121, 75, 196, 0.2);
+            color: #794bc4;
+        }
+
+        .type-mortgage {
+            background: rgba(29, 155, 240, 0.2);
+            color: #1d9bf0;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: rgba(0, 186, 124, 0.2);
+            color: #00ba7c;
+        }
+
+        .status-pending {
+            background: rgba(255, 173, 31, 0.2);
+            color: #ffad1f;
+        }
+
+        .status-processing {
+            background: rgba(29, 155, 240, 0.2);
+            color: #1d9bf0;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .animated-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1d9bf0, #794bc4);
+            transition: width 1s ease-out;
+            border-radius: 4px;
+        }
+
+        .bar-container {
+            height: 20px;
+            background: rgba(29, 155, 240, 0.1);
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .activity-feed {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 300px;
+            background: #15202b;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #2f3336;
+            font-size: 14px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .activity-time {
+            color: #71767b;
+            font-size: 12px;
+        }
+
+        .map-container {
+            background: #15202b;
+            border: 1px solid #2f3336;
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 20px;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .heat-point {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, rgba(29, 155, 240, 0.8), transparent);
+            border-radius: 50%;
+            animation: ripple 3s infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.location.href='index.html'">← Back to Demos</button>
+
+    <div class="dashboard-header">
+        <h1>Transaction Analytics Dashboard</h1>
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span>Live Data</span>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-value" id="totalRevenue">$0</div>
+                <div class="kpi-change positive">
+                    <span>↑</span>
+                    <span id="revenueChange">12.5%</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Active Transactions</div>
+                <div class="kpi-value" id="activeTransactions">0</div>
+                <div class="kpi-change positive">
+                    <span>↑</span>
+                    <span id="transactionChange">8.3%</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Properties Listed</div>
+                <div class="kpi-value" id="propertiesListed">0</div>
+                <div class="kpi-change positive">
+                    <span>↑</span>
+                    <span id="propertiesChange">15.2%</span>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-label">Average Deal Size</div>
+                <div class="kpi-value" id="avgDealSize">$0</div>
+                <div class="kpi-change negative">
+                    <span>↓</span>
+                    <span id="dealSizeChange">3.1%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2 class="chart-title">Transaction Volume</h2>
+                <div class="time-selector">
+                    <button class="time-btn">1D</button>
+                    <button class="time-btn active">1W</button>
+                    <button class="time-btn">1M</button>
+                    <button class="time-btn">1Y</button>
+                </div>
+            </div>
+            <div class="chart-canvas" id="volumeChart">
+                <svg width="100%" height="100%" viewBox="0 0 800 300">
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1d9bf0;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#1d9bf0;stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                    <path id="chartPath" fill="url(#gradient)" stroke="#1d9bf0" stroke-width="2" />
+                    <g id="chartDots"></g>
+                </svg>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2 class="chart-title">Transaction Types</h2>
+            </div>
+            <div style="display: grid; gap: 20px;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Property Sales</span>
+                        <span id="salesPercent">45%</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="animated-bar" id="salesBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Rentals</span>
+                        <span id="rentalsPercent">30%</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="animated-bar" id="rentalsBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Mortgages</span>
+                        <span id="mortgagesPercent">25%</span>
+                    </div>
+                    <div class="bar-container">
+                        <div class="animated-bar" id="mortgagesBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="transactions-table">
+            <div class="table-header">
+                <h2 class="chart-title">Recent Transactions</h2>
+                <button class="time-btn active">View All</button>
+            </div>
+            <div class="table-content" id="transactionsList">
+                <!-- Transactions will be dynamically added here -->
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="chart-header">
+                <h2 class="chart-title">Transaction Heat Map</h2>
+            </div>
+            <div id="heatMap" style="position: relative; height: 300px;">
+                <!-- Heat points will be added dynamically -->
+            </div>
+            <div class="map-overlay">
+                <svg width="600" height="300" style="opacity: 0.3;">
+                    <rect x="50" y="50" width="500" height="200" fill="none" stroke="#2f3336" stroke-width="2"/>
+                    <line x1="300" y1="50" x2="300" y2="250" stroke="#2f3336" stroke-width="1"/>
+                    <line x1="50" y1="150" x2="550" y2="150" stroke="#2f3336" stroke-width="1"/>
+                    <text x="300" y="280" text-anchor="middle" fill="#71767b">San Francisco Bay Area</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="activity-feed">
+        <h3 style="margin-bottom: 15px;">Live Activity</h3>
+        <div id="activityFeed">
+            <!-- Activity items will be added dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // Animate KPIs
+        function animateValue(id, start, end, duration, prefix = '', suffix = '') {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const minTimer = 50;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            stepTime = Math.max(stepTime, minTimer);
+            const startTime = new Date().getTime();
+            const endTime = startTime + duration;
+            
+            function run() {
+                const now = new Date().getTime();
+                const remaining = Math.max((endTime - now) / duration, 0);
+                const value = Math.round(end - (remaining * range));
+                obj.innerHTML = prefix + value.toLocaleString() + suffix;
+                if (value < end) {
+                    setTimeout(run, stepTime);
+                }
+            }
+            
+            run();
+        }
+
+        // Initialize dashboard
+        window.addEventListener('load', () => {
+            // Animate KPIs
+            animateValue('totalRevenue', 0, 4567890, 2000, '$');
+            animateValue('activeTransactions', 0, 342, 1500);
+            animateValue('propertiesListed', 0, 1247, 1800);
+            animateValue('avgDealSize', 0, 785000, 2000, '$');
+
+            // Animate progress bars
+            setTimeout(() => {
+                document.getElementById('salesBar').style.width = '45%';
+                document.getElementById('rentalsBar').style.width = '30%';
+                document.getElementById('mortgagesBar').style.width = '25%';
+            }, 500);
+
+            // Generate chart data
+            generateChart();
+            
+            // Generate sample transactions
+            generateTransactions();
+            
+            // Start live updates
+            startLiveUpdates();
+            
+            // Generate heat map points
+            generateHeatMap();
+        });
+
+        function generateChart() {
+            const svg = document.querySelector('#volumeChart svg');
+            const width = 800;
+            const height = 300;
+            const points = [];
+            const dotsGroup = document.getElementById('chartDots');
+            
+            // Generate random data points
+            for (let i = 0; i < 20; i++) {
+                const x = (i / 19) * width;
+                const y = height - (Math.random() * 200 + 50);
+                points.push(`${x},${y}`);
+                
+                // Add dots
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', x);
+                circle.setAttribute('cy', y);
+                circle.setAttribute('r', '4');
+                circle.setAttribute('fill', '#1d9bf0');
+                circle.setAttribute('opacity', '0');
+                dotsGroup.appendChild(circle);
+                
+                // Animate dots
+                setTimeout(() => {
+                    circle.setAttribute('opacity', '1');
+                }, i * 100);
+            }
+            
+            // Create path
+            const path = `M0,${height} L${points.join(' L')} L${width},${height} Z`;
+            document.getElementById('chartPath').setAttribute('d', path);
+        }
+
+        function generateTransactions() {
+            const properties = [
+                '123 Market St, SF',
+                '456 Valencia Ave',
+                '789 Mission Blvd',
+                '321 Folsom St',
+                '654 Howard Ave',
+                '987 Brannan St'
+            ];
+            
+            const types = ['sale', 'rental', 'mortgage'];
+            const statuses = ['completed', 'processing', 'pending'];
+            const container = document.getElementById('transactionsList');
+            
+            for (let i = 0; i < 10; i++) {
+                const row = document.createElement('div');
+                row.className = 'transaction-row';
+                
+                const property = properties[Math.floor(Math.random() * properties.length)];
+                const amount = Math.floor(Math.random() * 900000 + 100000);
+                const type = types[Math.floor(Math.random() * types.length)];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                const time = new Date(Date.now() - Math.random() * 3600000).toLocaleTimeString();
+                
+                row.innerHTML = `
+                    <div class="transaction-property">${property}</div>
+                    <div>$${amount.toLocaleString()}</div>
+                    <div><span class="transaction-type type-${type}">${type.toUpperCase()}</span></div>
+                    <div><span class="status-badge status-${status}">${status.toUpperCase()}</span></div>
+                    <div style="color: #71767b;">${time}</div>
+                `;
+                
+                container.appendChild(row);
+            }
+        }
+
+        function startLiveUpdates() {
+            // Update activity feed
+            const activities = [
+                'New property listed in Downtown',
+                'Mortgage approved for $650,000',
+                'Property viewing scheduled',
+                'Offer accepted on Market St',
+                'New rental inquiry received',
+                'Transaction completed successfully'
+            ];
+            
+            setInterval(() => {
+                const feed = document.getElementById('activityFeed');
+                const activity = document.createElement('div');
+                activity.className = 'activity-item';
+                
+                const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+                const time = new Date().toLocaleTimeString();
+                
+                activity.innerHTML = `
+                    <div>${randomActivity}</div>
+                    <div class="activity-time">${time}</div>
+                `;
+                
+                feed.insertBefore(activity, feed.firstChild);
+                
+                // Remove old activities
+                if (feed.children.length > 10) {
+                    feed.removeChild(feed.lastChild);
+                }
+            }, 3000);
+            
+            // Update KPIs periodically
+            setInterval(() => {
+                const revenue = parseInt(document.getElementById('totalRevenue').textContent.replace(/[$,]/g, ''));
+                const newRevenue = revenue + Math.floor(Math.random() * 50000 + 10000);
+                document.getElementById('totalRevenue').textContent = '$' + newRevenue.toLocaleString();
+                
+                const transactions = parseInt(document.getElementById('activeTransactions').textContent);
+                const newTransactions = transactions + Math.floor(Math.random() * 5 + 1);
+                document.getElementById('activeTransactions').textContent = newTransactions;
+            }, 5000);
+        }
+
+        function generateHeatMap() {
+            const container = document.getElementById('heatMap');
+            
+            // Generate random heat points
+            for (let i = 0; i < 8; i++) {
+                const point = document.createElement('div');
+                point.className = 'heat-point';
+                point.style.left = Math.random() * 80 + 10 + '%';
+                point.style.top = Math.random() * 80 + 10 + '%';
+                point.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(point);
+            }
+        }
+
+        // Handle time selector buttons
+        document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Regenerate chart with new data
+                document.getElementById('chartDots').innerHTML = '';
+                generateChart();
+            });
+        });
+    </script>
+</body>
+</html>

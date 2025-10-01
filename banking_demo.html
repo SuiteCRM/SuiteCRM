@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBOL Banking Services Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .service-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .service-card.active {
+            background: #0066cc;
+            color: white;
+            border-color: #0066cc;
+        }
+        
+        .service-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .service-content {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .service-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        button:hover {
+            background: #0052a3;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .status-indicator.offline {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="status">COBOL Services Online</div>
+    
+    <div class="container">
+        <h1>COBOL Banking Services Demo</h1>
+        
+        <div class="service-grid">
+            <div class="service-card active" onclick="showService('card-validator')">
+                <div class="service-icon">💳</div>
+                <h3>Card Validator</h3>
+                <p>Validate credit card numbers</p>
+            </div>
+            
+            <div class="service-card" onclick="showService('loan-calculator')">
+                <div class="service-icon">💰</div>
+                <h3>Loan Calculator</h3>
+                <p>Calculate loan payments</p>
+            </div>
+            
+            <div class="service-card" onclick="showService('account-verify')">
+                <div class="service-icon">🏦</div>
+                <h3>Account Verify</h3>
+                <p>Verify bank accounts</p>
+            </div>
+        </div>
+        
+        <!-- Card Validator -->
+        <div id="card-validator" class="service-content active">
+            <h2>Credit Card Validator</h2>
+            <form onsubmit="validateCard(event)">
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="4111 1111 1111 1111" maxlength="19" required>
+                </div>
+                <button type="submit">Validate Card</button>
+            </form>
+            <div id="cardResult" class="result"></div>
+        </div>
+        
+        <!-- Loan Calculator -->
+        <div id="loan-calculator" class="service-content">
+            <h2>Loan Payment Calculator</h2>
+            <form onsubmit="calculateLoan(event)">
+                <div class="form-group">
+                    <label for="loanAmount">Loan Amount ($)</label>
+                    <input type="number" id="loanAmount" placeholder="250000" required>
+                </div>
+                <div class="form-group">
+                    <label for="interestRate">Interest Rate (%)</label>
+                    <input type="number" id="interestRate" placeholder="4.5" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="loanTerm">Loan Term (years)</label>
+                    <input type="number" id="loanTerm" placeholder="30" required>
+                </div>
+                <button type="submit">Calculate Payment</button>
+            </form>
+            <div id="loanResult" class="result"></div>
+        </div>
+        
+        <!-- Account Verify -->
+        <div id="account-verify" class="service-content">
+            <h2>Bank Account Verification</h2>
+            <form onsubmit="verifyAccount(event)">
+                <div class="form-group">
+                    <label for="routingNumber">Routing Number</label>
+                    <input type="text" id="routingNumber" placeholder="123456789" maxlength="9" required>
+                </div>
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" placeholder="1234567890" required>
+                </div>
+                <button type="submit">Verify Account</button>
+            </form>
+            <div id="accountResult" class="result"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Check COBOL service status
+        async function checkStatus() {
+            try {
+                const response = await fetch('http://localhost:8080/health');
+                const status = document.getElementById('status');
+                if (response.ok) {
+                    status.textContent = 'COBOL Services Online';
+                    status.classList.remove('offline');
+                } else {
+                    status.textContent = 'COBOL Services Offline';
+                    status.classList.add('offline');
+                }
+            } catch (error) {
+                document.getElementById('status').textContent = 'COBOL Services Offline';
+                document.getElementById('status').classList.add('offline');
+            }
+        }
+        
+        // Show selected service
+        function showService(serviceId) {
+            // Update cards
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.service-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(serviceId).classList.add('active');
+        }
+        
+        // Validate credit card
+        async function validateCard(event) {
+            event.preventDefault();
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const result = document.getElementById('cardResult');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/validate-card', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cardNumber })
+                });
+                
+                const data = await response.json();
+                result.className = data.valid ? 'result success' : 'result error';
+                result.innerHTML = `
+                    <strong>${data.valid ? 'Valid Card' : 'Invalid Card'}</strong><br>
+                    Card Type: ${data.cardType || 'Unknown'}<br>
+                    ${data.message || ''}
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `<strong>Error:</strong> Unable to connect to COBOL service`;
+                result.style.display = 'block';
+            }
+        }
+        
+        // Calculate loan payment
+        async function calculateLoan(event) {
+            event.preventDefault();
+            const loanAmount = document.getElementById('loanAmount').value;
+            const interestRate = document.getElementById('interestRate').value;
+            const loanTerm = document.getElementById('loanTerm').value;
+            const result = document.getElementById('loanResult');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/calculate-loan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ loanAmount, interestRate, loanTerm })
+                });
+                
+                const data = await response.json();
+                result.className = 'result success';
+                result.innerHTML = `
+                    <strong>Loan Calculation Results</strong><br>
+                    Monthly Payment: $${data.monthlyPayment}<br>
+                    Total Interest: $${data.totalInterest}<br>
+                    Total Amount: $${data.totalAmount}
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `<strong>Error:</strong> Unable to connect to COBOL service`;
+                result.style.display = 'block';
+            }
+        }
+        
+        // Verify bank account
+        async function verifyAccount(event) {
+            event.preventDefault();
+            const routingNumber = document.getElementById('routingNumber').value;
+            const accountNumber = document.getElementById('accountNumber').value;
+            const result = document.getElementById('accountResult');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/verify-account', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ routingNumber, accountNumber })
+                });
+                
+                const data = await response.json();
+                result.className = data.valid ? 'result success' : 'result error';
+                result.innerHTML = `
+                    <strong>${data.valid ? 'Account Verified' : 'Invalid Account'}</strong><br>
+                    ${data.bankName ? `Bank: ${data.bankName}<br>` : ''}
+                    ${data.message || ''}
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.className = 'result error';
+                result.innerHTML = `<strong>Error:</strong> Unable to connect to COBOL service`;
+                result.style.display = 'block';
+            }
+        }
+        
+        // Format card number input
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+        
+        // Check status on load and periodically
+        checkStatus();
+        setInterval(checkStatus, 5000);
+    </script>
+</body>
+</html>

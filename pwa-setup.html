@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuiteCRM PWA Setup</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2c5aa0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CRM Mobile">
+    
+    <!-- Link to manifest -->
+    <link rel="manifest" href="/themes/MobileRealEstate/manifest.json">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="/themes/MobileRealEstate/images/icon-192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/themes/MobileRealEstate/images/icon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/themes/MobileRealEstate/images/icon-192.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="/themes/MobileRealEstate/images/icon-192.png">
+    
+    <!-- Splash screens for iOS -->
+    <link rel="apple-touch-startup-image" href="/themes/MobileRealEstate/images/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/themes/MobileRealEstate/images/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/themes/MobileRealEstate/images/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background-color: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #234a8c;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .icon-preview {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        
+        .icon-preview img {
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SuiteCRM PWA Setup Guide</h1>
+        
+        <div id="status" class="status info">
+            Checking PWA readiness...
+        </div>
+        
+        <div class="section">
+            <h2>PWA Installation</h2>
+            <p>This page helps you set up and test the Progressive Web App functionality for SuiteCRM.</p>
+            <button id="installBtn" style="display: none;">Install App</button>
+        </div>
+        
+        <div class="section">
+            <h2>Service Worker Status</h2>
+            <div id="swStatus">Checking...</div>
+            <button id="registerSW">Register Service Worker</button>
+            <button id="unregisterSW">Unregister Service Worker</button>
+        </div>
+        
+        <div class="section">
+            <h2>Required Setup in Your PHP Templates</h2>
+            <p>Add the following code to your main PHP template's <code>&lt;head&gt;</code> section:</p>
+            <pre><code>&lt;!-- PWA Meta Tags --&gt;
+&lt;meta name="theme-color" content="#2c5aa0"&gt;
+&lt;meta name="apple-mobile-web-app-capable" content="yes"&gt;
+&lt;meta name="apple-mobile-web-app-status-bar-style" content="default"&gt;
+&lt;meta name="apple-mobile-web-app-title" content="CRM Mobile"&gt;
+
+&lt;!-- Link to manifest --&gt;
+&lt;link rel="manifest" href="/themes/MobileRealEstate/manifest.json"&gt;
+
+&lt;!-- iOS Icons --&gt;
+&lt;link rel="apple-touch-icon" href="/themes/MobileRealEstate/images/icon-192.png"&gt;</code></pre>
+        </div>
+        
+        <div class="section">
+            <h2>Service Worker Registration Code</h2>
+            <p>Add this script before the closing <code>&lt;/body&gt;</code> tag:</p>
+            <pre><code>&lt;script&gt;
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/themes/MobileRealEstate/js/service-worker.js')
+            .then(registration => console.log('SW registered:', registration))
+            .catch(error => console.log('SW registration failed:', error));
+    });
+}
+&lt;/script&gt;</code></pre>
+        </div>
+        
+        <div class="section">
+            <h2>Generated Icons</h2>
+            <div class="icon-preview">
+                <img src="/themes/MobileRealEstate/images/icon-72.png" alt="72x72" width="72" height="72">
+                <div>72x72</div>
+            </div>
+            <div class="icon-preview">
+                <img src="/themes/MobileRealEstate/images/icon-192.png" alt="192x192" width="96" height="96">
+                <div>192x192</div>
+            </div>
+            <div class="icon-preview">
+                <img src="/themes/MobileRealEstate/images/icon-512.png" alt="512x512" width="128" height="128">
+                <div>512x512</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>Testing Checklist</h2>
+            <ul>
+                <li>✓ All icon sizes generated (72, 96, 128, 144, 152, 192, 384, 512)</li>
+                <li>✓ Manifest.json configured with correct paths</li>
+                <li>✓ Service worker created with offline support</li>
+                <li>✓ Offline.html page created</li>
+                <li>✓ Property placeholder image created</li>
+                <li>✓ Screenshot images generated</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Check if service worker is supported
+        const statusEl = document.getElementById('status');
+        const swStatusEl = document.getElementById('swStatus');
+        const installBtn = document.getElementById('installBtn');
+        
+        if ('serviceWorker' in navigator) {
+            statusEl.className = 'status success';
+            statusEl.textContent = 'Your browser supports PWA features!';
+            
+            // Check current service worker status
+            navigator.serviceWorker.getRegistration('/themes/MobileRealEstate/js/service-worker.js')
+                .then(registration => {
+                    if (registration) {
+                        swStatusEl.textContent = 'Service Worker is registered and ' + registration.active.state;
+                    } else {
+                        swStatusEl.textContent = 'Service Worker is not registered';
+                    }
+                });
+        } else {
+            statusEl.className = 'status error';
+            statusEl.textContent = 'Your browser does not support service workers';
+            swStatusEl.textContent = 'Not supported';
+        }
+        
+        // Register service worker
+        document.getElementById('registerSW').addEventListener('click', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/themes/MobileRealEstate/js/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                        swStatusEl.textContent = 'Service Worker registered successfully!';
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                        swStatusEl.textContent = 'Registration failed: ' + error.message;
+                    });
+            }
+        });
+        
+        // Unregister service worker
+        document.getElementById('unregisterSW').addEventListener('click', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration('/themes/MobileRealEstate/js/service-worker.js')
+                    .then(registration => {
+                        if (registration) {
+                            registration.unregister()
+                                .then(() => {
+                                    swStatusEl.textContent = 'Service Worker unregistered';
+                                });
+                        }
+                    });
+            }
+        });
+        
+        // PWA install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-block';
+        });
+        
+        installBtn.addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

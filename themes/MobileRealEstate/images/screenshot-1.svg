@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 720" width="540" height="720">
+  <!-- Phone frame -->
+  <rect width="540" height="720" fill="#f5f5f5" rx="30" ry="30"/>
+  <rect x="20" y="20" width="500" height="680" fill="#ffffff" rx="20" ry="20"/>
+  
+  <!-- Status bar -->
+  <rect x="20" y="20" width="500" height="60" fill="#2c5aa0" rx="20" ry="20"/>
+  <rect x="20" y="60" width="500" height="20" fill="#2c5aa0"/>
+  <text x="50" y="55" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">9:41 AM</text>
+  <text x="470" y="55" font-family="Arial, sans-serif" font-size="16" text-anchor="end" fill="#ffffff">100%</text>
+  
+  <!-- App header -->
+  <rect x="20" y="80" width="500" height="80" fill="#2c5aa0"/>
+  <text x="270" y="130" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#ffffff">Properties</text>
+  
+  <!-- Search bar -->
+  <rect x="40" y="180" width="460" height="50" fill="#f0f0f0" rx="25" ry="25"/>
+  <text x="60" y="210" font-family="Arial, sans-serif" font-size="16" fill="#999">Search properties...</text>
+  
+  <!-- Property cards -->
+  <g transform="translate(40, 250)">
+    <!-- Card 1 -->
+    <rect width="460" height="120" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="10" ry="10"/>
+    <rect x="10" y="10" width="100" height="100" fill="#e0e0e0" rx="5" ry="5"/>
+    <text x="125" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">123 Main Street</text>
+    <text x="125" y="55" font-family="Arial, sans-serif" font-size="14" fill="#666">3 bed, 2 bath • 1,850 sq ft</text>
+    <text x="125" y="75" font-family="Arial, sans-serif" font-size="16" fill="#2c5aa0" font-weight="bold">$425,000</text>
+    <text x="125" y="95" font-family="Arial, sans-serif" font-size="12" fill="#999">Listed 2 days ago</text>
+  </g>
+  
+  <g transform="translate(40, 390)">
+    <!-- Card 2 -->
+    <rect width="460" height="120" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="10" ry="10"/>
+    <rect x="10" y="10" width="100" height="100" fill="#e0e0e0" rx="5" ry="5"/>
+    <text x="125" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">456 Oak Avenue</text>
+    <text x="125" y="55" font-family="Arial, sans-serif" font-size="14" fill="#666">4 bed, 3 bath • 2,400 sq ft</text>
+    <text x="125" y="75" font-family="Arial, sans-serif" font-size="16" fill="#2c5aa0" font-weight="bold">$575,000</text>
+    <text x="125" y="95" font-family="Arial, sans-serif" font-size="12" fill="#999">Listed 1 week ago</text>
+  </g>
+  
+  <g transform="translate(40, 530)">
+    <!-- Card 3 -->
+    <rect width="460" height="120" fill="#ffffff" stroke="#e0e0e0" stroke-width="1" rx="10" ry="10"/>
+    <rect x="10" y="10" width="100" height="100" fill="#e0e0e0" rx="5" ry="5"/>
+    <text x="125" y="35" font-family="Arial, sans-serif" font-size="18" font-weight="bold">789 Pine Road</text>
+    <text x="125" y="55" font-family="Arial, sans-serif" font-size="14" fill="#666">2 bed, 1 bath • 1,200 sq ft</text>
+    <text x="125" y="75" font-family="Arial, sans-serif" font-size="16" fill="#2c5aa0" font-weight="bold">$325,000</text>
+    <text x="125" y="95" font-family="Arial, sans-serif" font-size="12" fill="#999">Listed 3 days ago</text>
+  </g>
+  
+  <!-- Bottom navigation -->
+  <rect x="20" y="660" width="500" height="40" fill="#ffffff"/>
+  <line x1="20" y1="660" x2="520" y2="660" stroke="#e0e0e0" stroke-width="1"/>
+</svg>
