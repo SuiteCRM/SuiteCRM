@@ -24,162 +24,162 @@
  * the words "Supercharged by SuiteCRM".
  */
 .oauth-navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .oauth-app-logo {
-    height:40px;
+  height:40px;
 }
 .oauth-codes-authorization-row {
-    display: flex;
-    align-content: center;
-    justify-content: center;
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
 .oauth-codes-authorization-col {
-    float:none;
-    padding:1.5em;
+  float:none;
+  padding:1.5em;
 }
 .oauth-container {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    background: #fff;
-    overflow: hidden;
-    margin-top: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fff;
+  overflow: hidden;
+  margin-top: 0;
 }
 .oauth-footer {
-    background: #fff;
+  background: #fff;
 }
 .oauth-header {
-    padding: 1em;
-    display: flex;
-    align-items: center;
+  padding: 1em;
+  display: flex;
+  align-items: center;
 }
 .oauth-logo {
-    height: 40px;
+  height: 40px;
 }
 .oauth-content {
-    padding: 2em;
-    padding-bottom: 1.5em;
+  padding: 2em;
+  padding-bottom: 1.5em;
 }
 .oauth-content-title {
-    margin-top: 0em;
+  margin-top: 0em;
 }
 .oauth-user {
-    font-size: 1.2em;
-    color: white;
-    display: flex;
-    align-items: center;
+  font-size: 1.2em;
+  color: white;
+  display: flex;
+  align-items: center;
 }
 .oauth-user-icon {
-    display: flex;
-    align-items: center;
-    margin-right: 0.5em;
+  display: flex;
+  align-items: center;
+  margin-right: 0.5em;
 }
 .oauth-user-name {
-    display: flex;
-    align-items: center;
-    vertical-align: middle;
-    font-weight: bold;
-    line-height: 1;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+  font-weight: bold;
+  line-height: 1;
 }
 .oauth-scopes ul {
-    margin: 0.5em 0 1em 1.5em;
-    padding: 0;
+  margin: 0.5em 0 1em 1.5em;
+  padding: 0;
 }
 .oauth-actions {
-    margin-top: 3em;
-    display: flex;
-    justify-content: center;
-    font-size: .9em
+  margin-top: 3em;
+  display: flex;
+  justify-content: center;
+  font-size: .9em
 }
 .oauth-client-info {
-    display: flex;
-    justify-content: start;
-    margin-bottom: 2em;
+  display: flex;
+  justify-content: start;
+  margin-bottom: 2em;
 }
 .oauth-client-info-icon {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .oauth-client-info-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 .oauth-client-info-description {
-    color: #555;
+  color: #555;
 }
 .oauth-grants-title {
-    margin-bottom: 0.8em;
+  margin-bottom: 0.8em;
 }
 .oauth-grant {
-    display: flex;
-    justify-content: start;
+  display: flex;
+  justify-content: start;
 }
 .oauth-grant:not(:last-child) {
-    margin-bottom: 0.8em;
+  margin-bottom: 0.8em;
 }
 .oauth-grant-icon {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 .oauth-grant-title {
-    font-weight: bold;
+  font-weight: bold;
 }
 .oauth-grant-description {
-    color: #555;
-    font-size: 0.9em;
+  color: #555;
+  font-size: 0.9em;
 }
 .oauth-footer-redirect {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 .oauth-info {
-    font-size: 90%;
-    margin-top: .5em;
-    color: slategray;
+  font-size: 90%;
+  margin-top: .5em;
+  color: slategray;
 }
 .oauth-footer-redirect {
-    margin-top: 0.5em;
-    font-size: 0.9em;
-    color: #555;
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  color: #555;
 }
 .oauth-redirect-url {
-    font-family: monospace;
-    word-break: break-all;
-    margin-top: 0.2em;
-    font-weight: bold;
+  font-family: monospace;
+  word-break: break-all;
+  margin-top: 0.2em;
+  font-weight: bold;
 }
 
 .oauth-page-footer {
-    position: relative !important;
+  position: relative !important;
 }
 
 .fill-dark svg g {
-    fill: black !important;
+  fill: black !important;
 }
 
 .stroke-dark  svg g {
-    stroke: black !important;
+  stroke: black !important;
 }
-.stroke-white  svg g {
-    stroke: white !important;
+.stroke-white svg g {
+  stroke: white !important;
 }
 .text-strong {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 
 @media (min-height: 400px) and (max-height: 649px) {
-    .oauth-page-footer {
-        position: relative !important;
-    }
+  .oauth-page-footer {
+    position: relative !important;
+  }
 }
 
 @media (min-height: 650px) {
-    .oauth-page-footer {
-        position: absolute !important;
-    }
+  .oauth-page-footer {
+    position: absolute !important;
+  }
 }
 

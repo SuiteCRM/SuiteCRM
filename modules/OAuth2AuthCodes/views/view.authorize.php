@@ -35,7 +35,7 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Api\V8\OAuth2\Entity\UserEntity;
 use Slim\App;
 
-require_once 'modules/OAuth2AuthCodes/services/OAuthCodeGrantManager.php';
+require_once get_custom_file_if_exists('modules/OAuth2AuthCodes/services/OAuthCodeGrantManager.php');
 
 /**
 * Class Oauth2AuthCodesViewAuthorize
@@ -111,8 +111,6 @@ class Oauth2AuthCodesViewAuthorize extends SugarView
         echo SugarThemeRegistry::current()->getJS();
         echo SugarThemeRegistry::current()->getCSS();
         echo '<link rel="stylesheet" type="text/css" media="all" href="' . getJSPath('modules/Users/login.css') . '">';
-
-        $sugar_smarty->assign('cssStyles', get_custom_file_contents('modules/OAuth2AuthCodes/css/style.css'));
 
         $sugar_smarty->assign('oauth2_authcode_logout', strpos($_SERVER['HTTP_REFERER'], 'action=Login') !== false);
         $sugar_smarty->assign('oauth2_authcode_hash', $hash);
