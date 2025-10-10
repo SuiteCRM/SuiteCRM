@@ -393,7 +393,7 @@ function get_sugar_config_defaults(): array
         'email_default_editor' => 'html',
         'email_default_client' => 'sugar',
         'email_default_delete_attachments' => true,
-        'email_warning_notifications' => true,
+        'email_warning_notifications' => false,
         'email_enable_auto_send_opt_in' => false,
         'email_enable_confirm_opt_in' => SugarEmailAddress::COI_STAT_DISABLED,
         'filter_module_fields' => [
