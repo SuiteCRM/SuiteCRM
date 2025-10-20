@@ -3581,7 +3581,7 @@ class SugarBean
             && isset($sugar_config['securitysuite_filter_user_list'])
             && $sugar_config['securitysuite_filter_user_list']
         ) {
-            $groupWhere = SecurityGroup::getGroupUsersWhere($user->id);
+            $groupWhere = SecurityGroup::getGroupUsersWhere($user->id, $this->table_name);
             $conditions['group'] = $groupWhere;
         } elseif ($this->bean_implements('ACL') && ACLController::requireSecurityGroup($this->module_dir, $view)) {
             $ownerWhere = $this->getOwnerWhere($user->id);
