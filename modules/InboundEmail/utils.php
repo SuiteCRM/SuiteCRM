@@ -90,6 +90,10 @@ function getUserSignature(
         $owner = BeanFactory::getBean('Users', $createdBy);
     }
 
+    if (!$owner || $owner->id === null) {
+        return '';
+    }
+
     $defaultSignatureId = $owner->getPreference('signature_default') ?? '';
 
     $isEditView = $view === 'EditView' || $view === 'MassUpdate' || $view === 'QuickCreate' || $view === 'ConvertLead';

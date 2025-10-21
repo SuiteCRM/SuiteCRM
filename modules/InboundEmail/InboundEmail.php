@@ -6946,6 +6946,10 @@ class InboundEmail extends SugarBean
         /** @var User $owner */
         $owner = BeanFactory::getBean('Users', $createdBy);
 
+        if (!$owner || $owner->id === null) {
+            return;
+        }
+
         $emailSignatures = $owner->getPreference('account_signatures', 'Emails') ?? '';
         $emailSignatures = sugar_unserialize(base64_decode($emailSignatures));
 
