@@ -5491,7 +5491,7 @@ class InboundEmail extends SugarBean
             ////	ASSIGN APPROPRIATE ATTRIBUTES TO NEW EMAIL OBJECT
             // handle UTF-8/charset encoding in the ***headers***
 
-            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject));
+            $email->name = purify_html($this->handleMimeHeaderDecode($header->subject));
             $email->type = 'inbound';
             if (!empty($unixHeaderDate)) {
                 $email->date_sent_received = $timedate->asUser($unixHeaderDate);
