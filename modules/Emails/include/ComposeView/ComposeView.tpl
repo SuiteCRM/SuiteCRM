@@ -48,6 +48,7 @@
     <input type="hidden" name="record" value="{$RECORD}">
     <input type="hidden" name="type" value="out">
     <input type="hidden" name="send" value="1">
+    <input type="hidden" name="to_pdf" value="1">
     <input type="hidden" name="return_module" value="{$RETURN_MODULE}">
     <input type="hidden" name="return_action" value="{$RETURN_ACTION}">
     <input type="hidden" name="return_id" value="{$RETURN_ID}">
