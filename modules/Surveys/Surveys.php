@@ -156,6 +156,10 @@ class Surveys extends Basic
         foreach ($_REQUEST['survey_questions_names'] as $key => $val) {
             if (!empty($_REQUEST['survey_questions_ids'][$key])) {
                 $question = BeanFactory::getBean('SurveyQuestions', $_REQUEST['survey_questions_ids'][$key]);
+                if ($_REQUEST['survey_questions_deleted'][$key]) {
+                    $question->mark_deleted($question->id);
+                    continue;
+                }
             } else {
                 $question = BeanFactory::newBean('SurveyQuestions');
             }
@@ -165,11 +169,11 @@ class Surveys extends Basic
             $question->survey_id = $this->id;
             $question->deleted = $_REQUEST['survey_questions_deleted'][$key];
             $question->save();
-            if (!empty($_REQUEST['survey_questions_options'][$key])) {
+            if (!empty($_REQUEST['survey_question_options'][$key])) {
                 $this->saveOptions(
-                    $_REQUEST['survey_questions_options'][$key],
-                    $_REQUEST['survey_questions_options_id'][$key],
-                    $_REQUEST['survey_questions_options_deleted'][$key],
+                    $_REQUEST['survey_question_options'][$key],
+                    $_REQUEST['survey_question_options_id'][$key],
+                    $_REQUEST['survey_question_options_deleted'][$key],
                     $question->id
                 );
             }
@@ -224,5 +228,24 @@ class Surveys extends Basic
         }
 
         return "Submit";
+    }
+
+    public function mark_deleted($id)
+    {
+        // If the survey is deleted and it doesn't have any response, the questions and the question options should be deleted.
+        // If the survey has any response then won't delete anything else (although the survey parent record is deleted) because
+        // questions and question options can still be accessed through survey responses and question responses.
+        if (!$this->get_linked_beans('surveys_surveyresponses')) {
+            $questionBeans = $this->get_linked_beans('surveys_surveyquestions');
+            foreach ($questionBeans as $questionBean) {
+                $optionQuestionBeans = $questionBean->get_linked_beans('surveyquestions_surveyquestionoptions');
+                foreach ($optionQuestionBeans as $optionQuestionBean) {
+                    $optionQuestionBean->mark_deleted($optionQuestionBean->id);
+                }
+                $questionBean->mark_deleted($questionBean->id);
+            }
+        }
+
+        parent::mark_deleted($id);
     }
 }
