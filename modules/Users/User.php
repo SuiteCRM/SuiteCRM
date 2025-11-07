@@ -1513,6 +1513,7 @@ EOQ;
             $reports_to_self = 0;
             $check_user = $this->reports_to_id;
             $already_seen_list = array();
+            $check_user_previous = $check_user;            
             while (!empty($check_user)) {
                 if (isset($already_seen_list[$check_user])) {
                     // This user doesn't actually report to themselves
@@ -1528,12 +1529,15 @@ EOQ;
                 $query = "SELECT reports_to_id FROM users WHERE id='" . $this->db->quote($check_user) . "'";
                 $result = $this->db->query($query, true, "Error checking for reporting-loop");
                 $row = $this->db->fetchByAssoc($result);
+                $check_user_previous = $check_user;
                 $check_user = $row['reports_to_id'];
             }
 
             if ($reports_to_self == 1) {
-                $this->error_string .= $mod_strings['ERR_REPORT_LOOP'];
-                $verified = false;
+                if ($_REQUEST["module"] == 'Import') {
+                    echo(translate('ERR_REPORT_LOOP', "Users") . "<br><br>" . $check_user_previous . $mod_strings['LBL_ERROR_CYCLIC_DEPENDENCY'] . $check_user);
+                    return true;
+                }
             }
         }
 
