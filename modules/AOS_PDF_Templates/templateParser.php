@@ -90,9 +90,9 @@ class templateParser
                     $repl_arr[$key . "_" . $fieldName] = (string)$focus->$fieldName;
                 } elseif ($field_def['type'] == 'bool') {
                     if ($focus->{$fieldName} == "1") {
-                        $repl_arr[$key . "_" . $fieldName] = "true";
+                        $repl_arr[$key . "_" . $fieldName] = translate('checkbox_dom', '', '1');
                     } else {
-                        $repl_arr[$key . "_" . $fieldName] = "false";
+                        $repl_arr[$key . "_" . $fieldName] = translate('checkbox_dom', '', '2');
                     }
                 } elseif ($field_def['type'] == 'image') {
                     $secureLink = $sugar_config['site_url'] . '/' . "public/" . $focus->id . '_' . $fieldName;
