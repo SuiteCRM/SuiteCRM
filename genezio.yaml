@@ -1,0 +1,10 @@
+frontend:
+    path: ./
+    publish: build
+    scripts:
+        build: npm run build
+        deploy: ""
+    subdomain: SuiteCRM
+name: SuiteCRM
+region: us-east-1
+yamlVersion: 2
