@@ -69,10 +69,6 @@ $viewdefs[$module_name]['EditView'] = [
             [
                 'name' => 'is_confidential',
             ],
-            4 =>
-            [
-                'name' => 'assigned_user_name',
-            ],
         ],
     ],
 ];
