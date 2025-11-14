@@ -1,5 +1,4 @@
 <?php
-
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -39,59 +38,29 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+// this entry-point requires the presence of a matching token file in the cache directory
+// to signal we're being called from the right place
+// See usage example in lib\Utility\Diagnostics.php, function QueryWebServerFromCLI()
+
 use SuiteCRM\Utility\Diagnostics;
 
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-global $mod_strings;
-global $app_list_strings;
-global $app_strings;
-global $theme;
+$diags = new Diagnostics();
 
-global $current_user;
-
-if (!is_admin($current_user)) {
-    sugar_die("Unauthorized access to administration.");
-}
-if (isset($GLOBALS['sugar_config']['hide_admin_diagnostics']) && $GLOBALS['sugar_config']['hide_admin_diagnostics']) {
-    sugar_die("Unauthorized access to diagnostic tool.");
+if (!$diags->checkToken()) {
+    die('No valid token');
 }
 
-$db = DBManagerFactory::getInstance();
-if (empty($db)) {
-    $db = DBManagerFactory::getInstance();
-}
+// from this point on the call is considered valid, but remember we're running unauthenticated
+// so only execute specific actions where that is acceptable, i.e., what you would allow
+// to be done by someone who can write a file in our cache directory, run Robo commands, etc.
 
-echo getClassicModuleTitle(
-    "Administration",
-    array(
-            "<a href='index.php?module=Administration&action=index'>{$mod_strings['LBL_MODULE_NAME']}</a>",
-           translate('LBL_DIAGNOSTIC_TITLE')
-           ),
-    false
-        );
-
-global $currentModule;
-
-$GLOBALS['log']->info("Administration Diagnostic");
-
-$sugar_smarty = new Sugar_Smarty();
-$sugar_smarty->assign("MOD", $mod_strings);
-$sugar_smarty->assign("APP", $app_strings);
-
-$sugar_smarty->assign("RETURN_MODULE", "Administration");
-$sugar_smarty->assign("RETURN_ACTION", "index");
-$sugar_smarty->assign("DB_NAME", $db->dbName);
-
-$sugar_smarty->assign("MODULE", $currentModule);
-$sugar_smarty->assign("PRINT_URL", "index.php?".$GLOBALS['request_string']);
+$ret = $diags->buildQuickReport(true);
+header('Content-Type: application/json');
+echo json_encode($ret);
 
 
-$sugar_smarty->assign("ADVANCED_SEARCH_PNG", SugarThemeRegistry::current()->getImage('advanced_search', 'border="0"', null, null, '.gif', $app_strings['LNK_ADVANCED_FILTER']));
-$sugar_smarty->assign("BASIC_SEARCH_PNG", SugarThemeRegistry::current()->getImage('basic_search', 'border="0"', null, null, '.gif', $app_strings['LNK_BASIC_FILTER']));
 
-$sugar_smarty->assign("QuickReport", (new SuiteCRM\Utility\Diagnostics)->buildQuickReport());
-
-$sugar_smarty->display("modules/Administration/Diagnostic.tpl");
