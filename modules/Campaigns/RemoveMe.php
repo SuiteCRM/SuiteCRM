@@ -43,7 +43,6 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 
-
 require_once('modules/Campaigns/utils.php');
 
 if (!empty($_REQUEST['remove'])) {
@@ -53,8 +52,29 @@ if (!empty($_REQUEST['from'])) {
     clean_string($_REQUEST['from'], "STANDARD");
 }
 
-if (!empty($_REQUEST['identifier'])) {
-    global $beanFiles, $beanList, $current_user;
+/*if the request is a POST request, and parameters are as expected, then it is a one click unsubscribe request.
+ *
+ * Must handle this POST format:
+POST /index.php?entryPoint=removeme&identifier=UUID HTTP/1.1
+   Host: crm.domain.tld
+   Content-Type: application/x-www-form-urlencoded
+   Content-Length: 26
+
+   List-Unsubscribe=One-Click
+ */
+function isValidUUID( $uuid ) {
+    // UUID is a 36-character string,  8-4-4-4-12 hex digits, e.g.:  550e8400-e29b-41d4-a716-446655440000
+    return (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $uuid) === 1);
+}
+$isContentType =  (!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/x-www-form-urlencoded');
+$isOneClickUnsubscribe = (($_SERVER['REQUEST_METHOD'] === 'POST') && !empty($_REQUEST['List-Unsubscribe']) && ($_REQUEST['List-Unsubscribe'] == 'One-Click'));
+$isRemoveMe = ((!empty($_REQUEST['entryPoint']) && ($_REQUEST['entryPoint']) == 'removeme'));
+$isIdentifier = ((!empty($_REQUEST['identifier'])) && isValidUUID($_REQUEST['identifier']));
+$isPOST = ($_SERVER['REQUEST_METHOD'] === 'POST');
+
+// Handle a typical "POST removeme Identifier OneClickUnsubscribe" opt-out.
+if ( $isOneClickUnsubscribe && $isRemoveMe && $isIdentifier ) {
+    global $beanFiles, $beanList, $current_user, $log, $current_language;
 
     //user is most likely not defined, retrieve admin user so that team queries are bypassed
     if (empty($current_user) || empty($current_user->id)) {
@@ -63,10 +83,8 @@ if (!empty($_REQUEST['identifier'])) {
     }
     
     $keys=log_campaign_activity($_REQUEST['identifier'], 'removed');
-    global $current_language;
     $mod_strings = return_module_language($current_language, 'Campaigns');
 
-    
     if (!empty($keys) && $keys['target_type'] == 'Users') {
         //Users cannot opt out of receiving emails, print out warning message.
         echo $mod_strings['LBL_USERS_CANNOT_OPTOUT'];
@@ -89,7 +107,7 @@ if (!empty($_REQUEST['identifier'])) {
 
         //no opt out for users.
         if (preg_match('/^[0-9A-Za-z\-]*$/', (string) $id) && $module != 'Users') {
-            //record this activity in the campaing log table..
+            //record this activity in the campaign log table..
             $query = "UPDATE email_addresses SET email_addresses.opt_out = 1 WHERE EXISTS(SELECT 1 FROM email_addr_bean_rel ear WHERE ear.bean_id = '$id' AND ear.deleted=0 AND email_addresses.id = ear.email_address_id)";
             $status=$db->query($query);
             if ($status) {
@@ -99,5 +117,32 @@ if (!empty($_REQUEST['identifier'])) {
     }
     //Print Confirmation Message.
     echo $mod_strings['LBL_ELECTED_TO_OPTOUT'];
+}
+
+if (!$isPOST &&  $isRemoveMe && $isIdentifier)
+{
+    // output simple html page containing an Unsubscribe button, which sends the Unsubscribe request back to here, the  "removeme" entryPoint.
+    $identifier = $_REQUEST['identifier'];
+    $UnsubscribePOSTURL = $_SERVER['APP_URL'].$_SERVER['REQUEST_URI']; // request URL should contain the query parameters ?entryPoint=removeme&identifier=xxxxxxxxxxx
+    // TODO: localize Title and Unsubscribe Label on button.
+    $OptOutOfEmails = "Opt Out of receiving Emails from this Campaign or Newsletter?";
+    $unsubscribe = "Unsubscribe";   // button label.
+    // TODO: If possible, display the public facing name of the Campaign or Newsletter on the page.
+    // TODO: Use a .tpl file (and the organization-uploaded graphic logo) instead of hardcoding the HTML.
+    echo("<html xml:lang='en' lang='en'>" .
+        "<head>" .
+        "<meta charset='UTF-8'>" .
+        "<title>$OptOutOfEmails</title>" .
+        "</head>" .
+        "<body>" .
+        "<h1>" . $OptOutOfEmails . "</h1><br/>" .
+        "<form method='POST' action='$UnsubscribePOSTURL'>" .
+        "<input type='hidden' name='entryPoint' value='removeme'>" .
+        "<input type='hidden' name='identifier' value='$identifier'>" .
+        "<input type='hidden' name='List-Unsubscribe' value='One-Click'>" .
+        "<input type='submit' value='$unsubscribe'>" .
+        "</form>" .
+        "</body>" .
+        "</html>");
 }
 sugar_cleanup();
