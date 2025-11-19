@@ -57,13 +57,13 @@ $popupMeta = [
             'allowed_grant_type',
         ],
     'listviewdefs' => [
-        'ID' => [
-            'label' => 'LBL_ID',
+        'NAME' => [
+            'label' => 'LBL_NAME',
             'default' => true,
             'link' => true,
         ],
-        'NAME' => [
-            'label' => 'LBL_NAME',
+        'ID' => [
+            'label' => 'LBL_ID',
             'default' => true,
             'link' => true,
         ],
