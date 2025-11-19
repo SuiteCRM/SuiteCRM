@@ -60,7 +60,7 @@
 	<input id="cancel_btn_48516" type="submit" name="button" class="button"
 		title="{APP.LBL_CANCEL_BUTTON_TITLE}"
 		accessKey="{APP.LBL_CANCEL_BUTTON_KEY}"
-		onclick="this.form.action.value='{RETURN_ACTION}'; this.form.module.value='{RETURN_MODULE}'; this.form.record.value='{RETURN_ID}'"
+		onclick="window.location.href='index.php?module={RETURN_MODULE}&action={RETURN_ACTION}&record={RETURN_ID}';return false;"
 		value="  {APP.LBL_CANCEL_BUTTON_LABEL}  "
 	/>
 </td>
