@@ -32,12 +32,23 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $module_name = 'OAuth2AuthCodes';
 
 $searchFields[$module_name] = [
-    'id' =>
-        [
-            'query_type' => 'default',
-        ],
-    'name' =>
-        [
-            'query_type' => 'default',
-        ],
+    'id' => ['query_type' => 'default'],
+    'name' => ['query_type' => 'default'],
+    'oauth2client_name' => ['query_type' => 'default'],
+    'assigned_user_name' => ['query_type' => 'default'],
+    'range_auth_code_expires' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'start_range_auth_code_expires' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
+    'end_range_auth_code_expires' => [
+        'query_type' => 'default',
+        'enable_range_search' => true,
+        'is_date_field' => true,
+    ],
 ];

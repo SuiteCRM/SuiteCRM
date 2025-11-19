@@ -67,6 +67,8 @@ $dictionary['OAuth2AuthCodes'] = [
             'reportable' => false,
             'api-visible' => false,
             'inline_edit' => false,
+            'enable_range_search' => true,
+            'options' => 'date_range_search_dom',
         ],
         'auth_code' => [
             'name' => 'auth_code',

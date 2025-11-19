@@ -32,35 +32,45 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $module_name = 'OAuth2AuthCodes';
 
 $searchdefs[$module_name] = [
-    'templateMeta' =>
-        [
-            'maxColumns' => '3',
-            'maxColumnsBasic' => '4',
-            'widths' =>
-                [
-                    'label' => '10',
-                    'field' => '30',
-                ],
+    'templateMeta' => [
+        'maxColumns' => '3',
+        'maxColumnsBasic' => '4',
+        'widths' => ['label' => '10', 'field' => '30',],
+    ],
+    'layout' => [
+        'basic_search' => [
+            'oauth2client_name' => [
+                'name' => 'oauth2client_name',
+                'default' => true,
+                'width' => '10%',
+            ],
+            'assigned_user_name' => [
+                'name' => 'assigned_user_name',
+                'default' => true,
+                'width' => '10%',
+            ],
+            'auth_code_expires' => [
+                'name' => 'auth_code_expires',
+                'default' => true,
+                'width' => '10%',
+            ],
         ],
-    'layout' =>
-        [
-            'basic_search' =>
-                [
-                    'name' =>
-                        [
-                            'id' => 'name',
-                            'default' => true,
-                            'width' => '10%',
-                        ],
-                ],
-            'advanced_search' =>
-                [
-                    'name' =>
-                        [
-                            'name' => 'name',
-                            'default' => true,
-                            'width' => '10%',
-                        ],
-                ],
+        'advanced_search' => [
+            'oauth2client_name' => [
+                'name' => 'oauth2client_name',
+                'default' => true,
+                'width' => '10%',
+            ],
+            'assigned_user_name' => [
+                'name' => 'assigned_user_name',
+                'default' => true,
+                'width' => '10%',
+            ],
+            'auth_code_expires' => [
+                'name' => 'auth_code_expires',
+                'default' => true,
+                'width' => '10%',
+            ],
         ],
+    ],
 ];
