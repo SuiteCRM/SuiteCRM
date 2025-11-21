@@ -574,4 +574,97 @@ class SugarWebServiceUtilv4 extends SugarWebServiceUtilv3_1
 
         return $results;
     }
+
+    /**
+     * Validate fields
+     * @param array $name_value_list
+     * @param string $module
+     * @return bool
+     */
+    public function validateFields(array $name_value_list, string $module): bool {
+        global $log;
+
+        $bean = BeanFactory::newBean($module);
+        $errors = [];
+        foreach ($name_value_list as $field => $value) {
+
+            $fieldName = $field;
+            $fieldValue = $value;
+
+            if (is_array($value)) {
+                $fieldName = $value['name'];
+                $fieldValue = $value['value'];
+            }
+
+            if (empty($fieldValue)) {
+                continue;
+            }
+
+            if ($fieldName === 'id' || $this->isIdField($bean, $fieldName)){
+                $error = $this->validateId($fieldName, $fieldValue);
+
+                if (!empty($error)) {
+                    $errors[] = $error;
+                }
+            }
+        }
+
+        if (empty($errors)) {
+            return true;
+        }
+
+        foreach ($errors as $error) {
+            $log->fatal('V4 API field validation | Error: ' . $error);
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if field is of id type
+     *
+     * @param SugarBean $bean
+     * @param mixed $field
+     * @return bool
+     */
+    public function isIdField(SugarBean $bean, $field): bool {
+        $fieldDefinition = $bean->field_defs[$field] ?? [];
+        $fieldType = $fieldDefinition ?? '';
+
+        $isId = false;
+        if ($fieldType === 'id') {
+            $isId = true;
+        }
+
+        return $isId;
+    }
+
+    /**
+     * Check if it is a valid id field
+     *
+     * @param SugarBean $bean
+     * @param string $field
+     * @param mixed $valud
+     * @return string
+     */
+    public function validateId(string $field, $value): string {
+
+        if (!is_string($value) && !is_numeric($value)) {
+            return "Invalid id field '$field'. Value not a string nor a number";
+        }
+
+        if (empty($value)) {
+            return '';
+        }
+
+        $idValidator = new \SuiteCRM\Utility\SuiteValidator();
+        if ($idValidator->isValidId($value)) {
+            return '';
+        }
+
+        $pattern = $idValidator->getIdValidationPattern();
+
+        return "Invalid id field '$field' with value '$value'. Id must follow pattern '$pattern'";
+    }
+
 }
