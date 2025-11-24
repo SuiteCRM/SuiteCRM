@@ -39,7 +39,6 @@ class OAuth2AuthCodesViewList extends ViewList
 
         # Hide Quick Edit Pencil
         $this->lv->export = false;
-        $this->lv->select = false;
         $this->lv->showMassupdateFields = false;
     }
 }
