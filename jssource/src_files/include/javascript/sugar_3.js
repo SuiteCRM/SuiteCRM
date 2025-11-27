@@ -2998,7 +2998,8 @@ SUGAR.util = function () {
                   async: false,
                   method: 'GET'
                 }).done(function(responseText) {
-                  SUGAR.util.globalEval(responseText);
+                  // Fix #8963 - Script tags evaluated twice when AJAX ui enabled
+                  // SUGAR.util.globalEval(responseText);
                 });
               })(srcResult);
             }
