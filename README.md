@@ -4,7 +4,9 @@
 
 # SuiteCRM 7.14.8
 
-[![Build Status](https://travis-ci.org/salesagility/SuiteCRM.svg?branch=hotfix)](https://travis-ci.org/salesagility/SuiteCRM)
+[![Github Actions Status](https://github.com/salesagility/SuiteCRM/workflows/GitHub%20CI/badge.svg)](https://github.com/salesagility/SuiteCRM/actions?query=workflow%3A%22GitHub+CI%22)
+[![GitHub Super-Linter](https://github.com/salesagility/SuiteCRM/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![Build Status](https://travis-ci.com/salesagility/SuiteCRM.svg?branch=hotfix)](https://travis-ci.com/salesagility/SuiteCRM)
 [![codecov](https://codecov.io/gh/salesagility/SuiteCRM/branch/hotfix/graph/badge.svg)](https://codecov.io/gh/salesagility/SuiteCRM/branch/hotfix)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/suitecrm/Lobby)
 [![LICENSE](https://img.shields.io/github/license/suitecrm/suitecrm.svg)](https://github.com/salesagility/suitecrm/blob/hotfix/LICENSE.txt)
@@ -68,7 +70,3 @@ SuiteCRM is an open-source project. If you require help with support then please
 ### License [![AGPLv3](https://img.shields.io/github/license/suitecrm/suitecrm.svg)](./LICENSE.txt)
 
 SuiteCRM is published under the AGPLv3 license.
-
-
-
-
