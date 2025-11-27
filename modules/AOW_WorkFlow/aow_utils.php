@@ -251,11 +251,9 @@ function getModuleRelationships($module, $view='EditView', $value = '')
                     } else {
                         $sort_fields[$name] = $relModuleName.' : '. $name;
                     }
-                    if ($arr['type'] == 'relate' && isset($arr['id_name']) && $arr['id_name'] != '') {
-                        if (isset($fields[$arr['id_name']])) {
-                            unset($fields[$arr['id_name']]);
-                        }
-                    }
+                    if ($arr['type'] == 'link' && (strpos($arr['name'], '_ida') || strpos($arr['name'], '_idb'))  && isset($sort_fields[$arr['name']])) {
+                        unset($sort_fields[$arr['name']]);
+                    }  
                 }
             } //End loop.
             array_multisort($sort_fields, SORT_ASC, $sort_fields);
