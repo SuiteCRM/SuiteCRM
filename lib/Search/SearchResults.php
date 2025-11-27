@@ -281,7 +281,13 @@ class SearchResults
             }
             if (is_object($relId)) {
                 if (method_exists($relId, "getFocus")) {
-                    $relId = $relId->getFocus()->id;
+                    if (!$obj->load_relationship($link)) {
+                        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': Failed retrieving relationship data');
+                        return '';
+                    }
+                    $relatedBeans = $obj->$link->getBeans();
+                    $relatedBean = array_pop($relatedBeans);
+                    $relId = !($relatedBean) ? '' : $relatedBean->id;
                 } else {
                     $relId = null;
                 }
