@@ -121,10 +121,10 @@
 
                     {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
                         {*<!-- phone (version 1) -->*}
-                        <div class="col-xs-12 col-sm-8 detail-view-field{{if $inline_edit && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}} inlineEdit{{/if}}{{if isset($fields[$colData.field.name].type) && $fields[$colData.field.name].type == 'phone'}} phone{{/if}}" type="{{$fields[$colData.field.name].type}}" field="{{$fields[$colData.field.name].name}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
+                        <div class="col-xs-12 col-sm-8 detail-view-field{{if $inline_edit && empty($fields[$colData.field.name].validation && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}} inlineEdit{{/if}}{{if isset($fields[$colData.field.name].type) && $fields[$colData.field.name].type == 'phone'}} phone{{/if}}" type="{{$fields[$colData.field.name].type}}" field="{{$fields[$colData.field.name].name}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
                     {{else}}
                         {*<!-- phone (version 2) -->*}
-                        <div class="col-xs-12 col-sm-10 detail-view-field{{if $inline_edit && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}} inlineEdit{{/if}}{{if isset($fields[$colData.field.name].type) && $fields[$colData.field.name].type == 'phone'}} phone{{/if}}" type="{{$fields[$colData.field.name].type}}" field="{{$fields[$colData.field.name].name}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
+                        <div class="col-xs-12 col-sm-10 detail-view-field{{if $inline_edit && empty($fields[$colData.field.name].validation && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}} inlineEdit{{/if}}{{if isset($fields[$colData.field.name].type) && $fields[$colData.field.name].type == 'phone'}} phone{{/if}}" type="{{$fields[$colData.field.name].type}}" field="{{$fields[$colData.field.name].name}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
                     {{/if}}
 
                     {{if !empty($colData.field.name)}}
@@ -179,7 +179,7 @@
 
                     {{/if}}
 
-                        {{if $inline_edit && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}}
+                        {{if $inline_edit && empty($fields[$colData.field.name].validation && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}}
                         <div class="inlineEditIcon col-xs-hidden">
                             <span class="suitepicon suitepicon-action-edit"></span>
                         </div>
