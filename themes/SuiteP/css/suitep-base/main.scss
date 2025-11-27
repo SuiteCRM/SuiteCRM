@@ -137,3 +137,10 @@ a:hover {
   }
 }
 
+.text-wrap {
+  overflow-wrap: anywhere!important;
+}
+
+.module-title-text, .sugar_field {
+  overflow-wrap: anywhere;
+}
