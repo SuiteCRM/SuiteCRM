@@ -207,6 +207,9 @@ class actionCreateRecord extends actionBase
     {
         global $app_list_strings, $timedate;
 
+        //Use FixUpFormating to change date values to DB format when running from cron
+        $bean->fixUpFormatting();
+
         $record_vardefs = $record->getFieldDefinitions();
 
         if (isset($params['field'])) {
@@ -269,7 +272,7 @@ class actionCreateRecord extends actionBase
                                 if ($sign !== 'plus') {
                                     $amount = 0-$amount;
                                 }
-                                if ($dateToUse === 'now') {
+                                if ($dateToUse === 'now' || $dateToUse === 'today') {
                                     $value = $businessHours->addBusinessHours($amount);
                                 } elseif ($dateToUse === 'field') {
                                     $dateToUse = $params['field'][$key];
