@@ -256,7 +256,12 @@ class AOR_Report extends Basic
             foreach ($fields as $name => $att) {
                 $currency_id = isset($row[$att['alias'] . '_currency_id']) ? $row[$att['alias'] . '_currency_id'] : '';
 
-                if ($att['function'] != 'COUNT' && empty($att['format']) && !is_numeric($row[$name])) {
+                $isFieldTypeRelate = isFieldTypeRelate($att['module'], $att['field']);
+                $isFunctionCount = $att['function'] === 'COUNT';
+                $isFormatSet = !empty($att['format']);
+                $isValueNumeric = isset($row[$name]) && is_numeric($row[$name]);
+
+                if ($isFieldTypeRelate || !$isFunctionCount || !$isFormatSet || !$isValueNumeric) {
                     $row[$name] = trim(strip_tags(getModuleField(
                         $att['module'],
                         $att['field'],
@@ -805,7 +810,11 @@ class AOR_Report extends Basic
 
                     $currency_id = isset($row[$att['alias'] . '_currency_id']) ? $row[$att['alias'] . '_currency_id'] : '';
 
-                    if ($att['function'] == 'COUNT' || !empty($att['format'])) {
+                    $isFieldTypeRelate = isFieldTypeRelate($att['module'], $att['field']);
+                    $isFunctionCount = $att['function'] === 'COUNT';
+                    $isFormatSet = !empty($att['format']);
+
+                    if ((!$isFieldTypeRelate && $isFunctionCount) || $isFormatSet) {
                         $html .= $row[$name];
                     } else {
                         // Make sure the `{$module}_id` key exists on $row, to prevent PHP notices.
