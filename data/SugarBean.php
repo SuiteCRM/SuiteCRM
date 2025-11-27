@@ -3791,58 +3791,60 @@ class SugarBean
                 $selectedFields["$this->table_name.$field"] = true;
             }
 
-            if ($data['type'] != 'relate' && isset($data['db_concat_fields'])) {
-                $ret_array['select'] .= ", " . $this->db->concat($this->table_name, $data['db_concat_fields'])
-                    . " as $field";
-                $selectedFields[$this->db->concat($this->table_name, $data['db_concat_fields'])] = true;
-            }
-            //Custom relate field or relate fields built in module builder which have no link field associated.
-            if ($data['type'] == 'relate' && (isset($data['custom_module']) || isset($data['ext2']))) {
-                $joinTableAlias = 'jt' . $jtcount;
-                $relateJoinInfo = $this->custom_fields->getRelateJoin($data, $joinTableAlias, false);
-                $ret_array['select'] .= $relateJoinInfo['select'];
-                $ret_array['from'] .= $relateJoinInfo['from'];
-                //Replace any references to the relationship in the where clause with the new alias
-                $field_name = $relateJoinInfo['rel_table'] . '.' . !empty($data['name']) ? $data['name'] : 'name';
-                $where = preg_replace('/(^|[\s(])' . $field_name . '/', '${1}' . $relateJoinInfo['name_field'], $where);
-                $jtcount++;
-            }
-            //Parent Field
-            if ($data['type'] == 'parent') {
-                //See if we need to join anything by inspecting the where clause
-                $match = preg_match(
-                    '/(^|[\s(])parent_([a-zA-Z]+_?[a-zA-Z]+)_([a-zA-Z]+_?[a-zA-Z]+)\.name/',
-                    $where,
-                    $matches
-                );
-                if ($match) {
+            if(isset($data['type'])) {
+                if ($data['type'] != 'relate' && isset($data['db_concat_fields'])) {
+                    $ret_array['select'] .= ", " . $this->db->concat($this->table_name, $data['db_concat_fields'])
+                        . " as $field";
+                    $selectedFields[$this->db->concat($this->table_name, $data['db_concat_fields'])] = true;
+                }
+                //Custom relate field or relate fields built in module builder which have no link field associated.
+                if ($data['type'] == 'relate' && (isset($data['custom_module']) || isset($data['ext2']))) {
                     $joinTableAlias = 'jt' . $jtcount;
-                    $joinModule = $matches[2];
-                    $joinTable = $matches[3];
-                    $localTable = $this->table_name;
-                    if (!empty($data['custom_module'])) {
-                        $localTable .= '_cstm';
-                    }
-                    global $beanFiles, $beanList;
-                    require_once($beanFiles[$beanList[$joinModule]]);
-                    $rel_mod = new $beanList[$joinModule]();
-                    $nameField = "$joinTableAlias.name";
-                    if (isset($rel_mod->field_defs['name'])) {
-                        $name_field_def = $rel_mod->field_defs['name'];
-                        if (isset($name_field_def['db_concat_fields'])) {
-                            $nameField = $this->db->concat($joinTableAlias, $name_field_def['db_concat_fields']);
-                        }
-                    }
-                    $ret_array['select'] .= ", $nameField {$data['name']} ";
-                    $ret_array['from'] .= " LEFT JOIN $joinTable $joinTableAlias
-                        ON $localTable.{$data['id_name']} = $joinTableAlias.id";
+                    $relateJoinInfo = $this->custom_fields->getRelateJoin($data, $joinTableAlias, false);
+                    $ret_array['select'] .= $relateJoinInfo['select'];
+                    $ret_array['from'] .= $relateJoinInfo['from'];
                     //Replace any references to the relationship in the where clause with the new alias
-                    $where = preg_replace(
-                        '/(^|[\s(])parent_' . $joinModule . '_' . $joinTable . '\.name/',
-                        '${1}' . $nameField,
-                        $where
-                    );
+                    $field_name = $relateJoinInfo['rel_table'] . '.' . !empty($data['name']) ? $data['name'] : 'name';
+                    $where = preg_replace('/(^|[\s(])' . $field_name . '/', '${1}' . $relateJoinInfo['name_field'], $where);
                     $jtcount++;
+                }
+                //Parent Field
+                if ($data['type'] == 'parent') {
+                    //See if we need to join anything by inspecting the where clause
+                    $match = preg_match(
+                        '/(^|[\s(])parent_([a-zA-Z]+_?[a-zA-Z]+)_([a-zA-Z]+_?[a-zA-Z]+)\.name/',
+                        $where,
+                        $matches
+                    );
+                    if ($match) {
+                        $joinTableAlias = 'jt' . $jtcount;
+                        $joinModule = $matches[2];
+                        $joinTable = $matches[3];
+                        $localTable = $this->table_name;
+                        if (!empty($data['custom_module'])) {
+                            $localTable .= '_cstm';
+                        }
+                        global $beanFiles, $beanList;
+                        require_once($beanFiles[$beanList[$joinModule]]);
+                        $rel_mod = new $beanList[$joinModule]();
+                        $nameField = "$joinTableAlias.name";
+                        if (isset($rel_mod->field_defs['name'])) {
+                            $name_field_def = $rel_mod->field_defs['name'];
+                            if (isset($name_field_def['db_concat_fields'])) {
+                                $nameField = $this->db->concat($joinTableAlias, $name_field_def['db_concat_fields']);
+                            }
+                        }
+                        $ret_array['select'] .= ", $nameField {$data['name']} ";
+                        $ret_array['from'] .= " LEFT JOIN $joinTable $joinTableAlias
+                            ON $localTable.{$data['id_name']} = $joinTableAlias.id";
+                        //Replace any references to the relationship in the where clause with the new alias
+                        $where = preg_replace(
+                            '/(^|[\s(])parent_' . $joinModule . '_' . $joinTable . '\.name/',
+                            '${1}' . $nameField,
+                            $where
+                        );
+                        $jtcount++;
+                    }
                 }
             }
 
