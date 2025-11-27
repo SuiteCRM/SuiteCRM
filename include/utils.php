@@ -5474,11 +5474,12 @@ function verify_uploaded_image($path, $jpeg_only = false)
     $filetype = $img_size['mime'] ?? '';
     $tmpArray = explode('.', $path);
     $ext = end($tmpArray);
-
+    if (strpos($ext, '/') !== false) {
+        $ext = $path;
+    }
     if (!has_valid_image_mime_type($filetype)) {
         return false;
     }
-
     if (substr_count('..', $path) > 0 || ($ext !== $path && !isset($supportedExtensions[strtolower($ext)])) ||
             !in_array($filetype, array_values($supportedExtensions))
     ) {
