@@ -172,6 +172,7 @@ if ($campaign_id && isset($campaign) && $campaign->status == 'Inactive') {
         $query.=" WHERE email_marketing.campaign_id='$campaign_id'";
         $query.=" and email_marketing.deleted=0 ";
         $query.=" and email_marketing.all_prospect_lists=1 ";
+        $query.=" ORDER BY date_modified desc";
 
         $result=$focus->db->query($query);
         while (($row=$focus->db->fetchByAssoc($result)) != null) {
