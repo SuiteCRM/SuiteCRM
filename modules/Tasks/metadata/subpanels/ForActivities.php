@@ -69,6 +69,10 @@ $subpanel_layout = [
             'vname' => 'LBL_LIST_CONTACT',
             'width' => '11%',
         ],
+        'date_start' => [
+            'vname' => 'LBL_LIST_START_DATE',
+            'width' => '10%',
+        ],
         'date_due' => [
             'vname' => 'LBL_LIST_DUE_DATE',
             'width' => '10%',
