@@ -163,4 +163,6 @@ $mod_strings = array(
     'LBL_LIST_DATE_MODIFIED'=>'Date Modified',
     'LBL_LIST_DUE_DATE'=>'Due Date',
     'LBL_RESCHEDULED_BY'=>'by',
+
+    'LBL_CALL_DIRECTION' => 'Call Direction',
 );
