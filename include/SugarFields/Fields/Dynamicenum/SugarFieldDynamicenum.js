@@ -55,7 +55,21 @@ function addLoadEvent(func) {
 function loadDynamicEnum(field, subfield) {
 
     if (field != '') {
-        var el = document.getElementById(field);
+        
+        // Add specific method for retrieving parent list value in view list
+        if(action_sugar_grp1 == 'index'){
+            var moduleName = module_sugar_grp1;
+            var recordId = $('input.listview-checkbox',$('form#EditView').closest('tr')).val();
+            var dynamicFieldName = $('form#EditView select').attr('id');
+            var el = $('<input></input>',{
+                id:recordId+dynamicFieldName,
+                type: 'hidden',
+                value: getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName)
+            }).appendTo($('#'+subfield).parent());
+            updateDynamicEnum(recordId+dynamicFieldName, subfield)
+        } else {
+            var el = document.getElementById(field);
+        }
 
         if (el) {
             if (el.addEventListener) {
@@ -119,3 +133,23 @@ function updateDynamicEnum(field, subfield) {
         selector.fireEvent("onchange");
 
 }
+
+/**
+* Gets parent value from dynamic enum field
+* @param {string} moduleName - Name of the module
+* @param {string} recordId - ID of the record
+* @param {string} dynamicFieldName - Name of dynamic enum field
+* @returns {string} Parent value from dynamic enum field
+*/
+function getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName){
+    $.ajaxSetup({ async: false });
+    var result = $.getJSON("index.php", {
+        module: "Home", 
+        action: "getParentValueFromDynamicEnum",
+        dynamicFieldName: dynamicFieldName,
+        moduleName: moduleName,
+        recordId: recordId
+    });
+    $.ajaxSetup({ async: true });
+    return result.responseText;
+ }
