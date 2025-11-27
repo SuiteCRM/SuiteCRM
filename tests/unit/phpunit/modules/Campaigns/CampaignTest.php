@@ -248,7 +248,7 @@ class CampaignTest extends SuitePHPUnitFrameworkTestCase
         $campaign->budget = '1000';
         $campaign->end_date = '10/01/2015';
         $campaign->status = 'Planned';
-        $campaign->content = 'some text';
+        $campaign->campaign_content = 'some text';
 
         $result = $campaign->set_notification_body(new Sugar_Smarty(), $campaign);
 
@@ -256,7 +256,7 @@ class CampaignTest extends SuitePHPUnitFrameworkTestCase
         self::assertEquals($campaign->budget, $result->tpl_vars['CAMPAIGN_AMOUNT']->value);
         self::assertEquals($campaign->end_date, $result->tpl_vars['CAMPAIGN_CLOSEDATE']->value);
         self::assertEquals($campaign->status, $result->tpl_vars['CAMPAIGN_STATUS']->value);
-        self::assertEquals($campaign->content, $result->tpl_vars['CAMPAIGN_DESCRIPTION']->value);
+        self::assertEquals($campaign->campaign_content, $result->tpl_vars['CAMPAIGN_DESCRIPTION']->value);
     }
 
     public function testtrack_log_leads(): void

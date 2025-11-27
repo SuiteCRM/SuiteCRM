@@ -71,7 +71,7 @@ class Campaign extends SugarBean
     public $expected_revenue;
     public $campaign_type;
     public $objective;
-    public $content;
+    public $campaign_content;
     public $tracker_key;
     public $tracker_text;
     public $tracker_count;

@@ -219,7 +219,7 @@ array(
         array(
           0 =>
           array(
-            'name' => 'content',
+            'name' => 'campaign_content',
             'label' => 'LBL_CAMPAIGN_CONTENT',
           ),
         ),

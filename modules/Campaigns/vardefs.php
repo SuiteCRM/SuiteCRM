@@ -191,12 +191,12 @@ $dictionary['Campaign'] = array('audited' => true,
             'type' => 'text',
             'comment' => 'The objective of the campaign'
         ),
-        'content' => array(
-            'name' => 'content',
+        'campaign_content' => array(
+            'name' => 'campaign_content',
             'vname' => 'LBL_CAMPAIGN_CONTENT',
             'type' => 'text',
             'comment' => 'The campaign description',
-            'inline_edit' => false
+            'inline_edit' => true
         ),
         'prospectlists' => array(
             'name' => 'prospectlists',

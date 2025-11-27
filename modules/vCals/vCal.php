@@ -242,7 +242,7 @@
             $focus->retrieve_by_string_fields($arr);
 
 
-            $focus->content = $focus->get_vcal_freebusy($user_focus, false);
+            $focus->campaign_content = $focus->get_vcal_freebusy($user_focus, false);
             $focus->type = 'vfb';
             $focus->date_modified = null;
             $focus->source = 'sugar';
