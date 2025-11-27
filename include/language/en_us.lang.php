@@ -1554,6 +1554,7 @@ $app_strings = array(
     'LBL_DATE_ENTERED' => 'Date Created:',
     'LBL_DATE_MODIFIED' => 'Date Modified:',
     'LBL_EDIT_BUTTON' => 'Edit',
+    'LBL_QUICKEDIT_BUTTON' => '↙ Edit',
     'LBL_DUPLICATE_BUTTON' => 'Duplicate',
     'LBL_DELETE_BUTTON' => 'Delete',
     'LBL_DELETE' => 'Delete',

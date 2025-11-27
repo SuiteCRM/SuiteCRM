@@ -127,6 +127,18 @@ class DeployedSubpanelImplementation extends AbstractMetaDataImplementation impl
                 //First load the original defs from the module folder
                 $originalSubpanel = $spd->load_subpanel($subpanelName, false, true);
                 $this->_fullFielddefs = $originalSubpanel->get_list_fields();
+
+                // Add quickedit_button if edit_button is present
+                if (array_key_exists('edit_button', $this->_fullFielddefs) && 
+                    !array_key_exists('quickedit_button', $this->_fullFielddefs)) {
+                    $this->_fullFielddefs['quickedit_button'] = array(
+                        'vname' => 'LBL_QUICKEDIT_BUTTON',
+                        'widget_class' => 'SubPanelQuickEditButton',
+                        'module' => $moduleName,
+                        'width' => '4%',
+                    );
+                }
+                
                 $this->_mergeFielddefs($this->_fielddefs, $this->_fullFielddefs);
 
                 $this->_aSubPanelObject = $spd->load_subpanel($subpanelName);
