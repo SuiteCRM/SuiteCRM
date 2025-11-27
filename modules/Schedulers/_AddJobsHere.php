@@ -910,6 +910,41 @@ function runElasticSearchIndexerScheduler($job, $data = '{}')
     return \SuiteCRM\Search\ElasticSearch\ElasticSearchIndexer::schedulerJob(json_decode(html_entity_decode($data), true));
 }
 
+class CaseEmailSchedulerJob implements RunnableSchedulerJob
+{
+    public function setJob(SchedulersJob $job)
+    {
+        $this->job = $job;
+    }
+
+    public function run($data)
+    {
+        require_once 'modules/AOP_Case_Updates/CaseUpdatesHook.php';
+        $args = json_decode(html_entity_decode($data),1);
+        if(empty($args)){
+            return false;
+        }
+        $case = BeanFactory::getBean('Cases',$args['case_id']);
+        if(empty($case->id)){
+            return false;
+        }
+        $case = BeanFactory::getBean('Cases',$args['case_id']);
+        if(empty($case->id)){
+            return false;
+        }
+        $contact = BeanFactory::getBean('Contacts',$args['contact_id']);
+        if(empty($contact->id)){
+            return false;
+        }
+        $caseHooks = new CaseUpdatesHook();
+        switch ($args['type']){
+            case 'creation':
+                return $caseHooks->sendCreationEmail($case, $contact);
+            default:
+                return false;
+        }
+    }
+}
 if (file_exists('custom/modules/Schedulers/_AddJobsHere.php')) {
     require('custom/modules/Schedulers/_AddJobsHere.php');
 }
