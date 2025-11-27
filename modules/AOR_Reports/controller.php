@@ -43,7 +43,10 @@ class AOR_ReportsController extends SugarController
                 $module = $_REQUEST['aor_module'];
             }
             $val = !empty($_REQUEST['aor_value']) ? $_REQUEST['aor_value'] : '';
-            echo getModuleFields($module, $_REQUEST['view'], $val);
+            $params = [
+                'calledFromReports' => true
+            ];
+            echo getModuleFields($module, $_REQUEST['view'], $val, [], [], $params);
         }
         die;
     }
