@@ -68,9 +68,11 @@ class SugarFieldHandler
                case 'date':
                     $field = 'datetime';
                     break;
+/* #9232 user's selected column not displayed properly with link template
                case 'url':
                        $field = 'link';
                        break;
+*/
                case 'varchar':
                     $field = 'base';
                     break;
