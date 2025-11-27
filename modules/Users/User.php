@@ -1034,7 +1034,7 @@ class User extends Person implements EmailInterface
             } else {
                 $newUser = false;
             }
-            if ($newUser && !$this->is_group && !$this->portal_only && isset($sugar_config['passwordsetting']['SystemGeneratedPasswordON'])) {
+            if ($newUser && !$this->is_group && !$this->portal_only && $sugar_config['passwordsetting']['SystemGeneratedPasswordON'] == '1') {
                 require_once 'modules/Users/GeneratePassword.php';
             }
         }
