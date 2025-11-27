@@ -197,7 +197,7 @@ class ModuleBuilderController extends SugarController
         $load = $_REQUEST [ 'name' ] ;
         if (! empty($load)) {
             $mb->getPackage($load) ;
-            $mb->packages [ $load ]->build() ;
+            $mb->packages [ $load ]->build(false, true);
         }
     }
 
@@ -220,7 +220,7 @@ class ModuleBuilderController extends SugarController
             $zip = $mb->getPackage($load) ;
             require_once('ModuleInstall/PackageManager/PackageManager.php') ;
             $pm = new PackageManager() ;
-            $info = $mb->packages [ $load ]->build(false) ;
+            $info = $mb->packages [ $load ]->build(false, true);
             $uploadDir = $pm->upload_dir.'/upgrades/module/';
             mkdir_recursive($uploadDir) ;
             rename($info [ 'zip' ], $uploadDir . $info [ 'name' ] . '.zip') ;
