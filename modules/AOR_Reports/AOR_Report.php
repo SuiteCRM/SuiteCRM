@@ -977,7 +977,8 @@ class AOR_Report extends Basic
                             $total,
                             '',
                             $currency->id,
-                            $params
+                            $params,
+                            true
                         );
                         break;
                     case 'COUNT':
