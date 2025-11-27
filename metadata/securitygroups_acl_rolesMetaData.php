@@ -9,7 +9,8 @@ $dictionary['securitygroups_acl_roles'] = array(
       , array('name' =>'deleted', 'type' =>'bool', 'len'=>'1', 'required'=>true, 'default'=>'0')
     ),
     'indices' => array(
-       array('name' =>'securitygroups_acl_rolespk', 'type' =>'primary', 'fields'=>array('id'))
+       array('name' =>'securitygroups_acl_rolespk', 'type' =>'primary', 'fields'=>array('id')),
+       array('name' => 'idx_SG_roles', 'type' => 'index', 'fields' => array('securitygroup_id', 'role_id')),
     ),
     'relationships' => array(
     
