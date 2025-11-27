@@ -106,8 +106,6 @@ $subpanel_layout = [
         'date_end' => [
             'vname' => 'LBL_LIST_DUE_DATE',
             'width' => '10%',
-            'alias' => 'date_due',
-            'sort_by' => 'date_due',
         ],
         'assigned_user_name' => [
             'name' => 'assigned_user_name',
