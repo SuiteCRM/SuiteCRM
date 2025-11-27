@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-$GLOBALS['starttTime'] = microtime(true);
+$GLOBALS['startTime'] = microtime(true);
 
 set_include_path(
     __DIR__.'/..'.PATH_SEPARATOR.
@@ -93,6 +93,12 @@ clean_special_arguments();
 clean_incoming_data();
 ////	END DATA SECURITY MEASURES
 ///////////////////////////////////////////////////////////////////////////////
+
+use SuiteCRM\Utility\SuiteHandlers;
+if (isset($sugar_config['show_log_with_php_messages']) &&
+    ($sugar_config['show_log_with_php_messages'] === true)) {
+    $suiteHandlers = new SuiteHandlers;
+}
 
 // cn: set php.ini settings at entry points
 setPhpIniSettings();

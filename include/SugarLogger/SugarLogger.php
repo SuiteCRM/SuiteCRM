@@ -1,7 +1,5 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
+
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -41,15 +39,13 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
-/*********************************************************************************
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
- * Description:  Defines the English language pack for the base application.
- * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
- * All Rights Reserved.
- * Contributor(s): ______________________________________..
- ********************************************************************************/
-require_once('include/SugarLogger/LoggerManager.php');
-require_once('include/SugarLogger/LoggerTemplate.php');
+require_once 'include/utils/file_utils.php';
+require_once 'include/SugarLogger/LoggerManager.php';
+require_once 'include/SugarLogger/LoggerTemplate.php';
 
 /**
  * Default SugarCRM Logger
@@ -173,50 +169,211 @@ class SugarLogger implements LoggerTemplate
         return false;
     }
 
-    /**
-     * for log() function, it shows a backtrace information in log when
-     * the 'show_log_trace' config variable is set and true
-     * @return string a readable trace string
-     */
-    private function getTraceString()
-    {
-        $ret = '';
-        $trace = debug_backtrace();
-        foreach ($trace as $call) {
-            $file = isset($call['file']) ? $call['file'] : '???';
-            $line = isset($call['line']) ? $call['line'] : '???';
-            $class = isset($call['class']) ? $call['class'] : '';
-            $type = isset($call['type']) ? $call['type'] : '';
-            $function = isset($call['function']) ? $call['function'] : '???';
-            $ret .= "\nCall in {$file} at #{$line} from {$class}{$type}{$function}(...)";
+    private function getArguments($className, $funcName) {
+        // https://stackoverflow.com/a/42600677/1189711
+        $f = null;
+        try {
+            $f = (new ReflectionFunction($funcName))->getParameters();
+        } catch(ReflectionException $funcExc) {
+            try {
+                $f = (new ReflectionClass($className))->getMethod($funcName)->getParameters();
+            } catch (ReflectionException $classExc) {
+                return [];
+            }
         }
-        $ret .= "\n";
+        return array_map( function( $parameter ) { return $parameter->name; }, $f);
+    }
+
+    /**
+     * A fancy replacement for PHP's print_r, allowing depth-level limits and other formatting options
+     *
+     * @param mixed $data The data to be printed into text
+     * @param int $maxLevel The maximum depth level for recursion into arrays or objects [optional, defaults to 5]
+     * @param string $eol Use either '' or PHP_EOL to control whether newlines get added [optional, defaults to PHP_EOL]
+     * @param int $trimChars Not a strict char limit, just a performance enhancement; avoid recursion when generating excess chars [optional, defaults to 100]
+     * @param int $currLevel the current depth level into an object or array, used for recursion [optional, defaults to 1]
+     * @param int $numSpaces Total spaces to indent, will be increased by 2 in each recursion [optional, defaults to 2]
+     *
+     * @return  string  Text representation of $data input
+     */
+    private function extendedPrintR($data, $maxLevel = 5, $eol = PHP_EOL, $trimChars = 100, $currLevel = 1, $numSpaces = 2)
+    {
+        $type = gettype($data);
+        $spaces = str_repeat(' ', $numSpaces + 1);
+        $print = '';
+        $elements = array();
+
+        if (in_array($type, array('object', 'array'))) {
+            if ($type === 'object') {
+                $print = get_class($data) . ' ' . ucfirst($type);
+                $ref = new \ReflectionObject($data);
+
+                foreach ($ref->getProperties() as $property) {
+                    $property->setAccessible(true);
+                    $pType = $property->getName();
+                    // the @ operator is to ignore all notices in getValue:
+                    @$elements[$pType] = $property->getValue($data);
+                }
+            }
+            elseif ($type === 'array') {
+                $print = 'Array';
+                $elements = $data;
+            }
+
+            if ($maxLevel === 0 || $currLevel < $maxLevel) {
+                $print .= " ("; // start of obj or arr
+                foreach ($elements as $key => $element) {
+                    $print .= $eol.($eol==PHP_EOL? "  {$spaces}" : '')." [{$key}] => ";
+                    if (strlen($print) < $trimChars) {
+                        $print .= in_array(gettype($element), array('object', 'array')) ?
+                            $this->extendedPrintR($element, $maxLevel, $eol, $trimChars, $currLevel + 1, $numSpaces + 2) :
+                            (is_string($element) ? ("'" . $element . "'") : $element);
+                    } else {
+                        return $print . '…'; // excess chars, finish everything early
+                    }
+                }
+            } else {
+                $print .= '…'; // excess levels, no more recursion in depth, but continue working in breadth
+            }
+        } else {
+            // non-complex types, end of recursion:
+            $print = is_string($data) ? ("'".$data."'") : $data;
+        }
+        return $print;
+    }
+
+    private function getRequestOverviewAsString($eol = false, $trimChars = 100, $maxDepth = 3) {
+        $eol = $eol ? PHP_EOL : '';
+
+        $context['$_REQUEST'] =  $_REQUEST;
+        // the @ operator is to ignore all missing array keys, no point in generating notices here:
+        @$context['Selected $GLOBALS'] = [
+            'SuiteCRM Version' => $GLOBALS['suitecrm_version'],
+            'db' => (isset($GLOBALS['db']) ? $GLOBALS['db']->connectOptions['db_name'] : ''),
+            'BASE_DIR' => $GLOBALS['BASE_DIR'],
+        ];
+        if (isset($GLOBALS['app']->controller)) {
+            @$context['SugarController'] = [
+                'entryPointFile' => $GLOBALS['app']->controller->breadcrumbs['entryPointFile'],
+                'processTasksHistory' => $GLOBALS['app']->controller->breadcrumbs['processTasksHistory'],
+                'handleActionTasksHistory' => $GLOBALS['app']->controller->breadcrumbs['handleActionTasksHistory'],
+                'redirect_url' => $GLOBALS['app']->controller->redirect_url,
+            ];
+        }
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        $text = 'Request Overview:' .
+            mb_strimwidth(trim($this->extendedPrintR($context, 4, $eol, 2000)), 0, 2000, ' …)');
+
+        return $text;
+    }
+
+   /**
+    * Print an entire exception trace as a string
+    *
+    * This is an advanced function allowing multiple formatting configurations,
+    * and combining two subtly different sources of information:
+    * - function names and argument values come in the dynamic information of
+    *   the Exception object itself (where we are in the execution at the moment)
+    * - but since that doesn't include argument names,
+    *   we use also Reflection to get those (static information about what is in the files)
+    *
+    * @param Exception $Exception The Exception object we want to print, containing the message, stack trace, etc
+    * @param boolean $eol Use true to include newlines in output, false to keep each frame to just one line [optional, defaults to false]
+    * @param integer $trimChars Char limit for text output of each frame [optional, defaults to 100]
+    *
+    * @return  string  Text representation of Exception stack trace
+    */
+    private function getExceptionTraceAsString($exception, $eol = false, $trimChars = 100, $maxDepth = 3, $source = -1) {
+        $ret = '';
+        $count = 0;
+        $eol = $eol ? PHP_EOL : '';
+        $dumpArgs = '';
+
+        $frames = $exception->getTrace();
+        foreach ($frames as $frame) {
+            if ((isset($frame['class']) && ($frame['class'] === 'SugarLogger')) ||
+                (isset($frame['function']) && $frame['function'] === 'phpShutdownHandler')) {
+                continue; // skip repetitive entries common to everything logged
+            }
+            try {
+                // since PHP 7.4, args will only be available if php.ini includes: zend.exception_ignore_args = Off
+                if (isset($frame['args'])) {
+                    $args = array();
+                    $argNames = $this->getArguments(isset($frame['class']) ? $frame['class'] : null, $frame['function']);
+
+                    foreach ($frame['args'] as $paramsCount => $arg) {
+                        $argName = '';
+                        if (isset($argNames[$paramsCount]) and strlen($argNames[$paramsCount]) !== 0) {
+                            $argName = "$argNames[$paramsCount]";
+                        }
+                        /** @noinspection PhpComposerExtensionStubsInspection */
+                        $text = mb_strimwidth(trim($this->extendedPrintR($arg, $maxDepth, $eol, $trimChars)), 0, $trimChars, ' …)');
+                        $args[] = ($eol===PHP_EOL ? '     ' : '').(strlen($argName)>0 ? "$argName: " : '')."$text";
+                    }
+                    $dumpArgs = join(', '.$eol, $args);
+                }
+            } catch(Exception $e) {
+                // if something fails when getting an arg while we're dumping a backtrace, we just skip it
+                $dumpArgs .= "### Exception in reflection: $e ###";
+            }
+
+            $sourceText = '';
+            if (isset($frame['file']) && isset($frame['line'])) {
+                $sourceText = ($source != -1 && $eol !== '') ?
+                    $eol . $this->getFileSource($frame['file'], $frame['line'], $source) . '   Called' :
+                    '';
+            }
+            $ret .= sprintf("#%s %s(%s): %s %s(%s%s)".PHP_EOL,
+                $count++,
+                isset($frame['file']) ? str_replace(SUGAR_PATH, '', $frame['file']) : 'unknown file',
+                isset($frame['line']) ? $frame['line'] : 'unknown line',
+                $sourceText,
+                (isset($frame['class'])) ? $frame['class'] . $frame['type'] . $frame['function'] : $frame['function'],
+                strstr($dumpArgs, PHP_EOL) ? $eol : '',
+                $dumpArgs);
+            $dumpArgs= '';
+        }
+        return $ret;
+    }
+
+    /**
+     * Get a segment of a file's source code at a specific line, optionally with some surrounding context
+     *
+     * @param $fileName              The name of the PHP source file
+     * @param $startLine             The focus line you want to get
+     * @param int $additionalContext Number of additional context lines to get, both before and after the focus line
+     * @return string                The source code with context and some formatting
+     */
+    private function getFileSource($fileName, $startLine, $additionalContext = 0) {
+        $ret = '';
+        try {
+            $source = file($fileName);
+            if (false !== $source) {
+                $start = max((int)($startLine - 1 - $additionalContext), 0);
+                $end = min((int)($startLine - 1 + $additionalContext), count($source) - 1);
+                for ($line = $start; $line <= $end; $line++) {
+                    $ret .= (($line == $start + intdiv($end - $start, 2)) ? '   >> ' : '   >  ') . $source[$line];
+                }
+            }
+        } catch (Exception $e) {
+        }
         return $ret;
     }
 
     /**
      * Show log
+     *
      * and show a backtrace information in log when
-     * the 'show_log_trace' config variable is set and true
+     * the 'show_log_trace' config variable is set and true, or a string value to match a message.
+     * Further configuration possible with 'show_log_trace_with_eol' and 'show_log_trace_trim' config vars.
      * see LoggerTemplate::log()
      */
-    public function log(
-        $level,
-        $message
-        ) {
+    public function log($level, $message) {
         global $sugar_config;
 
         if (!$this->initialized) {
             return;
         }
-        //lets get the current user id or default to -none- if it is not set yet
-        $userID = (!empty($GLOBALS['current_user']->id))?$GLOBALS['current_user']->id:'-none-';
-
-        //if we haven't opened a file pointer yet let's do that
-        if (! $this->fp) {
-            $this->fp = fopen($this->full_log_file, 'ab');
-        }
-
 
         // change to a string if there is just one entry
         if (is_array($message) && count($message) == 1) {
@@ -227,18 +384,66 @@ class SugarLogger implements LoggerTemplate
             $message = print_r($message, true);
         }
 
+        // if any of these 2 regexps contain syntax errors, they will effectively be ignored:
+        if (isset($sugar_config['show_log_regexp']) &&
+            (0 === preg_match($sugar_config['show_log_regexp'], $message))) {
+            return;
+        }
+        if (isset($sugar_config['show_log_regexp_exclude']) &&
+            (1 === preg_match($sugar_config['show_log_regexp_exclude'], $message))) {
+            return;
+        }
 
-        if (isset($sugar_config['show_log_trace']) && $sugar_config['show_log_trace']) {
-            $trace = $this->getTraceString();
-            $message .= ("\n" . $trace);
+        //lets get the current user id or default to -none- if it is not set yet
+        $userID = (!empty($GLOBALS['current_user']->id))?$GLOBALS['current_user']->id:'-none-';
+
+        //if we haven't opened a file pointer yet let's do that
+        if (! $this->fp) {
+            $this->fp = fopen($this->full_log_file, 'ab');
         }
 
         //write out to the file including the time in the dateFormat the process id , the user id , and the log level as well as the message
         fwrite(
             $this->fp,
-            strftime($this->dateFormat) . ' [' . getmypid() . '][' . $userID . '][' . strtoupper($level) . '] ' . $message . "\n"
+            strftime($this->dateFormat) . ' [' .
+                getmypid () . '][' . $userID . '][' .
+                substr(str_pad(strtoupper($level), 5), 0, 5) . '] ' .
+                $message . PHP_EOL
             );
+
+        if (($level !== 'PHP S') && // with XDEBUG you will still see a basic trace for these, as part of the $message
+            isset($sugar_config['show_log_trace']) &&
+            (($sugar_config['show_log_trace'] === true) ||
+                (is_string($sugar_config['show_log_trace']) && (strpos($message, $sugar_config['show_log_trace'])!== false)))) {
+
+            $eolConfig = isset($sugar_config['show_log_trace_with_eol']) && $sugar_config['show_log_trace_with_eol'];
+
+            if (isset($sugar_config['show_log_trace_trim'])) {
+                $trimConfig = (int)$sugar_config['show_log_trace_trim'];
+            }
+            $trimConfig = (isset($trimConfig) && is_int($trimConfig) && $trimConfig > 0) ? $trimConfig : 100;
+
+            if (isset($sugar_config['show_log_trace_depth'])) {
+                $depthConfig = (int)$sugar_config['show_log_trace_depth'];
+            }
+            $depthConfig = (isset($depthConfig) && is_int($depthConfig) && $depthConfig > 0) ? $depthConfig : 5;
+
+            if (isset($sugar_config['show_log_trace_source'])) {
+                $sourceConfig = (int)$sugar_config['show_log_trace_source'];
+            }
+            $sourceConfig = (isset($sourceConfig) && is_int($sourceConfig) && $sourceConfig >= -1) ? $sourceConfig : -1;
+
+            $overviewConfig = isset($sugar_config['show_log_trace_overview']) && $sugar_config['show_log_trace_overview'];
+
+            $e = new \Exception;
+            fwrite(
+                $this->fp,
+                $this->getExceptionTraceAsString($e, $eolConfig, $trimConfig, $depthConfig, $sourceConfig) . PHP_EOL .
+                ($overviewConfig ? ($this->getRequestOverviewAsString($eolConfig, $trimConfig, $depthConfig) . PHP_EOL . '      )' . PHP_EOL) : '')
+            );
+        }
     }
+
 
     /**
      * rolls the logger file to start using a new file

@@ -90,6 +90,8 @@ class LoggerManager
         'debug' => 100,
         'info' => 70,
         'warn' => 50,
+        'PHP E' => 45,
+        'PHP S' => 44,
         'deprecated' => 40,
         'error' => 25,
         'fatal' => 10,
@@ -237,7 +239,7 @@ class LoggerManager
                     }
                     require_once("$location/$file");
                     $loggerClass = basename($file, '.php');
-                    if (class_exists($loggerClass) && class_implements($loggerClass, 'LoggerTemplate')) {
+                        if (class_exists($loggerClass) && in_array('LoggerTemplate', class_implements($loggerClass))) {
                         self::$_loggers[$loggerClass] = new $loggerClass();
                     }
                 }
