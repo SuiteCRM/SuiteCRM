@@ -356,7 +356,7 @@ class SecurityGroup extends SecurityGroup_sugar
             $parent_type = '';
             $parent_id = '';
 
-            if (isset($_REQUEST['relate_to']) && isset($_REQUEST['relate_id'])) {
+            if (!empty($_REQUEST['relate_to']) && !empty($_REQUEST['relate_id'])) {
                 //relate_to is not guaranteed to be a module name anymore.
                 //if it isn't load the relationship and find the module name that way
                 if (!array_key_exists($_REQUEST['relate_to'], $security_modules)) {
@@ -368,7 +368,7 @@ class SecurityGroup extends SecurityGroup_sugar
                         $focus_module_dir,
                         $focus->db
                     );
-                    if (isset($rel)) {
+                    if (isset($rel_module)) {
                         $parent_type = $rel_module;
                         $parent_id = $_REQUEST['relate_id'];
                     }
@@ -378,22 +378,34 @@ class SecurityGroup extends SecurityGroup_sugar
                 }
             }
 
-            if (isset($_SESSION['portal_id'])) {
+            elseif (isset($_SESSION['portal_id'])) {
                 $parent_id = $_SESSION['user_id']; //soap stores contact id in user_id field
                 $parent_type = 'Contacts';
             }
 
             //from activity type creation
-            if ((empty($parent_type) || empty($parent_id)) && isset($_REQUEST['parent_type']) && isset($_REQUEST['parent_id'])) {
+            elseif ((empty($parent_type) || empty($parent_id)) && isset($_REQUEST['parent_type']) && isset($_REQUEST['parent_id'])) {
                 $parent_type = $_REQUEST['parent_type'];
                 $parent_id = $_REQUEST['parent_id'];
             }
 
             //full form from subpanel
-            if ((empty($parent_type) || empty($parent_id)) && isset($_REQUEST['return_module']) && isset($_REQUEST['return_id'])) {
+            elseif ((empty($parent_type) || empty($parent_id)) && isset($_REQUEST['return_module']) && isset($_REQUEST['return_id'])) {
                 $parent_type = $_REQUEST['return_module'];
                 $parent_id = $_REQUEST['return_id'];
             }
+
+            
+            if (!empty($parent_type) && !empty($parent_id)) {
+                self::inherit_parentQuery(
+                    $focus, 
+                    $parent_type, 
+                    $parent_id, 
+                    $focus_id, 
+                    $focus_module_dir
+                );
+            } //end if parent type/id
+
 
             /* need to find relate fields...for example for Cases look to see if account_id is set */
             //allow inheritance for all relate field types....iterate through and inherit each related field
@@ -402,20 +414,27 @@ class SecurityGroup extends SecurityGroup_sugar
                     && isset($def['module']) && strtolower($def['module']) != 'users'
                 ) {
                     if (isset($_REQUEST[$def['id_name']])) {
+
                         $relate_parent_id = $_REQUEST[$def['id_name']];
                         $relate_parent_type = $def['module'];
-
-                        self::inherit_parentQuery(
-                            $focus,
-                            $relate_parent_type,
-                            $relate_parent_id,
-                            $focus_id,
-                            $focus_module_dir
-                        );
+                     
                     } elseif (isset($_SESSION['portal_id']) && isset($_SESSION[$def['id_name']])) { //soap account
+                     
                         $relate_parent_id = $_SESSION[$def['id_name']];
                         $relate_parent_type = $def['module'];
 
+                    } elseif($def['type'] == 'relate' && isset($focus->{$def['id_name']})) {
+                        // If the relationship with the main record is created by code, none of the previous conditions 
+                        // will apply but inheritance from parent record should be done, too.
+                    
+                        $relate_parent_id = $focus->{$def['id_name']};
+                        $relate_parent_type = $def['module'];
+                   
+                    }
+
+                    
+                    if(!empty($relate_parent_id) && !empty($relate_parent_type))
+                    {
                         self::inherit_parentQuery(
                             $focus,
                             $relate_parent_type,
@@ -424,12 +443,14 @@ class SecurityGroup extends SecurityGroup_sugar
                             $focus_module_dir
                         );
                     }
+                    
+                    // Reset variables
+                    $relate_parent_id = '';
+                    $relate_parent_type = '';
                 }
             }
 
-            if (!empty($parent_type) && !empty($parent_id)) {
-                self::inherit_parentQuery($focus, $parent_type, $parent_id, $focus_id, $focus_module_dir);
-            } //end if parent type/id
+
         } //end if new record
     }
 
@@ -466,6 +487,7 @@ class SecurityGroup extends SecurityGroup_sugar
             . "and r.record_id = '" . $focus->db->quote($parent_id) . "' "
             . 'and r.deleted = 0 ';
         $GLOBALS['log']->debug("SecuritySuite: Inherit from Parent: $query");
+
         $focus->db->query($query, true);
     }
 
