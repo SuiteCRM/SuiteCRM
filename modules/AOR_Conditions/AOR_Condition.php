@@ -91,10 +91,11 @@ class AOR_Condition extends Basic
 
         $j = 0;
         foreach ((array)$postData as $i => $field) {
+            $condition_module = $_REQUEST['report_module'];
             if (!isset($post_data[$key . 'deleted'][$i])) {
                 LoggerManager::getLogger()->warn('AOR Condition trying to save lines but POST data does not contains the key "' . $key . 'deleted' . '" at index: ' . $i);
             }
-
+            $flow_bean = BeanFactory::newBean($_REQUEST['report_module']);
             if (isset($post_data[$key . 'deleted'][$i]) && $post_data[$key . 'deleted'][$i] == 1) {
                 $this->mark_deleted($post_data[$key . 'id'][$i]);
             } else {
@@ -112,8 +113,23 @@ class AOR_Condition extends Basic
                             }
                         } else {
                             if ($field_name == 'value' && $post_data[$key . 'value_type'][$i] === 'Value') {
-                                $post_data[$key . $field_name][$i] = fixUpFormatting($_REQUEST['report_module'], $condition->field, $post_data[$key . $field_name][$i]);
-                            } else {
+                                if (!empty($flow_bean)) {
+                                    $condition_relation = $post_data["aor_conditions_module_path"][$i];
+                                    $condition_relation_array = unserialize(base64_decode($condition_relation));
+                                    $rel_module = '';
+                                    foreach ($condition_relation_array as $relate){
+                                        $flow_bean->load_relationship($relate);
+                                        if ($flow_bean->$relate) {
+                                            $rel_module = $flow_bean->$relate->getRelatedModuleName();
+                                            $flow_bean = BeanFactory::newBean($rel_module);
+                                        }
+                                    }
+
+                                    if (!empty($rel_module) && $condition_module !== $rel_module) {
+                                        $condition_module = $rel_module;
+                                    }
+                                }
+                                $post_data[$key . $field_name][$i] = fixUpFormatting($condition_module, $condition->field, $post_data[$key . $field_name][$i]);                            } else {
                                 if ($field_name == 'parameter') {
                                     $post_data[$key . $field_name][$i] = isset($post_data[$key . $field_name][$i]);
                                 } else {

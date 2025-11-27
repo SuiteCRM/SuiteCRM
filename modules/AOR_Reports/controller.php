@@ -81,7 +81,7 @@ class AOR_ReportsController extends SugarController
         $offset = !empty($_REQUEST['offset']) ? $_REQUEST['offset'] : 0;
         $group = !empty($_REQUEST['group']) ? $_REQUEST['group'] : '';
         if (!empty($this->bean->id)) {
-            $this->bean->user_parameters = requestToUserParameters();
+            $this->bean->user_parameters = requestToUserParameters($this->bean);
             echo $this->bean->build_group_report($offset, true, array(), $group);
         }
 
@@ -144,7 +144,7 @@ class AOR_ReportsController extends SugarController
 
         $key = Relationship::retrieve_by_modules($this->bean->report_module, 'ProspectLists', $GLOBALS['db']);
         if (!empty($key)) {
-            $this->bean->user_parameters = requestToUserParameters();
+            $this->bean->user_parameters = requestToUserParameters($this->bean);
             $sql = $this->bean->build_report_query();
             $result = $this->bean->db->query($sql);
             $beans = array();
