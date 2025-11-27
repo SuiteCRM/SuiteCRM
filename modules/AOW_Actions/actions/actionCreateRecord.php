@@ -432,6 +432,7 @@ class actionCreateRecord extends actionBase
             $was_deleted = true;
         }
 
+        $record->not_use_rel_in_req = true;
         $record->save($check_notify);
 
         if ($was_deleted) {
