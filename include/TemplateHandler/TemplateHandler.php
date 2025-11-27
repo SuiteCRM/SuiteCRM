@@ -553,9 +553,7 @@ class TemplateHandler
                     $name
                 ) || !empty($field['quicksearch']))
                 ) {
-                    if (!preg_match('/_c$/si', $name)
-                        && (!isset($field['id_name']) || !preg_match('/_c$/si', $field['id_name']))
-                        && preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)
+                    if (preg_match('/^(Campaigns|Teams|Users|Contacts|Accounts)$/si', $field['module'], $matches)
                     ) {
                         if ($matches[0] === 'Campaigns') {
                             $sqs_objects[$name] = $qsd->loadQSObject(
