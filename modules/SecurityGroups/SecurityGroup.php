@@ -58,15 +58,16 @@ class SecurityGroup extends SecurityGroup_sugar
      * Gets the join statement used for returning all users that a given user is in the same group with.
      *
      * @param string $user_id
+     * @param string $alias By Default `users` for User table, but in case in Reports it is changed that use that
      *
      * @return string
      */
-    public static function getGroupUsersWhere($user_id)
+    public static function getGroupUsersWhere($user_id, $alias = 'users')
     {
         $db = DBManagerFactory::getInstance();
         $quotedUserId = $db->quote($user_id);
 
-        return " users.id in (
+        return " $alias.id in (
             select sec.user_id from securitygroups_users sec
             inner join securitygroups_users secu on sec.securitygroup_id = secu.securitygroup_id and secu.deleted = 0
                 and secu.user_id = '$quotedUserId'
