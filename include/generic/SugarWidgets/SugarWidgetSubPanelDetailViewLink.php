@@ -134,9 +134,17 @@ class SugarWidgetSubPanelDetailViewLink extends SugarWidgetField
             if ($module == 'EAPM') {
                 $link = "index.php?module=$module&action=$action&record={$record}{$parent}";
             }
-            return '<a href="' . $link . '" >'."$value</a>";
-        } else {
-            return $value;
-        }
-    }
+            if( $module == 'DocumentRevisions'){
+            	$view_revision = 
+            		'&nbsp;<a href="index.php?preview=yes&entryPoint=download&id=' . 
+            			$record . '&type=Documents" class="tabDetailViewDFLink" target="_blank" style="border-bottom: 0px;"><i class="glyphicon glyphicon-eye-open"></i>';
+            }
+   	    return '<a href="' . $link . '" >'."$value</a>" . $view_revision;
+
+		}else{
+			return $value;
+		}
+		
+	}
+
 }
