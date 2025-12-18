@@ -98,7 +98,7 @@ class EAPMController extends SugarController
     {
         if (!$this->bean->deleted) {
             // do not load bean here since password is already encoded
-            if ($this->api->authMethod != 'oauth') {
+            if ($this->api->authMethod != 'oauth' && $this->api->authMethod != 'oauth2') {
                 // OAuth beans have to be handled specially.
                 
                 $reply = $this->api->checkLogin();
@@ -122,7 +122,7 @@ class EAPMController extends SugarController
         }
         // Override the redirect location to add the hash
         $this->redirect_url = $this->redirect_url.'#tab5';
-        if ($this->api->authMethod == 'oauth' && !$this->bean->deleted) {
+        if (($this->api->authMethod == 'oauth' || $this->api->authMethod == 'oauth2') && !$this->bean->deleted) {
             // It's OAuth, we have to handle this specially.
             // We need to create a new window to handle the OAuth, and redirect this window back to the edit view
             // So we will handle that in javascript.
