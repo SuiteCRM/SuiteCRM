@@ -1527,7 +1527,7 @@ EOHTML;
     public function getModuleTitle(
         $show_help = true
     ) {
-        global $sugar_version, $sugar_flavor, $server_unique_key, $current_language, $action;
+        global $sugar_config, $sugar_version, $sugar_flavor, $server_unique_key, $current_language, $action;
 
         $theTitle = "<div class='moduleTitle'>\n";
 
@@ -1539,7 +1539,7 @@ EOHTML;
         if (SugarThemeRegistry::current()->directionality == "rtl") {
             $params = array_reverse($params);
         }
-        if (count($params) > 1) {
+        if (!$this->{'setModuleTitles'} && count($params) > 1) {
             array_shift($params);
         }
         $count = count($params);
@@ -1547,7 +1547,7 @@ EOHTML;
         foreach ($params as $parm) {
             $index++;
             $paramString .= $parm;
-            if ($index < $count) {
+            if (!($this->{'setModuleTitles'} && $index === 1) && $index < $count) {
                 $paramString .= $this->getBreadCrumbSymbol();
             }
         }
@@ -1642,7 +1642,19 @@ EOHTML;
      */
     protected function _getModuleTitleParams($browserTitle = false)
     {
-        $params = array($this->_getModuleTitleListParam($browserTitle));
+        global $sugar_config;
+        switch ($sugar_config['set_module_name_titles']) {
+            case true:
+                $params = array($this->_getModuleTitleListParam(true));
+                $iconPath = $this->getModuleTitleIconPath($this->module);
+                $iconHTML = "<span class='icon'><img src='{$iconPath}'></span> ";
+                array_unshift($params, $iconHTML);
+                $this->{'setModuleTitles'} = true;
+                break;
+            default:
+                $params = array($this->_getModuleTitleListParam($browserTitle));
+                break;
+        }
         if (isset($this->action)) {
             switch ($this->action) {
                 case 'EditView':
