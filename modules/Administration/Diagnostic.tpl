@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2020 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,21 +37,36 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
-
-/**
-
- */
 *}
 
 <form name="Diagnostic" method="POST" action="index.php">
-<input type="hidden" name="module" value="Administration">
-<input type="hidden" name="action" value="DiagnosticRun">
- 
-<table cellpadding="0" cellspacing="0" border="0" width="100%" class="actionsContainer">
-	<tr>
-	<td>
-	<input title="{$MOD.LBL_DIAG_EXECUTE_BUTTON}" class="button" onclick="this.form.action.value='DiagnosticRun';" type="submit" name="button" value="  {$MOD.LBL_DIAG_EXECUTE_BUTTON}  " >
-	<input title="{$MOD.LBL_DIAG_CANCEL_BUTTON}" class="button" onclick="this.form.action.value='index'; this.form.module.value='Administration'; " type="submit" name="button" value="  {$MOD.LBL_DIAG_CANCEL_BUTTON}  "></td>
+    <h4>{$MOD.LBL_DIAGNOSTIC_QUICKREPORT}</h4><br/>
+    <input type="hidden" name="module" value="Administration">
+    <input type="hidden" name="action" value="DiagnosticRun">
+    <!-- Keep the following report output in such a way that it copy-pastes well from browser into
+     a simple text field, such as a forum post. Ensure the whitespace between HTML tags is placed where it should. -->
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" class="edit view">
+        {foreach from=$QuickReport item=section key=sectionname}
+            <tr><td style='min-width: 14em;'><br/><h5><b>{$sectionname}</b></h5><br/></td></tr>
+            {foreach from=$section item=label key=key}<tr><td>{$key}:</td><td>{$label}</td></tr>{/foreach}
+        {/foreach}
+        <tr><td>&nbsp;</td></tr>
+        <tr>
+            <td>
+                <input title="DiagnosticQuickViewPhpInfo" class="button"
+                       onclick="this.form.action.value='DiagnosticQuickViewPhpInfo';" type="submit" name="button"
+                       value="{$MOD.LBL_DIAGNOSTIC_VIEWFULLPHPINFO}">
+            </td>
+        </tr>
+        <tr><td>&nbsp;</td></tr>
+    </table>
+
+</form>
+
+<form name="Diagnostic" method="POST" action="index.php">
+    <h4>{$MOD.LBL_DIAGNOSTIC_DOWNLOADLINK}</h4><br/>
+    <input type="hidden" name="module" value="Administration">
+    <input type="hidden" name="action" value="DiagnosticRun">
 
 	</tr>
 </table>
@@ -96,34 +111,42 @@
 	<td ><span><input name='sugarlog' class="checkbox" type="checkbox" tabindex='11'></span></td>
 	</tr><tr>
 	<td scope="row"><span>{$MOD.LBL_DIAGNOSTIC_VARDEFS}</span></td>
-	<td ><span><input name='vardefs' class="checkbox" type="checkbox" tabindex='11'></span></td>
+	<td ><span><input name='vardefs' class="checkbox" type="checkbox" tabindex='12'></span></td>
 	</tr>
+</table>
+<table cellpadding="0" cellspacing="0" border="0" width="100%" class="actionsContainer">
+    <tr>
+        <td><input title="{$MOD.LBL_DIAG_EXECUTE_BUTTON}" class="button"
+             onclick="this.form.action.value='DiagnosticRun';" type="submit" name="button"
+             value="  {$MOD.LBL_DIAG_EXECUTE_BUTTON}  "></td>
+    </tr>
 </table>
 </div>
 </form>
 
 {literal}
-<script type="text/javascript" language="Javascript">
-  var md5filesmd5_checked;
-  var md5calculated_checked;
-  function show(id) {
-      document.getElementById(id).style.display="block";
-  }
-  function md5checkboxes(){
-    if (document.Diagnostic.md5.checked == false){
-      md5filesmd5_checked = document.Diagnostic.md5filesmd5.checked;
-      md5calculated_checked = document.Diagnostic.md5calculated.checked;
-      document.Diagnostic.md5filesmd5.checked=false;
-      document.Diagnostic.md5calculated.checked=false;
-      document.Diagnostic.md5filesmd5.disabled=true;
-      document.Diagnostic.md5calculated.disabled=true;
-    }
-    else{
-      document.Diagnostic.md5filesmd5.disabled=false;
-      document.Diagnostic.md5calculated.disabled=false;
-      document.Diagnostic.md5filesmd5.checked=md5filesmd5_checked;
-      document.Diagnostic.md5calculated.checked=md5calculated_checked;
-    }
-  }
-</script>
+    <script type="text/javascript" language="Javascript">
+        var md5filesmd5_checked;
+        var md5calculated_checked;
+
+        function show(id) {
+            document.getElementById(id).style.display = "block";
+        }
+
+        function md5checkboxes() {
+            if (document.Diagnostic.md5.checked == false) {
+                md5filesmd5_checked = document.Diagnostic.md5filesmd5.checked;
+                md5calculated_checked = document.Diagnostic.md5calculated.checked;
+                document.Diagnostic.md5filesmd5.checked = false;
+                document.Diagnostic.md5calculated.checked = false;
+                document.Diagnostic.md5filesmd5.disabled = true;
+                document.Diagnostic.md5calculated.disabled = true;
+            } else {
+                document.Diagnostic.md5filesmd5.disabled = false;
+                document.Diagnostic.md5calculated.disabled = false;
+                document.Diagnostic.md5filesmd5.checked = md5filesmd5_checked;
+                document.Diagnostic.md5calculated.checked = md5calculated_checked;
+            }
+        }
+    </script>
 {/literal}

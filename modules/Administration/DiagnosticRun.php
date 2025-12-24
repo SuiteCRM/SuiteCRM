@@ -768,18 +768,18 @@ function finishDiag()
 }
 
 //BEGIN check for what we are executing
-$doconfigphp = ((empty($_POST['configphp']) || $_POST['configphp'] == 'off') ? false : true);
-$docustom_dir = ((empty($_POST['custom_dir']) || $_POST['custom_dir'] == 'off') ? false : true);
-$dophpinfo = ((empty($_POST['phpinfo']) || $_POST['phpinfo'] == 'off') ? false : true);
-$domysql_dumps = ((empty($_POST['mysql_dumps']) || $_POST['mysql_dumps'] == 'off') ? false : true);
-$domysql_schema = ((empty($_POST['mysql_schema']) || $_POST['mysql_schema'] == 'off') ? false : true);
-$domysql_info = ((empty($_POST['mysql_info']) || $_POST['mysql_info'] == 'off') ? false : true);
-$domd5 = ((empty($_POST['md5']) || $_POST['md5'] == 'off') ? false : true);
-$domd5filesmd5 = ((empty($_POST['md5filesmd5']) || $_POST['md5filesmd5'] == 'off') ? false : true);
-$domd5calculated = ((empty($_POST['md5calculated']) || $_POST['md5calculated'] == 'off') ? false : true);
-$dobeanlistbeanfiles = ((empty($_POST['beanlistbeanfiles']) || $_POST['beanlistbeanfiles'] == 'off') ? false : true);
-$dosugarlog = ((empty($_POST['sugarlog']) || $_POST['sugarlog'] == 'off') ? false : true);
-$dovardefs = ((empty($_POST['vardefs']) || $_POST['vardefs'] == 'off') ? false : true);
+$doconfigphp = !((empty($_POST['configphp']) || $_POST['configphp'] == 'off'));
+$docustom_dir = !((empty($_POST['custom_dir']) || $_POST['custom_dir'] == 'off'));
+$dophpinfo = !((empty($_POST['phpinfo']) || $_POST['phpinfo'] == 'off'));
+$domysql_dumps = !((empty($_POST['mysql_dumps']) || $_POST['mysql_dumps'] == 'off'));
+$domysql_schema = !((empty($_POST['mysql_schema']) || $_POST['mysql_schema'] == 'off'));
+$domysql_info = !((empty($_POST['mysql_info']) || $_POST['mysql_info'] == 'off'));
+$domd5 = !((empty($_POST['md5']) || $_POST['md5'] == 'off'));
+$domd5filesmd5 = !((empty($_POST['md5filesmd5']) || $_POST['md5filesmd5'] == 'off'));
+$domd5calculated = !((empty($_POST['md5calculated']) || $_POST['md5calculated'] == 'off'));
+$dobeanlistbeanfiles = !((empty($_POST['beanlistbeanfiles']) || $_POST['beanlistbeanfiles'] == 'off'));
+$dosugarlog = !((empty($_POST['sugarlog']) || $_POST['sugarlog'] == 'off'));
+$dovardefs = !((empty($_POST['vardefs']) || $_POST['vardefs'] == 'off'));
 //END check for what we are executing
 
 
