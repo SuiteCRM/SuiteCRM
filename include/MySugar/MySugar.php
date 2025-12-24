@@ -57,21 +57,18 @@ class MySugar
 
     public function checkDashletDisplay()
     {
-        if ((!in_array($this->type, $GLOBALS['moduleList'])
-                && !in_array($this->type, $GLOBALS['modInvisList']))
-                && (!in_array('Activities', $GLOBALS['moduleList']))) {
-            $displayDashlet = false;
-        } elseif (ACLController::moduleSupportsACL($this->type)) {
-            $bean = SugarModule::get($this->type)->loadBean();
-            if (!ACLController::checkAccess($this->type, 'list', true, $bean->acltype)) {
-                $displayDashlet = false;
-            }
-            $displayDashlet = true;
-        } else {
-            $displayDashlet = true;
-        }
-
-        return $displayDashlet;
+       $displayDashlet = true;
+		if((!in_array($this->type, $GLOBALS['moduleList'])
+				&& !in_array($this->type, $GLOBALS['modInvisList']))
+				&& (!in_array('Activities', $GLOBALS['moduleList']))){
+			$displayDashlet = false;
+		}elseif (ACLController::moduleSupportsACL($this->type) ) {
+		    $bean = SugarModule::get($this->type)->loadBean();
+		    if ( !ACLController::checkAccess($this->type,'list',true,$bean->acltype)) {
+		        $displayDashlet = false;
+		    }
+		}
+		return $displayDashlet;
     }
 
     public function addDashlet()
