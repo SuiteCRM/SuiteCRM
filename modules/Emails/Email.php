@@ -3351,6 +3351,7 @@ class Email extends Basic
 
         $query .= $custom_join['join'];
 
+        $where_auto = "1=1";
         if ($show_deleted == 0) {
             $where_auto = " emails.deleted=0 \n";
         } else {
