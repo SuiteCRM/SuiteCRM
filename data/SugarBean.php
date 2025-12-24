@@ -5283,6 +5283,11 @@ class SugarBean
             $custom_logic_arguments = [];
             $custom_logic_arguments['id'] = $id;
             $this->call_custom_logic("before_delete", $custom_logic_arguments);
+            // declaring bean->abort_mark_delete = 1 in before_delete logic hook will abort the delete operation
+            if(isset($this->abort_mark_deleted)) {
+                unset($this->abort_mark_deleted);
+                return;
+            }
             $this->deleted = 1;
             $this->mark_relationships_deleted($id);
             if (isset($this->field_defs['modified_user_id'])) {
