@@ -1670,4 +1670,26 @@ class MysqlManager extends DBManager
     {
         return 'UUID()';
     }
+	
+    /**
+     * begin database transaction
+     */
+    public function beginTransaction() {
+        mysql_query("BEGIN", $this->database);
+    }
+
+    /**
+     * Commit a transaction
+     */
+    public function commit() {
+        mysql_query("COMMIT", $this->database);
+    }
+
+    /**
+     * rollback database transaction
+     */
+    public function rollback() {
+        mysql_query("ROLLBACK", $this->database);
+    }
+
 }

@@ -631,4 +631,26 @@ EOSQL;
     {
         return function_exists("sqlsrv_connect");
     }
+    
+    /**
+     * begin database transaction
+     */
+    public function beginTransaction() {
+        sqlsrv_begin_transaction($this->database);
+    }
+
+    /**
+     * Commit a transaction
+     */
+    public function commit() {
+        sqlsrv_commit($this->database);
+    }
+
+    /**
+     * rollback database transaction
+     */
+    public function rollback() {
+        sqlsrv_rollback($this->database);
+    }
+
 }
