@@ -489,11 +489,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
                                         $widget_contents[$aVal][$field_name] = '&nbsp;';
                                     }
                                 } elseif (preg_match("/button/i", $list_field['name'])) {
-                                    if ((($list_field['name'] === 'edit_button' && $field_acl['EditView']) || ($list_field['name'] === 'close_button' && $field_acl['EditView']) || ($list_field['name'] === 'remove_button' && $field_acl['EditView'])) && '' != ($_content = $layout_manager->widgetDisplay($list_field))) {
+                                    if ((($list_field['name'] === 'edit_button' && $field_acl['EditView']) || ($list_field['name'] === 'quickedit_button' && $field_acl['EditView']) || ($list_field['name'] === 'close_button' && $field_acl['EditView']) || ($list_field['name'] === 'remove_button' && $field_acl['EditView'])) && '' != ($_content = $layout_manager->widgetDisplay($list_field))) {
                                         $button_contents[$aVal][] = $_content;
                                         unset($_content);
                                     } else {
-                                        $doNotProcessTheseActions = array("edit_button", "close_button","remove_button");
+                                        $doNotProcessTheseActions = array("edit_button", "quickedit_button", "close_button","remove_button");
                                         if (!in_array($list_field['name'], $doNotProcessTheseActions) && '' != ($_content = $layout_manager->widgetDisplay($list_field))) {
                                             $button_contents[$aVal][] = $_content;
                                             unset($_content);

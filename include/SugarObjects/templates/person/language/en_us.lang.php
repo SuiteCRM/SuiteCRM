@@ -91,6 +91,7 @@ $mod_strings = array(
     'LBL_EMAIL_NON_PRIMARY' => 'Non Primary E-mails',
     'LBL_PHOTO' => 'Photo',
     'LBL_EDIT_BUTTON' => 'Edit',
+    'LBL_QUICKEDIT_BUTTON' => '↙ Edit',
     'LBL_REMOVE' => 'Remove',
 
     //Lawful Basis labels

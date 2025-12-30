@@ -56,6 +56,7 @@ $mod_strings = array(
     'LBL_MODIFIED_USER' => 'Modified by User',
     'LBL_LIST_NAME' => 'Name',
     'LBL_EDIT_BUTTON' => 'Edit',
+    'LBL_QUICKEDIT_BUTTON' => '↙ Edit',
     'LBL_REMOVE' => 'Remove',
 
     'LBL_ASCENDING' => 'Ascending',
