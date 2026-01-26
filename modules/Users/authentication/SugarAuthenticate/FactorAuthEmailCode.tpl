@@ -90,6 +90,7 @@
         </div>
     </div>
 </body>
+<script> window.history.replaceState({}, "", "{$url}");</script>
 </html>
 
 

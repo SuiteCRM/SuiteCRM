@@ -71,6 +71,7 @@ class FactorAuthEmailCode implements FactorAuthInterface
         $ss->assign('cssPath', $cssPath);
         $ss->assign('css', $css);
         $ss->assign('favicon', getJSPath($favicon));
+        $ss->assign('url', $_SERVER["HTTP_REFERER"]);
 
         $factorMessage = SugarAuthenticate::getFactorMessages();
         $ss->assign('factor_message', $factorMessage);
