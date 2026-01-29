@@ -221,7 +221,7 @@ $dictionary['DocumentRevision'] = array('table' => 'document_revisions'
       'len' => '255',
       'source' => 'non-db',
   ),
-  filecontents' =>
+  'filecontents' =>
   array(
        'name' => 'filecontents',
        'vname' => 'LBL_FILE_CONTENTS',
