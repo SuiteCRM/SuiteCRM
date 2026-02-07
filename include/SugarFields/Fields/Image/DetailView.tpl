@@ -42,6 +42,6 @@
 {if !isset({{sugarvar key='value' string=true}})}
     <img src="" style="max-width: {if !$vardef.width}{{$vardef.width}}{else}200{/if}px;" height="{if !$vardef.height}{{$vardef.height}}{else}50{/if}">
 {else}
-    <img src="index.php?entryPoint=download&id={$fields.{{$vardef.fileId}}.value|default:''}_{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}{$fields.width.value|default:10}&type={{$vardef.linkModule|default:''}}" style="max-width: {if isset($vardef.width)}{{$vardef.width}}{else}200{/if}px;" height="{if isset($vardef.height)}{{$vardef.height}}{else}50{/if}">
+    <img src="index.php?entryPoint=download&id={$fields.{{$vardef.fileId}}.value|default:''}_{{if empty($displayParams.idName)}}{{sugarvar key='name'}}{{else}}{{$displayParams.idName}}{{/if}}&type={{$vardef.linkModule|default:''}}" style="max-width: {if isset($vardef.width)}{{$vardef.width}}{else}200{/if}px;" height="{if isset($vardef.height)}{{$vardef.height}}{else}50{/if}">
 {/if}
 </span>
