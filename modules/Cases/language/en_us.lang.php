@@ -117,7 +117,6 @@ $mod_strings = array(
     'LBL_AOP_CASE_ATTACHMENTS' => 'Attachments:',
 
     'LBL_AOP_CASE_EVENTS' => 'Case Events',
-    'LBL_CASE_ATTACHMENTS_DISPLAY' => 'Case Attachments:',
     'LBL_ADD_CASE_FILE' => 'Add file',
     'LBL_REMOVE_CASE_FILE' => 'Remove file',
     'LBL_SELECT_CASE_DOCUMENT' => 'Select document',
