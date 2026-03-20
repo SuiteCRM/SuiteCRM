@@ -98,6 +98,7 @@ class AOW_Condition extends Basic
         $line_count = count((array)$postedField);
         $j = 0;
         for ($i = 0; $i < $line_count; ++$i) {
+            $condition_module = $_REQUEST['flow_module'] ?? '';
             if (!isset($post_data[$key . 'deleted'][$i])) {
                 LoggerManager::getLogger()->warn('AOR Condition trying to save lines but POST data does not contains the key "' . $key . 'deleted' . '" at index: ' . $i);
             }
@@ -106,11 +107,14 @@ class AOW_Condition extends Basic
                 $this->mark_deleted($post_data[$key . 'id'][$i] ?? '');
             } else {
                 $condition = BeanFactory::newBean('AOW_Conditions');
+                $condition_relation = '';
+                $flow_bean = BeanFactory::newBean($condition_module);
                 foreach ($this->field_defs as $field_def) {
                     $field_name = $field_def['name'];
                     if (isset($post_data[$key . $field_name][$i])) {
                         if (is_array($post_data[$key . $field_name][$i])) {
                             if ($field_name == 'module_path') {
+                                $condition_relation = $post_data[$key . $field_name][$i];
                                 $post_data[$key . $field_name][$i] = base64_encode(serialize($post_data[$key . $field_name][$i]));
                             } else {
                                 switch ($condition->value_type) {
@@ -123,8 +127,20 @@ class AOW_Condition extends Basic
                             }
                         } else {
                             if ($field_name === 'value' && $post_data[$key . 'value_type'][$i] === 'Value') {
-                                $post_data[$key . $field_name][$i] = fixUpFormatting($_REQUEST['flow_module'], $condition->field, $post_data[$key . $field_name][$i]);
-                            }
+                                if (!empty($flow_bean)) {
+                                    foreach ($condition_relation as $relate){
+                                        $flow_bean->load_relationship($relate);
+                                        $rel_module = '';
+                                        if ($flow_bean->$relate) {
+                                            $rel_module = $flow_bean->$relate->getRelatedModuleName();
+                                            $flow_bean = BeanFactory::newBean($rel_module);
+                                        }
+                                    }
+                                    if (!empty($rel_module) &&  $condition_module !== $rel_module) {
+                                        $condition_module = $rel_module;
+                                    }
+                                }
+                                $post_data[$key . $field_name][$i] = fixUpFormatting($condition_module, $condition->field, $post_data[$key . $field_name][$i]);                            }
                         }
                         $condition->$field_name = $post_data[$key . $field_name][$i];
                     }
