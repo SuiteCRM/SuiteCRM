@@ -24,7 +24,7 @@ $viewdefs [$module_name] =
                 array(
                     0 =>
                     array(
-                        'file' => 'include/javascript/tiny_mce/tiny_mce.js',
+                        'file' => 'vendor/tinymce/tinymce/tinymce.min.js',
                     ),
                     1 =>
                     array(

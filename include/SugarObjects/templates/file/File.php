@@ -104,7 +104,7 @@ class File extends Basic
             $img_name_bare = strtolower($this->file_ext) . '_image_inline';
         }
 
-        if (empty($this->filename) || stripos($this->filename, 'svg') || stripos($this->file_mime_type , 'svg')){
+        if (empty($this->filename ?? '') || stripos($this->filename, 'svg') || stripos($this->file_mime_type ?? '', 'svg')){
             $this->show_preview = false;
         }
 

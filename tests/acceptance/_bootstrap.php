@@ -1,9 +1,9 @@
 <?php
 // Here you can initialize variables that will be available to your tests
-
 /* bootstrap composer's autoloader */
+require_once __DIR__.'/../_bootstrap.php';
+
 chdir(__DIR__.'/../../');
-require_once __DIR__ . '/../../vendor/autoload.php';
 global $sugar_config, $db;
 
 require_once __DIR__ . '/../../include/database/DBManagerFactory.php';

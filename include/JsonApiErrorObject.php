@@ -133,7 +133,7 @@ class JsonApiErrorObject
      * @param array $source
      * @param array $meta
      */
-    public function __construct(LangText $title = null, LangText $detail = null, $id = null, $code = null, $status = null, $links = null, $source = null, $meta = null)
+    public function __construct(?LangText $title = null, ?LangText $detail = null, $id = null, $code = null, $status = null, $links = null, $source = null, $meta = null)
     {
         $this->setTitle($title ? $title : $this->getDefaultTitle());
         $this->setDetail($detail ? $detail : $this->getDefaultDetail());

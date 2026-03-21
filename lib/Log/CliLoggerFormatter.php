@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Logger;
+use Monolog\LogRecord;
 
 /**
  * CliLoggerFormatter for CliLoggerHandler.
@@ -96,15 +97,15 @@ class CliLoggerFormatter implements FormatterInterface
         }
         return $formatted;
     }
-
+    
     /**
      * Formats a log record.
      *
-     * @param  array $record A record to format
+     * @param array|LogRecord $record A record to format
      *
      * @return mixed The formatted record
      */
-    public function format(array $record)
+    public function format(array|LogRecord $record)
     {
         $level = $record['level'];
         $message = $record['message'];

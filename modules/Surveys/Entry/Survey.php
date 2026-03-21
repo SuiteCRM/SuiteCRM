@@ -90,16 +90,16 @@ EOF;
 
         <link href="themes/SuiteP/css/bootstrap.min.css" rel="stylesheet">
         <link href="modules/Surveys/javascript/rating/rating.min.css" rel="stylesheet">
-        <link href="modules/Surveys/javascript/datetimepicker/jquery-ui-timepicker-addon.css" rel="stylesheet">
+        <link href="modules/Surveys/javascript/datetimepicker/jquery.dateandtime.css" rel="stylesheet">
         <link href="include/javascript/jquery/themes/base/jquery.ui.all.css" rel="stylesheet">
+        <link href="modules/Surveys/javascript/survey.css" rel="stylesheet">
     </head>
     <body>
     <div class="container">
-        <div class="row">
-            <div class="col-md-offset-3 col-md-6">
+        <div class="text-center">
                 <img src="<?php echo $companyLogoURL ?>"/>
-            </div>
         </div>
+        <div class="pad">
         <div class="row well">
             <div class="col-md-offset-2 col-md-8">
                 <h1><?= $survey->name ?></h1>
@@ -107,34 +107,17 @@ EOF;
             </div>
         </div>
     </div>
-    <script src="include/javascript/jquery/jquery-min.js"></script>
-    <script src="include/javascript/jquery/jquery-ui-min.js"></script>
-    <script src="modules/Surveys/javascript/datetimepicker/jquery-ui-timepicker-addon.js"></script>
+    <script src="include/javascript/jquery/jquery-min.js"></script><script src="include/javascript/jquery/jquery-ui-min.js"></script>
+    <script src="modules/Surveys/javascript/datetimepicker/jquery.dateandtime.js"></script>
     <script src="modules/Surveys/javascript/rating/rating.min.js"></script>
     <script>
 
       $(function () {
-        $(".datefield").datepicker({
-          dateFormat: "yy-mm-dd"
+        $(".datetimefield").dateAndTime();
+        
+        new StarRating('.starRating', {
+          tooltip : false,
         });
-        $('.ui-datepicker-trigger').click(function (ev) {
-          var target = $(ev.target);
-
-          var datepicker = target.closest('.input-group').find('.datefield');
-          console.log(datepicker);
-          datepicker.datepicker('show');
-        });
-        $(".datetimefield").datetimepicker({
-          dateFormat: "yy-mm-dd"
-        });
-        $('.ui-datetimepicker-trigger').click(function (ev) {
-          var target = $(ev.target);
-
-          var datetimepicker = target.closest('.input-group').find('.datetimefield');
-          console.log(datetimepicker);
-          datetimepicker.datetimepicker('show');
-        });
-        $('.starRating').rating();
       });
     </script>
     </body>
@@ -179,7 +162,7 @@ function displayQuestion($survey, $question)
             <h3 class="panel-title"><label for="question<?= $question->id ?>"><?= $question->name; ?></label></h3>
         </div>
         <div class="panel-body">
-            <div class="form-group">
+            <div class="form-group" type="<?= strtolower($question->type) ?>">
                 <?php
                 $options = array();
     foreach ($question->get_linked_beans(
@@ -211,32 +194,18 @@ function displayQuestion($survey, $question)
                         echo "</label></div>";
                         break;
                     case "Radio":
-                        foreach ($options as $option) {
-                            echo "<div class='radio'>";
-                            echo "<label>";
-                            echo "<input  id='question" .
-                                $question->id .
-                                "' name='question[" .
-                                $question->id .
-                                "]' value='" .
-                                $option['id'] .
-                                "' type='radio'/>";
-                            echo $option['name'];
-                            echo "</label>";
-                            echo "</div>";
-                        }
+                        displayRadioField($question, $options);
                         break;
                     case "Dropdown":
-                    case "Multiselect":
-                        $multi = $question->type == 'Multiselect' ? ' multiple="true" ' : '';
-                        $name =
-                            $question->type == 'Multiselect' ? "question[" . $question->id . "][]" :
-                                "question[" . $question->id . "]";
-                        echo "<select class=\"form-control\" id='question" . $question->id . "' name='$name' $multi>";
+                        echo "<select class=\"form-control\" id='question".$question->id."' name='question[".$question->id."]'>";
+                        echo "<option value=''></option>";
                         foreach ($options as $option) {
-                            echo "<option value='" . $option['id'] . "'>" . $option['name'] . "</option>";
+                            echo "<option value='".$option['id']."'>".$option['name']."</option>";
                         }
                         echo "</select>";
+                        break;
+                    case "Multiselect":
+                        displayMultiselectField($question, $options);
                         break;
                     case "Matrix":
                         displayMatrixField($survey, $question, $options);
@@ -273,70 +242,110 @@ function displayTextField($question)
         "]' type='text'/>";
 }
 
+function displayRadioField($question, $options)
+{
+    echo "<div id='question" . $question->id . "' name='question[" . $question->id . "]' >";
+
+    foreach ($options as $optionId => $option) {
+        $id = 'question' . $question->id . '_' . $optionId;
+        $name = 'question[' . $question->id . ']';
+        displayRadioButton($option, $name, $id);
+    }
+
+    echo "</div>";
+}
+
+function displayRadioButton($option, $name, $id)
+{
+    echo "<div class='radio_button'>";
+    echo "<input id='$id' name='" . $name . "' value='" . $option['id'] . "' type='radio'/>";
+    echo "<label class='btn' for='$id' id='$id'>" . $option['name'] . "</label>";
+    echo "</div>";
+}
+
+function displayMultiselectField($question, $options)
+{
+    echo "<div id='question".$question->id."' name='question[".$question->id."]' multiple=\"true\">";
+    foreach ($options as $optionId => $checkbox) {
+        $id = "question".$question->id.'_'.$optionId;
+        echo "<div class='multi-checkbox'>";
+        echo "<input 
+                id ='$id'
+                name =\"question[{$question->id}][]\"
+                type =\"checkbox\"
+                value = \"{$checkbox['id']}\"
+             />";
+        echo "<label class='btn' for='$id' id='$id'>".$checkbox['name']."</label>";
+        echo "</div>";
+    }
+    echo "</div>";
+}
+
 function displayScaleField($question)
 {
-    echo "<table class='table'><tr>";
+    echo "<table class='scale' id='question".$question->id."' name='question[".$question->id."]'>";
     $scaleMax = 10;
+    
+    echo "<tr class='multiple'>";
+    echo "<td class=''>";
+    echo "<div class='ScaleGridContainer'>";
     for ($x = 1; $x <= $scaleMax; $x++) {
-        echo "<th>" . $x . "</th>";
+        
+        $name = "question[".$question->id."]";
+        $id = 'question'.$question->id.'_'.$x;
+
+        echo "<div class='pad'>";
+        echo "<div class='radio_button'>";
+        echo "<input id='$id' name='".$name."' value='".$x."' type='radio'/>";
+        echo "<label class='btn' for='$id' id='$id'>".$x."</label>";
+        echo "</div>";
+        echo "</div>";
     }
-    echo "</tr><tr>";
-    for ($x = 1; $x <= $scaleMax; $x++) {
-        echo "<td><input id='question" .
-            $question->id .
-            "' name='question[" .
-            $question->id .
-            "]' value='" .
-            $x .
-            "' type='radio'/></td>";
-    }
-    echo "</tr></table>";
+    echo "</div>";
+    echo "</td>";
+    echo "</tr>";
+    
+    echo "</table>";
 }
 
 function displayRatingField($question)
 {
     $ratingMax = 5;
-    echo "<div class='starRating'>";
+    echo "<select class='starRating' id='question" . $question->id . "' name='question[" . $question->id . "]'>";
+    echo "<option value=''>Select a rating</option>";
     for ($x = 1; $x <= $ratingMax; $x++) {
-        echo "<input class='rating' id='question" .
-            $question->id .
-            "' name='question[" .
-            $question->id .
-            "]' value='" .
-            $x .
-            "' type='radio'/>";
+        echo "<option value='" . $x . "'>" . $x . "</option>";
     }
-    echo "</div>";
+    echo "</select>";
 }
 
 function displayMatrixField($survey, $question, $options)
 {
     $matrixOptions = $survey->getMatrixOptions();
-    echo "<table width='75%'>";
+    echo "<table class='table table-striped' id='question" . $question->id . "' name='question[" . $question->id . "]'>";
     echo "<tr>";
-    echo "<th style='width:25%'></th>";
+    echo "<th></th>";
     foreach ($matrixOptions as $matrixOption) {
-        echo "<th style='width:25%'>";
-        echo $matrixOption;
+        echo "<th>";
+        echo trim(preg_replace('/\s+/', '<br />', $matrixOption));
         echo "</th>";
     }
-
+    echo "</tr>";
     foreach ($options as $option) {
-        echo "<tr>";
-        echo "<td style='width:25%'>";
+        echo "<tr class='radio_line'>";
+        echo "<th class='matrix-option__label'>";
         echo $option['name'];
-        echo "</td>";
+        echo "</th>";
         foreach ($matrixOptions as $x => $matrixOption) {
-            echo "<td style='width:25%'><input  id='question" .
-                $question->id .
-                "' name='question[" .
-                $question->id .
-                "][" .
-                $option['id'] .
-                "]' 
-value='" .
-                $x .
-                "' type='radio'/></td>";
+            $id = 'question' . $question->id . $option['id'] . '_' . $x;
+            $name = 'question[' . $question->id . '][' . $option['id'] . ']';
+
+            echo "<td>";
+            echo "<div class='radio'><label class='radio_btn'>";
+            echo "<input id='$id' name='" . $name . "' value='" . $x . "' type='radio'/>";
+            echo "</label>";
+            echo "</div>";
+            echo "</td>";
         }
         echo "</tr>";
     }
@@ -345,24 +354,12 @@ value='" .
 
 function displayDateTimeField($question)
 {
-    echo "<div class=\"input-group\">";
-    echo "<input class=\"form-control datetimefield\" id='question" .
-        $question->id .
-        "' name='question[" .
-        $question->id .
-        "]' type='text'/>";
-    echo "<div class=\"input-group-addon ui-datetimepicker-trigger\"><span class=\"suitepicon suitepicon-module-calendar\"></span></div></div>";
+    echo "<input class=\"form-control datetimefield\" id='question" . $question->id . "' name='question[" . $question->id . "]' type='text' />";
 }
 
 function displayDateField($question)
 {
-    echo "<div class=\"input-group\">";
-    echo "<input class=\"form-control datefield\" id='question" .
-        $question->id .
-        "' name='question[" .
-        $question->id .
-        "]' type='text'/>";
-    echo "<div class=\"input-group-addon ui-datepicker-trigger\"><span class=\"suitepicon suitepicon-module-calendar\"></span></div></div>";
+    echo "<input class=\"form-control datefield \" id='question" . $question->id . "' name='question[" . $question->id . "]' type='date' />";
 }
 
 function displayClosedPage($survey)

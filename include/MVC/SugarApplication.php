@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2019 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -643,7 +643,7 @@ class SugarApplication
          * If the headers have been sent, then we cannot send an additional location header
          * so we will output a javascript redirect statement.
          */
-        
+
         if (!empty($_REQUEST['ajax_load'])) {
             ob_get_clean();
             $ajax_ret = array(
@@ -818,7 +818,7 @@ class SugarApplication
         $_COOKIE[$name] = $value;
     }
 
-    protected $redirectVars = array('module', 'action', 'record', 'token', 'oauth_token', 'mobile');
+    protected $redirectVars = array('module', 'action', 'record', 'token', 'oauth_token', 'mobile', 'client_id', 'redirect_uri', 'response_type', 'scope', 'state');
 
     /**
      * Create string to attach to login URL with vars to preserve post-login

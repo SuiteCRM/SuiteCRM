@@ -473,7 +473,7 @@ class M2MRelationship extends SugarRelationship
                 if ($field_def['name'] === 'id') {
                     continue;
                 }
-                $middle_table[] = $field_def['name'];
+                $middle_table[] = "$rel_table." . $field_def['name'];
             }
             $SelectIncludedMiddleTableFields = ', ' . implode(',', $middle_table);
         }

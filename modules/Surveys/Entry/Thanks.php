@@ -15,9 +15,8 @@ $surveyThanks = translate('LBL_SURVEY_THANKS', 'Surveys');
     <title><?= $surveyName; ?></title>
 
     <link href="themes/SuiteP/css/bootstrap.min.css" rel="stylesheet">
-    <link href="custom/include/javascript/rating/rating.min.css" rel="stylesheet">
-    <link href="custom/include/javascript/datetimepicker/jquery-ui-timepicker-addon.css" rel="stylesheet">
     <link href="include/javascript/jquery/themes/base/jquery.ui.all.css" rel="stylesheet">
+    <link href="modules/Surveys/javascript/survey.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">

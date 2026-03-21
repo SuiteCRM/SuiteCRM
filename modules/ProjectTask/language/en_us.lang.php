@@ -83,6 +83,7 @@ $mod_strings = array(
 
     'LBL_LIST_NAME' => 'Name',
     'LBL_LIST_PARENT_NAME' => 'Project',
+    'LBL_SEARCH_FORM_TITLE' => 'Project Task Search',
     'LBL_LIST_PERCENT_COMPLETE' => '% Complete',
     'LBL_LIST_STATUS' => 'Status',
     'LBL_LIST_ASSIGNED_USER_ID' => 'Assigned To',
@@ -90,6 +91,7 @@ $mod_strings = array(
     'LBL_LIST_PRIORITY' => 'Priority',
     'LBL_LIST_CLOSE' => 'Close',
     'LBL_PROJECT_NAME' => 'Project Name',
+    'LBL_LIST_FORM_TITLE' => 'Project Task List',
 
     'LNK_NEW_PROJECT' => 'Create Project',
     'LNK_PROJECT_LIST' => 'Project List',

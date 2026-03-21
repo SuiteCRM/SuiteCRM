@@ -64,7 +64,7 @@ class SearchConfigurator
      *
      * @param null|Configurator $configurator
      */
-    public function __construct(Configurator $configurator = null)
+    public function __construct(?Configurator $configurator = null)
     {
         if ($configurator === null) {
             $configurator = new Configurator();
@@ -97,17 +97,11 @@ class SearchConfigurator
         if (empty($engine)) {
             throw new InvalidArgumentException('Search Engine cannot be empty');
         }
-
-        $searchController = 'UnifiedSearch';
-        $enableAod = false;
-
+        
         switch ($engine) {
             case 'BasicSearchEngine':
-                // Only basic search
-                break;
             case 'BasicAndAodEngine':
-                // Basic search and AOD
-                $enableAod = true;
+                $searchController = 'UnifiedSearch';
                 break;
             default:
                 // SearchWrapper with a specific engine
@@ -116,7 +110,6 @@ class SearchConfigurator
 
         $this->configurator->config['search']['controller'] = $searchController;
         $this->configurator->config['search']['defaultEngine'] = $engine;
-        $this->configurator->config['aod']['enable_aod'] = $enableAod;
 
         return $this;
     }

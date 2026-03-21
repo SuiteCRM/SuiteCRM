@@ -473,6 +473,14 @@ class ModuleService
             } elseif ($property === 'filename') {
                 $createFile = true;
                 continue;
+
+            } elseif ($property === 'email1') {
+                foreach ($bean->emailAddress->addresses as $index => $email) {
+                    if ($email['email_address'] === $bean->$property) {
+                        $bean->emailAddress->addresses[$index]['email_address'] = $value;
+                        $bean->emailAddress->addresses[$index]['email_address_caps'] = strtoupper($value);
+                    }
+                }
             }
 
             $bean->$property = $value;

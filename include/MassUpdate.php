@@ -185,7 +185,7 @@ eoq;
                 if (empty($value)) {
                     unset($_POST[$post]);
                 }
-            } elseif (strlen((string) $value) == 0) {
+            } elseif (strlen((string) $value ?? '') == 0) {
                 if (isset($this->sugarbean->field_defs[$post]) && $this->sugarbean->field_defs[$post]['type'] == 'radioenum' && isset($_POST[$post])) {
                     $_POST[$post] = '';
                 } else {

@@ -127,7 +127,7 @@ class="yui-navset"
 <tr>
 
 	{{math assign="rowCount" equation="$rowCount + 1"}}
-	
+
 	{{assign var='columnsInRow' value=$rowData|@count}}
 	{{assign var='columnsUsed' value=0}}
 
@@ -147,7 +147,7 @@ class="yui-navset"
     {{/if}}
 
 		{{if empty($def.templateMeta.labelsOnTop) && empty($colData.field.hideLabel)}}
-		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].label}}%' data-total-columns="{{$columnsInRow}}" scope="col">
+		<td valign="top" id='{{$colData.field.name}}_label' width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.iteration].label|default:10}}%' data-total-columns="{{$columnsInRow}}" scope="col">
 			{{if isset($colData.field.customLabel)}}
 			   <label for="{{$fields[$colData.field.name].name}}">{{$colData.field.customLabel}}</label>
 			{{elseif isset($colData.field.label)}}
@@ -189,7 +189,7 @@ class="yui-navset"
 		    {** if not explicitly assigned, we will default to 0 for 508 compliance reasons, instead of the calculated tabIndexVal value **}
 		    {{assign var='tabindex' value=0}}
 		{{/if}}
-		<td valign="top" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.index].field}}%' data-total-columns="{{$columnsInRow}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
+		<td valign="top" width='{{$def.templateMeta.widths[$smarty.foreach.colIteration.iteration].label|default:10}}%' data-total-columns="{{$columnsInRow}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
 			{{if !empty($def.templateMeta.labelsOnTop)}}
 				{{if isset($colData.field.label)}}
 				    {{if !empty($colData.field.label)}}

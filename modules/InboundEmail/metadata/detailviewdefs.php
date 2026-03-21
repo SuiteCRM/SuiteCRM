@@ -188,6 +188,18 @@ $viewdefs ['InboundEmail'] = [
                     'is_auto_import',
                     'move_messages_to_trash_after_import',
                 ],
+                [
+                    'last_import_run_datetime',
+                    'mailbox_last_imported_days',
+                ],
+                [
+                    'email_import_unread_only',
+                    'email_import_timeframe_start'
+                ],
+                [
+                    'email_import_per_run_threshold',
+                    ''
+                ]
             ],
             'lbl_case_configuration' => [
                 [

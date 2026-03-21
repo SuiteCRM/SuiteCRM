@@ -78,7 +78,7 @@ $dictionary['OAuth2Clients'] = [
             'name' => 'redirect_url',
             'vname' => 'LBL_REDIRECT_URL',
             'type' => 'varchar',
-            'required' => false,
+            'required' => true,
             'reportable' => false,
             'inline_edit' => false,
 

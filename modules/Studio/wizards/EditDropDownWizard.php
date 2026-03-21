@@ -84,7 +84,7 @@ class EditDropDownWizard extends StudioWizard
         }
     }
 
-    public function display()
+    public function display($error = '')
     {
         // override the parent display - don't display any wizard stuff
     }

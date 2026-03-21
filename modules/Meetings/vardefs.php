@@ -565,6 +565,15 @@ $dictionary['Meeting'] = array('table' => 'meetings',
                 'importable' => false,
                 'studio' => false,
             ),
+        'calendar_account_meetings' =>
+            array(
+                'name' => 'calendar_account_meetings',
+                'type' => 'link',
+                'relationship' => 'calendar_account_meetings',
+                'source' => 'non-db',
+                'module' => 'CalendarAccount',
+                'vname' => 'LBL_CALENDAR_ACCOUNTS',
+            ),
     ),
     'relationships' => array(
         'meetings_assigned_user' =>

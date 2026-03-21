@@ -61,4 +61,14 @@ class SuiteEditorSettingsForTinyMCE extends SuiteEditorSettingsForDirectHTML
      * @var string
      */
     public $tinyMCESetup = '{}';
+
+    public function __construct($settings = null)
+    {
+        parent::__construct($settings);
+
+        require_once 'include/SugarTinyMCE.php';
+        $tiny = new SugarTinyMCE();
+        $config = $tiny->getConfigArray();
+        $this->tinyMCESetup = json_encode($config);
+    }
 }

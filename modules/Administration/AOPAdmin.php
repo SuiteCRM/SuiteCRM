@@ -103,9 +103,9 @@ if (isset($_REQUEST['do']) && $_REQUEST['do'] == 'save') {
     }
     $cfg->config['aop']['enable_aop'] = !empty($_REQUEST['enable_aop']);
     $cfg->config['aop']['enable_portal'] = !empty($_REQUEST['enable_portal']);
-    $cfg->config['aop']['joomla_access_key'] = $_REQUEST['joomla_access_key'];
+    $cfg->config['aop']['joomla_access_key'] = $_REQUEST['joomla_access_key'] ?? '';
     $cfg->config['aop']['distribution_method'] = $_REQUEST['distribution_method'];
-    $cfg->config['aop']['distribution_user_id'] = $_REQUEST['distribution_user_id'];
+    $cfg->config['aop']['distribution_user_id'] = $_REQUEST['distribution_user_id'] ?? '';
     $cfg->config['aop']['distribution_options'] = $_REQUEST['distribution_options'];
     $cfg->config['aop']['user_email_template_id'] = $_REQUEST['user_email_template_id'];
     $cfg->config['aop']['contact_email_template_id'] = $_REQUEST['contact_email_template_id'];
@@ -180,7 +180,7 @@ $cBean = BeanFactory::getBean('Cases');
 $statusDropdown = get_select_options($app_list_strings[$cBean->field_name_map['status']['options']], '');
 $currentStatuses = '';
 
-if ($cfg->config['aop']['case_status_changes']) {
+if (isset($cfg->config['aop']['case_status_changes'])) {
     foreach (json_decode((string) $cfg->config['aop']['case_status_changes']) as $if => $then) {
         $ifDropdown = get_select_options($app_list_strings[$cBean->field_name_map['status']['options']], $if);
         $thenDropdown = get_select_options($app_list_strings[$cBean->field_name_map['status']['options']], $then);

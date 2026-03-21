@@ -91,7 +91,7 @@
     {/if}
 
     {foreach from=$resultsAsBean item=beans key=module}
-    <h3>{$moduleLabel[$module]}</h3>
+    <h3>{$moduleLabel[$module]}({$results->getModuleTotal($module)})</h3>
     <table class="list view">
         <thead>
             <tr>
@@ -104,7 +104,7 @@
         <tbody>
             {foreach from=$beans item=bean}
             <tr class="{cycle values="oddListRowS1,evenListRowS1"}">
-                <td><a href="{$APP_CONFIG.site_url}/index.php?action=EditView&module={$module}&record={$bean->id}&offset=1"><span class="suitepicon suitepicon-action-edit"></span></a></td>
+                <td><a href="{$SITE_URL}/index.php?action=EditView&module={$module}&record={$bean->id}&offset=1"><span class="suitepicon suitepicon-action-edit"></span></a></td>
                 {foreach from=$headers[$module] item=header}
                 {assign var="headerField" value=$header.field|default:''}
                 <td>{$bean->$headerField}

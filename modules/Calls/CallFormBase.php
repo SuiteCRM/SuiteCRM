@@ -268,6 +268,17 @@ EOQ;
             sugar_cleanup(true);
         }
 
+        // if dates changed
+        if (!empty($focus->id)) {
+            $oldBean = BeanFactory::newBean('Calls');
+            $oldBean->retrieve($focus->id);
+            if (($focus->date_start != $oldBean->date_start) || ($focus->date_end != $oldBean->date_end)) {
+                $focus->date_changed = true;
+            } else {
+                $focus->date_changed = false;
+            }
+        }
+
         $newBean = true;
         if (!empty($focus->id)) {
             $newBean = false;
@@ -275,6 +286,10 @@ EOQ;
 
         $return_id = '';
         $assignedUserId = $_POST['assigned_user_id'] ?? '';
+
+        if (!isset($_POST['user_invitees'])){
+            $_POST['user_invitees'] = '';
+        }
         //add assigned user and current user if this is the first time bean is saved
         if (empty($focus->id) && !empty($_REQUEST['return_module']) && $_REQUEST['return_module'] =='Calls' && !empty($_REQUEST['return_action']) && $_REQUEST['return_action'] =='DetailView') {
             //if return action is set to detail view and return module to call, then this is from the long form, do not add the assigned user (only the current user)
@@ -392,7 +407,9 @@ EOQ;
                     if (!in_array($a['lead_id'], $leadInvitees)) {
                         $deleteLeads[$a['lead_id']] = $a['lead_id'];
                     } else {
-                        $acceptStatusLeads[$a['user_id']] = $a['accept_status'];
+                        if (isset($a['user_id'])){
+                            $acceptStatusLeads[$a['user_id']] = $a['accept_status'];
+                        }
                     }
                 }
 
@@ -447,7 +464,7 @@ EOQ;
                     if (!isset($acceptStatusUsers[$user_id])) {
                         $focus->load_relationship('users');
                         $focus->users->add($user_id);
-                    } else {
+                    } else if (!$focus->date_changed) {
                         // update query to preserve accept_status
                         $qU  = 'UPDATE calls_users SET deleted = 0, accept_status = \''.$acceptStatusUsers[$user_id].'\' ';
                         $qU .= 'WHERE call_id = \''.$focus->id.'\' ';
@@ -470,7 +487,7 @@ EOQ;
                     if (!isset($acceptStatusContacts[$contact_id])) {
                         $focus->load_relationship('contacts');
                         $focus->contacts->add($contact_id);
-                    } else {
+                    } else if (!$focus->date_changed) {
                         // update query to preserve accept_status
                         $qU  = 'UPDATE calls_contacts SET deleted = 0, accept_status = \''.$acceptStatusContacts[$contact_id].'\' ';
                         $qU .= 'WHERE call_id = \''.$focus->id.'\' ';
@@ -492,7 +509,7 @@ EOQ;
                     if (!isset($acceptStatusLeads[$lead_id])) {
                         $focus->load_relationship('leads');
                         $focus->leads->add($lead_id);
-                    } else {
+                    } else if (!$focus->date_changed) {
                         // update query to preserve accept_status
                         $qU  = 'UPDATE calls_leads SET deleted = 0, accept_status = \''.$acceptStatusLeads[$lead_id].'\' ';
                         $qU .= 'WHERE call_id = \''.$focus->id.'\' ';

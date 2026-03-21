@@ -81,6 +81,8 @@ class EmailsViewCompose extends ViewEdit
         $this->ev = $this->getEditView();
         $this->ev->ss =& $this->ss;
 
+        $this->setupTinyMCEConfig();
+
         if (!isset($this->bean->mailbox_id) || empty($this->bean->mailbox_id)) {
             $inboundEmailID = $current_user->getPreference('defaultIEAccount', 'Emails');
             $this->ev->ss->assign('INBOUND_ID', $inboundEmailID);
@@ -177,5 +179,26 @@ class EmailsViewCompose extends ViewEdit
                 $user->name
             );
         return false;
+    }
+
+    private function setupTinyMCEConfig()
+    {
+        global $log;
+
+        try {
+            require_once("include/SugarTinyMCE.php");
+            $tiny = new SugarTinyMCE();
+            $emailTinyConfig = json_encode($tiny->getConfigArray());
+
+            if (empty($emailTinyConfig)) {
+                $log?->error("[EmailsViewCompose][setupTinyMCEConfig] Empty TinyMCE configuration returned");
+                return;
+            }
+
+            $this->ev->ss->assign('EMAIL_TINYMCE_CONFIG', $emailTinyConfig);
+
+        } catch (Throwable $e) {
+            $log?->error("[EmailsViewCompose][setupTinyMCEConfig] Failed to initialize TinyMCE: " . $e->getMessage());
+        }
     }
 }

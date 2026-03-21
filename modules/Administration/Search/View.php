@@ -59,15 +59,20 @@ class View extends AbstractView
 
     public function preDisplay(): void
     {
+        global $sugar_config;
+        
         parent::preDisplay();
 
         $this->smarty->assign('selectedController', SearchWrapper::getController());
         $this->smarty->assign('selectedEngine', SearchWrapper::getDefaultEngine());
 
         $legacyEngines = [
-            'BasicSearchEngine' => translate('LBL_BASIC_SEARCH_ENGINE'),
-            'BasicAndAodEngine' => translate('LBL_BASIC_AND_AOD_ENGINE'),
+            'BasicSearchEngine' => translate('LBL_BASIC_SEARCH_ENGINE')
         ];
+        
+        if (isTrue($sugar_config['aod']['enable_aod'])) {
+            $legacyEngines['BasicAndAodEngine'] = translate('LBL_BASIC_AND_AOD_ENGINE');
+        }
 
         $engines = $this->getEngines();
         $engines = array_merge($legacyEngines, $engines);

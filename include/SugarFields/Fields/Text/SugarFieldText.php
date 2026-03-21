@@ -39,7 +39,9 @@
  */
 
 require_once('include/SugarFields/Fields/Base/SugarFieldBase.php');
-require_once 'include/clean.php';
+require_once('include/clean.php');
+require_once('include/SugarTinyMCE.php');
+
 class SugarFieldText extends SugarFieldBase
 {
     public function getDetailViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex)
@@ -93,6 +95,8 @@ class SugarFieldText extends SugarFieldBase
 
     public function setup($parentFieldArray, $vardef, $displayParams, $tabindex, $twopass = true)
     {
+        global $log;
+
         parent::setup($parentFieldArray, $vardef, $displayParams, $tabindex, $twopass);
         $initiate = "";
 
@@ -101,28 +105,32 @@ class SugarFieldText extends SugarFieldBase
                 $displayParams['htmlescape'] = false;
             }
 
-            if ($_REQUEST['action'] === "EditView") {
+            if (isset($_REQUEST['action']) && $_REQUEST['action'] === "EditView") {
                 $form_name = $displayParams['formName'] ?? '';
+                $vardefName = $vardef['name'];
 
                 if (!empty($this->ss->_tpl_vars['displayParams']['formName'])) {
                     $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
                 }
 
-                $config = [];
-                $config['height'] = 250;
-                $config['menubar'] = false;
-                $config['plugins'] = 'code, table, link, image, wordcount';
+                try {
+                    $tiny = new SugarTinyMCE();
+                    $tinyConfigJs = $tiny->getConfig();
 
-                if ($form_name !== '') {
-                    $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
-                } else {
-                    $config['selector'] = "#" . $vardef['name'];
+                    $selector = "";
+                    if ($form_name !== '') {
+                        $selector .= "#$form_name ";
+                    }
+                    $selector .= "#$vardefName";
+
+                    $initiate = '<script type="text/javascript">';
+                    $initiate .= $tinyConfigJs;
+                    $initiate .= "tinyConfig.selector = '$selector';";
+                    $initiate .= 'tinymce.init(tinyConfig);';
+                    $initiate .= '</script>';
+                } catch (Throwable $e) {
+                    $log?->error("[SugarFieldText][setup][tinymce_init_failed] Failed to initialize TinyMCE: " . $e->getMessage());
                 }
-
-                $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';
-
-                $jsConfig = json_encode($config);
-                $initiate = '<script type="text/javascript"> tinyMCE.init(' . $jsConfig . ')</script>';
             }
         }
 

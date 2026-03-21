@@ -88,9 +88,9 @@ class Controller extends AbstractController
     public function doSaveConfig()
     {
         $enabled = filter_input(INPUT_POST, 'enabled', FILTER_VALIDATE_BOOLEAN);
-        $host = filter_input(INPUT_POST, 'host', FILTER_SANITIZE_STRING);
-        $user = filter_input(INPUT_POST, 'user', FILTER_SANITIZE_STRING);
-        $pass = filter_input(INPUT_POST, 'pass', FILTER_SANITIZE_STRING);
+        $host = filter_input(INPUT_POST, 'host');
+        $user = filter_input(INPUT_POST, 'user');
+        $pass = filter_input(INPUT_POST, 'pass');
 
         $enabled = (bool) (int) $enabled;
 
@@ -118,9 +118,9 @@ class Controller extends AbstractController
         $return = [];
         $input = INPUT_POST;
 
-        $host = filter_input($input, 'host', FILTER_SANITIZE_STRING);
-        $user = filter_input($input, 'user', FILTER_SANITIZE_STRING);
-        $pass = filter_input($input, 'pass', FILTER_SANITIZE_STRING);
+        $host = filter_input($input, 'host');
+        $user = filter_input($input, 'user');
+        $pass = filter_input($input, 'pass');
 
         try {
             $config = [

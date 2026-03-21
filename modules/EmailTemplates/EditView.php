@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-global $current_user;
+global $current_user, $log;
 require_once('modules/Campaigns/utils.php');
 
 //if campaign_id is passed then we assume this is being invoked from the campaign module and in a popup.
@@ -293,15 +293,6 @@ $xtpl->assign('width_style', 'style="display:'.($current_user->getEditorType() !
 
 
 if (true) {
-    if (!isTouchScreen()) {
-        require_once("include/SugarTinyMCE.php");
-        $tiny = new SugarTinyMCE();
-        $tiny->defaultConfig['cleanup_on_startup'] = true;
-        $tiny->defaultConfig['height'] = 600;
-        $tiny->defaultConfig['plugins'] .= ",fullpage";
-        $tinyHtml = $tiny->getInstance();
-        $xtpl->assign("tiny", $tinyHtml);
-    }
     ///////////////////////////////////////
     ////	MACRO VARS
     $xtpl->assign("INSERT_VARIABLE_ONCLICK", "insert_variable(document.EditView.variable_text.value, \"email_template_editor\")");

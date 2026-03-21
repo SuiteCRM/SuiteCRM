@@ -71,3 +71,8 @@ if (!class_exists(Provider::class)) {
     #[\AllowDynamicProperties]
     class Provider {}
 }
+
+/**
+ * Backwards compatibility for Html2Text
+ */
+class_alias('Soundasleep\\Html2Text', 'Html2Text\\Html2Text');

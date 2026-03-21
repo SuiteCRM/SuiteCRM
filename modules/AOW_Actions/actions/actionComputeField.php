@@ -119,9 +119,9 @@ class actionComputeField extends actionBase
                 $bean->processed = true;
                 $check_notify =
                     $bean->assigned_user_id != $current_user->id &&
-                    $bean->assigned_user_id != $bean->fetched_row['assigned_user_id'];
+                    $bean->assigned_user_id != is_array($bean->fetched_row) ? ($bean->fetched_row['assigned_user_id'] ?? null) : null;
             } else {
-                $check_notify = $bean->assigned_user_id != $bean->fetched_row['assigned_user_id'];
+                $check_notify = $bean->assigned_user_id != is_array($bean->fetched_row) ? ($bean->fetched_row['assigned_user_id'] ?? null) : null;
             }
 
             $bean->process_save_dates = false;
@@ -333,7 +333,7 @@ class actionComputeField extends actionBase
      *
      * @return string
      */
-    public function edit_display($line, SugarBean $bean = null, $params = array())
+    public function edit_display($line, ?SugarBean $bean = null, $params = array())
     {
         require_once("modules/AOW_WorkFlow/aow_utils.php");
 

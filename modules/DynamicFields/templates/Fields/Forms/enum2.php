@@ -64,7 +64,7 @@
      $edit_mod_strings = return_module_language($GLOBALS['current_language'], 'EditCustomFields');
 
      if (!empty($_REQUEST['type']) && $_REQUEST['type'] == 'radioenum') {
-         $edit_mod_strings['LBL_DROP_DOWN_LIST'] = $edit_mod_strings['LBL_RADIO_FIELDS'];
+         $edit_mod_strings['LBL_DROP_DOWN_LIST'] = $edit_mod_strings['LBL_RADIO_FIELDS'] ?? '';
          $radio = true;
      }
      $package_strings = array();
@@ -99,7 +99,9 @@
      } else {
          //since we do not have a default value then we should assign the first one.
          $key = $dropdowns[0];
-         $default_dropdowns = $my_list_strings[$key];
+         if(isset($my_list_strings[$key])) {
+            $default_dropdowns = $my_list_strings[$key];
+         }
      }
     
      $selected_dropdown = '';

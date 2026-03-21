@@ -299,7 +299,7 @@ class EmailTemplate extends SugarBean
             // to recognise it when parsing and replacing variables
             $bodyCleanup = preg_replace('/(\$\w+\b)([^\s\/&"\'])/', '$1 $2', $bodyCleanup);
 
-            $bodyCleanup = Html2Text\Html2Text::convert($bodyCleanup, true);
+            $bodyCleanup = Soundasleep\Html2Text::convert($bodyCleanup, true);
 
             $this->body = $bodyCleanup;
         }

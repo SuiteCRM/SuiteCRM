@@ -41,7 +41,7 @@
 *}
 
 {include file="modules/Emails/templates/_baseJsVars.tpl"}
-<script type="text/javascript" src='{sugar_getjspath file='include/javascript/tiny_mce/tiny_mce.js'}'></script>
+<script type="text/javascript" src='{sugar_getjspath file='vendor/tinymce/tinymce/tinymce.min.js'}'></script>
 <script type="text/javascript" src='{sugar_getjspath file='cache/include/javascript/sugar_grp_emails.js'}'></script>
 <script type="text/javascript"
         src='{sugar_getjspath file='cache/include/javascript/sugar_grp_yui_widgets.js'}'></script>

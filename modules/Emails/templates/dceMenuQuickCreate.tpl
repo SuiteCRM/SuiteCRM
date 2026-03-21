@@ -43,11 +43,11 @@
 <script type='text/javascript'>
 {literal}
 function closeEmailOverlay() {
-	lastLoadedMenu=undefined; 
+	lastLoadedMenu=undefined;
 
 	if(typeof SUGAR.quickCompose.parentPanel != 'undefined' && SUGAR.quickCompose.parentPanel != null) {
-       if(tinyMCE) {
-    	  tinyMCE.execCommand('mceRemoveControl', false, 'htmleditor0'); 
+       if(tinymce) {
+    	  tinymce.remove('#htmleditor0');
        }
        SUGAR.quickCompose.parentPanel.hide();
        SUGAR.quickCompose.parentPanel = null;

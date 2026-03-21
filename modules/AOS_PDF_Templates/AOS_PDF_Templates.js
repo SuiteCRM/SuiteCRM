@@ -76,7 +76,7 @@ function populateModuleVariables(type){
 
 function insert_variable(text) {
     if (text != ''){
-        var inst = tinyMCE.getInstanceById("description");
+        var inst = tinymce.get("description");
         if (inst) inst.getWin().focus();
         inst.execCommand('mceInsertContent', false, text);
         inst.execCommand('mceToggleEditor');
@@ -86,9 +86,9 @@ function insert_variable(text) {
 
 function insertSample(smpl){
     if(smpl != 0){
-        var body = tinyMCE.getInstanceById("description");
-        var header = tinyMCE.getInstanceById("pdfheader");
-        var footer = tinyMCE.getInstanceById("pdffooter");
+        var body = tinymce.get("description");
+        var header = tinymce.get("pdfheader");
+        var footer = tinymce.get("pdffooter");
         var cnf = true;
         if(body.getContent() != '' || header.getContent() != '' || footer.getContent() != ''){
             cnf=confirm(SUGAR.language.get('AOS_PDF_Templates', 'LBL_WARNING_OVERWRITE'));

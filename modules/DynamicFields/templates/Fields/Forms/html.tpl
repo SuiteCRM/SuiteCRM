@@ -65,13 +65,19 @@
 <script type="text/javascript" language="Javascript">
 SUGAR.ajaxLoad = true;
 {if $hideLevel < 5}
-    setTimeout("tinyMCE.execCommand('mceAddControl', false, 'htmlarea');", 500);  
-	ModuleBuilder.tabPanel.get("activeTab").closeEvent.subscribe(function(){ldelim}tinyMCE.execCommand('mceRemoveControl', false, 'htmlarea');{rdelim});
+{$tinyConfig}
+{literal}
+    setTimeout(function() {
+        tinyConfig.selector = '#htmlarea';
+        tinymce.init(tinyConfig);
+    }, 500);
+	ModuleBuilder.tabPanel.get("activeTab").closeEvent.subscribe(function(){tinymce.remove('#htmlarea');});
 	setTimeout("document.forms.popup_form.required.value = false;YAHOO.util.Dom.getAncestorByTagName(document.forms.popup_form.required, 'tr').style.display='none';", 500);
+{/literal}
 {/if}
 {literal}
 document.popup_form.presave = function(){
-    var tiny = tinyMCE.getInstanceById('htmlarea');
+    var tiny = tinymce.get('htmlarea');
     if ( (null != tiny) || ("undefined" != typeof(tiny)) ) {
          document.getElementById('ext4').value = tiny.getContent();
     } else {

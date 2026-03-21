@@ -19,8 +19,17 @@
  * @param html|htmlall|url|quotes|hex|hexentity|javascript
  * @return string
  */
-function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-8859-1')
+function smarty_modifier_escape($string, $esc_type = 'html', $char_set = null)
 {
+    if (is_null($string)) {
+        return null;
+    }
+    
+    if ($char_set === null) {
+        global $sugar_config;
+        $char_set = $sugar_config['default_charset'] ?? 'UTF-8';
+    }
+
     switch ($esc_type) {
         case 'html':
             return htmlspecialchars($string, ENT_QUOTES, $char_set);

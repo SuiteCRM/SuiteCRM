@@ -48,7 +48,6 @@ use SuiteCRM\Exception\InvalidArgumentException;
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
 use SuiteCRM\Search\SearchResults;
-use SuiteCRM\Search\SearchWrapper;
 
 /**
  * SearchEngine that use Elasticsearch index for performing almost real-time search.
@@ -64,7 +63,7 @@ class ElasticSearchEngine extends SearchEngine
      *
      * @param Client|null $client
      */
-    public function __construct(Client $client = null)
+    public function __construct(?Client $client = null)
     {
         $this->client = $client ?? ElasticSearchClientBuilder::getClient();
     }
@@ -75,15 +74,22 @@ class ElasticSearchEngine extends SearchEngine
      */
     public function search(SearchQuery $query): SearchResults
     {
+        $totalHits = 0;
+        $results = [];
         $this->validateQuery($query);
         $params = $this->createSearchParams($query);
         $start = microtime(true);
-        $hits = $this->runElasticSearch($params);
-        $results = $this->parseHits($hits);
+        
+        foreach($params as $param) {
+            $hits = $this->runElasticSearch($param);
+            $results += $this->parseHits($this->runElasticSearch($param));
+            $totalHits +=  $hits['hits']['total']['value'];
+        }
+        
         $end = microtime(true);
-        $searchTime = ($end - $start);
+        $elapsed = ($end - $start);
 
-        return new SearchResults($results, true, $searchTime, $hits['hits']['total']['value']);
+        return new SearchResults($results, true, $elapsed, $totalHits);
     }
 
     /**
@@ -105,48 +111,52 @@ class ElasticSearchEngine extends SearchEngine
     private function createSearchParams(SearchQuery $query): array
     {
         $searchStr = $query->getSearchString();
-        $searchModules = SearchWrapper::getModules();
-        $indexes = implode(',', array_map('strtolower', $searchModules));
+        $searchModules = $query->getModules();
 
-        // Wildcard character required for Elasticsearch
-        $wildcardBe = "*";
+        $indexes = array_map('strtolower', $searchModules);
+        $results = [];
 
-        // Override frontend wildcard character
-        if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
-            $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
-            if ($wildcardFe !== $wildcardBe && strlen((string) $wildcardFe) === 1) {
-                $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
+        foreach($indexes as $index) {
+            // Wildcard character required for Elasticsearch
+            $wildcardBe = "*";
+
+            // Override frontend wildcard character
+            if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
+                $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
+                if ($wildcardFe !== $wildcardBe && strlen((string)$wildcardFe) === 1) {
+                    $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
+                }
             }
-        }
 
-        // Add wildcard at the beginning of the search string
-        if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
-            $GLOBALS['sugar_config']['search_wildcard_infront'] === true && $searchStr[0] !== $wildcardBe) {
-            $searchStr = $wildcardBe . $searchStr;
-        }
+            // Add wildcard at the beginning of the search string
+            if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
+                $GLOBALS['sugar_config']['search_wildcard_infront'] === true && $searchStr[0] !== $wildcardBe) {
+                $searchStr = $wildcardBe . $searchStr;
+            }
 
-        // Add wildcard at the end of search string
-        if ((substr_compare($searchStr, $wildcardBe, -strlen($wildcardBe))) !== 0) {
-            $searchStr .= $wildcardBe;
-        }
-
-        return [
-            'index' => $indexes,
-            'body' => [
-                'stored_fields' => [],
-                'from' => $query->getFrom(),
-                'size' => $query->getSize(),
-                'query' => [
-                    'query_string' => [
-                        'query' => $searchStr,
-                        'fields' => ['name.*^5', '*'],
-                        'analyzer' => 'standard',
-                        'default_operator' => 'OR',
-                        'minimum_should_match' => '66%',
+            // Add wildcard at the end of search string
+            if ((substr_compare($searchStr, $wildcardBe, -strlen($wildcardBe))) !== 0) {
+                $searchStr .= $wildcardBe;
+            }
+            $results[] = [
+                'index' => $index,
+                'body' => [
+                    'stored_fields' => [],
+                    'from' => $query->getFrom(),
+                    'size' => $query->getSize(),
+                    'query' => [
+                        'query_string' => [
+                            'query' => $searchStr,
+                            'fields' => ['name.*^5', '*'],
+                            'analyzer' => 'standard',
+                            'default_operator' => 'OR',
+                            'minimum_should_match' => '66%',
+                        ],
                     ],
                 ],
-            ],
-        ];
+            ];
+        }
+        return $results;
     }
 
     /**
@@ -186,7 +196,8 @@ class ElasticSearchEngine extends SearchEngine
             $params = ['index' => $index];
             $meta = $this->client->indices()->getMapping($params);
             $moduleName = $meta[$index]['mappings']['_meta']['module_name'];
-            $searchResults[$moduleName] = $hit;
+            $searchResults[$moduleName]['results'] = $hit;
+            $searchResults[$moduleName]['totalHits'] = $hits['hits']['total']['value'] ?: 0;
         }
 
         return $searchResults;

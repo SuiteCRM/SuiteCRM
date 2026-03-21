@@ -168,7 +168,7 @@ array(
           0 =>
           array(
             'name' => 'date_start',
-            'customCode' => '{$fields.date_start.value} {$fields.time_start.value}&nbsp;',
+            'customCode' => '{$fields.date_start.value}&nbsp;',
             'label' => 'LBL_DATE_TIME',
           ),
           1 =>

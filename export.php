@@ -49,6 +49,7 @@ require_once('include/export_utils.php');
 global $sugar_config;
 global $current_user;
 global $app_list_strings;
+global $db;
 global $beanList;
 global $log;
 
@@ -74,12 +75,51 @@ $bean = $beanList[$_REQUEST['module']];
 //check to see if this is a request for a sample or for a regular export
 if (!empty($_REQUEST['sample'])) {
     //call special method that will create dummy data for bean as well as insert standard help message.
-    $content = exportSample(clean_string($_REQUEST['module']));
+    $content = exportSample($the_module);
 } else {
     if (!empty($_REQUEST['uid'])) {
-        $content = export(clean_string($_REQUEST['module']), $_REQUEST['uid'], isset($_REQUEST['members']) ? $_REQUEST['members'] : false);
+        $ids = explode(',', $_REQUEST['uid']);
     } else {
-        $content = export(clean_string($_REQUEST['module']));
+        $ids = array();
+        $bean = BeanFactory::getBean($the_module);
+
+        if(trim($_SESSION["export_where"]) !== "where " . strtolower($_REQUEST["module"]) .".deleted=0"){
+            // handle select all queries with filters
+            $whereArr = explode(" ", trim($_SESSION['export_where']));
+            if ($whereArr[0] === trim('where')) {
+                array_shift($whereArr);
+            }
+            $query = $bean->create_new_list_query(
+                "",
+                implode(" ", $whereArr),
+                array(),
+                array(),
+                0,
+                '',
+                false,
+                $bean,
+                true,
+                true
+            );
+            $result = $db->query($query, true);
+        } else {
+            // handle default select all
+            $result = $db->query("SELECT id FROM $bean->table_name WHERE deleted=0;");
+        }
+
+        while ($val = $db->fetchByAssoc($result, false)) {
+            $ids[] = $val['id'];
+        }
+
+        unset($result, $bean);
+    }
+
+    $idChunks = array_chunk($ids, 1000, true);
+    $content = '';
+    $displayHeaders = true;
+    foreach($idChunks as $chunk) {
+        $content .= export($the_module, implode(",", $chunk), isset($_REQUEST['members']) ? $_REQUEST['members'] : false, false, $displayHeaders);
+        $displayHeaders = false;
     }
 }
 $filename = $_REQUEST['module'];

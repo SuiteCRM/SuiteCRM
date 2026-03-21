@@ -105,7 +105,7 @@
                                             {/if}
                                             <tr>
                                                 <td scope="row" width="30%"><label for="user_name">{sugar_translate module="Users" label="LBL_USER_NAME"}:</label></td>
-                                                <td width="70%"><input type="text" size='35' tabindex="1" id="user_name" name="user_name"  value='{$LOGIN_USER_NAME}' autocomplete="off"></td>
+                                                <td width="70%"><input type="text" size='35' tabindex="1" id="user_name" name="user_name"  value='{$LOGIN_USER_NAME|escape}' autocomplete="off"></td>
                                             </tr>
                                             <tr>
                                                 <td scope="row"><label for="username_password">{sugar_translate module="Users" label="LBL_PASSWORD"}:</label></td>
@@ -145,7 +145,7 @@
                                             </tr>
                                             <tr>
                                                 <td scope="row" width="30%"><label for="fp_user_name">{sugar_translate module="Users" label="LBL_USER_NAME"}:</label></td>
-                                                <td width="70%"><input type="text" size='26' id="fp_user_name" name="fp_user_name"  value='{$LOGIN_USER_NAME}' autocomplete="off"></td>
+                                                <td width="70%"><input type="text" size='26' id="fp_user_name" name="fp_user_name"  value='{$LOGIN_USER_NAME|escape}' autocomplete="off"></td>
                                             </tr>
                                             <tr>
                                                 <td scope="row" width="30%"><label for="fp_user_mail">{sugar_translate module="Users" label="LBL_EMAIL"}:</label></td>

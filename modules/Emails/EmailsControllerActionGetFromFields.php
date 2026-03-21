@@ -89,7 +89,7 @@ class EmailsControllerActionGetFromFields
         $ie->email = $email;
         $ieAccounts = $ie->retrieveAllByGroupIdWithGroupAccounts($this->currentUser->id);
         $accountSignatures = $this->currentUser->getPreference('account_signatures', 'Emails');
-        $showFolders = sugar_unserialize(base64_decode($this->currentUser->getPreference('showFolders', 'Emails'))) ?: [];
+        $showFolders = sugar_unserialize(base64_decode((string) $this->currentUser->getPreference('showFolders', 'Emails'))) ?: [];
         $emailSignatures = $this->getEmailSignatures($accountSignatures);
         $defaultEmailSignature = $this->getDefaultSignatures();
         $prependSignature = $this->currentUser->getPreference('signature_prepend') ?? false;

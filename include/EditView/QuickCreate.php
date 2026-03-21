@@ -56,11 +56,11 @@ class QuickCreate extends EditView
      */
     public $viaAJAX = false;
 
-    public function process()
+    public function process($checkFormName = false, $formName = '')
     {
         global $current_user, $timedate;
 
-        parent::process();
+        parent::process($checkFormName, $formName);
 
         $this->ss->assign('ASSIGNED_USER_ID', $current_user->id);
 

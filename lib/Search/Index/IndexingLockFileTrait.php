@@ -61,6 +61,7 @@ trait IndexingLockFileTrait
      * Returns a Carbon timestamp or `false` if the file could not be found.
      *
      * @return Carbon|false
+     * @throws \Exception
      */
     private function readLockFile()
     {
@@ -82,7 +83,7 @@ trait IndexingLockFileTrait
 
         $carbon = Carbon::createFromTimestamp($data);
 
-        $this->logger->debug(sprintf("Last logged indexing performed on %s (%s)", $carbon->toDateTimeString(), $carbon->diffForHumans()));
+        $this->logger->debug(sprintf("Last logged indexing performed on %s (%s)", $carbon->toDateTimeString(), $this->formatInterval(Carbon::now()->diffInSeconds($carbon))));
 
         return $carbon;
     }
@@ -151,5 +152,35 @@ trait IndexingLockFileTrait
             $this->logger->error('Error while writing lock file');
             $this->logger->error($exception);
         }
+    }
+
+    /**
+     * Format seconds as human-readable interval
+     * @param float $seconds
+     * @return string
+     * @throws \Exception
+     */
+    protected function formatInterval(float $seconds): string
+    {
+        $seconds = $seconds < 0 ? $seconds * -1 : $seconds; 
+        $interval = new \DateInterval('PT' . round($seconds) . 'S');
+        $reference = new \DateTimeImmutable();
+        $endTime = $reference->add($interval);
+        $diff = $reference->diff($endTime);
+
+        $parts = array_filter([
+            $diff->y ? $diff->y . 'y' : null,
+            $diff->m ? $diff->m . 'mo' : null,
+            $diff->d ? $diff->d . 'd' : null,
+            $diff->h ? $diff->h . 'h' : null,
+            $diff->i ? $diff->i . 'm' : null,
+            $diff->s ? $diff->s . 's' : null,
+        ]);
+
+        if (empty($parts)) {
+            $parts[] = '0s';
+        }
+
+        return implode(' ', array_slice($parts, 0, 3));
     }
 }

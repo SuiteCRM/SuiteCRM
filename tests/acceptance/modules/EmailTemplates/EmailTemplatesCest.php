@@ -47,4 +47,36 @@ class EmailTemplatesCest
 
         $I->see('Email - Templates', '.module-title-text');
     }
+
+    /**
+     * @param \AcceptanceTester $I
+     * @param \Step\Acceptance\DetailView $detailView
+     * @param \Step\Acceptance\ListView $listView
+     * @param \Step\Acceptance\EmailTemplates $emailTemplates
+     *
+     * As administrative user I want to create an Email Template so that I can test
+     * the TinyMCE editor in the body_html field.
+     */
+    public function testScenarioCreateEmailTemplate(
+        \AcceptanceTester $I,
+        \Step\Acceptance\DetailView $detailView,
+        \Step\Acceptance\ListView $listView,
+        \Step\Acceptance\EmailTemplates $emailTemplates
+    ) {
+        $I->wantTo('Create an Email Template with TinyMCE editor');
+
+        // Navigate to Email Templates list-view
+        $I->loginAsAdmin();
+        $I->visitPage('EmailTemplates', 'index');
+        $listView->waitForListViewVisible();
+
+        // Create Email Template
+        $this->fakeData->seed($this->fakeDataSeed);
+        $emailTemplates->createEmailTemplate('Test_'. $this->fakeData->company());
+
+        // Delete Email Template
+        $detailView->clickActionMenuItem('Delete');
+        $detailView->acceptPopup();
+        $listView->waitForListViewVisible();
+    }
 }

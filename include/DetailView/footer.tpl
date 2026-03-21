@@ -40,6 +40,12 @@
 
 *}
 </form>
+
+{{if isset($scriptBlocks)}}
+<!-- Begin Meta-Data Javascript -->
+{{$scriptBlocks}}
+<!-- End Meta-Data Javascript -->
+{{/if}}
 <script>SUGAR.util.doWhen("document.getElementById('form') != null",
         function(){ldelim}SUGAR.util.buildAccessKeyLabels();{rdelim});
 </script>

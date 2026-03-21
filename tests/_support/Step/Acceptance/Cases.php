@@ -29,7 +29,7 @@ class Cases extends \AcceptanceTester
         $I->selectOption('#priority', 'Low');
         $I->selectOption('#status', 'Duplicate');
 
-        $I->executeJS('tinyMCE.activeEditor.setContent("TinyMCE Content Test");');
+        $I->executeJS('tinymce.activeEditor.setContent("TinyMCE Content Test");');
 
         $I->seeElement('#assigned_user_name');
 

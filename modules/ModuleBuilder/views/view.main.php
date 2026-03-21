@@ -114,13 +114,6 @@ class ViewMain extends SugarView
         ///////////////////////////////////
         require_once('include/SugarTinyMCE.php');
         $tiny = new SugarTinyMCE();
-        $tiny->defaultConfig['width']=300;
-        $tiny->defaultConfig['height']=300;
-        $tiny->buttonConfig = "code,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,
-	                         justifyfull,separator,forecolor,backcolor,
-	                         ";
-        $tiny->buttonConfig2 = "pastetext,pasteword,fontselect,fontsizeselect,";
-        $tiny->buttonConfig3 = "";
         $ed = $tiny->getInstance();
         $smarty->assign("tiny", $ed);
 

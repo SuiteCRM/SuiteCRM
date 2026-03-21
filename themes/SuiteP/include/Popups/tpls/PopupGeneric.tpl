@@ -157,7 +157,7 @@
 						<input onclick='sListView.check_item(this, document.MassUpdate)' type='checkbox' class='checkbox' name='mass[]' value='{$rowData.ID}'>
 				</td>
 				<td width='1%' nowrap='nowrap'>
-						{$pageData.additionalDetails.$id}
+						{$pageData.additionalDetails.$id|default:''}
 				</td>
 				{/if}
 				{counter start=0 name="colCounter" print=false assign="colCounter"}
@@ -171,14 +171,12 @@
 							{sugar_evalcolumn_old var=$params.customCode rowData=$rowData}
 						{elseif $params.currency_format}
 							{sugar_currency_format
-								id=$rowData.ID
-								var=$rowData.$col
-								field_name=$params.name
-	                            round=$params.currency_format.round
-	                            decimals=$params.currency_format.decimals
-	                            symbol=$params.currency_format.symbol
-	                            convert=$params.currency_format.convert
-	                            currency_symbol=$params.currency_format.currency_symbol
+							    var=$rowData.$col
+							    round=$params.currency_format.round|default:''
+							    decimals=$params.currency_format.decimals|default:''
+							    symbol=$params.currency_format.symbol|default:''
+							    convert=$params.currency_format.convert|default:''
+							    currency_symbol=$params.currency_format.currency_symbol|default:''
 							}
 						{elseif $params.type == 'bool'}
 								<input type='checkbox' disabled=disabled class='checkbox'

@@ -81,6 +81,11 @@ $mod_strings = array(
     'LBL_SW_REPAIR_CUSTOMFIELDS' => 'Repair Custom Fields',
     'LBL_SW_MIGRATE_CUSTOMFIELDS' => 'Migrate Custom Fields',
 
+// JS LABELS
+    'LBL_REBUILD_JAVASCRIPT_LANG_DESC_SHORT' => 'Rebuilds javascript versions of language files',
+    'LBL_REBUILD_JAVASCRIPT_LANG_DESC' => 'Removing javascript versions of language files, will rebuild when needed.',
+
+
 //Manager Backups History
     'LBL_MB_DELETE' => 'Delete',
 

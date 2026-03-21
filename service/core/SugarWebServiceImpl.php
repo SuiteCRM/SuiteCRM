@@ -718,8 +718,14 @@ class SugarWebServiceImpl
             return;
         } // if
 
-        $class_name = $beanList[$module_name];
-        require_once($beanFiles[$class_name]);
+        $class_name = $beanList[$module_name] ?? '';
+        $class_file = $beanFiles[$class_name] ?? '';
+        if (!empty($class_file)) {
+            require_once($class_file);
+        } else {
+            $GLOBALS['log']->error('End: SugarWebServiceImpl->get_module_fields FAILED on getting class definition for ' . $module_name);
+            return;
+        }
         $seed = new $class_name();
         if ($seed->ACLAccess('ListView', true) || $seed->ACLAccess('DetailView', true) || 	$seed->ACLAccess('EditView', true)) {
             $return = self::$helperObject->get_return_module_fields($seed, $module_name, $fields);

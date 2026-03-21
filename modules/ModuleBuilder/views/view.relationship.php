@@ -126,14 +126,18 @@ class ViewRelationship extends SugarView
         // if a description for this relationship already exists, then load it so it can be modified
         if (! empty($_REQUEST [ 'relationship_name' ])) {
             $relationship = $relationships->get($_REQUEST [ 'relationship_name' ]) ;
-            $relationship->setName($_REQUEST [ 'relationship_name' ]);
-            $definition = $relationship->getDefinition();
-            if (!$this->fromModuleBuilder) {
-                $modStrings = return_module_language($selected_lang, $relationship->rhs_module, true) ;
-                $definition['lhs_label'] = isset($modStrings[$relationship->getTitleKey()])?$modStrings[$relationship->getTitleKey()] : $relationship->lhs_module;
-                $modStrings = return_module_language($selected_lang, $relationship->lhs_module, true) ;
-                $definition['rhs_label'] = isset($modStrings[$relationship->getTitleKey(true)])?$modStrings[$relationship->getTitleKey(true)] : $relationship->rhs_module ;
+            if ($relationship === false) {
+                $definition = [];
             } else {
+                $definition = $relationship->getDefinition();
+                if (!$this->fromModuleBuilder) {
+                    $modStrings = return_module_language($selected_lang, $relationship->rhs_module, true) ;
+                    $definition['lhs_label'] = isset($modStrings[$relationship->getTitleKey()])?$modStrings[$relationship->getTitleKey()] : $relationship->lhs_module;
+                    $modStrings = return_module_language($selected_lang, $relationship->lhs_module, true) ;
+                    $definition['rhs_label'] = isset($modStrings[$relationship->getTitleKey(true)])?$modStrings[$relationship->getTitleKey(true)] : $relationship->rhs_module ;
+                }
+            }
+            if ($this->fromModuleBuilder) {
                 #30624
                 if (!empty($_REQUEST['rhs_module'])) {
                     $definition['rhs_label'] = $_REQUEST['rhs_module'];
@@ -160,7 +164,9 @@ class ViewRelationship extends SugarView
 
         $rhs_subpanels = $relatableModules [ $relationship->rhs_module ] ;
         // Fix to re-add sorting of the subpanel names so that the 'default' subpanel always appears first in the list. This assumes that subpanels are usually named ForXYZ which is the case currently, and hence 'default' will be sorted first. If this assumption is incorrect, then a better solution would be to remove 'default' from the subpanel list, then sort, and finally array_unshift it back on.
-        natcasesort($rhs_subpanels);
+        if ($rhs_subpanels != null) {
+            natcasesort($rhs_subpanels);
+        }
 
         if (empty($_REQUEST [ 'relationship_name' ])) {
             // tidy up the options for the view based on the modules participating in the relationship and the cardinality

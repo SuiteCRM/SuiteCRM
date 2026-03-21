@@ -148,7 +148,7 @@ class EmailsDataAddressCollector
         foreach ($ieAccounts as $inboundEmail) {
             $this->validateInboundEmail($inboundEmail);
 
-            if (in_array($inboundEmail->id, $showFolders)) {
+            if (is_array($showFolders) && in_array($inboundEmail->id, $showFolders)) {
                 $storedOptions = sugar_unserialize(base64_decode($inboundEmail->stored_options));
                 $isGroupEmailAccount = $inboundEmail->isGroupEmailAccount();
                 $isPersonalEmailAccount = $inboundEmail->isPersonalEmailAccount();

@@ -85,6 +85,7 @@ class AOR_Field extends Basic
     public function save_lines($post_data, $parent, $key = '')
     {
         require_once('modules/AOW_WorkFlow/aow_utils.php');
+        require_once('modules/AOR_Reports/aor_utils.php');
 
         if (!isset($post_data[$key . 'field'])) {
             $line_count = 0;
@@ -100,7 +101,7 @@ class AOR_Field extends Basic
                 $postDataKeyDeleted = $post_data[$key . 'deleted'][$i];
             }
 
-            if ($postDataKeyDeleted == 1) {
+            if ($postDataKeyDeleted == 1 && isset($post_data[$key . 'id'][$i])) {
                 $this->mark_deleted($post_data[$key . 'id'][$i]);
             } else {
                 $field = BeanFactory::newBean('AOR_Fields');
@@ -140,6 +141,25 @@ class AOR_Field extends Basic
                         }
                     }
                 }
+
+                if ($field->field_function !== null && $field->field_function !== '') {
+                    if (!in_array(strtoupper($field->field_function), getAorAllowedFieldFunctions(), true)) {
+                        LoggerManager::getLogger()->warn(
+                            'AOR_Field: Invalid field_function value rejected: ' . $field->field_function
+                        );
+                        $field->field_function = null;
+                    }
+                }
+
+                if ($field->sort_by !== null && $field->sort_by !== '') {
+                    if (!in_array(strtoupper($field->sort_by), getAorAllowedSortDirections(), true)) {
+                        LoggerManager::getLogger()->warn(
+                            'AOR_Field: Invalid sort_by value rejected: ' . $field->sort_by
+                        );
+                        $field->sort_by = '';
+                    }
+                }
+
                 if (trim($field->field) != '') {
                     $field->aor_report_id = $parent->id;
                     $field->save();

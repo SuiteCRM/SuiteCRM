@@ -81,6 +81,8 @@ class SearchQuery implements JsonSerializable
     private $engine;
     /** @var array Structure containing additional search parameters */
     private $options;
+    /** @var array Optional parameter to specify the modules to search. */
+    private $modules;
 
     /**
      * SearchQuery constructor.
@@ -92,13 +94,14 @@ class SearchQuery implements JsonSerializable
      * @param int $from Offset of the search. Used for pagination
      * @param array $options [optional] used for additional options by SearchEngines.
      */
-    private function __construct(string $searchString, $engine = null, $size = null, $from = 0, array $options = [])
+    private function __construct(string $searchString, $engine = null, $size = null, $from = 0, array $options = [], array $modules = [])
     {
         $this->query = $searchString;
+        $this->engine = $engine ? (string)$engine : $this->getDefaultEngine();
         $this->size = $size ? (int)$size : $this->getDefaultSearchSize();
         $this->from = (int)$from;
         $this->options = $options;
-        $this->engine = $engine ? (string)$engine : $this->getDefaultEngine();
+        $this->modules = $modules ?: SearchWrapper::getModulesForDisplay();
     }
 
     /**
@@ -116,12 +119,13 @@ class SearchQuery implements JsonSerializable
      */
     public static function fromString(
         string $searchString,
-        $size = 50,
-        $from = 0,
-        $engine = null,
-        array $options = []
+               $size = 50,
+               $from = 0,
+               $engine = null,
+        array $options = [],
+        array $modules = []
     ): SearchQuery {
-        return new self($searchString, $engine, $size, $from, $options);
+        return new self($searchString, $engine, $size, $from, $options, $modules);
     }
 
     /**
@@ -138,12 +142,18 @@ class SearchQuery implements JsonSerializable
      */
     public static function fromRequestArray(array $request): SearchQuery
     {
-        $searchQuery = self::filterArray($request, 'search-query-string', '', FILTER_SANITIZE_STRING);
-        $searchQueryAlt = self::filterArray($request, 'query_string', '', FILTER_SANITIZE_STRING);
+        $searchQuery = self::filterArray($request, 'search-query-string', '');
+        $searchQueryAlt = self::filterArray($request, 'query_string', '');
         $searchSize = self::filterArray($request, 'search-query-size', null, FILTER_SANITIZE_NUMBER_INT);
         $searchFrom = self::filterArray($request, 'search-query-from', 0, FILTER_SANITIZE_NUMBER_INT);
-        $searchEngine = self::filterArray($request, 'search-engine', null, FILTER_SANITIZE_STRING);
+        $searchEngine = self::filterArray($request, 'search-engine', null);
+        $searchModules = self::filterArray($request, 'search-query-modules', []);
 
+        if(!$searchModules) {
+            $searchModules = SearchWrapper::getUserSelectedModules();
+        } else {
+            SearchWrapper::getUserSelectedModules($searchModules);
+        }
         if (!empty($searchQueryAlt) && empty($searchQuery)) {
             $searchQuery = $searchQueryAlt;
         }
@@ -153,10 +163,11 @@ class SearchQuery implements JsonSerializable
             $request['query_string'],
             $request['search-query-size'],
             $request['search-query-from'],
-            $request['search-engine']
+            $request['search-engine'],
+            $request['search-query-modules'],
         );
 
-        return new self($searchQuery, $searchEngine, $searchSize, $searchFrom, $request);
+        return new self($searchQuery, $searchEngine, $searchSize, $searchFrom, $request, $searchModules);
     }
 
     /**
@@ -176,17 +187,28 @@ class SearchQuery implements JsonSerializable
      * @param array $array The array to filter
      * @param string $key The key of the array to load
      * @param mixed $default The default value in case the array value is empty
-     * @param null|string $filter Optional filter to be used. e.g. FILTER_SANITIZE_STRING
+     * @param int|string|null $filter Optional filter to be used. e.g. FILTER_SANITIZE_STRING
      *
      * @return mixed
      */
-    private static function filterArray(array $array, $key, $default, $filter = null)
+    private static function filterArray(array $array, $key, $default, int|string|null $filter = FILTER_DEFAULT)
     {
         if (!isset($array[$key])) {
             return $default;
         }
 
-        $value = filter_var($array[$key], $filter);
+        if ($filter === null) {
+            $value = $array[$key];
+        } else {
+            $value = filter_var($array[$key], $filter);
+        }
+
+        if (is_array($array[$key])) {
+            $value = [];
+            foreach ($array[$key] as $selected) {
+                $value[$selected] = $selected;
+            }
+        }
 
         if ($value === false) {
             return $default;
@@ -375,14 +397,20 @@ class SearchQuery implements JsonSerializable
     }
 
     /** @inheritdoc */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'query' => $this->query,
             'size' => $this->size,
             'from' => $this->from,
             'engine' => $this->engine,
+            'modules' => $this->modules,
             'options' => $this->options,
         ];
+    }
+
+    public function getModules()
+    {
+        return $this->modules;
     }
 }

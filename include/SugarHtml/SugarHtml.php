@@ -196,18 +196,45 @@ class SugarHtml
                         $out .= strtr($template, $replacement);
                     }
                 } else {
-                    $count = 0;
+                    $attributes = [];
                     foreach ($dom_tree as $attr => $value) {
-                        if ($count++ > 0) {
-                            $out .= ' ';
+                        $rendered_attr = self::renderHtmlAttribute($attr, $value);
+                        if (empty($rendered_attr)) {
+                            continue;
                         }
-                        $out .= (empty($value)) ? $attr : $attr.'="'.$value.'"';
+                        $attributes[] = $rendered_attr;
                     }
+                    $out .= implode(' ', $attributes);
                 }
             }
         }
 
         return $out;
+    }
+
+    /**
+     * Render HTML attribute with proper type handling
+     * Handles strings, booleans, numbers, arrays, and objects correctly
+     *
+     * @param string $attr The attribute name
+     * @param mixed $value The attribute value (any type)
+     * @return ?string The rendered HTML attribute
+     */
+    protected static function renderHtmlAttribute(string $attr, mixed $value): ?string
+    {
+        if (is_string($value)) {
+            return empty($value) ? $attr : "$attr=\"$value\"";
+        }
+
+        if (is_array($value) || is_object($value)) {
+            $output = [];
+            foreach ($value as $key => $v) {
+                $output[] = empty($v) ? $key : "$key=\"$v\"";
+            }
+            return implode(' ', $output);
+        }
+
+        return null;
     }
 
     public static function parseSugarHtml($sugar_html = array())
@@ -303,8 +330,8 @@ class SugarHtml
         $_str = ltrim(substr($code, $offset + 1));
 
         preg_match("/^[$\w]+/", $_str, $statement);
-        $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0];
-        $_left = strlen($statement[0]);
+        $_smarty_closing = self::SMARTY_TAG_BEGIN.'/'.$statement[0]??'';
+        $_left = strlen($statement[0] ?? '');
 
         $_right = strpos($code, $_smarty_closing, $offset);
         if ($_right === false) { //smarty closed itself

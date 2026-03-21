@@ -293,7 +293,12 @@ class Imap2Handler implements ImapHandlerInterface
     {
         $this->logCall(__FUNCTION__, func_get_args());
 
-        $mbh = Connection::open($mailbox, $username, $password, $options, $n_retries, $params);
+        $error_reporting = error_reporting(E_ERROR | E_PARSE);
+        try {
+            $mbh = Connection::open($mailbox, $username, $password, $options, $n_retries, $params);
+        } finally {
+            error_reporting($error_reporting);
+        }
         $this->setStream($mbh);
 
         if (empty($mbh) || !is_a($mbh, Connection::class)) {
@@ -549,6 +554,10 @@ class Imap2Handler implements ImapHandlerInterface
     public function expunge()
     {
         $this->logCall(__FUNCTION__, func_get_args());
+        if (!$this->getStream()) {
+            $this->log('IMAP get Setream error in expunge');
+            return false;
+        }
         $ret = imap2_expunge($this->getStream());
         if (!$ret) {
             $this->log('IMAP expunge error');
@@ -894,8 +903,8 @@ class Imap2Handler implements ImapHandlerInterface
         };
 
         $ret = $this->executeImapCmd($call, $charset);
-
-        if (!$ret) {
+        $err = imap2_last_error();
+        if (!$ret && !empty($err)) {
             $this->log('IMAP search error');
         }
         $this->logReturn(__FUNCTION__, $ret);
@@ -910,7 +919,7 @@ class Imap2Handler implements ImapHandlerInterface
      * @param int $options
      * @return bool Returns TRUE on success or FALSE on failure.
      */
-    public function setFlagFull($sequence, $flag, $options = NIL)
+    public function setFlagFull($sequence, $flag, $options = 0)
     {
         $this->logCall(__FUNCTION__, func_get_args());
         $ret = imap2_setflag_full($this->getStream(), $sequence, $flag, $options);
@@ -1167,7 +1176,8 @@ class Imap2Handler implements ImapHandlerInterface
             $lastSequenceNumber = $mailboxInfo['Nmsgs'] = is_countable($emailSortedHeaders) ? count($emailSortedHeaders) : 0;
 
             // paginate
-            if ($offset === "end") {
+            // Avoid TypeError $offset is int
+            if ($offset === 0) {
                 $offset = $lastSequenceNumber - $pageSize;
             } elseif ($offset <= 0) {
                 $offset = 0;

@@ -53,6 +53,8 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
     global $current_language, $app_strings, $app_list_strings, $current_user, $beanFiles, $beanList;
 
     $bean = BeanFactory::getBean($module, $id);
+    
+    static $sfh;
 
     if (!checkAccess($bean)) {
         return false;
@@ -89,7 +91,7 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
             $vardef['type'] = 'varchar';
         }
 
-        if (isset($vardef['precision'])) {
+        if ($vardef['type'] != 'decimal' && isset($vardef['precision'])) {
             unset($vardef['precision']);
         }
 
@@ -143,7 +145,6 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
         }
 
         // load SugarFieldHandler to render the field tpl file
-        static $sfh;
 
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');
@@ -291,7 +292,6 @@ function getEditFieldHTML($module, $fieldname, $aow_field, $view = 'EditView', $
     }
 
     if ($fieldlist[$fieldname]['type'] == 'currency' && $view != 'EditView') {
-        static $sfh;
 
         if (!isset($sfh)) {
             require_once('include/SugarFields/SugarFieldHandler.php');
@@ -475,7 +475,9 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
         // use the calculated datetime_format
         $datetime = DateTime::createFromFormat($datetime_format, $value, new DateTimeZone('UTC'));
 
-        $value = $datetime->format($datetime_format);
+        if ($datetime!==false) {
+            $value = $datetime->format($datetime_format);
+        }
     }
 
     //If field is of type bool, checkbox.

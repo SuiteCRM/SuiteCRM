@@ -58,6 +58,10 @@ class InboundEmailController extends SugarController
         if (!empty($this->bean) && isTrue($this->bean->is_personal) && $this->bean->hasAccessToPersonalAccount()) {
             $this->hasAccess = true;
         }
+
+        if (empty($_REQUEST['record'] && empty($this->bean->id)) && $this->bean instanceof InboundEmail && !isTrue($this->bean->is_personal) ) {
+            $this->bean->initializeEmailImportSettings($this->bean);
+        }
     }
 
     public function action_SetDefault()

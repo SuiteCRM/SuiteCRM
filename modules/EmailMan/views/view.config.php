@@ -182,6 +182,21 @@ class ViewConfig extends SugarView
             LoggerManager::getLogger()->warn('EmailMan view display error: mail allow user send is not set for focus');
         }
 
+        $emailImportPerRunThreshold = 25;
+        if (isset($sugar_config['email_import_per_run_threshold']) && is_numeric($sugar_config['email_import_per_run_threshold'])) {
+            $emailImportPerRunThreshold = (int)($sugar_config['email_import_per_run_threshold']);
+        }
+
+        $emailImportFetchUnreadOnly = false;
+        if (isset($sugar_config['email_import_fetch_unread_only'])) {
+            $emailImportFetchUnreadOnly = isTrue($sugar_config['email_import_fetch_unread_only']);
+        }
+
+        $emailImportTimeframeStart = '-30 days';
+        if (isset($sugar_config['email_import_timeframe_start'])) {
+            $emailImportTimeframeStart = $sugar_config['email_import_timeframe_start'] ?? '';
+        }
+
         $oe = new OutboundEmail();
         $oe = $oe->getSystemEmail();
 
@@ -195,6 +210,16 @@ class ViewConfig extends SugarView
         $this->ss->assign("mail_haspass", empty($mailSmtpPass)?0:1);
         $this->ss->assign("MAIL_SSL_OPTIONS", get_select_options_with_id($app_list_strings['email_settings_for_ssl'], $mailSmtpSsl));
         $this->ss->assign("mail_allow_user_send", ($mailAllowUserSend) ? "checked='checked'" : "");
+        $this->ss->assign("email_import_per_run_threshold", $emailImportPerRunThreshold);
+        $this->ss->assign("email_import_fetch_unread_only", $emailImportFetchUnreadOnly);
+        $this->ss->assign("email_import_timeframe_start", $emailImportTimeframeStart);
+        $this->ss->assign(
+            'email_import_timeframe_start_options',
+            get_select_options_with_id(
+                $app_list_strings['email_import_timeframe_start_dom'],
+                $emailImportTimeframeStart
+            )
+        );
 
         //Assign the current users email for the test send dialogue.
         $this->ss->assign("CURRENT_USER_EMAIL", $current_user->email1);

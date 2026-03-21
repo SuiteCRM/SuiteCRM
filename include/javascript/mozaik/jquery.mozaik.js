@@ -153,6 +153,18 @@ var plgBackground = {
 (function($){
     $.fn.mozaik = function(options) {
 
+        /**
+         * TinyMCE configuration for Mozaik drag-and-drop email template builder
+         *
+         * This configuration is intentionally different from standard editors because:
+         * - undo/redo: Required for drag-drop template building operations
+         * - emoticons: Allows template personalization with emojis
+         * - media: Enables video/audio embedding in email templates
+         * - print/preview: Essential for template preview before use
+         * - Split toolbars: Better organization for template building context
+         *
+         * DO NOT standardize this config with other TinyMCE instances
+         */
         var tinyMCESettings = {
             plugins: [
                 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
@@ -384,7 +396,7 @@ var plgBackground = {
                     var config = settings.tinyMCE;
                     config.selector = sels;
                     config.inline = true;
-                    tinyMCE.init(config);
+                    tinymce.init(config);
                 });
 
                 // initialize toolbar
@@ -404,7 +416,7 @@ var plgBackground = {
                     return false;
                 });
                 $mozaik.find('.mozaik-elem:last-child .mozaik-tool-source').bind('click', function(){
-                    var html = tinyMCE.activeEditor.getContent();
+                    var html = tinymce.activeEditor.getContent();
                     mozaik.ace.setValue(html);
                     $('#mozaik-ace').show();
                 });

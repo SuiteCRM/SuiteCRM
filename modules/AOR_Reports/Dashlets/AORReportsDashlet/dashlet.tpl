@@ -9,6 +9,7 @@
                                 record : record,
                                 offset : offset,
                                 table_id : table_id,
+                                group: group_value,
                                 'parameter_id' : params['ids'],
                                 'parameter_operator' : params['operators'],
                                 'parameter_type' : params['types'],

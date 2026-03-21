@@ -308,7 +308,8 @@ class UploadStream
 
     public function url_stat($path, $flags)
     {
-        return @stat(self::path($path));
+        $realPath = self::path($path);
+        return file_exists($realPath) ? @stat($realPath) : false;
     }
 
     public static function move_uploaded_file($upload, $path)

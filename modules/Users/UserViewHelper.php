@@ -487,58 +487,6 @@ class UserViewHelper
         $this->ss->assign("CALENDAR_ICAL_URL", $ical_url);
 
         $this->ss->assign("SETTINGS_URL", $sugar_config['site_url']);
-
-        // Set Google Auth variables
-        $this->setGoogleAuthVariables($sugar_config);
-    }
-
-    /**
-     * Set Google Auth variables
-     *
-     * @param array $sugar_config
-     */
-    protected function setGoogleAuthVariables($sugar_config)
-    {
-        $this->ss->assign("GOOGLE_API_TOKEN_ENABLE_NEW", "none"); // Hide new token button by default
-        $this->ss->assign("GOOGLE_API_TOKEN_NEW_URL", $sugar_config['site_url'] . "/index.php?entryPoint=saveGoogleApiKey&getnew");
-        $this->ss->assign("GOOGLE_API_TOKEN_BTN", "Disabled");
-        if (isset($sugar_config['google_auth_json']) && !empty($sugar_config['google_auth_json'])) {
-            $json = base64_decode($sugar_config['google_auth_json']);
-            if (!$config = json_decode($json, true)) { // Check if the JSON is valid
-                $this->ss->assign("GOOGLE_API_TOKEN", "INVALID AUTH KEY");
-                $this->ss->assign("GOOGLE_API_TOKEN_COLOR", "red");
-                $this->ss->assign("GOOGLE_API_TOKEN_ENABLE_NEW", "inline");
-            } else {
-                $this->setGoogleAuthAccessToken();
-            }
-        } else {
-            $this->ss->assign("GOOGLE_API_TOKEN", "DISABLED");
-            $this->ss->assign("GOOGLE_API_TOKEN_COLOR", "black");
-            $this->ss->assign("HIDE_IF_GAUTH_UNCONFIGURED", "none");
-        }
-
-        if ($this->bean->getPreference('syncGCal', 'GoogleSync') == '1') {
-            $this->ss->assign('GSYNC_CAL', ' checked');
-        }
-    }
-
-    /**
-     * set Google Auth Access Token in template
-     */
-    protected function setGoogleAuthAccessToken()
-    {
-        $accessToken = json_decode(base64_decode($this->bean->getPreference('GoogleApiToken', 'GoogleSync')));
-        if (!empty($this->bean->getPreference('GoogleApiToken', 'GoogleSync')) && $accessToken = json_decode(base64_decode($this->bean->getPreference('GoogleApiToken', 'GoogleSync')))) { // Check if the user has a token
-            $this->ss->assign("GOOGLE_API_TOKEN", "CONFIGURED");
-            $this->ss->assign("GOOGLE_API_TOKEN_COLOR", "green");
-            $this->ss->assign("GOOGLE_API_TOKEN_BTN", "Reauthorize");
-            $this->ss->assign("GOOGLE_API_TOKEN_ENABLE_NEW", "inline");
-        } else {
-            $this->ss->assign("GOOGLE_API_TOKEN", "UNCONFIGURED");
-            $this->ss->assign("GOOGLE_API_TOKEN_COLOR", "black");
-            $this->ss->assign("GOOGLE_API_TOKEN_ENABLE_NEW", "inline");
-            $this->ss->assign("GOOGLE_API_TOKEN_BTN", "Authorize");
-        }
     }
 
     protected function setupAdvancedTabTeamSettings()

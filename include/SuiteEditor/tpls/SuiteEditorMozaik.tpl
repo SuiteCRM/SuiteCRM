@@ -74,7 +74,7 @@
         {rdelim}
         if($('#'+elemId+' .mozaik-list .mozaik-elem').length > 0) {ldelim}
             // similar as the original insert_variable_html(text);
-            tinyMCE.activeEditor.execCommand('mceInsertRawHTML', false, text);
+            tinymce.activeEditor.execCommand('mceInsertRawHTML', false, text);
         {rdelim}
     {rdelim};
 

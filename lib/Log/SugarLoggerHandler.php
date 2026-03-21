@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 use LoggerManager;
 use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\LogRecord;
 
 /**
  * Integrates Monolog with the LoggerManager.
@@ -52,14 +53,14 @@ use Monolog\Handler\AbstractProcessingHandler;
 #[\AllowDynamicProperties]
 class SugarLoggerHandler extends AbstractProcessingHandler
 {
-
+    
     /**
      * Writes the record down to the log of the implementing handler
      *
-     * @param  array $record
+     * @param array|LogRecord $record
      * @return void
      */
-    protected function write(array $record)
+    protected function write(array|LogRecord $record): void
     {
         $logger = LoggerManager::getLogger();
 

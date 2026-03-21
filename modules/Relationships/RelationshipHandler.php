@@ -220,7 +220,7 @@ class RelationshipHandler extends Relationship
 
 
 
-    public function build_related_list($query = 'base', &$template, $row_offset = 0, $limit = -1)
+    public function build_related_list($query, &$template, $row_offset = 0, $limit = -1)
     {
         $type = $query;
         //type can be base, rel1

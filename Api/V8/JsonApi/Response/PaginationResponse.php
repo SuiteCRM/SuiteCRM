@@ -90,7 +90,7 @@ class PaginationResponse extends LinksResponse
     /**
      * @inheritdoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return [
             'first' => $this->getFirst(),

@@ -46,6 +46,7 @@ use Api\V8\JsonApi\Response\DataResponse;
 use Api\V8\JsonApi\Response\DocumentResponse;
 use Api\V8\Param\GetUserPreferencesParams;
 use DBManagerFactory;
+use SuiteCRM\Exception\AccessDeniedException;
 
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
@@ -82,6 +83,10 @@ class UserPreferencesService
      */
     public function getUserPreferences(GetUserPreferencesParams $params)
     {
+        if ($params->getUserId() !== $GLOBALS['current_user']->id && !is_admin($GLOBALS['current_user'])) {
+            throw new AccessDeniedException();
+        }
+
         // needs to determinate the user preferences
         $user = $this->beanManager->getBeanSafe('Users', $params->getUserId());
         

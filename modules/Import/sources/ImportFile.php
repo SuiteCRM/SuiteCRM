@@ -125,10 +125,8 @@ class ImportFile extends ImportDataSource
             return null;
         }
 
-        // turn on auto-detection of line endings to fix bug #10770
-        ini_set('auto_detect_line_endings', '1');
 
-        $this->_fp         = sugar_fopen($filename, 'r');
+        $this->_fp         = sugar_fopen($filename, 'rb'); // Ensure compatibility Windows/Linux
         $this->_sourcename   = $filename;
         $this->_deleteFile = $deleteFile;
         $this->_delimiter  = (empty($delimiter) ? ',' : $delimiter);
@@ -172,7 +170,6 @@ class ImportFile extends ImportDataSource
             }
         }
 
-        ini_restore('auto_detect_line_endings');
     }
 
     /**
@@ -219,12 +216,15 @@ class ImportFile extends ImportDataSource
                 return false;
             }
         } else {
-            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure);
+            $row = fgetcsv($this->_fp, 8192, $this->_delimiter, $this->_enclosure, '\\');
             if ($row !== false && $row != array(null)) {
                 $this->_currentRow = $row;
             } else {
                 return false;
             }
+        }
+        if(!is_array($this->_currentRow)) {
+            return false;
         }
 
         global $locale;
@@ -416,27 +416,27 @@ class ImportFile extends ImportDataSource
     }
 
     //Begin Implementation for SPL's Iterator interface
-    public function key()
+    public function key(): mixed
     {
         return $this->_rowsCount;
     }
 
-    public function current()
+    public function current(): mixed
     {
         return $this->_currentRow;
     }
 
-    public function next()
+    public function next(): void
     {
         $this->getNextRow();
     }
 
-    public function valid()
+    public function valid(): bool
     {
         return $this->_currentRow !== false;
     }
 
-    public function rewind()
+    public function rewind(): void
     {
         $this->setFpAfterBOM();
         //Load our first row

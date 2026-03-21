@@ -132,7 +132,7 @@ class SugarFolder
      * Sole constructor
      */
     public function __construct(
-        User $current_user = null,
+        ?User $current_user = null,
         $app_strings       = null,
         $mod_strings       = null,
         $timedate          = null,
@@ -1503,7 +1503,7 @@ class SugarFolder
      * @param array|null $folders
      * @return bool
      */
-    public function isToDisplay(?string $folderId, array $folders = null): bool {
+    public function isToDisplay(?string $folderId, ?array $folders = null): bool {
         global $current_user;
 
         if (empty($folderId)){

@@ -50,6 +50,7 @@ include_once get_custom_file_if_exists('include/SuiteEditor/SuiteEditorSettingsF
 include_once get_custom_file_if_exists('include/SuiteEditor/SuiteEditorTinyMCE.php');
 include_once get_custom_file_if_exists('include/SuiteEditor/SuiteEditorSettingsForMozaik.php');
 include_once get_custom_file_if_exists('include/SuiteEditor/SuiteEditorMozaik.php');
+include_once get_custom_file_if_exists('include/SugarTinyMCE.php');
 
 /**
  * Class SuiteEditor
@@ -66,43 +67,21 @@ class SuiteEditorConnector
             'textareaId' => 'body_text',
             'elementId' => 'email_template_editor',
             'width' => $width,
-            'clickHandler' => "function(e){
-                onClickTemplateBody();
-            }",
+            'clickHandler' => "function(e){ onClickTemplateBody(); }",
         ];
 
-        if($_REQUEST["module"] == "Campaigns"){
-            //use loadtemplate() to populate template body on TinyMCE initialisation rather than page load for campaigns
-                $settings['tinyMCESetup'] = "{
-                setup: function(editor) {
-                    editor.on('focus', function(e){
-                        onClickTemplateBody();
-                    });
-                    editor.on('init', function(e){
-                        loadtemplate();
-                    });
-                },
-                height : '480',
-                plugins: ['code', 'table', 'link', 'image'],
-                toolbar: ['fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image'],
-                convert_urls: false,
-            }";
-        }else{
-            //default TinyMCESetup settings
-            $settings['tinyMCESetup'] = "{
-                setup: function(editor) {
-                    editor.on('focus', function(e){
-                        onClickTemplateBody();
-                    });
-                },
-                height : '480',
-                plugins: ['code', 'table', 'link', 'image'],
-                toolbar: ['fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image'],
-                convert_urls: false,
-            }";
+        $tinyMCE = new SugarTinyMCE();
+        $tinyMCE->defaultConfig['height'] = 480;
+        $extendedConfig = $tinyMCE->getConfigArray();
+
+        $extendedConfig['setup'] = "function(editor) { ";
+        $extendedConfig['setup'] .= "editor.on('focus', function(e){ onClickTemplateBody(); });";
+        if ($_REQUEST["module"] === "Campaigns") {
+            $extendedConfig['setup'] .= " editor.on('init', function(e){ loadtemplate(); });";
         }
+        $extendedConfig['setup'] .= " },";
 
-
+        $settings['tinyMCESetup'] = json_encode($extendedConfig);
 
         return $settings;
     }

@@ -220,21 +220,25 @@ do {
         // if user want to use an other outbound email account to sending...
         if ($current_emailmarketing->outbound_email_id) {
             $outboundEmailAccount = BeanFactory::getBean('OutboundEmailAccounts', $current_emailmarketing->outbound_email_id);
+            if ($outboundEmailAccount) {
+                if (strtolower($outboundEmailAccount->mail_sendtype) === 'smtp') {
+                    $mail->Mailer = 'smtp';
+                    $mail->Host = $outboundEmailAccount->mail_smtpserver;
+                    $mail->Port = $outboundEmailAccount->mail_smtpport;
 
-            if (strtolower($outboundEmailAccount->mail_sendtype) === 'smtp') {
-                $mail->Mailer = 'smtp';
-                $mail->Host = $outboundEmailAccount->mail_smtpserver;
-                $mail->Port = $outboundEmailAccount->mail_smtpport;
-
-                $mail->setSecureProtocol($ssltls ?? false);
-                $mail->initSMTPAuth(
-                    $outboundEmailAccount->auth_type ?? '',
-                    $outboundEmailAccount->external_oauth_connection_id ?? '',
-                    $outboundEmailAccount->mail_smtpuser ?? '',
-                    $outboundEmailAccount->mail_smtppass ?? '',
-                );
+                    $mail->setSecureProtocol($ssltls ?? false);
+                    $mail->initSMTPAuth(
+                        $outboundEmailAccount->auth_type ?? '',
+                        $outboundEmailAccount->external_oauth_connection_id ?? '',
+                        $outboundEmailAccount->mail_smtpuser ?? '',
+                        $outboundEmailAccount->mail_smtppass ?? '',
+                    );
+                } else {
+                    $mail->Mailer = 'sendmail';
+                }
             } else {
-                $mail->Mailer = 'sendmail';
+                $GLOBALS['log']->fatal("Email delivery failed because the outbound email with id does not exist:" . $current_emailmarketing->outbound_email_id);
+                continue;
             }
 
             $mail->oe->auth_type = $outboundEmailAccount->auth_type ?? '';

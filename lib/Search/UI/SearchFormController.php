@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 use SuiteCRM\Search\SearchQuery;
+use SuiteCRM\Search\SearchWrapper;
 use SuiteCRM\Search\UI\MVC\Controller;
 
 /**
@@ -75,6 +76,8 @@ class SearchFormController extends Controller
         $smarty->assign('searchQuerySize', $this->query->getSize());
         $smarty->assign('searchQueryFrom', $this->query->getFrom());
         $smarty->assign('searchQueryEngine', $this->query->getEngine());
+        $modules = SearchWrapper::getUserSelectedModules();
+        $smarty->assign('searchQueryModules', $modules);
 
         parent::display();
     }

@@ -80,10 +80,16 @@ class CampaignROIChartDashlet extends DashletGenericChart
      */
     public function display()
     {
+        $campaignId = null;
+
+        if (isset($this->campaign_id)){
+            $campaignId = $this->campaign_id[0];
+        }
+
         $rawData = $this->constructQuery(
             $GLOBALS['app_list_strings']['roi_type_dom'],
             $GLOBALS['app_list_strings']['roi_type_dom'],
-            $this->campaign_id[0],
+            $campaignId,
             null,
             true,
             true,
@@ -109,7 +115,7 @@ class CampaignROIChartDashlet extends DashletGenericChart
         //$chartReadyData['data'] = [[1.1,2.2],[3.3,4.4]];
         $jsonData = json_encode($chartReadyData['data']);
         $jsonLabels = json_encode($chartReadyData['labels']);
-        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues']);
+        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues'] ?? []);
 
 
         $jsonKey = json_encode($chartReadyData['key']);
@@ -337,6 +343,11 @@ EOD;
         //Need to add all elements into the key, as they are stacked (even though the category is not present, the value could be)
         $chart['key'] = array();
         $chart['tooltips']= array();
+        $chart['labelsAndValues']=array();
+
+        if (empty($data)) {
+            return $chart;
+        }
 
         foreach ($data as $key=>$value) {
             $formattedFloat = (float)number_format((float)$value, 2, '.', '');
@@ -358,6 +369,7 @@ EOD;
             $chart['tooltips'][]="<div><input type='hidden' class='stage' value='$stage'><input type='hidden' class='date' value='$key'></div>".$stage.'('.$currency_symbol.$formattedFloat.$thousands_symbol.') '.$key;
             */
         }
+
         return $chart;
     }
 }

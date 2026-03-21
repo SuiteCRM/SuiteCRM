@@ -50,6 +50,9 @@ install_ss();
 require_once('install/suite_install/GoogleMaps.php');
 install_gmaps();
 
+require_once('install/suite_install/CalendarSync.php');
+install_calendar_sync_hooks();
+
 require_once('install/suite_install/Social.php');
 install_social();
 

@@ -41,10 +41,10 @@
 *}
 <script type="text/javascript" src="{sugar_getjspath file='modules/ModuleBuilder/javascript/JSTransaction.js'}" ></script>
 <script>
-	var jstransaction = new JSTransaction();
-	{literal}
-	if (SUGAR.themes.tempHideLeftCol){
-    	SUGAR.themes.tempHideLeftCol();
+    var jstransaction = new JSTransaction();
+    {literal}
+    if (SUGAR.themes.tempHideLeftCol){
+        SUGAR.themes.tempHideLeftCol();
     }
     {/literal}
 </script>
@@ -63,6 +63,6 @@
 <script type="text/javascript" language="Javascript" src='{sugar_getjspath file ='modules/ModuleBuilder/javascript/ModuleBuilder.js'}'></script>
 <script type="text/javascript" language="Javascript" src='{sugar_getjspath file ='modules/ModuleBuilder/javascript/SimpleList.js'}'></script>
 <script type="text/javascript" src='{sugar_getjspath file ='modules/ModuleBuilder/javascript/JSTransaction.js'}' ></script>
-<script type="text/javascript" src='{sugar_getjspath file ='include/javascript/tiny_mce/tiny_mce.js'}' ></script>
+<script type="text/javascript" src='{sugar_getjspath file ='vendor/tinymce/tinymce/tinymce.min.js'}' ></script>
 
 <link rel="stylesheet" type="text/css" href="{sugar_getjspath file="modules/ModuleBuilder/tpls/MB.css"}" />

@@ -41,6 +41,7 @@
  **/
 
 require_once('include/SugarFields/Fields/Base/SugarFieldBase.php');
+require_once('include/SugarTinyMCE.php');
 
 class SugarFieldWysiwyg extends SugarFieldBase {
 
@@ -52,28 +53,37 @@ class SugarFieldWysiwyg extends SugarFieldBase {
 
     function getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex)
     {
+        global $log;
+
         $this->setup($parentFieldArray, $vardef, $displayParams, $tabindex);
 
         $form_name = $displayParams['formName'] ?? '';
+        $vardefName = $vardef['name'];
 
         if (!empty($this->ss->_tpl_vars['displayParams']['formName'])) {
             $form_name = $this->ss->_tpl_vars['displayParams']['formName'];
         }
 
-        $config = [];
-        $config['height'] = 250;
-        $config['menubar'] = false;
-        $config['plugins']  = 'code, table, link, image, wordcount';
-        if ($form_name !== '') {
-            $config['selector'] = "#{$form_name} " . "#" . $vardef['name'];
-        } else {
-            $config['selector'] = "#" . $vardef['name'];
-        }
-        $config['toolbar1'] = 'fontselect | fontsizeselect | bold italic underline | forecolor backcolor | styleselect | outdent indent | link image | code table';
+        try {
+            $tiny = new SugarTinyMCE();
+            $tinyConfigJs = $tiny->getConfig();
 
-        $jsConfig = json_encode($config);
-        $initiate = '<script type="text/javascript"> tinyMCE.init('.$jsConfig.')</script>';
-        $this->ss->assign("tiny", $initiate);
+            $selector = "";
+            if ($form_name !== '') {
+                $selector .= "#$form_name ";
+            }
+            $selector .= "#$vardefName";
+
+            $initiate = '<script type="text/javascript">';
+            $initiate .= $tinyConfigJs;
+            $initiate .= "tinyConfig.selector = '$selector';";
+            $initiate .= 'tinymce.init(tinyConfig);';
+            $initiate .= '</script>';
+
+            $this->ss->assign("tiny", $initiate);
+        } catch (Throwable $e) {
+            $log?->error("[SugarFieldWysiwyg][getEditViewSmarty][tinymce_init_failed] Failed to initialize TinyMCE: " . $e->getMessage());
+        }
 
         return parent::getEditViewSmarty($parentFieldArray, $vardef, $displayParams, $tabindex);
     }

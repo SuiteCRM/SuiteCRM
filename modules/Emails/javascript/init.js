@@ -65,7 +65,7 @@ function email2init() {
   // var tinyConfig = "code,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,justifyfull," +
   //             "separator,bullist,numlist,outdent,indent,separator,forecolor,backcolor,fontselect,fontsizeselect";
   if (!SUGAR.util.isTouchScreen()) {
-    tinyMCE.init({
+    tinymce.init({
       convert_urls: false,
       theme_advanced_toolbar_align: tinyConfig.theme_advanced_toolbar_align,
       valid_children: tinyConfig.valid_children,
@@ -83,7 +83,8 @@ function email2init() {
       strict_loading_mode: true,
       force_br_newlines: true,
       forced_root_block: '',
-      directionality: (typeof(rtl) == "undefined") ? "ltr" : "rtl"
+      directionality: (typeof(rtl) == "undefined") ? "ltr" : "rtl",
+      license_key: tinyConfig.license_key
     });
   }
 

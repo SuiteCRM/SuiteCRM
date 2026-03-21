@@ -45,7 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once("include/JSON.php");
 
-
+#[\AllowDynamicProperties]
 class SugarEmailAddress extends SugarBean
 {
     const ERR_INVALID_REQUEST_NO_USER_PROFILE_PAGE_SAVE_ACTION = 1;
@@ -454,31 +454,7 @@ class SugarEmailAddress extends SugarBean
             return false;
         }
 
-        // do we have to update the address?
-
-        if ($email->email_address != $address) {
-            $_address = $db->quote($address);
-            $_addressCaps = $db->quote(strtoupper($address));
-            $_id = $db->quoted($id);
-            $query =
-                "UPDATE email_addresses 
-                  SET 
-                    email_address = '$_address', 
-                    email_address_caps = '$_addressCaps' 
-                  WHERE 
-                    id = {$_id} AND
-                    deleted = 0";
-            $result = $db->query($query);
-            if (!$result) {
-                $GLOBALS['log']->warn("Undefined behavior: Missing error information about email save (1)");
-            }
-            if ($db->getAffectedRowCount($result) != 1) {
-                $GLOBALS['log']->debug("Email address has not change");
-            }
-        }
-
         // update primary and replyTo
-
         $_primary = (bool)$primary ? '1' : '0';
         $_replyTo = (bool)$replyTo ? '1' : '0';
         $_id = $db->quoted($id);
@@ -494,7 +470,7 @@ class SugarEmailAddress extends SugarBean
                 deleted = 0";
         $result = $db->query($query);
         if (!$result) {
-            $GLOBALS['log']->warn("Undefined behavior: Missing error information about email save (2)");
+            $GLOBALS['log']->warn("Undefined behavior: Missing error information about email save");
         }
         if ($db->getAffectedRowCount($result) != 1) {
             $GLOBALS['log']->debug("Primary or reply-to Email address has not change");
@@ -549,6 +525,15 @@ class SugarEmailAddress extends SugarBean
         $module_dir = $this->getCorrectedModule($bean->module_dir);
         $this->addresses = $this->getAddressesByGUID($bean->id, $module_dir);
         $this->populateLegacyFields($bean);
+
+        if (empty($bean->fetched_row)){
+            return;
+        }
+
+        if ($bean->fetched_row === false) {
+            $bean->fetched_row = [];
+        }
+
         if (isset($bean->email1) && !isset($bean->fetched_row['email1'])) {
             $bean->fetched_row['email1'] = $bean->email1;
         }
@@ -1165,6 +1150,10 @@ class SugarEmailAddress extends SugarBean
 
     public function splitEmailAddress($addr)
     {
+        if ($addr === null) {
+            $addr = '';
+        }
+
         $email = $this->_cleanAddress($addr);
         if (!preg_match($this->regex, $email)) {
             $email = ''; // remove bad email addr

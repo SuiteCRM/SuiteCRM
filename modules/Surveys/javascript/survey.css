@@ -1,0 +1,398 @@
+body {
+    font-size: 14px;
+}
+img {
+    max-width:100%;
+}
+table {
+    word-break: break-all;
+}
+
+th {
+    text-align: center;
+    vertical-align: middle !important;
+    word-break: keep-all;
+    hyphens: auto;
+    line-height: 1.25;
+}
+
+.button-link {
+    background-color: #D66C60; /* Custom color */
+    color: white; /* White text */
+    padding: 10px 20px; /* Padding for size */
+    text-align: center; /* Center text */
+    text-decoration: none; /* Remove text decoration */
+    display: inline-block; /* Inline block display */
+    font-size: 16px; /* Font size */
+    margin: 4px 2px; /* Margin around the link */
+    cursor: pointer; /* Cursor to pointer to indicate it's clickable */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s; /* Transition for hover effect */
+}
+
+.button-link:hover {
+    opacity: 0.8; /* Slight transparency on hover */
+}
+
+.unanswered-required-question, .email-is-not-valid {
+    border: #FF0000FF solid 1px;
+}
+
+h1, h2, h3, .checkbox {
+    overflow-wrap: break-word;
+}
+
+.scale-option__label, .matrix-option__label {
+    font-weight: normal;
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background-color: #fff;
+    line-height: 1.25;
+}
+
+.scale-option__label {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    min-width: 100px;
+    max-width: 150px;
+    padding:7px;
+    min-height:88%;
+    background-color: transparent;
+    height:100%;
+}
+
+.matrix-option__label {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) .scale-option__label,
+.table-striped > tbody > tr:nth-of-type(odd) .matrix-option__label {
+    background-color: #f9f9f9;
+}
+
+.div-striped {
+    background-color: #f9f9f9;
+}
+
+.radio_line input[type="radio"] {
+    position: inherit !important;
+}
+
+.radio_line td {
+    text-align: center;
+    vertical-align: middle !important;
+    min-width: 45px;
+
+}
+
+.radio_line input[type="radio"] {
+    cursor: pointer;
+    width: 17px;
+    height: 17px;
+}
+
+.radio_btn {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+
+.radio_button [type="radio"], .multi-checkbox [type="checkbox"] {
+    display: none
+}
+
+.radio input[type="radio"]:checked + label,
+.radio_button input[type="radio"]:checked + label,
+.multi-checkbox input[type="checkbox"]:checked + label {
+    color: #fff;
+    font-weight: bold;
+    background: #337ab7;
+    border-color: #2e6da4;
+}
+
+.radio_button label, .multi-checkbox label {
+    padding: 7px;
+    border: 1px solid #CCC;
+    cursor: pointer;
+    z-index: 90;
+    width: 100%;
+    border-radius: 0;
+    white-space: pre-wrap;
+    hyphens: auto;
+}
+
+.radio_button label:hover, .multi-checkbox label:hover {
+    background: #f5f5f5;
+}
+
+.scale-option_label {
+    word-break: normal;
+    margin-top: 7px;
+    padding-right: 2px;
+}
+
+.form-group[type="scale"], .form-group[type="matrix"] {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.form-group[type="scale"] .radio, .form-group[type="matrix"] .radio {
+    position: static;
+}
+
+.multi-checkbox, .radio_button {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+table.scale {
+    margin-top: 5px;
+    width:100%;
+}
+
+tr.multiple .radio_button label {
+    padding: 1px;
+    width: 20px;
+    height: 20px;
+    font-size:11px;
+    word-break: keep-all;
+}
+
+tr.multiple td {
+    padding: 1px;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    align-items: center;
+    width:100%;
+    padding:0px 5px;
+}
+
+.ScaleGridContainer {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    align-items: center;
+    width:100%;
+    padding:0px 5px;
+}
+
+.pad{
+    padding-top:10px;
+}
+
+@media (min-width: 200px) {
+    tr.multiple .radio_button label {
+        padding: 2px;
+        width: 22px;
+        height: 22px;
+        font-size:12px;
+    }
+
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+    }
+
+    .scale-option__label {
+        font-size:1em;
+        min-width:100%;
+        max-width:100%;
+        display: block;
+        margin:0px;
+        font-weight: normal;
+        text-align: center;
+        position: static;
+        wdith:100%;
+        grid-column: 1 / 11;
+        word-break: keep-all;
+    }
+}
+
+@media (min-width: 410px) {
+
+    tr.multiple .radio_button label {
+        width: 25px;
+        height: 25px;
+        padding: 2px;
+    }
+
+    tr.multiple td {
+        padding: 2px;
+    }
+
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+        
+    }
+
+    .scale-option__label {
+        font-size:1em;
+        min-width:100%;
+        max-width:100%;
+        display: block;
+        margin:0px;
+        font-weight: normal;
+        text-align: center;
+        position: static;
+        wdith:100%;
+        grid-column: 1 / 11;
+    }
+}
+
+@media (min-width: 450px) {
+    tr.multiple .radio_button label {
+        width: 26px;
+        height: 26px;
+        padding: 4px;
+        font-size:12px;
+    }
+
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+    }
+
+    .scale-option__label {
+        font-size:1em;
+        min-width:100%;
+        max-width:100%;
+        display: block;
+        margin:0px;
+        font-weight: normal;
+        text-align: center;
+        position: static;
+        wdith:100%;
+        grid-column: 1 / 11;
+    }
+}
+
+
+@media (min-width: 565px) {
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+        
+    }
+
+    .scale-option__label {
+        font-size:1em;
+        min-width:100%;
+        max-width:100%;
+        display: block;
+        margin:0px;
+        font-weight: normal;
+        text-align: center;
+        position: static;
+        wdith:100%;
+        grid-column: 1 / 11;
+    }
+
+    tr.multiple .radio_button label {
+        padding: 5px;
+        width: 31px;
+        height: 31px;
+        font-size:14px;
+    }
+}
+
+@media (min-width: 768px) {
+    table.scale {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+        
+    }
+
+    tr.multiple td {
+        padding: 0;
+    }
+
+    tr.multiple .radio_button label {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .form-group[type="scale"], .form-group[type="matrix"] {
+        overflow-x: visible;
+    }
+
+    .scale-option__label {
+        font-size:0.8em;
+        min-width: 80px;
+        max-width: 150px;
+        display: flex;
+        align-items: center;
+        align-self: center;
+        font-weight: normal;
+        text-align: left;
+        position: sticky;
+        grid-column: 1;
+    }
+}
+
+@media (min-width: 993px) {
+    .gridContainer {
+        grid-template-columns: repeat(11, 1fr);
+        
+    }
+
+    table.scale {
+        margin-top: 15px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    tr.multiple .radio_button label {
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .scale-option__label {
+        font-size:0.8em;
+        min-width: 100px;
+        max-width: 150px;
+        display: flex;
+        align-items: center;
+        align-self: center;
+        font-weight: normal;
+        text-align: left;
+        position: sticky;
+        grid-column: 1;
+    }
+}
+
+@media (min-width: 1145px) {
+    table.scale {
+        margin-top: 15px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    tr.multiple .radio_button label {
+        padding: 16px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .scale-option__label {
+        font-size:0.9em;
+        min-width: 100px;
+        max-width: 150px;
+        display: flex;
+        align-items: center;
+        align-self: center;
+        font-weight: normal;
+        text-align: left;
+        position: sticky;
+        grid-column: 1;
+    }
+}
+

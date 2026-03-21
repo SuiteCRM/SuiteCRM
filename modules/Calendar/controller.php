@@ -193,7 +193,7 @@ class CalendarController extends SugarController
         if ($this->currentBean->module_dir == "Tasks") {
             $dateField = "date_due";
         }
-        if ($_REQUEST['allDay'] == true) {
+        if (isset($_REQUEST['allDay']) && $_REQUEST['allDay'] == true) {
             $endDateField = "date_end";
             list($tmp, $time) = explode(" ", $this->currentBean->$endDateField);
             list($date, $tmp) = explode(" ", $_REQUEST['enddatetime']);
@@ -290,8 +290,7 @@ class CalendarController extends SugarController
 
         require_once("data/BeanFactory.php");
         $this->currentBean = BeanFactory::getBean($module, $record);
-
-        if (!empty($actionToCheck)) {
+        if (!empty($actionToCheck) && !empty($this->currentBean)) {
             if (!$this->currentBean->ACLAccess($actionToCheck)) {
                 $this->view = 'json';
                 $jsonData = array(

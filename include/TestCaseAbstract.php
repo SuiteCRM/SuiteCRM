@@ -66,7 +66,7 @@ abstract class TestCaseAbstract extends TestCase
     protected function setUp(): void
     {
         if (self::$verbose) {
-            $currentTestName = get_class($this) . '::' . $this->getName(false);
+            $currentTestName = get_class($this) . '::' . $this->name();
             fwrite(STDOUT, "\t" . $currentTestName . ' ..');
             for ($i = 60, $iMax = strlen($currentTestName); $i > $iMax; $i--) {
                 fwrite(STDOUT, '.');

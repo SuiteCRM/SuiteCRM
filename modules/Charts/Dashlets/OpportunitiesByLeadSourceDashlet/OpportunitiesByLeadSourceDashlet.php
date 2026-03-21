@@ -107,7 +107,7 @@ class OpportunitiesByLeadSourceDashlet extends DashletGenericChart
         $jsonData = json_encode($chartReadyData['data']);
         $jsonKeys = json_encode($chartReadyData['keys']);
         $jsonLabels = json_encode($chartReadyData['labels']);
-        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues']);
+        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues'] ?? []);
 
         $autoRefresh = $this->processAutoRefresh();
 
@@ -232,8 +232,12 @@ EOD;
         $chart['labels'] = [];
         $chart['data'] = [];
         $chart['keys'] = [];
+        $chart['labelsAndValues'] = [];
         $total = 0;
         foreach ($data as $i) {
+            if (!isset($i['lead_source_key'])){
+                $i['lead_source_key'] = $i['lead_source'];
+            }
             $chart['labelsAndValues'][] = $i['lead_source'] . ' (' . $currency_symbol . (int)$i['total'] . $thousands_symbol . ')';
             //$chart['labelsAndValues'][]=$currency_symbol.(int)$i['total'].$thousands_symbol;
             $chart['labels'][] = $i['lead_source'];

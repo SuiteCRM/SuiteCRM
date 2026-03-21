@@ -85,7 +85,7 @@ SUGAR.quickCompose = function() {
     		if (SQ.parentPanel != null)
     		{
     			//First clean up the tinyMCE instance
-    			tinyMCE.execCommand('mceRemoveControl', false, SUGAR.email2.tinyInstances.currentHtmleditor);
+    			tinymce.remove('#' + SUGAR.email2.tinyInstances.currentHtmleditor);
     			SUGAR.email2.tinyInstances[SUGAR.email2.tinyInstances.currentHtmleditor] = null;
     			SUGAR.email2.tinyInstances.currentHtmleditor = "";
     			SQ.parentPanel.destroy();
@@ -167,7 +167,7 @@ SUGAR.quickCompose = function() {
 				//dom event has fired.
 				tinymce.dom.Event.domLoaded = true;
 
-				tinyMCE.init({
+				tinymce.init({
 			 		 convert_urls : false,
 			         theme_advanced_toolbar_align : tinyConfig.theme_advanced_toolbar_align,
                      valid_children : tinyConfig.valid_children,
@@ -183,7 +183,8 @@ SUGAR.quickCompose = function() {
 			         extended_valid_elements : tinyConfig.extended_valid_elements,
 			         mode: tinyConfig.mode,
 			         strict_loading_mode : true,
-			         gecko_spellcheck : tinyConfig.gecko_spellcheck
+			         gecko_spellcheck : tinyConfig.gecko_spellcheck,
+			         license_key : tinyConfig.license_key
 		    	 });
 				SQ.tinyLoaded = true;
 			}
@@ -261,7 +262,7 @@ SUGAR.quickCompose = function() {
 				    name :"tinymce",
 				    type : "js",
 				    varName: "TinyMCE",
-				    fullpath: "include/javascript/tiny_mce/tiny_mce.js"
+				    fullpath: "vendor/tinymce/tinymce/tinymce.min.js"
 				});
 
 				//Load the Sugar widgets with dependancies on the yui library.

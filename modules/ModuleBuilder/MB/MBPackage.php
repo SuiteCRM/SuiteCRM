@@ -644,12 +644,20 @@ class MBPackage
      */
     public function exportCustom($modules, $export = true, $clean = true)
     {
+        global $log;
+
         $path = $this->getBuildDir();
         if ($clean && file_exists($path)) {
             rmdir_recursive($path);
         }
         //Copy the custom files to the build dir
         foreach ($modules as $module) {
+
+            if (!isAllowedModuleName($module)) {
+                $log->security(  'Attempt to use invalid module name '. $module );
+                throw new InvalidArgumentException('Invalid module name');
+            }
+
             $pathmod = "$path/SugarModules/modules/$module";
             if (mkdir_recursive($pathmod)) {
                 if (file_exists("custom/modules/$module")) {

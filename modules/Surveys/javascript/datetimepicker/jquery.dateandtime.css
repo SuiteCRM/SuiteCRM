@@ -1,0 +1,9 @@
+.form-group[type="datetime"] .form-control[type="date"] {
+  display: inline;
+  width: 49%;
+}
+
+.form-group[type="datetime"] .form-control[type="time"] {
+  display: inline;
+  width: 49%;
+}

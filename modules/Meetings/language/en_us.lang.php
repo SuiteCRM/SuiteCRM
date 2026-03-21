@@ -113,6 +113,7 @@ $mod_strings = array(
     'LBL_SUBJECT' => 'Subject:',
     'LBL_TIME' => 'Start Time:',
     'LBL_USERS_SUBPANEL_TITLE' => 'Users',
+    'LBL_CALENDAR_ACCOUNTS' => 'Calendar Accounts',
     'LBL_PARENT_TYPE' => 'Parent Type',
     'LBL_PARENT_ID' => 'Parent ID',
     'LNK_MEETING_LIST' => 'View Meetings',

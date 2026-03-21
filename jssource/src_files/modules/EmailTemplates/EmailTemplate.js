@@ -66,11 +66,6 @@ function toggle_text_only(firstRun) {
 	if (typeof(firstRun) == 'undefined')
 		firstRun = false;
 	var text_only = document.getElementById('text_only');
-	//Initialization of TinyMCE
-	//if(firstRun){
-	//setTimeout("tinyMCE.execCommand('mceAddControl', false, 'body_text');", 500);
-	//var tiny = tinyMCE.getInstanceById('body_text');
-	//}
 	//check to see if the toggle textonly flag is checked
 	if(document.getElementById('toggle_textonly').checked == true) {
 		//hide the html div (containing TinyMCE)
@@ -113,7 +108,7 @@ function toggle_textarea_edit(obj)
 
 //This function checks that tinyMCE is initilized before setting the text (IE bug)
 function setTinyHTML(text) {
-	var tiny = tinyMCE.getInstanceById('body_text');
+	var tiny = tinymce.get('body_text');
 
 	if (tiny.getContent() != null) {
 		tiny.setContent(text)

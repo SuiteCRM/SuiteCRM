@@ -15,5 +15,25 @@ function smarty_function_diff_for_humans(array $params)
 {
     global $timedate;
 
-    return \Carbon\Carbon::createFromTimeString($timedate->to_db($params['datetime']))->diffForHumans();
+    $seconds = \Carbon\Carbon::createFromTimeString($timedate->to_db($params['datetime']))->diffInSeconds();
+
+    $interval = new \DateInterval('PT' . round($seconds) . 'S');
+    $reference = new \DateTimeImmutable();
+    $endTime = $reference->add($interval);
+    $diff = $reference->diff($endTime);
+
+    $parts = array_filter([
+        $diff->y ? $diff->y . 'y' : null,
+        $diff->m ? $diff->m . 'mo' : null,
+        $diff->d ? $diff->d . 'd' : null,
+        $diff->h ? $diff->h . 'h' : null,
+        $diff->i ? $diff->i . 'm' : null,
+        $diff->s ? $diff->s . 's' : null,
+    ]);
+
+    if (empty($parts)) {
+        $parts[] = '0s';
+    }
+
+    return implode(' ', array_slice($parts, 0, 3));
 }

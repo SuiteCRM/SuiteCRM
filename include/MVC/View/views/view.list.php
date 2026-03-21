@@ -43,7 +43,7 @@ require_once('include/MVC/View/SugarView.php');
 require_once('include/ListView/ListViewSmarty.php');
 
 require_once('modules/MySettings/StoreQuery.php');
-
+#[\AllowDynamicProperties]
 class ViewList extends SugarView
 {
     /**
@@ -124,7 +124,7 @@ class ViewList extends SugarView
         $metadataFile = $this->getMetaDataFile();
 
         if (!file_exists($metadataFile)) {
-            sugar_die(sprintf($GLOBALS['app_strings']['LBL_NO_ACTION'], $this->do_action));
+            sugar_die(sprintf($GLOBALS['app_strings']['LBL_NO_ACTION'], $this->action));
         }
 
         require($metadataFile);
@@ -316,11 +316,11 @@ class ViewList extends SugarView
             || (file_exists('custom/modules/' . $this->module . '/SearchForm.html')
                 && !file_exists('custom/modules/' . $this->module . '/metadata/searchdefs.php'))
         ) {
-            require_once('include/SearchForm/SearchForm.php');
+            require_once(get_custom_file_if_exists('include/SearchForm/SearchForm.php'));
             $this->searchForm = new SearchForm($this->module, $this->seed);
         } else {
             $this->use_old_search = false;
-            require_once('include/SearchForm/SearchForm2.php');
+            require_once(get_custom_file_if_exists('include/SearchForm/SearchForm2.php'));
 
             $searchMetaData = SearchForm::retrieveSearchDefs($this->module);
 

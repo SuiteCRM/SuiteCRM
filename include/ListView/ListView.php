@@ -46,6 +46,7 @@ require_once('include/EditView/SugarVCR.php');
  * ListView - list of many objects
  * @api
  */
+#[\AllowDynamicProperties]
 class ListView
 {
     public $local_theme= null;
@@ -71,7 +72,7 @@ class ListView
     public $show_mass_update_form = true;
     public $query_where_has_changed = false;
     public $display_header_and_footer = true;
-    public $baseURL = '';
+    public $base_URL = '';
     public $is_dynamic = false;
     public $inline = false;
     public $start_link_wrapper = '';
@@ -91,6 +92,8 @@ class ListView
     public $force_mass_update=false;
     public $keep_mass_update_form_open=false;
     public $ignorePopulateOnly = false;
+    public $appendToBaseUrl = [];
+    public $sortby = [];
 
     public function setDataArray($value)
     {
@@ -1197,8 +1200,8 @@ class ListView
         /*fixes an issue with deletes when doing a search*/
         foreach (array_merge($_GET, $_POST) as $name=>$value) {
             //echo ("$name = $value <br/>");
-                if (!empty($value) && $name != 'sort_order' //&& $name != ListView::getSessionVariableName($html_varName,"ORDER_BY")
-                        && $name != ListView::getSessionVariableName($html_varName, "offset")
+                if (!empty($value) && $name != 'sort_order' //&& $name != $this->getSessionVariableName($html_varName,"ORDER_BY")
+                        && $name != $this->getSessionVariableName($html_varName, "offset")
                         /*&& substr_count($name, "ORDER_BY")==0*/ && !in_array($name, $blockVariables)) {
                     if (is_array($value)) {
                         foreach ($value as $valuename=>$valuevalue) {
@@ -1236,7 +1239,7 @@ class ListView
             }
         }
 
-        $baseurl .= "&".ListView::getSessionVariableName($html_varName, "offset")."=";
+        $baseurl .= "&".$this->getSessionVariableName($html_varName, "offset")."=";
         $cache[$html_varName] = $baseurl;
         return $baseurl;
     }
@@ -1586,7 +1589,7 @@ class ListView
                 if ($this->base_URL == "/index.php") {
                     $this->base_URL .= "?";
                 } else {
-                    if ($fullRequestString == substr($this->baseURL, '-' . strlen($fullRequestString))) {
+                    if ($fullRequestString == substr($this->base_URL, '-' . strlen($fullRequestString))) {
                         $this->base_URL = preg_replace("/&" . $key . "\=.*/", "", $this->base_URL);
                     } else {
                         $this->base_URL = preg_replace("/&" . $key . "\=.*?&/", "&", $this->base_URL);

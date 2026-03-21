@@ -5,6 +5,7 @@ use Api\V8\JsonApi\Response\ErrorResponse;
 use Api\V8\Param\BaseParam;
 use Exception;
 use LoggerManager;
+use RuntimeException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Api\V8\BeanDecorator\BeanManager;
@@ -80,6 +81,10 @@ class ParamsMiddleware
         );
 
         $currentUser = $this->beanManager->getBeanSafe('Users', $oauth2Token->assigned_user_id);
+
+        if (!$currentUser->isEnabled()) {
+            throw new RuntimeException('Not found');
+        }
 
         $GLOBALS['current_user'] = $currentUser;
     }

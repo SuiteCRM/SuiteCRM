@@ -1,7 +1,4 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -44,6 +41,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
+
+use PhpParser\NodeTraverser;
 
 #[\AllowDynamicProperties]
 class ModuleScanner
@@ -216,29 +215,29 @@ class ModuleScanner
         'phpinfo',
 
 
-    //mutliple files per function call
-    'copy',
-    'copy_recursive',
-    'link',
-    'rename',
-    'symlink',
-    'move_uploaded_file',
-    'chdir',
-    'chroot',
-    'create_cache_directory',
-    'mk_temp_dir',
-    'write_array_to_file',
-    'write_encoded_file',
-    'create_custom_directory',
-    'sugar_rename',
-    'sugar_chown',
-    'sugar_fopen',
-    'sugar_mkdir',
-    'sugar_file_put_contents',
-    'sugar_file_put_contents_atomic',
-    'sugar_chgrp',
-    'sugar_chmod',
-    'sugar_touch',
+        //mutliple files per function call
+        'copy',
+        'copy_recursive',
+        'link',
+        'rename',
+        'symlink',
+        'move_uploaded_file',
+        'chdir',
+        'chroot',
+        'create_cache_directory',
+        'mk_temp_dir',
+        'write_array_to_file',
+        'write_encoded_file',
+        'create_custom_directory',
+        'sugar_rename',
+        'sugar_chown',
+        'sugar_fopen',
+        'sugar_mkdir',
+        'sugar_file_put_contents',
+        'sugar_file_put_contents_atomic',
+        'sugar_chgrp',
+        'sugar_chmod',
+        'sugar_touch',
 
         // Functions that have callbacks can circumvent our security measures.
         // List retrieved through PHP's XML documentation, and running the
@@ -551,7 +550,10 @@ class ModuleScanner
                 }
                 $this->scanDir($next);
             } else {
-                $issues = $this->scanFile($next);
+                $contents = file_get_contents($next);
+                if ($this->isPHPFile($contents)) {
+                    $issues = $this->scanFile($next);
+                }
             }
         }
         return true;
@@ -567,7 +569,7 @@ class ModuleScanner
         if (stripos($contents, '<?php') !== false) {
             return true;
         }
-        for ($tag=0;($tag = stripos($contents, '<?', $tag)) !== false;$tag++) {
+        for ($tag = 0; ($tag = stripos($contents, '<?', $tag)) !== false; $tag++) {
             if (strncasecmp(substr($contents, $tag, 13), '<?xml version', 13) == 0) {
                 // <?xml version is OK, skip it
                 $tag++;
@@ -582,10 +584,11 @@ class ModuleScanner
     }
 
     /**
-     * Given a file it will open it's contents and check if it is a PHP file (not safe to just rely on extensions) if it finds <?php tags it will use the tokenizer to scan the file
-     * $var()  and ` are always prevented then whatever is in the blacklist.
-     * It will also ensure that all files are of valid extension types
+     * Given a file it will open its contents and check if it is a PHP file (not safe to just rely on extensions).
+     * If it finds <?php tags it will use the php-parser AST to scan the file for dangerous function calls,
+     * class instantiations, method calls, and other restricted patterns.
      *
+     * It will also ensure that all files are of valid extension types.
      */
     public function scanFile($file)
     {
@@ -607,121 +610,56 @@ class ModuleScanner
             $this->issues['file'][$file] = $issues;
             return $issues;
         }
-        $tokens = @token_get_all($contents);
-        $checkFunction = false;
-        $possibleIssue = '';
-        $lastToken = false;
-        $return = false;
-        foreach ($tokens as $index=>$token) {
-            if (is_string($token[0])) {
-                switch ($token[0]) {
-                    case '`':
-                        $issues['backtick'] = translate('ML_INVALID_FUNCTION', 'Administration') . " '`'";
-                        // no break
-                    case '(':
-                        if ($checkFunction) {
-                            $issues[] = $possibleIssue;
-                        }
-                        break;
-                    case ']':
-                        if ($checkFunction){
-                            $issues[] = $possibleIssue;
-                        }
-                }
 
-                if ($return && $checkFunction){
-                    $issues[] = $possibleIssue;
-                }
+        $issues = $this->scanFileAST($contents);
 
-                $checkFunction = false;
-                $possibleIssue = '';
-            } else {
-                $token['_msi'] = token_name($token[0]);
-                switch ($token[0]) {
-                    case T_WHITESPACE: break;
-                    case T_EVAL:
-                        if (in_array('eval', $this->blackList) && !in_array('eval', $this->blackListExempt)) {
-                            $issues[]= translate('ML_INVALID_FUNCTION', 'Administration') . ' eval()';
-                        }
-                        break;
-                    case T_ECHO:
-                        $issues[]= translate('ML_INVALID_FUNCTION', 'Administration') . ' echo';
-                        break;
-                    case T_EXIT:
-                        $issues[]= translate('ML_INVALID_FUNCTION', 'Administration') . ' exit / die';
-                        break;
-                    case T_STRING:
-                    case T_CONSTANT_ENCAPSED_STRING:
-                        $token[1] = trim(strtolower($token[1]),'\'"');
-                        if ($lastToken !== false && $lastToken[0] == T_NEW) {
-                            if (!in_array($token[1], $this->classBlackList)) {
-                                break;
-                            }
-                            if (in_array($token[1], $this->classBlackListExempt)) {
-                                break;
-                            }
-                        } elseif ($token[0] == T_DOUBLE_COLON) {
-                            if (!in_array($lastToken[1], $this->classBlackList)) {
-                                break;
-                            }
-                            if (in_array($lastToken[1], $this->classBlackListExempt)) {
-                                break;
-                            }
-                        } else {
-                            //if nothing else fit, lets check the last token to see if this is a possible method call
-                            if ($lastToken !== false &&
-                            ($lastToken[0] == T_OBJECT_OPERATOR ||  $lastToken[0] == T_DOUBLE_COLON)) {
-                                // check static blacklist for methods
-                                if (!empty($this->methodsBlackList[$token[1]])) {
-                                    if ($this->methodsBlackList[$token[1]] == '*') {
-                                        $issues[]= translate('ML_INVALID_METHOD', 'Administration') . ' ' .$token[1].  '()';
-                                        break;
-                                    }
-                                    if ($lastToken[0] == T_DOUBLE_COLON && $index > 2 && $tokens[$index-2][0] == T_STRING) {
-                                        $classname = strtolower($tokens[$index-2][1]);
-                                        if (in_array($classname, $this->methodsBlackList[$token[1]])) {
-                                            $issues[]= translate('ML_INVALID_METHOD', 'Administration') . ' ' .$classname . '::' . $token[1]. '()';
-                                            break;
-                                        }
-                                    }
-                                }
-                                //this is a method call, check the black list
-                                if (in_array($token[1], $this->methodsBlackList)) {
-                                    $issues[]= translate('ML_INVALID_METHOD', 'Administration') . ' ' .$token[1].  '()';
-                                }
-                                break;
-                            }
-
-
-                            if (!in_array($token[1], $this->blackList)) {
-                                break;
-                            }
-                            if (in_array($token[1], $this->blackListExempt)) {
-                                break;
-                            }
-
-                            if ($lastToken[1] === 'return'){
-                                $return = true;
-                            }
-                        }
-                        // no break
-                    case T_VARIABLE:
-                        $checkFunction = true;
-                        $possibleIssue = translate('ML_INVALID_FUNCTION', 'Administration') . ' ' .  $token[1] . '()';
-                        break;
-
-                    default:
-                        $checkFunction = false;
-                        $possibleIssue = '';
-
-                }
-                if ($token[0] != T_WHITESPACE) {
-                    $lastToken = $token;
-                }
-            }
-        }
         if (!empty($issues)) {
             $this->issues['file'][$file] = $issues;
+        }
+
+        return $issues;
+    }
+
+    /**
+     * Scan PHP file contents using AST-based analysis.
+     *
+     * Uses nikic/php-parser to build a proper Abstract Syntax Tree, then walks
+     * it to detect dangerous patterns. This approach is immune to token-level
+     * bypass techniques (e.g. ($f)(), $_GET['cmd']()) because the parser
+     * resolves all expression structures before we inspect them.
+     *
+     * @param string $contents PHP file contents
+     * @return array List of issues found
+     */
+    private function scanFileAST(string $contents): array
+    {
+        $issues = [];
+
+        $parser = (new \PhpParser\ParserFactory())->createForHostVersion();
+        $traverser = new NodeTraverser();
+
+        require_once __DIR__ . '/ModuleScannerVisitor.php';
+
+        $visitor = new ModuleScannerVisitor(
+            $this->blackList,
+            $this->blackListExempt,
+            $this->classBlackList,
+            $this->classBlackListExempt,
+            $this->methodsBlackList
+        );
+        $traverser->addVisitor($visitor);
+
+        try {
+            $stmts = $parser->parse($contents);
+            if ($stmts !== null) {
+                $traverser->traverse($stmts);
+            }
+            $issues = $visitor->getIssues();
+        } catch (\PhpParser\Error $e) {
+            // If the parser cannot parse the file, flag it as a parse error.
+            // Malformed PHP that bypasses the parser should not be installable.
+            $issues[] = translate('ML_INVALID_PHP_FILE', 'Administration')
+                . ' (parse error: ' . $e->getMessage() . ')';
         }
 
         return $issues;
@@ -898,7 +836,7 @@ class ModuleScanner
             echo '<h2 class="error">' . ucfirst($type) . ' ' . translate('ML_ISSUES', 'Administration') . '</h2>';
             echo '<div id="details' . $type . '" >';
             foreach ($issues as $file => $issue) {
-                $file = preg_replace('/.*\//', '', (string) $file);
+                $file = preg_replace('/.*\//', '', (string)$file);
                 echo '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">';
                 if (is_array($issue)) {
                     foreach ($issue as $i) {
@@ -922,11 +860,13 @@ class ModuleScanner
         $message = '';
 
         foreach ($this->issues as $type => $issues) {
-            $message .= '<h2 class="error">' . ucfirst($type) . ' ' . translate('ML_ISSUES',
-                    'Administration') . '</h2>';
+            $message .= '<h2 class="error">' . ucfirst($type) . ' ' . translate(
+                    'ML_ISSUES',
+                    'Administration'
+                ) . '</h2>';
             $message .= '<div id="details' . $type . '" >';
             foreach ($issues as $file => $issue) {
-                $file = preg_replace('/.*\//', '', (string) $file);
+                $file = preg_replace('/.*\//', '', (string)$file);
                 $message .= '<div style="position:relative;left:10px"><b>' . $file . '</b></div><div style="position:relative;left:20px">';
                 if (is_array($issue)) {
                     foreach ($issue as $i) {

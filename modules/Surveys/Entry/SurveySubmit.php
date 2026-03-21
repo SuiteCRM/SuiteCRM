@@ -66,7 +66,7 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
     $response->assigned_user_id = $survey->assigned_user_id;
 
     foreach ($survey->get_linked_beans('surveys_surveyquestions', 'SurveyQuestions', 'sort_order') as $question) {
-        $userResponse = $request['question'][$question->id];
+        $userResponse = $request['question'][$question->id] ?? null;
         switch ($question->type) {
             case "Checkbox":
                 $qr = BeanFactory::newBean('SurveyQuestionResponses');
@@ -85,7 +85,7 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
                 $qr->surveyquestionoptions_surveyquestionresponses->add($userResponse);
                 break;
             case "Multiselect":
-                foreach ($userResponse as $selected) {
+                foreach ($userResponse ?? [] as $selected) {
                     $qr = BeanFactory::newBean('SurveyQuestionResponses');
                     $qr->surveyresponse_id = $response->id;
                     $qr->surveyquestion_id = $question->id;
@@ -95,7 +95,7 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
                 }
                 break;
             case "Matrix":
-                foreach ($userResponse as $key => $val) {
+                foreach ($userResponse ?? [] as $key => $val) {
                     $qo = BeanFactory::getBean('SurveyQuestionOptions', $key);
                     $qr = BeanFactory::newBean('SurveyQuestionResponses');
                     $qr->surveyresponse_id = $response->id;

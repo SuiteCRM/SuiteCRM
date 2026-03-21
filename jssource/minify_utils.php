@@ -60,7 +60,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
         //add prefix to key if it was passed in
         $compress_exempt_files = array(
             rtrim($prefix.sugar_cached(''), '/')  => true,
-            $prefix.'include/javascript/tiny_mce'   => true,
+            $prefix.'vendor'                        => true,
             $prefix.'include/javascript/yui'        => true,
             $prefix.'modules/Emails'                => true,
             $prefix.'jssource'                      => true,
@@ -266,7 +266,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
             if (file_exists($from_path) && is_file($from_path)) {
                 //read in license script
                 if (function_exists('sugar_fopen')) {
-                    $file_handle = sugar_fopen($from_path, 'r');
+                    $file_handle = sugar_fopen($from_path, 'rb');
                 } else {
                     $file_handle = fopen($from_path, 'rb');
                 }

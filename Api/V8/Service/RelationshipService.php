@@ -16,6 +16,7 @@ use Api\V8\Param\GetRelationshipParams;
 use Slim\Http\Request;
 use \SugarBean;
 use \DomainException;
+use SuiteCRM\Exception\AccessDeniedException;
 
 #[\AllowDynamicProperties]
 class RelationshipService
@@ -57,6 +58,10 @@ class RelationshipService
         $response = new DocumentResponse();
         $sourceBean = $params->getSourceBean();
 
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $linkFieldName = $params->getLinkedFieldName();
 
         $size = $params->getPage()->getSize();
@@ -85,6 +90,11 @@ class RelationshipService
             $data = [];
             /** @var SugarBean $relatedBean */
             foreach ($relatedBeans as $relatedBean) {
+
+                if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+                    continue;
+                }
+
                 $linkResponse = new LinksResponse();
                 $linkResponse->setSelf(sprintf('V8/module/%s/%s', $relatedBean->getObjectName(), $relatedBean->id));
 
@@ -122,7 +132,17 @@ class RelationshipService
     public function createRelationship(CreateRelationshipParams $params)
     {
         $sourceBean = $params->getSourceBean();
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $relatedBean = $params->getRelatedBean();
+
+        if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $linkFieldName = $this->beanManager->getLinkedFieldName($sourceBean, $relatedBean);
 
         $this->beanManager->createRelationshipSafe($sourceBean, $relatedBean, $linkFieldName);
@@ -152,7 +172,15 @@ class RelationshipService
     {
         $sourceBean = $params->getSourceBean();
 
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $relatedBean = $params->getRelatedBean();
+
+        if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
 
         $sourceLabel = translate($sourceBean->module_dir);
 
@@ -198,8 +226,21 @@ class RelationshipService
     public function deleteRelationship(DeleteRelationshipParams $params)
     {
         $sourceBean = $params->getSourceBean();
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('edit') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $linkFieldName = $params->getLinkedFieldName();
         $relatedBeans = $sourceBean->get_linked_beans($linkFieldName);
+
+        if (!empty($relatedBeans)) {
+            $firstRelatedBean = reset($relatedBeans);
+            if (!$firstRelatedBean->ACLAccess('view') || !$firstRelatedBean->ACLAccess('list')) {
+                throw new AccessDeniedException();
+            }
+        }
+
         $relatedBeanId = $params->getRelatedBeanId();
 
         $relatedBean = array_filter($relatedBeans, function ($bean) use ($relatedBeanId) {

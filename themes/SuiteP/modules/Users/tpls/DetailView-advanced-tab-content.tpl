@@ -365,45 +365,6 @@ advanced tab content goes here
         </div>
     </div>
 </div>
-<div id='google_options_suitep style="display:{$HIDE_IF_GAUTH_UNCONFIGURED}"'>
-    <div class="row detail-view-row">
-        <h4>{$MOD.LBL_GOOGLE_API_SETTINGS}</h4>
-    </div>
-    <div class="row detail-view-row">
-        <div class="col-xs-12 col-sm-12 detail-view-row-item">
-            <!-- [hide!!] -->
-            <!-- DIV inside - colspan != 3 -->
-            <div class="col-xs-12 col-sm-2 label col-1-label">
-                <!-- LABEL -->
-                {$MOD.LBL_GOOGLE_API_TOKEN}
-            </div>
-            <!-- /DIV inside  -->
-            <!-- phone (version 1) -->
-            <div class="col-xs-12 col-sm-10 detail-view-field ">
-                <!-- simple hidden start -->
-                Current API Token is: <span style="color:{$GOOGLE_API_TOKEN_COLOR}">{$GOOGLE_API_TOKEN}</span>
-                <!-- simple hidden finish -->
-            </div>
-        </div>
-    </div>
-    <div class="row detail-view-row">
-        <div class="col-xs-12 col-sm-12 detail-view-row-item">
-            <!-- [hide!!] -->
-            <!-- DIV inside - colspan != 3 -->
-            <div class="col-xs-12 col-sm-2 label col-1-label">
-                <!-- LABEL -->
-                {$MOD.LBL_GSYNC_CAL}
-            </div>
-            <!-- /DIV inside  -->
-            <!-- phone (version 1) -->
-            <div class="col-xs-12 col-sm-10 detail-view-field ">
-                <!-- simple hidden start -->
-                <input class="checkbox" type="checkbox" disabled {$GSYNC_CAL}>
-                <!-- simple hidden finish -->
-            </div>
-        </div>
-    </div>
-</div>
 <div id="layout_suitep">
     <div class="row detail-view-row">
         <h4>{$MOD.LBL_LAYOUT_OPTIONS}</h4>

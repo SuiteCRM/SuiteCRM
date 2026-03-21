@@ -71,7 +71,7 @@ class SugarSecure
             if (is_dir($path . '/' . $entry) && $entry != '.' && $entry != '..') {
                 $this->scan($path .'/' . $entry);
             }
-            if (is_file($path . '/'. $entry) && substr($entry, strlen($entry) - strlen((string) $ext), strlen((string) $ext)) == $ext) {
+            if (is_file($path . '/'. $entry) && substr($entry, strlen((string) $entry) - strlen((string) $ext), strlen((string) $ext)) == $ext) {
                 $contents = file_get_contents($path .'/'. $entry);
                 $this->scanContents($contents, $path .'/'. $entry);
             }

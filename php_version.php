@@ -4,7 +4,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 // The absolute minimum version on which to install SuiteCRM
-define('SUITECRM_PHP_MIN_VERSION', '7.4.0');
+define('SUITECRM_PHP_MIN_VERSION', '8.1.0');
 
 // The minimum recommended version on which to install SuiteCRM
-define('SUITECRM_PHP_REC_VERSION', '7.4.0');
+define('SUITECRM_PHP_REC_VERSION', '8.2.0');

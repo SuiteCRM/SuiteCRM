@@ -747,6 +747,15 @@ $dictionary['User'] = array(
             'type' => 'enum',
             'options' => 'user_factor_auth_interface_dom',
         ),
+        'calendar_accounts' => array(
+            'name' => 'calendar_accounts',
+            'type' => 'link',
+            'relationship' => 'users_calendar_accounts',
+            'source' => 'non-db',
+            'vname' => 'LBL_CALENDAR_ACCOUNTS',
+            'module' => 'CalendarAccounts',
+            'bean_name' => 'CalendarAccounts',
+        ),
 
     ),
     'indices' => array(
@@ -828,6 +837,16 @@ $dictionary['User'] = array(
                 'join_key_rhs' => 'email_address_id',
                 'relationship_role_column' => 'primary_address',
                 'relationship_role_column_value' => '1'
+            ],
+        'users_calendar_accounts' =>
+            [
+                'lhs_module' => 'Users',
+                'lhs_table' => 'users',
+                'lhs_key' => 'id',
+                'rhs_module' => 'CalendarAccounts',
+                'rhs_table' => 'calendar_accounts',
+                'rhs_key' => 'calendar_user_id',
+                'relationship_type' => 'one-to-many'
             ],
     ],
 );

@@ -251,6 +251,45 @@ function change_state(radiobutton) {
 			<div class="panel-heading ">
 				<a class="" role="button" data-toggle="collapse-edit" aria-expanded="false">
 					<div class="col-xs-10 col-sm-11 col-md-11">
+						{$MOD.LBL_EMAIL_IMPORT_CONFIGURATION}
+					</div>
+				</a>
+			</div>
+			<div class="panel-body">
+				<div class="tab-content">
+					<table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view">
+						<tr>
+							<td width="20%" scope="row" valign='top'>
+								{$MOD.LBL_EMAIL_IMPORT_PER_RUN_THRESHOLD}:&nbsp;
+								<img border="0" class="inlineHelpTip" onclick="return SUGAR.util.showHelpTips(this,'{$MOD.LBL_EMAIL_IMPORT_PER_RUN_THRESHOLD_DESC}','','','dialogHelpPopup')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
+							</td>
+							<td width="30%"  valign='top'>
+								<input type="number" name="email_import_per_run_threshold" tabindex='1' value="{$email_import_per_run_threshold}">
+							</td>
+							<td scope="row" width="17%">
+								{$MOD.LBL_EMAIL_IMPORT_TIMEFRAME_START}:&nbsp;
+								<img border="0" class="inlineHelpTip" onclick="return SUGAR.util.showHelpTips(this,'{$MOD.LBL_EMAIL_IMPORT_TIMEFRAME_START_DESC}','','','dialogHelpPopup')" src="index.php?entryPoint=getImage&themeName={$THEME}&imageName=helpInline.gif">
+							</td>
+							<td>
+								<select name="email_import_timeframe_start">{$email_import_timeframe_start_options}</select>
+							</td>
+						</tr>
+						<tr>
+							<td width="20%" scope="row" valign='top'>
+								{$MOD.LBL_EMAIL_IMPORT_FETCH_UNREAD_ONLY}:&nbsp;
+							</td>
+							<td width="30%"  valign='top'>
+								<input type="checkbox" class="checkbox" id="email_import_fetch_unread_only" name='email_import_fetch_unread_only' value="true" tabindex='1' {if !empty($email_import_fetch_unread_only)}checked="checked{/if}">
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading ">
+				<a class="" role="button" data-toggle="collapse-edit" aria-expanded="false">
+					<div class="col-xs-10 col-sm-11 col-md-11">
 						{$MOD.LBL_SECURITY_TITLE}
 					</div>
 				</a>

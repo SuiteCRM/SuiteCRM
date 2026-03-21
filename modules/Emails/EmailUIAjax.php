@@ -105,7 +105,7 @@ $json = getJSONobj();
 
 global $current_user;
 
-$showFolders = sugar_unserialize(base64_decode($current_user->getPreference('showFolders', 'Emails')));
+$showFolders = sugar_unserialize(base64_decode((string) $current_user->getPreference('showFolders', 'Emails')));
 
 if (isset($_REQUEST['emailUIAction'])) {
     if (isset($_REQUEST['user']) && $_REQUEST['user'] && is_admin($current_user)) {
@@ -456,7 +456,7 @@ if (isset($_REQUEST['emailUIAction'])) {
                             $emailAddressWithName = $ie->email->reply_to_addr;
                         } // if
 
-                        $emailAddress = SugarEmailAddress::_cleanAddress($emailAddressWithName);
+                        $emailAddress = (new SugarEmailAddress())->_cleanAddress($emailAddressWithName);
                         $contactIds = $ie->email->emailAddress->getRelatedId($emailAddress, 'contacts');
                         if (!empty($contactIds)) {
                             $controller->bean->contacts->add($contactIds);
@@ -1826,7 +1826,9 @@ eoq;
     } // switch
 
     if (isset($cid) && $cid) {
-        $current_user->savePreferencesToDB();
+        if ($current_user !== null) {
+            $current_user->savePreferencesToDB();
+        }
         $current_user = BeanFactory::getBean('Users', $cid);
     }
 } // if

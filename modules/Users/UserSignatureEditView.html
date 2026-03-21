@@ -48,7 +48,7 @@
 </style>
 
 {JAVASCRIPT}
-<script type="text/javascript" language="Javascript" src="include/javascript/tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" language="Javascript" src="vendor/tinymce/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 	function checkSignatureForm() {
 		if(document.getElementById('name').value == "") {
@@ -74,20 +74,20 @@
 			<input type="hidden" name="inpopupwindow" value="{INPOPUPWINDOW}">
 			<input type="hidden" name="old_id" value="{OLD_ID}">
 			<input type="hidden" name="the_user_id" value="{THE_USER_ID}">
-		
-			<input 	title="{APP.LBL_SAVE_BUTTON_TITLE}" 
-					accessKey="{APP.LBL_SAVE_BUTTON_KEY}" 
-					class="button" 
-					onclick="this.form.action.value='SaveSignature'; return checkSignatureForm();" 
-					type="submit" 
-					name="button" 
+
+			<input 	title="{APP.LBL_SAVE_BUTTON_TITLE}"
+					accessKey="{APP.LBL_SAVE_BUTTON_KEY}"
+					class="button"
+					onclick="this.form.action.value='SaveSignature'; return checkSignatureForm();"
+					type="submit"
+					name="button"
 					value="  {APP.LBL_SAVE_BUTTON_LABEL}  " >
-			<input	title="{APP.LBL_CANCEL_BUTTON_TITLE}" 
-					accessKey="{APP.LBL_CANCEL_BUTTON_KEY}" 
-					class="button" 
-					onclick="{CANCEL_SCRIPT}" 
-					type="submit" 
-					name="button" 
+			<input	title="{APP.LBL_CANCEL_BUTTON_TITLE}"
+					accessKey="{APP.LBL_CANCEL_BUTTON_KEY}"
+					class="button"
+					onclick="{CANCEL_SCRIPT}"
+					type="submit"
+					name="button"
 					value="  {APP.LBL_CANCEL_BUTTON_LABEL}  ">
 		</td>
 		<td align="right" nowrap><span class="required">{APP.LBL_REQUIRED_SYMBOL}</span> {APP.NTC_REQUIRED}</td>
@@ -101,14 +101,14 @@
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 				<tr>
 					<td width="15%" scope="row">
-						
+
 							{MOD.LBL_SIGNATURE_NAME} <span class="required">{APP.LBL_REQUIRED_SYMBOL}</span>
-						
+
 					</td>
 					<td width="85%" >
-						
+
 							<input id="name" name='name' tabindex="10" type="text" size='30' maxlength="255" value="{NAME}">
-						
+
 					</td>
 				</tr>
 				<tr>
@@ -116,9 +116,9 @@
 				</tr>
 				<tr>
 					<td valign="top" scope="row">
-						
+
 							{MOD.LBL_SIGNATURE}:
-						
+
 					</td>
 			        <td >
 		        		<textarea id="sigText" cols="100" rows="10" name="description">{SIGNATURE_TEXT}</textarea></div>

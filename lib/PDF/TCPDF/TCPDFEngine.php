@@ -81,7 +81,7 @@ class TCPDFEngine extends PDFEngine
      * TFPDFEngine constructor.
      * @param SuiteTCPDF|null $pdf
      */
-    public function __construct(SuiteTCPDF $pdf = null)
+    public function __construct(?SuiteTCPDF $pdf = null)
     {
         $this->pdf = $pdf ?? new SuiteTCPDF();
         

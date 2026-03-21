@@ -168,7 +168,7 @@ class MssqlManager extends DBManager
     /**
      * @see DBManager::connect()
      */
-    public function connect(array $configOptions = null, $dieOnError = false)
+    public function connect(?array $configOptions = null, $dieOnError = false)
     {
         global $sugar_config;
 

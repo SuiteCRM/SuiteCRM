@@ -36,11 +36,16 @@ if (isset($time_start) && strlen((string) $date) == 10) {
 
 
 $call->retrieve($id);
+if ($call->id === null) {
+    return;
+}
 $call->date_start = $date_start;//set new the start date
 $call->save();//save the new start date
 //get the duration of the call
 $hours = $call->duration_hours;
 $mins = $call->duration_minutes;
+
+$id = $call->db->quote($id);
 
 //get the new start date directly from the database to avoid sugar changing the format to users setting
 $query = 'SELECT date_start FROM calls WHERE id="'.$id.'"';

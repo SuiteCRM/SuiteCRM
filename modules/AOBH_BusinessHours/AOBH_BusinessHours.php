@@ -182,7 +182,7 @@ class AOBH_BusinessHours extends Basic
      *
      * @return DateTime
      */
-    public function addBusinessHours($hours, DateTime $date = null)
+    public function addBusinessHours($hours, ?DateTime $date = null)
     {
         if ($date == null) {
             $date = new DateTime();

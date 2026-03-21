@@ -45,7 +45,72 @@ if (!is_admin($current_user)) {
     sugar_die("Unauthorized access to administration.");
 }
 
-global $timedate;
+/**
+ * Helper function to safely calculate end date from start date and duration
+ * Prevents fatal errors by validating DateTime objects before method chaining
+ *
+ * @param array $row Database row containing date_start, duration_hours, duration_minutes, id
+ * @param string $recordType Type of record (call/meeting) for logging
+ * @return string|false The calculated end date as database string, or false on failure
+ */
+function calculateEndDate(array $row, string $recordType): false|string
+{
+    global $timedate;
+    $logger = LoggerManager::getLogger();
+
+    $rowId = $row['id'];
+    $rowDateStart = $row['date_start'] ?? null;
+
+    /** @var ?SugarDateTime $dateStart */
+    $dateStart = $timedate->fromDb($rowDateStart);
+
+    if (!$dateStart) {
+        $logger?->warn(
+            sprintf(
+                "RepairActivities: Invalid date_start for %s ID %s: '%s'",
+                $recordType,
+                $rowId,
+                $rowDateStart
+            )
+        );
+        return false;
+    }
+
+    $rowDurationHours = $row['duration_hours'] ?? null;
+    $rowDurationMinutes = $row['duration_minutes'] ?? null;
+
+    if ($rowDurationHours === null || $rowDurationMinutes === null) {
+        $logger?->error(
+            sprintf(
+                "RepairActivities: Missing duration fields for %s ID %s: duration_hours=%s, duration_minutes=%s",
+                $recordType,
+                $rowId,
+                $rowDurationHours ?? 'NULL',
+                $rowDurationMinutes ?? 'NULL'
+            )
+        );
+        return false;
+    }
+
+    /** @var ?SugarDateTime $modifiedDate */
+    $modifiedDate = $dateStart->modify("+$rowDurationHours hours $rowDurationMinutes mins");
+
+    if (!$modifiedDate) {
+        $logger?->error(
+            sprintf(
+                "RepairActivities: Failed to calculate end date for %s ID %s: dateStart: %s, duration_hours=%s, duration_minutes=%s",
+                $recordType,
+                $rowId,
+                $rowDateStart,
+                $rowDurationHours,
+                $rowDurationMinutes
+            )
+        );
+        return false;
+    }
+
+    return $modifiedDate->asDb();
+}
 
 $callBean = BeanFactory::newBean('Calls');
 $callQuery = "SELECT * FROM calls where calls.status != 'Held' and calls.deleted=0";
@@ -53,10 +118,14 @@ $callQuery = "SELECT * FROM calls where calls.status != 'Held' and calls.deleted
 $result = $callBean->db->query($callQuery, true, "");
 $row = $callBean->db->fetchByAssoc($result);
 while ($row != null) {
-    $date_end = $timedate->fromDb($row['date_start'])->modify("+{$row['duration_hours']} hours {$row['duration_minutes']} mins")->asDb();
-    $updateQuery = "UPDATE calls set calls.date_end='{$date_end}' where calls.id='{$row['id']}'";
-    $call = BeanFactory::newBean('Calls');
-    $call->db->query($updateQuery);
+    $date_end = calculateEndDate($row, 'call');
+
+    if ($date_end) {
+        $updateQuery = "UPDATE calls set calls.date_end='$date_end' where calls.id='{$row['id']}'";
+        $call = BeanFactory::newBean('Calls');
+        $call->db->query($updateQuery);
+    }
+
     $row = $callBean->db->fetchByAssoc($result);
 }
 
@@ -66,10 +135,14 @@ $meetingQuery = "SELECT * FROM meetings where meetings.status != 'Held' and meet
 $result = $meetingBean->db->query($meetingQuery, true, "");
 $row = $meetingBean->db->fetchByAssoc($result);
 while ($row != null) {
-    $date_end = $timedate->fromDb($row['date_start'])->modify("+{$row['duration_hours']} hours {$row['duration_minutes']} mins")->asDb();
-    $updateQuery = "UPDATE meetings set meetings.date_end='{$date_end}' where meetings.id='{$row['id']}'";
-    $call = BeanFactory::newBean('Calls');
-    $call->db->query($updateQuery);
+    $date_end = calculateEndDate($row, 'meeting');
+
+    if ($date_end) {
+        $updateQuery = "UPDATE meetings set meetings.date_end='$date_end' where meetings.id='{$row['id']}'";
+        $call = BeanFactory::newBean('Calls');
+        $call->db->query($updateQuery);
+    }
+
     $row = $callBean->db->fetchByAssoc($result);
 }
 echo $mod_strings['LBL_DIAGNOSTIC_DONE'];

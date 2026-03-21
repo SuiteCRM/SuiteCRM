@@ -307,7 +307,7 @@ class Zend_Oauth_Provider
      * @throws Zend_Oauth_Exception
      * @throws \Zend_Uri_Exception
      */
-    public function checkOAuthRequest(Zend_Uri_Http $url = null, $params = array())
+    public function checkOAuthRequest(?Zend_Uri_Http $url = null, $params = array())
     {
         if ($url === null) {
             $this->url = $this->getRequestUrl();

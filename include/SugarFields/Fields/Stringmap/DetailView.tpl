@@ -70,7 +70,14 @@
                         </div>
                     {{/if}}
                     <div class="col-sm-6 col-xs-12 string-map-value-col">
-                        {{if !empty($entry_value_label)}}<span class="string-map-label">{{$entry_value_label}}:</span>{{/if}}<span>{$v}</span>
+                        {{if !empty($entry_value_label)}}<span class="string-map-label">{{$entry_value_label}}:</span>{{/if}}
+                        <span>
+                            {{if !empty($vardef.map_value_format) && $vardef.map_value_format === 'date'}}
+                                {$v|user_date_format}
+                            {{else}}
+                                {$v}
+                            {{/if}}
+                        </span>
                     </div>
                 </div>
             {/foreach}

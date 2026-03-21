@@ -285,7 +285,14 @@ function make_sugar_config(&$sugar_config)
             '110', '143', '993', '995'
         ],
         'web_to_lead_allowed_redirect_hosts' => [],
-        'trusted_hosts' => []
+        'trusted_hosts' => [],
+        'external_trusted_hosts' => [],
+        'oauth_token_delete_threshold' => '-7 days',
+        'oauth_code_delete_threshold' => '-7 days',
+        'email_import_per_run_threshold' => 25,
+        'email_import_fetch_unread_only' => false,
+        'email_import_timeframe_start' => '-30 days',
+        'email_calendar_invite_type' => 'rsvp_ics'
     );
 }
 
@@ -393,7 +400,7 @@ function get_sugar_config_defaults(): array
         'email_default_editor' => 'html',
         'email_default_client' => 'sugar',
         'email_default_delete_attachments' => true,
-        'email_warning_notifications' => true,
+        'email_warning_notifications' => false,
         'email_enable_auto_send_opt_in' => false,
         'email_enable_confirm_opt_in' => SugarEmailAddress::COI_STAT_DISABLED,
         'filter_module_fields' => [
@@ -581,7 +588,14 @@ function get_sugar_config_defaults(): array
             '110', '143', '993', '995'
         ],
         'web_to_lead_allowed_redirect_hosts' => [],
-        'trusted_hosts' => []
+        'trusted_hosts' => [],
+        'external_trusted_hosts' => [],
+        'oauth_token_delete_threshold' => '-7 days',
+        'oauth_code_delete_threshold' => '-7 days',
+        'email_import_per_run_threshold' => 25,
+        'email_import_fetch_unread_only' => false,
+        'email_import_timeframe_start' => '-30 days',
+        'email_calendar_invite_type' => 'rsvp_ics'
     ];
 
     if (!is_object($locale)) {
@@ -1626,9 +1640,18 @@ function is_guid($guid)
 }
 
 /**
- * A temporary method of generating GUIDs of the correct format for our DB.
+ * Generates a UUID v4 (random) in the format required by SuiteCRM database.
  *
- * @return string contianing a GUID in the format: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+ * Uses symfony/polyfill-uuid to generate RFC 4122 compliant UUIDs.
+ * This replaces the legacy microtime-based implementation to fix PHP 8.4
+ * compatibility issues where record IDs were incorrectly starting with "00000".
+ *
+ * @return string UUID v4 in the format: aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee
+ *
+ * @throws RuntimeException if UUID generation fails
+ *
+ * @since SuiteCRM 7.15 Updated to use symfony/polyfill-uuid for PHP 8.4 compatibility
+ * @see https://tools.ietf.org/html/rfc4122 RFC 4122 UUID specification
  *
  * Portions created by SugarCRM are Copyright (C) SugarCRM, Inc.
  * All Rights Reserved.
@@ -1636,49 +1659,7 @@ function is_guid($guid)
  */
 function create_guid()
 {
-    $microTime = microtime();
-    list($a_dec, $a_sec) = explode(' ', $microTime);
-
-    $dec_hex = dechex($a_dec * 1000000);
-    $sec_hex = dechex($a_sec);
-
-    ensure_length($dec_hex, 5);
-    ensure_length($sec_hex, 6);
-
-    $guid = '';
-    $guid .= $dec_hex;
-    $guid .= create_guid_section(3);
-    $guid .= '-';
-    $guid .= create_guid_section(4);
-    $guid .= '-';
-    $guid .= create_guid_section(4);
-    $guid .= '-';
-    $guid .= create_guid_section(4);
-    $guid .= '-';
-    $guid .= $sec_hex;
-    $guid .= create_guid_section(6);
-
-    return $guid;
-}
-
-function create_guid_section($characters)
-{
-    $return = '';
-    for ($i = 0; $i < $characters; ++$i) {
-        $return .= dechex(mt_rand(0, 15));
-    }
-
-    return $return;
-}
-
-function ensure_length(&$string, $length)
-{
-    $strlen = strlen((string) $string);
-    if ($strlen < $length) {
-        $string = str_pad($string, $length, '0');
-    } elseif ($strlen > $length) {
-        $string = substr((string) $string, 0, $length);
-    }
+    return uuid_create();
 }
 
 function microtime_diff($a, $b)
@@ -1889,7 +1870,8 @@ function get_select_options_with_id_separate_key($label_list, $key_list, $select
         $key_list = array();
     }
     //create the type dropdown domain and set the selected value if $opp value already exists
-    foreach ($key_list as $option_key => $option_value) {
+    $key_list_array = is_array($key_list) ? $key_list : [$key_list];
+    foreach ($key_list_array as $option_key => $option_value) {
         $selected_string = '';
 
         if (is_string($selected_key)) {
@@ -2585,7 +2567,9 @@ function clean_incoming_data()
     if (isset($_REQUEST['stamp'])) {
         clean_string($_REQUEST['stamp']);
     }
-
+    if (isset($_REQUEST['return_id'])) {
+        $_REQUEST['return_id'] = purifyId($_REQUEST['return_id']);
+    }
     if (isset($_REQUEST['lvso'])) {
         set_superglobals('lvso', (strtolower($_REQUEST['lvso']) === 'desc') ? 'desc' : 'asc');
     }
@@ -2677,7 +2661,7 @@ function purify_html(?string $value, array $extraOptions = []): string {
 
     $sanitizer = new SuiteCRM\HtmlSanitizer($extraOptions);
 
-    $cleanedValue = htmlentities($sanitizer->clean($value, true));
+    $cleanedValue = htmlentities($sanitizer->clean((string) $value, true));
     $decoded = html_entity_decode($cleanedValue);
     $doubleDecoded = html_entity_decode($decoded);
 
@@ -5177,9 +5161,14 @@ function sugar_ucfirst($string, $charset = 'UTF-8')
  */
 function unencodeMultienum($string)
 {
+    if (is_null($string)){
+        $string = [];
+    }
+
     if (is_array($string)) {
         return $string;
     }
+    $string = (string) ($string ?? '');
     if (substr($string, 0, 1) == '^' && substr($string, -1) == '^') {
         $string = substr(substr($string, 1), 0, strlen($string) - 2);
     }
@@ -5246,7 +5235,7 @@ function create_export_query_relate_link_patch($module, $searchFields, $where)
             $join = $seed->$fieldLink->getJoin($params, true);
             $join_table_alias = 'join_' . $field['name'];
             if (isset($field['db_concat_fields'])) {
-                $db_field = DBManager::concat($join_table_alias, $field['db_concat_fields']);
+                $db_field = $seed->db->concat($join_table_alias, $field['db_concat_fields']);
                 $where = preg_replace('/' . $field['name'] . '/', $db_field, (string) $where);
             } else {
                 $where = preg_replace('/(^|[\s(])' . $field['name'] . '/', '${1}' . $join_table_alias . '.' . $field['rname'], (string) $where);
@@ -5956,6 +5945,23 @@ function isValidId($id)
     return $result;
 }
 
+/**
+ * Purify id by validating it and returning empty string if invalid. This is useful for cleaning up data that is going to be used in a query or as part of a file path.
+ * @param string $id
+ * @return string
+ */
+function purifyId(string $id): string
+{
+    $isValidator = new \SuiteCRM\Utility\SuiteValidator();
+    $result = $isValidator->isValidId($id);
+
+    if (!$result) {
+        return '';
+    }
+
+    return $id;
+}
+
 function isValidEmailAddress($email, $message = 'Invalid email address given', $orEmpty = true, $logInvalid = 'error')
 {
     if ($orEmpty && !$email) {
@@ -6269,6 +6275,103 @@ function check_trusted_hosts(): void {
 
         throw new BadMethodCallException(sprintf('Untrusted Host "%s".', $host));
     }
+}
+
+/**
+ * Get currently configured external trusted hosts, if none configured return empty
+ * @return array
+ */
+function get_external_trusted_hosts(): array {
+
+    $trustedHosts = SugarConfig::getInstance()->get('external_trusted_hosts', []);
+
+    if (!empty($trustedHosts) && is_array($trustedHosts)){
+        return $trustedHosts;
+    }
+
+    return [];
+}
+
+/**
+ * Validate external host
+ */
+function validate_external_host(string $url): bool {
+
+    global $log;
+
+    // Allow self-referential URLs (site_url and HTTP_HOST)
+    if (isSelfRequest($url)) {
+        return true;
+    }
+
+    // Allow tmp urls for file uploads for internal tcpdf use
+    if (str_starts_with($url, '/tmp') || str_starts_with($url, 'tmp/')) {
+        return true;
+    }
+
+    $urlparse = parse_url($url);
+    if ($urlparse === false || empty($urlparse['scheme']) || empty($urlparse['host'])) {
+        $log->security("Invalid external host URL: $url");
+        return false;
+    }
+
+    if ($urlparse['scheme'] !== 'http' && $urlparse['scheme'] !== 'https') {
+        $log->security("Invalid external host URL scheme: $url");
+        return false;
+    }
+
+    $host = strtolower($urlparse['host']);
+
+    // Resolve hostname to IP and validate
+    $ips = @gethostbynamel($host) ?: [filter_var($host, FILTER_VALIDATE_IP)];
+
+    foreach ($ips as $ip) {
+        if ($ip === false) {
+            continue;
+        }
+
+        // Validate IPv4 and IPv6 addresses
+        $isValidIPv4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+        $isValidIPv6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_RES_RANGE);
+
+        // Additional IPv6 private range checks (as FILTER_FLAG_NO_PRIV_RANGE doesn't cover all)
+        if ($isValidIPv6 !== false) {
+            $isValidIPv6 = !preg_match('/^(::1|fe80:|fc00:|fd00:)/i', $ip);
+        }
+
+        if ($isValidIPv4 === false && $isValidIPv6 === false) {
+            $log->security("Invalid external host IP address (private/reserved): $url resolves to $ip");
+            return false;
+        }
+    }
+
+    $externalTrustedHostPatterns = get_external_trusted_hosts();
+
+    if (empty($externalTrustedHostPatterns)) {
+        return true;
+    }
+
+    // Add site_url and HTTP_HOST to trusted patterns
+    $siteUrl = SugarConfig::getInstance()->get('site_url', '');
+    $parsedSiteUrl = parse_url($siteUrl);
+
+    if (!empty($parsedSiteUrl['host'])) {
+        $externalTrustedHostPatterns[] = preg_quote($parsedSiteUrl['host'], '/');
+    }
+
+    if (!empty($_SERVER["HTTP_HOST"])) {
+        $externalTrustedHostPatterns[] = preg_quote($_SERVER["HTTP_HOST"], '/');
+    }
+
+    foreach ($externalTrustedHostPatterns as $pattern) {
+        // Match pattern against the host only, not the entire URL
+        if (preg_match('/^' . $pattern . '$/i', $host)) {
+            return true;
+        }
+    }
+
+    $log->security("Untrusted external Host: $url (host: $host)");
+    return false;
 }
 
 /**

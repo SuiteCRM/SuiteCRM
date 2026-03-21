@@ -109,9 +109,9 @@ function convertQuestionResponseForDisplay($responseArr, $type)
             }
             // no break
         case "Rating":
-            $answer = $responseArr[0]->answer ?? '';
+            $answer = (int) ($responseArr[0]->answer ?? null);
             if (is_int($answer)) {
-                return str_repeat('<img width=20 src="modules/Surveys/imgs/star.png"/>', $answer);
+                return str_repeat('<img width=20 src="modules/Surveys/imgs/star-full.svg"/>', $answer);
             }
             return '';
         case "Scale":

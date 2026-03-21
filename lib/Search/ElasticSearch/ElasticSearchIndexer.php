@@ -82,7 +82,7 @@ class ElasticSearchIndexer extends AbstractIndexer
      *
      * @param Client|null $client
      */
-    public function __construct(Client $client = null)
+    public function __construct(?Client $client = null)
     {
         parent::__construct();
 
@@ -184,7 +184,7 @@ class ElasticSearchIndexer extends AbstractIndexer
      * @param string $index name of the index
      * @param array|null $body options of the index
      */
-    public function createIndex(string $index, array $body = null): void
+    public function createIndex(string $index, ?array $body = null): void
     {
         $params = ['index' => $index];
 

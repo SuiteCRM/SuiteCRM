@@ -60,7 +60,7 @@
         if(typeof htmlCode === 'undefined') {ldelim}
             htmlCode = '';
         {rdelim}
-        tinyMCE.EditorManager.get('{$elementId}').setContent(htmlCode);
+        tinymce.EditorManager.get('{$elementId}').setContent(htmlCode);
     {rdelim};
 
     /**
@@ -77,7 +77,7 @@
             throw 'incorrect editor element id (TinyMCE id: '+elemId+')';
         {rdelim}
 
-        tinyMCE.activeEditor.execCommand('mceInsertRawHTML', false, text);
+        tinymce.activeEditor.execCommand('mceInsertRawHTML', false, text);
 
     {rdelim};
 

@@ -7,6 +7,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
 #[\AllowDynamicProperties]
 class AOS_PDF_TemplatesViewEdit extends ViewEdit
 {
+    public $tinymceElementIds = [
+        'description' => '#description',
+        'pdfheader' => '#pdfheader',
+        'pdffooter'=> '#pdffooter',
+    ];
     public function __construct()
     {
         parent::__construct();
@@ -21,7 +26,7 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
 
     public function setFields()
     {
-        global $app_list_strings, $mod_strings, $beanList;
+        global $app_list_strings, $mod_strings, $beanList, $log;
 
         //Loading Sample Files
         $json = getJSONobj();
@@ -67,12 +72,13 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
             if (!$beanList[$moduleName]) {
                 continue;
             }
+
             $module = new $beanList[$moduleName]();
 
             foreach ($module->field_defs as $name => $arr) {
                 if (!((isset($arr['dbType']) && strtolower($arr['dbType']) == 'id') || (isset($arr['type']) && $arr['type'] == 'id') || (isset($arr['type']) && $arr['type'] == 'link'))) {
                     if (!isset($arr['reportable']) || $arr['reportable']) {
-                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'], $module->module_dir);
+                        $options_array['$'.$module->table_name.'_'.$name] = translate($arr['vname'] ?? '', $module->module_dir);
                     }
                 }
             } //End loop.
@@ -234,69 +240,65 @@ HTML;
     public function displayTMCE()
     {
         require_once("include/SugarTinyMCE.php");
-        global $locale;
+        global $locale, $log;
 
-        $tiny = new SugarTinyMCE();
-        $tinyMCE = $tiny->getConfig();
+        try {
+            $tiny = new SugarTinyMCE();
+            $tinyConfig = $tiny->getConfig();
+            $extendedTinyConfig = json_encode($tiny->getConfigArray('extended'));
+            $standardTinyConfig = json_encode($tiny->getConfigArray());
 
-        $js =<<<JS
-		<script language="javascript" type="text/javascript">
-		$tinyMCE
-		var df = '{$locale->getPrecedentPreference('default_date_format')}';
+            if (empty($extendedTinyConfig)) {
+                $log?->error("[AOS_PDF_Templates][displayTMCE] Empty TinyMCE configuration returned");
+                return '';
+            }
 
- 		tinyMCE.init({
-    		theme : "advanced",
-    		theme_advanced_toolbar_align : "left",
-    		mode: "exact",
-			elements : "description",
-			theme_advanced_toolbar_location : "top",
-			theme_advanced_buttons1: "code,help,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,forecolor,backcolor,separator,styleprops,styleselect,formatselect,fontselect,fontsizeselect",
-			theme_advanced_buttons2: "cut,copy,paste,pastetext,pasteword,selectall,separator,search,replace,separator,bullist,numlist,separator,outdent,indent,separator,ltr,rtl,separator,undo,redo,separator, link,unlink,anchor,image,separator,sub,sup,separator,charmap,visualaid",
-			theme_advanced_buttons3: "tablecontrols,separator,advhr,hr,removeformat,separator,insertdate,pagebreak",
-			theme_advanced_fonts:"Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Helvetica Neu=helveticaneue,sans-serif;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats",
-			plugins : "advhr,insertdatetime,table,paste,searchreplace,directionality,style,pagebreak",
-			height:"500",
-			width: "100%",
-			inline_styles : true,
-			directionality : "ltr",
-			remove_redundant_brs : true,
-			entity_encoding: 'raw',
-			cleanup_on_startup : true,
-			strict_loading_mode : true,
-			convert_urls : false,
-			plugin_insertdate_dateFormat : '{DATE '+df+'}',
-			pagebreak_separator : "<div style=\"page-break-before: always;\">&nbsp;</div>",
-			extended_valid_elements : "textblock,barcode[*]",
-			custom_elements: "textblock",
-		});
+            $defaultDateFormat = $locale->getPrecedentPreference('default_date_format');
+            $descriptionTinyMceElementIds = $this->tinymceElementIds['description'];
+            $pdfHeaderTinyMceElementIds = $this->tinymceElementIds['pdfheader'];
+            $pdfFooterTinyMceElementIds = $this->tinymceElementIds['pdffooter'];
 
-		tinyMCE.init({
-    		theme : "advanced",
-    		theme_advanced_toolbar_align : "left",
-    		mode: "exact",
-			elements : "pdfheader,pdffooter",
-			theme_advanced_toolbar_location : "top",
-			theme_advanced_buttons1: "code,separator,bold,italic,underline,strikethrough,separator,justifyleft,justifycenter,justifyright,justifyfull,separator,undo,redo,separator,forecolor,backcolor,separator,styleprops,styleselect,formatselect,fontselect,fontsizeselect,separator,insertdate",
-			theme_advanced_buttons2 : "",
-    		theme_advanced_buttons3 : "",
-    		theme_advanced_fonts:"Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Helvetica Neu=helveticaneue,sans-serif;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings,zapf dingbats",
-			plugins : "advhr,insertdatetime,table,paste,searchreplace,directionality,style",
-			width: "100%",
-			inline_styles : true,
-			directionality : "ltr",
-			entity_encoding: 'raw',
-			cleanup_on_startup : true,
-			strict_loading_mode : true,
-			convert_urls : false,
-			remove_redundant_brs : true,
-			plugin_insertdate_dateFormat : '{DATE '+df+'}',
-			extended_valid_elements : "textblock,barcode[*]",
-			custom_elements: "textblock",
-		});
+            $js = '<script language="javascript" type="text/javascript">';
+            $js .= $tinyConfig;
+            $js .= "var dateFormat = '$defaultDateFormat';";
+            // PDF Template Body Editor'
+            // SECURITY NOTE: entity_encoding is set to \'raw\' for PDF templates because:'
+            // 1. HTML entities must be preserved for proper PDF rendering via TCPDF'
+            // 2. Access to PDF template editing is restricted by ACL controls'
+            // 3. Template output is sanitized during PDF generation'
+            // 4. This editor requires raw HTML for textblock/barcode custom elements'
+            $js .= "var bodyConfig = Object.assign({}, $extendedTinyConfig);";
+            $js .= "bodyConfig.selector = '$descriptionTinyMceElementIds';";
+            $js .= "bodyConfig.inline_styles = true;";
+            $js .= "bodyConfig.remove_redundant_brs = true;";
+            $js .= "bodyConfig.entity_encoding = 'raw';";
+            $js .= "bodyConfig.cleanup_on_startup = true;";
+            $js .= "bodyConfig.strict_loading_mode = true;";
+            $js .= "bodyConfig.pagebreak_separator = '<div style=\"page-break-before: always;\">&nbsp;</div>';";
+            $js .= "bodyConfig.extended_valid_elements = 'textblock,barcode[*]';";
+            $js .= "bodyConfig.custom_elements = 'textblock';";
+            $js .= "bodyConfig.insertdatetime_formats = ['{DATE '+dateFormat+'}'];";
+            $js .= 'tinymce.init(bodyConfig);';
+            // PDF Template Header/Footer Editor'
+            // SECURITY NOTE: entity_encoding is set to \'raw\' (see comment above)'
+            $js .= "var headerFooterConfig = Object.assign({}, $standardTinyConfig);";
+            $js .= "headerFooterConfig.selector = '$pdfHeaderTinyMceElementIds, $pdfFooterTinyMceElementIds';";
+            $js .= "headerFooterConfig.inline_styles = true;";
+            $js .= "headerFooterConfig.entity_encoding = 'raw';";
+            $js .= "headerFooterConfig.cleanup_on_startup = true;";
+            $js .= "headerFooterConfig.strict_loading_mode = true;";
+            $js .= "headerFooterConfig.remove_redundant_brs = true;";
+            $js .= "headerFooterConfig.extended_valid_elements = 'textblock,barcode[*]';";
+            $js .= "headerFooterConfig.custom_elements = 'textblock';";
+            $js .= "headerFooterConfig.insertdatetime_formats = ['{DATE '+dateFormat+'}'];";
+            $js .= 'tinymce.init(headerFooterConfig);';
+            $js .= '</script>';
 
-		</script>
+            echo $js;
 
-JS;
-        echo $js;
+        } catch (Throwable $e) {
+            $log?->error("[AOS_PDF_Templates][displayTMCE] Failed to initialize TinyMCE: " . $e->getMessage());
+            throw $e;
+        }
     }
 }

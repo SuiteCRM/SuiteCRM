@@ -471,20 +471,27 @@ abstract class SugarRelationship
     {
         $GLOBALS['resavingRelatedBeans'] = true;
 
-        //Resave any bean not currently in the middle of a save operation
-        foreach (self::$beansToResave as $module => $beans) {
-            foreach ($beans as $bean) {
-                if (empty($bean->deleted) && empty($bean->in_save)) {
-                    $bean->save();
-                } else {
-                    // Bug 55942 save the in-save id which will be used to send workflow alert later
-                    if (isset($bean->id) && !empty($_SESSION['WORKFLOW_ALERTS'])) {
-                        $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+        if (is_array(self::$beansToResave)) {
+            //Resave any bean not currently in the middle of a save operation
+            foreach (self::$beansToResave as $module => $beans) {
+                foreach ($beans as $bean) {
+                    if ($bean === false || empty($bean) || !is_object($bean)) {
+                        continue;
+                    }
+                    if (empty($bean->deleted) && empty($bean->in_save)) {
+                        $bean->save();
+                    } else {
+                        // Bug 55942 save the in-save id which will be used to send workflow alert later
+                        if (isset($bean->id)) {
+                            if (!isset($_SESSION['WORKFLOW_ALERTS']) || !is_array($_SESSION['WORKFLOW_ALERTS'])) {
+                                $_SESSION['WORKFLOW_ALERTS'] = [];
+                            }
+                            $_SESSION['WORKFLOW_ALERTS']['id'] = $bean->id;
+                        }
                     }
                 }
             }
         }
-
         $GLOBALS['resavingRelatedBeans'] = false;
 
         //Reset the list of beans that will need to be resaved

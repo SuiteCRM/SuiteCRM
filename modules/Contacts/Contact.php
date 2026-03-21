@@ -426,7 +426,7 @@ class Contact extends Person implements EmailInterface
         // Bug 43196 - If a contact is related to multiple accounts, make sure we pull the one we are looking for
         // Bug 44730  was introduced due to this, fix is to simply clear any whitespaces around the account_id first
 
-        $clean_account_id = trim($this->account_id);
+        $clean_account_id = trim($this->account_id ?? '');
 
         if (!empty($clean_account_id)) {
             $query .= " and acc.id = '{$this->account_id}'";
@@ -568,7 +568,7 @@ class Contact extends Person implements EmailInterface
         global $locale;
 
         $xtpl->assign("CONTACT_NAME", trim($locale->getLocaleFormattedName($contact->first_name, $contact->last_name)));
-        $xtpl->assign("CONTACT_DESCRIPTION", nl2br($contact->description));
+        $xtpl->assign("CONTACT_DESCRIPTION", nl2br((string) $contact->description));
 
         return $xtpl;
     }

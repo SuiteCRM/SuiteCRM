@@ -39,14 +39,13 @@
  */
 *}
 
-{if !$currentModule}
+{if !$currentModule && isset($savedSearchData)}
     {assign var="currentModule" value=$savedSearchData.module}
-    {if !$currentModule}
-        {assign var="currentModule" value=$pageData.bean.moduleName}
-    {/if}
+{elseif !$currentModule && isset($pageData.bean)}
+    {assign var="currentModule" value=$pageData.bean.moduleName}
 {/if}
 
-{if $savedSearchData.hasOptions}
+{if isset($savedSearchData) && $savedSearchData.hasOptions}
     <ul class="action-link action-link-{$action_menu_location} clickMenu selectActions fancymenu show listViewLinkButton listViewLinkButton_{$action_menu_location}">
         <li class="sugar_action_button">
             <a href="javascript:void(0)" class="parent-dropdown-handler" title="{$APP.LBL_SAVED_FILTER_SHORTCUT}" onclick="return false;">

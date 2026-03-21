@@ -69,7 +69,7 @@ class LegacyMPDFEngine extends PDFEngine
      * MPDFEngine constructor.
      * @param mPDF|null $pdf
      */
-    public function __construct(mPDF $pdf = null)
+    public function __construct(?mPDF $pdf = null)
     {
         @$this->pdf = $pdf ?? new mPDF();
     }

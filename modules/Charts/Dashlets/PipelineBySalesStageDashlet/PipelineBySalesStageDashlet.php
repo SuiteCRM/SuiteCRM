@@ -67,7 +67,7 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        ?array $options = null
     ) {
         global $timedate;
 
@@ -133,7 +133,7 @@ class PipelineBySalesStageDashlet extends DashletGenericChart
         $jsonData = json_encode($chartReadyData['data']);
         $jsonLabels = json_encode($chartReadyData['labels']);
         $jsonKeys = json_encode($chartReadyData['keys']);
-        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues']);
+        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues'] ?? []);
 
         $total = $chartReadyData['total'];
 
@@ -343,6 +343,7 @@ EOD;
         $chart['labels']=array();
         $chart['data']=array();
         $chart['keys']=array();
+        $chart['labelsAndValues']=array();
         $total = 0;
         foreach ($data as $i) {
             //$chart['labelsAndValues'][]=$i['key'].' ('.$currency.(int)$i['total'].')';

@@ -65,7 +65,7 @@ class OutcomeByMonthDashlet extends DashletGenericChart
      */
     public function __construct(
         $id,
-        array $options = null
+        ?array $options = null
     ) {
         global $timedate;
 
@@ -125,7 +125,7 @@ class OutcomeByMonthDashlet extends DashletGenericChart
         //$chartReadyData['data'] = [[1.1,2.2],[3.3,4.4]];
         $jsonData = json_encode($chartReadyData['data']);
         $jsonLabels = json_encode($chartReadyData['labels']);
-        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues']);
+        $jsonLabelsAndValues = json_encode($chartReadyData['labelsAndValues'] ?? []);
 
 
         $jsonKey = json_encode($chartReadyData['key']);
@@ -269,6 +269,7 @@ EOD;
         //Need to add all elements into the key, as they are stacked (even though the category is not present, the value could be)
         $chart['key'] = array();
         $chart['tooltips']= array();
+        $chart['labelsAndValues']=array();
 
         foreach ($data as $i) {
             $key = $i["m"];

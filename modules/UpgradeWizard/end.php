@@ -123,6 +123,51 @@ $dictionary = $olddictionary;
 
 logThis('database repaired', $path);
 
+///////////////////////////////////////////////////////////////////////////////
+////	HANDLE POST_END SCRIPTS
+logThis('Starting post_end()...', $path);
+try {
+    if (didThisStepRunBefore('end', 'post_end')) {
+        throw new RuntimeException('post_end already ran, skipping.');
+    }
+
+    $file = "$unzip_dir/" . constant('SUGARCRM_POST_END_FILE');
+    if (!is_file($file)) {
+        logThis('No post_end file found, skipping.', $path);
+        throw new RuntimeException('post_end file not found.');
+    }
+
+    logThis('Including post_end file: ' . $file, $path);
+    include $file;
+
+    if (!function_exists('post_end')) {
+        logThis('post_end function not defined, skipping.', $path);
+        throw new RuntimeException('post_end function not defined.');
+    }
+
+    set_upgrade_progress('end', 'in_progress', 'post_end', 'in_progress');
+    try {
+        post_end();
+        logThis('post_end() completed successfully.', $path);
+        set_upgrade_progress('end', 'in_progress', 'post_end', 'done');
+    } catch (Throwable $e) {
+        $errorMessage = 'post_end() failed: ' . $e->getMessage();
+        logThis($errorMessage, $path);
+
+        $GLOBALS['top_message'] = "<span class='error'><b>Upgrade Failed:</b> {$errorMessage}</span>";
+        $stop = true;
+
+        set_upgrade_progress('end', 'failed', 'post_end', 'failed');
+
+        return;
+    }
+} catch (RuntimeException $e) {
+    logThis('post_end hook failed: ' . $e->getMessage(), $path);
+}
+logThis('post_end() done.', $path);
+////	END POST_END SCRIPTS
+///////////////////////////////////////////////////////////////////////////////
+
 $ce_to_pro_ent = isset($_SESSION['upgrade_from_flavor']) && ($_SESSION['upgrade_from_flavor'] == 'SugarCE to SugarPro' || $_SESSION['upgrade_from_flavor'] == 'SugarCE to SugarEnt' || $_SESSION['upgrade_from_flavor'] == 'SugarCE to SugarCorp' || $_SESSION['upgrade_from_flavor'] == 'SugarCE to SugarUlt');
 
 logThis(' Start Rebuilding the config file again', $path);

@@ -157,14 +157,12 @@ class RSSDashlet extends Dashlet
         ) {
         // suppress XML errors
         libxml_use_internal_errors(true);
+
+        if (validate_external_host((string) $url) === false) {
+            return $this->dashletStrings['ERR_LOADING_FEED'];
+        }
+
         $data = file_get_contents($url);
-        $urlparse = parse_url((string) $url);
-        if (empty($urlparse['scheme']) || empty($urlparse['host'])) {
-            return $this->dashletStrings['ERR_LOADING_FEED'];
-        }
-        if ($urlparse['scheme'] != 'http' && $urlparse['scheme'] != 'https') {
-            return $this->dashletStrings['ERR_LOADING_FEED'];
-        }
         if (!$data) {
             return $this->dashletStrings['ERR_LOADING_FEED'];
         }

@@ -5,7 +5,7 @@
 #
 # Use the enviornmental config files to configure the driver
 
-class_name: AcceptanceTester
+actor: AcceptanceTester
 modules:
     enabled:
         - \Helper\Acceptance

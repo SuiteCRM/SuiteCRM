@@ -10,7 +10,7 @@ body:
         - if you have discovered a security risk, a security risk, please refer to our [Security Policy](https://docs.suitecrm.com/community/security-policy)
         
         Please note, only issues found which are valid in supported versions of SuiteCRM 7, will be investigated.
-        Issues found in SuiteCRM 8 and above should be raised [here](https://github.com/salesagility/SuiteCRM-Core/issues/new/choose)
+        Issues found in SuiteCRM 8 and above should be raised [here](https://github.com/SuiteCRM/SuiteCRM-Core/issues/new/choose)
 
   - type: textarea
     id: issue

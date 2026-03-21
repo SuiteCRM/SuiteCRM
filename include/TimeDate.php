@@ -184,7 +184,7 @@ class TimeDate
      * Create TimeDate handler
      * @param User|null $user User to work with, default if current user
      */
-    public function __construct(User $user = null)
+    public function __construct(?User $user = null)
     {
         if (self::$gmtTimezone == null) {
             self::$gmtTimezone = new DateTimeZone("UTC");
@@ -248,7 +248,11 @@ class TimeDate
      * @param User|null $user User object, default is current user
      * @return TimeDate
      */
-    public function setUser(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function setUser(User $user = null)
+    public function setUser(?User $user = null)
+    // END STIC Custom    
     {
         $this->user = $user;
         $this->clearCache();
@@ -265,7 +269,11 @@ class TimeDate
      * @return User
      * @internal
      */
-    protected function _getUser(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function _getUser(User $user = null)
+    protected function _getUser(?User $user = null)
+    // END STIC Custom    
     {
         if ($user === null) {
             $user = $this->user;
@@ -283,7 +291,11 @@ class TimeDate
      * @param User|null $user User object, default is current user
      * @return DateTimeZone
      */
-    protected function _getUserTZ(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function _getUserTZ(User $user = null)
+    protected function _getUserTZ(?User $user = null)
+    // END STIC Custom    
     {
         $user = $this->_getUser($user);
         if (empty($user) || $this->isAlwaysDb()) {
@@ -333,7 +345,11 @@ class TimeDate
      * @param User|null $user user object, current user if not specified
      * @return string
      */
-    public function get_date_format(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function get_date_format(User $user = null)
+    public function get_date_format(?User $user = null)
+    // END STIC Custom    
     {
         $user = $this->_getUser($user);
 
@@ -457,7 +473,11 @@ class TimeDate
      * @param User|null $user user object, current user if not specified
      * @return int Day, 0 = Sunday, 1 = Monday, etc...
      */
-    public function get_first_day_of_week(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function get_first_day_of_week(User $user = null)
+    public function get_first_day_of_week(?User $user = null)
+    // END STIC Custom    
     {
         $user = $this->_getUser($user);
         $fdow = 0;
@@ -597,7 +617,11 @@ class TimeDate
      * @param User|null $user
      * @return string
      */
-    public function asUser(DateTime $date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function asUser(DateTime $date, User $user = null)
+    public function asUser(DateTime $date, ?User $user = null)
+    // END STIC Custom    
     {
         $this->tzUser($date, $user);
 
@@ -611,7 +635,11 @@ class TimeDate
      * @param User|null $user
      * @return string
      */
-    public function asUserType(DateTime $date, $type, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function asUserType(DateTime $date, $type, User $user = null)
+    public function asUserType(DateTime $date, $type, ?User $user = null)
+    // END STIC Custom    
     {
         switch ($type) {
             case "date":
@@ -637,7 +665,11 @@ class TimeDate
      * @param User|null $user
      * @return int
      */
-    public function asUserTs(DateTime $date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function asUserTs(DateTime $date, User $user = null)
+    public function asUserTs(DateTime $date, ?User $user = null)
+    // END STIC Custom    
     {
         return $date->format('U') + $this->_getUserTZ($user)->getOffset($date);
     }
@@ -666,7 +698,11 @@ class TimeDate
      * @param User|null $user
      * @return string
      */
-    public function asUserDate(DateTime $date, $tz = false, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function asUserDate(DateTime $date, $tz = false, User $user = null)
+    public function asUserDate(DateTime $date, $tz = false, ?User $user = null)
+    // END STIC Custom    
     {
         if ($tz) {
             $this->tzUser($date, $user);
@@ -695,7 +731,11 @@ class TimeDate
      * @param User|null $user
      * @return string
      */
-    public function asUserTime(DateTime $date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function asUserTime(DateTime $date, User $user = null)
+    public function asUserTime(DateTime $date, ?User $user = null)
+    // END STIC Custom    
     {
         $this->tzUser($date, $user);
 
@@ -802,7 +842,11 @@ class TimeDate
      * @param User|null $user
      * @return SugarDateTime
      */
-    public function fromUser($date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function fromUser($date, User $user = null)
+    public function fromUser($date, ?User $user = null)
+    // END STIC Custom    
     {
         $res = null;
         try {
@@ -852,7 +896,11 @@ class TimeDate
      * @param User|null $user
      * @return SugarDateTime
      */
-    public function fromUserTime($date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function fromUserTime($date, User $user = null)
+    public function fromUserTime($date, ?User $user = null)
+    // END STIC Custom    
     {
         try {
             return SugarDateTime::createFromFormat($this->get_time_format($user), $date, $this->_getUserTZ($user));
@@ -873,7 +921,11 @@ class TimeDate
      * @param User|null $user
      * @return SugarDateTime
      */
-    public function fromUserDate($date, $convert_tz = false, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function fromUserDate($date, $convert_tz = false, User $user = null)
+    public function fromUserDate($date, $convert_tz = false, ?User $user = null)
+    // END STIC Custom    
     {
         try {
             return SugarDateTime::createFromFormat(
@@ -898,8 +950,16 @@ class TimeDate
      * @param User|null $user
      * @return SugarDateTime
      */
-    public function fromString($date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function fromString($date, User $user = null)
+    public function fromString($date, ?User $user = null)
+    // END STIC Custom
     {
+        if ($date === null) {
+            return null;
+        }
+
         try {
             return new SugarDateTime($date, $this->_getUserTZ($user));
         } catch (Exception $e) {
@@ -936,7 +996,11 @@ class TimeDate
      * @param User|null $user
      * @return DateTime
      */
-    public function tzUser(DateTime $date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function tzUser(DateTime $date, User $user = null)
+    public function tzUser(DateTime $date, ?User $user = null)
+    // END STIC Custom    
     {
         $userTZ = $this->_getUserTZ($user);
         $ret = $date->setTimezone($userTZ);
@@ -971,13 +1035,21 @@ class TimeDate
      */
     protected function _convert($date, $fromFormat, $fromTZ, $toFormat, $toTZ, $expand = false)
     {
-        $date = trim($date);
         if (empty($date)) {
             return $date;
         }
+
+        if (is_string($date)) {
+            $date = trim($date);
+        }
+
         try {
             if ($expand && strlen($date) <= 10) {
                 $date = $this->expandDate($date, $fromFormat);
+            }
+            $toFormatDate = SugarDateTime::createFromFormat($toFormat, $date, $fromTZ);
+            if ($toFormatDate !== false){
+                return $date;
             }
             $phpdate = SugarDateTime::createFromFormat($fromFormat, $date, $fromTZ);
             if ($phpdate == false) {
@@ -1351,7 +1423,11 @@ class TimeDate
      * @param User|null $user
      * @return array Start & end date in start, startdate, starttime, end, enddate, endtime
      */
-    public function getDayStartEndGMT($date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function getDayStartEndGMT($date, User $user = null)
+    public function getDayStartEndGMT($date, ?User $user = null)
+    // END STIC Custom    
     {
         $result = [];
         if ($date instanceof DateTime) {
@@ -1432,7 +1508,11 @@ class TimeDate
      * @param User|null $user User, default - current user
      * @return string
      */
-    public static function userTimezone(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public static function userTimezone(User $user = null)
+    public static function userTimezone(?User $user = null)
+    // END STIC Custom    
     {
         $user = self::getInstance()->_getUser($user);
         if (empty($user)) {
@@ -1520,7 +1600,11 @@ class TimeDate
      * @param User|null $user User, default - current user
      * @return string
      */
-    public static function userTimezoneSuffix(DateTime $date, User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public static function userTimezoneSuffix(DateTime $date, User $user = null)
+    public static function userTimezoneSuffix(DateTime $date, ?User $user = null)
+    // END STIC Custom    
     {
         $user = self::getInstance()->_getUser($user);
         if (empty($user)) {
@@ -1693,7 +1777,11 @@ class TimeDate
      * @param \DateTime|null $time When the offset is taken, default is now
      * @return int Offset in minutes
      */
-    public function getUserUTCOffset(User $user = null, DateTime $time = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function getUserUTCOffset(User $user = null, DateTime $time = null)
+    public function getUserUTCOffset(?User $user = null, ?DateTime $time = null)
+    // END STIC Custom
     {
         if (empty($time)) {
             $time = $this->now;
@@ -1750,7 +1838,11 @@ class TimeDate
      * @param bool $adjustForTimezone
      * @return SugarDateTime
      */
-    protected function parseFromTemplate($template, $daystart, User $user = null, $adjustForTimezone = true)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function parseFromTemplate($template, $daystart, User $user = null, $adjustForTimezone = true)
+    protected function parseFromTemplate($template, $daystart, ?User $user = null, $adjustForTimezone = true)
+    // END STIC Custom
     {
         $rawTime = $this->getNow();
         $now = $adjustForTimezone ? $this->tzUser($rawTime, $user) : $rawTime;
@@ -1772,7 +1864,11 @@ class TimeDate
      * @param bool $adjustForTimezone
      * @return array
      */
-    protected function diffMon($mdiff, User $user = null, $adjustForTimezone = true)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function diffMon($mdiff, User $user = null, $adjustForTimezone = true)
+    protected function diffMon($mdiff, ?User $user = null, $adjustForTimezone = true)
+    // END STIC Custom
     {
         $rawTime = $this->getNow();
         $now = $adjustForTimezone ? $this->tzUser($rawTime, $user) : $rawTime;
@@ -1791,7 +1887,11 @@ class TimeDate
      * @param bool $adjustForTimezone
      * @return array
      */
-    protected function diffYear($ydiff, User $user = null, $adjustForTimezone = true)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // protected function diffYear($ydiff, User $user = null, $adjustForTimezone = true)
+    protected function diffYear($ydiff, ?User $user = null, $adjustForTimezone = true)
+    // END STIC Custom
     {
         $rawTime = $this->getNow();
         $now = $adjustForTimezone ? $this->tzUser($rawTime, $user) : $rawTime;
@@ -1810,7 +1910,11 @@ class TimeDate
      * @param bool $adjustForTimezone Do we need to adjust for timezone?
      * @return array of two Date objects, start & end
      */
-    public function parseDateRange($range, User $user = null, $adjustForTimezone = true)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function parseDateRange($range, User $user = null, $adjustForTimezone = true)
+    public function parseDateRange($range, ?User $user = null, $adjustForTimezone = true)
+    // END STIC Custom
     {
         if (isset($this->date_expressions[$range])) {
             return array(
@@ -1981,7 +2085,11 @@ class TimeDate
      * @param User|null $user
      * @return array
      */
-    public function getUserTimeZone(User $user = null)
+    // STIC Custom 20250220 JBL - Avoid Deprecated Warning: Using explicit nullable type
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/477
+    // public function getUserTimeZone(User $user = null)
+    public function getUserTimeZone(?User $user = null)
+    // END STIC Custom    
     {
         $tz = $this->_getUserTZ($user);
 
@@ -2067,7 +2175,7 @@ class TimeDate
             return '';
         }
         $selected = array("am" => "", "pm" => "", "AM" => "", "PM" => "");
-        if (preg_match('/([ap]m)/i', $date, $match)) {
+        if (isset($date) && preg_match('/([ap]m)/i', $date, $match)) {
             $selected[$match[1]] = " selected";
         }
 

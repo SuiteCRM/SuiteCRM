@@ -189,6 +189,13 @@ $admin_option_defs['Administration']['aop'] = [
     './index.php?module=Administration&action=AOPAdmin',
     'aop-settings'
 ];
+$admin_option_defs['Administration']['calendar_sync_settings'] = [
+    'CalendarSync',
+    'LBL_CALENDAR_SYNC_SETTINGS',
+    'LBL_CALENDAR_SYNC_SETTINGS_DESC',
+    './index.php?module=Administration&action=CalendarSyncSettings',
+    'system-settings'
+];
 $admin_option_defs['Administration']['configure_group_tabs'] = [
     'ConfigureTabs',
     'LBL_CONFIGURE_GROUP_TABS',
@@ -397,13 +404,6 @@ $admin_group_header[] = ['LBL_STUDIO_TITLE', '', false, $admin_option_defs, 'LBL
 //Google Settings
 $admin_option_defs = [];
 
-$admin_option_defs['Administration']['google_calendar_settings'] = [
-    'Google Calendar Settings',
-    'LBL_GOOGLE_CALENDAR_SETTINGS_TITLE',
-    'LBL_GOOGLE_CALENDAR_SETTINGS_DESC',
-    './index.php?module=Administration&action=GoogleCalendarSettings',
-    'system-settings'
-];
 $admin_option_defs['jjwg_Maps']['config'] = [
     'Administration',
     'LBL_JJWG_MAPS_ADMIN_CONFIG_TITLE',

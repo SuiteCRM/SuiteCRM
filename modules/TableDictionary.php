@@ -47,6 +47,7 @@ include("metadata/accounts_casesMetaData.php");
 include("metadata/accounts_contactsMetaData.php");
 include("metadata/accounts_opportunitiesMetaData.php");
 include("metadata/calls_contactsMetaData.php");
+include("metadata/calendar_accounts_meetingsMetaData.php");
 include("metadata/calls_usersMetaData.php");
 include("metadata/calls_leadsMetaData.php");
 include("metadata/cases_bugsMetaData.php");

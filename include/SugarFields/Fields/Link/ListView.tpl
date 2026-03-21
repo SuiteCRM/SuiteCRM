@@ -45,4 +45,4 @@
     {sugar_replace_vars subject=$default use_curly=true assign='link' fields=$parentFieldArray}
 {/if}
 
-<a href="{$link|to_url}" {if $displayParams.link_target}target='{$displayParams.link_target}'{elseif $vardef.link_target}target='{$vardef.link_target}'{/if}>{$link}</a>
+<a href="{$link|to_url}" {if isset($displayParams.link_target)}target='{$displayParams.link_target}'{elseif isset($vardef.link_target)}target='{$vardef.link_target}'{/if}>{$link}</a>

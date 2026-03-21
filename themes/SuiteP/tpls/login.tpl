@@ -98,7 +98,7 @@
             <div class="input-group">
                 <input type="text" class="form-control"
                        placeholder="{sugar_translate module="Users" label="LBL_USER_NAME"}" required autofocus
-                       tabindex="1" id="user_name" name="user_name" value='{$LOGIN_USER_NAME}' autocomplete="off">
+                       tabindex="1" id="user_name" name="user_name" value='{$LOGIN_USER_NAME|escape}' autocomplete="off">
             </div>
             <br>
             <div class="input-group">
@@ -124,7 +124,7 @@
                 <div class="input-group">
                     {*<span class="input-group-addon logininput glyphicon glyphicon-user"></span>*}
                     <input type="text" class="form-control" size='26' id="fp_user_name" name="fp_user_name"
-                           value='{$LOGIN_USER_NAME}'
+                           value='{$LOGIN_USER_NAME|escape}'
                            placeholder="{sugar_translate module="Users" label="LBL_USER_NAME"}" autocomplete="off">
                 </div>
                 <br>

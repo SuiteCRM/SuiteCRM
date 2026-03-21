@@ -497,32 +497,6 @@ class="yui-navset detailview_tabs"
                     </tr>
                 </table>
             </div>
-            <div id='google_options'>
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
-                    <tr>
-                        <th align="left" scope="row" colspan="4"><h4>{$MOD.LBL_GOOGLE_API_SETTINGS}</h4></th>
-                    </tr>
-                    <tr>
-                        <td width="17%" scope="row">
-                            <slot>{$MOD.LBL_GOOGLE_API_TOKEN}:</slot>&nbsp;{sugar_help text=$MOD.LBL_GOOGLE_API_TOKEN_HELP}
-                        </td>
-                            <td width="20%">
-                            Current API Token is: <span style="color:{$GOOGLE_API_TOKEN_COLOR}">{$GOOGLE_API_TOKEN}</span>
-                        </td>
-                        <td width="63%">
-                            <slot>&nbsp;</slot>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="17%" scope="row">
-                            <slot>{$MOD.LBL_GSYNC_CAL}:</slot>
-                        </td>
-                        <td>
-                            <slot><input class="checkbox" type="checkbox" disabled {$GSYNC_CAL}></slot>
-                        </td>
-                    </tr>
-                </table>
-            </div>
             <div id='edit_tabs'>
                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="detail view">
                     <tr>

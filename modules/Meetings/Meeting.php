@@ -145,7 +145,7 @@ class Meeting extends SugarBean
     {
         // don't check if meeting is being synced from Outlook
         if ($this->syncing == false) {
-            $view = strtolower($view);
+            $view = strtolower($view ?? '');
             switch ($view) {
                 case 'edit':
                 case 'save':
@@ -695,6 +695,11 @@ class Meeting extends SugarBean
             $xtpl->parse('Meeting.Meeting_External_API');
         }
 
+        $calendarInviteType = $sugar_config['email_calendar_invite_type'] ?? 'rsvp_ics';
+        if ($calendarInviteType === 'rsvp_links') {
+            $xtpl->parse('Meeting.Meeting_Links');
+        }
+
         return $xtpl;
     }
 
@@ -703,6 +708,7 @@ class Meeting extends SugarBean
      */
     public function create_notification_email($notify_user)
     {
+        global $sugar_config;
         // reset acceptance status for non organizer if date is changed
         if (($notify_user->id != $GLOBALS['current_user']->id) && $this->date_changed) {
             $this->set_accept_status($notify_user, 'none');
@@ -710,15 +716,21 @@ class Meeting extends SugarBean
 
         $notify_mail = parent::create_notification_email($notify_user);
 
+        $calendarInviteType = $sugar_config['email_calendar_invite_type'] ?? 'rsvp_ics';
+        if ($calendarInviteType !== 'rsvp_ics') {
+            return $notify_mail;
+        }
+
         $path = SugarConfig::getInstance()->get('upload_dir', 'upload/') . $this->id;
 
         require_once("modules/vCals/vCal.php");
-        $content = vCal::get_ical_event($this, $GLOBALS['current_user']);
+        $content = vCal::get_ical_event($this, $GLOBALS['current_user'], $notify_user);
 
         if (is_dir($path)) {
             LoggerManager::getLogger()->warn('file_put_contents(' . $path . '): failed to open stream: Is a directory ');
         } else {
             if (file_put_contents($path, $content)) {
+                $notify_mail->Ical = $content;
                 $notify_mail->AddAttachment($path, 'meeting.ics', 'base64', 'text/calendar');
             }
         }

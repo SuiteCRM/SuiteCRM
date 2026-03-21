@@ -44,16 +44,13 @@ namespace SuiteCRM\Search\BasicSearch;
 
 use BeanFactory;
 use DBManagerFactory;
-use JsonSchema\Exception\RuntimeException;
 use ListViewData;
-use LoggerManager;
 use SugarBean;
 use SuiteCRM\Exception\Exception;
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchModules;
 use SuiteCRM\Search\SearchQuery;
 use SuiteCRM\Search\SearchResults;
-use VardefManager;
 
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
@@ -82,55 +79,16 @@ class BasicSearchEngine extends SearchEngine
      */
     public function search(SearchQuery $query): SearchResults
     {
-        $modulesToSearch = $this->getSearchModules();
-
+        $totalHits = 0;
+        $modulesToSearch = $query->getModules();
         $start = microtime(true);
-
-        $results = $this->searchModules($modulesToSearch, $query->getSearchString());
-
+        $results = $this->searchModules($modulesToSearch, $query->getSearchString(), $query->getSize(), $query->getFrom());
         $end = microtime(true);
         $elapsed = $end - $start;
-        $totalHits = 0;
-
-        foreach ($results['modules'] as $moduleHit) {
-            $totalHits += is_countable($moduleHit) ? count($moduleHit) : 0;
-        }
-
-        return new SearchResults($results['modules'], true, $elapsed, $totalHits);
-    }
-
-    /**
-     * @return array
-     */
-    protected function getSearchModules(): array
-    {
-        $unifiedSearchModuleDisplay = SearchModules::getUnifiedSearchModulesDisplay();
-
-        require_once 'include/ListView/ListViewSmarty.php';
-
-        global $beanList, $current_user;
-
-        $users_modules = $current_user->getPreference('globalSearch', 'search');
-        $modulesToSearch = [];
-
-        if (!empty($users_modules)) {
-            // Use user's previous selections
-            foreach ($users_modules as $key => $value) {
-                if (isset($unifiedSearchModuleDisplay[$key]) && !empty($unifiedSearchModuleDisplay[$key]['visible'])) {
-                    $modulesToSearch[$key] = $beanList[$key];
-                }
-            }
-        } else {
-            foreach ($unifiedSearchModuleDisplay as $module => $data) {
-                if (!empty($data['visible'])) {
-                    $modulesToSearch[$module] = $beanList[$module];
-                }
-            }
-        }
-
-        $current_user->setPreference('globalSearch', $modulesToSearch, 'search');
-
-        return $modulesToSearch;
+                
+        $totalHits = $_SESSION['basicSearchTotal'] ?: 0;
+        
+        return new SearchResults($results, true, $elapsed, $totalHits);
     }
 
     /**
@@ -141,21 +99,17 @@ class BasicSearchEngine extends SearchEngine
      * @noinspection DisconnectedForeachInstructionInspection
      * @noinspection PhpIncludeInspection
      */
-    private function searchModules(array $modulesToSearch, string $searchQuery): array
+    private function searchModules(array $modulesToSearch, string $searchQuery, int $size, int $from): array
     {
-        global $beanFiles;
-
         $unifiedSearchModules = SearchModules::getUnifiedSearchModules();
-
+        $_SESSION['basicSearchTotal'] = $from === 0 ? 0 : $_SESSION['basicSearchTotal'];
         $moduleResults = [];
         $moduleCounts = [];
         $listViewDefs = [];
-
+        require_once('include/ListView/ListViewData.php');
         if (!empty($searchQuery)) {
-            foreach ($modulesToSearch as $moduleName => $beanName) {
-                require_once $beanFiles[$beanName];
-                $seed = new $beanName();
-
+            foreach ($modulesToSearch as $moduleName => $label) {
+                $seed = BeanFactory::newBean($moduleName);
                 $listViewData = new ListViewData();
 
                 // Retrieve the original list view defs and store for processing in case of custom layout changes
@@ -172,6 +126,11 @@ class BasicSearchEngine extends SearchEngine
 
                 $unifiedSearchFields = [];
                 $innerJoins = [];
+                
+                if (!isset($unifiedSearchModules[$moduleName]['fields'])) {
+                    continue;
+                }
+                
                 foreach ($unifiedSearchModules[$moduleName]['fields'] as $field => $def) {
                     $listViewCheckField = strtoupper($field);
                     // Check to see if the field is in listview defs
@@ -205,8 +164,6 @@ class BasicSearchEngine extends SearchEngine
                  * Use searchForm2->generateSearchWhere() to create the search query, as it can generate SQL for the full set of comparisons required
                  * generateSearchWhere() expects to find the search conditions for a field in the 'value' parameter of the searchFields entry for that field
                  */
-                require_once $beanFiles[$beanName];
-                $seed = new $beanName();
 
                 require_once $this->searchFormPath;
                 $searchForm = new $this->searchFormClass($seed, $moduleName);
@@ -238,20 +195,22 @@ class BasicSearchEngine extends SearchEngine
 
                 $filter_fields = $this->buildFilterFields($seed);
 
-                $listData = $listViewData->getListViewData($seed, $where, 0, -1, $filter_fields, $params);
-
-                $moduleCounts[$moduleName] = $listData['pageData']['offsets']['total'];
+                $listData = $listViewData->getListViewData($seed, $where, $from, $size, $filter_fields, $params);
+                if($listData['data']) {
+                    $moduleCounts[$moduleName] = $listData['pageData']['offsets']['total'];
+                    $_SESSION['basicSearchTotal'] += $from === 0 ? $listData['pageData']['offsets']['total'] : 0;
+                } else {
+                    $moduleCounts[$moduleName] = 0;
+                }
 
                 foreach ($listData['data'] as $hit) {
-                    $moduleResults[$moduleName][] = $hit['ID'];
+                    $moduleResults[$moduleName]['results'][] = $hit['ID'];
                 }
+                $moduleResults[$moduleName]['totalHits'] = $moduleCounts[$moduleName];
             }
         }
 
-        return [
-            'hits' => $moduleCounts,
-            'modules' => $moduleResults
-        ];
+        return $moduleResults;
     }
 
     /**

@@ -1,7 +1,4 @@
 <?php
- if (!defined('sugarEntry')) {
-     define('sugarEntry', true);
- }
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
@@ -41,6 +38,10 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+if (!defined('sugarEntry')) {
+    define('sugarEntry', true);
+}
+
 $module_name = 'AOK_KnowledgeBase';
 $viewdefs [$module_name] =
 array(
@@ -66,7 +67,7 @@ array(
       array(
         0 =>
         array(
-          'file' => 'include/javascript/tiny_mce/tiny_mce.js',
+          'file' => 'vendor/tinymce/tinymce/tinymce.min.js',
         ),
       ),
       'useTabs' => false,

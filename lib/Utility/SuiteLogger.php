@@ -60,7 +60,7 @@ class SuiteLogger extends AbstractLogger
      * @param array $context eg array(user => 'joe')
      * @throws InvalidArgumentException
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $log = \LoggerManager::getLogger();
         $message = $this->interpolate($message, $context);

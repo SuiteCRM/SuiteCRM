@@ -309,13 +309,10 @@ function multiFiles( list_target){
 			var filePathComponents = this.parentNode.element.value.split("\\"),
                 fileName = (filePathComponents[filePathComponents.length - 1]);
 
-                // tinymce related
-			//tiny = tinyMCE.getInstanceById('body_text'),
-
 			// Remove row element from form
 			this.parentNode.element.parentNode.removeChild(this.parentNode.element);
 
-			$(tinyMCE.editors).each(function(i, tiny){
+			$(tinymce.editors).each(function(i, tiny){
 
 
 				var currValTiny = tiny.getContent({format: 'raw'});
@@ -472,8 +469,7 @@ function docUpload() {
     eai.onclick=function(){
     	var filename = this.parentNode.childNodes[2].value;
 	    	if(filename){
-					$(tinyMCE.editors).each(function(i, tiny){
-						//var tiny = tinyMCE.getInstanceById('body_text');
+					$(tinymce.editors).each(function(i, tiny){
 						var currValTiny = tiny.getContent();
 						while(currValTiny.indexOf(unescape(filename)) != -1){
 							currValTiny = currValTiny.replace(unescape(filename),'QW%%^%%WQ');
@@ -666,7 +662,7 @@ function toggle_textonly() {
 	var html = document.getElementById('html_div');
 
 	var desc = document.getElementById('description');
-	var tiny = tinyMCE.getInstanceById('description_html');
+	var tiny = tinymce.get('description_html');
 
 	// toggling INTO HTML editting
 	if(html.style.display == 'none') {
@@ -729,7 +725,7 @@ function appendEmailTemplateJSON() {
 	}
 
 	document.EditView.description.value += decodeURI(encodeURI(json_objects['email_template_object']['fields']['body'])).replace(/<BR>/ig, '\n');
-	var tiny = tinyMCE.getInstanceById("description_html");
+	var tiny = tinymce.get("description_html");
 	var tinyHtml = tiny.getContent(true);
 
 	// cn: bug 10985 - IE6/7 will show inline image at top of screen if we set this with no valid target

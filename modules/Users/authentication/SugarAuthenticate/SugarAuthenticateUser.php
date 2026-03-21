@@ -138,7 +138,12 @@ class SugarAuthenticateUser
         if (!empty($_SESSION['authenticated_user_id']) || !empty($user_id)) {
             $GLOBALS['current_user'] = BeanFactory::newBean('Users');
             if ($GLOBALS['current_user']->retrieve($_SESSION['authenticated_user_id'])) {
-                return true;
+                if ($GLOBALS['current_user']->isEnabled()) {
+                    return true;
+                } else {
+                    $GLOBALS['log']->security('Load user failed: user ' . $GLOBALS['current_user']->user_name . ' is not active');
+                    return false;
+                }
             }
         }
         return false;

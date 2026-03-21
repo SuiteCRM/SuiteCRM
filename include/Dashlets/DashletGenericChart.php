@@ -106,7 +106,7 @@ abstract class DashletGenericChart extends Dashlet
      */
     public function __construct(
         $id,
-        array $options = null
+        ?array $options = null
         ) {
         $dashletData = [];
         parent::__construct($id);
@@ -250,6 +250,7 @@ abstract class DashletGenericChart extends Dashlet
         $currentSearchFields = array();
 
         if (is_array($this->_searchFields)) {
+            $count = 0;
             foreach ($this->_searchFields as $name=>$params) {
                 if (!empty($name)) {
                     $name = strtolower($name);
@@ -273,8 +274,8 @@ abstract class DashletGenericChart extends Dashlet
                     }
                     $currentSearchFields[$name]['input'] = $this->layoutManager->widgetDisplayInput($widgetDef, true, (empty($this->$name) ? '' : $this->$name));
                 } else { // ability to create spacers in input fields
-                    $currentSearchFields['blank' + $count]['label'] = '';
-                    $currentSearchFields['blank' + $count]['input'] = '';
+                    $currentSearchFields['blank' . $count]['label'] = '';
+                    $currentSearchFields['blank' . $count]['input'] = '';
                     $count++;
                 }
             }
@@ -421,7 +422,7 @@ abstract class DashletGenericChart extends Dashlet
         foreach ($data_set as $row) {
             $sortby1[]  = $row[$keycolname1];
         }
-        $sortby1 = array_unique($sortby1);
+        $sortby1 = array_values($sortby1);
         //The data is from the database, the sorting should be done in the sql. So I will not do the sort here.
         if ($translate1) {
             $temp_sortby1 = array();

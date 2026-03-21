@@ -84,10 +84,10 @@ class SearchResults
     public function __construct(
         array $hits,
         $groupedByModule = true,
-        float $searchTime = null,
-        int $total = null,
-        array $scores = null,
-        array $options = null
+        ?float $searchTime = null,
+        ?int $total = null,
+        ?array $scores = null,
+        ?array $options = null
     ) {
         $this->hits = $hits;
         $this->scores = $scores;
@@ -126,7 +126,7 @@ class SearchResults
         $parsed = [];
 
         foreach ($searchHits as $module => $beans) {
-            foreach ((array)$beans as $bean) {
+            foreach ((array)$beans['results'] as $bean) {
                 $obj = BeanFactory::getBean($module, $bean);
 
                 // if a search found a bean but suitecrm does not, it could happens
@@ -163,7 +163,7 @@ class SearchResults
         global $app_list_strings, $locale;
 
         foreach ($fieldDefs as $fieldDef) {
-            $value = $obj->{$fieldDef['name']};
+            $value = $obj->{$fieldDef['name']} ?? null;
             if (isset($value)) {
                 switch ($fieldDef['type']){
                     case 'enum':
@@ -177,28 +177,26 @@ class SearchResults
                         break;
 
                     case 'multienum':
-                        
-                        if (isset($obj->field_name_map[$fieldDef['name']]['options']) &&
-                            isset($app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']])
-                        ) {
-                            $multienumString = '';
-                            $multienumValues = unencodeMultienum($value);
-                            $arrayCount = count($multienumValues);
-                            $i = 0;
-                            foreach ($multienumValues as $multienumValue) {
-                                $i++;
-                                $multienumString .= $app_list_strings[$obj->field_name_map[$fieldDef['name']]['options']][$multienumValue];
-                                if($i !== ($arrayCount)) $multienumString .= ", ";
-                            }
-                            $obj->{$fieldDef['name']} = $multienumString;
+
+                        $optionsListKey = $obj->field_name_map[$fieldDef['name']]['options'] ?? '';
+                        $availableOptions = $app_list_strings[$optionsListKey] ?? [];
+                        $validOptionValues = array_filter(
+                            array: array_map(
+                                callback: static fn($key) => $availableOptions[$key] ?? null,
+                                array: unencodeMultienum($value)
+                            ),
+                            callback: static fn($value) => $value !== null && (string)$value
+                        );
+                        if (!empty($validOptionValues)) {
+                            $obj->{$fieldDef['name']} = implode(', ', $validOptionValues);
                         }
                         break;
 
                     case 'currency':
                         
-                        if (substr($fieldDef['name'], -9) !== '_usdollar') {
+                        if (!str_ends_with($fieldDef['name'], '_usdollar')) {
                             $params['currency_id'] = getCurrencyId($obj->module_dir, $obj->id);
-                            $params['currency_symbol'] = $locale->currencies[$params['currency_id']]['symbol'];
+                            $params['currency_symbol'] = $locale->currencies[$params['currency_id']]['symbol'] ?? null;
                         } else {
                             $params['currency_id'] = $locale->getPrecedentPreference('currency');
                             $params['currency_symbol'] = $locale->getPrecedentPreference('default_currency_symbol');
@@ -334,6 +332,11 @@ class SearchResults
     {
         return $this->total;
     }
+    
+    public function getModuleTotal($module) :?int
+    {
+        return $this->getHits()[$module]['totalHits'];
+    }
 
     /**
      * @return mixed[]|null
@@ -369,5 +372,15 @@ class SearchResults
     public function isGroupedByModule(): bool
     {
         return $this->groupedByModule;
+    }
+    
+    public function getLargestHitsCount() 
+    {
+        $largest = 0;
+        foreach($this->getHits() as $hit) 
+        {
+            $largest = max($largest, $hit['totalHits']);
+        }
+        return $largest;
     }
 }

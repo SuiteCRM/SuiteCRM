@@ -45,6 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once('include/ListView/ListViewData.php');
 require_once('include/MassUpdate.php');
 
+#[\AllowDynamicProperties]
 class ListViewDisplay
 {
     public static $listViewCounter = 0;
@@ -168,8 +169,9 @@ class ListViewDisplay
 
         $this->fillDisplayColumnsWithVardefs();
 
-        $this->process($file, $data, $seed->object_name);
-
+        if ($seed?->object_name != null) {
+            $this->process($file, $data, $seed->object_name);
+        }
         return true;
     }
 
@@ -558,7 +560,7 @@ class ListViewDisplay
      *
      * @return string HTML
      */
-    protected function buildMergeLink(array $modules_array = null, $loc = 'top')
+    protected function buildMergeLink(?array $modules_array = null, $loc = 'top')
     {
         if (empty($modules_array)) {
             require('modules/MailMerge/modules_array.php');
@@ -731,20 +733,6 @@ EOF;
             if (!empty($seedDef['options'])) {
                 $this->displayColumns[$columnName]['options'] = $seedDef['options'];
             }
-
-            //C.L. Fix for 11177
-            if ($this->displayColumns[$columnName]['type'] == 'html') {
-                $cField = $this->seed->custom_fields;
-                if (isset($cField) && isset($cField->bean->$seedName)) {
-                    $seedName2 = strtoupper($columnName);
-                    $htmlDisplay = html_entity_decode($cField->bean->$seedName);
-                    $count = 0;
-                    while ($count < count($data['data'])) {
-                        $data['data'][$count][$seedName2] = &$htmlDisplay;
-                        $count++;
-                    }
-                }
-            }//fi == 'html'
 
             //Bug 40511, make sure relate fields have the correct module defined
             if ($this->displayColumns[$columnName]['type'] == "relate" && !empty($seedDef['link']) && empty($this->displayColumns[$columnName]['module'])) {

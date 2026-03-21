@@ -2014,6 +2014,7 @@ function prepSystemForUpgrade()
     if (!defined('SUGARCRM_PRE_INSTALL_FILE')) {
         define('SUGARCRM_PRE_INSTALL_FILE', 'scripts/pre_install.php');
         define('SUGARCRM_POST_INSTALL_FILE', 'scripts/post_install.php');
+        define('SUGARCRM_POST_END_FILE', 'scripts/post_end.php');
         define('SUGARCRM_PRE_UNINSTALL_FILE', 'scripts/pre_uninstall.php');
         define('SUGARCRM_POST_UNINSTALL_FILE', 'scripts/post_uninstall.php');
     }
@@ -2021,6 +2022,7 @@ function prepSystemForUpgrade()
     $script_files = array(
         "pre-install" => constant('SUGARCRM_PRE_INSTALL_FILE'),
         "post-install" => constant('SUGARCRM_POST_INSTALL_FILE'),
+        "post-end" => constant('SUGARCRM_POST_END_FILE'),
         "pre-uninstall" => constant('SUGARCRM_PRE_UNINSTALL_FILE'),
         "post-uninstall" => constant('SUGARCRM_POST_UNINSTALL_FILE'),
     );

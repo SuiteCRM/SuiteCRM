@@ -221,4 +221,9 @@ $mod_strings = array(
     'LBL_SET_AS_DEFAULT_BUTTON' => 'Set as default',
 
     'LBL_MOVE_MESSAGES_TO_TRASH_AFTER_IMPORT' => 'Move Messages To Trash After Import?',
+    'LBL_LAST_IMPORT_RUN_DATETIME' => 'Last Import Run Date/Time',
+    'LBL_MAILBOX_LAST_IMPORTED_DAYS' => 'Last Imported Date Per Mailbox',
+    'LBL_EMAIL_IMPORT_PER_RUN_THRESHOLD' => 'Emails to Import Per Run',
+    'LBL_EMAIL_IMPORT_TIMEFRAME_START' => 'Import Timeframe Start',
+    'LBL_EMAIL_IMPORT_UNREAD_ONLY' => 'Import Unread Emails Only'
 );

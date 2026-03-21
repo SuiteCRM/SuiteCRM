@@ -303,6 +303,13 @@ class InboundEmail extends SugarBean
      */
     public $move_messages_to_trash_after_import;
 
+    public ?string $last_import_run_datetime;
+
+    public ?string $mailbox_last_imported_days;
+    public $email_import_per_run_threshold;
+    public $email_import_timeframe_start;
+    public $email_import_unread_only;
+
 
     /**
      * Email constructor
@@ -310,7 +317,7 @@ class InboundEmail extends SugarBean
      * @param MailMimeParser|null $mailParser
      * @throws ImapHandlerException
      */
-    public function __construct(ImapHandlerInterface $imapHandler = null, MailMimeParser $mailParser = null)
+    public function __construct(?ImapHandlerInterface $imapHandler = null, ?MailMimeParser $mailParser = null)
     {
         global $sugar_config;
 
@@ -342,7 +349,7 @@ class InboundEmail extends SugarBean
      * @return ImapHandlerInterface
      * @throws ImapHandlerException
      */
-    public function getImap(ImapHandlerInterface $imap = null)
+    public function getImap(?ImapHandlerInterface $imap = null)
     {
         if (null === $this->imap) {
             if (null === $imap) {
@@ -388,6 +395,10 @@ class InboundEmail extends SugarBean
         if (!empty($ret) && !$this->hasAccessToPersonalAccount()) {
             $this->logPersonalAccountAccessDenied('retrieve');
             return null;
+        }
+
+        if (!empty($ret)) {
+            $this->initializeEmailImportSettings($ret);
         }
 
         return $ret;
@@ -3243,7 +3254,7 @@ class InboundEmail extends SugarBean
             $useSsl = true;
         }
 
-        $exServ = explode('::', $this->service);
+        $exServ = explode('::', (string) $this->service);
         if (!isset($exServ[1])) {
             LoggerManager::getLogger()->warn('incorrect service given: ' . $this->service);
             $service = '/';
@@ -4478,7 +4489,7 @@ class InboundEmail extends SugarBean
          * [text] => UTF-8''%E3%83%8F%E3%82%99%E3%82%A4%E3%82%AA%E3%82%AF%E3%82%99%E3%83%A9%E3%83%95%E3%82%A3%E3%83%BC.txt
          * )
          *******************************/
-        if ($imapDecode[0]->charset != 'default') { // mime-header encoded charset
+        if (is_object($imapDecode[0]) && $imapDecode[0]->charset !== 'default') { // mime-header encoded charset
             $encoding = $imapDecode[0]->charset;
             $name = $imapDecode[0]->text; // encoded in that charset
         } else {
@@ -4704,8 +4715,10 @@ class InboundEmail extends SugarBean
     {
         $cacheDir = $GLOBALS['sugar_config']['cache_dir'] . 'images/';
 
-        if (isset($attach->id) &&
-            strpos((string) $attach->id, "..") !== false &&
+        $attachmentId = $attach->id ?? '';
+
+        if (!empty($attachmentId) &&
+            strpos((string) $attachmentId, "..") !== false &&
             $this->id !== null &&
             strpos((string) $this->id, "..") !== false
         ) {
@@ -4715,7 +4728,7 @@ class InboundEmail extends SugarBean
         $uploadDir = ($forDisplay) ? "{$this->EmailCachePath}/{$this->id}/attachments/" : "upload://";
 
         // decide what name to save file as
-        $fileName = htmlspecialchars((string) $attach->id);
+        $fileName = htmlspecialchars((string) $attachmentId);
 
         // download the attachment if we didn't do it yet
         if (!file_exists($uploadDir . $fileName)) {
@@ -4737,7 +4750,7 @@ class InboundEmail extends SugarBean
             }
         }
 
-        $this->tempAttachment[$fileName] = urldecode($attach->filename);
+        $this->tempAttachment[$fileName] = urldecode($attach->filename ?? '');
         // if all was successful, feel for inline and cache Note ID for display:
         if ((isset($part->disposition) && strtolower($part->disposition) == 'inline' && in_array($part->subtype, $this->imageTypes))
             || ($part->type == 5)
@@ -4748,8 +4761,10 @@ class InboundEmail extends SugarBean
             }
 
             if (copy($uploadDir . $fileName, sugar_cached("images/{$fileName}.") . strtolower($part->subtype))) {
-                $id = substr((string) $part->id, 1, -1); //strip <> around
-                $this->inlineImages[$id] = $attach->id . "." . strtolower($part->subtype);
+                if (isset($part->id)){
+                    $id = substr((string) $part->id, 1, -1); //strip <> around
+                    $this->inlineImages[$id] = $attachmentId . "." . strtolower($part->subtype);
+                }
             } else {
                 $GLOBALS['log']->debug('InboundEmail could not copy ' . $uploadDir . $fileName . ' to cache');
             }
@@ -5491,7 +5506,7 @@ class InboundEmail extends SugarBean
             ////	ASSIGN APPROPRIATE ATTRIBUTES TO NEW EMAIL OBJECT
             // handle UTF-8/charset encoding in the ***headers***
 
-            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject));
+            $email->name = purify_html($this->handleMimeHeaderDecode($header->subject ?? ''));
             $email->type = 'inbound';
             if (!empty($unixHeaderDate)) {
                 $email->date_sent_received = $timedate->asUser($unixHeaderDate);
@@ -5709,7 +5724,7 @@ class InboundEmail extends SugarBean
             $fullHeader = $this->getImap()->fetchHeader($uid, FT_UID);
             $parsedFullHeader = $this->getImap()->rfc822ParseHeaders($fullHeader);
 
-            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject));
+            $email->name = purify_html($this->handleMimeHeaderDecode($parsedFullHeader->subject ?? ''));
             $email->type = 'inbound';
 
             if (isset($request['metadata']['viewdefs'])) {
@@ -5739,8 +5754,11 @@ class InboundEmail extends SugarBean
                     // The if ($dateTime !== false) means that when the DateTime class successfully
                     // decodes the date field it will exit the loop.
                     // As we no longer need to continue trying to decode the datetime format.
+
+                    $parsedFullHeaderDate = $parsedFullHeader->date ?? '';
+
                     foreach ($possibleFormats as $possibleFormat) {
-                        $dateTime = DateTime::createFromFormat($possibleFormat, $parsedFullHeader->date);
+                        $dateTime = DateTime::createFromFormat($possibleFormat, $parsedFullHeaderDate);
                         if ($dateTime !== false) {
                             break;
                         }
@@ -5749,7 +5767,7 @@ class InboundEmail extends SugarBean
                     if ($dateTime === false) {
                         throw new Exception(
                             sprintf('Expected header Date to comply with RFC882 or RFC2882, but actual is "%s"',
-                                $parsedFullHeader->date)
+                                $parsedFullHeaderDate)
                         );
                     }
 
@@ -5767,15 +5785,15 @@ class InboundEmail extends SugarBean
 
                 $email->status = 'unread'; // this is used in Contacts' Emails SubPanel
                 if (!empty($parsedFullHeader->to)) {
-                    $email->to_name = $this->handleMimeHeaderDecode($parsedFullHeader->toaddress);
+                    $email->to_name = $this->handleMimeHeaderDecode($parsedFullHeader->toaddress ?? '');
                     $email->to_addrs_names = $email->to_name;
-                    $email->to_addrs = $this->convertImapToSugarEmailAddress($parsedFullHeader->toaddress);
+                    $email->to_addrs = $this->convertImapToSugarEmailAddress($parsedFullHeader->toaddress ?? '');
                 }
 
                 if (!empty($parsedFullHeader->from)) {
-                    $email->to_addrs = $this->convertImapToSugarEmailAddress($parsedFullHeader->toaddress);
+                    $email->to_addrs = $this->convertImapToSugarEmailAddress($parsedFullHeader->toaddress ?? '');
                 }
-                $email->from_name = $this->handleMimeHeaderDecode($parsedFullHeader->fromaddress);
+                $email->from_name = $this->handleMimeHeaderDecode($parsedFullHeader->fromaddress ?? '');
                 $email->from_addr_name = $email->from_name;
                 $email->from_addr = $this->convertImapToSugarEmailAddress($email->from_name);
                 isValidEmailAddress($email->from_addr);
@@ -5791,8 +5809,8 @@ class InboundEmail extends SugarBean
                 }
 
 
-                $email->reply_to_name = $this->handleMimeHeaderDecode($parsedFullHeader->reply_toaddress);
-                $email->reply_to_email = $this->convertImapToSugarEmailAddress($parsedFullHeader->reply_to);
+                $email->reply_to_name = $this->handleMimeHeaderDecode($parsedFullHeader->reply_toaddress ?? '');
+                $email->reply_to_email = $this->convertImapToSugarEmailAddress($parsedFullHeader->reply_to ?? '');
                 if (!empty($email->reply_to_email)) {
                     $email->reply_to_addr = $email->reply_to_name;
                 }
@@ -6215,10 +6233,13 @@ class InboundEmail extends SugarBean
 
     /**
      * Returns the stored options property un-encoded and un serialised.
-     * @return array
+     * @return array|false
      */
     public function getStoredOptions()
     {
+        if (empty($this->stored_options)) {
+            return [];
+        }
         return sugar_unserialize(base64_decode($this->stored_options));
     }
 
@@ -6230,6 +6251,22 @@ class InboundEmail extends SugarBean
         $this->stored_options = base64_encode(serialize($options));
     }
 
+    /**
+     * @param $option_name
+     * @param $value
+     * @return void
+     */
+    public function setStoredOption($option_name, $value): void
+    {
+        $options = $this->getStoredOptions();
+
+        if (!is_array($options) || empty($options)) {
+            $options = [];
+        }
+        $options[$option_name] = $value;
+
+        $this->setStoredOptions($options);
+    }
 
     /**
      * @param $option_name
@@ -6328,6 +6365,35 @@ class InboundEmail extends SugarBean
 
         $nmessages = is_countable($ret)? count($ret) : 0;
         LoggerManager::getLogger()->debug('-----> getNewMessageIds() got ' . $nmessages . ' new Messages');
+
+        return $ret;
+    }
+
+    /**
+     * finds emails tagged "//UNSEEN" on mailserver and "SINCE: [date]" if that
+     * option is set
+     *
+     * @return array Array of messageNumbers (mail server's internal keys)
+     */
+    public function getMessagesFromDate(string $date, bool $unSeenOnly = false): array
+    {
+        $startFormatedDate = date('d-M-Y', strtotime($date));
+
+        $criteria = 'ON "' . $startFormatedDate . '" UNDELETED';
+        if ($unSeenOnly) {
+            $criteria .= ' UNSEEN';
+        }
+        $ret = $this->getImap()->search($criteria);
+        $check = $this->getImap()->check();
+
+        if (isFalse($ret) && !empty($this->getImap()->getErrors())) {
+            $GLOBALS['log']->error("InboundEmail::getMessagesFromDate: IMAP search failed: criteria -'$criteria' | error: " . $this->getImap()->getErrors());
+            $ret = [];
+        }
+
+        if (empty($ret)) {
+            $ret = [];
+        }
 
         return $ret;
     }
@@ -6590,7 +6656,12 @@ class InboundEmail extends SugarBean
                 $params = [];
             }
 
-            $connection = $this->getImap()->open($mailbox, $username, $password, $options, 0, $params);
+            $error_reporting = error_reporting(E_ERROR | E_PARSE);
+            try {
+                $connection = $this->getImap()->open($mailbox, $username, $password, $options, 0, $params);
+            } finally {
+                error_reporting($error_reporting);
+            }
 
             if (!$connection){
                 break;
@@ -6945,6 +7016,10 @@ class InboundEmail extends SugarBean
 
         /** @var User $owner */
         $owner = BeanFactory::getBean('Users', $createdBy);
+
+        if (!$owner || $owner->id === null) {
+            return;
+        }
 
         $emailSignatures = $owner->getPreference('account_signatures', 'Emails') ?? '';
         $emailSignatures = sugar_unserialize(base64_decode($emailSignatures));
@@ -7335,7 +7410,9 @@ class InboundEmail extends SugarBean
             $GLOBALS['log']->debug("NOOP: could not expunge deleted email.");
             $return = false;
         } else {
-            LoggerManager::getLogger()->info("INBOUNDEMAIL: hard-deleted mail with MSgno's' [ {$msgnos} ]");
+            if (!empty($msgnos)){
+                LoggerManager::getLogger()->info("INBOUNDEMAIL: hard-deleted mail with MSgno's' [ {$msgnos} ]");
+            }
         }
 
         return $return;
@@ -8688,6 +8765,111 @@ eoq;
         $oAuthConnectionId = $this->external_oauth_connection_id ?? '';
 
         return $authType === 'oauth' && $oAuthConnectionId !== '';
+    }
+
+    /**
+     * Initializes email import settings for the given InboundEmail record.
+     * @param InboundEmail|null $inboundEmail
+     * @return void
+     */
+    public function initializeEmailImportSettings(?InboundEmail $inboundEmail): void
+    {
+        if (empty($inboundEmail)) {
+            return;
+        }
+
+        $this->initializeImportUnreadOnly($inboundEmail);
+        $this->initializeImportTimeframeStart($inboundEmail);
+        $this->initializeImportThreshold($inboundEmail);
+    }
+
+    /**
+     * Initializes the import unread only setting for the given InboundEmail record.
+     * @param InboundEmail|null $inboundEmail
+     * @return void
+     */
+    protected function initializeImportUnreadOnly(?InboundEmail $inboundEmail): void
+    {
+        if ($inboundEmail === null) {
+            return;
+        }
+
+        $unreadOnly = $inboundEmail->email_import_unread_only ?? null;
+        if ($unreadOnly !== null && $unreadOnly !== '') {
+            return;
+        }
+
+        $configurator = new Configurator();
+        $configurator->loadConfig();
+
+        $globalUnreadOnly = $configurator->config['email_import_fetch_unread_only'] ?? true;
+
+        $inboundEmail->email_import_unread_only = isTrue($globalUnreadOnly);
+    }
+
+    /**
+     * Initializes the import timeframe start setting for the given InboundEmail record.
+     * @param InboundEmail|null $inboundEmail
+     * @return void
+     */
+    protected function initializeImportTimeframeStart(?InboundEmail $inboundEmail): void
+    {
+        if ($inboundEmail === null) {
+            return;
+        }
+
+        $timeframeStart = $inboundEmail->email_import_timeframe_start ?? null;
+        if (is_string($timeframeStart) && preg_match('/^-\s*\d+\s+(days|day|months|month|years|year)$/i', trim($timeframeStart))) {
+            return;
+        }
+
+        $configurator = new Configurator();
+        $configurator->loadConfig();
+
+        $timeframeStart = $configurator->config['email_import_timeframe_start'] ?? '';
+        $timeframeStart = is_string($timeframeStart) ? trim($timeframeStart) : '';
+        $default = '-30 days';
+
+        if ($timeframeStart === '') {
+            $inboundEmail->email_import_timeframe_start = $default;
+            return;
+        }
+
+        if (preg_match('/^-\s*\d+\s+(days|day|months|month|years|year)$/i', $timeframeStart)) {
+            $inboundEmail->email_import_timeframe_start = $timeframeStart;
+            return;
+        }
+
+        $inboundEmail->email_import_timeframe_start = $default;
+    }
+
+    /**
+     * Initializes the import threshold setting for the given InboundEmail record.
+     * @param InboundEmail|null $inboundEmail
+     * @return void
+     */
+    protected function initializeImportThreshold(?InboundEmail $inboundEmail): void
+    {
+        if ($inboundEmail === null) {
+            return;
+        }
+        $threshold = $inboundEmail->email_import_per_run_threshold ?? null;
+        if (is_numeric($threshold) && $threshold > 0) {
+            return;
+        }
+
+        $configurator = new Configurator();
+        $configurator->loadConfig();
+        if (
+            isset($configurator->config['email_import_per_run_threshold']) &&
+            is_numeric($configurator->config['email_import_per_run_threshold']) &&
+            $configurator->config['email_import_per_run_threshold'] > 0
+        ) {
+            $inboundEmail->email_import_per_run_threshold = (int)$configurator->config['email_import_per_run_threshold'];
+            return;
+        }
+
+        $inboundEmail->email_import_per_run_threshold = 25;
     }
 
 

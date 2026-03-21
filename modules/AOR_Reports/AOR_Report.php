@@ -204,7 +204,7 @@ class AOR_Report extends Basic
         while ($row = $this->db->fetchByAssoc($result)) {
             $field = BeanFactory::newBean('AOR_Fields');
             $field->retrieve($row['id']);
-            
+
             $path = unserialize(base64_decode($field->module_path),['allowed_classes' => false]);
 
             $field_bean = new $beanList[$this->report_module]();
@@ -496,8 +496,9 @@ class AOR_Report extends Basic
                 $select_field = $this->db->quoteIdentifier($table_alias) . '.' . $field->field;
             }
 
-            if ($field->sort_by != '') {
-                $query_array['sort_by'][] = $field_label . ' ' . $field->sort_by;
+            if ($field->sort_by != '' && in_array(strtoupper($field->sort_by), getAorAllowedSortDirections(), true)) {
+                $safe_label = str_replace("'", "''", $field_label);
+                $query_array['sort_by'][] = $safe_label . ' ' . strtoupper($field->sort_by);
             }
 
             if ($field->format && in_array($data['type'], array('date', 'datetime', 'datetimecombo'))) {
@@ -511,13 +512,14 @@ class AOR_Report extends Basic
                 );
             }
 
-            if ($field->field_function != null) {
-                $select_field = $field->field_function . '(' . $select_field . ')';
+            if ($field->field_function != null && in_array(strtoupper($field->field_function), getAorAllowedFieldFunctions(), true)) {
+                $select_field = strtoupper($field->field_function) . '(' . $select_field . ')';
             }
 
             $query_array['group_by'][] = $select_field;
 
-            $query_array['select'][] = $select_field . " AS '" . $field_label . "'";
+            $safe_label = str_replace("'", "''", $field_label);
+            $query_array['select'][] = $select_field . " AS '" . $safe_label . "'";
             if (isset($extra['select']) && $extra['select']) {
                 foreach ($extra['select'] as $selectField => $selectAlias) {
                     if ($selectAlias) {
@@ -584,6 +586,8 @@ class AOR_Report extends Basic
                     $groupDisplay = $app_strings['LBL_NONE'];
                 }
 
+                $reportGroupID = create_guid();
+
                 // Fix #5427 If download pdf then not use tab-content and add css inline to work with mpdf
                 $pdf_style = "";
                 $action = $_REQUEST['action'];
@@ -593,21 +597,21 @@ class AOR_Report extends Basic
 
                 $html .= '<div class="panel panel-default">
                             <div class="panel-heading" style="' . $pdf_style . '">
-                                <a class="" role="button" data-toggle="collapse" href="#detailpanel_report_group_' . $groupValue . '" aria-expanded="false">
+                                <a class="" role="button" data-toggle="collapse" href="#detailpanel_report_group_' . $reportGroupID . '" aria-expanded="false">
                                     <div class="col-xs-10 col-sm-11 col-md-11">
                                         ' . $groupDisplay . '
                                     </div>
                                 </a>
                             </div>';
                 if ($action != 'DownloadPDF') {
-                    $html .= '<div class="panel-body panel-collapse collapse in" id="detailpanel_report_group_' . $groupValue . '">
+                    $html .= '<div class="panel-body panel-collapse collapse in" id="detailpanel_report_group_' . $reportGroupID . '">
                                 <div class="tab-content">';
                 } else {
                     $html .= '</div>';
                 }
 
 
-                $html .= $this->build_report_html($offset, $links, $groupValue, create_guid(), $extra);
+                $html .= $this->build_report_html($offset, $links, $groupValue, $reportGroupID, $extra);
                 $html .= ($action == 'downloadPDF') ? '' : '</div></div></div>';
                 // End
             }
@@ -656,7 +660,7 @@ class AOR_Report extends Basic
         }
 
         $html = '<div class="list-view-rounded-corners">';
-        $html.='<table id="report_table_'.$tableIdentifier.$group_value.'" width="100%" border="0" class="list view table-responsive aor_reports">';
+        $html.='<table id="report_table_'.$tableIdentifier.'" width="100%" border="0" class="list view table-responsive aor_reports">';
 
         $sql = "SELECT id FROM aor_fields WHERE aor_report_id = '" . $this->id . "' AND deleted = 0 ORDER BY field_order ASC";
         $result = $this->db->query($sql);
@@ -801,6 +805,9 @@ class AOR_Report extends Basic
                     $html .= "<td class='' valign='top' align='left'>";
                     if ($att['link'] && $links) {
                         $html .= "<a href='" . $sugar_config['site_url'] . "/index.php?module=" . $att['module'] . "&action=DetailView&record=" . $row[$att['alias'] . '_id'] . "'>";
+                    }
+                    if (!isset($row[$name])){
+                        continue;
                     }
 
                     $currency_id = isset($row[$att['alias'] . '_currency_id']) ? $row[$att['alias'] . '_currency_id'] : '';
@@ -1260,48 +1267,50 @@ class AOR_Report extends Basic
                         $field_module = $new_field_module;
                     }
                 }
-                $data = $field_module->field_defs[$field->field];
+                $data = $field_module->field_defs[$field->field] ?? [];
 
-                if ($data['type'] == 'relate' && isset($data['id_name'])) {
-                    $field->field = $data['id_name'];
-                    $data_new = $field_module->field_defs[$field->field];
-                    if (isset($data_new['source']) && $data_new['source'] == 'non-db' && $data_new['type'] != 'link' && isset($data['link'])) {
-                        $data_new['type'] = 'link';
-                        $data_new['relationship'] = $data['link'];
+                if (!empty($data)){
+                    if ($data['type'] == 'relate' && isset($data['id_name'])) {
+                        $field->field = $data['id_name'];
+                        $data_new = $field_module->field_defs[$field->field];
+                        if (isset($data_new['source']) && $data_new['source'] == 'non-db' && $data_new['type'] != 'link' && isset($data['link'])) {
+                            $data_new['type'] = 'link';
+                            $data_new['relationship'] = $data['link'];
+                        }
+                        $data = $data_new;
                     }
-                    $data = $data_new;
-                }
 
-                if ($data['type'] == 'link' && $data['source'] == 'non-db') {
-                    $new_field_module = new $beanList[getRelatedModule(
-                        $field_module->module_dir,
-                        $data['relationship']
-                    )];
-                    $table_alias = $data['relationship'];
-                    $query = $this->build_report_query_join(
-                        $data['relationship'],
-                        $table_alias,
-                        $oldAlias,
-                        $field_module,
-                        'relationship',
-                        $query,
-                        $new_field_module
-                    );
-                    $field_module = $new_field_module;
-                    $field->field = 'id';
-                }
+                    if ($data['type'] == 'link' && $data['source'] == 'non-db') {
+                        $new_field_module = new $beanList[getRelatedModule(
+                            $field_module->module_dir,
+                            $data['relationship']
+                        )];
+                        $table_alias = $data['relationship'];
+                        $query = $this->build_report_query_join(
+                            $data['relationship'],
+                            $table_alias,
+                            $oldAlias,
+                            $field_module,
+                            'relationship',
+                            $query,
+                            $new_field_module
+                        );
+                        $field_module = $new_field_module;
+                        $field->field = 'id';
+                    }
 
-                if ($data['type'] == 'currency' && isset($field_module->field_defs['currency_id']) && !stripos((string) $field->field,'_USD')) {
-                    if ((isset($field_module->field_defs['currency_id']['source']) && $field_module->field_defs['currency_id']['source'] == 'custom_fields')) {
-                        $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id AS '" . $table_alias . "_currency_id'";
-                        $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id";
-                    } else {
-                        $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias) . ".currency_id AS '" . $table_alias . "_currency_id'";
-                        $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias) . ".currency_id";
+                    if ($data['type'] == 'currency' && isset($field_module->field_defs['currency_id']) && !stripos((string) $field->field,'_USD')) {
+                        if ((isset($field_module->field_defs['currency_id']['source']) && $field_module->field_defs['currency_id']['source'] == 'custom_fields')) {
+                            $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id AS '" . $table_alias . "_currency_id'";
+                            $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias . '_cstm') . ".currency_id";
+                        } else {
+                            $query['select'][$table_alias . '_currency_id'] = $this->db->quoteIdentifier($table_alias) . ".currency_id AS '" . $table_alias . "_currency_id'";
+                            $query['second_group_by'][] = $this->db->quoteIdentifier($table_alias) . ".currency_id";
+                        }
                     }
                 }
 
-                if ((isset($data['source']) && $data['source'] == 'custom_fields')) {
+                if (!empty($data) && (isset($data['source']) && $data['source'] == 'custom_fields')) {
                     $select_field = $this->db->quoteIdentifier($table_alias . '_cstm') . '.' . $field->field;
                     $query = $this->build_report_query_join(
                         $table_alias . '_cstm',
@@ -1316,7 +1325,7 @@ class AOR_Report extends Basic
                 }
                 $select_field_db = $select_field;
 
-                if ($field->format && in_array($data['type'], array('date', 'datetime', 'datetimecombo'))) {
+                if ($field->format && isset($data['type']) && in_array($data['type'], array('date', 'datetime', 'datetimecombo'))) {
                     if (in_array($data['type'], array('datetime', 'datetimecombo'))) {
                         $select_field = $this->db->convert($select_field, 'add_tz_offset');
                     }
@@ -1333,25 +1342,27 @@ class AOR_Report extends Basic
                     unset($query['id_select'][$table_alias]);
                 }
 
-                if ($field->field_function != null) {
+                if ($field->field_function != null && in_array(strtoupper($field->field_function), getAorAllowedFieldFunctions(), true)) {
                     $unique = $field->group_by == 1 ? 'DISTINCT ' : '';
-                    $select_field = $field->field_function . '(' . $unique . $select_field . ')';
+                    $select_field = strtoupper($field->field_function) . '(' . $unique . $select_field . ')';
                 } elseif ($field->group_by == 1) {
                     $query['group_by'][] = $select_field;
                 } else {
                     $query['second_group_by'][] = $select_field;
                 }
 
-                if ($field->sort_by != '') {
+                if ($field->sort_by != '' && in_array(strtoupper($field->sort_by), getAorAllowedSortDirections(), true)) {
+                    $sortDir = strtoupper($field->sort_by);
                     // If the field is a date, sort by the natural date and not the user-formatted date
                     if ($data['type'] == 'date' || $data['type'] == 'datetime') {
-                        $query['sort_by'][] = $select_field_db . " " . $field->sort_by;
+                        $query['sort_by'][] = $select_field_db . " " . $sortDir;
                     } else {
-                        $query['sort_by'][] = $select_field . " " . $field->sort_by;
+                        $query['sort_by'][] = $select_field . " " . $sortDir;
                     }
                 }
 
-                $query['select'][] = $select_field . " AS '" . $field->label . "'";
+                $safe_label = str_replace("'", "''", $field->label);
+                $query['select'][] = $select_field . " AS '" . $safe_label . "'";
 
                 if ($field->group_display == 1 && $group_value) {
                     if ($group_value === '_empty') {
@@ -1375,7 +1386,7 @@ class AOR_Report extends Basic
         SugarBean $module,
         $type,
         $query = array(),
-        SugarBean $rel_module = null
+        ?SugarBean $rel_module = null
     ) {
 
         // Alias to keep lines short
@@ -1623,7 +1634,11 @@ class AOR_Report extends Basic
                             break;
 
                         case 'Date':
-                            $params = unserialize(base64_decode($condition->value),['allowed_classes' => false]);
+                            if (is_string($condition->value)) {
+                                $params = unserialize(base64_decode($condition->value),['allowed_classes' => false]);
+                            } else {
+                                $params = $condition->value;
+                            }
 
                             // Fix for issue #1272 - AOR_Report module cannot update Date type parameter.
                             if ($params == false) {

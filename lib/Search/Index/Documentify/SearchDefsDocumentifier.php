@@ -87,7 +87,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
     }
 
     /** @inheritdoc */
-    public function documentify(\SugarBean $bean, ParserSearchFields $parser = null)
+    public function documentify(\SugarBean $bean, ?ParserSearchFields $parser = null)
     {
         $fields = &$this->getFieldsToIndexCached($bean, $parser);
 
@@ -113,7 +113,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
      *
      * @return string[]
      */
-    protected function getFieldsToIndex($module, ParserSearchFields $parser = null)
+    protected function getFieldsToIndex($module, ?ParserSearchFields $parser = null)
     {
         if (empty($parser)) {
             $parser = new ParserSearchFields($module);
@@ -172,7 +172,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
      *
      * @return array
      */
-    private function &getFieldsToIndexCached(\SugarBean $bean, ParserSearchFields $parser = null)
+    private function &getFieldsToIndexCached(\SugarBean $bean, ?ParserSearchFields $parser = null)
     {
         $module_name = $bean->module_name;
 

@@ -109,6 +109,8 @@ class Call extends SugarBean
     public $syncing = false;
     public $recurring_source;
 
+    public $date_changed = false;
+
     // This is used to retrieve related fields from form posts.
     public $additional_column_fields = array('assigned_user_name', 'assigned_user_id', 'contact_id', 'user_id', 'contact_name');
     public $relationship_fields = array(	'account_id'		=> 'accounts',
@@ -151,7 +153,7 @@ class Call extends SugarBean
     {
         // don't check if call is being synced from Outlook
         if ($this->syncing == false) {
-            $view = strtolower($view);
+            $view = strtolower($view ?? '');
             switch ($view) {
                 case 'edit':
                 case 'save':
@@ -250,6 +252,7 @@ class Call extends SugarBean
     {
         $reminderData = $reminders;
         $uninvited = array();
+        $reminders ??= [];
         foreach ($reminders as $r => $reminder) {
             foreach ($reminder['invitees'] as $i => $invitee) {
                 switch ($invitee['module']) {
@@ -555,6 +558,40 @@ class Call extends SugarBean
         return $call_fields;
     }
 
+    /**
+     * Redefine method to attach ics file to notification email
+     */
+    public function create_notification_email($notify_user)
+    {
+        global $sugar_config;
+        // reset acceptance status for non organizer if date is changed
+        if (($notify_user->id != $GLOBALS['current_user']->id) && $this->date_changed) {
+            $this->set_accept_status($notify_user, 'none');
+        }
+
+        $notify_mail = parent::create_notification_email($notify_user);
+
+        $calendarInviteType = $sugar_config['email_calendar_invite_type'] ?? 'rsvp_ics';
+        if ($calendarInviteType !== 'rsvp_ics') {
+            return $notify_mail;
+        }
+
+        $path = SugarConfig::getInstance()->get('upload_dir', 'upload/') . $this->id;
+
+        require_once("modules/vCals/vCal.php");
+        $content = vCal::get_ical_event($this, $GLOBALS['current_user'], $notify_user);
+
+        if (is_dir($path)) {
+            LoggerManager::getLogger()->warn('file_put_contents(' . $path . '): failed to open stream: Is a directory ');
+        } else {
+            if (file_put_contents($path, $content)) {
+                $notify_mail->Ical = $content;
+                $notify_mail->AddAttachment($path, 'call.ics', 'base64', 'text/calendar');
+            }
+        }
+        return $notify_mail;
+    }
+
     public function set_notification_body($xtpl, $call)
     {
         global $sugar_config;
@@ -589,6 +626,11 @@ class Call extends SugarBean
         $xtpl->assign("CALL_MINUTES", $call->duration_minutes);
         $xtpl->assign("CALL_STATUS", ((isset($call->status))?$app_list_strings['call_status_dom'][$call->status] : ""));
         $xtpl->assign("CALL_DESCRIPTION", nl2br($call->description));
+
+        $calendarInviteType = $sugar_config['email_calendar_invite_type'] ?? 'rsvp_ics';
+        if ($calendarInviteType === 'rsvp_links') {
+            $xtpl->parse('Call.Call_Links');
+        }
 
         return $xtpl;
     }

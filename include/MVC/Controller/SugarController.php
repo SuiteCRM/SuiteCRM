@@ -48,6 +48,7 @@ require_once('include/MVC/View/SugarView.php');
  * Main SugarCRM controller
  * @api
  */
+#[\AllowDynamicProperties]
 class SugarController
 {
     /**
@@ -180,6 +181,8 @@ class SugarController
      *@var bool
      */
     public $hasAccess ;
+
+    public $entry_point_registry;
 
     /**
      * Map case sensitive filenames to action.  This is used for linux/unix systems

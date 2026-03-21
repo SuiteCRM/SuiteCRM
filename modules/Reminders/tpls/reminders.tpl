@@ -201,7 +201,7 @@
                     <ul class="invitees_list disabled">
                     {foreach from=$reminder.invitees item=invitee}
                         <li class="invitees_item">
-                            <button class="invitee_btn btn btn-danger" data-invitee-id="{$invitees.id}" data-id="{$invitee.module_id}" data-module="{$invitee.module}" disabled="disabled">
+                            <button class="invitee_btn btn btn-danger" data-invitee-id="{$invitee.id}" data-id="{$invitee.module_id}" data-module="{$invitee.module}" disabled="disabled">
 								<span class="suitepicon suitepicon-module-users"></span>
                                 <span class="related-value"> {$invitee.value}</span>
                             </button>

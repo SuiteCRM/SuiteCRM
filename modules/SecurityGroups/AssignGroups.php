@@ -148,7 +148,7 @@ EOQ;
 
         $no_mass_assign_list = array("Emails" => "Emails", "ACLRoles" => "ACLRoles"); //,"Users"=>"Users");
         //check if security suite enabled
-        $action = strtolower($action);
+        $action = strtolower($action ?? '');
         if (isset($module) && ($action == "list" || $action == "index" || $action == "listview")
             && (!isset($_REQUEST['search_form_only']) || $_REQUEST['search_form_only'] != true)
             && !array_key_exists($module, $no_mass_assign_list)

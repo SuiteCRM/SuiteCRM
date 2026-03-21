@@ -132,7 +132,7 @@ class CalendarActivity
             $end_ts_obj,
             $field_name,
             $field_end_date,
-            array('self', 'within')
+            array('CalendarActivity', 'within')
         );
     }
 
@@ -161,7 +161,7 @@ class CalendarActivity
             $end_ts_obj,
             $field_name,
             $field_end_date,
-            array('self', 'until')
+            array('CalendarActivity', 'until')
         );
     }
 

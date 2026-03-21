@@ -2,68 +2,90 @@
   <img width="180px" height="41px" src="https://suitecrm.com/wp-content/uploads/2017/12/logo.png" align="right" />
 </a>
 
-# SuiteCRM 7.14.7
+# SuiteCRM 7.15.1
 
-[![Build Status](https://travis-ci.org/salesagility/SuiteCRM.svg?branch=hotfix)](https://travis-ci.org/salesagility/SuiteCRM)
-[![codecov](https://codecov.io/gh/salesagility/SuiteCRM/branch/hotfix/graph/badge.svg)](https://codecov.io/gh/salesagility/SuiteCRM/branch/hotfix)
-[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/suitecrm/Lobby)
-[![LICENSE](https://img.shields.io/github/license/suitecrm/suitecrm.svg)](https://github.com/salesagility/suitecrm/blob/hotfix/LICENSE.txt)
-[![GitHub contributors](https://img.shields.io/github/contributors/salesagility/suitecrm)](https://github.com/salesagility/SuiteCRM/graphs/contributors)
-[![Twitter](https://img.shields.io/twitter/follow/suitecrm.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=suitecrm)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/SuiteCRM/SuiteCRM/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/SuiteCRM/suitecrm)](https://github.com/SuiteCRM/SuiteCRM/graphs/contributors)
+[![LICENSE](https://img.shields.io/github/license/suitecrm/suitecrm.svg)](https://github.com/SuiteCRM/suitecrm/blob/hotfix/LICENSE.txt)
 
-[Website](https://suitecrm.com) | 
+
+
+[Website](https://suitecrm.com) |
 [Demo](https://suitecrm.com/demo/) |
-[Maintainers](https://salesagility.com) |
-[Contributors](https://github.com/salesagility/SuiteCRM/graphs/contributors) |
-[Community & Forum](https://suitecrm.com/suitecrm/forum) |
+[Maintainers](https://suitecrm.com/about/about-us/suitecrm-ltd/) |
+[Contributors](https://github.com/SuiteCRM/SuiteCRM/graphs/contributors) |
+[Community Forum](https://community.suitecrm.com/) |
 [Partners](https://suitecrm.com/about/about-us/partners/) |
-[Extensions Directory](https://store.suitecrm.com/) |
-[Translations](https://crowdin.com/project/suitecrmtranslations) | [Code of Conduct](https://docs.suitecrm.com/community/code-of-conduct/)
+[Extensions Directory](https://store.suitecrm.com/?tag=suitecrm) |
+[Translations](https://sourceforge.net/projects/suitecrmtranslations/)
 
 [SuiteCRM](https://suitecrm.com) is the award-winning open-source, enterprise-ready Customer Relationship Management (CRM) software application.
 
 Our vision is to be the most adopted open source enterprise CRM in the world, giving users full control of their data and freedom to own and customise their business solution.
 
-Try out a free fully working [SuiteCRM demo available here](https://suitecrm.com/demo/)
+SuiteCRM 7 is a mature and stable CRM with a large community and regular releases containing new features, security patches and bug fixes from both our community and the SuiteCRM team.
 
-### Contribute [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/salesagility/SuiteCRM/issues)
+You may also be interested in [SuiteCRM 8](https://github.com/SuiteCRM/SuiteCRM-Core) the latest version of SuiteCRM. At the time of writing, SuiteCRM 8 is in the levelling up phase and not yet as feature complete. More information is available on the [SuiteCRM Journey ](https://suitecrm.com/the-suitecrm-8-journey/).
 
-There are lots of ways to [contribute](https://docs.suitecrm.com/community/) to SuiteCRM
+### Getting Started
 
-* [Submit bug](https://docs.suitecrm.com/community/raising-issues/) reports and help us [verify fixes](https://docs.suitecrm.com/community/contributing-code/test-pull-requests/) as they are pushed up
-* Review and collaborate [source code](https://github.com/salesagility/SuiteCRM/pulls) changes
-* Join and engage with other SuiteCRM users and developers on the [forums](https://suitecrm.com/suitecrm/forum)
-* [Contribute bug fixes](https://docs.suitecrm.com/community/contributing-code/bugs/)
-* Help [translate](https://docs.suitecrm.com/community/contributing-to-docs/contributing-to-translation/) language packs
-* [Write and improve](https://docs.suitecrm.com/community/contributing-to-docs/) SuiteCRM documentation
-* Signing CLA - Only needs to be done once for all PRs and contributions.
+SuiteCRM 7 is compatible with most Linux and Windows servers. Test and development servers can be deployed locally, however for best performance and compatibility we recommend hosting on a linux based server with a properly configured LAMP Stack. As SuiteCRM is based on standard technologies like Apache, PHP and MySQL, the CRM can be self-hosted on your own internal network, on a public cloud provider or on a fully managed hosting service.
 
+#### Key System Requirements
+* **Web Server:** Apache (recommended) or IIS
+* **PHP:** 8.1 - 8.4
+* **Database:** MySQL or MariaDB (recommended) or MSSQL
+
+Please see our [Compatibility Matrix](https://docs.suitecrm.com/admin/compatibility-matrix/) and [Installation Guide](https://docs.suitecrm.com/admin/installation-guide/downloading-installing/) for more detail.
+
+SuiteCRM Ltd, the authors and maintainers of SuiteCRM offer a range of [fully managed hosting](https://suitecrm.com/suitecrmhosted/) services. These are ideal for organisations who don't have the in house knowledge or experience to host and maintain the application and are a great way to support the future development of the project.
+
+### Demo
+
+We have a demo of SuiteCRM 7 available online, allowing you to easily try the CRM and some of its features.
+
+Try out our demo here: [Click here to visit the SuiteCRM Demo](https://suitecrm.com/demo/)
+
+The demo rebuilds every hour, so any changes made will be removed automatically on a regular basis. Please note the demo is public so don't upload any personal information.
+
+### Updating SuiteCRM
+
+To benefit from the latest security and bugfixes as well as the most comprehensive feature set, we recommend all users upgrade to the latest ESR release at their earliest opportunity. See our [upgrade documentation](https://docs.suitecrm.com/admin/installation-guide/upgrading/) for more detail.
+
+### News and Releases
+
+To stay up to date on our latest releases, including security patches and fixes we recommend you monitor our [News Page](https://suitecrm.com/about/newsroom/press/) and [Release Notes](https://docs.suitecrm.com/admin/releases/)
+
+You can also [Subscribe to our Newsletter](https://suitecrm.com/about/about-us/sign-up-for-marketing/) or follow us on Social Media.
 
 ### Code Contributors
 
-This project exists thanks to all the people who [contribute](https://github.com/salesagility/SuiteCRM/graphs/contributors) and more.
-<a href="https://github.com/salesagility/SuiteCRM/graphs/contributors"><img src="https://opencollective.com/SuiteCRM/contributors.svg?avatarHeight=36&width=890&button=false" /></a>
+This project exists thanks to all the people who [contribute](https://github.com/SuiteCRM/SuiteCRM/graphs/contributors) and more.
+<a href="https://github.com/SuiteCRM/SuiteCRM/graphs/contributors"><img src="https://opencollective.com/SuiteCRM/contributors.svg?avatarHeight=36&width=890&button=false" /></a>
 
-You wanna buy the **core team** a coffee :coffee: or beer :beer:?
+As an open source project, we welcome sponsorships from our individuals and organisations in our community. Your contribution to the project will help drive the SuiteCRM project forward at a greater rate.
+
+If you use SuiteCRM in your organisation, please consider [sponsoring the SuiteCRM Project](https://suitecrm.com/join-the-project/suitecrm-community-sponsorship/)
+
+Or if You want to buy the **core team** a coffee :coffee: or beer :beer:?
 Then consider a small [donation](https://opencollective.com/SuiteCRM/contribute) to help fuel our activities :heart:
 
-### Security ###
-
-We take security seriously here at SuiteCRM so if you have discovered a security risk report it by
-emailing [security@suitecrm.com](mailto:security@suitecrm.com). This will be delivered to the product team who handle security issues.
-Please don't disclose security bugs publicly until they have been handled by the security team.
-
-Your email will be acknowledged within 24 hours during the business week (Mon - Fri), and you’ll receive a more
-detailed response to your email within 72 hours during the business week (Mon - Fri) indicating the next steps in
-handling your report.
 
 ### Roadmap ### 
 
-View the [Roadmap](https://suitecrm.com/roadmap/) and [LTS](https://suitecrm.com/lts/) for details on our planned features and future direction.
+View the [Roadmap](https://suitecrm.com/roadmap/) for details on our planned features and future direction.
 
 ### Support ###
 
-SuiteCRM is an open-source project. If you require help with support then please use our [support forum](https://suitecrm.com/suitecrm/forum/). By using the forums the knowledge is shared with everyone in the community. Our developer and community team members answer questions on the forum daily but it also allows the other members of the community to contribute. If you would like customisations to specifically fit your SuiteCRM needs then please visit the [website](https://suitecrm.com/).
+SuiteCRM is an open-source project. If you require help with support then please use our [support forum](https://community.suitecrm.com/). By using the forums the knowledge is shared with everyone in the community. Our developer and community team members answer questions on the forum daily, but it also allows the other members of the community to contribute. If you would like customisations to specifically fit your SuiteCRM needs then please visit the [website](https://suitecrm.com/).
+
+SuiteCRM Ltd also offers a range of complimentary hosting and support services:
+
+- [Hosting](https://suitecrm.com/suitecrmhosted/)
+- [Support Plans](https://suitecrm.com/enterprise/support-plans/)
+- [SuiteASSURED](https://suitecrm.com/enterprise/suiteassured/)
+
+By utilising these services you are also contributing to the future development and progress of the project.
 
 ### License [![AGPLv3](https://img.shields.io/github/license/suitecrm/suitecrm.svg)](./LICENSE.txt)
 

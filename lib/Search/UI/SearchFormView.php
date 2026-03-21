@@ -80,9 +80,11 @@ class SearchFormView extends View
         if ($currentEngine === 'BasicSearchEngine' || $currentEngine === 'ElasticSearchEngine') {
             $engines = [];
         }
+        $searchModules = SearchWrapper::getModulesForDisplay();
 
         $this->smarty->assign('sizeOptions', $sizes);
         $this->smarty->assign('engineOptions', $engines);
+        $this->smarty->assign('moduleOptions', $searchModules);
         $this->smarty->assign('APP', $app_strings);
 
         parent::display();

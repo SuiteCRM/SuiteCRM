@@ -133,12 +133,15 @@ $xtpl->assign("BODY_HTML", $Web_To_Lead_Form_html ? $Web_To_Lead_Form_html : '')
 
 require_once('include/SugarTinyMCE.php');
 $tiny = new SugarTinyMCE();
-$tiny->defaultConfig['height']=700;
-$tiny->defaultConfig['apply_source_formatting']=true;
-$tiny->defaultConfig['cleanup']=false;
-$tiny->defaultConfig['extended_valid_elements'] .= ',input[name|id|type|value|onclick|required|placeholder|title],select[name|id|multiple|tabindex|onchange|required|title],option[value|selected|title]';
-$ed = $tiny->getInstance('body_html');
-$xtpl->assign("tiny", $ed);
+$tiny->defaultConfig['height'] = 700;
+$tinyConfig = $tiny->getConfig();
+$js = '<script type="text/javascript">';
+$js .= $tinyConfig;
+$js .= "tinyConfig.selector = '#body_html';";
+$js .= "tinyConfig.extended_valid_elements += ',input[name|id|type|value|onclick|required|placeholder|title],select[name|id|multiple|tabindex|onchange|required|title],option[value|selected|title]';";
+$js .= 'tinymce.init(tinyConfig);';
+$js .= '</script>';
+$xtpl->assign("tiny", $js);
 
 $xtpl->parse("main.textarea");
 

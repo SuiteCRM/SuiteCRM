@@ -58,6 +58,11 @@ if (!isset($_REQUEST['guid']) || !isset($_REQUEST['time'])) {
 $time = str_replace(array('.', '/', '\\'), '', (string) $_REQUEST['time']);
 $guid = str_replace(array('.', '/', '\\'), '', (string) $_REQUEST['guid']);
 $path = sugar_cached("diagnostic/{$guid}/diagnostic{$time}.zip");
+
+if (!file_exists($path)) {
+    sugar_die("Diagnostic file not found. The file may have been removed or the generation process failed. Please generate a new diagnostic report.");
+}
+
 $filesize = filesize($path);
 ob_clean();
 header('Content-Description: File Transfer');

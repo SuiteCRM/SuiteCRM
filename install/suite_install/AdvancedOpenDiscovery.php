@@ -5,7 +5,7 @@ function install_aod()
 
     global $sugar_config;
 
-    $sugar_config['aod']['enable_aod'] = true;
+    $sugar_config['aod']['enable_aod'] = false;
 
     ksort($sugar_config);
     write_array_to_file('sugar_config', $sugar_config, 'config.php');

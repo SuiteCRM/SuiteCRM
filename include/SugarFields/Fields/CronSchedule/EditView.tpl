@@ -1,5 +1,5 @@
 <script type="text/javascript" src='{sugar_getjspath file="include/SugarFields/Fields/CronSchedule/SugarFieldCronSchedule.js"}'></script>
-{if strlen({{sugarvar key='value' string=true}}) <= 0}
+{if !isset({{sugarvar key='value' string=true}})}
     {assign var="value" value={{sugarvar key='default_value' string=true}} }
 {else}
     {assign var="value" value={{sugarvar key='value' string=true}} }

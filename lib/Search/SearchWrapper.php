@@ -180,7 +180,55 @@ class SearchWrapper
     {
         return SearchModules::getEnabledModules();
     }
+    
+    /**
+     * Returns the configured modules with their labels.
+     *
+     * @return array|null
+     */
+    public static function getModulesForDisplay(): array
+    {
+        $searchModules = SearchModules::getEnabledModules();
+        $moduleList = SearchModules::getModulesList();
+        foreach ($searchModules as $key => $module) {
+            $searchModules[$module] = $moduleList[$module];
+            unset($searchModules[$key]);
+        }
+        return $searchModules;
+    }
 
+    /**
+     * @return array
+     */
+    public static function getUserSelectedModules($users_modules = null): array
+    {
+        $unifiedSearchModuleDisplay = SearchModules::getUnifiedSearchModulesDisplay();
+
+        global $current_user;
+
+        $users_modules = $users_modules ?: $current_user->getPreference('globalSearch', 'search');
+        $modulesToSearch = [];
+
+        if (!empty($users_modules)) {
+            // Use user's previous selections
+            foreach ($users_modules as $key => $value) {
+                if (isset($unifiedSearchModuleDisplay[$key]) && !empty($unifiedSearchModuleDisplay[$key]['visible'])) {
+                    $modulesToSearch[$key] = $value;
+                }
+            }
+        } else {
+            foreach ($unifiedSearchModuleDisplay as $module => $data) {
+                if (!empty($data['visible'])) {
+                    $modulesToSearch[$module] = $module;
+                }
+            }
+        }
+
+        $current_user->setPreference('globalSearch', $modulesToSearch, 0, 'search');
+
+        return $modulesToSearch;
+    }
+    
     /**
      * Performs various validation and retrieves an instance of a given search engine.
      *

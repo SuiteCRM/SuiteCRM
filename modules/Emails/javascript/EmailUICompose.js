@@ -1106,11 +1106,29 @@ SE.composeLayout = {
         SE.tinyInstances[elId].ready = false;
 
         if (!SUGAR.util.isTouchScreen()) {
-            var t = tinyMCE.getInstanceById(elId);
+            var t = tinymce.get(elId);
         }
         if(typeof(t) == 'undefined')  {
             if (!SUGAR.util.isTouchScreen()) {
-                tinyMCE.execCommand('mceAddControl', false, elId);
+                tinymce.init({
+                    selector: '#' + elId,
+                    convert_urls: false,
+                    theme_advanced_toolbar_align: tinyConfig.theme_advanced_toolbar_align,
+                    valid_children: tinyConfig.valid_children,
+                    width: tinyConfig.width,
+                    theme: tinyConfig.theme,
+                    theme_advanced_toolbar_location: tinyConfig.theme_advanced_toolbar_location,
+                    theme_advanced_buttons1: tinyConfig.theme_advanced_buttons1,
+                    theme_advanced_buttons2: tinyConfig.theme_advanced_buttons2,
+                    theme_advanced_buttons3: tinyConfig.theme_advanced_buttons3,
+                    plugins: tinyConfig.plugins,
+                    language: tinyConfig.language,
+                    extended_valid_elements: tinyConfig.extended_valid_elements,
+                    strict_loading_mode: true,
+                    force_br_newlines: true,
+                    forced_root_block: '',
+                    license_key: tinyConfig.license_key
+                });
             }
             YAHOO.util.Event.onAvailable(elId + "_parent", function() {
                 SE.composeLayout.resizeEditorSetSignature(idx,!isReplyForward);
@@ -1196,7 +1214,7 @@ SE.composeLayout = {
         if (!retry) {
             this._0_yui();
         }
-        if  (!SUGAR.util.isTouchScreen() && (typeof(tinyMCE) == 'undefined' || typeof(tinyMCE.settings) == 'undefined')){
+        if  (!SUGAR.util.isTouchScreen() && (typeof(tinyMCE) == 'undefined' || typeof(tinymce.settings) == 'undefined')){
             setTimeout("SE.composeLayout.c1_composeEmail(" + isReplyForward + ", true);", 500);
         } else {
 	        this._1_tiny(isReplyForward);
@@ -1463,7 +1481,7 @@ SE.composeLayout = {
         var closeTag = '<span>&nbsp;</span></div>';
 
         // Get tinyMCE instance
-        var t = tinyMCE.getInstanceById('htmleditor' + idx);
+        var t = tinymce.get('htmleditor' + idx);
 
         // IE 6 Hack
         if(typeof(t) != 'undefined')
@@ -2160,7 +2178,7 @@ SE.composeLayout = {
         // destroy tinyMCE instance
         var idx = id.substr(13, id.length);
         var instanceId = "htmleditor" + idx;
-        tinyMCE.execCommand('mceRemoveControl', false, instanceId);
+        tinymce.remove('#' + instanceId);
 
         // nullify DOM and namespace values.
         inCompose = false;
@@ -2550,7 +2568,7 @@ SE.util = {
             return null;
         }
 
-        var t = tinyMCE.getInstanceById(instanceId);
+        var t = tinymce.get(instanceId);
 
         if(this.isIe()) {
             this.sleep(200);

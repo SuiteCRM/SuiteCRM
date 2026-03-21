@@ -193,7 +193,9 @@ class One2MBeanRelationship extends One2MRelationship
             if (isset($link->getFocus()->$rhsID)) {
                 $id = $link->getFocus()->$rhsID;
             } else {
-                LoggerManager::getLogger()->warn('Incorrect linked relationship rhs ID: ' . get_class($link->getFocus()) . '::$' . $rhsID . ' is undefined');
+                $focus = $link->getFocus();
+                $className = is_object($focus) ? get_class($focus) : 'unknown';
+                LoggerManager::getLogger()->warn('Incorrect linked relationship rhs ID: ' . $className . '::$' . $rhsID . ' is undefined');
             }
 
             if (!empty($id)) {

@@ -176,7 +176,7 @@ sqs_objects["{$form_name}_{{$idName}}_remoteName"] = {ldelim}
 if(typeof QSProcessedFieldsArray != 'undefined') {ldelim}
 QSProcessedFieldsArray["{$form_name}_{{$idName}}_remoteName"] = false;
 {rdelim}
-{if $showRemove && strlen("{{$vardef.docType}}") > 0 }
+{if $showRemove && !empty($vardef.docType) }
 document.getElementById("{{$vardef.docType}}").disabled = true;
 {/if}
 enableQS(false);

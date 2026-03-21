@@ -231,7 +231,7 @@ class CalendarDisplay
         if (empty($activity)) {
             $activity = $this->activity_colors;
         }
-        $newActivities = unserialize(base64_decode($current_user->getPreference("CalendarActivities")), ['allowed_classes' => false]);
+        $newActivities = unserialize(base64_decode($current_user->getPreference("CalendarActivities") ?? ''), ['allowed_classes' => false]);
         if ($newActivities) {
             $activity = array_merge($activity, $newActivities);
         }
