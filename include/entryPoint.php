@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-$GLOBALS['starttTime'] = microtime(true);
+$GLOBALS['startTime'] = microtime(true);
 
 set_include_path(
     __DIR__.'/..'.PATH_SEPARATOR.
