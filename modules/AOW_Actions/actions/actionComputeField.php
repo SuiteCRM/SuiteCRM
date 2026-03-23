@@ -453,7 +453,6 @@ class actionComputeField extends actionBase
 					</div>
 				</fieldset>";
 
-        if (count($params) > 0) {
             $parameters = $this->createJavascriptArrayFromParams($params, 'parameter');
             $parameterTypes = $this->createJavascriptArrayFromParams($params, 'parameterType');
             $formulas = $this->createJavascriptArrayFromParams($params, 'formula');
@@ -483,18 +482,7 @@ class actionComputeField extends actionBase
 						}
 					}
 					
-					$('#$containerName .computeFieldParametersContainer').find('.parameterSelect').change(function () {
-						onFieldChange$line(this, $('#$containerName .computeFieldParametersContainer').find('.parameterTypeSelect'));
-					});
-					
-					$('#$containerName .computeFieldRelationParametersContainer').find('.relationParameterFieldSelect').change(function () {
-						onFieldChange$line(this, $('#$containerName .computeFieldRelationParametersContainer').find('.relationParameterTypeSelect'));
-					});
-					
-					$('#$containerName .computeFieldParametersContainer').find('.parameterSelect').change();
-					$('#$containerName .computeFieldRelationParametersContainer').find('.relationParameterFieldSelect:visible').change();
 				</script>";
-        }
 
         $html .= "
 			</div>
