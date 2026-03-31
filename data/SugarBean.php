@@ -875,7 +875,7 @@ class SugarBean
                     $final_query .= ' UNION ALL ( ' . $tmp_final_query . ' )';
                 } else {
                     $final_query_rows = '(' . $parentbean->create_list_count_query($tmp_final_query, $parameters) . ')';
-                    $final_query = '(' . $tmp_final_query . ')';
+                    $final_query = $tmp_final_query;
                     $first = false;
                 }
             }
@@ -929,7 +929,6 @@ class SugarBean
                     $query = ' UNION ALL ( ' . $query . ' )';
                     $final_query_rows .= " UNION ALL ";
                 } else {
-                    $query = '(' . $query . ')';
                     $first = false;
                 }
                 $query_array = $subquery['query_array'];
