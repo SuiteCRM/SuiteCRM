@@ -810,11 +810,12 @@ class AOR_Report extends Basic
             foreach ($fields as $name => $att) {
                 if ($att['display']) {
                     $html .= "<td class='' valign='top' align='left'>";
+                    if (!isset($row[$name])){
+                        $html .= "</td>";
+                        continue;
+                    }
                     if ($att['link'] && $links) {
                         $html .= "<a href='" . $sugar_config['site_url'] . "/index.php?module=" . $att['module'] . "&action=DetailView&record=" . $row[$att['alias'] . '_id'] . "'>";
-                    }
-                    if (!isset($row[$name])){
-                        continue;
                     }
 
                     $currency_id = isset($row[$att['alias'] . '_currency_id']) ? $row[$att['alias'] . '_currency_id'] : '';
