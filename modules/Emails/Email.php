@@ -4936,10 +4936,20 @@ eoq;
         Localization $locale,
         ?string $OBCharset
     ): void {
+        // Skip removed attachments
+        $removedAttachments = [];
+        if (!empty($_REQUEST['temp_remove_attachment'])) {
+            $removedAttachments = $_REQUEST['temp_remove_attachment'];
+        }
 ///////////////////////////////////////////////////////////////////////
         ////	ATTACHMENTS
         if (isset($this->saved_attachments)) {
             foreach ($this->saved_attachments as $note) {
+                // Skip removed attachments
+                if (in_array($note->id, $removedAttachments)) {
+                    continue;
+                }
+
                 $mime_type = 'text/plain';
                 if ($note->object_name == 'Note') {
                     if (!empty($note->file->temp_file_location) && is_file($note->file->temp_file_location)) { // brandy-new file upload/attachment
