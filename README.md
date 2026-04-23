@@ -29,7 +29,7 @@ You may also be interested in [SuiteCRM 8](https://github.com/SuiteCRM/SuiteCRM-
 
 ### Getting Started
 
-SuiteCRM 7 is compatible with most Linux and Windows servers. Test and development servers can be deployed locally. For best performance and compatibility, we recommend hosting on a Linux-based server with a properly configured LAMP Stack. As SuiteCRM is based on standard technologies like Apache, PHP,, and MySQL, the CRM can be self-hosted on your internal network, on a public cloud provider, or on a fully managed hosting service.
+SuiteCRM 7 is compatible with most Linux and Windows servers. Test and development servers can be deployed locally. For best performance and compatibility, we recommend hosting on a Linux-based server with a properly configured LAMP Stack. As SuiteCRM is based on standard technologies like Apache, PHP, and MySQL, the CRM can be self-hosted on your internal network, on a public cloud provider, or on a fully managed hosting service.
 
 #### Key System Requirements
 * **Web Server:** Apache (recommended) or IIS
