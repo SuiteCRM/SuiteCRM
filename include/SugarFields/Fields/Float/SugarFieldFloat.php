@@ -76,15 +76,10 @@ class SugarFieldFloat extends SugarFieldInt
         $focus,
         ImportFieldSanitize $settings
         ) {
-        $value = str_replace($settings->num_grp_sep, "", $value);
-        $dec_sep = $settings->dec_sep;
-        if ($dec_sep != '.') {
-            $value = str_replace($dec_sep, ".", $value);
+        if (isset($vardef['len'])) {
+            // check for field length
+            $value = sugar_substr($value, $vardef['len']);
         }
-        if (!is_numeric($value)) {
-            return false;
-        }
-        
         return $value;
     }
 }
