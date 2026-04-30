@@ -99,4 +99,6 @@ $entry_point_registry = array(
     'setImapTestSettings' => ['file' => 'include/Imap/ImapTestSettingsEntry.php', 'auth' => true],
     'redirectToExternalOAuth' => ['file' => 'modules/ExternalOAuthConnection/entrypoint/redirectToExternalOAuth.php', 'auth' => true],
     'setExternalOAuthToken' => ['file' => 'modules/ExternalOAuthConnection/entrypoint/setExternalOAuthToken.php', 'auth' => true],
+    'suite_sweetspot_search' => array('file' => 'modules/Home/SweetspotSearch.php', 'auth' => true),
+    'suite_sweetspot_actions' => array('file' => 'modules/Home/SweetspotActions.php', 'auth' => true),
 );
