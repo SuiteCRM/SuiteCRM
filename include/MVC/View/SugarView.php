@@ -423,7 +423,7 @@ class SugarView
         ob_start();
         $this->renderJavascript();
 
-        $ss->assign("SUGAR_JS", ob_get_contents() . $themeObject->getJS());
+        $ss->assign("SUGAR_JS", ob_get_contents() . $themeObject->getJS() . $this->getSuiteSweetspotAssets());
         ob_end_clean();
 
         // get favicon
@@ -1041,6 +1041,36 @@ EOHTML;
             }
             echo "</script>\n";
         }
+    }
+
+    /**
+     * Inject Suite SweetSpot assets for authenticated users.
+     *
+     * @return string
+     */
+    protected function getSuiteSweetspotAssets()
+    {
+        global $sugar_config;
+
+        if (!isset($_SESSION['authenticated_user_id'])) {
+            return '';
+        }
+
+        if ($this->action === 'Login') {
+            return '';
+        }
+
+        if (isset($sugar_config['suite_sweetspot_enabled']) && !$sugar_config['suite_sweetspot_enabled']) {
+            return '';
+        }
+
+        $cssPath = getJSPath('include/css/suite_sweetspot.css');
+        $jsPath = getJSPath('include/javascript/suite_sweetspot.js');
+
+        return '<link rel="stylesheet" type="text/css" href="' . $cssPath . '"/>' .
+            "\n" .
+            '<script type="text/javascript" src="' . $jsPath . '"></script>' .
+            "\n";
     }
 
     /**
