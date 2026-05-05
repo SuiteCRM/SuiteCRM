@@ -83,7 +83,6 @@ class MBLanguage
 
     public function loadAppListStrings($file)
     {
-        global $app_list_strings;
         $app_list_strings = $app_list_strings ?? [];
         if (!file_exists($file)) {
             return;
