@@ -82,16 +82,12 @@ if (!empty($_REQUEST['sample'])) {
     } else {
         $ids = array();
         $bean = BeanFactory::getBean($the_module);
-
-        if(trim($_SESSION["export_where"]) !== "where " . strtolower($_REQUEST["module"]) .".deleted=0"){
+        $currentQuery = generateSearchWhere($the_module, $_REQUEST['current_post']);
+        if (!empty($currentQuery['where'])) {
             // handle select all queries with filters
-            $whereArr = explode(" ", trim($_SESSION['export_where']));
-            if ($whereArr[0] === trim('where')) {
-                array_shift($whereArr);
-            }
             $query = $bean->create_new_list_query(
                 "",
-                implode(" ", $whereArr),
+                $currentQuery['where'],
                 array(),
                 array(),
                 0,
