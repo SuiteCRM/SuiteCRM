@@ -71,5 +71,23 @@ class stic_AWF_Forms extends Basic
 
         return false;
     }
-	
+
+    public function save($check_notify = false)
+    {
+        if ($this->new_with_id && empty($this->fetched_row['id'])) {
+            $this->reset_analytics_and_public_url();
+        }
+
+        return parent::save($check_notify);
+    }
+
+    public function reset_analytics_and_public_url()
+    {
+        $this->analytics_views = 0;
+        $this->analytics_blocked = 0;
+        $this->analytics_submissions = 0;
+        $this->analytics_spam = 0;
+        $this->analytics_referrers = '';
+        $this->public_url = '';
+    }
 }

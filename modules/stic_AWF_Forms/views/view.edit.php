@@ -73,17 +73,30 @@ class stic_AWF_FormsViewEdit extends ViewEdit
 
         SticViews::display($this);
 
-        // Assign current user to assifned user if new record
-        if (empty($this->bean->id) && empty($this->bean->assigned_user_id)) {
+        /** @var stic_AWF_Forms $bean */
+        $formBean = $this->bean;
+
+        // Handle duplicate: clear ID so the wizard creates a new record
+        $isDuplicate = !empty($_REQUEST['isDuplicate']) && $_REQUEST['isDuplicate'] === 'true';
+        if ($isDuplicate) {
+            $formBean->id = '';
+            $formBean->date_entered = '';
+            $formBean->date_modified = '';
+            $formBean->status = 'draft';
+            $formBean->reset_analytics_and_public_url();
+        }
+
+        // Assign current user to assigned user if new record
+        if (empty($formBean->id) && empty($formBean->assigned_user_id)) {
             global $current_user;
-            $this->bean->assigned_user_id = $current_user->id;
-            $this->bean->assigned_user_name = $current_user->name ?? $current_user->user_name; // Nom complet o login
+            $formBean->assigned_user_id = $current_user->id;
+            $formBean->assigned_user_name = $current_user->name ?? $current_user->user_name; // Name or username
         }
 
         $responseCount = 0;
-        if (!empty($this->bean->id)) {
+        if (!empty($formBean->id)) {
             $db = DBManagerFactory::getInstance();
-            $formId = $db->quote($this->bean->id);
+            $formId = $db->quote($formBean->id);
 
             $query = "SELECT count(*) FROM stic_awf_forms_stic_awf_responses_c 
                       WHERE stic_awf_forms_stic_awf_responsesforms_ida = '$formId' 
@@ -93,7 +106,7 @@ class stic_AWF_FormsViewEdit extends ViewEdit
         }
         $warnings = [];
         $msgWarnings = "";
-        if ($this->bean->status === 'public') {
+        if ($formBean->status === 'public') {
             $warnings[] = "\t· " . translate('LBL_WIZARD_FORM_EDIT_WARNING_PUBLIC', 'stic_AWF_Forms');
         }
         if ($responseCount > 0) {
@@ -114,9 +127,9 @@ class stic_AWF_FormsViewEdit extends ViewEdit
         $this->ss->assign('msgWarnings', $msgWarnings);
         $this->ss->assign('isAdminUser', $GLOBALS['current_user']->is_admin ? true : false);
 
-        $beanArray = $this->bean->toArray();
-        $beanArray['assigned_user_id'] = $this->bean->assigned_user_id;
-        $beanArray['assigned_user_name'] = $this->bean->assigned_user_name;
+        $beanArray = $formBean->toArray();
+        $beanArray['assigned_user_id'] = $formBean->assigned_user_id;
+        $beanArray['assigned_user_name'] = $formBean->assigned_user_name;
         // Decode HTML entities in all string values to pass pure JSON to JS
         foreach ($beanArray as $key => $value) {
             if (is_string($value)) {
