@@ -656,8 +656,8 @@ class stic_AWFUtils {
         $loadedModules = array_map(function($b) { return $b->module_dir; }, $beansForTemplate);
         foreach ($context->actionResults as $result) {
             foreach ($result->modifiedBeans as $modBean) {
-                // Ignore skipped beans to avoid send data that is not in the CRM
-                if ($modBean->modificationType === BeanModificationType::SKIPPED) continue;
+                // Ignore Metadata entries wich represent action logs not CRM records
+                if ($modBean->modificationType === BeanModificationType::METADATA) continue;
 
                 // Ignore beans from modules that are already loaded to avoid unpredictable overwrites in the template parser
                 if (in_array($modBean->moduleName, $loadedModules)) continue;
