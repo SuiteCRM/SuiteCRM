@@ -841,7 +841,8 @@ class SugarBean
         }
 
 
-        $first = true;
+        $final_query_array = [];
+        $final_query_rows_array = [];
 
         //Breaking the building process into two loops. The first loop gets a list of all the sub-queries.
         //The second loop merges the queries and forces them to select the same number of columns
@@ -869,17 +870,23 @@ class SugarBean
                 } else {
                     $tmp_final_query = $parentbean->$shortcut_function_name();
                 }
-                if (!$first) {
-                    $final_query_rows .= ' UNION ALL ( '
-                        . $parentbean->create_list_count_query($tmp_final_query, $parameters) . ' )';
-                    $final_query .= ' UNION ALL ( ' . $tmp_final_query . ' )';
-                } else {
-                    $final_query_rows = '(' . $parentbean->create_list_count_query($tmp_final_query, $parameters) . ')';
-                    $final_query = '(' . $tmp_final_query . ')';
-                    $first = false;
+
+                if (!empty($tmp_final_query)) {
+                    $final_query_array[] = $tmp_final_query;
+                    $final_query_rows_array[] = $parentbean->create_list_count_query($tmp_final_query, $parameters);
                 }
             }
         }
+
+        if (count($final_query_array) > 1) {
+            $final_query =  '( ' . implode(' ) UNION ALL ( ', $final_query_array) . ' )';
+            $final_query_rows =  '( ' . implode(' ) UNION ALL ( ', $final_query_rows_array) . ' )';
+        } elseif (count($final_query_array) === 1) {
+            $final_query = $final_query_array[0];
+            $final_query_rows = $final_query_rows_array[0];
+        }
+        $queryFromDatasourceFunction = !empty($final_query);
+
         //If final_query is still empty, its time to build the sub-queries
         if (empty($final_query)) {
             $subqueries = SugarBean::build_sub_queries_for_union($subpanel_list, $subpanel_def, $parentbean, $order_by);
@@ -893,7 +900,8 @@ class SugarBean
                 }
                 $subqueries[$i]['query_fields'] = $query_fields;
             }
-            $first = true;
+            $final_query_array = [];
+            $final_query_rows_array = [];
             //Now ensure the queries have the same set of fields in the same order.
             foreach ($subqueries as $subquery) {
                 $subquery['select'] = "SELECT";
@@ -925,13 +933,6 @@ class SugarBean
 
                 //Put the query into the final_query
                 $query = $subquery['select'] . " " . $subquery['from'] . " " . $subquery['where'];
-                if (!$first) {
-                    $query = ' UNION ALL ( ' . $query . ' )';
-                    $final_query_rows .= " UNION ALL ";
-                } else {
-                    $query = '(' . $query . ')';
-                    $first = false;
-                }
                 $query_array = $subquery['query_array'];
                 $select_position = strpos((string) $query_array['select'], "SELECT");
                 $distinct_position = strpos((string) $query_array['select'], "DISTINCT");
@@ -959,8 +960,17 @@ class SugarBean
                     }
                     $secondary_queries[] = $subquerystring;
                 }
-                $final_query .= $query;
-                $final_query_rows .= $query_rows;
+
+                $final_query_array[] = $query;
+                $final_query_rows_array[] = $query_rows;
+            }
+
+            if (count($final_query_array) > 1) {
+                $final_query =  '( ' . implode(' ) UNION ALL ( ', $final_query_array) . ' )';
+                $final_query_rows =  '( ' . implode(' ) UNION ALL ( ', $final_query_rows_array) . ' )';
+            } elseif (count($final_query_array) === 1) {
+                $final_query = $final_query_array[0];
+                $final_query_rows = $final_query_rows_array[0];
             }
         }
 
@@ -982,6 +992,17 @@ class SugarBean
 
             $order_by = $parentbean->process_order_by($order_by, $submodule, $suppress_table_name);
             if (!empty($order_by)) {
+                if ($queryFromDatasourceFunction) {
+                    // Strip any trailing ORDER BY (and any LIMIT that follows it) embedded by the datasource function
+                    // before appending the requested sort. It only matches the outermost clause, ORDER BY inside a
+                    // parenthesised subquery is always followed by an unmatched ")" and won't be touched. Supports
+                    // function calls with up to 2 levels of nested parens (e.g. FIELD(), COALESCE()).
+                    $final_query = preg_replace(
+                        '/\s+ORDER\s+BY\b(?:[^()]|\((?:[^()]*|\([^()]*\))*\))*$/i',
+                        '',
+                        $final_query
+                    );
+                }
                 $final_query .= ' ORDER BY ' . $order_by;
             }
         }
