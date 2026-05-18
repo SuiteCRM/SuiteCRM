@@ -198,11 +198,8 @@ array (
     array (
       'includes' => 
       array (
-        0 => 
-        array (
-          'file' => 'modules/Reminders/Reminders.js',
-          'file' => 'modules/Calls/sticCV_quickcreate.php',          
-        ),
+        0 => array ( 'file' => 'modules/Reminders/Reminders.js' ),
+        1 => array ( 'file' => 'modules/Calls/sticCV_quickcreate.php' ),
       ),
       'maxColumns' => '2',
       'form' => 

@@ -201,7 +201,16 @@ CAL.repeat_tab_handle = function (module_name) {
 CAL.GR_update_user = function (user_id) {
     var callback = {
         success: function (o) {
-            SUGAR.util.globalEval("res = (" + o.responseText + ")");
+            // STIC-Custom - JBL - 20260306 - Solve js console errors
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/1008
+            // SUGAR.util.globalEval("res = (" + o.responseText + ")");
+
+            // Ensure that the record structure exists before evaluating
+            if (typeof GLOBAL_REGISTRY === 'undefined') GLOBAL_REGISTRY = {};
+            if (typeof GLOBAL_REGISTRY['focus'] === 'undefined') GLOBAL_REGISTRY['focus'] = {};
+
+            SUGAR.util.globalEval("res = " + o.responseText);
+            // END STIC-Custom
             GLOBAL_REGISTRY.focus.users_arr_hash = undefined;
         },
     };
@@ -211,7 +220,16 @@ CAL.GR_update_user = function (user_id) {
 };
 CAL.GR_update_focus = function (module, record) {
     if (record == "") {
-        GLOBAL_REGISTRY["focus"] = { module: module, users_arr: [], fields: { id: "-1" } };
+        // STIC-Custom - JBL - 20260306 - Solve js console errors
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1008
+        // GLOBAL_REGISTRY["focus"] = { module: module, users_arr: [], fields: { id: "-1" } };
+
+        // Save the downloaded users if they exist, otherwise we initialize empty
+        var existing_users = (typeof GLOBAL_REGISTRY !== 'undefined' && GLOBAL_REGISTRY["focus"] && GLOBAL_REGISTRY["focus"].users_arr) 
+                             ? GLOBAL_REGISTRY["focus"].users_arr 
+                             : [];
+        GLOBAL_REGISTRY["focus"] = { module: module, users_arr: existing_users, fields: { id: "-1" } };
+        // END STIC-Custom
         SugarWidgetScheduler.update_time();
     } else {
         var callback = {
