@@ -432,7 +432,7 @@ class stic_AWF_FormsUtils {
      * }
      */
     public static function getEnabledModules() {
-        global $app_list_strings;
+        global $app_list_strings, $beanList;
 
         // Get Enabled Modules
         require_once("modules/MySettings/TabController.php");
@@ -441,12 +441,15 @@ class stic_AWF_FormsUtils {
         
         $enabled = [];
         foreach ($tabs[0] as $key=>$value) {
+            if (!isset($beanList[$key])) {
+                continue;
+            }
             $text = translate($key);
             $textSingular = $app_list_strings['moduleListSingular'][$key] ?? $text;
             $enabled[$key] = ["name" => $key, "text" => $text, "textSingular" => $textSingular, "inStudio" => false, "icon" => ""];
         }
 
-        // Fill inStudio information
+        // Complete information from Studio
         require_once 'modules/ModuleBuilder/Module/StudioBrowser.php';
         $sb = new StudioBrowser();
         $nodes = $sb->getNodes();
@@ -457,16 +460,12 @@ class stic_AWF_FormsUtils {
             }
         }
 
-        $result = array_filter($enabled, function($item) {
-            return isset($item['inStudio']) && $item['inStudio'] == true;
-        });
-
         // Sort modules by text
-        uasort($result, function($a, $b) {
+        uasort($enabled, function($a, $b) {
             return strcmp($a['text'], $b['text']);
         });
 
-        return $result;
+        return $enabled;
     }
 
     /**
