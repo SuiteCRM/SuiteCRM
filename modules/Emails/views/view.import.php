@@ -72,11 +72,29 @@ class EmailsViewImport extends ViewEdit
      */
     public function preDisplay()
     {
-        global $current_user;
+        global $current_user, $app_strings;
 
         $metadataFile = $this->getMetaDataFile();
         $this->ev = $this->getEditView();
         $this->ev->ss =& $this->ss;
+
+
+        // QuickSearch
+        $qsName = array(
+            'form' => 'EditView',
+            'method' => 'query',
+            'modules' => array(),
+            'group' => 'or',
+            'field_list' => array('name', 'id'),
+            'populate_list' => array("parent_name", "parent_id"),
+            'conditions' => array(array('name' => 'name', 'op' => 'like_custom', 'end' => '%', 'value' => '')),
+            'limit' => '30',
+            'no_match_text' => $app_strings['ERR_SQS_NO_MATCH']
+        );
+        $json = getJSONobj();
+        $qsName = $json->encode($qsName);
+        $this->ev->ss->assign('qsName', $qsName);
+
 
         // Set a distinct view name to avoid cache conflicts with regular edit view
         $this->ev->formName = 'EditNonImported';
