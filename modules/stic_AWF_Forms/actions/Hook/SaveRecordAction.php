@@ -52,8 +52,13 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
      */
     public function executeWithBlock(ExecutionContext $context, FormAction $actionConfig, DataBlockResolved $block): ActionResult
     {
-        global $db;
+        global $db, $beanList;
+
         $module = $block->dataBlock->module;
+        if (!isset($beanList[$module])) {
+            return new ActionResult(ResultStatus::ERROR, $actionConfig, "The configured module '{$module}' is not available on the system.");
+        }
+
         $bean = null;
         $onDuplicateAction = null;
         $modifications = [];
@@ -68,6 +73,9 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
 
             $foundBean = null;
             $tempBean = BeanFactory::newBean($module);
+            if (!$tempBean) {
+                return new ActionResult(ResultStatus::ERROR, $actionConfig, "Failed to create a new instance of the module '{$module}'.");
+            }
 
             // Build the search fields for this rule
             foreach ($rule->fields as $fieldName) {
@@ -137,7 +145,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                     if ($beanToCheck) {
                         $match = true;
                         foreach ($scalarFields as $sField => $sValue) {
-                            if ($beanToCheck->$sField != $sValue) {
+                            if (($beanToCheck->$sField ?? null) != $sValue) {
                                 $match = false;
                                 break;
                             }
@@ -187,6 +195,10 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
         if ($bean === null) {
             // No duplicate, create a new one
             $bean = BeanFactory::newBean($module);
+            if (!$bean) {
+                return new ActionResult(ResultStatus::ERROR, $actionConfig, "Failed to create a new instance of the module '{$module}'.");
+            }
+            
             // Assign user if a default one is set
             if (!empty($context->defaultAssignedUserId)) {
                 $bean->assigned_user_id = $context->defaultAssignedUserId;
