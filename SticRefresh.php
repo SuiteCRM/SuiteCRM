@@ -63,6 +63,7 @@ global $moduleList, $current_language;
 return_application_language($current_language);
 
 foreach ($moduleList as $module) {
+    LanguageManager::clearLanguageCache($module);
     return_module_language($current_language, $module);
 }
 
