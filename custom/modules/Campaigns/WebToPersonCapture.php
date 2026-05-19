@@ -421,6 +421,8 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             // This patch gets rid of this function and uses the other provided redirection option, 
             // replacing GET method by POST.
             // STIC#670
+            // STIC-Custom 20260427 JBL - Config for redirection method in web forms (Lead or Person capture) (POST or GET)
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/1079
             // ------------------------------------------------------------
             // // Check if the headers have been sent, or if the redirect url is greater than 2083 characters (IE max URL length)
             // // and use a javascript form submission if that is the case.
@@ -445,8 +447,17 @@ if (isset($_POST['campaign_id']) && !empty($_POST['campaign_id'])) {
             //
             //     die();
             // }
+            $method = isset($sugar_config['stic_webFormsRedirectMethod']) ? $sugar_config['stic_webFormsRedirectMethod'] : 'POST';
+            if ($method !== 'POST' && $method !== 'GET') {
+                $method = 'POST';
+            }
+            if ($method === 'GET' && !headers_sent() && strlen($redirect_url) <= 2083) {
+                $header_URL = "Location: {$redirect_url}";
+                SugarApplication::headerRedirect($header_URL);
+                die();
+            }
             echo '<html ' . get_language_header() . '><head><title>SugarCRM</title></head><body>';
-            echo '<form name="redirect" action="' . $_POST['redirect_url'] . '" method="POST">';
+            echo '<form name="redirect" action="' . $_POST['redirect_url'] . '" method="' . $method . '">';
             foreach ($_POST as $param => $value) {
                 if ($param != 'redirect_url' || $param != 'submit') {
                     echo '<input type="hidden" name="' . $param . '" value="' . $value . '">';
