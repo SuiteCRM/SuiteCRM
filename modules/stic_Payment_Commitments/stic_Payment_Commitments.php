@@ -63,6 +63,8 @@ class stic_Payment_Commitments extends Basic
     public $in_kind_donation;
     public $banking_concept;
     public $destination;
+    // Flag to indicate the bean is being processed within an AWF context (not set via DB)
+    public $fromAWF = false;
 	
     public function __construct()
     {

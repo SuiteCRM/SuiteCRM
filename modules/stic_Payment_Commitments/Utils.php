@@ -267,6 +267,44 @@ class stic_Payment_CommitmentsUtils
     }
 
     /**
+     * Updates related Payments that lack Contact or Account relationships with the ones from the Payment Commitment.
+     * @param stic_Payment_Commitments $PCBean The Payment Commitment bean whose related Payments need to be updated.
+     */
+    public static function updatePaymentsWithoutRelationships($PCBean)
+    {
+        // Only execute when the bean has been explicitly marked as coming from AWF context
+        if ($PCBean->fromAWF !== true) {
+            return;
+        }
+
+        // If there is no related Contact or Account in the Payment Commitment return directly
+        if (empty($PCBean->stic_payment_commitments_contactscontacts_ida) && empty($PCBean->stic_payment_commitments_accountsaccounts_ida)) {
+            return;
+        }
+        // If there is no related Payment return directly
+        if (!$PCBean->load_relationship('stic_payments_stic_payment_commitments')) {
+            return;
+        }
+        $payments = $PCBean->stic_payments_stic_payment_commitments->getBeans();
+
+        foreach ($payments as $paymentBean) {
+            // Only update payments that have both Contact AND Account empty,
+            // as this indicates that they were created before the relationship was set in the Payment Commitment
+            if (!empty($paymentBean->stic_payments_contactscontacts_ida) || !empty($paymentBean->stic_payments_accountsaccounts_ida)) {
+                continue;
+            }
+
+            // Set the Contact and Account from the Payment Commitment relationships
+            $paymentBean->stic_payments_contactscontacts_ida = $PCBean->stic_payment_commitments_contactscontacts_ida;
+            $paymentBean->stic_payments_accountsaccounts_ida = $PCBean->stic_payment_commitments_accountsaccounts_ida;
+
+            // Reset the name to trigger its recalculation and save the Payment
+            $paymentBean->name = '';
+            $paymentBean->save();
+        }
+    }
+
+    /**
      * Recalculates all future payments for active payment commitments using SQL.
      *
      * This function updates the expected payments detail and pending annualized fee for all active payment commitments

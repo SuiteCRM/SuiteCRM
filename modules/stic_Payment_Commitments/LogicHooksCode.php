@@ -103,6 +103,8 @@ class stic_Payment_CommitmentsLogicHooks
             stic_Payment_CommitmentsUtils::createInitialPayments($bean);
         }
 
+        // Update related payments with missing Contact or Account with the ones from the Payment Commitment
+        stic_Payment_CommitmentsUtils::updatePaymentsWithoutRelationships($bean);
     }
 
 }
