@@ -192,8 +192,11 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                 $bean->assigned_user_id = $context->defaultAssignedUserId;
             }
             // Fill all bean fields
-            $modifications = $this->populateBean($bean, $block); 
-            $bean->save();
+            $modifications = $this->populateBean($bean, $block);
+            
+            // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
+            $bean->save(false); 
+            
             $modificationType = BeanModificationType::CREATED;
 
         } else {
@@ -207,14 +210,18 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                     // Overwrite all fields of the existing bean
                     $modifications = $this->populateBean($bean, $block);
                     $modificationType = BeanModificationType::UPDATED;
-                    $bean->save();
+                    
+                    // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
+                    $bean->save(false); 
                     break;
 
                 case OnDuplicateAction::ENRICH:
                     // Fill only empty fields of the existing bean
                     $modifications = $this->enrichBean($bean, $block); 
                     $modificationType = BeanModificationType::ENRICHED;
-                    $bean->save();
+
+                    // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
+                    $bean->save(false); 
                     break;
                 
                 case OnDuplicateAction::SKIP:
