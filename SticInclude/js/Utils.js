@@ -29,30 +29,6 @@ validateFunctions = {};
 validationDependencies = {};
 
 /**
- * Add parent css stylesheets to iframe wysiwyg fields (only in detail view)
- */
-function setStylesToWysywigIframe() {
-  if (viewType() == "detail") {
-    $("link[rel=stylesheet]").each(function () {
-      $(".detail-view-row-item iframe")
-        .contents()
-        .find("head")
-        .append(
-          $("<link>", {
-            rel: "stylesheet",
-            href: $(this).attr("href"),
-            type: "text/css"
-          })
-        );
-    });
-    // after (500ms) appends stylesheets, show the iframe element, previously hidden by css
-    setTimeout(() => {
-      $(".detail-view-row-item iframe").css("visibility", "visible");
-    }, 500);
-  }
-}
-
-/**
  *  Set specific class and text to fields that are not editable inline in detail and list views
  */
 function markNoInlineEdit() {
@@ -86,7 +62,6 @@ function runFunctionsAfterAjaxLoadEnd() {
     if (SUGAR_callsInProgress === 0) {
       validationDependenciesCheck();
       validateFunctionsInit();
-      setStylesToWysywigIframe();
       clearInterval(runIfViewIsFullRendered);
     }
   }, 200);

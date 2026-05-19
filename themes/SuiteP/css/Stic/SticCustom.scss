@@ -1186,6 +1186,29 @@ table.view th.depend-not-exist div:before {
   height: auto !important;
 }
 
+// Fix for text and wysiwyg fields in detail view, to set best spacing and list visibility
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/1113
+.detail-view-field[type="text"] .sugar_field,
+.detail-view-field[type="wysiwyg"] iframe {
+  p {
+    margin: 0 0 10px 0;
+  }
+  ul, ol {
+    margin-bottom: 10px;
+    padding-left: 30px;
+    list-style-position: outside;
+  }
+  ul {
+    list-style-type: disc;
+  }
+  ol {
+    list-style-type: decimal;
+  }
+  li {
+    list-style-type: inherit;
+  }
+}
+
 /* CONVERT LEADS FIXED */
 /* Textarea width */
 .panel-convert-lead textarea {
