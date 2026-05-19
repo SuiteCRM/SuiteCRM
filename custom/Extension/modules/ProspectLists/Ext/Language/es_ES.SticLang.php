@@ -49,4 +49,6 @@ $mod_strings['LBL_STIC_PROSPECT_LISTS_CONTACTS_NAME'] = 'Persona';
 $mod_strings['LBL_LPO_STIC_SIGNATURES_ALL_SIGNERS']     = 'Todos los firmantes'; 
 $mod_strings['LBL_LPO_STIC_SIGNATURES_PENDING_SIGNERS']  = 'Firmantes pendientes';
 $mod_strings['LBL_LPO_STIC_EVENTS_CONFIRMED_REGISTRATIONS'] = 'Inscripciones confirmadas';
+$mod_strings['LBL_LPO_STIC_JOB_OFFERS_ALL_APPLICANTS'] = 'Todas las candidaturas';
+$mod_strings['LBL_LPO_STIC_JOB_OFFERS_ACTIVE_APPLICANTS'] = 'Candidaturas activas';
 

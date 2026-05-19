@@ -126,7 +126,81 @@ class stic_Messages extends Basic
             $this->message = $processedText;
         }
 
-        $this->assigned_user_id = $current_user->id;
+        $assignedUserId = $current_user->id ?? '';
+
+        // For conversation messages, resolve the assignee from related records
+        if ($this->type === 'private_area') {
+            $contactId = '';
+            $conversationBean = null;
+
+            // If the message already points to a Contact, use it first
+            if ($this->parent_type === 'Contacts' && !empty($this->parent_id)) {
+                $contactId = $this->parent_id;
+            }
+
+            // Otherwise, try to get the Contact from the related conversation
+            if (empty($contactId) && !empty($this->stic_conversations_ida)) {
+                $conversationBean = BeanFactory::getBean('stic_Conversations', $this->stic_conversations_ida);
+                if (!empty($conversationBean) && !empty($conversationBean->id) && $conversationBean->load_relationship('contacts_stic_conversations')) {
+                    $contactIds = $conversationBean->contacts_stic_conversations->get();
+                    if (!empty($contactIds) && !empty($contactIds[0])) {
+                        $contactId = $contactIds[0];
+                    }
+                }
+            }
+
+            // If we have a Contact, assign the message to that Contact's assigned user
+            if (!empty($contactId)) {
+                $contactBean = BeanFactory::getBean('Contacts', $contactId);
+                if (!empty($contactBean) && !empty($contactBean->id) && !empty($contactBean->assigned_user_id)) {
+                    $assignedUserId = $contactBean->assigned_user_id;
+                }
+            }
+
+            // Ensure parent points to the resolved Contact for notifications
+            if (empty($this->parent_id) && !empty($contactId)) {
+                $this->parent_id = $contactId;
+            }
+
+            // Use the conversation assigned user
+            if (empty($assignedUserId) && !empty($this->stic_conversations_ida)) {
+                if (empty($conversationBean) || empty($conversationBean->id)) {
+                    $conversationBean = BeanFactory::getBean('stic_Conversations', $this->stic_conversations_ida);
+                }
+
+                if (!empty($conversationBean) && !empty($conversationBean->id) && !empty($conversationBean->assigned_user_id)) {
+                    $assignedUserId = $conversationBean->assigned_user_id;
+                }
+            }
+
+        }
+
+        // Apply the final assigned user to the message
+        if (!empty($assignedUserId)) {
+            $this->assigned_user_id = $assignedUserId;
+            // Ensure assigned_user_name is populated for notifications
+            if (empty($this->assigned_user_name)) {
+                $userBean = BeanFactory::getBean('Users', $assignedUserId);
+                if (!empty($userBean) && !empty($userBean->name)) {
+                    $this->assigned_user_name = $userBean->name;
+                }
+            }
+        }
+
+        // Conversation messages: set direction and sender
+        if ($this->type === 'private_area') {
+            if (empty($this->id) && empty($this->fetched_row['id'])) {
+                if ($this->direction === 'inbound') {
+                    $this->sender = 'sticpa';
+                } else {
+                    if (!empty($current_user->id)) {
+                        $this->sender = $current_user->name;
+                    }
+                    $this->direction = 'outbound';
+                }
+            }
+            $this->status = 'sent';
+        }
 
         // For WhatsAppWeb messages, set sender to assigned user name
         if ($this->type === 'WhatsAppWeb') {
@@ -146,6 +220,11 @@ class stic_Messages extends Basic
                 $response = array('code' => self::OK, 'message' => 'Sent via WhatsApp Web (client)');
                 $this->status = 'sent';
                 $this->response = $response['message'];
+                $this->sent_date = $GLOBALS['timedate']->nowDb();
+            } elseif ($this->type === 'private_area') {
+                // Conversation type is handled internally, without external provider
+                $this->status = 'sent';
+                $this->response = 'Conversation message saved';
                 $this->sent_date = $GLOBALS['timedate']->nowDb();
             } else {
             if (!empty($this->phone)){
@@ -167,8 +246,41 @@ class stic_Messages extends Basic
             }
         }
 
+        if ($this->type === 'private_area') {
+            $this->parent_type = 'Contacts';
+
+            // Store conversation subject on the bean for workflow notifications before save
+            if (empty($this->stic_conversations_subject) && !empty($this->stic_conversations_ida)) {
+                $convBean = BeanFactory::getBean('stic_Conversations', $this->stic_conversations_ida);
+                if (!empty($convBean) && !empty($convBean->id) && !empty($convBean->subject)) {
+                    $this->stic_conversations_subject = $convBean->subject;
+                }
+            }
+        }
         // Save the bean
         parent::save($check_notify);
+
+        // For conversation messages, ensure the M:M relationship is created in the join table
+        if ($this->type === 'private_area' && !empty($this->stic_conversations_ida)) {
+            $this->load_relationship('stic_conversations_stic_messages');
+            if (!empty($this->stic_conversations_stic_messages)) {
+                $this->stic_conversations_stic_messages->add($this->stic_conversations_ida);
+            }
+
+            // If conversation has no subject, use the message text as subject
+            $conversationId = is_array($this->stic_conversations_ida) ? reset($this->stic_conversations_ida) : $this->stic_conversations_ida;
+            if (!empty($conversationId)) {
+                $convBean = BeanFactory::getBean('stic_Conversations', $conversationId);
+                if (!empty($convBean) && !empty($convBean->id) && empty($convBean->subject)) {
+                    $cleanSubject = trim(strip_tags((string)$this->message));
+                    if ($cleanSubject !== '') {
+                        $convBean->subject = mb_substr($cleanSubject, 0, 60);
+                        $convBean->save();
+                    }
+                }
+            }
+        }
+
         return $this->id;
     }
 

@@ -21,10 +21,10 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 //prevents directly accessing this file from a web browser
-if (!defined('sugarEntry') || !sugarEntry) die ('Not A Valid Entry Point');
-if (! isset($hook_array) || ! is_array($hook_array)) {
-	$hook_array = Array();
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
 }
-$hook_version = 1;
 
-$hook_array['before_save'][] = Array(100, 'before_save', 'modules/stic_Job_Offers/LogicHooksCode.php', 'stic_Job_OffersLogicHooks', 'before_save');
+$hook_array['before_save'][] = array(100, 'before_save', 'modules/stic_Job_Offers/LogicHooksCode.php', 'stic_Job_OffersLogicHooks', 'before_save');
+// Notify candidates when the status of the job offer changes
+$hook_array['after_save'][] = array(100, 'after_save', 'modules/stic_Job_Offers/LogicHooksCode.php', 'stic_Job_OffersLogicHooks', 'after_save');

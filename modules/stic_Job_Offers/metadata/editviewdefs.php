@@ -62,6 +62,10 @@ array(
                     'newTab' => false,
                     'panelDefault' => 'expanded',
                 ),
+                'LBL_PANEL_NOTIFICATION_TEMPLATES' => array(
+                    'newTab' => false,
+                    'panelDefault' => 'expanded',
+                ),
             ),
             'syncDetailEditViews' => false,
         ),
@@ -97,7 +101,7 @@ array(
                         'label' => 'LBL_STATUS',
                     ),
                 ),
-                3 => array (
+                3  => array (
                     0 => 
                     array (
                         'name' => 'type',
@@ -201,6 +205,68 @@ array(
                 ),
                 11 => array (
                     0 => 'description',
+                ),
+            ),
+            'LBL_PANEL_NOTIFICATION_TEMPLATES' => array(
+                0 => array(
+                    0 => array(
+                        'name' => 'notification_status',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATIONS_STATUS',
+                    ),
+                    1 => '',
+                ),
+                1 => array(
+                    0 => array(
+                        'name' => 'notification_template_assigned_user',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_ASSIGNED_USER',
+                    ),
+                    1 => array(
+                        'name' => 'notification_template_candidates',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_CANDIDATES',
+                    ),
+                ),
+                2 => array(
+                    0 => array(
+                        'name' => 'notification_template_interlocutor',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_INTERLOCUTOR',
+                    ),
+                    1 => array(),
+                ),
+                3 => array(
+                    0 => array(
+                        'name' => 'notification_template_presented_interlocutor',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_INTERLOCUTOR_PRESENTED',
+                    ),
+                    1 => array(
+                        'name' => 'notification_template_accepted_interlocutor',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_INTERLOCUTOR_ACCEPTED',
+                    ),
+                ),
+                4 => array(
+                    0 => array(
+                        'name' => 'notification_template_rejected_interlocutor',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_INTERLOCUTOR_REJECTED',
+                    ),
+                    1 => array(),
+                ),
+                5 => array(
+                    0 => array(
+                        'name' => 'notification_template_cancelled_assigned_user',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_CANCELLED_ASSIGNED_USER',
+                    ),
+                    1 => array(
+                        'name' => 'notification_template_cancelled_interlocutor',
+                        'studio' => 'visible',
+                        'label' => 'LBL_NOTIFICATION_TEMPLATE_CANCELLED_INTERLOCUTOR',
+                    ),
                 ),
             ),
             'lbl_editview_panel5' => array(

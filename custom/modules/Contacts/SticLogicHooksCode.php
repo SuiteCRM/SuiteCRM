@@ -34,6 +34,11 @@ class ContactsLogicHooks {
             include_once 'modules/stic_Incorpora_Locations/Utils.php';
             stic_Incorpora_LocationsUtils::transferLocationData($bean);
         }
+
+        // This code is added to process Private Area logic hooks before save
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+        include_once 'SticInclude/SticPrivateAreaUtils.php';
+        SticPrivateAreaUtils::processBeforeSave($bean);
     }
 
     public function after_save(&$bean, $event, $arguments) {
@@ -53,6 +58,11 @@ class ContactsLogicHooks {
             include_once 'custom/modules/Contacts/SticUtils.php';
             ContactsUtils::generateCallFromReturnMailReason($bean);
         }
+        
+        // This code is added to process Private Area logic hooks after save
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+        include_once 'SticInclude/SticPrivateAreaUtils.php';
+        SticPrivateAreaUtils::processAfterSave($bean);
     }
 
     public function after_retrieve(&$bean, $event, $arguments) {

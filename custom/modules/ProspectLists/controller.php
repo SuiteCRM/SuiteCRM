@@ -27,6 +27,12 @@ class CustomProspectListsController extends SugarController
             $result = CustomLPOTypes::generateLPO($id, $type, $label);
         }
 
+        // For subpanel notifications, get all aplicants of the related offer
+        if ($result['status'] != 'success' && $module === 'stic_Job_Offers') {
+            require_once 'modules/stic_Job_Offers/Utils.php';
+            $result = stic_Job_OffersUtils::generateApplicantsLpo($id, $label, $type);
+        }
+
         // Fallback to standard LPO types if custom fails or does not exist
         if ($result['status'] != 'success' && file_exists("modules/{$module}/LPOTypes.php")) {
             require_once "modules/{$module}/LPOTypes.php";
@@ -51,6 +57,8 @@ class CustomProspectListsController extends SugarController
             'stic_Signatures__all_signers' => $mod_strings['LBL_LPO_STIC_SIGNATURES_ALL_SIGNERS'],
             'stic_Signatures__signers_pending' => $mod_strings['LBL_LPO_STIC_SIGNATURES_PENDING_SIGNERS'],
             'stic_Events__registrations_confirmed' => $mod_strings['LBL_LPO_STIC_EVENTS_CONFIRMED_REGISTRATIONS'],
+            'stic_Job_Offers__all_applicants' => $mod_strings['LBL_LPO_STIC_JOB_OFFERS_ALL_APPLICANTS'],
+            'stic_Job_Offers__active_applicants' => $mod_strings['LBL_LPO_STIC_JOB_OFFERS_ACTIVE_APPLICANTS'],
         ];
         echo json_encode($types);
         die();

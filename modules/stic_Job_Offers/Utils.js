@@ -124,6 +124,27 @@ switch (viewType()) {
     };
     createDetailViewButton(buttons.syncIncorpora);
 
+    // Show or hide the "Notifications enabled" field is inline editing
+    if (typeof window.handleSave === "function" && !window.sticJobOffersInlineSavePatched) {
+      window.sticJobOffersInlineSavePatched = true;
+      var originalHandleSave = window.handleSave;
+      window.handleSave = function(field, id, moduleName, type) {
+        if (moduleName === "stic_Job_Offers" && field === "notification_status" && type === "bool") {
+          var value = getInputValue(field, type);
+          if (typeof value === "undefined") {
+            value = "";
+          }
+          saveFieldHTML(field, moduleName, id, value, "");
+          var checked = (value === "on" || value === "1");
+          var outputValue = "<input name='checkbox_display' class='checkbox' type='checkbox' disabled " + (checked ? "CHECKED" : "") + ">";
+          setValueClose(outputValue, false);
+          return;
+        }
+
+        return originalHandleSave.apply(this, arguments);
+      };
+    }
+
     break;
   case "list":
     button = {

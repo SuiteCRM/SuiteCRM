@@ -80,6 +80,14 @@ array(
         'width' => '7%',
         'default' => true,
     ),
+    'STIC_CONVERSATIONS_STIC_MESSAGES_NAME' => array (
+        // 'type' => 'relate',
+        'link' => true,
+        'label' => 'LBL_STIC_CONVERSATIONS_STIC_MESSAGES',
+        'id' => 'STIC_CONVERSATIONS_IDA',
+        'width' => '10%',
+        'default' => true,
+    ),
     'SENDER' => array(
         'width' => '10%',
         'label' => 'LBL_SENDER',

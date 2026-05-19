@@ -188,3 +188,13 @@ $mod_strings['LBL_STIC_CURRENT_PROJECTS_CONTACTS_NAME'] = 'Current project';
 
 // Financial Products
 $mod_strings['LBL_STIC_FINANCIAL_PRODUCTS_CONTACTS_FROM_STIC_FINANCIAL_PRODUCTS_TITLE'] = 'Financial products';
+
+// Private Area Strings
+$mod_strings['LBL_STIC_PA_USERNAME'] = 'Private area user';
+$mod_strings['LBL_STIC_PA_PASSWORD'] = 'Private area password';
+$mod_strings['LBL_STIC_PA_ENABLE'] = 'Enable private area';
+$mod_strings['LBL_STIC_PA_ENABLE_HELP'] = 'In order for the contact to access the private area, this field must be checked. If not, it will not be possible to access it even if a username and password are available. When checking this field, if the setting <a href="index.php?module=stic_Settings&action=DetailView&record=f8b4a3a2-9f40-4c2e-9f8d-5e76a20f5d11" target="_blank">PRIVATEAREA_SEND_CREDENTIALS_ON_ENABLE</a> is enabled, the access credentials will be automatically sent to the contact. Otherwise, it will have to be done manually.';
+$mod_strings['LBL_STIC_PA_PASSWORD_HELP'] = 'To edit the password, the "Enable private area" field must be checked.';
+
+// Conversations
+$mod_strings['LBL_STIC_CONVERSATIONS_SUBPANEL_TITLE'] = 'Conversations';

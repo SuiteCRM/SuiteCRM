@@ -96,6 +96,9 @@ switch (viewType()) {
       }
     });
 
+    setupPrivateAreaPasswordField();
+    setupPrivateAreaFields();
+
     break;
 
   case "detail":
@@ -155,4 +158,111 @@ function onClickIncorporaSyncButton() {
   document.MassUpdate.action.value='fromMassUpdate';
   document.MassUpdate.module.value='stic_Incorpora';
   document.MassUpdate.submit();
+}
+
+/**
+ * Function to hide or show the placeholders and the value of the private area password field
+ */
+function privateAreaPasswordField() {
+  var field = document.getElementById("stic_pa_password_c");
+  if (!field) {
+    return;
+  }
+
+  var config = window.STIC && window.STIC.privateAreaPassword;
+  var isValueSet = field.getAttribute("data-is-value-set") === "true";
+  var hasRenderedPlaceholder = !!(field.getAttribute("placeholder") || "").trim();
+  var hasRenderedValue = !!field.value;
+  var hasStoredPassword =
+    (config && typeof config.hasStoredPassword === "boolean" ? config.hasStoredPassword : false) ||
+    isValueSet ||
+    hasRenderedPlaceholder ||
+    hasRenderedValue ||
+    field.getAttribute("data-stic-had-password") === "true";
+  field.setAttribute("data-stic-had-password", hasStoredPassword ? "true" : "false");
+  var currentPlaceholder = field.getAttribute("placeholder") || "";
+  var placeholder =
+    (config && config.placeholder) ||
+    SUGAR.language.get("app_strings", "LBL_PASSWORD_SET_NEW_VALUE_TO_RESET") ||
+    (SUGAR.language.languages &&
+      SUGAR.language.languages.app_strings &&
+      SUGAR.language.languages.app_strings.LBL_PASSWORD_SET_NEW_VALUE_TO_RESET) ||
+    currentPlaceholder;
+
+  if (field.type !== "password") {
+    try {
+      field.type = "password";
+    } catch (e) {
+      // Keep silent; some legacy browsers may throw here
+    }
+  }
+
+  field.value = "";
+  field.setAttribute("autocomplete", "new-password");
+
+  if (hasStoredPassword) {
+    field.setAttribute("placeholder", placeholder);
+  } else {
+    field.removeAttribute("placeholder");
+  }
+
+  var checkbox = document.getElementById('stic_pa_enable_c');
+  if (checkbox) {
+    field.disabled = !checkbox.checked;
+    if (!checkbox.checked) {
+      $(field).attr('readonly', true).css({'background-color': '#eeeeee', 'color': '#999999'});
+    } else {
+      $(field).removeAttr('readonly').css({'background-color': '', 'color': ''});
+    }
+  }
+}
+
+/**
+ * Function to setup the private area password field when the DOM is loaded and when the field is rendered in the form
+ */
+function setupPrivateAreaPasswordField() {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", privateAreaPasswordField);
+  } else {
+    privateAreaPasswordField();
+  }
+
+  var observer = new MutationObserver(function(mutations, obs) {
+    var field = document.getElementById("stic_pa_password_c");
+    if (field) {
+      privateAreaPasswordField();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
+/**
+ * Function to enable or disable private area password field based on stic_pa_enable_c
+ */
+function setupPrivateAreaFields() {
+  var checkbox = document.getElementById('stic_pa_enable_c');
+  var password = document.getElementById('stic_pa_password_c');
+
+  if (!checkbox || !password) {
+    return;
+  }
+
+  var togglePassword = function() {
+    var isEnabled = checkbox.checked;
+    password.disabled = !isEnabled;
+    if (!isEnabled) {
+      password.value = '';
+      password.removeAttribute('required');
+      $(password).attr('readonly', true).css({'background-color': '#eeeeee', 'color': '#999999'});
+    } else {
+      $(password).removeAttr('readonly').css({'background-color': '', 'color': ''});
+    }
+    if (typeof privateAreaPasswordField === 'function') {
+      privateAreaPasswordField();
+    }
+  };
+
+  togglePassword();
+  checkbox.addEventListener('change', togglePassword);
 }

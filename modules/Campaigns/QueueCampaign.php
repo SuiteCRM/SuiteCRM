@@ -191,7 +191,16 @@ if (!$test) {
 
 $return_module=isset($_REQUEST['return_module'])?$_REQUEST['return_module']:'Campaigns';
 $return_action=isset($_REQUEST['return_action'])?$_REQUEST['return_action']:'DetailView';
-$return_id=$_REQUEST['record'];
+// STIC-Custom 20260318 ART - Ensure QueueCampaign always receives the Campaign id
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+// $return_id=$_REQUEST['record'];
+$return_id=isset($_REQUEST['return_id'])?$_REQUEST['return_id']:$_REQUEST['record'];
+
+// Allow queue processing without redirect for logichook chained saves
+if (!empty($GLOBALS['stic_no_queue_redirect'])) {
+    return;
+}
+// END STIC-Custom
 
 if ($test) {
     //navigate to EmailManDelivery..

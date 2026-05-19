@@ -74,6 +74,7 @@ $moduleList[] = 'stic_Transactions';
 $moduleList[] = 'stic_Financial_Products';
 $moduleList[] = 'stic_Assets';
 $moduleList[] = 'stic_AWF_Forms';
+$moduleList[] = 'stic_Conversations';
 
 // Bean names for custom modules
 // Although they should be singular ModuleBuilder outputs them in plural and we keep them this way
@@ -138,7 +139,7 @@ $beanList['stic_AWF_Links'] = 'stic_AWF_Links';
 $beanList['stic_AWF_Response_Details'] = 'stic_AWF_Response_Details';
 $beanList['stic_AWF_Deferred_Tickets'] = 'stic_AWF_Deferred_Tickets';
 $beanList['stic_AWF_Incoming_Events'] = 'stic_AWF_Incoming_Events';
-
+$beanList['stic_Conversations'] = 'stic_Conversations';
 
 // Location of custom modules main class files
 $beanFiles['stic_Accounts_Relationships'] = 'modules/stic_Accounts_Relationships/stic_Accounts_Relationships.php';
@@ -202,6 +203,7 @@ $beanFiles['stic_AWF_Links'] = 'modules/stic_AWF_Links/stic_AWF_Links.php';
 $beanFiles['stic_AWF_Response_Details'] = 'modules/stic_AWF_Response_Details/stic_AWF_Response_Details.php';
 $beanFiles['stic_AWF_Deferred_Tickets'] = 'modules/stic_AWF_Deferred_Tickets/stic_AWF_Deferred_Tickets.php';
 $beanFiles['stic_AWF_Incoming_Events'] = 'modules/stic_AWF_Incoming_Events/stic_AWF_Incoming_Events.php';
+$beanFiles['stic_Conversations'] = 'modules/stic_Conversations/stic_Conversations.php';
 
 // Modules in $modInvisList are hidden in the main menu, in reporting and as subpanels
 $modInvisList[] = 'stic_Settings';

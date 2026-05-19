@@ -35,10 +35,29 @@ require_once('modules/stic_Messages/Utils.php');
 class SugarWidgetSubPanelEditMessagesButton extends SugarWidgetSubPanelTopButtonQuickCreate
 {
 
-    public function getWidgetId($buttonSuffix = true)
+    /**
+     * Function to get the label for the button based on the module, if the module is stic_Conversations it will return a different label than for the rest of modules
+      * @param string $moduleName The name of the module to get the label
+      * @return string The label for the button
+     */
+    protected function getButtonLabelByModule($moduleName)
     {
         global $app_strings;
-        $this->form_value = $app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'];
+
+        if ($moduleName === 'stic_Conversations' && !empty($app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'])) {
+            return $app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'];
+        }
+
+        return $app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'];
+    }
+
+    public function getWidgetId($buttonSuffix = true)
+    {
+        global $focus;
+
+        // Get the module name to determinate the label for the button
+        $moduleName = !empty($focus->module_name) ? $focus->module_name : '';
+        $this->form_value = $this->getButtonLabelByModule($moduleName);
         return parent::getWidgetId();
     }
 
@@ -49,18 +68,22 @@ class SugarWidgetSubPanelEditMessagesButton extends SugarWidgetSubPanelTopButton
 
         $bean = $defines['focus'];
 
-        $button = $app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'];
-        $accesskey = $app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'];
+        // Get the module name to determinate the label for the button
+        $button = $this->getButtonLabelByModule($bean->module_name ?? '');
 
-        $phone = stic_MessagesUtils::getPhoneForMessage($bean);
-        $name = stic_MessagesUtils::getNameFieldNameForMessage($bean->module_name);
+        $phone = '';
+        // Get the phone number to send the message, only if the module of the record has a phone field configured for messages
+        $messageableModules = stic_MessagesUtils::getMessageableModules();
+        if (!empty($bean->module_name) && in_array($bean->module_name, $messageableModules, true)) {
+            $phone = stic_MessagesUtils::getPhoneForMessage($bean);
+        }
 
         $jsonData = json_encode([
             'return_action' => 'DetailView',
         ]);
         $jsonData = str_replace("'", "\\'", $jsonData);
         $form = "<input type='button' name='button' id='custom_modal_button' class='button' 
-            title='{$button}' value='{$button}' accesskey='{$accesskey}'
+            title='{$button}' value='{$button}'
             onclick='openMessagesModal(this); return false;'
                  data-phone='{$phone}'
                  data-module='{$bean->module_name}'

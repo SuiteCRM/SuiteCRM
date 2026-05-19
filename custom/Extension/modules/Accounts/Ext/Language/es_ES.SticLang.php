@@ -182,3 +182,10 @@ $mod_strings['LBL_STIC_TRAINING_ACCOUNTS_FROM_STIC_TRAINING_TITLE'] = 'Formació
 
 // Cadenas Experiencia laboral
 $mod_strings['LBL_STIC_WORK_EXPERIENCE_ACCOUNTS_FROM_STIC_WORK_EXPERIENCE_TITLE'] = 'Experiencia laboral';
+
+// Cadenas Área Privada
+$mod_strings['LBL_STIC_PA_USERNAME'] = 'Usuario área privada';
+$mod_strings['LBL_STIC_PA_PASSWORD'] = 'Contraseña área privada';
+$mod_strings['LBL_STIC_PA_ENABLE'] = 'Activar área privada';
+$mod_strings['LBL_STIC_PA_ENABLE_HELP'] = 'Para que la organización pueda acceder al área privada es necesario que este campo esté marcado. Si no lo está, no se podrá acceder a ella aunque se disponga de nombre de usuario y contraseña. Al marcar este campo, si el parámetro de configuración <a href="index.php?module=stic_Settings&action=DetailView&record=f8b4a3a2-9f40-4c2e-9f8d-5e76a20f5d11" target="_blank">PRIVATEAREA_SEND_CREDENTIALS_ON_ENABLE</a> está activado, se enviarán automáticamente a la organización las credenciales de acceso. En caso contrario, será necesario hacerlo de forma manual.';
+$mod_strings['LBL_STIC_PA_PASSWORD_HELP'] = 'Para editar la contraseña es necesario que el campo "Activar área privada" esté marcado.';

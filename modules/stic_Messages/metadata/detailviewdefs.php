@@ -102,6 +102,15 @@ array(
                 ),
                 5 => array(
                     0 => array(
+                        'name' => 'new_conversation',
+                        'label' => 'LBL_NEW_CONVERSATION',
+                    ),
+                    1 => array (
+                        'name' => 'stic_conversations_stic_messages_name',
+                    ),
+                ),
+                6 => array(
+                    0 => array(
                         'name' => 'status',
                         'studio' => 'visible',
                         'label' => 'LBL_STATUS',
@@ -111,7 +120,7 @@ array(
                         'label' => 'LBL_SENT_DATE',
                     ),
                 ),
-                6 => array(
+                7 => array(
                     0 => array(
                         'name' => 'response',
                         'studio' => 'visible',

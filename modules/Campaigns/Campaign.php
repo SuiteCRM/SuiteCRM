@@ -369,6 +369,23 @@ class Campaign extends SugarBean
                 }
             }
         }
+
+        // STIC-Custom 20260318 ART - Check if queue processing is disabled to avoid redirection when saving from logic hooks
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+        $isFromJobOffers = (isset($_REQUEST['return_module']) && $_REQUEST['return_module'] == "stic_Job_Offers")
+            || (isset($_REQUEST['current_module']) && $_REQUEST['current_module'] == "stic_Job_Offers")
+            || $this->parent_type == 'stic_Job_Offers';
+
+        // Preserve original Job Offer id before $_REQUEST['record'] is overwritten with Campaign id
+        $jobOfferReturnId = '';
+        if ($isFromJobOffers) {
+            $jobOfferReturnId = !empty($_REQUEST['record']) ? $_REQUEST['record'] : $this->parent_id;
+        }
+
+        // Prevent warning when saving from logic hooks without start_date in REQUEST
+        $campaignStartDate = $_REQUEST['start_date'] ?? $this->start_date ?? '';
+        // END STIC Custom
+
         if ($isNewCampaign && $this->campaign_type == "Notification") {
             // Save or Update EmailMarketing record
             $emailMarketing = BeanFactory::newBean('EmailMarketing');
@@ -386,7 +403,11 @@ class Campaign extends SugarBean
             $emailMarketing->from_addr = $this->notification_from_addr;
             $emailMarketing->reply_to_name = $this->notification_reply_to_name;
             $emailMarketing->reply_to_addr = $this->notification_reply_to_addr;
-            $emailMarketing->date_start = $_REQUEST["start_date"];
+            // STIC-Custom 20260423 ART - Prevent warning when saving from logic hooks without start_date in REQUEST
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+            // $emailMarketing->date_start = $_REQUEST["start_date"];
+            $emailMarketing->date_start = $campaignStartDate;
+            // END STIC Custom
             $emailMarketing->status = 'active';
             $emailMarketing->all_prospect_lists = 1;
 
@@ -396,11 +417,27 @@ class Campaign extends SugarBean
             $_POST['mass'] = array(0 => $emailMarketingId);
             $_REQUEST['module'] = "Campaigns";
             $_REQUEST['record'] = $return_id;
-            $_REQUEST['return_action'] = "TrackDetailView";
-            $_REQUEST['return_module'] = "Campaigns";
-            $_REQUEST['return_id'] = $return_id;
             $_REQUEST['action'] = "QueueCampaign";
             $_REQUEST['campaign_id'] = $return_id;
+
+            // STIC-Custom 20260318 ART - Ensure QueueCampaign always receives the Campaign id
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+            // Don't change the REQUEST if is coming from Job Offers module
+            // $_REQUEST['return_action'] = "TrackDetailView";
+            // $_REQUEST['return_module'] = "Campaigns";
+            // $_REQUEST['return_id'] = $return_id;
+
+            // Preserve redirection to Job Offer detail when called from stic_Job_Offers.
+            if ($isFromJobOffers) {
+                $_REQUEST['return_action'] = "DetailView";
+                $_REQUEST['return_module'] = "stic_Job_Offers";
+                $_REQUEST['return_id'] = $jobOfferReturnId;
+            } else {
+                $_REQUEST['return_action'] = "TrackDetailView";
+                $_REQUEST['return_module'] = "Campaigns";
+                $_REQUEST['return_id'] = $return_id;
+            }
+            // END STIC Custom
 
             include_once("modules/Campaigns/QueueCampaign.php");
         }
@@ -419,7 +456,11 @@ class Campaign extends SugarBean
             // $messageMarketing->campaign_id = $return_id;
             $messageMarketing->template_id = $this->msg_notification_template_id;
             $messageMarketing->sender = $this->sender;
-            $messageMarketing->start_date_time = $_REQUEST["start_date"];
+            // STIC-Custom 20260423 ART - Prevent warning when saving from logic hooks without start_date in REQUEST
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+            // $messageMarketing->start_date_time = $_REQUEST["start_date"];
+            $messageMarketing->start_date_time = $campaignStartDate;
+            // END STIC Custom
             $messageMarketing->status = 'active';
             $messageMarketing->select_all = 1;
             $messageMarketing->type = $this->notification_message_type;
@@ -432,11 +473,26 @@ class Campaign extends SugarBean
             $_POST['mass'] = array(0 => $messageMarketingId);
             $_REQUEST['module'] = "Campaigns";
             $_REQUEST['record'] = $return_id;
-            $_REQUEST['return_action'] = "TrackDetailView";
-            $_REQUEST['return_module'] = "Campaigns";
-            $_REQUEST['return_id'] = $return_id;
             $_REQUEST['action'] = "QueueCampaign";
             $_REQUEST['campaign_id'] = $return_id;
+
+            // STIC-Custom 20260318 ART - Ensure QueueCampaign always receives the Campaign id
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+            // $_REQUEST['return_action'] = "TrackDetailView";
+            // $_REQUEST['return_module'] = "Campaigns";
+            // $_REQUEST['return_id'] = $return_id;
+            // Don't change the REQUEST if is coming from Job Offers module
+
+            if ($isFromJobOffers) {
+                $_REQUEST['return_action'] = "DetailView";
+                $_REQUEST['return_module'] = "stic_Job_Offers";
+                $_REQUEST['return_id'] = $jobOfferReturnId;
+            } else {
+                $_REQUEST['return_action'] = "TrackDetailView";
+                $_REQUEST['return_module'] = "Campaigns";
+                $_REQUEST['return_id'] = $return_id;
+            }
+            // END STIC Custom
 
             require_once("modules/stic_Message_Marketing/Utils.php");
             stic_Message_MarketingUtils::queueMessages($messageMarketingId);

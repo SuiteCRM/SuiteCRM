@@ -1,0 +1,6 @@
+SticUpdates/Migrations/20260217_enhancement_jobPortal.sql
+SticUpdates/Languages/ca/20260225_enhancement_jobportal_notifications.sql
+SticUpdates/Languages/en/20260225_enhancement_jobportal_notifications.sql
+SticUpdates/Languages/es/20260225_enhancement_jobportal_notifications.sql
+SticUpdates/Languages/gl/20260225_enhancement_jobportal_notifications.sql
+SticUpdates/Languages/eu/20260225_enhancement_jobportal_notifications.sql

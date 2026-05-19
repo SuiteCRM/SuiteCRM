@@ -42,6 +42,11 @@ class AccountsLogicHooks
             include_once 'custom/modules/Accounts/SticUtils.php';
             AccountsUtils::generateCallFromReturnMailReason($bean);
         }
+
+        // This code is added to process Private Area logic hooks after save
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+        include_once 'SticInclude/SticPrivateAreaUtils.php';
+        SticPrivateAreaUtils::processAfterSave($bean);
     }
 
     public function before_save(&$bean, $event, $arguments)
@@ -51,5 +56,10 @@ class AccountsLogicHooks
             include_once 'modules/stic_Incorpora_Locations/Utils.php';
             stic_Incorpora_LocationsUtils::transferLocationData($bean);
         }
+
+        // This code is added to process Private Area logic hooks before save
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/916
+        include_once 'SticInclude/SticPrivateAreaUtils.php';
+        SticPrivateAreaUtils::processBeforeSave($bean);
     }
 }

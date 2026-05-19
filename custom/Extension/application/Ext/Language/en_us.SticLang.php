@@ -108,6 +108,7 @@ $app_strings['LBL_TOO_MANY_RECORDS_SELECTED'] = 'The limit of messages that can 
 $app_strings['LBL_MASS_SENT_MESSAGE_BUTTON_TITTLE'] = 'Compose Message';
 $app_strings['LBL_NEW_NOTIFICATION'] = 'New notification by email';
 $app_strings['LBL_NEW_MSG_NOTIFICATION'] = 'New notification by message';
+$app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'] = 'Compose message (conversation)';
 
 // Mass emailing
 $app_strings['LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'] = 'Email sending will only apply to records on the current page. For mass emailing it is recommended to use the Campaigns module.';
@@ -184,6 +185,8 @@ $app_list_strings['moduleList']['stic_AWF_Links'] = 'Form Links';
 $app_list_strings['moduleList']['stic_AWF_Forms'] = 'Advanced Web Forms';
 $app_list_strings['moduleList']['stic_AWF_Deferred_Tickets'] = 'Form Deferred Tickets';
 $app_list_strings['moduleList']['stic_AWF_Incoming_Events'] = 'Form External Notifications';
+$app_list_strings['moduleList']['stic_Conversations'] = 'Conversations';
+
 $app_list_strings['moduleListSingular']['Accounts'] = 'Account';
 $app_list_strings['moduleListSingular']['Contacts'] = 'Contact';
 $app_list_strings['moduleListSingular']['Leads'] = 'Lead';
@@ -245,6 +248,8 @@ $app_list_strings['moduleListSingular']['stic_AWF_Links'] = 'Form Link';
 $app_list_strings['moduleListSingular']['stic_AWF_Forms'] = 'Advanced Web Form';
 $app_list_strings['moduleListSingular']['stic_AWF_Deferred_Tickets'] = 'Form Deferred Ticket';
 $app_list_strings['moduleListSingular']['stic_AWF_Incoming_Events'] = 'Form External Notification';
+$app_list_strings['moduleListSingular']['stic_Conversations'] = 'Conversation';
+
 $app_list_strings['parent_type_display']['Accounts'] = 'Accounts';
 $app_list_strings['parent_type_display']['Contacts'] = 'Contacts';
 $app_list_strings['parent_type_display']['Leads'] = 'Leads';
@@ -290,6 +295,7 @@ $app_list_strings['parent_type_display']['stic_Places'] = 'Places';
 $app_list_strings['parent_type_display']['stic_Transactions'] = 'Transactions';
 $app_list_strings['parent_type_display']['stic_Financial_Products'] = 'Financial Products';
 $app_list_strings['parent_type_display']['stic_Assets'] = 'Assets';
+$app_list_strings['parent_type_display']['stic_Conversations'] = 'Conversations';
 
 $app_list_strings['record_type_display']['Accounts'] = 'Accounts';
 $app_list_strings['record_type_display']['Contacts'] = 'Contacts';
@@ -338,6 +344,7 @@ $app_list_strings['record_type_display']['stic_Signers'] = 'Signers';
 $app_list_strings['record_type_display']['stic_Transactions'] = 'Transactions';
 $app_list_strings['record_type_display']['stic_Financial_Products'] = 'Financial Products';
 $app_list_strings['record_type_display']['stic_Assets'] = 'Assets';
+$app_list_strings['record_type_display']['stic_Conversations'] = 'Conversations';
 
 $app_list_strings['record_type_display_notes']['Accounts'] = 'Accounts';
 $app_list_strings['record_type_display_notes']['Contacts'] = 'Contacts';
@@ -386,10 +393,15 @@ $app_list_strings['record_type_display_notes']['stic_Signers'] = 'Signers';
 $app_list_strings['record_type_display_notes']['stic_Transactions'] = 'Transactions';
 $app_list_strings['record_type_display_notes']['stic_Financial_Products'] = 'Financial Products';
 $app_list_strings['record_type_display_notes']['stic_Assets'] = 'Assets';
+$app_list_strings['record_type_display_notes']['stic_Conversations'] = 'Conversations';
 
 $app_list_strings['parent_type_display_notifications']['Opportunities'] = 'Opportunities';
 $app_list_strings['parent_type_display_notifications']['stic_Events'] = 'Events';
 $app_list_strings['parent_type_display_notifications']['stic_Signatures'] = 'Signatures';
+$app_list_strings['parent_type_display_notifications']['stic_Job_Applications'] = 'Job applications';
+$app_list_strings['parent_type_display_notifications']['stic_Job_Offers'] = 'Job offers';
+$app_list_strings['parent_type_display_notifications']['stic_Conversations'] = 'Conversations';
+$app_list_strings['parent_type_display_notifications']['stic_Messages'] = 'Messages';
 
 // Categories for Target Lists dynamic creation 
 $app_list_strings['notification_auto_prospect_list_name_list'][''] = '';
@@ -1245,6 +1257,7 @@ $app_list_strings['stic_job_offers_status_list']['closed_covered'] = 'Closed (co
 $app_list_strings['stic_job_offers_status_list']['closed_partially_covered'] = 'Closed (partially covered)';
 $app_list_strings['stic_job_offers_status_list']['closed_not_covered'] = 'Closed (not covered)';
 $app_list_strings['stic_job_offers_status_list']['reopened'] = 'Reopened';
+$app_list_strings['stic_job_offers_status_list']['review'] = 'Under review';
 
 // Job offers: Origins
 $app_list_strings['stic_job_offer_origin_list'][''] = '';
@@ -1282,6 +1295,7 @@ $app_list_strings['stic_job_offers_temporalities_list']['temporary'] = 'Temporar
 // Job applications: Status
 $app_list_strings['stic_job_applications_status_list'][''] = '';
 $app_list_strings['stic_job_applications_status_list']['expected_presentation'] = 'Expected presentation';
+$app_list_strings['stic_job_applications_status_list']['review'] = 'Under review';
 $app_list_strings['stic_job_applications_status_list']['presented'] = 'Presented';
 $app_list_strings['stic_job_applications_status_list']['pending_interview'] = 'Pending interview';
 $app_list_strings['stic_job_applications_status_list']['interviewed'] = 'Interviewed';
@@ -3658,6 +3672,7 @@ $app_list_strings['stic_skills_evaluation_stages_list']['final'] = 'Final';
 // Messages: Type
 $app_list_strings['stic_messages_type_list']['SevenSmsHelper'] = 'SMS';
 $app_list_strings['stic_messages_type_list']['WhatsAppWeb'] = 'WhatsApp Web';
+$app_list_strings['stic_messages_type_list']['private_area'] = 'Private area';
 
 // Messages: Direction
 $app_list_strings['stic_messages_direction_list']['inbound'] = 'Inbound';
@@ -4046,6 +4061,11 @@ $app_list_strings['stic_awf_links_record_action_list']['enriched'] = 'Enriched';
 $app_list_strings['stic_awf_links_record_action_list']['skipped'] = 'Skipped';
 $app_list_strings['stic_awf_links_record_action_list']['metadata'] = 'Processed';
 $app_list_strings['stic_awf_links_record_action_list']['unchanged'] = 'Unchanged';
+
+// Conversations: Types
+$app_list_strings['stic_conversations_types_list'][''] = '';
+$app_list_strings['stic_conversations_types_list']['type1'] = 'Type 1';
+$app_list_strings['stic_conversations_types_list']['type2'] = 'Type 2';
 
 // SuiteCRM Core modifications
 

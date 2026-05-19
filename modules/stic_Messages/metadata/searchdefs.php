@@ -68,6 +68,15 @@ array(
                 'default' => true,
                 'name' => 'status',
             ),
+            'stic_conversations_stic_messages_name' => array(
+                'type' => 'relate',
+                'label' => 'LBL_STIC_CONVERSATIONS_STIC_MESSAGES',
+                'id' => 'STIC_CONVERSATIONS_IDA',
+                'link' => true,
+                'width' => '20%',
+                'default' => true,
+                'name' => 'stic_conversations_stic_messages_name',
+            ),
             'sent_date' => array(
                 'type' => 'datetime',
                 'label' => 'LBL_SENT_DATE',
@@ -160,6 +169,15 @@ array(
                 'default' => true,
                 'width' => '10%',
             ),
+            // 'stic_conversations_stic_messages_name' => array(
+            //     'type' => 'relate',
+            //     'label' => 'LBL_STIC_CONVERSATIONS_STIC_MESSAGES',
+            //     'id' => 'STIC_CONVERSATIONS_IDA',
+            //     'link' => true,
+            //     'width' => '20%',
+            //     'default' => true,
+            //     'name' => 'stic_conversations_stic_messages_name',
+            // ),
             'date_entered' => array(
                 'type' => 'datetime',
                 'label' => 'LBL_DATE_ENTERED',

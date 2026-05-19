@@ -54,4 +54,7 @@ INSERT INTO `stic_settings` (`id`, `date_entered`, `date_modified`, `modified_us
 ('d9f0118c-b752-444d-9057-456b18f9f360', NOW(), NOW(), '1', '1', 0, '1', 'SEVEN', 'SEVEN_API_KEY', '', 'Key to connect with to Seven, obtained from its control panel.'),
 ('c8d720bd-2c7b-47a6-98ce-9664529559ca', NOW(), NOW(), '1', '1', 0, '1', 'MESSAGES', 'MESSAGES_SENDER', '', 'Sender name that will be shown on sent messages.'),
 ('64b1554a-cf95-423b-ae78-7f75951f3976', NOW(), NOW(), '1', '1', 0, '1', 'MESSAGES', 'MESSAGES_LIMIT', '100', 'Maximum number of messages allowed in a bulk send.'),
-('e5a26eec-b326-11f0-b8b0-f2de65fe24cb', NOW(), NOW(), '1', '1', 0, '1', 'SEVEN', 'SEVEN_MESSAGES_BULK', '5000', 'Messages per hour on SMS campaigns.');
+('e5a26eec-b326-11f0-b8b0-f2de65fe24cb', NOW(), NOW(), '1', '1', 0, '1', 'SEVEN', 'SEVEN_MESSAGES_BULK', '5000', 'Messages per hour on SMS campaigns.'),
+('f8b4a3a2-9f40-4c2e-9f8d-5e76a20f5d11', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_SEND_CREDENTIALS_ON_ENABLE', '0', 'Indicates whether the Private Area credentials will be automatically sent when checking the "Activate Private Area" field in Contacts and Accounts modules (0 = No (default value), 1 = Yes).'),
+('4ef9497d-6511-4a87-9467-01ca8ac99f20', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_CREDENTIALS_TEMPLATE_CONTACTS', '6e6f5a91-2cb9-4f42-bf26-0a13b2f1c101', 'Notification email template ID used to send Private Area credentials for Contacts'),
+('8a2014ed-569d-44ad-b03a-f39420aa7ef6', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_CREDENTIALS_TEMPLATE_ACCOUNTS', '6e6f5a91-2cb9-4f42-bf26-0a13b2f1c102', 'Notification email template ID used to send Private Area credentials for Accounts');

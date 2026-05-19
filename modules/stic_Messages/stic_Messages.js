@@ -32,6 +32,10 @@ function onClickMassSendMessagesButton() {
 }
 
 function openMessagesModal(source, paramsJson = '{"return_action":"DetailView"}') {
+    if (source && typeof source.blur === 'function') {
+      source.blur();
+    }
+
     let numRecordsSelected = $(".selectedRecords.value").eq(0).text();
 
     if (numRecordsSelected > getMessagesLimit()) {
@@ -96,24 +100,102 @@ function openMessagesModal(source, paramsJson = '{"return_action":"DetailView"}'
         data: paramsPost,
         success: function(data) {
         var panelBody = $('<div class="content">').append(data).find('#EditView').parent();
+        // Check if we are in the context of the Conversations subpanel to apply some defaults to the compose view
+        var sourceModule = $(source).attr('data-module') || '';
+        var isConversationsMessagesSubpanel =
+          paramsPost.relatedModule === 'stic_Conversations'
+          && (
+            sourceModule === 'stic_Conversations'
+            || $(source).closest('#whole_subpanel_stic_conversations_stic_messages').length > 0
+          );
+
+        function applyConversationSubpanelModalDefaults($panel) {
+          if (!isConversationsMessagesSubpanel) {
+            return;
+          }
+
+          var $form = $panel.find('#EditView');
+          if (!$form.length) {
+            return;
+          }
+
+          var conversationId = $(source).attr('data-record-id') || paramsPost.relatedId || '';
+          var conversationName = $(source).attr('data-name') || '';
+
+          if (conversationId) {
+            $form.find('#stic_conversations_ida').val(conversationId);
+          }
+          if (conversationName) {
+            $form.find('#stic_conversations_stic_messages_name').val(conversationName);
+          }
+
+          if (typeof initSubpanelConversationLogic === 'function') {
+            initSubpanelConversationLogic($form);
+          }
+        }
+
+        // Hide conversation type when context module is not Contacts
+        function applyConversationTypeVisibilityByModule($panel, moduleName) {
+          if (moduleName === 'Contacts' || moduleName === 'stic_Conversations') {
+            return;
+          }
+
+          var $typeSelect = $panel.find('select[name="type"]');
+          if (!$typeSelect.length) {
+            return;
+          }
+
+          var $conversationOption = $typeSelect.find('option[value="conversation"]');
+          if (!$conversationOption.length) {
+            return;
+          }
+
+          if ($typeSelect.val() === 'private_area') {
+            var fallbackValue = '';
+            $typeSelect.find('option').each(function () {
+              var value = $(this).val();
+              if (value !== 'private_area') {
+                fallbackValue = value;
+                return false;
+              }
+            });
+
+            if (fallbackValue) {
+              $typeSelect.val(fallbackValue).trigger('change');
+            }
+          }
+
+          $conversationOption.remove();
+        }
+
+        applyConversationTypeVisibilityByModule(panelBody, paramsPost.relatedModule);
+
         var dataPhone = $(source).attr('data-phone');
         var dataName = $(source).attr('data-name');
         // If the attribute data-record-id is present, then we come from subpanel, else we come from mass send or Edit View.
           var dataRecordId = $(source).attr('data-record-id');
-        if (typeof dataRecordId !== 'undefined' && dataRecordId !== '') {
+        if (typeof dataRecordId !== 'undefined' && dataRecordId !== '' && !isConversationsMessagesSubpanel) {
           panelBody.find('#phone').val(dataPhone);
           panelBody.find('#parent_name').val(dataName);
         }
-        else {
+        else if (typeof dataRecordId === 'undefined' || dataRecordId === '') {
           // Mass send messages
           phoneList = '';
           namesList = '';
           idsList = '';
           targetCount = 0;
+          totalRecords = 0;
+          singleRecordName = '';
+          singleRecordId = '';
           panelBody.find('.phone-compose-view-to-list').each(function () {
             dataPhone = $(this).attr('data-record-phone');
             dataId = $(this).attr('data-record-id');
             dataName = $(this).attr('data-record-name');
+            totalRecords++;
+            if (totalRecords === 1) {
+              singleRecordName = dataName;
+              singleRecordId = dataId;
+            }
             if (dataPhone !== '') {
               if (targetCount > 0 ){
                 phoneList += ',';
@@ -127,6 +209,12 @@ function openMessagesModal(source, paramsJson = '{"return_action":"DetailView"}'
             }
           });
           panelBody.find('#phone').val(phoneList);
+          if (totalRecords === 1) {
+            setTimeout(function() {
+              panelBody.find('#parent_name').val(singleRecordName);
+              panelBody.find('#parent_id').val(singleRecordId);
+            }, 200);
+          }
           function replacePhoneField(panelBody) {
             var originalPhone = panelBody.find('#phone');
             if (!originalPhone) return; // Exit if the original phone input doesn't exist
@@ -159,12 +247,35 @@ function openMessagesModal(source, paramsJson = '{"return_action":"DetailView"}'
         }
           SUGAR.ajaxUI.hideLoadingPanel();
 
-          $('<div>').append(panelBody).dialog({
+          var $dialogWrapper = $('<div>').append(panelBody).dialog({
               modal: true,
               // title: SUGAR.language.get(buttonModule, 'LBL_NEW_FORM_TITLE'),
               title: '',
               width: '80%',
+              open: function() {
+                // Focus message field when modal is opened
+                var focusMessageField = function() {
+                  var $messageField = $dialogWrapper.find('#message');
+                  if ($messageField.length) {
+                    $messageField.trigger('focus');
+                  }
+                };
+
+                setTimeout(focusMessageField, 0);
+                $(window).off('focus.sticMessagesModal').on('focus.sticMessagesModal', function() {
+                  setTimeout(focusMessageField, 0);
+                });
+              },
+              close: function() {
+                $(window).off('focus.sticMessagesModal');
+              }
           });
+          // If the modal is opened from the Conversations subpanel, we need to apply some defaults and hide some fields
+          if (isConversationsMessagesSubpanel) {
+            setTimeout(function() {
+              applyConversationSubpanelModalDefaults($dialogWrapper);
+            }, 0);
+          }
           if (typeof namesList !== 'undefined') {
             $('#namesList').val(namesList);
           }

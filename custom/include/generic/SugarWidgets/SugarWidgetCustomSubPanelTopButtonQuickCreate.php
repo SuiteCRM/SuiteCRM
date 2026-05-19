@@ -75,6 +75,14 @@ class SugarWidgetCustomSubPanelTopButtonQuickCreate extends SugarWidgetField
         <input type="hidden" name="return_name" value="'.$defines['focus']->name.'">
 		<input title="'.$labelText.'" accesskey="N" class="button" type="submit" name="'.$unique_id.'_quickedit_button" id="'.$unique_id.'_quickedit_button" value="'.$labelText.'">';
 
+        if ($module_name === 'Campaigns' && !empty($defines['additional_form_fields']['campaign_type'])) {
+            $campaignType = $defines['additional_form_fields']['campaign_type'];
+            if ($campaignType === 'Notification' || $campaignType === 'NotifMsg') {
+                $html .= '<input type="hidden" name="relate_to" value="getNotificationsFromParent" />' . "\n";
+                $html .= '<input type="hidden" name="relate_id" value="' . $return_id . '" />' . "\n";
+            }
+        }
+
         foreach ($defines['additional_form_fields'] as $key => $value) {
             if ($key != 'action') {
                 $html .= '<input type="hidden" name="' . $key . '" value=\'' . $value . '\' />' . "\n";

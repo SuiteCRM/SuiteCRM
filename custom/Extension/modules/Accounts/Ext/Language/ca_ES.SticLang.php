@@ -76,10 +76,10 @@ $mod_strings['LBL_STIC_PAYMENT_COMMITMENTS_ACCOUNTS_FROM_STIC_PAYMENT_COMMITMENT
 $mod_strings['LBL_STIC_PAYMENT_COMMITMENTS_ACCOUNTS_1_FROM_STIC_PAYMENT_COMMITMENTS_TITLE'] = "Compromisos de Pagament en què l'organització és la destinatària";
 $mod_strings['LBL_STIC_ACCOUNTS_RELATIONSHIPS_ACCOUNTS_FROM_STIC_ACCOUNTS_RELATIONSHIPS_TITLE'] = 'Relacions amb Organitzacions';
 $mod_strings['LBL_STIC_REGISTRATIONS_ACCOUNTS_FROM_STIC_REGISTRATIONS_TITLE'] = 'Inscripcions';
+$mod_strings['LBL_STIC_PROSPECT_LISTS_SUBPANEL_TITLE'] = 'Llistes de Públic Objectiu';
 $mod_strings['LBL_ACCOUNT_IDENTIFICATION_NUMBER_ERROR'] = "El número d'identificació no és correcte. Cal que sigui un NIF de persona jurídica vàlid.";
 $mod_strings['LBL_STIC_PERSONAL_ENVIRONMENT_ACCOUNTS_FROM_STIC_PERSONAL_ENVIRONMENT_TITLE'] = "Relacions d'entorn personal de les quals l'organització forma part";
 $mod_strings['LBL_STIC_CENTERS_ACCOUNTS_FROM_STIC_CENTERS_TITLE'] = 'Centres';
-
 
 // Cadenes Inserció Laboral
 $mod_strings['LBL_STIC_PANEL_INCORPORA'] = 'Incorpora';
@@ -163,7 +163,6 @@ $mod_strings['LBL_MODULE_TITLE'] = 'Organitzacions: Inici';
 $mod_strings['LBL_MODULE_ID'] = 'Organitzacions';
 $mod_strings['LBL_NEW_FORM_TITLE'] = 'Nova Organització';
 $mod_strings['LBL_OPPORTUNITIES_SUBPANEL_TITLE'] = 'Subvencions';
-$mod_strings['LBL_STIC_PROSPECT_LISTS_SUBPANEL_TITLE'] = 'Llistes de Públic Objectiu';
 $mod_strings['LBL_PARENT_ACCOUNT_ID'] = "ID de l'Organització pare";
 $mod_strings['LBL_PUSH_CONTACTS_BUTTON_LABEL'] = 'Copia a Persones';
 $mod_strings['LBL_SAVE_ACCOUNT'] = "Desa l'Organització";
@@ -184,3 +183,9 @@ $mod_strings['LBL_STIC_TRAINING_ACCOUNTS_FROM_STIC_TRAINING_TITLE'] = 'Formació
 // Cadenes Experiència laboral
 $mod_strings['LBL_STIC_WORK_EXPERIENCE_ACCOUNTS_FROM_STIC_WORK_EXPERIENCE_TITLE'] = 'Experiència laboral';
 
+// Cadenes Àrea Privada
+$mod_strings['LBL_STIC_PA_USERNAME'] = "Usuari de l'àrea privada";
+$mod_strings['LBL_STIC_PA_PASSWORD'] = "Contrasenya de l'àrea privada";
+$mod_strings['LBL_STIC_PA_ENABLE'] = "Activa l'àrea privada";
+$mod_strings['LBL_STIC_PA_ENABLE_HELP'] = "Per tal que l'organització pugui accedir a l'àrea privada cal que aquest camp estigui marcat. Si no ho està, no s'hi podrà accedir encara que es disposi de nom d'usuari i contrasenya. En marcar aquest camp, si el paràmetre de configuració <a href='index.php?module=stic_Settings&action=DetailView&record=f8b4a3a2-9f40-4c2e-9f8d-5e76a20f5d11' target='_blank'>PRIVATEAREA_SEND_CREDENTIALS_ON_ENABLE</a> està activat, s'enviaran automàticament a l'organització les credencials d'accés. En cas contrari, caldrà fer-ho de forma manual.";
+$mod_strings['LBL_STIC_PA_PASSWORD_HELP'] = "Per tal de poder editar la contrasenya cal que el camp 'Activa l'àrea privada' estigui marcat.";

@@ -32,5 +32,38 @@ class stic_Job_OffersLogicHooks
             include_once 'modules/stic_Incorpora_Locations/Utils.php';
             stic_Incorpora_LocationsUtils::transferLocationData($bean);
         }
+
+        // Check if status is changing and store previous status
+        if (!empty($bean->id)) {
+            $hasFetchedStatus = isset($bean->fetched_row)
+                && is_array($bean->fetched_row)
+                && array_key_exists('status', $bean->fetched_row);
+            $previousStatus = $hasFetchedStatus ? $bean->fetched_row['status'] : null;
+            if (!$hasFetchedStatus) {
+                $storedBean = BeanFactory::getBean('stic_Job_Offers', $bean->id);
+                if (!empty($storedBean) && !empty($storedBean->id)) {
+                    $previousStatus = $storedBean->status ?? null;
+                }
+            }
+            // Store previous status in bean for use in after_save
+            $bean->_previous_status = $previousStatus;
+        }
+    }
+
+    /**
+     * Notify when the status of the job offer changes
+     *
+     * @param SugarBean $bean The stic_Job_Offers bean
+     * @param string $event The hook event
+     * @param array $arguments Additional arguments
+     */
+    public function after_save(&$bean, $event, $arguments)
+    {
+        if (empty($bean->id)) {
+            return;
+        }
+
+        require_once 'modules/stic_Job_Offers/Utils.php';
+        stic_Job_OffersUtils::notifyStatusChange($bean);
     }
 }

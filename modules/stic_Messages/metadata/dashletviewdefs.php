@@ -45,6 +45,10 @@ $dashletData['stic_MessagesDashlet']['searchFields'] = array(
     'assigned_user_id' => array(
         'default' => '',
     ),
+    'stic_conversations_stic_messages_name' => 
+    array (
+      'default' => '',
+    ),
 );
 $dashletData['stic_MessagesDashlet']['columns'] = array(
     'name' => array(
@@ -82,6 +86,15 @@ $dashletData['stic_MessagesDashlet']['columns'] = array(
         'sortable' => true,
         'default' => false,
         'name' => 'direction',
+    ),
+    'stic_conversations_stic_messages_name' => 
+    array (
+      'type' => 'relate',
+      'link' => true,
+      'label' => 'LBL_STIC_CONVERSATIONS_STIC_MESSAGES',
+      'id' => 'STIC_CONVERSATIONS_IDA',
+      'width' => '10%',
+      'default' => true,
     ),
     'template' => array(
         'type' => 'relate',

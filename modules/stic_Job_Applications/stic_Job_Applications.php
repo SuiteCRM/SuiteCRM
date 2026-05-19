@@ -65,7 +65,8 @@ class stic_Job_Applications extends Basic
         }
         return false;
     }
-	public function save($check_notify = true) 
+
+    public function save($check_notify = false) 
     {
         // Call the generic save() function from the SugarBean class
         if (empty($this->name)) {
@@ -81,8 +82,15 @@ class stic_Job_Applications extends Basic
         }
         
         $offerBean = BeanFactory::getBean('stic_Job_Offers', $this->stic_job_applications_stic_job_offersstic_job_offers_ida);
-        // If it is a new record and it relates to a volunteering offer, the assigned user of the offer is indicated in the job application.
-        if (!empty($offerBean) && ($offerBean->offer_type == 'volunteering') &&
+
+        if (empty($offerBean) || empty($offerBean->id)) {
+            $offerId = $this->getRelatedOfferId();
+            if (!empty($offerId)) {
+                $offerBean = BeanFactory::getBean('stic_Job_Offers', $offerId);
+            }
+        }
+        // If it is a new record, the assigned user of the offer is indicated in the job application
+        if (!empty($offerBean) &&
             $this->assigned_user_id != $offerBean->assigned_user_id) {
             $this->assigned_user_id = $offerBean->assigned_user_id;
         }
@@ -135,5 +143,44 @@ class stic_Job_Applications extends Basic
                 $relationshipBean->save();
             }
         }
+    }
+
+    /**
+     * Get related offer ID
+     *
+     * @return string
+     */
+    protected function getRelatedOfferId()
+    {
+        $rawOfferId = $this->stic_job_applications_stic_job_offersstic_job_offers_ida ?? '';
+        if (!is_object($rawOfferId) && !empty($rawOfferId)) {
+            return (string)$rawOfferId;
+        }
+
+        $requestOfferId = (string)($_REQUEST['stic_job_applications_stic_job_offersstic_job_offers_ida'] ?? '');
+        if (!empty($requestOfferId)) {
+            return $requestOfferId;
+        }
+
+        $fetchedOfferId = (string)($this->fetched_row['stic_job_applications_stic_job_offersstic_job_offers_ida'] ?? '');
+        if (!empty($fetchedOfferId)) {
+            return $fetchedOfferId;
+        }
+
+        if (empty($this->id)) {
+            return '';
+        }
+
+        global $db;
+        $applicationId = $db->quote((string)$this->id);
+        $query = "SELECT rel.stic_job_applications_stic_job_offersstic_job_offers_ida AS offer_id
+            FROM stic_job_applications_stic_job_offers_c rel
+            WHERE rel.deleted = 0
+              AND rel.stic_job_applications_stic_job_offersstic_job_applications_idb = '{$applicationId}'
+            ORDER BY rel.date_modified DESC
+            LIMIT 1";
+        $row = $db->fetchByAssoc($db->query($query));
+
+        return (string)($row['offer_id'] ?? '');
     }
 }

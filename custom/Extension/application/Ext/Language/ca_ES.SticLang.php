@@ -101,12 +101,13 @@ $app_strings['LBL_STIC_VIDEOS_LINK'] = 'Vídeos de SinergiaCRM';
 $app_strings['LBL_STIC_SINERGIADA'] = 'SinergiaDA';
 
 // Missatges: accions en mòduls de destinataris
-$app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'] = 'Envia un missatge telefònic';
+$app_strings['LBL_SUBPANEL_NEW_MESSAGE_LABEL'] = 'Envia un missatge';
 $app_strings['LBL_CONFIRM_APPLY_MESSAGES_TEMPLATE_BODY'] = 'Aquesta operació esborrarà el contingut del missatge. Segur que voleu continuar?';
 $app_strings['LBL_TOO_MANY_RECORDS_SELECTED'] = "S'ha sobrepassat el límit de missatges que es poden enviar simultàniament.";
 $app_strings['LBL_MASS_SENT_MESSAGE_BUTTON_TITTLE'] = 'Envia un missatge telefònic';
 $app_strings['LBL_NEW_NOTIFICATION'] = 'Nova notificació per correu';
 $app_strings['LBL_NEW_MSG_NOTIFICATION'] = 'Nova notificació per missatge telefònic';
+$app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'] = 'Envia un missatge (conversa)';
 
 // Enviament massiu de correus
 $app_strings['LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'] = "L'enviament només s'aplicarà als registres de la pàgina actual. Per als enviaments massius es recomana fer servir el mòdul Campanyes.";
@@ -183,6 +184,8 @@ $app_list_strings['moduleList']['stic_AWF_Links'] = 'Enllaços de formularis';
 $app_list_strings['moduleList']['stic_AWF_Forms'] = 'Formularis Web Avançats';
 $app_list_strings['moduleList']['stic_AWF_Deferred_Tickets'] = 'Processos en espera de formularis';
 $app_list_strings['moduleList']['stic_AWF_Incoming_Events'] = 'Notificacions externes de formularis';
+$app_list_strings['moduleList']['stic_Conversations'] = 'Converses';
+
 $app_list_strings['moduleListSingular']['Accounts'] = 'Organització';
 $app_list_strings['moduleListSingular']['Contacts'] = 'Persona';
 $app_list_strings['moduleListSingular']['Leads'] = 'Interessat';
@@ -246,6 +249,8 @@ $app_list_strings['moduleListSingular']['stic_AWF_Links'] = 'Enllaç de formular
 $app_list_strings['moduleListSingular']['stic_AWF_Forms'] = 'Formulari Web Avançat';
 $app_list_strings['moduleListSingular']['stic_AWF_Deferred_Tickets'] = 'Procés en espera de formulari';
 $app_list_strings['moduleListSingular']['stic_AWF_Incoming_Events'] = 'Notificació externa de formulari';
+$app_list_strings['moduleListSingular']['stic_Conversations'] = 'Conversa';
+
 $app_list_strings['parent_type_display']['Accounts'] = 'Organitzacions';
 $app_list_strings['parent_type_display']['Contacts'] = 'Persones';
 $app_list_strings['parent_type_display']['Leads'] = 'Interessats';
@@ -291,6 +296,7 @@ $app_list_strings['parent_type_display']['stic_Places'] = 'Places';
 $app_list_strings['parent_type_display']['stic_Transactions'] = 'Transaccions';
 $app_list_strings['parent_type_display']['stic_Financial_Products'] = 'Productes financers';
 $app_list_strings['parent_type_display']['stic_Assets'] = 'Actius';
+$app_list_strings['parent_type_display']['stic_Conversations'] = 'Converses';
 
 $app_list_strings['record_type_display']['Accounts'] = 'Organitzacions';
 $app_list_strings['record_type_display']['Contacts'] = 'Persones';
@@ -339,6 +345,7 @@ $app_list_strings['record_type_display']['stic_Signers'] = 'Firmants';
 $app_list_strings['record_type_display']['stic_Transactions'] = 'Transaccions';
 $app_list_strings['record_type_display']['stic_Financial_Products'] = 'Productes financers';
 $app_list_strings['record_type_display']['stic_Assets'] = 'Actius';
+$app_list_strings['record_type_display']['stic_Conversations'] = 'Converses';
 
 $app_list_strings['record_type_display_notes']['Accounts'] = 'Organitzacions';
 $app_list_strings['record_type_display_notes']['Contacts'] = 'Persones';
@@ -387,10 +394,15 @@ $app_list_strings['record_type_display_notes']['stic_Signers'] = 'Firmants';
 $app_list_strings['record_type_display_notes']['stic_Transactions'] = 'Transaccions';
 $app_list_strings['record_type_display_notes']['stic_Financial_Products'] = 'Productes financers';
 $app_list_strings['record_type_display_notes']['stic_Assets'] = 'Actius';
+$app_list_strings['record_type_display_notes']['stic_Conversations'] = 'Converses';
 
 $app_list_strings['parent_type_display_notifications']['Opportunities'] = 'Subvencions';
 $app_list_strings['parent_type_display_notifications']['stic_Events'] = 'Esdeveniments';
 $app_list_strings['parent_type_display_notifications']['stic_Signatures'] = 'Firmes';
+$app_list_strings['parent_type_display_notifications']['stic_Job_Applications'] = 'Candidatures';
+$app_list_strings['parent_type_display_notifications']['stic_Job_Offers'] = 'Ofertes laborals';
+$app_list_strings['parent_type_display_notifications']['stic_Conversations'] = 'Converses';
+$app_list_strings['parent_type_display_notifications']['stic_Messages'] = 'Missatges';
 
 // Creació dinàmica de Llistes de públic objectiu
 $app_list_strings['notification_auto_prospect_list_name_list'][''] = '';
@@ -1246,6 +1258,7 @@ $app_list_strings['stic_job_offers_status_list']['closed_covered'] = 'Tancada (c
 $app_list_strings['stic_job_offers_status_list']['closed_partially_covered'] = 'Tancada (coberta parcialment)';
 $app_list_strings['stic_job_offers_status_list']['closed_not_covered'] = 'Tancada (no coberta)';
 $app_list_strings['stic_job_offers_status_list']['reopened'] = 'Reoberta';
+$app_list_strings['stic_job_offers_status_list']['review'] = 'En revisió';
 
 // Ofertes laborals: Orígens
 $app_list_strings['stic_job_offer_origin_list'][''] = '';
@@ -1283,6 +1296,7 @@ $app_list_strings['stic_job_offers_temporalities_list']['temporary'] = 'Temporal
 // Candidatures: Estats
 $app_list_strings['stic_job_applications_status_list'][''] = '';
 $app_list_strings['stic_job_applications_status_list']['expected_presentation'] = 'Prevista presentació';
+$app_list_strings['stic_job_applications_status_list']['review'] = 'En revisió';
 $app_list_strings['stic_job_applications_status_list']['presented'] = 'Presentada';
 $app_list_strings['stic_job_applications_status_list']['pending_interview'] = 'Pendent entrevista';
 $app_list_strings['stic_job_applications_status_list']['interviewed'] = 'Entrevistada';
@@ -3659,6 +3673,7 @@ $app_list_strings['stic_skills_evaluation_stages_list']['final'] = 'Final';
 // Missatges: Tipus
 $app_list_strings['stic_messages_type_list']['SevenSmsHelper'] = 'SMS';
 $app_list_strings['stic_messages_type_list']['WhatsAppWeb'] = 'WhatsApp Web';
+$app_list_strings['stic_messages_type_list']['private_area'] = 'Àrea privada';
 
 // Missatges: Direcció
 $app_list_strings['stic_messages_direction_list']['inbound'] = 'Entrada';
@@ -4047,6 +4062,11 @@ $app_list_strings['stic_awf_links_record_action_list']['enriched'] = 'Ampliat';
 $app_list_strings['stic_awf_links_record_action_list']['skipped'] = 'Ignorat';
 $app_list_strings['stic_awf_links_record_action_list']['metadata'] = 'Tractat';
 $app_list_strings['stic_awf_links_record_action_list']['unchanged'] = 'Sense canvis';
+
+// Converses: Tipus
+$app_list_strings['stic_conversations_types_list'][''] = '';
+$app_list_strings['stic_conversations_types_list']['type1'] = 'Tipus 1';
+$app_list_strings['stic_conversations_types_list']['type2'] = 'Tipus 2';
 
 // Modificacions del core de SuiteCRM
 

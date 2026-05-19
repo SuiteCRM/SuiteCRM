@@ -107,4 +107,38 @@ class ContactsUtils
             $callBean->save();
         }
     }
+
+    /**
+     * Remove AP password field from DetailView layout definitions
+     *
+     * @param array $detailDefs
+     * @return void
+     */
+    public static function removePrivateAreaPasswordFromDetailDefs(&$detailDefs)
+    {
+        if (empty($detailDefs['panels']) || !is_array($detailDefs['panels'])) {
+            return;
+        }
+
+        foreach ($detailDefs['panels'] as &$panelRows) {
+            if (!is_array($panelRows)) {
+                continue;
+            }
+
+            foreach ($panelRows as &$row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+
+                foreach ($row as $index => $cell) {
+                    $fieldName = is_array($cell) ? ($cell['name'] ?? '') : $cell;
+                    if ($fieldName === 'stic_pa_password_c') {
+                        $row[$index] = array(); // Set to empty string instead of unsetting to avoid issues with array keys in the layout definitions
+                    }
+                }
+
+                $row = array_values($row);
+            }
+        }
+    }
 }

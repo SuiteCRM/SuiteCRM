@@ -1,10 +1,10 @@
 @font-face {
     font-family: "suitepicon";
-    src: url("suitepicon.eot?d9a2f8dfd9b423237a20bd195f0d84e2?#iefix") format("embedded-opentype"),
-url("suitepicon.woff2?d9a2f8dfd9b423237a20bd195f0d84e2") format("woff2"),
-url("suitepicon.woff?d9a2f8dfd9b423237a20bd195f0d84e2") format("woff"),
-url("suitepicon.ttf?d9a2f8dfd9b423237a20bd195f0d84e2") format("truetype"),
-url("suitepicon.svg?d9a2f8dfd9b423237a20bd195f0d84e2#suitepicon") format("svg");
+    src: url("suitepicon.eot?010cffa71c004007b09412d51f4d3dd0?#iefix") format("embedded-opentype"),
+url("suitepicon.woff2?010cffa71c004007b09412d51f4d3dd0") format("woff2"),
+url("suitepicon.woff?010cffa71c004007b09412d51f4d3dd0") format("woff"),
+url("suitepicon.ttf?010cffa71c004007b09412d51f4d3dd0") format("truetype"),
+url("suitepicon.svg?010cffa71c004007b09412d51f4d3dd0#suitepicon") format("svg");
 }
 
 i[class^="suitepicon-"]:before, i[class*=" suitepicon-"]:before {
@@ -327,10 +327,10 @@ i[class^="suitepicon-"]:before, i[class*=" suitepicon-"]:before {
 .suitepicon-admin-module-trackers:before {
     content: "\f167";
 }
-.suitepicon-admin-oauth2:before {
+.suitepicon-admin-oauth-keys:before {
     content: "\f168";
 }
-.suitepicon-admin-oauth-keys:before {
+.suitepicon-admin-oauth2:before {
     content: "\f169";
 }
 .suitepicon-admin-outbound-email:before {
@@ -501,16 +501,16 @@ i[class^="suitepicon-"]:before, i[class*=" suitepicon-"]:before {
 .suitepicon-module-campaigntrackers:before {
     content: "\f1a1";
 }
-.suitepicon-module-cases:before {
+.suitepicon-module-case-updates:before {
     content: "\f1a2";
 }
-.suitepicon-module-case-updates:before {
+.suitepicon-module-cases:before {
     content: "\f1a3";
 }
-.suitepicon-module-companyc:before {
+.suitepicon-module-company:before {
     content: "\f1a4";
 }
-.suitepicon-module-company:before {
+.suitepicon-module-companyc:before {
     content: "\f1a5";
 }
 .suitepicon-module-contacts:before {
@@ -534,10 +534,10 @@ i[class^="suitepicon-"]:before, i[class*=" suitepicon-"]:before {
 .suitepicon-module-editview:before {
     content: "\f1ac";
 }
-.suitepicon-module-email-marketing2:before {
+.suitepicon-module-email-marketing:before {
     content: "\f1ad";
 }
-.suitepicon-module-email-marketing:before {
+.suitepicon-module-email-marketing2:before {
     content: "\f1ae";
 }
 .suitepicon-module-emails:before {

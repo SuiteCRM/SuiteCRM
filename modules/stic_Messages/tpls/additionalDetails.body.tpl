@@ -76,6 +76,12 @@
     </div>
 {/if}
 <br>
+{if !empty($FIELD.STIC_CONVERSATIONS_STIC_MESSAGES_NAME)}
+    <div>
+        <strong>{$PARAM.LBL_STIC_CONVERSATIONS_STIC_MESSAGES}:</strong>
+        <a href="index.php?module=stic_Conversations&action=DetailView&record={$FIELD.STIC_CONVERSATIONS_IDA}">{$FIELD.STIC_CONVERSATIONS_STIC_MESSAGES_NAME}</a>
+    </div>
+{/if}
 {if !empty($FIELD.MESSAGE)}
     <div>
         <strong>{$PARAM.LBL_MESSAGE}:</strong>
