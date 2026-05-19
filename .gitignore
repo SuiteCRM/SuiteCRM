@@ -130,14 +130,14 @@ codeception.yml
 # Ignore application concatenated files
 /custom/application/Ext/*
 
-# Ignore SDA check rebuild errors
-sdaRebuildError.txt
-
 # Ignore TEST folder
 /TEST
 
-# Ignore STIC internal files
+# Ignore STIC files
 SticRepair.php
+themes/SuiteP/css/SticCustom/CustomPalette.scss
+themes/SuiteP/css/SticCustom/style.css
+sdaRebuildError.txt 
 
 # Do not ignore cache vendor library
 !vendor/psr/cache/

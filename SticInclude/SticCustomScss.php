@@ -96,6 +96,11 @@ $sourceString = file_get_contents('themes/SuiteP/css/SticCustom/style.scss');
 
 file_put_contents('themes/SuiteP/css/SticCustom/style.css', $compiler->compileString($sourceString)->getCss());
 
+// Remove CustomPalette.scss as it's regenerated on each compilation
+if (file_exists('themes/SuiteP/css/SticCustom/CustomPalette.scss')) {
+    unlink('themes/SuiteP/css/SticCustom/CustomPalette.scss');
+}
+
 // Remove cache/themes/SuiteP/css/SticCustom/style.css to force reload css theme
 if (file_exists('cache/themes/SuiteP/css/SticCustom/style.css')) {
     unlink('cache/themes/SuiteP/css/SticCustom/style.css');
