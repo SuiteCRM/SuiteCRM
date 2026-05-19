@@ -136,7 +136,7 @@ class RelateRecordsAction extends HookBeanActionDefinition {
 
         // Load the relationship in source Bean
         if (!$bean->load_relationship($linkName)) {
-            return new ActionResult(ResultStatus::ERROR, $actionConfig, "Could not load relationship '{$linkName}' in module '{$bean->module_name}'. Check vardefs link name.");
+            return new ActionResult(ResultStatus::SKIPPED, $actionConfig, "Could not load relationship '{$linkName}' in module '{$bean->module_name}'. Check vardefs link name.");
         }
         // Verify that it is a Link2
         if (!($bean->$linkName instanceof Link2)) {
