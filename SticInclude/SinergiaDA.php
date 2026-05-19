@@ -429,6 +429,7 @@ class ExternalReporting
                     case 'none':
                     case 'ColourPicker':
                     case 'collection':
+                    case 'encrypt':
                     case 'longtext':                        
                         continue 2;
                         break;
@@ -499,6 +500,7 @@ class ExternalReporting
                                 if (in_array($fieldV['alias'], $usedAlias)) {
                                     $relName = $fieldV['link'];
                                     $fieldV['alias'] = $this->sanitizeText("{$fieldV['alias']}_{$relName}");
+                                    $fieldV['alias'] = substr($fieldV['alias'], 0, 64);
                                 }
                                 $usedAlias[] = $fieldV['alias'];
 
@@ -2211,7 +2213,7 @@ class ExternalReporting
         if ($result !== false) {
             if ($result->num_rows > 0) {
                 while ($row = $db->fetchByassoc($result)) {
-                    $queryDelete = "DELETE FROM {$row['sda_def_columns']} WHERE {$row['column_name']} = '{$row['table']}';";
+                    $queryDelete = "DELETE FROM {$row['sda_def_columns']} WHERE `{$columnName}` = '{$row['table']}';";
 
                     $deleteResult = $db->query($queryDelete);
 
