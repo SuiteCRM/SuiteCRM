@@ -5143,20 +5143,51 @@ $(document).ready(function(){
 
 // STIC-Custom OC - 20260309 - Async count loading for list views
 // https://github.com/SinergiaTIC/SinergiaCRM/pull/1014
+// STIC-Custom AAM - 20260508 - Deduplicate async count requests
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/1104
 function loadAsyncListCount() {
     var asyncCountElements = document.querySelectorAll('.async-count-loading');
     if (!asyncCountElements.length) return;
 
+    var groups = {};
     asyncCountElements.forEach(function(el) {
         var module = el.dataset.module;
         var offset = el.dataset.offset || 0;
         var where = el.dataset.where || '';
-        
-        var url = 'index.php?entryPoint=sticAsyncListCount&module=' + encodeURIComponent(module) + '&offset=' + encodeURIComponent(offset);
-        
-        // Add WHERE clause for filtering
-        if (where) {
-            url += '&where=' + encodeURIComponent(where);
+        var key = module + '|' + offset + '|' + where;
+        if (!groups[key]) {
+            groups[key] = { module: module, offset: offset, where: where, elements: [] };
+        }
+        groups[key].elements.push(el);
+    });
+
+    function processResponse(elements, response) {
+        elements.forEach(function(el) {
+            el.innerHTML = response.total;
+            el.classList.remove('async-count-loading', 'async-spinner');
+            el.classList.add('async-count-loaded');
+        });
+        var selectAllLinks = document.querySelectorAll('a[name="selectall"]');
+        selectAllLinks.forEach(function(link) {
+            var onclick = link.getAttribute('onclick');
+            if (onclick) {
+                link.setAttribute('onclick', onclick.replace(/check_entire_list\(([^,]+),([^,]+),([^,]+),[\d]+\)/, 'check_entire_list($1,$2,$3,' + response.total + ')'));
+            }
+        });
+        if (document.MassUpdate && document.MassUpdate.show_plus) {
+            document.MassUpdate.show_plus.value = '';
+        }
+        if (document.MassUpdate && document.MassUpdate.select_entire_list && document.MassUpdate.select_entire_list.value == 1) {
+            sugarListView.update_count(response.total, false);
+            sugarListView.prototype.toggleSelected();
+        }
+    }
+
+    Object.keys(groups).forEach(function(key) {
+        var group = groups[key];
+        var url = 'index.php?entryPoint=sticAsyncListCount&module=' + encodeURIComponent(group.module) + '&offset=' + encodeURIComponent(group.offset);
+        if (group.where) {
+            url += '&where=' + encodeURIComponent(group.where);
         }
 
         var xhr = new XMLHttpRequest();
@@ -5166,20 +5197,22 @@ function loadAsyncListCount() {
                 try {
                     var response = JSON.parse(xhr.responseText);
                     if (response.success) {
-                        el.innerHTML = response.total;
-                        el.classList.remove('async-count-loading', 'async-spinner');
-                        el.classList.add('async-count-loaded');
+                        processResponse(group.elements, response);
                     }
                 } catch (e) {
                     console.error('Error parsing async count response:', e);
-                    el.innerHTML = '?';
-                    el.classList.remove('async-count-loading', 'async-spinner');
+                    group.elements.forEach(function(el) {
+                        el.innerHTML = '?';
+                        el.classList.remove('async-count-loading', 'async-spinner');
+                    });
                 }
             }
         };
         xhr.onerror = function() {
-            el.innerHTML = '?';
-            el.classList.remove('async-count-loading', 'async-spinner');
+            group.elements.forEach(function(el) {
+                el.innerHTML = '?';
+                el.classList.remove('async-count-loading', 'async-spinner');
+            });
         };
         xhr.send();
     });
@@ -5190,4 +5223,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delay slightly to prioritize main content loading
     setTimeout(loadAsyncListCount, 200);
 });
+
+// STIC-Custom AAM - 20260508 - Show spinner in selected count when async count is pending
+// https://github.com/SinergiaTIC/SinergiaCRM/pull/1104
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.name === 'selectall' && document.querySelectorAll('.async-count-loading').length > 0) {
+        setTimeout(function() {
+            if (document.MassUpdate && document.MassUpdate.select_entire_list && document.MassUpdate.select_entire_list.value == 1) {
+                var selectedValues = document.querySelectorAll('.selectedRecords.value');
+                selectedValues.forEach(function(el) {
+                    el.innerHTML = '<span class="async-spinner selected-count-spinner"></span>';
+                });
+            }
+        }, 50);
+    }
+});
+// END STIC-Custom AAM
 // END STIC-Custom OC

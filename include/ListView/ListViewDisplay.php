@@ -279,9 +279,27 @@ class ListViewDisplay
             $pageTotal = $total;
         }
 
+        // STIC-Custom AAM - 20260505 - Async count pending: render spinner in Select All label
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1104
+        // $total_label = "";
+        // if (!empty($GLOBALS['sugar_config']['disable_count_query']) && $GLOBALS['sugar_config']['disable_count_query'] === true && $total > $pageTotal) {
+        //     $this->show_plus = true;
+        //     $total_label =  $pageTotal.'+';
+        //     $total = $pageTotal;
+        // } else {
+        //     $total_label = $total;
+        // }
+        $asyncCountPending = !empty($this->data['pageData']['offsets']['asyncCountPending']);
+        $asyncModule = $this->data['pageData']['offsets']['moduleDir'] ?? $this->data['pageData']['bean']['moduleDir'] ?? '';
+        $asyncWhere = $this->data['pageData']['offsets']['where'] ?? '';
+        $asyncOffset = $this->data['pageData']['offsets']['current'] ?? 0;
 
         $total_label = "";
-        if (!empty($GLOBALS['sugar_config']['disable_count_query']) && $GLOBALS['sugar_config']['disable_count_query'] === true && $total > $pageTotal) {
+        if ($asyncCountPending) {
+            $this->show_plus = true;
+            $total_label = $pageTotal.'+';
+            $total = $pageTotal;
+        } elseif (!empty($GLOBALS['sugar_config']['disable_count_query']) && $GLOBALS['sugar_config']['disable_count_query'] === true && $total > $pageTotal) {
             $this->show_plus = true;
             $total_label =  $pageTotal.'+';
             $total = $pageTotal;
@@ -289,12 +307,21 @@ class ListViewDisplay
             $total_label = $total;
         }
 
+        if ($asyncCountPending) {
+            $asyncSpinner = "&nbsp;&#x28;<span class=\"async-count-loading async-spinner\" data-module=\"{$asyncModule}\" data-offset=\"{$asyncOffset}\" data-where=\"{$asyncWhere}\"></span>&#x29;&#x200E;";
+        } else {
+            $asyncSpinner = '';
+        }
+
+        $entireListLabel = $asyncSpinner ? $asyncSpinner : "&nbsp;&#x28;{$total_label}&#x29;&#x200E;";
+        // END STIC-Custom AAM
+
         $close_inline_img = SugarThemeRegistry::current()->getImage('close_inline', 'border=0', null, null, ".gif", $app_strings['LBL_CLOSEINLINE']);
         $selectObjectSpan = $this->buildSelectedObjectsSpan();
         $menuItems = array(
             "<label class=\"hidden glyphicon bootstrap-checkbox glyphicon-unchecked\"><span class='suitepicon suitepicon-action-caret'></span></label><input title=\"".$app_strings['LBL_SELECT_ALL_TITLE']."\" type='checkbox' class='bootstrap-checkbox-hidden checkbox massall' name='massall' id='massall_".$location."' value='' onclick='sListView.check_all(document.MassUpdate, \"mass[]\", this.checked);' />$selectObjectSpan<a id='$id'  href='javascript: void(0);'></a>",
             "<a  name='thispage' id='button_select_this_page_".$location."' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick='sListView.check_all(document.MassUpdate, \"mass[]\", true, $pageTotal);' href='#'>{$app_strings['LBL_LISTVIEW_OPTION_CURRENT']}&nbsp;&#x28;{$pageTotal}&#x29;&#x200E;</a>",
-            "<a  name='selectall' id='button_select_all_".$location."' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick='sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,{$total});' href='#'>{$app_strings['LBL_LISTVIEW_OPTION_ENTIRE']}&nbsp;&#x28;{$total_label}&#x29;&#x200E;</a>",
+            "<a  name='selectall' id='button_select_all_".$location."' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick='sListView.check_entire_list(document.MassUpdate, \"mass[]\",true,{$total});' href='#'>{$app_strings['LBL_LISTVIEW_OPTION_ENTIRE']}{$entireListLabel}</a>",
             "<a name='deselect' id='button_deselect_".$location."' class='menuItem' onmouseover='hiliteItem(this,\"yes\");' onmouseout='unhiliteItem(this);' onclick='sListView.clear_all(document.MassUpdate, \"mass[]\", false);' href='#'>{$app_strings['LBL_LISTVIEW_NONE']}</a>",
         );
 
