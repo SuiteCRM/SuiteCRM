@@ -161,7 +161,7 @@ $dictionary['AOR_Condition'] = array(
     'required' => false,
     'name' => 'value',
     'vname' => 'LBL_VALUE',
-    'type' => 'varchar',
+    'type' => 'text',
     'massupdate' => 0,
     'comments' => '',
     'help' => '',
@@ -172,7 +172,6 @@ $dictionary['AOR_Condition'] = array(
     'reportable' => true,
     'unified_search' => false,
     'merge_filter' => 'disabled',
-    'len' => '255',
     'size' => '20',
   ),
         'parameter' =>
