@@ -297,21 +297,6 @@ $dictionary['Contact'] = array('table' => 'contacts', 'audited' => true,
                     'source' => 'non-db',
                     'vname' => 'LBL_PROJECTS',
                 ),
-            'project_resource' => array(
-                'name' => 'project_resource',
-                'type' => 'link',
-                'relationship' => 'projects_contacts_resources',
-                'source' => 'non-db',
-                'vname' => 'LBL_PROJECTS_RESOURCES',
-            ),
-
-            'am_projecttemplates_resources' => array(
-                'name' => 'am_projecttemplates_resources',
-                'type' => 'link',
-                'relationship' => 'am_projecttemplates_contacts_resources',
-                'source' => 'non-db',
-                'vname' => 'LBL_PROJECTS_RESOURCES',
-            ),
 
             'am_projecttemplates_contacts_1' =>
                 array(
