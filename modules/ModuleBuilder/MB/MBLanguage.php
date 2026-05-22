@@ -120,7 +120,7 @@ class MBLanguage
         }
         $this->loadStrings($this->path . '/language');
 
-        //reset global mod_string to prevent conflicts with Module Builder modules 
+        //reset global mod_string to prevent conflicts with Module Builder modules
         $GLOBALS['mod_strings'] = $current_mod_strings;
     }
 
@@ -154,7 +154,9 @@ class MBLanguage
         $this->appListStrings = array('en_us.lang.php'=>array());
         //By default, generate app strings for the current language as well.
         $this->appListStrings[$GLOBALS [ 'current_language' ] . ".lang.php"] = array();
-        $this->loadAppListStrings($this->path . '/../../language/application');
+        $path = dirname($this->path, 2) . '/language/application';
+
+        $this->loadAppListStrings($path);
 
         if ($buildFromTemplate) {
             //go through the templates application strings and load anything that is needed
