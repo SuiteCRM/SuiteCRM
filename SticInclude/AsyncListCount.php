@@ -25,6 +25,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+require_once 'include/EditView/SugarVCR.php';
+
 function outputJson($success, $data = null, $error = null) {
     @ob_end_clean();
     ob_start();
@@ -62,8 +64,20 @@ if (!$bean->ACLAccess('ListView')) {
     return;
 }
 
-$ret_array = $bean->create_new_list_query('', $where, [], [], 0, '', true, $bean, false);
-$countQuery = $bean->create_list_count_query($ret_array['select'] . $ret_array['from'] . $ret_array['where']);
+// The main query stored by ListViewData.php includes all filter joins (inner_join, custom_from, etc.)
+// that are needed for WHERE clauses referencing joined tables (e.g., jt6.name)
+$storedQuery = SugarVCR::retrieve($module);
+if (!empty($storedQuery)) {
+    $countQuery = $bean->create_list_count_query($storedQuery);
+} else {
+    // Fallback: rebuild query without filter joins (may miss search-specific joins)
+    $ret_array = $bean->create_new_list_query('', $where, [], [], 0, '', true, $bean, false);
+    if (!empty($bean->listview_inner_join)) {
+        $ret_array['inner_join'] = ' ' . implode(' ', $bean->listview_inner_join) . ' ';
+    }
+    $mainQuery = $ret_array['select'] . $ret_array['from'] . ($ret_array['inner_join'] ?? '') . $ret_array['where'];
+    $countQuery = $bean->create_list_count_query($mainQuery);
+}
 
 $db = DBManagerFactory::getInstance();
 $result = $db->query($countQuery);
