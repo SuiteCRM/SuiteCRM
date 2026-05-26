@@ -55,6 +55,8 @@ $mod_strings['LBL_PERIODIC_WORK_CALENDAR_BUTTON'] = 'Generar Calendario laboral'
 $mod_strings['LBL_OAUTH_AUTH_LOGIN_CONTAINER'] = '<h3>Inicio de sesión alternativo</h3>';
 $mod_strings['LBL_OAUTH_AUTH_ERR_INVALID_EMAIL_1'] = 'La dirección de correo electrónico ';
 $mod_strings['LBL_OAUTH_AUTH_ERR_INVALID_EMAIL_2'] = ' no pertenece a ningún usuario de SinergiaCRM. Si considera que se trata de un error, contacte con un administrador.';
+$mod_strings['LBL_OAUTH_AUTH_ERR_INACTIVE_USER'] = 'El usuario asociado a esta dirección de correo electrónico está inactivo. Si considera que se trata de un error, contacte con un administrador.';
+$mod_strings['LBL_OAUTH_AUTH_ERR_INVALID_USER_TYPE'] = 'El usuario asociado a esta dirección de correo electrónico no puede iniciar sesión mediante autenticación externa. Si considera que se trata de un error, contacte con un administrador.';
 
 // Autenticación OAuth - Google
 $mod_strings['LBL_OAUTH_AUTH_GOOGLE_AUTHENTICATION_TEXT'] = 'Iniciar sesión con Google';
