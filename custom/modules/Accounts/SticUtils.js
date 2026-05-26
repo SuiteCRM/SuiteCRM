@@ -96,9 +96,6 @@ switch (viewType()) {
       }
     });
 
-    setupPrivateAreaPasswordField();
-    setupPrivateAreaFields();
-
     break;
 
   case "detail":

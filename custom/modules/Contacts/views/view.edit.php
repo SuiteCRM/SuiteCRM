@@ -52,30 +52,6 @@ class CustomContactsViewEdit extends ContactsViewEdit
 
         // Write here you custom code
 
-        // Provide Private Area password status for frontend placeholder handling
-        $hasStoredPassword = false;
-        if (!empty($this->bean->id)) {
-            global $db;
-            $idQuoted = $db->quote($this->bean->id);
-            $storedPassword = $db->getOne("SELECT stic_pa_password_c FROM contacts_cstm WHERE id_c = '{$idQuoted}'");
-            $hasStoredPassword = !empty($storedPassword);
-        }
-
-        global $app_strings;
-        $passwordPlaceholder = $app_strings['LBL_PASSWORD_SET_NEW_VALUE_TO_RESET'] ?? '';
-
-        $privateAreaPasswordConfig = json_encode([
-            'hasStoredPassword' => $hasStoredPassword,
-            'placeholder' => $passwordPlaceholder,
-        ]);
-
-        echo <<<SCRIPT
-        <script>
-            window.STIC = window.STIC || {};
-            STIC.privateAreaPassword = $privateAreaPasswordConfig;
-        </script>
-    SCRIPT;
-
         // We need to add manually to the frontend the required Incorpora fields
         require_once('modules/stic_Incorpora/utils/FieldsDef.php');
         $incorporaRequiredFieldsArray = json_encode(array_filter($contactDef, function ($var) { return $var['required'] ?? false; }));

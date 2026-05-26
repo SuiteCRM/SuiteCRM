@@ -23,7 +23,6 @@
 
 require_once 'modules/Contacts/views/view.detail.php';
 require_once 'SticInclude/Views.php';
-require_once 'custom/modules/Contacts/SticUtils.php';
 
 class CustomContactsViewDetail extends ContactsViewDetail
 {
@@ -42,8 +41,6 @@ class CustomContactsViewDetail extends ContactsViewDetail
         SticViews::preDisplay($this);
 
         // Write here you custom code
-
-        ContactsUtils::removePrivateAreaPasswordFromDetailDefs($this->dv->defs);
     }
 
     public function display()

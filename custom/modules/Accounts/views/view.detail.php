@@ -23,7 +23,6 @@
 
 require_once 'modules/Accounts/views/view.detail.php';
 require_once 'SticInclude/Views.php';
-require_once 'custom/modules/Accounts/SticUtils.php';
 
 class CustomAccountsViewDetail extends AccountsViewDetail
 {
@@ -39,8 +38,6 @@ class CustomAccountsViewDetail extends AccountsViewDetail
         SticViews::preDisplay($this);
 
         // Write here the SinergiaCRM code that must be executed for this module and view
-
-        AccountsUtils::removePrivateAreaPasswordFromDetailDefs($this->dv->defs);
     }
 
     public function display()
