@@ -155,12 +155,21 @@ class CalDAVProvider extends AbstractCalendarProvider
             $authHeaders = $this->getAuthHeaders();
             $allHeaders = array_merge($authHeaders, $headers);
 
+            $responseHeaders = [];
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $allHeaders);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($curl, CURLOPT_TIMEOUT, 30);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+            curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ($_curl, $header) use (&$responseHeaders) {
+                $length = strlen($header);
+                $parts = explode(':', $header, 2);
+                if (count($parts) === 2) {
+                    $responseHeaders[strtolower(trim($parts[0]))] = trim($parts[1]);
+                }
+                return $length;
+            });
 
             if ($body !== null) {
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
@@ -177,7 +186,8 @@ class CalDAVProvider extends AbstractCalendarProvider
 
             return [
                 'httpCode' => $httpCode,
-                'body' => $response
+                'body' => $response,
+                'headers' => $responseHeaders
             ];
         } catch (RuntimeException $e) {
             if (str_contains($e->getMessage(), 'HTTP 401')) {
@@ -689,24 +699,153 @@ class CalDAVProvider extends AbstractCalendarProvider
             $this->calendarUrl = $this->getCalendarUrl();
             $eventUrl = rtrim($this->calendarUrl, '/') . '/' . $eventId . '.ics';
 
-            $icalData = $this->convertToICalendar($targetEvent, $eventId);
-
-            $response = $this->makeCalDAVRequest(
-                'PUT',
-                $eventUrl,
-                ['Content-Type: text/calendar'],
-                $icalData
-            );
-
-            if ($response['httpCode'] !== 200 && $response['httpCode'] !== 204) {
-                throw new RuntimeException('CalDAV PUT error: HTTP ' . $response['httpCode']);
-            }
+            $this->performReadModifyWriteUpdate($eventUrl, $targetEvent, $eventId);
 
             $log->info('CalDAVProvider: Successfully updated event with ID: ' . $eventId);
 
         } catch (Throwable $e) {
             $log->error('CalDAVProvider: updateEvent error: ' . $e->getMessage());
         }
+    }
+
+    protected function performReadModifyWriteUpdate(string $eventUrl, CalendarAccountEvent $targetEvent, string $eventId, int $attempt = 1): void
+    {
+        global $log;
+
+        $getResponse = $this->makeCalDAVRequest('GET', $eventUrl);
+        $getCode = $getResponse['httpCode'];
+
+        if ($getCode === 404) {
+            $log->warn('CalDAVProvider: event not found on GET; falling back to full PUT: ' . $eventId);
+            $this->putFullReplaceICalendar($eventUrl, $targetEvent, $eventId);
+            return;
+        }
+
+        if ($getCode < 200 || $getCode >= 300) {
+            throw new RuntimeException('CalDAV GET error during RMW: HTTP ' . $getCode);
+        }
+
+        $existingIcal = (string)($getResponse['body'] ?? '');
+        $etag = $getResponse['headers']['etag'] ?? null;
+        $mergedIcal = $this->mergeSuitecrmPropertiesIntoICalendar($existingIcal, $targetEvent);
+
+        $putHeaders = ['Content-Type: text/calendar'];
+        if ($etag !== null && $etag !== '') {
+            $putHeaders[] = 'If-Match: ' . $etag;
+        }
+
+        $putResponse = $this->makeCalDAVRequest('PUT', $eventUrl, $putHeaders, $mergedIcal);
+        $putCode = $putResponse['httpCode'];
+
+        if ($putCode === 412) {
+            if ($attempt >= 2) {
+                throw new RuntimeException('CalDAV PUT precondition failed after retry (concurrent edit): ' . $eventId);
+            }
+            $log->warn('CalDAVProvider: If-Match 412 on PUT; retrying RMW cycle: ' . $eventId);
+            $this->performReadModifyWriteUpdate($eventUrl, $targetEvent, $eventId, $attempt + 1);
+            return;
+        }
+
+        if ($putCode !== 200 && $putCode !== 204) {
+            throw new RuntimeException('CalDAV PUT error during RMW: HTTP ' . $putCode);
+        }
+    }
+
+    protected function putFullReplaceICalendar(string $eventUrl, CalendarAccountEvent $targetEvent, string $eventId): void
+    {
+        $icalData = $this->convertToICalendar($targetEvent, $eventId);
+
+        $response = $this->makeCalDAVRequest(
+            'PUT',
+            $eventUrl,
+            ['Content-Type: text/calendar'],
+            $icalData
+        );
+
+        $code = $response['httpCode'];
+        if ($code !== 200 && $code !== 201 && $code !== 204) {
+            throw new RuntimeException('CalDAV fallback PUT error: HTTP ' . $code);
+        }
+    }
+
+    protected function mergeSuitecrmPropertiesIntoICalendar(string $existingIcal, CalendarAccountEvent $event): string
+    {
+        $managed = $this->buildManagedVeventProperties($event);
+
+        $normalized = preg_replace('/\r\n|\r|\n/', "\r\n", $existingIcal);
+        $unfolded = preg_replace("/\r\n[ \t]/", '', $normalized);
+        $lines = explode("\r\n", $unfolded);
+
+        $output = [];
+        $depth = 0;
+        $inFirstVevent = false;
+        $firstVeventSeen = false;
+        $replacedKeys = [];
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+
+            if (stripos($trimmed, 'BEGIN:') === 0) {
+                $output[] = $line;
+                $depth++;
+                $blockName = strtoupper(substr($trimmed, 6));
+                if ($blockName === 'VEVENT' && !$firstVeventSeen) {
+                    $inFirstVevent = true;
+                    $firstVeventSeen = true;
+                }
+                continue;
+            }
+
+            if (stripos($trimmed, 'END:') === 0) {
+                $blockName = strtoupper(substr($trimmed, 4));
+                if ($inFirstVevent && $blockName === 'VEVENT') {
+                    foreach ($managed as $key => $value) {
+                        if (!isset($replacedKeys[$key]) && $value !== null) {
+                            $output[] = $key . ':' . $value;
+                        }
+                    }
+                    $inFirstVevent = false;
+                }
+                $output[] = $line;
+                $depth--;
+                continue;
+            }
+
+            if ($inFirstVevent && $depth === 2) {
+                $keyEnd = strcspn($line, ':;');
+                if ($keyEnd > 0 && $keyEnd < strlen($line)) {
+                    $key = strtoupper(substr($line, 0, $keyEnd));
+                    if (array_key_exists($key, $managed)) {
+                        if ($managed[$key] !== null) {
+                            $output[] = $key . ':' . $managed[$key];
+                        }
+                        $replacedKeys[$key] = true;
+                        continue;
+                    }
+                }
+            }
+
+            $output[] = $line;
+        }
+
+        return implode("\r\n", $output);
+    }
+
+    protected function buildManagedVeventProperties(CalendarAccountEvent $event): array
+    {
+        return [
+            'DTSTAMP' => gmdate('Ymd\THis\Z'),
+            'DTSTART' => $this->formatDateTimeAsUTC($event->getDateStart()),
+            'DTEND' => $event->getDateEnd() ? $this->formatDateTimeAsUTC($event->getDateEnd()) : null,
+            'SUMMARY' => $this->escapeICalValue($event->getName()),
+            'DESCRIPTION' => !empty($event->getDescription()) ? $this->escapeICalValue($event->getDescription()) : null,
+            'LOCATION' => !empty($event->getLocation()) ? $this->escapeICalValue($event->getLocation()) : null,
+            'X-SUITECRM-LINKED-EVENT' => $event->getLinkedEventId() ?: null,
+            'X-SUITECRM-USER-ID' => $event->getAssignedUserId() ?: null,
+            'X-SUITECRM-EVENT-TYPE' => $event->getType()->value,
+            'X-SUITECRM-LAST-SYNC' => $event->getLastSync() ? $this->formatDateTimeAsUTC($event->getLastSync()) : null,
+            'LAST-MODIFIED' => $event->getDateModified() ? $this->formatDateTimeAsUTC($event->getDateModified()) : null,
+        ];
     }
 
     /**

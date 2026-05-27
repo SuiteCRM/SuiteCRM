@@ -448,10 +448,10 @@ class Importer
             default:
                 $returnValue = $this->ifs->$fieldtype($rowValue, $fieldDef, $focus);
                 // try the default value on fail
-                if (!$returnValue && !empty($defaultRowValue)) {
+                if ($returnValue === false && !empty($defaultRowValue)) {
                     $returnValue = $this->ifs->$fieldtype($defaultRowValue, $fieldDef, $focus);
                 }
-                if (!$returnValue) {
+                if ($returnValue === false) {
                     $this->importSource->writeError($mod_strings['LBL_ERROR_INVALID_'.strtoupper($fieldtype)], $fieldTranslated, $rowValue, $focus);
                     return false;
                 }

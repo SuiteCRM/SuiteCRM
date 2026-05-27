@@ -180,7 +180,8 @@ if (!$test) {
             ON plp.prospect_list_id = plc.prospect_list_id 
             WHERE plp.deleted = 0 AND plc.deleted = 0
             AND pl.deleted = 0 AND pl.list_type = 'exempt'
-            AND plc.campaign_id = '{$campaign->id}') em
+            AND plc.campaign_id = '{$campaign->id}'
+            AND emailman.campaign_id = '{$campaign->id}') em    
     )";
     $campaign->db->query($delete_query);
 }
