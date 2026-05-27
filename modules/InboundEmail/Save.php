@@ -243,7 +243,7 @@ if ($focus->isMailBoxTypeCreateCase() || ($focus->mailbox_type === 'createcase' 
             break;
     }
 } // if
-$storedOptions['folderDelimiter'] = $delimiter;
+$stored_options['folderDelimiter'] = $delimiter;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////    CREATE MAILBOX QUEUE
