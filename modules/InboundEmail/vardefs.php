@@ -410,6 +410,20 @@ $dictionary['InboundEmail'] = [
             'unified_search' => false,
             'comment' => ''
         ],
+        'primary_folder' => [
+            'name' => 'primary_folder',
+            'vname' => 'LBL_PRIMARY_FOLDER',
+            'type' => 'varchar',
+            'len' => '255',
+            'required' => false,
+            'reportable' => false,
+            'massupdate' => false,
+            'inline_edit' => false,
+            'importable' => false,
+            'exportable' => false,
+            'unified_search' => false,
+            'comment' => 'Primary monitored folder used as the parent folder for this inbound email account'
+        ],
         'sentFolder' => [
             'name' => 'sentFolder',
             'vname' => 'LBL_SENT_FOLDER',
