@@ -1541,10 +1541,41 @@ class SugarFolder
             if (isFalse($isSelected)) {
                 continue;
             }
-            $id = $folder['id'] ?? '';
 
-            if ($id === $folderId) {
+            if (($folder['id'] ?? '') === $folderId) {
                 return true;
+            }
+
+            if ($folder['has_child'] == 1) {
+                $children = $folder['children'] ?? [];
+                if (!empty($children) && $this->folderExistsInSubtree($children, $folderId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Recursively search for a folder ID within a subtree without applying
+     * the 'selected' filter — child folders don't carry that property.
+     *
+     * @param array $folders
+     * @param string $folderId
+     * @return bool
+     */
+    private function folderExistsInSubtree(array $folders, string $folderId): bool
+    {
+        foreach ($folders as $folder) {
+            if (($folder['id'] ?? '') === $folderId) {
+                return true;
+            }
+            if ($folder['has_child'] == 1) {
+                $children = $folder['children'] ?? [];
+                if (!empty($children) && $this->folderExistsInSubtree($children, $folderId)) {
+                    return true;
+                }
             }
         }
 
