@@ -3163,18 +3163,14 @@ class InboundEmail extends SugarBean
         $trashFolder = $trashFolder ?? ($_REQUEST['trashFolder'] ?? '');
         $sentFolder  = $sentFolder  ?? ($_REQUEST['sentFolder']  ?? '');
 
-        // Check case-insensitively against the explicitly configured special folders.
-        if (!empty($trashFolder) && strcasecmp($folderName, $trashFolder) === 0) {
+        if (!empty($trashFolder) && $folderName === $trashFolder) {
             return true;
         }
-        if (!empty($sentFolder) && strcasecmp($folderName, $sentFolder) === 0) {
+        if (!empty($sentFolder) && $folderName === $sentFolder) {
             return true;
         }
 
-        // Also guard against common IMAP system folder names that should never become
-        // regular inbound subfolders (matches the pattern used in the legacy migration code).
-        $systemFolders = ['sent', 'trash'];
-        return in_array(strtolower($folderName), $systemFolders, true);
+        return false;
     }
 
     /**
@@ -7041,7 +7037,9 @@ class InboundEmail extends SugarBean
         $this->filter_domain = $storedOptions['filter_domain'] ?? '';
         $this->trashFolder =  $storedOptions['trashFolder'] ?? '';
         $this->sentFolder = $storedOptions['sentFolder'] ?? '';
-        $this->mailbox = $storedOptions['mailbox'] ?? '';
+        if (!empty($storedOptions['mailbox'])) {
+            $this->mailbox = $storedOptions['mailbox'];
+        }
 
         $this->leave_messages_on_mail_server = isTrue($storedOptions['leaveMessagesOnMailServer'] ?? false);
         $this->move_messages_to_trash_after_import = !isTrue($storedOptions['leaveMessagesOnMailServer'] ?? true);
