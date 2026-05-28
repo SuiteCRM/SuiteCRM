@@ -292,6 +292,7 @@ if('{$from_mb}')
 ModuleBuilder.MBpackage = "{$view_package}";
 
 Studio2.requiredFields = [{$required_fields}];
+Studio2.compositeFields = {$composite_fields};
 {literal}
 //rrs: this is for IE 7 which only supports javascript 1.6 and does not have indexOf support.
 if (typeof new Array().indexOf == "undefined") {

@@ -200,6 +200,22 @@ abstract class AbstractMetaDataParser
     }
 
     /**
+     * @return array<string, string[]>
+     */
+    public function getCompositeFields(): array
+    {
+        $compositeFields = [];
+
+        foreach ($this->implementation->getFielddefs() as $name => $def) {
+            if (!empty($def['fields']) && is_array($def['fields'])) {
+                $compositeFields[$name] = $def['fields'];
+            }
+        }
+
+        return $compositeFields;
+    }
+
+    /**
      * Used to determine if a field property is true or false given that it could be
      * the boolean value or a string value such use 'false' or '0'
      * @static

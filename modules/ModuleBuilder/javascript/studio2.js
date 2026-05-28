@@ -882,28 +882,39 @@ Studio2 = {
 	},  
 
     checkRequiredFields : function(){
-		var Dom = YAHOO.util.Dom;
-		var availablefields = Dom.get('availablefields');
-		var fields = Dom.getElementsByClassName('field_name', '', 'availablefields');
-		var missing = [ ];
-		for(field in fields){
-		    if (Studio2.requiredFields.indexOf(fields[field].innerHTML) != -1) {
-				missing[missing.length] = fields[field].innerHTML;
-			}
-		}
-		if (missing.length > 0)	
-		{
-		    var msg = SUGAR.language.get("ModuleBuilder", "ERROR_REQUIRED_FIELDS");
-			for (var i = 0; i < missing.length; i++) {
-			  msg += '"' + missing[i] + '"';
-			  if (i != missing.length - 1)
-			      msg += ",";
-			}
-	        return window.confirm(msg);
-		}
-				
-	    return true;
-	},
+        var Dom = YAHOO.util.Dom;
+        var fields = Dom.getElementsByClassName('field_name', '', 'availablefields');
+        var compositeFields = Studio2.compositeFields || {};
+
+        var includedInCompositeFields = [];
+        var panelFields = Dom.getElementsByClassName('field_name', 'span', 'panels');
+        for (var k = 0; k < panelFields.length; k++) {
+            includedInCompositeFields = includedInCompositeFields.concat(
+                compositeFields[panelFields[k].innerHTML.trim()] || []
+            );
+        }
+
+        var missing = [];
+        for (field in fields) {
+            var fieldName = (fields[field].innerHTML || '').trim();
+            if (Studio2.requiredFields.indexOf(fieldName) !== -1 &&
+                includedInCompositeFields.indexOf(fieldName) === -1) {
+                missing[missing.length] = fieldName;
+            }
+        }
+
+        if (missing.length > 0) {
+            var msg = SUGAR.language.get("ModuleBuilder", "ERROR_REQUIRED_FIELDS");
+            for (var i = 0; i < missing.length; i++) {
+                msg += '"' + missing[i] + '"';
+                if (i != missing.length - 1)
+                    msg += ",";
+            }
+            return window.confirm(msg);
+        }
+
+        return true;
+    },
 	
 	checkCalcFields: function(view, error) {
 		if (view == "DetailView")
