@@ -490,6 +490,8 @@ if (empty($foldersFoundRow)) {
             case 'sent':
                 if (!empty($stored_options['sentFolder'])) {
                     $name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
+                } else {
+                    $folder->delete();
                 }
                 break;
             case 'archived':
