@@ -330,16 +330,26 @@ if ($type === 'personal' && isset($_REQUEST['account_signature_id']) && $idValid
 
 
 // Folders
-$foldersFound = $focus->db->query('SELECT id FROM folders WHERE folders.id LIKE "'.$focus->id.'"');
+$inboxFolders = array_filter(array_map('trim', explode(',', $focus->mailbox ?: 'INBOX')));
+$inboxFolders = array_values($inboxFolders) ?: ['INBOX'];
+
+$primaryFolder = trim($_REQUEST['primary_folder'] ?? '');
+if (!empty($primaryFolder) && in_array($primaryFolder, $inboxFolders, true) && $inboxFolders[0] !== $primaryFolder) {
+    $inboxFolders = array_values(array_merge(
+        [$primaryFolder],
+        array_filter($inboxFolders, fn($f) => $f !== $primaryFolder)
+    ));
+}
+
+$foldersFound = $focus->db->query('SELECT id, name FROM folders WHERE folders.id LIKE "'.$focus->id.'"');
 $foldersFoundRow = $focus->db->fetchRow($foldersFound);
-$sf = new SugarFolder();
 if (empty($foldersFoundRow)) {
     // Create Folders
     $focusUser = $owner;
     $params = array(
         // Inbox
         "inbound" => array(
-            'name' => $focus->mailbox . ' ('.$focus->name.')',
+            'name' => $inboxFolders[0] . ' ('.$focus->name.')',
             'folder_type' => "inbound",
             'has_child' => 1,
             'dynamic_query' => '',
@@ -369,11 +379,9 @@ if (empty($foldersFoundRow)) {
         ),
     );
 
-
     require_once("include/SugarFolders/SugarFolders.php");
 
     $parent_id = '';
-
 
     foreach ($params as $type => $type_params) {
         if ($type == "inbound") {
@@ -417,7 +425,7 @@ if (empty($foldersFoundRow)) {
         if ($key === 0) {
             continue;
         }
-        if ($focus->folderIsRequestTrashOrSent($inboxFolder)) {
+        if ($focus->folderIsRequestTrashOrSent($inboxFolder, $stored_options['trashFolder'] ?? '', $stored_options['sentFolder'] ?? '')) {
             continue;
         }
         $focus->createFolder($inboxFolder, "inbound", $focusUser);
@@ -425,16 +433,59 @@ if (empty($foldersFoundRow)) {
 } else {
     // Update folders
     require_once("include/SugarFolders/SugarFolders.php");
-    $foldersFound = $focus->db->query('SELECT * FROM folders WHERE folders.id LIKE "'.$focus->id.'" OR '.
-        'folders.parent_folder LIKE "'.$focus->id.'"');
+
+    // Detect and migrate legacy parent folder names that store multiple mailboxes
+    // as a comma-separated string (e.g. "INBOX,Work (AccountName)").
+    // Any mailboxes embedded in the old name that are not already present in
+    // $inboxFolders are merged in so the remainder of the update logic creates
+    // the missing child folder rows.
+    if (!empty($foldersFoundRow['name'])) {
+        $legacyMailboxPart = preg_replace('/\s*\([^)]*\)\s*$/', '', $foldersFoundRow['name']);
+        if (strpos($legacyMailboxPart, ',') !== false) {
+            $systemFolders = [
+                strtolower($stored_options['trashFolder'] ?? ''),
+                strtolower($stored_options['sentFolder'] ?? ''),
+                'sent',
+                'trash',
+            ];
+            $legacyMailboxes = array_filter(array_map('trim', explode(',', $legacyMailboxPart)));
+            foreach ($legacyMailboxes as $legacyMailbox) {
+                if (in_array(strtolower($legacyMailbox), $systemFolders, true)) {
+                    continue;
+                }
+                if (!in_array($legacyMailbox, $inboxFolders, true)) {
+                    $inboxFolders[] = $legacyMailbox;
+                }
+            }
+        }
+    }
+
+    $foldersFound = $focus->db->query(
+        'SELECT * FROM folders WHERE deleted = 0 AND (folders.id LIKE "'.$focus->id.'" OR '.
+        'folders.parent_folder LIKE "'.$focus->id.'")'
+    );
+
+    $inboxNames = array_slice($inboxFolders, 1);
+
     while ($row = $focus->db->fetchRow($foldersFound)) {
         $name = '';
+        $folder = new SugarFolder();
+        $folder->retrieve($row['id']);
+
         switch ($row['folder_type']) {
             case 'inbound':
-                $name = $focus->mailbox . ' ('.$focus->name.')';
+                if (!$row['has_child']) {
+                    if (in_array($row['name'], $inboxNames, true)) {
+                        unset($inboxNames[array_search($row['name'], $inboxNames, true)]);
+                    } else {
+                        $folder->delete();
+                    }
+                    break;
+                }
+                $name = $inboxFolders[0] . ' ('.$focus->name.')';
                 break;
             case 'draft':
-                $name = $mod_strings['LNK_MY_DRAFTS'] . ' ('.$stored_options['sentFolder'].')';
+                $name = $mod_strings['LNK_MY_DRAFTS'];
                 break;
             case 'sent':
                 if (!empty($stored_options['sentFolder'])) {
@@ -446,10 +497,18 @@ if (empty($foldersFoundRow)) {
                 break;
         }
 
-        $folder = new SugarFolder();
-        $folder->retrieve($row['id']);
-        $folder->name = $name;
-        $folder->save();
+        if ($name) {
+            $folder->name = $name;
+            $folder->save();
+        }
+    }
+
+    // Create any newly added monitored inbox folders
+    foreach ($inboxNames as $newInboxFolder) {
+        if ($focus->folderIsRequestTrashOrSent($newInboxFolder, $stored_options['trashFolder'] ?? '', $stored_options['sentFolder'] ?? '')) {
+            continue;
+        }
+        $focus->createFolder($newInboxFolder, "inbound", $owner);
     }
 }
 

@@ -3129,14 +3129,14 @@ class InboundEmail extends SugarBean
      * @param int $id
      * @return int
      */
-    private function createFolder($name, $type, $focusUser, $id = 0)
+    public function createFolder($name, $type, $focusUser, $id = 0)
     {
         $folder = new SugarFolder();
         $folder->name = $name;
         $folder->folder_type = $type;
         $folder->has_child = $id ? 1 : 0;
         $folder->is_dynamic = 1;
-        $folder->dynamic_query = $this->generateDynamicFolderQuery("sent", $focusUser->id);
+        $folder->dynamic_query = $this->generateDynamicFolderQuery($type, $focusUser->id);
         $folder->created_by = $focusUser->id;
         $folder->modified_by = $focusUser->id;
 
@@ -3153,12 +3153,28 @@ class InboundEmail extends SugarBean
     }
 
     /**
-     * @param $folderName
+     * @param string $folderName
+     * @param string|null $trashFolder Explicit trash folder name; falls back to $_REQUEST['trashFolder']
+     * @param string|null $sentFolder  Explicit sent folder name;  falls back to $_REQUEST['sentFolder']
      * @return bool
      */
-    private function folderIsRequestTrashOrSent($folderName)
+    public function folderIsRequestTrashOrSent($folderName, $trashFolder = null, $sentFolder = null)
     {
-        return $folderName == $_REQUEST['trashFolder'] || $folderName == $_REQUEST['sentFolder'];
+        $trashFolder = $trashFolder ?? ($_REQUEST['trashFolder'] ?? '');
+        $sentFolder  = $sentFolder  ?? ($_REQUEST['sentFolder']  ?? '');
+
+        // Check case-insensitively against the explicitly configured special folders.
+        if (!empty($trashFolder) && strcasecmp($folderName, $trashFolder) === 0) {
+            return true;
+        }
+        if (!empty($sentFolder) && strcasecmp($folderName, $sentFolder) === 0) {
+            return true;
+        }
+
+        // Also guard against common IMAP system folder names that should never become
+        // regular inbound subfolders (matches the pattern used in the legacy migration code).
+        $systemFolders = ['sent', 'trash'];
+        return in_array(strtolower($folderName), $systemFolders, true);
     }
 
     /**
