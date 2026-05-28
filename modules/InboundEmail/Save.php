@@ -357,16 +357,6 @@ if (empty($foldersFoundRow)) {
             'created_by' => $focusUser->id,
             'modified_by' => $focusUser->id,
         ),
-        // Sent Emails
-        "sent" => array(
-            'name' => $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')',
-            'folder_type' => "sent",
-            'has_child' => 0,
-            'dynamic_query' => '',
-            'is_dynamic' => 1,
-            'created_by' => $focusUser->id,
-            'modified_by' => $focusUser->id,
-        ),
         // Archived Emails
         "archived" => array(
             'name' => $mod_strings['LBL_LIST_TITLE_MY_ARCHIVES'],
@@ -408,6 +398,30 @@ if (empty($foldersFoundRow)) {
             $folder->save();
         }
     }
+
+    if (!empty($stored_options['sentFolder'])) {
+        $sentFolder = new SugarFolder();
+        $sentFolder->name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
+        $sentFolder->folder_type = 'sent';
+        $sentFolder->has_child = 0;
+        $sentFolder->dynamic_query = '';
+        $sentFolder->is_dynamic = 1;
+        $sentFolder->created_by = $focusUser->id;
+        $sentFolder->modified_by = $focusUser->id;
+        $sentFolder->parent_folder = $parent_id;
+        $sentFolder->save();
+    }
+
+    // Create any additional monitored inbox folders (comma-separated mailbox values)
+    foreach ($inboxFolders as $key => $inboxFolder) {
+        if ($key === 0) {
+            continue;
+        }
+        if ($focus->folderIsRequestTrashOrSent($inboxFolder)) {
+            continue;
+        }
+        $focus->createFolder($inboxFolder, "inbound", $focusUser);
+    }
 } else {
     // Update folders
     require_once("include/SugarFolders/SugarFolders.php");
@@ -423,7 +437,9 @@ if (empty($foldersFoundRow)) {
                 $name = $mod_strings['LNK_MY_DRAFTS'] . ' ('.$stored_options['sentFolder'].')';
                 break;
             case 'sent':
-                $name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
+                if (!empty($stored_options['sentFolder'])) {
+                    $name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
+                }
                 break;
             case 'archived':
                 $name = $mod_strings['LBL_LIST_TITLE_MY_ARCHIVES'];
