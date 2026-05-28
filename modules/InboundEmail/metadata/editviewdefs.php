@@ -113,7 +113,8 @@ $viewdefs ['InboundEmail'] = [
                                modules/InboundEmail/js/auth_type_fields_toggle.js,
                                modules/InboundEmail/js/owner_toggle.js,
                                modules/InboundEmail/js/test_configuration.js,
-                               modules/InboundEmail/js/panel_toggle.js"}
+                               modules/InboundEmail/js/panel_toggle.js,
+                               modules/InboundEmail/js/primary_folder.js"}
                 </script>
             '
         ],
