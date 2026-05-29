@@ -47,7 +47,8 @@ function getModuleFields(
     $view = 'EditView',
     $value = '',
     $valid = array(),
-    $override = array()
+    $override = array(),
+    $filterOutNonReportableFields = false
 ) {
     global $app_strings, $beanList, $current_user;
 
@@ -86,6 +87,13 @@ function getModuleFields(
                             $GLOBALS['log']->debug('hiding ' . $arr['name'] . ' field from ' . $current_user->name);
                             continue;
                         }
+                    }
+
+                    if ($filterOutNonReportableFields &&
+                        isset($arr['reportable']) &&
+                        $arr['reportable'] === false
+                    ) {
+                        continue;
                     }
 
                     if ($arr['type'] !== 'link'
