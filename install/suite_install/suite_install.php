@@ -60,6 +60,9 @@ require_once('install/suite_install/SystemEmailTemplates.php');
 installSystemEmailTemplates();
 setSystemEmailTemplatesDefaultConfig();
 
+require_once('install/suite_install/BusinessHours.php');
+install_business_hours();
+
 require_once('modules/Administration/QuickRepairAndRebuild.php');
 $actions = array('clearAll');
 $randc = new RepairAndClear();
