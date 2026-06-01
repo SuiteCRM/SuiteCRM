@@ -43,6 +43,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+use BeanFactory;
 use Exception;
 use LoggerManager;
 use Monolog\Logger;
@@ -50,6 +51,7 @@ use ParserSearchFields;
 use SuiteCRM\Log\CliLoggerHandler;
 use SuiteCRM\Log\SugarLoggerHandler;
 use SuiteCRM\Utility\ArrayMapper;
+use VardefManager;
 
 require_once 'modules/ModuleBuilder/parsers/parser.searchfields.php';
 
@@ -81,9 +83,13 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
             LoggerManager::getLogger()->error('Failed to start Monolog loggers');
         }
 
-        $this->mapper = ArrayMapper::make()
-            ->loadYaml(__DIR__ . '/SearchDefsDocumentifier.yml')
-            ->setHideEmptyValues(true);
+        $this->mapper = ArrayMapper::make();
+        if (file_exists('custom/lib/Search/Index/Documentify/SearchDefsDocumentifier.yml')) {
+            $this->mapper->loadYaml('custom/lib/Search/Index/Documentify/SearchDefsDocumentifier.yml');
+        } else {
+            $this->mapper->loadYaml(__DIR__ . '/SearchDefsDocumentifier.yml');
+        }
+        $this->mapper->setHideEmptyValues(true);
     }
 
     /** @inheritdoc */
@@ -121,6 +127,10 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
 
         $fields = $parser->getSearchFields()[$module];
 
+        // Load field_defs once to check unified_search vardef attribute
+        $bean = BeanFactory::getBean($module);
+        $fieldDefs = $bean->getFieldDefinitions();
+
         $parsedFields = [];
 
         $badKeys = ['favorites_only', 'open_only', 'do_not_call', 'email', 'optinprimary'];
@@ -128,6 +138,11 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
 
         foreach ($fields as $key => $field) {
             if (in_array($key, $badKeys)) {
+                continue;
+            }
+            // Respect vardef unified_search = false: skip fields explicitly excluded from search
+            if (isset($fieldDefs[$key]['unified_search']) && $fieldDefs[$key]['unified_search'] === false) {
+                $this->logger->debug("[$module]->$key skipped: unified_search=false in vardefs");
                 continue;
             }
 
@@ -152,12 +167,23 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
             }
 
             foreach ($field['db_field'] as $db_field) {
+                if (isset($fieldDefs[$db_field]['unified_search']) && $fieldDefs[$db_field]['unified_search'] === false) {
+                    $this->logger->debug("[$module]->$key.$db_field skipped: unified_search=false in vardefs");
+                    continue;
+                }
                 $parsedFields[$key][] = $db_field;
+            }
+            // drop the key entirely if all db_fields were excluded
+            if (isset($parsedFields[$key]) && empty($parsedFields[$key])) {
+                unset($parsedFields[$key]);
             }
         }
 
-        // injects the standard metadata fields as they are not present in the searchdefs
-        $parsedFields = array_merge($parsedFields, $this->getMetaData());
+        // injects the standard metadata fields, skipping any with unified_search=false in vardefs
+        $metaFields = array_filter($this->getMetaData(), function ($field) use ($fieldDefs) {
+            return !(isset($fieldDefs[$field]['unified_search']) && $fieldDefs[$field]['unified_search'] === false);
+        });
+        $parsedFields = array_merge($parsedFields, array_values($metaFields));
 
         return $parsedFields;
     }
