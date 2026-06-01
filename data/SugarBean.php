@@ -3780,6 +3780,7 @@ class SugarBean
                 continue;
             }
             $data = $this->field_defs[$field];
+            $data['type'] = isset($data['type']) ? $data['type'] : '';
 
 
             //ignore fields that are a part of the collection and a field has been removed as a result of
