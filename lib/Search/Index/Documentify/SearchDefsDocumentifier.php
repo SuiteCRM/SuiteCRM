@@ -140,7 +140,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
             if (in_array($key, $badKeys)) {
                 continue;
             }
-            // Respect vardef unified_search = false: skip fields explicitly excluded from search
+            // Check vardef unified_search = false: skip fields explicitly excluded from search
             if (isset($fieldDefs[$key]['unified_search']) && $fieldDefs[$key]['unified_search'] === false) {
                 $this->logger->debug("[$module]->$key skipped: unified_search=false in vardefs");
                 continue;
@@ -179,7 +179,7 @@ class SearchDefsDocumentifier extends AbstractDocumentifier
             }
         }
 
-        // injects the standard metadata fields, skipping any with unified_search=false in vardefs
+        // injects the standard metadata fields as they are not present in the searchdefs, skipping any with unified_search=false in vardefs
         $metaFields = array_filter($this->getMetaData(), function ($field) use ($fieldDefs) {
             return !(isset($fieldDefs[$field]['unified_search']) && $fieldDefs[$field]['unified_search'] === false);
         });
