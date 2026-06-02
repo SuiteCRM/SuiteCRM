@@ -151,9 +151,11 @@ class MBLanguage
 
     public function generateAppStrings($buildFromTemplate = true)
     {
-        $this->appListStrings = array('en_us.lang.php'=>array());
-        //By default, generate app strings for the current language as well.
-        $this->appListStrings[$GLOBALS [ 'current_language' ] . ".lang.php"] = array();
+        $this->appListStrings = ['en_us.lang.php' => []];
+        // Create empty arrays for all installed languages so that they get created when we save the module
+        foreach (array_keys(get_languages()) as $installedLang) {
+            $this->appListStrings[$installedLang . '.lang.php'] = [];
+        }
         $path = dirname($this->path, 2) . '/language/application';
 
         $this->loadAppListStrings($path);
@@ -201,14 +203,14 @@ class MBLanguage
             }
             write_array_to_file('mod_strings', $values, $save_path .'/'.$lang, 'w', $header);
         }
-        $app_save_path = $this->path . '/../../language/application';
-        mkdir_recursive($app_save_path);
+        $path = dirname($this->path, 2) . '/language/application';
+        mkdir_recursive($path);
         $key_changed = ($this->key_name != $key_name);
 
         foreach ($this->appListStrings as $lang=>$values) {
             // Load previously created modules data
             // $app_list_strings = array (); --- fix for issue #305
-            $neededFile = $app_save_path . '/'. $lang;
+            $neededFile = $path . '/'. $lang;
             if (file_exists($neededFile)) {
                 include $neededFile;
             }
@@ -244,7 +246,7 @@ class MBLanguage
                 }
             }
 
-            sugar_file_put_contents($app_save_path . '/'. $lang, $appFile);
+            sugar_file_put_contents($path . '/'. $lang, $appFile);
         }
     }
 
