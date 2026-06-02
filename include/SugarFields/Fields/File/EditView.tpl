@@ -75,6 +75,7 @@
 <input type="hidden" name="{{$vardef.docId}}" id="{{$vardef.docId}}" value="{$fields.{{$vardef.docId}}.value}">
 <input type="hidden" name="{{$vardef.docUrl}}" id="{{$vardef.docUrl}}" value="{$fields.{{$vardef.docUrl}}.value}">
 <input type="hidden" name="{{$idName}}_old_doctype" id="{{$idName}}_old_doctype" value="{$fields.{{$vardef.docType}}.value}">
+<input type="hidden" name="{{$vardef.docType}}" id="{{$vardef.docType}}" value="{$fields.{{$vardef.docType}}.value|default:'Sugar'}">
 {{/if}}
 <span id="{{$idName}}_old" style="display:{if !$showRemove}none;{/if}">
   <a href="index.php?entryPoint=download&id={$fields.{{$vardef.fileId}}.value}&type={{$vardef.linkModule}}" class="tabDetailViewDFLink">{{sugarvar key='value'}}</a>
