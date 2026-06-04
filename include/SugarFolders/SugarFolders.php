@@ -884,7 +884,7 @@ class SugarFolder
                 }
 
                 if ($a['has_child'] == 1) {
-                    $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']);
+                    $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
                     $rGetChildren = $this->db->query($qGetChildren);
 
                     while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
@@ -968,7 +968,7 @@ class SugarFolder
 
         if ($a['has_child'] == 1) {
             $this->_depth++;
-            $qGetChildren = $this->core . $this->coreWhere . " AND parent_folder = " . $this->db->quoted($a['id']);
+            $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
             $rGetChildren = $this->db->query($qGetChildren);
 
             while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
@@ -1060,7 +1060,7 @@ class SugarFolder
             $folderNode->set_property('children', array());
 
             if (in_array($a['id'], $subscriptions) && $a['has_child'] == 1) {
-                $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']);
+                $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
                 $rGetChildren = $this->db->query($qGetChildren);
 
                 while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
