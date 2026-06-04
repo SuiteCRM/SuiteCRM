@@ -330,8 +330,8 @@ if ($type === 'personal' && isset($_REQUEST['account_signature_id']) && $idValid
 
 
 // Folders
-$inboxFolders = array_filter(array_map('trim', explode(',', $focus->mailbox ?: 'INBOX')));
-$inboxFolders = array_values($inboxFolders) ?: ['INBOX'];
+$rawMailbox = html_entity_decode($focus->mailbox ?: 'INBOX', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+$inboxFolders = array_values(array_filter(array_map('trim', explode(',', $rawMailbox)))) ?: ['INBOX'];
 
 $primaryFolder = trim($_REQUEST['primary_folder'] ?? '');
 if (!empty($primaryFolder) && in_array($primaryFolder, $inboxFolders, true) && $inboxFolders[0] !== $primaryFolder) {
@@ -359,7 +359,7 @@ if (empty($foldersFoundRow)) {
         ),
         // My Drafts
         "draft" => array(
-            'name' => $mod_strings['LNK_MY_DRAFTS'] . ' ('.$stored_options['sentFolder'].')',
+            'name' => $mod_strings['LNK_MY_DRAFTS'] . ' (' . ($stored_options['sentFolder'] ?? '') . ')',
             'folder_type' => "draft",
             'has_child' => 0,
             'dynamic_query' => '',
@@ -442,15 +442,11 @@ if (empty($foldersFoundRow)) {
     if (!empty($foldersFoundRow['name'])) {
         $legacyMailboxPart = preg_replace('/\s*\([^)]*\)\s*$/', '', $foldersFoundRow['name']);
         if (strpos($legacyMailboxPart, ',') !== false) {
-            $systemFolders = [
-                strtolower($stored_options['trashFolder'] ?? ''),
-                strtolower($stored_options['sentFolder'] ?? ''),
-                'sent',
-                'trash',
-            ];
+            $legacyTrash = $stored_options['trashFolder'] ?? '';
+            $legacySent  = $stored_options['sentFolder'] ?? '';
             $legacyMailboxes = array_filter(array_map('trim', explode(',', $legacyMailboxPart)));
             foreach ($legacyMailboxes as $legacyMailbox) {
-                if (in_array(strtolower($legacyMailbox), $systemFolders, true)) {
+                if ($focus->folderIsRequestTrashOrSent($legacyMailbox, $legacyTrash, $legacySent)) {
                     continue;
                 }
                 if (!in_array($legacyMailbox, $inboxFolders, true)) {
@@ -466,6 +462,7 @@ if (empty($foldersFoundRow)) {
     );
 
     $inboxNames = array_slice($inboxFolders, 1);
+    $sentFolderExists = false;
 
     while ($row = $focus->db->fetchRow($foldersFound)) {
         $name = '';
@@ -485,9 +482,10 @@ if (empty($foldersFoundRow)) {
                 $name = $inboxFolders[0] . ' ('.$focus->name.')';
                 break;
             case 'draft':
-                $name = $mod_strings['LNK_MY_DRAFTS'];
+                $name = $mod_strings['LNK_MY_DRAFTS'] . ' (' . ($stored_options['sentFolder'] ?? '') . ')';
                 break;
             case 'sent':
+                $sentFolderExists = true;
                 if (!empty($stored_options['sentFolder'])) {
                     $name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
                 } else {
@@ -503,6 +501,19 @@ if (empty($foldersFoundRow)) {
             $folder->name = $name;
             $folder->save();
         }
+    }
+
+    if (!$sentFolderExists && !empty($stored_options['sentFolder'])) {
+        $sentFolder = new SugarFolder();
+        $sentFolder->name = $mod_strings['LNK_SENT_EMAIL_LIST'] . ' ('.$stored_options['sentFolder'].')';
+        $sentFolder->folder_type = 'sent';
+        $sentFolder->has_child = 0;
+        $sentFolder->dynamic_query = '';
+        $sentFolder->is_dynamic = 1;
+        $sentFolder->created_by = $owner->id;
+        $sentFolder->modified_by = $owner->id;
+        $sentFolder->parent_folder = $focus->id;
+        $sentFolder->save();
     }
 
     // Create any newly added monitored inbox folders
