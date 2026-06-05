@@ -117,16 +117,16 @@ class Folder
                 $this->type = $row['folder_type'];
 
                 if (!empty($row['primary_folder'])) {
-                    $this->mailbox = $row['primary_folder'];
+                    $this->mailbox = html_entity_decode($row['primary_folder'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 } else {
                     $mailboxes = array_filter(array_map('trim', explode(',', $row['ie_mailbox'] ?? '')));
-                    $this->mailbox = !empty($mailboxes) ? reset($mailboxes) : 'INBOX';
+                    $this->mailbox = !empty($mailboxes) ? html_entity_decode(reset($mailboxes), ENT_QUOTES | ENT_HTML5, 'UTF-8') : 'INBOX';
                 }
             } else {
                 // child node
                 $this->id = $row['parent_folder'];
                 $this->type = $row['folder_type'];
-                $this->mailbox = $row['name'];
+                $this->mailbox = html_entity_decode($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             }
         } else {
             throw new SuiteException("Invalid or empty Email Folder ID");

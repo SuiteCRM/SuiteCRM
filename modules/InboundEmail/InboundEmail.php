@@ -6488,7 +6488,7 @@ class InboundEmail extends SugarBean
 
         if ($requestFolder === 'inbound') {
             if (!empty($_REQUEST['folder_name'])) {
-                $this->mailbox = $_REQUEST['folder_name'];
+                $this->mailbox = html_entity_decode($_REQUEST['folder_name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             } elseif ($this->mailboxarray && (is_countable($this->mailboxarray) ? count($this->mailboxarray) : 0)) {
                 $this->mailbox = $this->mailboxarray[0];
             } else {
@@ -6496,7 +6496,11 @@ class InboundEmail extends SugarBean
             }
         }
 
-        $connectString = $this->getConnectString($service, $this->mailbox);
+        $encodedMailbox = $this->mailbox;
+        if (function_exists('mb_convert_encoding') && in_array('UTF7-IMAP', mb_list_encodings())) {
+            $encodedMailbox = mb_convert_encoding($this->mailbox, 'UTF7-IMAP', 'UTF-8') ?: $this->mailbox;
+        }
+        $connectString = $this->getConnectString($service, $encodedMailbox);
 
         /*
          * Try to recycle the current connection to reduce response times
