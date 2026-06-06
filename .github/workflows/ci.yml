@@ -1,0 +1,206 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop, 'hotfix/**', 'feature/**', 'fix/**', 'staging/**']
+  pull_request:
+    branches: [master, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Fast checks that gate the expensive test job ──
+  lint:
+    name: PHP Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Lint changed PHP files
+        run: |
+          if git rev-parse origin/${{ github.base_ref }} >/dev/null 2>&1; then
+            BASE="origin/${{ github.base_ref }}"
+          else
+            BASE="HEAD~1"
+          fi
+          git diff --name-status $BASE HEAD | grep -E '^[ACMR].*\.php$' | cut -c 3- | while read -r file; do
+            php -l "$file"
+          done
+
+  composer-validate:
+    name: Composer Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+  # ── Full test suite ──
+  test:
+    name: Test (PHP 8.2)
+    needs: [lint, composer-validate]
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: automated_tests
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.28
+        env:
+          discovery.type: single-node
+          xpack.security.enabled: false
+          ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd="curl -s http://localhost:9200/_cluster/health"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      INSTANCE_URL: http://localhost
+      DATABASE_DRIVER: MYSQL
+      DATABASE_NAME: automated_tests
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_USER: automated_tests
+      DATABASE_PASSWORD: automated_tests
+      INSTANCE_ADMIN_USER: admin
+      INSTANCE_ADMIN_PASSWORD: admin1
+      COMPOSER_MEMORY_LIMIT: -1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: curl, gd, json, openssl, zip, imap, mbstring, pcre, zlib, mysqli, intl, xml, ldap, xdebug
+          ini-values: memory_limit=-1, display_errors=On, log_errors=On, error_log=error.log
+          coverage: xdebug
+
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+        with:
+          chromedriver-version: '131.0.6778.204'
+
+      - name: Setup MySQL user
+        run: |
+          mysql -h 127.0.0.1 -u root -proot -e "
+            CREATE USER 'automated_tests'@'%' IDENTIFIED WITH mysql_native_password BY 'automated_tests';
+            GRANT ALL PRIVILEGES ON automated_tests.* TO 'automated_tests'@'%';
+            FLUSH PRIVILEGES;
+          "
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Build Codeception
+        run: ./vendor/bin/codecept build
+
+      - name: Start ChromeDriver
+        run: chromedriver --port=9515 &
+
+      - name: Start web server
+        run: php -S localhost:80 build/router.php > /tmp/php-server.log 2>&1 &
+
+      - name: Wait for web server
+        run: |
+          n=0
+          while [ $n -lt 30 ]; do
+            if curl -s -o /dev/null http://localhost/install.php; then
+              echo "Web server ready"
+              exit 0
+            fi
+            n=$((n + 1))
+            sleep 1
+          done
+          echo "Web server failed to start"
+          cat /tmp/php-server.log
+          exit 1
+
+      - name: Run installer tests
+        run: ./vendor/bin/codecept run install --env travis-ci-hub -f --ext DotReporter
+
+      - name: Set permissions
+        run: sudo chmod -R 777 .
+
+      - name: Run unit tests
+        run: ./vendor/bin/phpunit --stop-on-failure --stop-on-error --colors --configuration ./tests/phpunit.xml.dist ./tests/unit/phpunit
+
+      - name: Setup OAuth2 demo data
+        run: |
+          mysql -h 127.0.0.1 -u root -proot -D automated_tests -v -e "source tests/_data/api_data.sql"
+          mysql -h 127.0.0.1 -u root -proot -D automated_tests -v -e "source tests/_data/demo_users.sql"
+
+      - name: Configure logging
+        run: echo "<?php \$sugar_config['logger']['level'] = 'error';" >> config_override.php
+
+      - name: Generate OAuth2 keys
+        run: |
+          openssl genrsa -out Api/V8/OAuth2/private.key 2048
+          openssl rsa -in Api/V8/OAuth2/private.key -pubout -out Api/V8/OAuth2/public.key
+          chmod 600 Api/V8/OAuth2/p*.key
+
+      - name: Run API tests
+        run: ./vendor/bin/codecept run tests/api/V8/ -f --ext DotReporter
+
+      - name: Configure IMAP test mode
+        run: echo "<?php \$sugar_config['imap_test'] = true;" >> config_override.php
+
+      - name: Run acceptance tests
+        run: ./vendor/bin/codecept run acceptance --env travis-ci-hub -f --ext DotReporter
+
+      - name: Upload test artifacts (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-output
+          path: |
+            tests/_output/
+            error.log
+            /tmp/php-server.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Show logs
+        if: always()
+        run: |
+          echo "=== PHP server log ==="
+          cat /tmp/php-server.log 2>/dev/null || echo "(no server log)"
+          echo "=== PHP error log ==="
+          cat error.log 2>/dev/null || echo "(no error log)"
+          echo "=== Elasticsearch index log ==="
+          cat search_index.log 2>/dev/null || echo "(no ES index log)"
