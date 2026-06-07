@@ -7,9 +7,13 @@ echo "=== SuiteCRM Docker ==="
 echo "Waiting for MySQL..."
 until mysqladmin ping -h "${DATABASE_HOST:-mysql}" -u root -p"${DATABASE_ROOT_PASSWORD:-root}" --silent 2>/dev/null; do sleep 2; done
 
-# Wait for Elasticsearch  
-echo "Waiting for Elasticsearch..."
-until curl -s "http://elasticsearch:9200/_cluster/health" >/dev/null 2>&1; do sleep 2; done
+# Wait for Elasticsearch (optional)
+echo "Checking Elasticsearch..."
+if curl -s "http://elasticsearch:9200/_cluster/health" >/dev/null 2>&1; then
+    echo "Elasticsearch is ready."
+else
+    echo "Elasticsearch not available - skipping (full-text search disabled)."
+fi
 
 # Check if already installed
 if [ -f config.php ] && grep -q "db_host_name" config.php 2>/dev/null; then

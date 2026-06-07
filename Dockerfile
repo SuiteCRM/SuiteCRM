@@ -13,6 +13,8 @@ RUN set -eux; \
         libldap2-dev \
         libxml2-dev \
         libonig-dev \
+        default-mysql-client \
+        curl \
         cron \
         unzip \
     ; \
