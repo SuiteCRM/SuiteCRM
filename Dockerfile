@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.2-apache-bookworm
 
 # Install system dependencies and PHP extensions SuiteCRM requires
 RUN set -eux; \
