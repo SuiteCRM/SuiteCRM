@@ -1,0 +1,16 @@
+.git
+.github
+.gitignore
+.gitattributes
+.agents
+.codex
+node_modules
+vendor
+*.md
+*.log
+docker-compose*.yml
+Dockerfile
+tests
+.sass-cache
+.idea
+.vscode
