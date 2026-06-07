@@ -29,6 +29,6 @@ please create the pull request to the hotfix branch accordingly. -->
 - [ ] My change requires a change to the documentation.
 - [ ] I have read the [**How to Contribute**](https://docs.suitecrm.com/community/contributing-code/) guidelines.
 
-<!--- Your pull request will be tested via Travis CI to automatically indicate that your changes do not prevent compilation. --->
+<!--- Your pull request will be tested via GitHub Actions to automatically indicate that your changes do not prevent compilation. --->
 
-<!--- If it reports back that there are problems, you can log into the Travis system and check the log report for your pull request to see what the problem was. --->
+<!--- If it reports back that there are problems, you can view the Actions run for your pull request to see what the problem was. --->
