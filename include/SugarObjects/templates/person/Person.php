@@ -174,7 +174,12 @@ class Person extends Basic
         $this->add_address_streets('primary_address_street');
         $this->add_address_streets('alt_address_street');
         $ori_in_workflow = empty($this->in_workflow) ? false : true;
-	$this->emailAddress->handleLegacySave($this);
+
+        if ($this->in_import === true) {
+            $this->emailAddress->addresses = [];
+        }
+
+	    $this->emailAddress->handleLegacySave($this);
 
         if (empty($this->id)) {
             $this->id = create_guid();
@@ -193,7 +198,12 @@ class Person extends Basic
         if (!isset($this->in_workflow)) {
             $this->in_workflow = false;
         }
-        if ($ori_in_workflow === false || !empty($override_email)) {
+
+        $skipSaveEmail = $this->in_import === true &&
+            $override_email === [] &&
+            $this->emailAddress->addresses === [];
+
+        if (!$skipSaveEmail && ($ori_in_workflow === false || !empty($override_email))) {
             $this->emailAddress->saveEmail(
                 $this->id,
                 $this->module_dir,
