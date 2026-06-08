@@ -29,8 +29,8 @@ function display_lines($focus, $field, $value, $view)
 {
     global $sugar_config, $locale, $app_list_strings, $mod_strings;
 
-    $enable_groups = (int)$sugar_config['aos']['lineItems']['enableGroups'];
-    $total_tax = (int)$sugar_config['aos']['lineItems']['totalTax'];
+    $enable_groups = (int) ($sugar_config['aos']['lineItems']['enableGroups'] ?? 0);
+    $total_tax = (int) ($sugar_config['aos']['lineItems']['totalTax'] ?? 0);
 
     $html = '';
 
