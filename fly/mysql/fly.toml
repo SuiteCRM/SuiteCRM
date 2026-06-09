@@ -3,6 +3,9 @@ app = "suitecrm-db"
 [build]
   image = "mysql:8.0"
 
+[vm]
+  memory = "512mb"
+
 [env]
   MYSQL_ROOT_PASSWORD = "root"
   MYSQL_DATABASE = "suitecrm"
