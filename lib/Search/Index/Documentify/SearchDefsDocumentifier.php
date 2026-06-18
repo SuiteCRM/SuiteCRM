@@ -51,7 +51,6 @@ use ParserSearchFields;
 use SuiteCRM\Log\CliLoggerHandler;
 use SuiteCRM\Log\SugarLoggerHandler;
 use SuiteCRM\Utility\ArrayMapper;
-use VardefManager;
 
 require_once 'modules/ModuleBuilder/parsers/parser.searchfields.php';
 
