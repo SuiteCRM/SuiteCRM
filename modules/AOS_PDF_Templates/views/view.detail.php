@@ -18,6 +18,15 @@ class AOS_PDF_TemplatesViewDetail extends ViewDetail
     public function display()
     {
         $this->setDecodeHTML();
+        echo '<style>
+#pdfheader.sugar_field,
+#description.sugar_field,
+#pdffooter.sugar_field {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+}
+</style>';
         parent::display();
     }
 
