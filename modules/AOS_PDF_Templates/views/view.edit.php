@@ -31,7 +31,7 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
         //Loading Sample Files
         $json = getJSONobj();
         $samples = array();
-        $sample_options_array = [];
+        $sample_options_array = ['' => ''];
 
         if ($handle = opendir('modules/AOS_PDF_Templates/samples')) {
             while (false !== ($file = readdir($handle))) {
@@ -51,6 +51,8 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
                     $sample_options_array[$fileArray] = $value;
                 }
             }
+            
+            asort($sample_options_array);
             $samples = get_select_options($sample_options_array, '');
             closedir($handle);
         }
