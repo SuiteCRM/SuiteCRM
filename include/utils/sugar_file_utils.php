@@ -72,8 +72,26 @@ function sugar_mkdir($pathname, $mode = null, $recursive = false, $context = nul
     if (empty($mode)) {
         $mode = 0777;
     }
+
+    $result = false;
     if (empty($context)) {
-        $result = @mkdir($pathname, $mode, $recursive);
+        try {
+            $result = mkdir($pathname, $mode, $recursive);
+        } catch(Throwable $e) {
+            // for hardened PHP-FPM installs without CAP_FSETID, retry the mkdir
+            // but drop the special bits from the mode (e.g. 02775 is retried as 0775)
+            if (strpos($e->getMessage(), 'not permitted') !== false) {
+                $result = @mkdir($pathname, $mode & 0777, $recursive);
+            }
+        }
+        // mkdir() also emits E_WARNING on failure (not always catchable as exception),
+        // so check error_get_last() as a fallback for the same condition
+        if (!$result) {
+            $error = error_get_last();
+            if ($error !== null && strpos($error['message'], 'not permitted') !== false) {
+                $result = @mkdir($pathname, $mode & 0777, $recursive);
+            }
+        }
     } else {
         $result = @mkdir($pathname, $mode, $recursive, $context);
     }
@@ -94,8 +112,8 @@ function sugar_mkdir($pathname, $mode = null, $recursive = false, $context = nul
         }
     } else {
         $errorMessage = "Cannot create directory $pathname cannot be touched";
-        if (is_null($GLOBALS['log'])) {
-            throw new Exception("Error occurred but the system doesn't have logger. Error message: \"$errorMessage\"");
+        if (is_null($GLOBALS['log']) || !$GLOBALS['log']->wouldLog('error')) {
+            throw new Exception("Error occurred in sugar_mkdir but the system doesn't have logger. Error message: \"$errorMessage\"");
         }
         $GLOBALS['log']->error($errorMessage);
     }
