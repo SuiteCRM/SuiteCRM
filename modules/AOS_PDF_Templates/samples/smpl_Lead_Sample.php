@@ -13,13 +13,13 @@ class smpl_Lead_Sample
     public function getBody()
     {
         global $locale;
-        return '<table style="width: 100%;" border="0" cellspacing="2" cellpadding="2">
+        return '<table style="width: 100%; font-family: DejaVu Sans;" border="0" cellspacing="2" cellpadding="2">
 <tbody style="text-align: left;">
 <tr>
 <td valign="top">
 <p><img src="'. TemplateSampleService::getAbsoluteLogoUrl() .'" style="float: left;"/>&nbsp;</p>
 </td>
-<td style="font-weight: bold; text-align: right;"><div>'.translate('LBL_BROWSER_TITLE').' Ltd<br />'.translate('LBL_ANY_STREET', 'AOS_PDF_Templates').'<br />'.translate('LBL_ANY_TOWN', 'AOS_PDF_Templates').'</span><br />'.translate('LBL_ANY_WHERE', 'AOS_PDF_Templates').'</div></td>
+<td style="text-align: right;"><div>'.translate('LBL_BROWSER_TITLE').'<br />'.translate('LBL_ANY_STREET', 'AOS_PDF_Templates').'<br />'.translate('LBL_ANY_TOWN', 'AOS_PDF_Templates').'<br />'.translate('LBL_ANY_WHERE', 'AOS_PDF_Templates').'</div></td>
 </tr>
 </tbody>
 </table>
@@ -34,13 +34,13 @@ class smpl_Lead_Sample
 <div>{DATE '.$locale->getPrecedentPreference('default_date_format').'}</div>
 <div><br /></div>
 <p>Dear $leads_first_name</p>
-<p>Established in 2009, SalesAgility is a mature, cutting edge and profitable open source software consultancy focused solely on providing exceptional Customer RelationshipManagement (CRM) solutions for organisations around the world. Based in Stirling, Scotland, the company employs over 40 people and are ISO9001 and recently ISO27001 accredited.</p>
-<p>SalesAgility is the driving force behind SuiteCRM. With over a decade of experience in delivering bespoke open source CRM consulting, SalesAgility was the perfect company to create a fork of the SugarCRM Community Edition when SugarCRM abandoned open source in 2013. The fork has been very successful and SuiteCRM is now acknowledged to be the world’s leading open source CRM solution.</p>
-<p>At SalesAgility we strive to be the best at everything we do through valuing results, respect, accountability, openness and collaboration, and our unique culture is defined by this. Our culture and values guide every decision we make and helps SalesAgility act as a platform for change, for our clients.</p>
+<p>We believe organisations should have full control over the software they use and the data they hold. Open source is what makes that possible: when the code is open, you can see exactly how your CRM works and adapt it to the way your organisation operates. It&#39;s an approach rooted in transparency, collaboration and innovation, the values that guide everything we do.</p>
+<p>We are passionate about open source and it sits at the heart of our work. We provide software that is free to download and code that is open to everyone, built on years of open collaboration and improved continuously through contributions from the community.</p>
+<p>SuiteCRM started in 2013 as a fork of SugarCRM&#39;s Community Edition and has since grown into one of the most capable open source CRMs available. At SuiteCRM Ltd, we continue to lead its development, so that organisations around the world can run their CRM on their own terms, with genuine ownership of their software and their data.</p>
 <p>Yours sincerely</p>
 <p> </p>
 <p> </p>
-<p>The SalesAgility Team</p>
+<p>The SuiteCRM Team</p>
 </td>
 </tr>
 </tbody>
@@ -54,6 +54,14 @@ class smpl_Lead_Sample
 
     public function getFooter()
     {
-        return '';
+        global $locale;
+        return '<table border="0" style="width: 100%; border: none; border-collapse: collapse; border-spacing: 0pt;">
+<tbody>
+<tr>
+<td style="border: none;">'.translate('LBL_PAGE', 'AOS_PDF_Templates').' {PAGENO}</td>
+<td style="border: none; text-align: right;">{DATE '.$locale->getPrecedentPreference('default_date_format').'}</td>
+</tr>
+</tbody>
+</table>';
     }
 }
