@@ -29,29 +29,48 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
         global $app_list_strings, $mod_strings, $beanList, $log;
 
         //Loading Sample Files
-        $json = getJSONobj();
         $samples = array();
         $sample_options_array = ['' => ''];
 
-        if ($handle = opendir('modules/AOS_PDF_Templates/samples')) {
+        $samplesDir = realpath('modules/AOS_PDF_Templates/samples');
+        if ($samplesDir !== false && ($handle = opendir($samplesDir))) {
             while (false !== ($file = readdir($handle))) {
-                if ($value = ltrim(rtrim($file, '.php'), 'smpl_')) {
-                    require_once('modules/AOS_PDF_Templates/samples/'.$file);
-                    $file = rtrim($file, '.php');
-                    $file = new $file();
-                    $fileArray =
-                        array(
-                            $file->getType(),
-                            $file->getBody(),
-                            $file->getHeader(),
-                            $file->getFooter()
-                        );
-                    $fileArray = $json->encode($fileArray);
-                    $value = $mod_strings['LBL_'.strtoupper($value)];
-                    $sample_options_array[$fileArray] = $value;
+                // Only accept files matching the exact smpl_*.php naming convention
+                if (!preg_match('/^smpl_\w+\.php$/', $file)) {
+                    continue;
                 }
+
+                $filePath = $samplesDir . DIRECTORY_SEPARATOR . $file;
+
+                // Resolve symlinks and confirm the file stays within the samples directory
+                $realFilePath = realpath($filePath);
+                if ($realFilePath === false || !str_starts_with($realFilePath, $samplesDir . DIRECTORY_SEPARATOR)) {
+                    continue;
+                }
+
+                // Derive class name and label key without broken character-set trimming
+                $className = substr($file, 0, -4);          // strip '.php' suffix
+                $labelKey  = substr($className, 5);         // strip 'smpl_' prefix
+
+                require_once($realFilePath);
+
+                if (!class_exists($className)) {
+                    $log->warn("[PDF_Templates] Sample file '$file' did not define expected class '$className'");
+                    continue;
+                }
+
+                $instance  = new $className();
+                $fileArray = array(
+                    $instance->getType(),
+                    $instance->getBody(),
+                    $instance->getHeader(),
+                    $instance->getFooter()
+                );
+                $fileArray = JSON::encode($fileArray);
+                $value = $mod_strings['LBL_' . strtoupper($labelKey)] ?? $labelKey;
+                $sample_options_array[$fileArray] = $value;
             }
-            
+
             asort($sample_options_array);
             $samples = get_select_options($sample_options_array, '');
             closedir($handle);
