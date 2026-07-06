@@ -80,12 +80,12 @@ $dictionary['prospect_list_campaigns'] = array(
         array(
             'name' => 'idx_pro_id',
             'type' => 'index',
-            'fields' => array('prospect_list_id')
+            'fields' => array('prospect_list_id', 'deleted')
         ),
         array(
             'name' => 'idx_cam_id',
             'type' => 'index',
-            'fields' => array('campaign_id')
+            'fields' => array('campaign_id', 'deleted')
         ),
         array(
             'name' => 'idx_prospect_list_campaigns',
