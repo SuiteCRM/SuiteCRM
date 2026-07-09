@@ -892,7 +892,7 @@ class FormHtmlGeneratorService {
             }
         }
 
-        // == FRONTEND ACTIONS ==
+        // == UI ACTIONS ==
         if (isset($config->flows['0'])) {
             // Load Hook and UI actions to check for IFrontendAction
             $possibleActions = ActionDiscoveryService::discoverActions([ActionType::HOOK, ActionType::UI]);
@@ -957,21 +957,79 @@ document.addEventListener('alpine:init', () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const ignore = ['entryPoint', 'id', 'module', 'action', 'ajax_validation_only'];
+        const disablePrefix = '[disabled]';
+        const hiddenPrefix = '[hidden]';
+
+        // Track the panels (cards) we modify to check if they should be hidden entirely
+        const affectedPanels = new Set();
+
         urlParams.forEach((value, key) => {
           if (ignore.includes(key)) return;
           const form = this.$refs.form;
           if (!form) return;
-          
+
+          let isDisabled = false, isHidden = false;
+          if (key.startsWith(disablePrefix)) {
+            isDisabled = true;
+            key = key.substring(disablePrefix.length);
+          } else if (key.startsWith(hiddenPrefix)) {
+            isHidden = true;
+            key = key.substring(hiddenPrefix.length);
+          }
+         
           const selector = `[name='${key}'], [name$='_${key}'], [name$='.${key}']`;
           const inputs = form.querySelectorAll(selector);
           inputs.forEach(input => {
-            if (!input.value && input.type !== 'hidden') {
+            // Ignore our own hidden clones
+            if (input.dataset.clone === 'true') return;
+
+            // Assign value (supporting checkboxes and radios)
+            if (input.type === 'checkbox' || input.type === 'radio') {
+              if (input.value === value) {
+                input.checked = true;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+              }
+            } else {
               input.value = value;
               input.dispatchEvent(new Event('input', { bubbles: true }));
               input.dispatchEvent(new Event('change', { bubbles: true }));
             }
+
+            // Apply disabled or hidden modifiers
+            if (isDisabled) {
+              // Disabled: disable the input and add a hidden clone to ensure value is submitted in POST
+              input.disabled = true;
+              if (!input.parentNode.querySelector(`input[type="hidden"][name="${input.name}"][data-clone="true"]`)) {
+                const hiddenClone = document.createElement('input');
+                hiddenClone.type = 'hidden';
+                hiddenClone.name = input.name;
+                hiddenClone.value = value;
+                hiddenClone.dataset.clone = 'true';
+                input.parentNode.insertBefore(hiddenClone, input.nextSibling);
+              }
+            } else if (isHidden) {
+              // Hidden: hide the input and its wrapper
+              const wrapper = input.closest('.awf-field') || input.closest('.form-group') || input.parentElement;
+              if (wrapper) {
+                wrapper.style.display = 'none';
+
+                // Track the closest section panel (card)
+                const panel = wrapper.closest('.awf-section-panel');
+                if (panel) affectedPanels.add(panel);
+              }
+            }
           });
         });
+        // Post-process affected panels to hide empty ones
+        affectedPanels.forEach(panel => {
+          const allFields = Array.from(panel.querySelectorAll('.awf-field'));
+          const allHidden = allFields.every(field => field.style.display === 'none');
+          if (allHidden) {
+            panel.style.display = 'none';
+          }
+        });
+
       } catch (e) { console.warn('AWF Prefill Error:', e); }
     },
 
