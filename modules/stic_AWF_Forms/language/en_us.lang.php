@@ -356,7 +356,6 @@ $mod_strings = array (
   'LBL_CODE_LOADING' => 'Loading code...',
   'LBL_CODE_LOADING_ERROR' => 'Connection error',
 
-  'LBL_HONEYPOT_LABEL' => 'Keep this field empty',
   'LBL_REQUIRED_FIELD_MESSAGE' => 'This field must be informed',
   
   'LBL_PREVIEW_RIBBON' => 'Preview',

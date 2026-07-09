@@ -67,39 +67,16 @@ class ResponseHandler
         $rawPostData = $_POST;
         $cleanData = $this->sanitizeInput($rawPostData);
 
-        $isSpam = false;
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         $remoteIp = $_SERVER['REMOTE_ADDR'] ?? '';
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
         // Anti-Spam Detection 
-        // 1- Honeypot: Hidden field that bots usually fill in
-        if (!$isSpam) {
-            if (isset($cleanData['awf_honey_pot']) && $cleanData['awf_honey_pot'] !== '') {
-                $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: Spam detected by Honeypot protection");
-                $isSpam = true;
-                $responseDescription = translate('LBL_RESPONSE_HONEYPOT_SPAM', 'stic_AWF_Responses');
-            }
-        }
-        // 2- TimeTrap: Normally bots submit the form immediately and/or without executing JS
-        if (!$isSpam) {
-            $currentTs = microtime(true);
-            $submissionTs = (float)($_POST['awf_submission_ts'] ?? $currentTs);
-            $duration = round($currentTs - $submissionTs, 2);
-            if ($submissionTs === 0 || $duration < 2.0) {
-                $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: Spam detected by Timetrap protection. Duration: {$duration}s");
-                $isSpam = true;
-                $responseDescription = translate('LBL_RESPONSE_TIMETRAP_SPAM', 'stic_AWF_Responses'). " ({$duration}s)";
-            } else {
-                $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: Form valid submission. Time to complete: {$duration}s");
-            }
-        }
-        // 3- UserAgent: Some bots don't impersonate browsers
-        if (!$isSpam) {
-            if ($this->isBotUserAgent($userAgent)) {
-                $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: Spam detected by UserAgent filter");
-                $isSpam = true;
-                $responseDescription = translate('LBL_RESPONSE_USERAGENT_SPAM', 'stic_AWF_Responses');
-            }
+        $antiSpamService = new AntiSpamService();
+        $spamResult = $antiSpamService->checkRequest($cleanData, $_SERVER);
+        $isSpam = $spamResult->isSpam;
+        $responseDescription = $spamResult->userDescription;
+        if ($isSpam) {
+            $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: " . $responseDescription);
         }
 
         // Form URL
@@ -116,15 +93,20 @@ class ResponseHandler
             $cleanUrl = $scheme . $host . $path;
         }
 
-        // Data sanitization
+        // Data sanitization: Remove system fields so they are not saved as actual form data
         unset($cleanData['module']);
         unset($cleanData['action']);
         unset($cleanData['entryPoint']);
         unset($cleanData['id']);
         unset($cleanData['awf_honey_pot']);
         unset($cleanData['awf_submission_ts']);
+        unset($cleanData['awf_submission_token']);
         unset($cleanData['awf_form_url']);
-
+        foreach ($cleanData as $key => $value) {
+            if (strpos($key, 'awf_website_url_') === 0) {
+                unset($cleanData[$key]);
+            }
+        }
 
         // Initial validations
         if (empty($formId)) {
@@ -163,7 +145,7 @@ class ResponseHandler
         $fingerprintString = $payloadJson . $formId . $remoteIp . $userAgent . $formUrl . $timeSlot;
         $responseHash = md5($fingerprintString);
 
-        if ($this->checkDuplicateSubmission($formId, $responseHash)) {
+        if ($this->checkDuplicateSubmission($responseHash)) {
             if ($isSpam) {
                 $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": ResponseHandler: Spam duplicated");
                 stic_AWFUtils::renderGenericSpamResponse();
@@ -476,22 +458,15 @@ class ResponseHandler
      * Checks if a response with the same hash has been received for the same form. This is used for duplicate detection.
      * For human users, we check if we have received the same response from the same origin within a 5-minute window.
      * For bots (identified as spam), we check if we have received the same response from the same origin at any time.
-     * @param string $formId The ID of the form
      * @param string $hash The hash of the response to check for duplicates
      * @return bool True if a duplicate submission is detected, false otherwise
      */
-    private function checkDuplicateSubmission(string $formId, string $hash): bool {
+    private function checkDuplicateSubmission(string $hash): bool {
         global $db;
-        $safeFormId = $db->quote($formId);
+        $safeHash = $db->quote($hash);
 
         $query = "SELECT count(response.id) as count FROM stic_awf_responses response
-                    INNER JOIN stic_awf_forms_stic_awf_responses_c form_response
-                        ON form_response.stic_awf_forms_stic_awf_responsesresponses_idb = response.id
-                  WHERE
-                    form_response.stic_awf_forms_stic_awf_responsesforms_ida = '{$safeFormId}'
-                    AND form_response.deleted = 0
-                    AND response.response_hash = '{$hash}'
-                    AND response.deleted = 0";
+                  WHERE response.response_hash = '{$safeHash}' AND response.deleted = 0";
 
         $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": " . $query);
         $result = $db->query($query);
@@ -948,47 +923,6 @@ class ResponseHandler
     }
 
 
-    /**
-     * Determines if the User Agent string belongs to a bot or script. This is used for spam detection and to apply different duplicate detection rules.
-     * The function checks if the User Agent is empty (which is suspicious) 
-     *  or if it contains known signatures of programming tools and libraries commonly used for making HTTP requests (like curl, wget, python, java, etc.).
-     * If any of these conditions are met, it returns true, indicating that the User Agent is likely a bot. 
-     * Otherwise, it returns false, indicating that it is likely a human user.
-     * @param string $userAgent The User Agent string from the request headers
-     * @return bool True if the User Agent is identified as a bot, false otherwise
-     */
-    private function isBotUserAgent(string $userAgent): bool 
-    {
-        // If it's empty, it's suspicious (all browsers send something)
-        if (empty($userAgent)) {
-            return true; 
-        }
-
-        // Blacklist of programming tools that are NOT browsers
-        // If the User Agent contains any of these words, it is a script.
-        $botSignatures = [
-            'curl',          // Linux command tool
-            'wget',          // Download tool
-            'python',        // Requests/Ulllib library
-            'java/',         // Java HTTP Client
-            'libwww',        // Perl library
-            'httpclient',    // Generic Apache/Java
-            'php/',          // PHP scripts (file_get_contents)
-            'postman',       // API testing tool
-            'insomnia',      // API testing tool
-            'node-fetch',    // NodeJS
-            'axios',         // JS library (server side)
-            'go-http-client' // Golang
-        ];
-
-        foreach ($botSignatures as $bot) {
-            if (strpos($userAgent, $bot) !== false) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
 
 // Handler execution

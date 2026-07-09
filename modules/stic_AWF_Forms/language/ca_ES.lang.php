@@ -356,7 +356,6 @@ $mod_strings = array (
   'LBL_CODE_LOADING' => 'Carregant el codi...',
   'LBL_CODE_LOADING_ERROR' => 'Error de connexió',
 
-  'LBL_HONEYPOT_LABEL' => 'Mantingueu aquest camp buit',
   'LBL_REQUIRED_FIELD_MESSAGE' => 'Cal emplenar aquest camp',
   
   'LBL_PREVIEW_RIBBON' => 'Previsualització',

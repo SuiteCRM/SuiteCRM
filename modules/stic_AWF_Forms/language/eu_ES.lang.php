@@ -356,7 +356,6 @@ $mod_strings = array (
   'LBL_CODE_LOADING' => 'Cargando el código...',
   'LBL_CODE_LOADING_ERROR' => 'Error de conexión',
 
-  'LBL_HONEYPOT_LABEL' => 'Mantenga este campo vacío',
   'LBL_REQUIRED_FIELD_MESSAGE' => 'Es necesario informar este campo',
   
   'LBL_PREVIEW_RIBBON' => 'Previsualización',

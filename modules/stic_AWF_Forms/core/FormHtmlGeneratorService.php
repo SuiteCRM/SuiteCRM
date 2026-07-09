@@ -324,18 +324,26 @@ class FormHtmlGeneratorService {
                 // Begin Form
                 $html .= "<form x-ref='form' {$formAttributes} {$alpineSubmit} class='needs-validation'>" .$this->newLine('+');
                 {
-                    // Honeypot: Invisible anti-spam
-                    $html .= "<div style='display:none; opacity:0; position:absolute; left:-9999px;'>" .$this->newLine('+');
+                    // Honeypot: Invisible anti-spam. V2: Dynamic and Semantic
+                    $randomSuffix = substr(md5(uniqid((string)mt_rand(), true)), 0, 6);
+                    $honeypotName = 'awf_website_url_' . $randomSuffix;
+                    $html .= "<div class='awf-form-group' style='opacity: 0; position: absolute; left: -9999px; z-index: -1;' aria-hidden='true'>" .$this->newLine('+');
                     {
-                        $html .= "<label for='awf_website'>".translate('LBL_HONEYPOT_LABEL', 'stic_AWF_Forms')."</label>" .$this->newLine();
-                        $html .= "<input type='text' id='awf_website' name='awf_honey_pot' value='' tabindex='-1' autocomplete='off'>" .$this->newLine();
+                        $html .= "<label for='{$honeypotName}'>Website</label>" .$this->newLine();
+                        $html .= "<input type='text' name='{$honeypotName}' id='{$honeypotName}' tabindex='-1' autocomplete='{$honeypotName}'>" .$this->newLine();
                     }
                     $html .= "</div>" .$this->newLine('-');
 
-                    // TimeTrap: Hidden field to track time spent on form
-                    $html .= "<input type='hidden' name='awf_submission_ts' x-model='loadTime'>";
+                    // TimeTrap: Hidden field to track time spent on form. V2: Server-side + HMAC
+                    global $sugar_config;
+                    $secretKey = $sugar_config['unique_key'] ?? 'default_fallback_key';
+                    // Convert to string to ensure the full precision of microtime is preserved for the HMAC signature
+                    $serverTs = (string)microtime(true);
+                    $signature = hash_hmac('sha256', $serverTs, $secretKey);
+                    $html .= "<input type='hidden' name='awf_submission_ts' value='{$serverTs}'>" .$this->newLine();
+                    $html .= "<input type='hidden' name='awf_submission_token' value='{$signature}'>" .$this->newLine();
 
-                    // Captura de la url del formulario
+                    // Capture the URL of the page where the form is embedded
                     $html .= "<input type='hidden' name='awf_form_url' x-init=\"\$el.value = (window.self !== window.top) ? document.referrer : window.location.href\">" . $this->newLine();
                     
                     // Sections Grid
@@ -939,12 +947,14 @@ document.addEventListener('alpine:init', () => {
   // Main Component of the Form
   Alpine.data('awfForm', (config) => ({
     isActive: true,
-    loadTime: 0,
+    clientLoadTime: 0,
+    message: config.closedFormText,
     submitting: false,
     serverErrors: {},
     
     init() {
-      this.loadTime = (Date.now() / 1000).toFixed(3);
+      this.clientLoadTime = Date.now();
+
       if (!config.isPreview && config.checkUrl) {
         fetch(config.checkUrl).then(r => r.json()).then(d => {
           this.isActive = d.active;
@@ -1128,27 +1138,32 @@ document.addEventListener('alpine:init', () => {
       }
 
       this.submitting = true;
-      const formData = new FormData(formElement);
-      formData.append('ajax_validation_only', '1');
+      const timeElapsedMs = Date.now() - this.clientLoadTime;
+      const delayMs = timeElapsedMs < 2000 ? (2500 - timeElapsedMs) : 0;
+
+      setTimeout(() => {
+        const formData = new FormData(formElement);
+        formData.append('ajax_validation_only', '1');
       
-      fetch(formElement.action, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' }})
-      .then(response => response.json()).then(data => {
-        if (data.status === 'success') {
-          formElement.submit();
-        } else {
-          this.submitting = false;
-          this.serverErrors = data.errors || {};
-          const errorIds = Object.keys(this.serverErrors);
-          if (errorIds.length > 0) {
-            errorIds.forEach(id => this.showServerError(id, this.serverErrors[id]));
-          } else {
+        fetch(formElement.action, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' }})
+        .then(response => response.json()).then(data => {
+          if (data.status === 'success') {
             formElement.submit();
+          } else {
+            this.submitting = false;
+            this.serverErrors = data.errors || {};
+            const errorIds = Object.keys(this.serverErrors);
+            if (errorIds.length > 0) {
+              errorIds.forEach(id => this.showServerError(id, this.serverErrors[id]));
+            } else {
+              formElement.submit();
+            }
           }
-        }
-      }).catch(err => {
-        console.error('Validation Error', err);
-        formElement.submit();
-      });
+        }).catch(err => {
+          console.error('Validation Error', err);
+          formElement.submit();
+        });
+      }, delayMs);
     }
   }));
 JS;

@@ -223,6 +223,9 @@ $dictionary['stic_AWF_Responses'] = array(
     'cols' => '80',
   ),
 ),
+  'indices' => array(
+    array('name' => 'idx_awf_responses_hash', 'type' => 'index', 'fields' => array('response_hash', 'deleted')),
+),
     'relationships' => array (
 ),
     'optimistic_locking' => true,
