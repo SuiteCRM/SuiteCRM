@@ -361,7 +361,7 @@ class FormHtmlGeneratorService {
                                     if ($isCollapsible) {
                                         $cursorStyle = "cursor: pointer;"; 
                                         $toggleBtn = "<button type='button' class='btn btn-sm btn-link text-decoration-none text-reset p-0 ms-2' " .
-                                                              "@click='open = !open' :aria-expanded='open.toString()' aria-controls='{$sectionPanelId}'>" .$this->newLine('+');
+                                                              "@click.stop='open = !open' :aria-expanded='open.toString()' aria-controls='{$sectionPanelId}'>" .$this->newLine('+');
                                         {
                                             $toggleBtn .= "<span class='awf-icon-toggle' :class=\"open ? 'open' : ''\"></span>" .$this->newLine();
                                         }
