@@ -925,7 +925,21 @@ class stic_AwfAction {
   }
 
   isValid() {
-    return this.parameters.every(param => !param.required || (param.value !== null && param.value !== ''));
+    const allActions = utils.getDefinedActions();
+    const actionDef = allActions.find(a => a.name === this.name);
+    return this.parameters.every(param => {
+      if (!param.required) return true;
+      if (param.type === 'optionSelector' && actionDef) {
+        const paramDef = actionDef.parameters.find(p => p.name === param.name);
+        const optDef = (paramDef?.selectorOptions || []).find(o => o.name === param.selectedOption);
+        if (optDef?.resolvedType === 'empty') {
+          param.value = optDef.name;
+          param.value_text = optDef.text;
+          return true;
+        }
+      }
+      return param.value !== null && param.value !== '';
+    });
   }
 
   static category_in_formList(asString = false){

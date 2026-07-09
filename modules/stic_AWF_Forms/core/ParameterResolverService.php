@@ -304,6 +304,11 @@ class ParameterResolverService {
                 $resolvedValue = $this->resolveBean($def, $value, $context);
                 break;
 
+            case ActionParameterType::EMPTY:
+                // The option does not require an additional value; use the option name as the resolved value
+                $resolvedValue = $selectedOption;
+                break;
+
             default:
                 $GLOBALS['log']->warn("Line ".__LINE__.": ".__METHOD__.": Unknown ResolvedType '{$optionDef->resolvedType->value}'.");
                 return null;

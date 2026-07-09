@@ -446,7 +446,7 @@
                                                         <div class="card p-3 bg-white border">
                                                             <div class="mb-2">
                                                                 <label class="form-label small text-muted" x-text="utils.translateForFieldLabel('LBL_ACTION_PARAM_OPTION_SELECTOR_OPTION')"></label>
-                                                                <stic-select options="paramDef.selectorOptions.map(o => ({ id: o.name, label: o.text}))" model="param.selectedOption"></stic-select>
+                                                                <stic-select options="paramDef.selectorOptions.map(o => ({ id: o.name, label: o.text}))" model="param.selectedOption" @change="$store.actionEditor.onParamOptionChange(param, paramDef)"></stic-select>
                                                             </div>
                                                             <div x-data="{ get activeOpt() { return paramDef.selectorOptions.find(o => o.name == param.selectedOption); } }">
                                                                 <!-- Resolved Type: value -->
