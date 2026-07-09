@@ -104,8 +104,5 @@ if ($status) {
     }
 }
 
-require_once 'include/utils.php';
-$message = !$isActive ? translate('LBL_THEME_CLOSED_FORM_TEXT_VALUE', 'stic_AWF_Forms') : '';
-echo json_encode(['active' => $isActive, 'message' => $message]);
-
+echo json_encode(['active' => $isActive]);
 exit;

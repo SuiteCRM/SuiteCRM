@@ -300,7 +300,7 @@ class FormHtmlGeneratorService {
                     $html .= "<div class='awf-overlay-content'>" .$this->newLine('+');
                     {
                         $html .= "<h3 class='h4 text-danger awf-field'>{$closedFormTitle}</h3>" .$this->newLine();
-                        $html .= "<p class='mb-0 lead' x-text='message'>{$closedFormText}</p>" .$this->newLine();
+                        $html .= "<p class='mb-0 lead'>{$closedFormText}</p>" .$this->newLine();
                     }
                     $html .= "</div>" .$this->newLine('-');
                 }
@@ -919,7 +919,6 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('awfForm', (config) => ({
     isActive: true,
     loadTime: 0,
-    message: config.closedFormText,
     submitting: false,
     serverErrors: {},
     
@@ -928,7 +927,6 @@ document.addEventListener('alpine:init', () => {
       if (!config.isPreview && config.checkUrl) {
         fetch(config.checkUrl).then(r => r.json()).then(d => {
           this.isActive = d.active;
-          this.message = this.message === config.closedFormText ? d.message : this.message;
         }).catch(e => console.error(e));
       }
       this.prefillFromUrl();
