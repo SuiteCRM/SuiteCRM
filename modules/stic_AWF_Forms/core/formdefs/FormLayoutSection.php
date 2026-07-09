@@ -30,6 +30,7 @@ class FormLayoutSection {
 
     public string $id;
     public string $title;
+    public string $subtitle;
     public string $containerType;    // 'panel', 'card', 'tabs', 'accordion'
     public bool $showTitle;
     public bool $isCollapsible;
@@ -44,6 +45,7 @@ class FormLayoutSection {
 
         $dto->id = $data['id'] ?? uniqid('sect');
         $dto->title = $data['title'] ?? '';
+        $dto->subtitle = $data['subtitle'] ?? '';
         $dto->showTitle = $data['showTitle'];
         $dto->isCollapsible = $data['isCollapsible'];
         $dto->isCollapsed = $data['isCollapsed'];

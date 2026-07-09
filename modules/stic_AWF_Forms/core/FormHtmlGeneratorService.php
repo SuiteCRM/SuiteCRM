@@ -209,6 +209,7 @@ class FormHtmlGeneratorService {
 #{$wrapperId} .awf-section-panel { border: none; background: transparent; box-shadow: none; height: var(--awf-section-height); }
 #{$wrapperId} .awf-section-title-panel { font-size: 1.25em; margin-bottom: 0; padding-bottom: 0.5rem; border-bottom: 1px solid var(--bs-border-color); }
 #{$wrapperId} .awf-section-title-card { font-weight: 700; margin: 0; }
+#{$wrapperId} .awf-section-subtitle { font-size: 0.9em; margin-top: -0.15rem; margin-left: 0.25rem; }
 #{$wrapperId} .awf-footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--bs-border-color); font-size: 0.875em; color: #6c757d; text-align: center; }
 #{$wrapperId} .awf-required { color: #dc3545; font-weight: bold; }
 #{$wrapperId} label, #{$wrapperId} .form-label, #{$wrapperId} .form-check-label { font-weight: var(--awf-label-weight); }
@@ -353,7 +354,7 @@ class FormHtmlGeneratorService {
                             $html .= "<div class='card {$containerClass}' {$xDataAttr} {$styleAttr}>" .$this->newLine('+');
                             {
                                 // Header
-                                if ($section->showTitle && !empty($section->title)) {
+                                if ($section->showTitle && (!empty($section->title) || !empty($section->subtitle)))  {
                                     $toggleBtn = "";
                                     $cursorStyle = "";
 
@@ -372,7 +373,18 @@ class FormHtmlGeneratorService {
 
                                         $html .= "<div class='awf-section-header-panel d-flex justify-content-between align-items-center' {$clickAction} style='{$cursorStyle}'>" .$this->newLine('+');
                                         {
-                                            $html .= "<h4 class='awf-section-title-panel mb-0 border-0 pb-0'>".htmlspecialchars($section->title)."</h4>" .$this->newLine();
+                                            $html .= "<div class='awf-section-title-wrapper'>" .$this->newLine('+');
+                                            {
+                                                if (!empty($section->title)) {
+                                                    $html .= "<h4 class='awf-section-title-panel mb-0 border-0 pb-0'>".htmlspecialchars($section->title)."</h4>" .$this->newLine();
+                                                }
+                                                if (!empty($section->subtitle)) {
+                                                    $parsedSubtitle = htmlspecialchars($section->subtitle, ENT_QUOTES, 'UTF-8');
+                                                    $marginTop = !empty($section->title) ? "mt-1" : "";
+                                                    $html .= "<div class='awf-section-subtitle text-muted {$marginTop}' style='font-size: 0.9em; font-weight: normal; line-height: 1.4;'>{$parsedSubtitle}</div>" .$this->newLine();
+                                                }
+                                            }
+                                            $html .= "</div>" .$this->newLine('-');
                                             $html .= $toggleBtn .$this->newLine();
                                         }
                                         $html .= "</div>" .$this->newLine('-');
@@ -383,7 +395,18 @@ class FormHtmlGeneratorService {
 
                                         $html .= "<div class='card-header awf-section-title-card d-flex justify-content-between align-items-center' {$clickAction} style='{$cursorStyle}'>" .$this->newLine('+');
                                         {
-                                            $html .= "<span>".htmlspecialchars($section->title)."</span>" .$this->newLine();
+                                            $html .= "<div class='awf-section-title-wrapper'>" .$this->newLine('+');
+                                            {
+                                                if (!empty($section->title)) {
+                                                    $html .= "<span>".htmlspecialchars($section->title)."</span>" .$this->newLine();
+                                                }
+                                                if (!empty($section->subtitle)) {
+                                                    $parsedSubtitle = htmlspecialchars($section->subtitle, ENT_QUOTES, 'UTF-8');
+                                                    $marginTop = !empty($section->title) ? "mt-1" : "";
+                                                    $html .= "<span class='awf-section-subtitle text-muted d-block {$marginTop}' style='font-size: 0.85em; font-weight: normal; line-height: 1.4;'>{$parsedSubtitle}</span>" .$this->newLine();
+                                                }
+                                            }
+                                            $html .= "</div>" .$this->newLine('-');
                                             $html .= $toggleBtn .$this->newLine();
                                         }
                                         $html .= "</div>" .$this->newLine('-');

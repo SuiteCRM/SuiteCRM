@@ -341,6 +341,7 @@ $mod_strings = array (
   'LBL_SECTION_CONFIG' => 'Configuración',
   'LBL_SECTION_CONTENT' => 'Contenido',
   'LBL_SECTION_TITLE' => 'Título',
+  'LBL_SECTION_SUBTITLE' => 'Subtítulo',
   'LBL_SECTION_NO_TITLE' => '< Sin título >',
   'LBL_SECTION_SHOW_TITLE' => 'Mostrar título',
   'LBL_SECTION_CONTAINER' => 'Contenedor visual',
