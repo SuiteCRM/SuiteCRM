@@ -280,7 +280,7 @@ $mod_strings = array (
   'LBL_THEME_PRIMARY_COLOR' => 'Principal',
   'LBL_THEME_PAGE_BG_COLOR' => 'Fons de pàgina',
   'LBL_THEME_FORM_BG_COLOR' => 'Fons del formulari',
-  'LBL_THEME_TYPOGRAPGY_TEXT' => 'Tipografia i text',
+  'LBL_THEME_TYPOGRAPGY_TEXT' => 'Format del text',
   'LBL_THEME_FONT_FAMILY' => 'Font',
   'LBL_THEME_FONT_SIZE' => 'Mida',
   'LBL_THEME_TEXT_COLOR' => 'Color',
@@ -406,7 +406,7 @@ $mod_strings = array (
   'LBL_SAVE_RECORD_ACTION_DUPLICATE_RULE_MATCHED_TEXT' => 'Coincidència per camps',
 
   // RelateRecordsAction
-  'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Desa la relació',
+  'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Crea la relació',
   'LBL_RELATE_RECORDS_ACTION_DESC' => 'Crea una relació entre dos registres',
   'LBL_RELATE_RECORDS_ACTION_TARGET_OBJECT_TEXT' => 'Destí de la relació',
   'LBL_RELATE_RECORDS_ACTION_TARGET_OBJECT_DESC' => 'El bloc de dades o registre destí de la relació a desar',

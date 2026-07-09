@@ -280,7 +280,7 @@ $mod_strings = array (
   'LBL_THEME_PRIMARY_COLOR' => 'Principal',
   'LBL_THEME_PAGE_BG_COLOR' => 'Fondo de página',
   'LBL_THEME_FORM_BG_COLOR' => 'Fondo del formulario',
-  'LBL_THEME_TYPOGRAPGY_TEXT' => 'Tipografía y texto',
+  'LBL_THEME_TYPOGRAPGY_TEXT' => 'Formato del texto',
   'LBL_THEME_FONT_FAMILY' => 'Fuente',
   'LBL_THEME_FONT_SIZE' => 'Tamaño',
   'LBL_THEME_TEXT_COLOR' => 'Color',
@@ -406,7 +406,7 @@ $mod_strings = array (
   'LBL_SAVE_RECORD_ACTION_DUPLICATE_RULE_MATCHED_TEXT' => 'Coincidencia por campos',
 
   // RelateRecordsAction
-  'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Guardar relación',
+  'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Crear relación',
   'LBL_RELATE_RECORDS_ACTION_DESC' => 'Crea una relación entre dos registros',
   'LBL_RELATE_RECORDS_ACTION_TARGET_OBJECT_TEXT' => 'Destino de la relación',
   'LBL_RELATE_RECORDS_ACTION_TARGET_OBJECT_DESC' => 'El bloque de datos o registro destino de la relación a guardar',
