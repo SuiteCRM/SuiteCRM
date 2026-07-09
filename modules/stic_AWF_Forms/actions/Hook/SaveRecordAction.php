@@ -344,7 +344,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
 
             $oldValue = isset($bean->$targetField) ? $bean->$targetField : null;
             // Check if the field in the bean is empty or null
-            $isEmpty = ($oldValue === null || $oldValue === '');
+            $isEmpty = ($oldValue === null || $oldValue === '' || $oldValue === '^^');
 
             // Check if the field is boolean (in that case, consider false as empty)
             $isBoolean = ($fieldDef && isset($fieldDef['type']) && ($fieldDef['type'] === 'bool' || $fieldDef['type'] === 'boolean'));
