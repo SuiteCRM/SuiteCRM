@@ -473,13 +473,10 @@ $mod_strings = array (
   // CheckSessionAction
   'LBL_CHECK_SESSION_ACTION_TITLE' => 'Verificar sesión activa y permisos',
   'LBL_CHECK_SESSION_ACTION_DESC' => 'Bloquea el procesamiento del formulario si no hay una sesión de usuario activa o si el usuario no tiene los permisos para crear los registros asociados al formulario',
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT' => 'Mensaje por sesión no activa',
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT_DEFAULT' => 'Acceso no autorizado. Inicie sesión para continuar.',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT' => 'Mensaje por falta de permisos',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT_DEFAULT' => 'Acceso no autorizado. No posee los permisos necesarios para continuar.',
   'LBL_CHECK_SESSION_ACTION_CHECKING' => 'Verificando acceso y permisos...',
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Acceso denegado',
-  'LBL_CHECK_SESSION_ACTION_LOGIN' => 'Iniciar sesión',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Sesión activa',
 
 

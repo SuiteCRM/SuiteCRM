@@ -473,13 +473,10 @@ $mod_strings = array (
   // CheckSessionAction
   'LBL_CHECK_SESSION_ACTION_TITLE' => 'Verify active session and permissions',
   'LBL_CHECK_SESSION_ACTION_DESC' => 'Blocks form processing if there is no active user session or if the user lacks permissions to create records associated with the form',
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT' => 'Message for inactive session',
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT_DEFAULT' => 'Unauthorized access. Please log in to continue.',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT' => 'Message for lack of permissions',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT_DEFAULT' => 'Unauthorized access. You do not have the necessary permissions to continue.',
   'LBL_CHECK_SESSION_ACTION_CHECKING' => 'Verifying access and permissions...',
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Access denied',
-  'LBL_CHECK_SESSION_ACTION_LOGIN' => 'Log in',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Active session',
 
 

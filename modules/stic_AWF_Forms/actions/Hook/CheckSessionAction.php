@@ -49,14 +49,6 @@ class CheckSessionAction extends HookActionDefinition implements IFrontendAction
      */
     public function getParameters(): array
     {
-        $paramSessionErrorMsg = new ActionParameterDefinition();
-        $paramSessionErrorMsg->name = 'session_error_message';
-        $paramSessionErrorMsg->text = $this->translate('SESSION_ERROR_MSG_TEXT'); 
-        $paramSessionErrorMsg->type = ActionParameterType::VALUE;
-        $paramSessionErrorMsg->dataType = ActionDataType::TEXT;
-        $paramSessionErrorMsg->defaultValue = $this->translate('SESSION_ERROR_MSG_TEXT_DEFAULT');
-        $paramSessionErrorMsg->required = true;
-
         $paramPermissionsErrorMsg = new ActionParameterDefinition();
         $paramPermissionsErrorMsg->name = 'permissions_error_message';
         $paramPermissionsErrorMsg->text = $this->translate('PERMISSIONS_ERROR_MSG_TEXT'); 
@@ -65,7 +57,7 @@ class CheckSessionAction extends HookActionDefinition implements IFrontendAction
         $paramPermissionsErrorMsg->defaultValue = $this->translate('PERMISSIONS_ERROR_MSG_TEXT_DEFAULT');
         $paramPermissionsErrorMsg->required = true;
         
-        return [$paramSessionErrorMsg, $paramPermissionsErrorMsg];
+        return [$paramPermissionsErrorMsg];
     }
 
     /**
@@ -104,18 +96,18 @@ class CheckSessionAction extends HookActionDefinition implements IFrontendAction
      * @return array array Structure: ['script' => ['console.log("hi")'], 'css' => [], 'html' => []]
      */
     public function getFrontendAssets(array $params, ?FormConfig $formConfig = null, string $formId = ''): array {
-        $sessionErrorMsg = $this->translate('SESSION_ERROR_MSG_TEXT_DEFAULT'); 
         $permissionsErrorMsg = $this->translate('PERMISSIONS_ERROR_MSG_TEXT_DEFAULT'); 
         foreach($params as $p) {
-            if ($p->name == 'session_error_message') $sessionErrorMsg = $p->value;
             if ($p->name == 'permissions_error_message') $permissionsErrorMsg = $p->value;
         }
-        $jsSessionErrorMsg = json_encode($sessionErrorMsg);
         $jsPermissionsErrorMsg = json_encode($permissionsErrorMsg);
         $jsCheckingMsg = json_encode($this->translate('CHECKING'));
         $jsDeniedTitle = json_encode($this->translate('DENIED_TITLE'));
         $jsActiveSessionTxt = json_encode($this->translate('ACTIVE_SESSION'));
-        $jsLoginMsg = $this->translate('LOGIN');
+
+        // URL for login with redirection
+        $loginUrl = "index.php?module=Users&action=Login&login_module=stic_AWF_Forms&login_action=renderForm&login_record={$formId}";
+        $jsLoginUrl = json_encode($loginUrl);
 
         $script = <<<JS
         document.addEventListener('DOMContentLoaded', function() {
@@ -172,16 +164,7 @@ class CheckSessionAction extends HookActionDefinition implements IFrontendAction
                             }
                         }
                     } else {
-                        if (wrapper) {
-                            wrapper.style.visibility = 'hidden';
-                            const errorDiv = document.createElement('div');
-                            let finalMsg = {$jsSessionErrorMsg};
-                            errorDiv.className = 'alert alert-danger m-5 text-center shadow';
-                            errorDiv.innerHTML = '<h4>' + {$jsDeniedTitle} + '</h4><p>' + finalMsg + '</p><p><a href="index.php" class="btn btn-outline-danger btn-sm">{$jsLoginMsg}</a></p>';
-                            wrapper.parentNode.insertBefore(errorDiv, wrapper);
-                        } else {
-                            window.location.href = "index.php"; // Redirect to login if we can't even show the message
-                        }
+                        window.location.href = {$jsLoginUrl}; // Redirect to login
                     }
                 })
                 .catch(e => {
@@ -191,15 +174,7 @@ class CheckSessionAction extends HookActionDefinition implements IFrontendAction
                     const loader = document.getElementById('awf-session-loader');
                     if(loader) loader.remove();
 
-                    if (wrapper) {
-                        const errorDiv = document.createElement('div');
-                        let finalMsg = {$jsSessionErrorMsg};
-                        errorDiv.className = 'alert alert-danger m-5 text-center shadow';
-                        errorDiv.innerHTML = '<h4>' + {$jsDeniedTitle} + '</h4><p>' + finalMsg + '</p><p><a href="index.php" class="btn btn-outline-danger btn-sm">{$jsLoginMsg}</a></p>';
-                        wrapper.parentNode.insertBefore(errorDiv, wrapper);
-                    } else {
-                        window.location.href = "index.php"; // Redirect to login if we can't even show the message
-                    }
+                    window.location.href = {$jsLoginUrl}; // Redirect to login
                 });
         });
 JS;

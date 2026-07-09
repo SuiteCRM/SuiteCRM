@@ -473,13 +473,10 @@ $mod_strings = array (
   // CheckSessionAction
   'LBL_CHECK_SESSION_ACTION_TITLE' => 'Verifica la sessió i els permisos',
   'LBL_CHECK_SESSION_ACTION_DESC' => "Bloqueja el processament del formulari si no hi ha una sessió d'usuari activa o si l'usuari no té els permisos per crear els registres associats al formulari",
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT' => 'Missatge per sessió no activa',
-  'LBL_CHECK_SESSION_ACTION_SESSION_ERROR_MSG_TEXT_DEFAULT' => 'Accés no autoritzat. Inicieu sessió per continuar.',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT' => 'Missatge per falta de permisos',
   'LBL_CHECK_SESSION_ACTION_PERMISSIONS_ERROR_MSG_TEXT_DEFAULT' => 'Accés no autoritzat. No disposeu dels permisos necessaris per continuar.',
   'LBL_CHECK_SESSION_ACTION_CHECKING' => 'Verificant accés i permisos...',
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Accés denegat',
-  'LBL_CHECK_SESSION_ACTION_LOGIN' => 'Inicia la sessió',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Sessió activa',
 
 
