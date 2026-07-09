@@ -409,7 +409,30 @@ function handle_open_popup(popup_reply_data) {
   }
   if (popup_reply_data.selection_list) {
     const idField = popup_reply_data.passthru_data.id;
-    $(`#${idField}`).val(Object.values(popup_reply_data.selection_list).join("|"));
+    if (popup_reply_data.select_entire_list == 1 && popup_reply_data.current_query_by_page) {
+      $.ajax({
+        url: 'index.php',
+        data: {
+          module: 'stic_AWF_Forms',
+          action: 'getAllPopupIds',
+          current_query_by_page: popup_reply_data.current_query_by_page
+        },
+        dataType: 'json',
+        async: false,
+        success: function(response) {
+          if (response.success && response.ids) {
+            $(`#${idField}`).val(response.ids.join("|"));
+          } else {
+            $(`#${idField}`).val(Object.values(popup_reply_data.selection_list).join("|"));
+          }
+        },
+        error: function() {
+          $(`#${idField}`).val(Object.values(popup_reply_data.selection_list).join("|"));
+        }
+      });
+    } else {
+      $(`#${idField}`).val(Object.values(popup_reply_data.selection_list).join("|"));
+    }
     $(`#${idField}`)[0].dispatchEvent(new Event('input', { bubbles: true }));
   }
 }

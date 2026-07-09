@@ -162,6 +162,137 @@ class stic_AWF_FormsController extends SugarController
         sugar_cleanup(true);
     }
     
+    /**
+     * Handles the 'getAllPopupIds' action to retrieve all record IDs matching
+     * the popup query when "Select All" (entire list) is used in a MultiSelect popup.
+     */
+    public function action_getAllPopupIds()
+    {
+        header('Content-Type: application/json');
+
+        if (empty($_REQUEST['current_query_by_page'])) {
+            echo json_encode(['success' => false, 'message' => 'Missing current_query_by_page']);
+            sugar_cleanup(true);
+            return;
+        }
+
+        $current_query_by_page_array = json_decode(html_entity_decode($_REQUEST['current_query_by_page']), true);
+        if (empty($current_query_by_page_array['module'])) {
+            echo json_encode(['success' => false, 'message' => 'Missing module in query data']);
+            sugar_cleanup(true);
+            return;
+        }
+
+        $module = $current_query_by_page_array['module'];
+        $seed = BeanFactory::getBean($module);
+        if (empty($seed)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid module: ' . $module]);
+            sugar_cleanup(true);
+            return;
+        }
+
+        if ($seed->bean_implements('ACL')) {
+            if (!ACLController::checkAccess($module, 'list', true)) {
+                echo json_encode(['success' => false, 'message' => 'ACL access denied']);
+                sugar_cleanup(true);
+                return;
+            }
+        }
+
+        $where = $this->_generatePopupSearchWhere($module, $seed, $current_query_by_page_array);
+
+        $accessWhere = '';
+        if ($seed->bean_implements('ACL')) {
+            $accessWhere = $seed->buildAccessWhere('list');
+        }
+        if (!empty($accessWhere)) {
+            $where = empty($where) ? $accessWhere : $where . ' AND ' . $accessWhere;
+        }
+
+        $table_name = $seed->table_name;
+        $sql = "SELECT DISTINCT id FROM {$table_name} WHERE deleted=0";
+        if (!empty($where)) {
+            $sql .= ' AND ' . $where;
+        }
+
+        $result = $GLOBALS['db']->query($sql);
+        $ids = array();
+        while ($row = $GLOBALS['db']->fetchByAssoc($result)) {
+            $ids[] = $row['id'];
+        }
+
+        echo json_encode(['success' => true, 'ids' => $ids]);
+        sugar_cleanup(true);
+    }
+
+    private function _generatePopupSearchWhere($module, $seed, $current_query_by_page_array)
+    {
+        global $popupMeta;
+
+        $popupdefsFile = null;
+        if (file_exists('custom/modules/' . $module . '/metadata/popupdefs.php')) {
+            $popupdefsFile = 'custom/modules/' . $module . '/metadata/popupdefs.php';
+        } elseif (file_exists('modules/' . $module . '/metadata/popupdefs.php')) {
+            $popupdefsFile = 'modules/' . $module . '/metadata/popupdefs.php';
+        }
+
+        if (empty($popupdefsFile)) {
+            $GLOBALS['log']->warn("Line ".__LINE__.": ".__METHOD__.": No popupdefs found for module {$module}, falling back to MassUpdate");
+            require_once('include/MassUpdate.php');
+            $mass = new MassUpdate();
+            $mass->generateSearchWhere($module, htmlentities(json_encode($current_query_by_page_array)));
+            return $mass->where_clauses ?? '';
+        }
+
+        require $popupdefsFile;
+
+        if (empty($popupMeta) || empty($popupMeta['searchdefs'])) {
+            $GLOBALS['log']->warn("Line ".__LINE__.": ".__METHOD__.": popupdefs for {$module} has no searchdefs, falling back to MassUpdate");
+            require_once('include/MassUpdate.php');
+            $mass = new MassUpdate();
+            $mass->generateSearchWhere($module, htmlentities(json_encode($current_query_by_page_array)));
+            return $mass->where_clauses ?? '';
+        }
+
+        $popupSearchDefs = array();
+        if (is_array($popupMeta['searchdefs'])) {
+            $popupSearchDefs[$module]['layout']['advanced_search'] = $popupMeta['searchdefs'];
+        } else {
+            require_once $popupMeta['searchdefs'];
+        }
+
+        $searchFields = array();
+        if (file_exists('custom/modules/' . $module . '/metadata/SearchFields.php')) {
+            require 'custom/modules/' . $module . '/metadata/SearchFields.php';
+        } elseif (file_exists('modules/' . $module . '/metadata/SearchFields.php')) {
+            require 'modules/' . $module . '/metadata/SearchFields.php';
+        }
+
+        if (empty($searchFields) || empty($popupSearchDefs)) {
+            return '';
+        }
+
+        require_once('include/SearchForm/SearchForm2.php');
+        $searchForm = new SearchForm($seed, $module);
+        $searchForm->setup($popupSearchDefs, $searchFields, 'SearchFormGenericAdvanced.tpl', 'advanced_search');
+        $searchForm->populateFromArray($current_query_by_page_array, 'advanced_search');
+
+        $where_clauses = $searchForm->generateSearchWhere(true, $module);
+        $where = '';
+        if ((is_countable($where_clauses) ? count($where_clauses) : 0) > 0) {
+            $where = '(' . implode(' AND ', $where_clauses) . ')';
+        }
+
+        if (!empty($popupMeta['whereStatement'])) {
+            if (!empty($where)) {
+                $where .= ' AND ';
+            }
+            $where .= $popupMeta['whereStatement'];
+        }
+
+        return $where;
+    }
+
     private function renderOutput(string $recordId, bool $isPreview, ?array $configData = null)
     {
         require_once 'modules/stic_AWF_Forms/core/FormRenderService.php';
