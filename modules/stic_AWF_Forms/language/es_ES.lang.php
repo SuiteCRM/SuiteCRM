@@ -268,10 +268,12 @@ $mod_strings = array (
   'LBL_LAYOUT_FORM_DESIGN' => 'Diseño del formulario',
   'LBL_LAYOUT_PREVIEW' => 'Previsualización',
   'LBL_LAYOUT_HEADER' => 'Cabecera',
-  'LBL_LAYOUT_BODY' => 'Formulario',
   'LBL_LAYOUT_FOOTER' => 'Pie',
 
   // Layout -> Theme
+  'LBL_THEME_GENERAL' => 'General',
+  'LBL_THEME_WEB_TITLE_TEXT' => 'Título de la página',
+  'LBL_THEME_WEB_TITLE_VALUE' => 'Formulario Web Avanzado',
   'LBL_THEME_SUBMIT_BUTTON_TEXT' => 'Texto del botón de envío',
   'LBL_THEME_SUBMIT_BUTTON_TEXT_VALUE' => 'Enviar',
   'LBL_THEME_MAIN_COLORS' => 'Colores',

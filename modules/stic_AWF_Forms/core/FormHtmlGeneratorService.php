@@ -55,7 +55,7 @@ class FormHtmlGeneratorService {
             {
                 $htmlRaw .= "<meta charset='UTF-8'>" .$this->newLine();
                 $htmlRaw .= "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" .$this->newLine();
-                $htmlRaw .= "<title>Advanced Web Form</title>" .$this->newLine();
+                $htmlRaw .= "<title>" . htmlspecialchars($config->layout->web_title) . "</title>" .$this->newLine();
         
                 // External libraries (Bootstrap + Alpine)
                 $htmlRaw .= '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">' .$this->newLine();

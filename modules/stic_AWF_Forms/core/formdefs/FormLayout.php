@@ -29,6 +29,8 @@ class FormLayout {
     public FormConfig $form_config;    // The configuration of the form to which it belongs
 
     public FormTheme $theme;
+    public string $web_title = 'Advanced Web Form';
+
     public string $header_html = '';
     public string $footer_html = '';
 
@@ -51,6 +53,8 @@ class FormLayout {
         $dto->form_config = $form;
 
         $dto->theme = FormTheme::fromJsonArray($dto, $data['theme'] ?? []);
+
+        $dto->web_title = $data['web_title'] ?? translate('LBL_THEME_WEB_TITLE_VALUE', 'stic_AWF_Forms');
 
         $dto->header_html = $data['header_html'] ?? '';
         $dto->footer_html = $data['footer_html'] ?? '';

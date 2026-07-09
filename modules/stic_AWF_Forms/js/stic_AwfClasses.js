@@ -963,6 +963,8 @@ class stic_AwfLayout {
     Object.assign(this, {
       theme: new stic_AwfTheme(),      // Visual variables of the form
 
+      web_title: utils.translate('LBL_THEME_WEB_TITLE_VALUE'),  // Title of the web page
+
       header_html: '',             // Html with the header of the form
       footer_html: '',             // Html with the footer of the form
 

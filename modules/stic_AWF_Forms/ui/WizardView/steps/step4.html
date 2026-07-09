@@ -29,11 +29,32 @@
          <div class="col-md-3 border-end bg-light overflow-auto p-3" style="max-height: calc(100vh - 200px);">
             <h3 class="mb-3" x-text="utils.translate('LBL_LAYOUT_SETTINGS')"></h3>
 
-            <!-- submit_button_text -->
-            <div class="mb-3 row">
-                <label for="theme-submit_button_text" class="form-label small" x-text="utils.translateForFieldLabel('LBL_THEME_SUBMIT_BUTTON_TEXT')"></label>
-                <input id="theme-submit_button_text" type="text" x-model="formConfig.layout.submit_button_text">
-            </div>
+            <!-- General: Title and submit -->
+            <details class="mb-3">
+                <summary class="cursor-pointer user-select-none" x-text="utils.translate('LBL_THEME_GENERAL')"></summary>
+                <div class="ps-4 g-2  mt-2">
+                    <!-- web_title -->
+                    <div class="mb-3 row">
+                        <label for="theme-web_title" class="form-label small" x-text="utils.translateForFieldLabel('LBL_THEME_WEB_TITLE_TEXT')"></label>
+                        <input id="theme-web_title" type="text" x-model="formConfig.layout.web_title">
+                    </div>
+
+                    <!-- submit_button_text -->
+                    <div class="mb-3 row">
+                        <label for="theme-submit_button_text" class="form-label small" x-text="utils.translateForFieldLabel('LBL_THEME_SUBMIT_BUTTON_TEXT')"></label>
+                        <input id="theme-submit_button_text" type="text" x-model="formConfig.layout.submit_button_text">
+                    </div>
+
+                    <!-- submit_full_width -->
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="theme-submit_full_width" x-model="formConfig.layout.theme.submit_full_width"
+                                   :true-value="'full'" :false-value="'auto'">
+                            <label class="form-check-label small" for="theme-submit_full_width" x-text="utils.translate('LBL_THEME_SUBMIT_FULL_WIDTH')"></label>
+                        </div>
+                    </div>                    
+                </div>
+            </details>
 
             <!-- Main colors -->
             <details class="mb-3">
@@ -230,14 +251,6 @@
                             <label class="form-check-label small" for="theme-equal_height_sections" x-text="utils.translate('LBL_THEME_EQUAL_HEIGHT_SECTIONS')"></label>
                         </div>
                     </div>
-                    <!-- submit_full_width -->
-                    <div class="mb-3">
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="theme-submit_full_width" x-model="formConfig.layout.theme.submit_full_width"
-                                   :true-value="'full'" :false-value="'auto'">
-                            <label class="form-check-label small" for="theme-submit_full_width" x-text="utils.translate('LBL_THEME_SUBMIT_FULL_WIDTH')"></label>
-                        </div>
-                    </div>
                 </div>
             </details>
 
@@ -389,9 +402,6 @@
 
                             <!-- Body -->
                             <div class="accordion-item">
-                                <div id="LayoutBody_Header" class="pt-3 ps-3 accordion-header card-header" aria-controls="LayoutBody_Content">
-                                    <h3 x-text="utils.translate('LBL_LAYOUT_BODY')"></h3>
-                                </div>
                                 <div id="LayoutBody_Content" class="accordion-collapse show" aria-labelledby="LayoutBody_Header">
                                     <div id="LayoutBody_Body" class="accordion-body"> 
                                         <div class="flex-fill border rounded p-2 overflow-auto">
