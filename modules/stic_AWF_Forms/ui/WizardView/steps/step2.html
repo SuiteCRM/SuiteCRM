@@ -288,7 +288,7 @@
                           </td>
                           <!-- Duplicate Action -->
                           <td class="col-3">
-                            <select :id="`duplicateAction${item.id}${index}`" class="form-select" x-model="dupli.on_duplicate">
+                            <select :id="`duplicateAction${item.id}${index}`" class="form-select" x-model="dupli.on_duplicate" x-init="$nextTick(() => $el.value = dupli.on_duplicate)">
                               <template x-for="action in stic_AwfDuplicateDetection.on_duplicateList()" :key="action.id">
                                 <option :value="action.id" x-text="action.text"></option>
                               </template>
