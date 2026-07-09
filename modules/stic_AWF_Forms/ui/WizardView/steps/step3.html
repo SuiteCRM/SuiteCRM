@@ -51,7 +51,8 @@
             <div class="accordion">
                 <template x-for="action in actions" :key="action.id">
                     <div class="accordion-item" x-data="{opened:false}" x-show="action.is_user_selectable || showAllActions">
-                        <div :id="action.id+'_Header'" class="mt-1 mb-1 pe-2 btn accordion-header accordion-button p-0 align-items-center" :class="{'collapsed': !opened}">
+                        <div :id="action.id+'_Header'" class="mt-1 mb-1 pe-2 btn accordion-header accordion-button p-0 align-items-center" :class="{'collapsed': !opened}"
+                             @click.self="$el.querySelector('[data-bs-toggle]').click()">
                             <div class="d-flex flex-grow-1 align-items-center py-3 ps-3 pe-2" role="button" @click="opened = !opened"
                                  data-bs-toggle="collapse" :data-bs-target="'#'+action.id+'_Content'" :aria-controls="action.id+'_Content'">
                                 <!-- Condition -->
