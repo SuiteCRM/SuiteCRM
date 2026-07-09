@@ -1093,9 +1093,7 @@ JS;
     },
     npsClass(i) { 
       if(this.val !== i) return 'btn-outline-secondary opacity-75';
-      if(i <= 6) return 'btn-danger text-white border-danger shadow-sm';
-      if(i <= 8) return 'btn-warning text-dark border-warning shadow-sm';
-      return 'btn-success text-white border-success shadow-sm';
+      return 'btn-primary border-primary shadow-sm';
     },
     starContainerStyle(i) {
       const baseStyle = 'width: 1.5rem; height: 1.5rem; transform-origin: center center; transition: all 0.2s ease; margin-bottom: 0.5rem;';
