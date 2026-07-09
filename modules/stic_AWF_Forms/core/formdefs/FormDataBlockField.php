@@ -98,4 +98,13 @@ class FormDataBlockField {
         
         return $dto;
     }
+
+    public function getKey(): string {
+        $prefix = $this->type_field === DataBlockFieldType::UNLINKED ? '_detached.' : '';
+        return $prefix . $this->data_block->name . '.' . $this->name;
+    }
+
+    public function getPhpKey(): string {
+        return str_replace('.', '_', $this->getKey());
+    }
 }

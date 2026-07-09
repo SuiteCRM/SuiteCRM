@@ -101,8 +101,8 @@ class FormRenderService {
                 
                 if (isset($requestData[$field->name])) {
                     $val = $requestData[$field->name];
-                } elseif (isset($requestData[$block->name . '_' . $field->name])) {
-                    $val = $requestData[$block->name . '_' . $field->name];
+                } elseif (isset($requestData[$field->getPhpKey()])) {
+                    $val = $requestData[$field->getPhpKey()];
                 }
 
                 if ($val !== null) {

@@ -640,6 +640,10 @@ class ResponseHandler
             'errorDescriptions' => [],
         ];
 
+        // Preprocess data to fill in missing boolean/checkbox fields
+        // (browsers don't send unchecked checkboxes)
+        stic_AWFUtils::fillMissingBooleanFields($config, $data);
+
         foreach ($config->data_blocks as $block) {
             // Datablock is detached
             if (empty($block->module)) continue; 
@@ -649,9 +653,8 @@ class ResponseHandler
             if (empty($realVardefs)) continue;
 
             foreach ($block->fields as $formField) {
-                $prefix = ($formField->type_field === DataBlockFieldType::UNLINKED) ? '_detached.' : '';
-                $inputKeyInForm = $prefix . $block->name . '.' . $formField->name;
-                $inputKey = str_replace(".", "_", $inputKeyInForm);
+                $inputKeyInForm = $formField->getKey();
+                $inputKey = $formField->getPhpKey();
                 $value = $data[$inputKey] ?? null;
                 $label = rtrim($formField->label, ":");
                 
@@ -820,8 +823,7 @@ class ResponseHandler
                 if ($field->type_field === DataBlockFieldType::FIXED) continue;
 
                 // Input key
-                $prefix = ($field->type_field === DataBlockFieldType::UNLINKED) ? '_detached_' : '';
-                $inputKey = $prefix . $block->name . '_' . $field->name;
+                $inputKey = $field->getPhpKey();
                 
                 $rawValue = $submittedData[$inputKey] ?? null;
                 

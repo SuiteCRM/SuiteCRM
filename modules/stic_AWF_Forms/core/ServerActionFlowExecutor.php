@@ -47,6 +47,12 @@ class ServerActionFlowExecutor {
         $lastActionConfig = null;
         try {
             $actions = $flowConfig->actions ?? [];
+
+            // Preprocess formData to fill in missing boolean/checkbox fields
+            // (browsers don't send unchecked checkboxes, so without this the condition would
+            // compare null vs '0' and fail)
+            stic_AWFUtils::fillMissingBooleanFields($this->context->formConfig, $this->context->formData);
+
             foreach ($actions as $actionConfig) {
                 $lastActionConfig = $actionConfig;
 

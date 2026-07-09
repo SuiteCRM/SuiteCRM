@@ -466,7 +466,7 @@ class FormHtmlGeneratorService {
      * @return string The generated HTML for the field as a string
      */
     private function renderField(FormDataBlock $block, FormDataBlockField $field, FormTheme $theme): string {
-        $inputName = ($field->type_field === DataBlockFieldType::UNLINKED ? '_detached.' : '') . $block->name . '.' . $field->name;
+        $inputName = $field->getKey();
 
         // Render hidden fields differently: only input without label or wrapper
         if ($field->type_in_form === 'hidden') {
@@ -696,7 +696,7 @@ class FormHtmlGeneratorService {
      * @return string The generated HTML for the rating field as a string, including the interactive controls and any associated labels and descriptions
      */
     private function generateRatingField(FormDataBlock $block, FormDataBlockField $field): string {
-        $inputName = ($field->type_field === DataBlockFieldType::UNLINKED ? '_detached.' : '') . $block->name . '.' . $field->name;
+        $inputName = $field->getKey();
         $name = htmlspecialchars($inputName);
         $label = htmlspecialchars($field->label ?? '');
         $description = "";

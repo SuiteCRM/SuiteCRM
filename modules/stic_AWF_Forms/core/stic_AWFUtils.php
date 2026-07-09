@@ -171,11 +171,7 @@ class stic_AWFUtils {
                         continue;
                     }
 
-                    $formKey = "{$block->name}.{$fieldDef->name}";
-                    if ($fieldDef->type_field === DataBlockFieldType::UNLINKED) {
-                        $formKey = "_detached.{$formKey}";
-                    }
-                    $formKey = str_replace('.', '_', $formKey);
+                    $formKey = $fieldDef->getPhpKey();
                     
                     // Value to display
                     $value = $formData[$formKey] ?? '';
@@ -403,11 +399,7 @@ class stic_AWFUtils {
                     if ($fieldDef->type_field === DataBlockFieldType::FIXED) continue;
                     if (empty($fieldDef->label)) continue;
 
-                    $formKey = "{$block->name}.{$fieldDef->name}";
-                    if ($fieldDef->type_field === DataBlockFieldType::UNLINKED) {
-                        $formKey = "_detached.{$formKey}";
-                    }
-                    $formKey = str_replace('.', '_', $formKey);
+                    $formKey = $fieldDef->getPhpKey();
 
                     // Value to display
                     $value = $formData[$formKey] ?? '';
@@ -845,6 +837,27 @@ class stic_AWFUtils {
         $html = preg_replace($pattern, $replacement, $text);
 
         return nl2br($html);
+    }
+
+    /**
+     * Preprocesses form data to fill in missing boolean/checkbox fields with '0'.
+     * Browsers do not send unchecked checkboxes in POST data, so they are absent from formData.
+     * Without this preprocessing, conditions on boolean fields with value 'No' ('0') would fail
+     * because the field would be null instead of '0'.
+     * @param FormConfig $formConfig The form configuration containing field definitions
+     * @param array $formData The submitted form data (passed by reference to be modified)
+     */
+    public static function fillMissingBooleanFields(FormConfig $formConfig, array &$formData): void {
+        foreach ($formConfig->data_blocks as $dataBlock) {
+            foreach ($dataBlock->fields as $field) {
+                if ($field->type === 'bool' || $field->type === 'checkbox' || in_array($field->subtype_in_form, ['select_checkbox', 'select_switch'])) {
+                    $phpKey = $field->getPhpKey();
+                    if (!isset($formData[$phpKey])) {
+                        $formData[$phpKey] = '0';
+                    }
+                }
+            }
+        }
     }
 
     /**

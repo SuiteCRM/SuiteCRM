@@ -55,7 +55,7 @@ class DataBlockResolved {
 
                 // Field is not present in the form; compute the logical key it would have
                 $formKey = ""; 
-                $logicalKey = ($fieldDef->type_field === DataBlockFieldType::UNLINKED ? '_detached.' : '') . $config->name . '.' . $fieldName;
+                $logicalKey = $fieldDef->getKey();
                 $fieldResolved = new DataBlockFieldResolved($logicalKey, $fieldName, $fieldDef, $castedValue);
 
                 // Store the field in the appropriate array
