@@ -182,6 +182,7 @@ $mod_strings = array (
   'LBL_FIELD_VALUE_OPTIONS_CUSTOMIZED' => '(Modificat)',
   'LBL_FIELD_VALUE_OPTIONS_SELECT_REGS' => 'Selecciona els registres',
   'LBL_FIELD_VALUE_OPTIONS' => 'Valors possibles',
+  'LBL_FIELD_VALUE_OPTION_SHOW_NAME' => 'Mostra els valors interns',
   'LBL_FIELD_VALUE_OPTION_NAME' => 'Valor intern',
   'LBL_FIELD_VALUE_OPTION_ORIGINAL_LABEL' => 'Text original',
   'LBL_FIELD_VALUE_OPTION_LABEL' => 'Text',

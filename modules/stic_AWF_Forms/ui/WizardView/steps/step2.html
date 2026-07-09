@@ -524,10 +524,14 @@
                           <!-- Value options configuration Table -->
                           <div class="col-12" x-data="WizardStep2.sortableListxData(field.value_options)">
                             <span class="form-label mt-3" x-text="utils.translateForFieldLabel('LBL_FIELD_VALUE_OPTIONS')" ></span>
+                            <div class="text-muted form-check form-switch small" x-data="{ init() { $data.showInternalValues = false; } }">
+                              <input class="form-check-input" type="checkbox" id="toggleInternalValues" x-model="showInternalValues">
+                              <label class="form-label" for="toggleInternalValues" x-text="utils.translate('LBL_FIELD_VALUE_OPTION_SHOW_NAME')"></label>
+                            </div>
                             <table class="table table-bordered table-striped w-auto" id="modalField_ValueOptionsTable">
                               <thead>
                                 <tr>
-                                  <th x-text="utils.translate('LBL_FIELD_VALUE_OPTION_NAME')"></th>
+                                  <th x-show="showInternalValues" x-text="utils.translate('LBL_FIELD_VALUE_OPTION_NAME')"></th>
                                   <template x-if="!field.isSelectCustomOptions()">
                                     <th x-text="utils.translate('LBL_FIELD_VALUE_OPTION_ORIGINAL_LABEL')"></th>
                                   </template>
@@ -543,11 +547,11 @@
                                   <tr>
                                     <!-- Value -->
                                     <template x-if="!field.isSelectCustomOptions()">
-                                      <td x-text="element.value"></td>
+                                      <td x-show="showInternalValues" x-text="element.value"></td>
                                     </template>
                                     <template x-if="field.isSelectCustomOptions()">
-                                      <td>
-                                        <input class="form-control" type="text" x-model="element.value" :id="`modalField_ValueOptionsValue${index}`"/>
+                                      <td x-show="showInternalValues">
+                                        <input class="form-control" type="text" x-model="element.value" :id="`modalField_ValueOptionsValue${index}`" :placeholder="element.text"/>
                                       </td>
                                     </template>
                                     <!-- Text original -->
@@ -564,7 +568,8 @@
                                     </template>
                                     <!-- Text -->
                                     <td>
-                                      <input class="form-control" type="text" x-model="element.text" :id="`modalField_ValueOptionsText${index}`"/>
+                                      <input class="form-control" type="text" x-model="element.text" :id="`modalField_ValueOptionsText${index}`"
+                                             @change="if (field.isSelectCustomOptions() && (!element.value || element.value.trim() === '')) { element.value = element.text; }" />
                                     </td>
                                     <!-- Buttons -->
                                     <td class="d-flex">

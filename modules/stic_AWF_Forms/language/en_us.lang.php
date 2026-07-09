@@ -182,6 +182,7 @@ $mod_strings = array (
   'LBL_FIELD_VALUE_OPTIONS_CUSTOMIZED' => '(Modified)',
   'LBL_FIELD_VALUE_OPTIONS_SELECT_REGS' => 'Select records',
   'LBL_FIELD_VALUE_OPTIONS' => 'Possible values',
+  'LBL_FIELD_VALUE_OPTION_SHOW_NAME' => 'Show internal values',
   'LBL_FIELD_VALUE_OPTION_NAME' => 'Internal value',
   'LBL_FIELD_VALUE_OPTION_ORIGINAL_LABEL' => 'Original text',
   'LBL_FIELD_VALUE_OPTION_LABEL' => 'Text',
