@@ -450,7 +450,7 @@ class FormHtmlGeneratorService {
         $html = "";
         foreach ($block->fields as $field) {
             if ($field->type_field === DataBlockFieldType::FIXED) continue;
-            $html .= $this->renderField($block, $field, $theme);
+            $html .= $this->renderField($field, $theme);
         }
         return $html;
     }
@@ -460,12 +460,11 @@ class FormHtmlGeneratorService {
      * It handles special cases such as hidden fields, single checkboxes, switches, and rating fields, as well as common cases for text inputs, textareas, and selects. 
      * It also incorporates validation attributes and help text when provided.
      * 
-     * @param FormDataBlock $block The data block to which the field belongs, used for constructing the input name and ID
      * @param FormDataBlockField $field The field to be rendered, containing all necessary information about its type, label, validations, etc.
      * @param FormTheme $theme The form theme that may affect the rendering of the field (e.g., whether floating labels are used)
      * @return string The generated HTML for the field as a string
      */
-    private function renderField(FormDataBlock $block, FormDataBlockField $field, FormTheme $theme): string {
+    private function renderField(FormDataBlockField $field, FormTheme $theme): string {
         $inputName = $field->getKey();
 
         // Render hidden fields differently: only input without label or wrapper
@@ -551,7 +550,7 @@ class FormHtmlGeneratorService {
         // --- SPECIAL CASES (ratings) ---
 
         if ($field->type_in_form === 'rating') {
-            return $this->generateRatingField($block, $field) .$this->newLine();
+            return $this->generateRatingField($field) .$this->newLine();
         }
 
         // --- COMMON CASES ---
@@ -691,11 +690,10 @@ class FormHtmlGeneratorService {
      * Supports different subtypes: stars, emojis, thumbs, and lights, each with its own visual representation and interaction logic.
      * The method uses AlpineJS for interactivity, allowing users to hover and select their rating, with visual feedback.
      * 
-     * @param FormDataBlock $block The data block to which the rating field belongs, used for constructing the input name and ID
      * @param FormDataBlockField $field The rating field to be rendered, containing all necessary information about its label, description, subtype, and validation requirements
      * @return string The generated HTML for the rating field as a string, including the interactive controls and any associated labels and descriptions
      */
-    private function generateRatingField(FormDataBlock $block, FormDataBlockField $field): string {
+    private function generateRatingField(FormDataBlockField $field): string {
         $inputName = $field->getKey();
         $name = htmlspecialchars($inputName);
         $label = htmlspecialchars($field->label ?? '');
