@@ -145,7 +145,8 @@ class stic_AWF_FormsController extends SugarController
         header('Content-Type: application/json');
 
         require_once "modules/stic_AWF_Forms/core/includes.php";
-        $serverActions = ActionDiscoveryService::discoverActions();
+        $formType = $_REQUEST['form_type'] ?? null;
+        $serverActions = ActionDiscoveryService::discoverActions([], $formType);
 
         $actionDTOs = [];
         foreach ($serverActions as $actionDef) {

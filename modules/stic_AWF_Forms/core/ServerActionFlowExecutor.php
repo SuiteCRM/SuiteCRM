@@ -69,6 +69,16 @@ class ServerActionFlowExecutor {
                 // Find the action executor (throws if not found)
                 $actionExecutor = $this->factory->createAction($actionConfig);
 
+                // Check form type compatibility
+                if (!empty($this->context->formType) && !empty($actionExecutor->supportedFormTypes)) {
+                    if (!in_array($this->context->formType, $actionExecutor->supportedFormTypes)) {
+                        $GLOBALS['log']->info('Line '.__LINE__.': '.__METHOD__.': '. "Advanced Web Forms: Skipping action '{$actionConfig->text}' because it does not support form type '{$this->context->formType}'.");
+                        $skippedResult = new ActionResult(ResultStatus::SKIPPED, $actionConfig, "Form type '{$this->context->formType}' not supported.");
+                        $this->context->addActionResult($skippedResult);
+                        continue;
+                    }
+                }
+
                 // Parameter resolution
                 $paramDefinitions  = $actionExecutor->getParameters();
                 $paramConfigurations = $actionConfig->parameters;

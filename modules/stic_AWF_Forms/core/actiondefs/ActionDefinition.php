@@ -57,6 +57,8 @@ abstract class ActionDefinition {
     public array $supportedModules = [];       // moduleList
     /** @var string[] */
     public array $supportedFieldSubTypes = []; // stic_awf_forms_field_subtype_in_form_list
+    /** @var string[] */
+    public array $supportedFormTypes = []; // Empty = all form types (web, crm, etc.)
     public int $order = 0;
 
     protected string $baseLabel = 'LBL_CUSTOM_ACTION'; // Base label for translations, subclasses should set this to their specific base label

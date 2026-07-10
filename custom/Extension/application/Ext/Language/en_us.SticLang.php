@@ -3947,6 +3947,10 @@ $app_list_strings['stic_awf_forms_status_list']['draft'] = 'Draft';
 $app_list_strings['stic_awf_forms_status_list']['public'] = 'Public';
 $app_list_strings['stic_awf_forms_status_list']['closed'] = 'Closed';
 
+// Advanced Web Forms: types
+$app_list_strings['stic_awf_forms_types_list']['web'] = 'Web form';
+$app_list_strings['stic_awf_forms_types_list']['crm'] = 'CRM form';
+
 // Advanced Web Forms: configuration->data_block->duplicate_detection->on_duplicate
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['enrich'] = 'Enrich';
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['update'] = 'Update';

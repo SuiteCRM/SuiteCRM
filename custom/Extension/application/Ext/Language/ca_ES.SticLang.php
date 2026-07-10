@@ -3948,6 +3948,10 @@ $app_list_strings['stic_awf_forms_status_list']['draft'] = 'Esborrany';
 $app_list_strings['stic_awf_forms_status_list']['public'] = 'Públic';
 $app_list_strings['stic_awf_forms_status_list']['closed'] = 'Tancat';
 
+// Advanced Web Forms: types
+$app_list_strings['stic_awf_forms_types_list']['web'] = 'Formulari web';
+$app_list_strings['stic_awf_forms_types_list']['crm'] = "Formulari del CRM";
+
 // Advanced Web Forms: configuration->data_block->duplicate_detection->on_duplicate
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['enrich'] = 'Amplia';
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['update'] = 'Actualitza';

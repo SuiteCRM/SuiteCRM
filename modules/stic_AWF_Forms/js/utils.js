@@ -209,6 +209,10 @@ class utils {
     return utils._cachedActions;
   }
 
+  static getDefinedAction(actionName) {
+    return utils.getDefinedActions().find(a => a.name == actionName);
+  }
+
   static newId(prefix = "") {
     return prefix + Date.now().toString(36) + Math.random().toString(36).substring(2);
   }

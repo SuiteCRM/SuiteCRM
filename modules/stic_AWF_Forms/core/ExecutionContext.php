@@ -39,6 +39,8 @@ class ExecutionContext {
 
     public float $submissionTimestamp;
 
+    public string $formType = '';
+
     public string $defaultAssignedUserId;
     public ?string $visitorUserId = null;
 
@@ -51,8 +53,9 @@ class ExecutionContext {
      * @param ?float $timestamp Submission timestamp (optional)
      * @param string $defaultAssignedUserId Default assigned user ID (optional)
      * @param ?SugarBean $responseBean The response Bean (optional)
+     * @param string $formType The form type (e.g., 'web', 'crm')
      */
-    public function __construct(string $formId, string $responseId, array $formData, FormConfig $formConfig, ?float $timestamp = null, string $defaultAssignedUserId = '', ?SugarBean $responseBean = null) {
+    public function __construct(string $formId, string $responseId, array $formData, FormConfig $formConfig, ?float $timestamp = null, string $defaultAssignedUserId = '', ?SugarBean $responseBean = null, string $formType = '') {
         $this->formId = $formId;
         $this->responseId = $responseId;
         $this->formData = $formData;
@@ -61,6 +64,7 @@ class ExecutionContext {
         $this->submissionTimestamp = $timestamp ?? microtime(true);
         $this->defaultAssignedUserId = $defaultAssignedUserId;
         $this->responseBean = $responseBean;
+        $this->formType = $formType;
     }
 
     /**

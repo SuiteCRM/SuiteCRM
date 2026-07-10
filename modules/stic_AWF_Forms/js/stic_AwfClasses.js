@@ -1893,8 +1893,12 @@ class stic_AwfConfiguration {
     const mainFlow = this.flows.find(f => f.id == '0');
     if (!mainFlow) return;
 
-    // Clean: Remove existing automatic actions from the main flow
-    mainFlow.actions = mainFlow.actions.filter(a => !a.is_automatic);
+    // Clean: Remove only SaveRecord and RelateRecords automatic actions (managed by this method).
+    // Other automatic actions (e.g., CheckSessionAction) are managed separately and must be preserved.
+    mainFlow.actions = mainFlow.actions.filter(a => 
+      !a.is_automatic || 
+      (a.name !== 'SaveRecordAction' && a.name !== 'RelateRecordsAction')
+    );
     
     // Reset saved action IDs on blocks before regenerating
     this.data_blocks.forEach(b => b.save_action_id = "");
@@ -1907,7 +1911,7 @@ class stic_AwfConfiguration {
     this.data_blocks.forEach(block => {
       if (!block.module) return;
       
-      const originalDef = utils.getDefinedActions().find(a => a.name == 'SaveRecordAction');
+      const originalDef = utils.getDefinedAction('SaveRecordAction');
       if (originalDef) {
         // Prepare definition override
         const actionDef = { 
@@ -1946,7 +1950,7 @@ class stic_AwfConfiguration {
           }
           
           if (relationshipName) {
-            const originalDef = utils.getDefinedActions().find(a => a.name == 'RelateRecordsAction');
+            const originalDef = utils.getDefinedAction('RelateRecordsAction');
             if (originalDef) {
               const actionDef = { 
                 ...originalDef, 

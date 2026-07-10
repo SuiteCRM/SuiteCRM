@@ -42,8 +42,8 @@ $viewdefs [$module_name] = array (
         ),
         1 => array (
           0 => array (
-            'name' => 'status',
-            'label' => 'LBL_STATUS',
+            'name' => 'form_type',
+            'label' => 'LBL_FORM_TYPE',
           ),
           1 => array (
             'name' => 'processing_mode',
@@ -51,6 +51,14 @@ $viewdefs [$module_name] = array (
           ),
         ),
         2 => array (
+          0 => array (
+            'name' => 'status',
+            'label' => 'LBL_STATUS',
+          ),
+          1 => array (
+          ),
+        ),
+        3 => array (
           0 => array (
             'name' => 'start_date',
             'label' => 'LBL_START_DATE',
@@ -60,7 +68,7 @@ $viewdefs [$module_name] = array (
             'label' => 'LBL_END_DATE',
           ),
         ),        
-        3 => array (
+        4 => array (
           0 => array (
             'name' => 'analytics_views',
             'label' => 'LBL_ANALYTICS_VIEWS',
@@ -70,7 +78,7 @@ $viewdefs [$module_name] = array (
             'label' => 'LBL_ANALYTICS_BLOCKED',
           ),
         ),
-        4 => array (
+        5 => array (
           0 => array (
             'name' => 'analytics_submissions',
             'label' => 'LBL_ANALYTICS_SUBMISSIONS',
@@ -80,13 +88,13 @@ $viewdefs [$module_name] = array (
             'label' => 'LBL_ANALYTICS_SPAM',
           ),
         ),
-        5 => array (
+        6 => array (
           0 => array (
             'name' => 'analytics_referrers',
             'label' => 'LBL_ANALYTICS_REFERRERS',
           ),
         ),
-        6 => array (
+        7 => array (
           0 => 'description',
         ),
       ),

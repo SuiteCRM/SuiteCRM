@@ -54,6 +54,17 @@
           map-text="text"
           map-value="id"
         ></stic-field-select> -->
+        <!-- Form Type -->
+        <div class="col-6" x-init="utils.setInlineHelpQtip()">
+          <label for="form_type" class="form-label" x-text="utils.translateForFieldLabel('LBL_FORM_TYPE')"></label>
+          <i class="inline-help glyphicon glyphicon-info-sign"></i>
+          <div class="inline-help-content" style="display:none;" x-text="utils.translate('LBL_FORM_TYPE_DESC')"></div>
+          <select id="form_type" class="form-select" x-model="bean.form_type">
+            <template x-for="item in utils.getList('stic_awf_forms_types_list')" :key="item.id">
+              <option :value="item.id" x-text="item.text" :selected="item.id == bean.form_type"></option>
+            </template>
+          </select>
+        </div>
       </div>
 
       <!-- Description -->

@@ -39,9 +39,10 @@ class ActionDiscoveryService {
     /**
      * Scans configured paths to discover actions, handling overrides in custom paths.
      * @param ActionType[] $availableTypes Action types to discover (empty for all)
+     * @param ?string $formType Optional form type to filter actions by (null = no filtering)
      * @return ActionDefinition[] Discovered actions
      */
-    public static function discoverActions(array $availableTypes = []): array {
+    public static function discoverActions(array $availableTypes = [], ?string $formType = null): array {
         $discoveredFiles = [];
         if (empty($availableTypes)) {
             $availableTypes = ActionType::cases();
@@ -88,6 +89,14 @@ class ActionDiscoveryService {
             } catch (\Throwable $t) {
                 $GLOBALS['log']->error("Line ".__LINE__.": ".__METHOD__.": Error discovering the action {$actionName}: " . $t->getMessage());
             }
+        }
+
+        // Filter by form type if specified
+        if ($formType !== null) {
+            $discoveredActions = array_filter($discoveredActions, function (ActionDefinition $action) use ($formType) {
+                // If supportedFormTypes is empty, the action supports all form types
+                return empty($action->supportedFormTypes) || in_array($formType, $action->supportedFormTypes);
+            });
         }
 
         return array_values($discoveredActions);

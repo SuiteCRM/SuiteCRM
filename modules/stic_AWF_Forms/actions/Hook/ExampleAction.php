@@ -72,6 +72,9 @@ class ExampleAction extends HookActionDefinition
         // The prefix to use for multi-language labels used by the application
         // These labels should be defined in the language files of the stic_AWF_Forms module
         $this->baseLabel = 'LBL_EXAMPLE_ACTION';
+
+        // Set the supported form types for this action. (Empty = all form types, or specify ['web', 'crm'] for specific types)
+        $this->supportedFormTypes = ['web', 'crm'];
     }
 
     /**

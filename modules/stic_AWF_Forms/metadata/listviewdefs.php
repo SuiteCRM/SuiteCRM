@@ -50,6 +50,11 @@ $listViewDefs[$module_name] = array(
         'default' => true,
         'link' => true
     ),
+    'FORM_TYPE' => array(
+        'width' => '10',
+        'label' => 'LBL_FORM_TYPE',
+        'default' => true,
+    ),
     'STATUS' => array(
         'width' => '10',
         'label' => 'LBL_STATUS',
