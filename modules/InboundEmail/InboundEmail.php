@@ -6324,12 +6324,17 @@ class InboundEmail extends SugarBean
 
         //TODO figure out if the since date is UDT
         if (!is_bool($storedOptions) && $storedOptions['only_since']) {// POP3 does not support Unseen flags
-            if (!isset($storedOptions['only_since_last']) && !empty($storedOptions['only_since_last'])) {
+            if (!isset($storedOptions['only_since_last']) || empty($storedOptions['only_since_last'])) {
                 $q = "SELECT last_run FROM schedulers WHERE job = '{$this->job_name}'";
                 $r = $this->db->query($q, true);
                 $a = $this->db->fetchByAssoc($r);
 
-                $date = date('r', strtotime($a['last_run']));
+                // Pad the cutoff back by a day: IMAP's SINCE date is evaluated against the mail
+                // server's own clock/timezone, which can disagree with PHP's day boundary near
+                // midnight. UNSEEN already prevents re-processing already-handled mail, so
+                // widening this window costs a slightly larger search rather than silently
+                // skipping messages received close to a day boundary.
+                $date = date('r', strtotime($a['last_run']) - 86400);
                 LoggerManager::getLogger()->debug("-----> getNewMessageIds() executed query: {$q}");
             } else {
                 $date = $storedOptions['only_since_last'];
@@ -6362,9 +6367,19 @@ class InboundEmail extends SugarBean
      */
     public function getMessagesFromDate(string $date, bool $unSeenOnly = false): array
     {
-        $startFormatedDate = date('d-M-Y', strtotime($date));
+        $targetTimestamp = strtotime($date);
+        $targetDay = date('Y-m-d', $targetTimestamp);
 
-        $criteria = 'ON "' . $startFormatedDate . '" UNDELETED';
+        // IMAP's ON/SINCE date criteria are day-granularity and evaluated against the mail
+        // server's own clock, with no timezone in the grammar - so a message whose sender
+        // Date: header falls on $date can have an INTERNALDATE the server considers a
+        // different calendar day (delivery near midnight, sender in a different timezone).
+        // Widen the server-side query by a day on each side, then filter precisely by
+        // parsing each candidate's actual Date: header against the requested day.
+        $rangeStart = date('d-M-Y', strtotime('-1 day', $targetTimestamp));
+        $rangeEnd = date('d-M-Y', strtotime('+2 day', $targetTimestamp)); // BEFORE is exclusive
+
+        $criteria = 'SINCE "' . $rangeStart . '" BEFORE "' . $rangeEnd . '" UNDELETED';
         if ($unSeenOnly) {
             $criteria .= ' UNSEEN';
         }
@@ -6377,10 +6392,21 @@ class InboundEmail extends SugarBean
         }
 
         if (empty($ret)) {
-            $ret = [];
+            return [];
         }
 
-        return $ret;
+        $filtered = [];
+        foreach ($ret as $msgNo) {
+            $header = $this->getImap()->getHeaderInfo($msgNo);
+            $senderTimestamp = isset($header->date) ? strtotime($header->date) : false;
+
+            // Keep the message if its Date: header can't be parsed, rather than dropping it.
+            if ($senderTimestamp === false || date('Y-m-d', $senderTimestamp) === $targetDay) {
+                $filtered[] = $msgNo;
+            }
+        }
+
+        return $filtered;
     }
 
     /**
