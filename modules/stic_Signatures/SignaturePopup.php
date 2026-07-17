@@ -62,10 +62,19 @@ class SelectSignatureTemplate
      */
     public static function getModuleTemplates($module)
     {
+        global $current_user;
         $db = DBManagerFactory::getInstance();
         $signatures = array();
 
-        $sql = "SELECT id,name, status FROM stic_signatures WHERE main_module = '" . $module . "' AND deleted = 0 ORDER BY date_modified DESC";
+        $sql = "SELECT id, name, status FROM stic_signatures WHERE main_module = '" . $module . "' AND deleted = 0";
+
+        require_once 'modules/SecurityGroups/SecurityGroup.php';
+        require_once 'modules/ACL/ACLController.php';
+        if (ACLController::requireSecurityGroup('stic_Signatures', 'list')) {
+            $sql .= " AND (stic_signatures.assigned_user_id = '" . $current_user->id . "' OR " . SecurityGroup::getGroupWhere('stic_signatures', 'stic_Signatures', $current_user->id) . ")";
+        }
+
+        $sql .= " ORDER BY date_modified DESC";
         $result = $db->query($sql);
         while ($row = $db->fetchByAssoc($result)) {
             $signatures[$row['id']] = ['name' => $row['name'], 'status' => $row['status']];
