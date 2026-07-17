@@ -3129,14 +3129,14 @@ class InboundEmail extends SugarBean
      * @param int $id
      * @return int
      */
-    private function createFolder($name, $type, $focusUser, $id = 0)
+    public function createFolder($name, $type, $focusUser, $id = 0)
     {
         $folder = new SugarFolder();
         $folder->name = $name;
         $folder->folder_type = $type;
         $folder->has_child = $id ? 1 : 0;
         $folder->is_dynamic = 1;
-        $folder->dynamic_query = $this->generateDynamicFolderQuery("sent", $focusUser->id);
+        $folder->dynamic_query = $this->generateDynamicFolderQuery($type, $focusUser->id);
         $folder->created_by = $focusUser->id;
         $folder->modified_by = $focusUser->id;
 
@@ -3153,12 +3153,24 @@ class InboundEmail extends SugarBean
     }
 
     /**
-     * @param $folderName
+     * @param string $folderName
+     * @param string|null $trashFolder Explicit trash folder name; falls back to $_REQUEST['trashFolder']
+     * @param string|null $sentFolder  Explicit sent folder name;  falls back to $_REQUEST['sentFolder']
      * @return bool
      */
-    private function folderIsRequestTrashOrSent($folderName)
+    public function folderIsRequestTrashOrSent($folderName, $trashFolder = null, $sentFolder = null)
     {
-        return $folderName == $_REQUEST['trashFolder'] || $folderName == $_REQUEST['sentFolder'];
+        $trashFolder = $trashFolder ?? ($_REQUEST['trashFolder'] ?? '');
+        $sentFolder  = $sentFolder  ?? ($_REQUEST['sentFolder']  ?? '');
+
+        if (!empty($trashFolder) && $folderName === $trashFolder) {
+            return true;
+        }
+        if (!empty($sentFolder) && $folderName === $sentFolder) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -6476,7 +6488,7 @@ class InboundEmail extends SugarBean
 
         if ($requestFolder === 'inbound') {
             if (!empty($_REQUEST['folder_name'])) {
-                $this->mailbox = $_REQUEST['folder_name'];
+                $this->mailbox = html_entity_decode($_REQUEST['folder_name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             } elseif ($this->mailboxarray && (is_countable($this->mailboxarray) ? count($this->mailboxarray) : 0)) {
                 $this->mailbox = $this->mailboxarray[0];
             } else {
@@ -6484,7 +6496,11 @@ class InboundEmail extends SugarBean
             }
         }
 
-        $connectString = $this->getConnectString($service, $this->mailbox);
+        $encodedMailbox = $this->mailbox;
+        if (function_exists('mb_convert_encoding') && in_array('UTF7-IMAP', mb_list_encodings())) {
+            $encodedMailbox = mb_convert_encoding($this->mailbox, 'UTF7-IMAP', 'UTF-8') ?: $this->mailbox;
+        }
+        $connectString = $this->getConnectString($service, $encodedMailbox);
 
         /*
          * Try to recycle the current connection to reduce response times
@@ -7025,7 +7041,9 @@ class InboundEmail extends SugarBean
         $this->filter_domain = $storedOptions['filter_domain'] ?? '';
         $this->trashFolder =  $storedOptions['trashFolder'] ?? '';
         $this->sentFolder = $storedOptions['sentFolder'] ?? '';
-        $this->mailbox = $storedOptions['mailbox'] ?? '';
+        if (!empty($storedOptions['mailbox'])) {
+            $this->mailbox = $storedOptions['mailbox'];
+        }
 
         $this->leave_messages_on_mail_server = isTrue($storedOptions['leaveMessagesOnMailServer'] ?? false);
         $this->move_messages_to_trash_after_import = !isTrue($storedOptions['leaveMessagesOnMailServer'] ?? true);
