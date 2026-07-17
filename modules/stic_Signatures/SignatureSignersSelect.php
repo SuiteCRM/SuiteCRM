@@ -22,10 +22,16 @@
  */
 
 /**
- * This script processes the selection of records to be added as signers
- * for a specific signature process. It handles fetching record IDs,
- * checking for existing signers, creating new signer records,
- * and establishing relationships with the signature.
+ * Presentation layer script for adding signers to a signature process.
+ *
+ * This script reads HTTP request data, delegates the business logic to
+ * SignatureSignersManager, and handles UI messages and redirect.
+ * The business logic is also available from non-HTTP contexts via
+ * SignatureSignersManager::addSignersToSignature().
+ *
+ * Incorporates the fix from PR #1279: manual authentication of $current_user
+ * from the session when the entrypoint is called with 'auth' => false,
+ * ensuring created_by and assigned_user_id are correctly populated.
  */
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
@@ -33,36 +39,32 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 global $mod_strings, $current_user;
 
-$bean = BeanFactory::getBean($_REQUEST['module']);
+if (empty($current_user->id) && !empty($_SESSION['authenticated_user_id'])) {
+    $current_user = BeanFactory::getBean('Users', $_SESSION['authenticated_user_id']);
+}
 
-if (!$bean) {
-    $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Invalid Module: " . $_REQUEST['module']);
+require_once 'modules/stic_Signatures/SignatureSignersManager.php';
+
+$module = $_REQUEST['module'] ?? '';
+$signatureId = $_REQUEST['signature-id'] ?? '';
+$currentUserId = $current_user->id ?? null;
+
+if (empty($module)) {
+    $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Module parameter is empty.");
     sugar_die("Invalid Module");
 }
 
-$signatureId = $_REQUEST['signature-id'] ?? '';
 if (empty($signatureId)) {
     $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Signature ID is empty.");
     sugar_die("Signature ID is required");
 }
 
-$recordIds = array();
-
 // Determine record IDs based on mass update context or direct selection
 if (isset($_REQUEST['current_post']) && $_REQUEST['current_post'] !== '') {
-    $order_by = '';
-    require_once 'include/MassUpdate.php';
-    $mass = new MassUpdate();
-    $mass->generateSearchWhere($_REQUEST['module'], $_REQUEST['current_post']);
-    $ret_array = create_export_query_relate_link_patch($_REQUEST['module'], $mass->searchFields, $mass->where_clauses);
-    $query = $bean->create_export_query($order_by, $ret_array['where'], $ret_array['join']);
-    $result = DBManagerFactory::getInstance()->query($query, true);
-    $uids = array();
-    while ($val = DBManagerFactory::getInstance()->fetchByAssoc($result, false)) {
-        $recordIds[] = $val['id'];
-    }
+    $recordIds = SignatureSignersManager::getRecordIdsFromMassUpdate($module, $_REQUEST['current_post']);
 } else {
-    $recordIds = explode(',', $_REQUEST['uid']);
+    $uid = $_REQUEST['uid'] ?? '';
+    $recordIds = !empty($uid) ? explode(',', $uid) : [];
 }
 
 if (empty($recordIds)) {
@@ -70,89 +72,26 @@ if (empty($recordIds)) {
     sugar_die("No records selected");
 }
 
-require_once 'modules/stic_Signatures/Utils.php';
+$result = SignatureSignersManager::addSignersToSignature(
+    $signatureId,
+    $module,
+    $recordIds,
+    $currentUserId
+);
 
 $stic_SignatureBean = BeanFactory::getBean('stic_Signatures', $signatureId);
 
-// Obtain destination signers based on the signature configuration and selected records
-$destSigners = stic_SignaturesUtils::getSignatureSigners($signatureId, $recordIds);
-
-// Query the database directly to find existing stic_Signers records
-// associated with the current signatureId to prevent duplicates.
-$SQL = "SELECT ss.parent_id as id
-            FROM stic_signatures s
-            JOIN stic_signatures_stic_signers_c ssssc ON s.id = ssssc.stic_signatures_stic_signersstic_signatures_ida AND ssssc.deleted = 0
-            JOIN stic_signers ss ON ss.id = ssssc.stic_signatures_stic_signersstic_signers_idb AND ss.deleted = 0
-            WHERE s.deleted = 0
-            AND s.id = '{$signatureId}'";
-$result = DBManagerFactory::getInstance()->query($SQL, true);
-$existingSigners = array();
-while ($row = DBManagerFactory::getInstance()->fetchByAssoc($result, false)) {
-    $existingSigners[] = $row['id'];
-}
-
-$okCounter = 0;
-$koCounter = 0;
-
-// Process each destination signer
-foreach ($destSigners as $destSignerId => $destSigner) {
-    $destSignerBean = BeanFactory::getBean($destSigner['module'], $destSignerId);
-    if (!$destSignerBean) {
-        $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ": Could not obtain signer data for ID: " . $destSignerId);
-        $koCounter++;
-        continue;
-    }
-
-    // Skip if the signer already exists for this signature
-    if (in_array($destSignerId, $existingSigners)) {
-        $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": Skipping existing signer with ID: " . $destSignerId);
-        $koCounter++;
-        continue;
-    }
-
-    // Create a new stic_Signer bean
-    $stic_SignerBean = BeanFactory::newBean('stic_Signers');
-    $stic_SignerBean->name = "{$destSignerBean->full_name} - {$stic_SignatureBean->name}";
-    $stic_SignerBean->assigned_user_id = $current_user->id ?? $stic_SignatureBean->assigned_user_id;
-    $stic_SignerBean->created_by = $current_user->id ?? $stic_SignatureBean->assigned_user_id;
-    $stic_SignerBean->parent_type = $destSigner['module'];
-    $stic_SignerBean->parent_id = $destSignerId;
-    $stic_SignerBean->parent_name = $destSignerBean->full_name;
-    $stic_SignerBean->record_id = $destSigner['sourceId'];
-    $stic_SignerBean->record_type = $destSigner['sourceModule'];
-    $stic_SignerBean->record_name = $destSigner['sourceName'];
-    $stic_SignerBean->email_address = $destSigner['email'];
-    $stic_SignerBean->phone = $destSigner['phone'];
-    $stic_SignerBean->status = 'pending';
-    $stic_SignerBean->contact_id_c = $destSigner['onBehalfOfId'] != $stic_SignerBean->parent_id ? $destSigner['onBehalfOfId'] : null;
-
-    $stic_SignerBean->save();
-    if (!empty($stic_SignerBean->id)) {
-        require_once 'modules/stic_Signature_Log/Utils.php';
-        stic_SignatureLogUtils::logSignatureAction('ADD_SIGNER_TO_SIGNATURE', $stic_SignerBean->id, 'SIGNER', $stic_SignatureBean->name);
-        stic_SignatureLogUtils::logSignatureAction('ADD_SIGNER_TO_SIGNATURE', $stic_SignatureBean->id, 'SIGNATURE', $stic_SignerBean->name);
-    }
-
-    // Add relationships between stic_Signers and stic_Signatures records
-    // via the stic_signatures_stic_signers_c relationship table
-    $stic_SignatureBean->load_relationship('stic_signatures_stic_signers');
-    $stic_SignatureBean->stic_signatures_stic_signers->add($stic_SignerBean->id);
-    $okCounter++;
-}
-
-// Display success or error messages to the user
-if ($okCounter !== 0) {
-    SugarApplication::appendSuccessMessage("<p class='label label-success'><strong>{$okCounter}</strong> " . translate('LBL_SIGNERS_ADDED_MSG', 'stic_Signatures') . ".</p>");
-    if (in_array($stic_SignatureBean->status, ['completed', 'cancelled', 'paused'])) {
+if ($result['ok'] !== 0) {
+    SugarApplication::appendSuccessMessage("<p class='label label-success'><strong>{$result['ok']}</strong> " . translate('LBL_SIGNERS_ADDED_MSG', 'stic_Signatures') . ".</p>");
+    if ($stic_SignatureBean && in_array($stic_SignatureBean->status, ['completed', 'cancelled', 'paused'])) {
         SugarApplication::appendSuccessMessage("<br><p class='label label-warning'>" . translate('LBL_SIGNERS_ADDED_CLOSED_MSG', 'stic_Signatures') . "</p>");
     }
-    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$okCounter} signers added successfully.");
+    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$result['ok']} signers added successfully.");
 }
 
-if ($koCounter !== 0) {
-    SugarApplication::appendErrorMessage("<p class='label label-error'><strong>{$koCounter}</strong> " . translate('LBL_SIGNERS_NOT_ADDED_MSG', 'stic_Signatures') . ".</p>");
-    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$koCounter} signers could not be added because they already exist or an error occurred.");
+if ($result['ko'] !== 0) {
+    SugarApplication::appendErrorMessage("<p class='label label-error'><strong>{$result['ko']}</strong> " . translate('LBL_SIGNERS_NOT_ADDED_MSG', 'stic_Signatures') . ".</p>");
+    $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": {$result['ko']} signers could not be added because they already exist or an error occurred.");
 }
 
-// Redirect to the DetailView of the signature after processing
 SugarApplication::redirect('index.php?module=stic_Signatures&action=DetailView&record=' . $signatureId);
