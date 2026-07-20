@@ -25,6 +25,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 class stic_AWF_FormsUtils {
+
+    private static $relationshipsCache = [];
+
     /**
      * Retrieves fields and relationships of given Module to given SuiteCRM modules.
      * Result: [name, text, textSingular, inStudio, icon, fields:[Field], relationships:[Relationship]]
@@ -64,164 +67,86 @@ class stic_AWF_FormsUtils {
             }
         }
 
-        // Prepare where to find relationships
-        $moduleScanList = [
-            // All relations from module to availableModules
-            ['availableOrig' => [$moduleName => $moduleName], 'availableDest' => $availableModules],
-            // All relations from availableModules to module
-            ['availableOrig' => $availableModules, 'availableDest' => [$moduleName => $moduleName]]
-        ];
+        // Discover relationships from $dictionary (canonical source + link field fallback)
+        $result['relationships'] = self::getRelationshipsFromDictionary($moduleName, $availableModules);
 
-        $link_defs = [];
-        foreach($moduleScanList as $moduleScan) {
-            foreach($moduleScan['availableOrig'] as $moduleOrigName => $moduleOrigInfo) {
-                $objectOrig = BeanFactory::getObjectName($moduleOrigName);
-                VardefManager::loadVardef($moduleOrigName, $objectOrig);
-                $fieldDefs = $dictionary[$objectOrig]['fields'] ?? [];
-                foreach ($fieldDefs as $fieldName => $arr) {
-                    if ($moduleOrigName == $moduleName && isset($result['fields'][$fieldName])) {
-                        continue;
-                    }
-                    if (!isset($arr['type'])) {
-                        continue;
-                    }
-                    // Set link defs to process later
-                    if ($arr['type'] == 'link') {
-                        $link_defs[$fieldName] = $arr;
-                        continue;
-                    }
+        // Discover fields for the module
+        try {
+            $objectOrig = BeanFactory::getObjectName($moduleName);
+            VardefManager::loadVardef($moduleName, $objectOrig);
+        } catch (\Exception $e) {
+            $GLOBALS['log']->warn(__METHOD__ . ": Error loading vardefs for '{$moduleName}': " . $e->getMessage());
+            return $result;
+        }
+        $fieldDefs = $dictionary[$objectOrig]['fields'] ?? [];
 
-                    // Exclude non Studio editable fields
-                    if (isset($arr['studio'])) {
-                        if (is_array($arr['studio']) && isset($arr['studio']['editview']) && $arr['studio']['editview'] === false) {
-                            continue;
-                        }
-                        if ($arr['studio'] === false || $arr['studio'] === 'false') {
-                            continue;
-                        }
-                    }
+        // Collect link field relationship names for later relate-field cleanup
+        $validRelNames = array_keys($result['relationships']);
 
-                    // Exclude ID type fields
-                    if ($arr['type'] == 'id' || (isset($arr['dbType']) && strtolower($arr['dbType']) == 'id')) {
-                        continue;
-                    }
-                    // Exclude currency, date_entered, date_modified, modified_user, created_by, deleted fields
-                    if ($fieldName === 'currency_name' || $fieldName === 'currency_symbol' ||
-                        $fieldName === 'date_entered' || $fieldName === 'date_modified' ||
-                        $fieldName === 'modified_user_id' || $fieldName === 'modified_by_name' ||
-                        $fieldName === 'created_by' || $fieldName === 'created_by_name' ||
-                        $fieldName === 'deleted') {
-                        continue;
-                    }
-                    // Exclude non procesable field types
-                    // Tipus especials o widgets UI: html, iframe, image, file, phone, email, url, address, name, fullname, …
-                    if ($arr['type'] == "html" || $arr['type'] == "iframe" || $arr['type'] == "image" || 
-                        $arr['type'] == "file" || $arr['type'] == "attachment" || $arr['type'] == "address" || $arr['type'] == "wysiwyg" || 
-                        $arr['type'] == "parent" || $arr['type'] == "parent_type" || 
-                        $arr['type'] == "team_id" || $arr['type'] == "team_set_id" || $arr['type'] == "team_list" || $arr['type'] == "team_count" || 
-                        $arr['type'] == "wysiwyg") {
-                        continue;
-                    }
+        foreach ($fieldDefs as $fieldName => $arr) {
+            if (isset($result['fields'][$fieldName])) continue;
+            if (!isset($arr['type'])) continue;
+            if ($arr['type'] == 'link') continue;
 
-                    $isEmail = self::isEmailField($arr, $fieldName);
-                    $merge_filter = $arr['merge_filter'] ?? ''; 
-                    if ($isEmail) {
-                        $merge_filter = 'enabled';
-                    }
-                    // In source Module: Set fields information
-                    if ($moduleOrigName == $moduleName) {
-                        // Add field information
-                        // name, text, type, required, default, options, inViews
-                        $result['fields'][$fieldName] = [
-                            'name' => $fieldName,
-                            'text' => rtrim(trim(translate($arr['vname'] ?? '', $moduleOrigName)), ":"),
-                            'type' => $arr['type'],
-                            'required' => isset($arr['required']) && $arr['required'],
-                            'default' => $arr['default'] ?? null,
-                            'options' => $arr['options'] ?? '',
-                            'module' => $arr['module'] ?? '',
-                            'merge_filter' => $merge_filter, // 'enabled', 'disabled', 'selected', ''
-                            'inViews' => false,
-                        ];
+            // Exclude non Studio editable fields
+            if (isset($arr['studio'])) {
+                if (is_array($arr['studio']) && isset($arr['studio']['editview']) && $arr['studio']['editview'] === false) continue;
+                if ($arr['studio'] === false || $arr['studio'] === 'false') continue;
+            }
 
-                    }
+            // Exclude ID type fields
+            if ($arr['type'] == 'id' || (isset($arr['dbType']) && strtolower($arr['dbType']) == 'id')) continue;
 
-                    // Relationships: type:'relate' with 'non-db' and 'link' and is set 'module' as available (dest) module
-                    if ($arr['type'] != 'relate' || 
-                        !isset($arr['source']) || $arr['source'] != 'non-db' || !isset($arr['link']) ||
-                        !isset($arr['module']) || !isset($arr['module']) || !isset($moduleScan['availableDest'][$arr['module']])) {
-                        continue;
-                    }
-                    // Ignore EmailAddress relationships
-                    if ($arr['module'] == 'EmailAddress') {
-                        continue;
-                    }
+            // Exclude system fields
+            $excludedFields = ['currency_name', 'currency_symbol', 'date_entered', 'date_modified',
+                'modified_user_id', 'modified_by_name', 'created_by', 'created_by_name', 'deleted'];
+            if (in_array($fieldName, $excludedFields)) continue;
 
-                    // Add relationship information (if not set yet)
-                    if (!isset($result['relationships'][$arr['link']])) {
-                        // { name, text, module_orig, field_orig, relationship, module_dest }
-                        $result['relationships'][$arr['link']] = [
-                            'name' => $arr['link'],
-                            'text' => '',
-                            'module_orig' => $moduleOrigName,
-                            'field_orig' => $fieldName,
-                            'relationship' => '',
-                            'module_dest' => $arr['module']
-                        ];
-                    }
+            // Exclude non procesable field types
+            $excludedTypes = ['html', 'iframe', 'image', 'file', 'attachment', 'address', 'wysiwyg',
+                'parent', 'parent_type', 'team_id', 'team_set_id', 'team_list', 'team_count'];
+            if (in_array($arr['type'], $excludedTypes)) continue;
+
+            $isEmail = self::isEmailField($arr, $fieldName);
+            $merge_filter = $isEmail ? 'enabled' : ($arr['merge_filter'] ?? '');
+
+            $result['fields'][$fieldName] = [
+                'name' => $fieldName,
+                'text' => rtrim(trim(translate($arr['vname'] ?? '', $moduleName)), ":"),
+                'type' => $arr['type'],
+                'required' => isset($arr['required']) && $arr['required'],
+                'default' => $arr['default'] ?? null,
+                'options' => $arr['options'] ?? '',
+                'module' => $arr['module'] ?? '',
+                'id_name' => $arr['id_name'] ?? '',
+                'merge_filter' => $merge_filter,
+                'inViews' => false,
+            ];
+
+            // For relate fields with 'link' property: link options to their relationship name
+            if ($arr['type'] === 'relate' && isset($arr['link'])) {
+                $linkName = $arr['link'];
+                $linkRelName = $fieldDefs[$linkName]['relationship'] ?? '';
+                if (!empty($linkRelName) && isset($result['relationships'][$linkRelName])) {
+                    $result['fields'][$fieldName]['options'] = $linkRelName;
+                    $result['fields'][$fieldName]['link_name'] = $linkName;
+                }
+            }
+
+            // For standalone relate fields (no link, but has id_name): link to their virtual relationship
+            if ($arr['type'] === 'relate' && !isset($arr['link']) && !empty($arr['id_name'])) {
+                $virtualName = 'virtual__' . $fieldName;
+                if (isset($result['relationships'][$virtualName])) {
+                    $result['fields'][$fieldName]['options'] = $virtualName;
+                    $result['fields'][$fieldName]['link_name'] = $virtualName;
                 }
             }
         }
 
-        // Complete Relationship information finding Links
-        foreach ($result['relationships'] as $linkName => $arr) {
-            if (!isset($link_defs[$linkName])) {
-                continue;
-            }
-            $link_def = $link_defs[$linkName];
-
-            // { name, text, module_orig, field_orig, relationship, module_dest }
-            $module_orig = $result['relationships'][$linkName]['module_orig'];
-            $module_dest = $result['relationships'][$linkName]['module_dest'];
-
-            // Set relationship information
-            $label = $link_def['vname'] ?? '';
-            $rel_text = rtrim(trim(translate($label, $module_orig)), ":");
-            if ($label == $rel_text) {
-                $rel_text = rtrim(trim(translate($label, $module_dest)), ":");
-            }
-            // Fix relationship text
-            $module_text = trim(translate($moduleName));
-            $module_singularText = $module_text;
-            if(isset($app_list_strings['moduleListSingular'][$moduleName])) {
-                $module_singularText = trim($app_list_strings['moduleListSingular'][$moduleName]);
-            }
-            $otherModule = ($moduleName == $module_orig) ? $module_dest : $module_orig;
-            $otherModule_text = trim(translate($otherModule));
-            $otherModule_singularText = $otherModule_text; 
-            if(isset($app_list_strings['moduleListSingular'][$otherModule])) {
-                $otherModule_singularText = trim($app_list_strings['moduleListSingular'][$otherModule]);
-            }
-            if (strtolower(($rel_text)) == strtolower($module_text) ||
-                strtolower(($rel_text)) == strtolower($module_singularText) ||
-                strtolower(($rel_text)) == strtolower($otherModule_text) ) {
-                $rel_text = $otherModule_singularText;
-            }
-        
-            $result['relationships'][$linkName]['text'] = $rel_text;
-            $result['relationships'][$linkName]['relationship'] = $link_def['relationship'] ?? '';
-
-            if ($module_orig == $moduleName) {
-                // Set field information: Options with the linkName
-                $field_name = $result['relationships'][$linkName]['field_orig'];
-                $result['fields'][$field_name]['options'] = $linkName;
-            }
-        }
-
-        // Remove relation fields to unavailable modules
+        // Remove relate fields whose relationship is not available
         $fieldsToRemove = [];
         foreach ($result['fields'] as $fieldName => $arr) {
-            if ($arr['type'] == 'relate' && !isset($link_defs[$arr['options']])) {
+            if ($arr['type'] == 'relate' && !empty($arr['options']) && !in_array($arr['options'], $validRelNames)) {
                 $fieldsToRemove[] = $fieldName;
             }
         }
@@ -256,6 +181,291 @@ class stic_AWF_FormsUtils {
     }
 
     /**
+     * Returns relationships for a module using $dictionary['relationships'] (canonical source)
+     * with fallback to link-type fields from $dictionary['fields'].
+     * Each relationship entry includes: name, text, module_orig, module_dest, relationship, link_name
+     */
+    private static function getRelationshipsFromDictionary(string $moduleName, array $availableModules): array {
+        global $dictionary;
+
+        $cacheKey = $moduleName . '_' . md5(serialize(array_keys($availableModules)));
+        if (isset(self::$relationshipsCache[$cacheKey])) {
+            return self::$relationshipsCache[$cacheKey];
+        }
+
+        $result = [];
+        $bean = BeanFactory::newBean($moduleName);
+        if (!$bean) {
+            return $result;
+        }
+
+        try {
+            $objectName = BeanFactory::getObjectName($moduleName);
+            VardefManager::loadVardef($moduleName, $objectName);
+        } catch (\Exception $e) {
+            $GLOBALS['log']->warn(__METHOD__ . ": Error loading vardefs for '{$moduleName}': " . $e->getMessage());
+            return $result;
+        }
+
+        $fields = $dictionary[$objectName]['fields'] ?? [];
+        $relDefs = $dictionary[$objectName]['relationships'] ?? [];
+
+        $processed = [];
+        $sources = [
+            'relationships' => $relDefs,
+            'link_fields'   => array_filter($fields, function($f) { return ($f['type'] ?? '') === 'link' && !empty($f['relationship']); }),
+        ];
+
+        foreach ($sources as $sourceType => $entries) {
+            foreach ($entries as $key => $def) {
+                if ($sourceType === 'relationships') {
+                    $relName = $key;
+                    $lhs = $def['lhs_module'] ?? '';
+                    $rhs = $def['rhs_module'] ?? '';
+                    $vname = $def['vname'] ?? '';
+                    $linkFieldName = '';
+                    $relType = $def['relationship_type'] ?? 'many-to-many';
+                } else {
+                    $relName = $def['relationship'];
+                    $lhs = $moduleName;
+                    $rhs = $def['module'] ?? '';
+                    $vname = $def['vname'] ?? '';
+                    $linkFieldName = $def['name'] ?? $key;
+                    $relType = $def['relationship_type'] ?? 'many-to-many';
+
+                    if (empty($rhs)) {
+                        try {
+                            if ($bean->load_relationship($linkFieldName)) {
+                                $rhs = $bean->$linkFieldName->getRelatedModuleName();
+                            }
+                        } catch (\Exception $e) {
+                            continue;
+                        }
+                    }
+                }
+
+                if (isset($processed[$relName])) {
+                    // If the relationships source already created an entry but
+                    // without link_name (empty string), fill it from this link_field entry.
+                    if ($sourceType === 'link_fields' && isset($result[$relName]) && empty($result[$relName]['link_name'])) {
+                        $result[$relName]['link_name'] = $linkFieldName;
+                    }
+                    continue;
+                }
+                if (empty($rhs) || $rhs === 'EmailAddress') continue;
+
+                // Determine which side is the current module
+                $otherModule = null;
+                $isOrig = false;
+                if ($lhs === $moduleName && isset($availableModules[$rhs])) {
+                    $otherModule = $rhs;
+                    $isOrig = true;
+                } elseif ($rhs === $moduleName && isset($availableModules[$lhs])) {
+                    $otherModule = $lhs;
+                    $isOrig = false;
+                } else {
+                    continue;
+                }
+
+                $processed[$relName] = true;
+
+                // Text: translate vname, with fallbacks
+                $text = '';
+                if (!empty($vname)) {
+                    $text = translate($vname, $moduleName);
+                    if ($text === $vname) {
+                        $text = translate($vname, $otherModule);
+                    }
+                    $text = rtrim(trim($text), ':');
+                }
+                if (empty($text) || $text === $vname) {
+                    // Fallback 1: try relate field's vname (more descriptive for 1-N)
+                    $fieldVname = '';
+                    foreach ($fields as $fName => $fDef) {
+                        if (($fDef['type'] ?? '') !== 'relate') continue;
+                        $match = (!empty($linkFieldName) && ($fDef['link'] ?? '') === $linkFieldName)
+                              || (($fDef['module'] ?? '') === $otherModule);
+                        if ($match) {
+                            $fieldVname = $fDef['vname'] ?? '';
+                            break;
+                        }
+                    }
+                    if (!empty($fieldVname)) {
+                        $text = translate($fieldVname, $moduleName);
+                        $text = rtrim(trim($text), ':');
+                    }
+                    // Fallback 2: destination module name
+                    if (empty($text) || $text === $fieldVname) {
+                        $text = translate($otherModule) ?: $relName;
+                    }
+                }
+
+                $result[$relName] = [
+                    'name'              => $relName,
+                    'text'              => $text,
+                    'module_orig'       => $isOrig ? $moduleName : $otherModule,
+                    'module_dest'       => $isOrig ? $otherModule : $moduleName,
+                    'relationship'      => $relName,
+                    'link_name'         => $linkFieldName,
+                    'relationship_type' => $relType,
+                ];
+            }
+        }
+
+        // Build set of id_name values already covered by existing relationships
+        $coveredIdNames = [];
+        foreach ($relDefs as $relName => $relDef) {
+            if (isset($processed[$relName])) {
+                if (isset($relDef['relationship_type']) && $relDef['relationship_type'] === 'one-to-many') {
+                    if (($relDef['rhs_module'] ?? '') === $moduleName && !empty($relDef['rhs_key'])) {
+                        $coveredIdNames[$relDef['rhs_key']] = true;
+                    }
+                }
+            }
+        }
+        // Also check result entries that may already have id_name set
+        foreach ($result as $relData) {
+            if (!empty($relData['id_name'])) {
+                $coveredIdNames[$relData['id_name']] = true;
+            }
+        }
+
+        // Third source: standalone relate fields with id_name but without link (virtual relationships)
+        foreach ($fields as $fieldName => $f) {
+            if (($f['type'] ?? '') !== 'relate') continue;
+            if (empty($f['id_name'])) continue;
+            if (!empty($f['link'])) continue;
+            if (empty($f['module']) || !isset($availableModules[$f['module']])) continue;
+            if (isset($coveredIdNames[$f['id_name']])) continue;
+
+            $virtualName = 'virtual__' . $fieldName;
+
+            $vname = $f['vname'] ?? '';
+            $text = '';
+            if (!empty($vname)) {
+                $text = rtrim(trim(translate($vname, $moduleName)), ':');
+            }
+            if (empty($text)) {
+                $text = translate($f['module']) ?: $fieldName;
+            }
+            $suffix = translate('LBL_AWF_FIELD_SUFFIX', 'stic_AWF_Forms');
+            $text .= ' (' . $suffix . ')';
+
+            $result[$virtualName] = [
+                'name'              => $virtualName,
+                'text'              => $text,
+                'module_orig'       => $moduleName,
+                'module_dest'       => $f['module'],
+                'relationship'      => $virtualName,
+                'link_name'         => $fieldName,
+                'id_name'           => $f['id_name'],
+                'is_virtual_relate' => true,
+                'type'              => '1-N',
+                'relationship_type' => 'one-to-many',
+            ];
+
+            $processed[$virtualName] = true;
+        }
+
+        // Build a map of canonical relationship text by module_dest to detect redundant inverse virtuals.
+        $canonicalTextByDest = [];
+        foreach ($result as $relName => $relData) {
+            if (empty($relData['is_virtual_relate'])) {
+                $dest = $relData['module_dest'];
+                if (!isset($canonicalTextByDest[$dest])) {
+                    $canonicalTextByDest[$dest] = $relData['text'];
+                }
+            }
+        }
+
+        // Fourth source: inverse virtual relationships — scan other modules for standalone
+        // relate fields pointing to the current module, so the relationship is visible from
+        // both the owning module (the N side with the FK) and the target module (the 1 side).
+        foreach ($availableModules as $otherModuleName => $otherModuleInfo) {
+            if ($otherModuleName === $moduleName) continue;
+
+            try {
+                $otherObjectName = BeanFactory::getObjectName($otherModuleName);
+                if (empty($otherObjectName)) {
+                    $GLOBALS['log']->debug(__METHOD__ . ": Fourth source — empty objectName for '{$otherModuleName}', skipping.");
+                    continue;
+                }
+                VardefManager::loadVardef($otherModuleName, $otherObjectName);
+            } catch (\Exception $e) {
+                $GLOBALS['log']->debug(__METHOD__ . ": Fourth source — Exception loading vardefs for '{$otherModuleName}': " . $e->getMessage());
+                continue;
+            }
+
+            $otherFields = $dictionary[$otherObjectName]['fields'] ?? [];
+
+            foreach ($otherFields as $fieldName => $f) {
+                if (($f['type'] ?? '') !== 'relate') continue;
+                if (empty($f['id_name'])) continue;
+                if (!empty($f['link'])) continue;
+                if (($f['module'] ?? '') !== $moduleName) continue;
+
+                $virtualName = 'virtual__' . $fieldName;
+                if (isset($processed[$virtualName])) continue;
+
+                $vname = $f['vname'] ?? '';
+                $baseText = '';
+                if (!empty($vname)) {
+                    $baseText = rtrim(trim(translate($vname, $otherModuleName)), ':');
+                }
+                if (empty($baseText)) {
+                    $baseText = translate($moduleName) ?: $fieldName;
+                }
+
+                // Skip if a canonical relationship already covers the same text to the same module_dest.
+                // This prevents redundant inverse virtuals (e.g. Leads' report_to_name → Contacts
+                // when contact_direct_reports already provides "Informa a" within Contacts).
+                if (isset($canonicalTextByDest[$moduleName]) && $canonicalTextByDest[$moduleName] === $baseText) {
+                    $GLOBALS['log']->debug(__METHOD__ . ": Fourth source — SKIPPING '{$virtualName}' (field '{$fieldName}' in '{$otherModuleName}'): text '{$baseText}' already covered by canonical to '{$moduleName}'.");
+                    continue;
+                }
+
+                $suffix = translate('LBL_AWF_FIELD_SUFFIX', 'stic_AWF_Forms');
+                $text = $baseText . ' (' . $suffix . ')';
+
+                $GLOBALS['log']->debug(__METHOD__ . ": Fourth source — FOUND relate field '{$fieldName}' in '{$otherModuleName}' pointing to '{$moduleName}', creating virtual '{$virtualName}' with text '{$text}'.");
+
+                $result[$virtualName] = [
+                    'name'               => $virtualName,
+                    'text'               => $text,
+                    'module_orig'        => $otherModuleName,
+                    'module_dest'        => $moduleName,
+                    'relationship'       => $virtualName,
+                    'link_name'          => $fieldName,
+                    'id_name'            => $f['id_name'],
+                    'is_virtual_relate'  => true,
+                    'is_inverse_virtual' => true,
+                    'type'               => '1-N',
+                    'relationship_type'  => 'one-to-many',
+                ];
+
+                $processed[$virtualName] = true;
+            }
+        }
+
+        // Deduplicate by target module: if multiple relationships point to the same module_dest,
+        // keep only the first non-virtual one (avoids duplicate Notes/Tasks entries in module selectors).
+        // Virtual relationships (is_virtual_relate = true) are always kept, since they represent
+        // distinct standalone relate fields that coexist with canonical relationships to the same module.
+        $seenDest = [];
+        foreach ($result as $relName => $relData) {
+            $dest = $relData['module_dest'];
+            $isVirtual = $relData['is_virtual_relate'] ?? false;
+            if (isset($seenDest[$dest]) && !$isVirtual) {
+                unset($result[$relName]);
+            } else {
+                $seenDest[$dest] = true;
+            }
+        }
+
+        return self::$relationshipsCache[$cacheKey] = $result;
+    }
+
+    /**
      * Determines if a given field definition corresponds to a CRM Email field.
      */
     public static function isEmailField($fieldDef, $fieldName) 
@@ -279,73 +489,8 @@ class stic_AWF_FormsUtils {
      * }
      */
     public static function getRelationships($moduleName, $availableModules) {
-        global $beanList;
+        $result = self::getRelationshipsFromDictionary($moduleName, $availableModules);
 
-        $result = [];
-        $moduleScanList = [
-            // All relations from module to availableModules
-            ['availableOrig' => [$moduleName => $moduleName], 'availableDest' => $availableModules],
-            // All relations from availableModules to module
-            ['availableOrig' => $availableModules, 'availableDest' => [$moduleName => $moduleName]]
-        ];
-
-        $link_defs = [];
-        foreach($moduleScanList as $moduleScan) {
-            foreach($moduleScan['availableOrig'] as $moduleOrigName => $moduleOrigInfo) {
-                if (!isset($beanList[$moduleOrigName])) {
-                    continue;
-                }
-                $moduleOrig = new $beanList[$moduleOrigName]();
-                foreach ($moduleOrig->field_defs as $fieldName => $arr) {
-                    if (!isset($arr['type'])) {
-                        continue;
-                    }
-                    // Set link defs to process later
-                    if ($arr['type'] == 'link') {
-                        $link_defs[$fieldName] = $arr;
-                        continue;
-                    }
-                    // Relationships: type:'relate' with 'non-db' and 'link' and is set 'module' as available (dest) module
-                    if ($arr['type'] != 'relate' || 
-                        !isset($arr['source']) || $arr['source'] != 'non-db' || !isset($arr['link']) ||
-                        !isset($arr['module']) || !isset($arr['module']) || !isset($moduleScan['availableDest'][$arr['module']])) {
-                        continue;
-                    }
-                    // Ignore EmailAddress relationships
-                    if ($arr['module'] == 'EmailAddress') {
-                        continue;
-                    }
-
-                    // Add relationship information (if not set yet)
-                    if (!isset($result[$arr['link']])) {
-                        // { name, text, module_orig, field_orig, relationship, module_dest }
-                        $result[$arr['link']] = [
-                            'name' => $arr['link'],
-                            'text' => '',
-                            'module_orig' => $moduleOrigName,
-                            'field_orig' => $fieldName,
-                            'relationship' => '',
-                            'module_dest' => $arr['module']
-                        ];
-                    }
-                }
-            }
-        }
-        // Complete Relationship information finding Links
-        foreach ($result as $linkName => $arr) {
-            if (!isset($link_defs[$linkName])) {
-                continue;
-            }
-            $link_def = $link_defs[$linkName];
-            // Set relationship information
-            // { name, text, module_orig, field_orig, relationship, module_dest }
-            $module_orig = $result[$linkName]['module_orig'];
-            $result[$linkName]['text'] = trim(translate($link_def['vname'] ?? '', $module_orig));
-            $result[$linkName]['text'] = trim(translate($link_def['vname'] ?? '', $moduleName));
-            $result[$linkName]['relationship'] = $link_def['relationship'] ?? '';
-        }  
-
-        // Sort relationships by text
         uasort($result, function($a, $b) {
             return strcmp($a['text'], $b['text']);
         });
@@ -362,61 +507,16 @@ class stic_AWF_FormsUtils {
      * }
      */
     public static function getRelationshipsBetween($availableModules) {
-        global $beanList;
-
         $result = [];
-        foreach($availableModules as $moduleName => $moduleInfo) {
-            if (!isset($beanList[$moduleName])) {
-                continue;
-            }
-            $module = new $beanList[$moduleName]();
-            $link_defs = [];
-            foreach ($module->field_defs as $fieldName => $arr) {
-                if (!isset($arr['type'])) {
-                    continue;
+        foreach ($availableModules as $moduleName => $moduleInfo) {
+            $rels = self::getRelationshipsFromDictionary($moduleName, $availableModules);
+            foreach ($rels as $relName => $relData) {
+                if (!isset($result[$relName])) {
+                    $result[$relName] = $relData;
                 }
-        
-                // Set link defs to process later
-                if ($arr['type'] == 'link') {
-                    $link_defs[$fieldName] = $arr;
-                    continue;
-                }
-            
-                // Relationships: type:'relate' with 'non-db' and 'link' and is set 'module' as available module
-                if ($arr['type'] != 'relate' || 
-                    !isset($arr['source']) || $arr['source'] != 'non-db' || !isset($arr['link']) ||
-                    !isset($arr['module']) || !isset($arr['module']) || !isset($availableModules[$arr['module']])) {
-                    continue;
-                }
-
-                // Ignore EmailAddress relationships
-                if ($arr['module'] == 'EmailAddress') {
-                    continue;
-                }
-        
-                // Add relationship information
-                // { name, text, module_orig, field_orig, relationship, module_dest }
-                $result[$arr['link']] = [
-                    'name' => $arr['link'],
-                    'text' => '',
-                    'module_orig' => $moduleName,
-                    'field_orig' => $fieldName,
-                    'relationship' => '',
-                    'module_dest' => $arr['module']
-                ];
-            }
-            // Complete relationship information: Field
-            foreach ($result as $linkName => $arr) {
-                if (!isset($link_defs[$linkName])) {
-                    continue;
-                }
-                $link_def = $link_defs[$linkName];
-                $result[$linkName]['text'] = trim(translate($link_def['vname'] ?? '', $moduleName));
-                $result[$linkName]['relationship'] = $link_def['relationship'] ?? '';
             }
         }
 
-        // Sort relationships by text
         uasort($result, function($a, $b) {
             return strcmp($a['text'], $b['text']);
         });
@@ -594,6 +694,83 @@ class stic_AWF_FormsUtils {
             return $color;
         } else {
             return '#b5bc31';
+        }
+    }
+
+    /**
+     * Checks if a bean was newly created during the current execution flow.
+     */
+    public static function wasBeanCreatedInThisContext(string $beanId, ExecutionContext $context): bool 
+    {
+        foreach ($context->actionResults as $result) {
+            foreach ($result->modifiedBeans as $modBean) {
+                if ($modBean->beanId === $beanId && $modBean->modificationType === BeanModificationType::CREATED) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Recalculates auto-generated names for newly created beans.
+     */
+    public static function recalculateNameIfNeeded(SugarBean $bean, DataBlockResolved $block, ExecutionContext $context): void
+    {
+        $nameFieldInBlock = $block->getFieldValue('name');
+        $nameIsUserDefined = $nameFieldInBlock && !empty($nameFieldInBlock->value);
+
+        if (!$nameIsUserDefined && self::wasBeanCreatedInThisContext($bean->id, $context)) {
+            $bean->retrieve($bean->id);
+            $bean->name = '';
+            $bean->save();
+        }
+    }
+
+    /**
+     * Finds and populates the display relate field (e.g. account_name) associated with a physical FK field (e.g. account_id)
+     */
+    public static function populateRelateDisplayField(SugarBean $bean, string $idName, string $targetBeanId): void
+    {
+        $nameField = null;
+        foreach ($bean->field_defs as $fieldName => $def) {
+            if (isset($def['type'], $def['id_name']) && $def['type'] === 'relate' && $def['id_name'] === $idName) {
+                $nameField = $fieldName;
+                break;
+            }
+        }
+        if ($nameField) {
+            $parentModule = $bean->field_defs[$nameField]['module'] ?? '';
+            $rname = $bean->field_defs[$nameField]['rname'] ?? 'name';
+            if ($parentModule) {
+                $parentBean = BeanFactory::getBean($parentModule, $targetBeanId);
+                if ($parentBean && $parentBean->id === $targetBeanId && isset($parentBean->$rname)) {
+                    $bean->$nameField = $parentBean->$rname;
+                    $GLOBALS['log']->debug(__METHOD__ . ": Populated relate field '{$nameField}' = '{$parentBean->$rname}'.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Detects and saves the form type ('crm' or 'web') for legacy forms if not set.
+     *
+     * @param SugarBean $formBean
+     * @param array $configData
+     * @return void
+     */
+    public static function detectAndSaveFormType(SugarBean $formBean, array $configData): void
+    {
+        if (empty($formBean->form_type)) {
+            $hasCheckSession = false;
+            $mainFlowActions = $configData['flows']['0']['actions'] ?? [];
+            if (!empty($mainFlowActions)) {
+                // Gets the first element and evaluates if its name matches CheckSessionAction
+                $firstAction = reset($mainFlowActions);
+                $hasCheckSession = ($firstAction['name'] ?? '') === 'CheckSessionAction';
+            }
+            $formBean->form_type = $hasCheckSession ? 'crm' : 'web';
+            $formBean->save();
         }
     }
 }

@@ -222,8 +222,9 @@ $mod_strings = array (
   'LBL_RELATIONSHIP_NEW' => 'New data block relationship',  
   'LBL_RELATIONSHIP_NO_MODULE_RELATED' => 'No related module',
   'LBL_RELATIONSHIP_NEW_DATABLOCK' => 'New data block',
-  'LBL_RELATIONSHIP_DATABLOCK_ORIG' => 'Origin data block',
-  'LBL_RELATIONSHIP_DATABLOCK_DEST' => 'Destination data block',
+  'LBL_RELATIONSHIP_TYPE' => 'Type',
+  'LBL_RELATIONSHIP_INVOLVED_BLOCKS' => 'Involved data blocks',
+  'LBL_AWF_FIELD_SUFFIX' => 'field',
 
   // Flows
   'LBL_FLOWS' => 'Action flows',
@@ -248,8 +249,7 @@ $mod_strings = array (
   'LBL_ACTION_CATEGORY' => 'Category',
   'LBL_ACTION_PARAMETERS' => 'Parameters',
   'LBL_ACTION_ACTIONS' => 'Actions',
-  'LBL_ACTIONS_SHOW_ALL' => 'Show all actions',
-  'LBL_ACTIONS_SHOW_ALL_DESC' => 'Shows all actions defined in the form, including automatically created actions.',
+  'LBL_ACTION_AUTOMATIC' => 'Automatic',
   'LBL_ACTION_NO_PARAMS' => 'No parameters',
   'LBL_ACTION_PARAM_SELECT_NO_OPTION' => '-- Select --',
   'LBL_ACTION_PARAM_CRM_RECORD_MODULE' => 'Module',
@@ -408,6 +408,7 @@ $mod_strings = array (
   'LBL_SAVE_RECORD_ACTION_TITLE' => 'Save record',
   'LBL_SAVE_RECORD_ACTION_DESC' => 'Saves or updates a record from form data',
   'LBL_SAVE_RECORD_ACTION_DUPLICATE_RULE_MATCHED_TEXT' => 'Field matching',
+  'LBL_SAVE_RECORD_ACTION_RELATION_CONFIGS_TEXT' => 'Relationship fields',
 
   // RelateRecordsAction
   'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Create relationship',
@@ -418,6 +419,7 @@ $mod_strings = array (
   'LBL_RELATE_RECORDS_ACTION_OPTION_VALUE_TEXT' => 'Destination record ID',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_TEXT' => 'Relationship to update',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_DESC' => 'The internal name of the relationship linking to the destination data block',
+  'LBL_RELATE_RECORDS_ACTION_RELATION_ID_NAME_TEXT' => 'Related field',
 
   // AddToTargetListAction
   'LBL_ADD_TO_TARGET_LIST_ACTION_TITLE' => 'Add to Target List',

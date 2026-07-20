@@ -222,8 +222,9 @@ $mod_strings = array (
   'LBL_RELATIONSHIP_NEW' => 'Nova relació entre blocs de dades',  
   'LBL_RELATIONSHIP_NO_MODULE_RELATED' => 'Sense mòdul relacionat',
   'LBL_RELATIONSHIP_NEW_DATABLOCK' => 'Nou bloc de dades',
-  'LBL_RELATIONSHIP_DATABLOCK_ORIG' => 'Bloc de dades origen',
-  'LBL_RELATIONSHIP_DATABLOCK_DEST' => 'Bloc de dades destí',
+  'LBL_RELATIONSHIP_TYPE' => 'Tipus',
+  'LBL_RELATIONSHIP_INVOLVED_BLOCKS' => 'Blocs de dades involucrats',
+  'LBL_AWF_FIELD_SUFFIX' => 'camp',
 
   // Flows
   'LBL_FLOWS' => "Fluxos d'accions",
@@ -248,8 +249,7 @@ $mod_strings = array (
   'LBL_ACTION_CATEGORY' => 'Categoria',
   'LBL_ACTION_PARAMETERS' => 'Paràmetres',
   'LBL_ACTION_ACTIONS' => 'Accions',
-  'LBL_ACTIONS_SHOW_ALL' => 'Mostra totes les accions',
-  'LBL_ACTIONS_SHOW_ALL_DESC' => 'Mostra totes les accions definides al formulari, incloent les accions creades de forma automàtica.',
+  'LBL_ACTION_AUTOMATIC' => 'Automàtica',
   'LBL_ACTION_NO_PARAMS' => 'Sense paràmetres',
   'LBL_ACTION_PARAM_SELECT_NO_OPTION' => '-- Selecciona --',
   'LBL_ACTION_PARAM_CRM_RECORD_MODULE' => 'Mòdul',
@@ -408,6 +408,7 @@ $mod_strings = array (
   'LBL_SAVE_RECORD_ACTION_TITLE' => 'Desa el registre',
   'LBL_SAVE_RECORD_ACTION_DESC' => 'Desa o actualitza un registre a partir de les dades del formulari',
   'LBL_SAVE_RECORD_ACTION_DUPLICATE_RULE_MATCHED_TEXT' => 'Coincidència per camps',
+  'LBL_SAVE_RECORD_ACTION_RELATION_CONFIGS_TEXT' => 'Camps de relació',
 
   // RelateRecordsAction
   'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Crea la relació',
@@ -418,6 +419,7 @@ $mod_strings = array (
   'LBL_RELATE_RECORDS_ACTION_OPTION_VALUE_TEXT' => 'ID del registre destí',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_TEXT' => 'Relació a actualitzar',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_DESC' => 'El nom intern de la relació que enllaça amb el bloc de dades destí',
+  'LBL_RELATE_RECORDS_ACTION_RELATION_ID_NAME_TEXT' => 'Camp relacionat',
 
   // AddToTargetListAction
   'LBL_ADD_TO_TARGET_LIST_ACTION_TITLE' => 'Afegeix a una Llista de Públic Objectiu',

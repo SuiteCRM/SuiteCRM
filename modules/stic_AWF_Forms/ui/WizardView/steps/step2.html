@@ -62,7 +62,7 @@
                 <h3 class="mb-0 me-3" :id="`dataBlockTitleEdit-${item.id}`" data-model="item.text" data-condition="item.editable_text" x-init="sticControls.editableText($el);"></h3>
                 <div>
                   <template x-for="(rel, index) in $store.dataBlockRelationships.usedDatablockRelationships(item.id)">
-                    <div class="text-muted" x-text="$store.dataBlockRelationships.getRelText(item.id, rel.name);"></div>
+                    <div class="text-muted" x-text="$store.dataBlockRelationships.getRelText(item.id, rel);"></div>
                   </template>
                 </div>
                 <!-- Buttons -->
@@ -322,8 +322,9 @@
                     <thead>
                       <tr>
                         <th x-text="utils.translate('LBL_RELATIONSHIP')"></th>
-                        <th x-text="utils.translate('LBL_RELATIONSHIP_DATABLOCK_ORIG')"></th>
-                        <th x-text="utils.translate('LBL_RELATIONSHIP_DATABLOCK_DEST')"></th>
+                        <th x-text="utils.translate('LBL_RELATIONSHIP_INVOLVED_BLOCKS')"></th>
+                        <th x-text="utils.translate('LBL_RELATIONSHIP_TYPE')"></th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -331,10 +332,20 @@
                         <tr>
                           <!-- Relationship -->
                           <td x-text="rel.text"></td>
-                          <!-- DataBlock Orig -->
-                          <td x-text="getDataBlockText(rel.datablock_orig)"></td>
-                          <!-- DataBlock Dest -->
-                          <td x-text="getDataBlockText(rel.datablock_dest)"></td>
+                          <!-- Involved DataBlocks -->
+                          <td x-text="$store.dataBlockRelationships.getInvolvedBlocksText(item.id, rel)"></td>
+                          <!-- Type -->
+                          <td>
+                            <span class="badge rounded-pill bg-secondary" x-text="$store.dataBlockRelationships.getRelationshipTypeLabel(item.id, rel.name, rel.datablock_dest, rel.initiator_id)"></span>
+                          </td>
+                          <!-- Delete button -->
+                          <td>
+                            <button type="button" class="btn"
+                                    @click="$store.dataBlockRelationships.deleteRelationship(rel.datablock_orig, rel.name, rel.datablock_dest);"
+                                    :title="utils.translate('LBL_BUTTON_DELETE')">
+                              <span class="suitepicon suitepicon-action-delete"></span>
+                            </button>
+                          </td>
                         </tr>
                       </template>
                     </tbody>

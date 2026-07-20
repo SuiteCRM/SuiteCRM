@@ -27,13 +27,6 @@
     <!-- Flows -->
     <div>
         <h2 class="mb-2" x-text="utils.translate('LBL_FLOWS')"></h2>
-        <!-- Show all Actions -->
-        <div class="text-muted form-check form-switch small p-3" x-init="utils.setInlineHelpQtip()">
-            <label for="actions_allcheck" class="form-label" x-text="utils.translate('LBL_ACTIONS_SHOW_ALL')"></label>
-            <i class="inline-help glyphicon glyphicon-info-sign"></i>
-            <div class="inline-help-content" style="display:none;" x-text="utils.translate('LBL_ACTIONS_SHOW_ALL_DESC')"></div>
-            <input class="form-check-input form-switch" type="checkbox" role="switch" id="actions_allcheck" x-model="showAllActions"/>
-        </div>
         <!-- Tab Headers: Flows -->
         <div class="stic-tabs">
             <template x-for="flow in formConfig.flows" :key="flow.id">
@@ -50,9 +43,8 @@
             <!-- Actions -->
             <div class="accordion">
                 <template x-for="action in actions" :key="action.id">
-                    <div class="accordion-item" x-data="{opened:false}" x-show="action.is_user_selectable || showAllActions">
-                        <div :id="action.id+'_Header'" class="mt-1 mb-1 pe-2 btn accordion-header accordion-button p-0 align-items-center" :class="{'collapsed': !opened}"
-                             @click.self="$el.querySelector('[data-bs-toggle]').click()">
+                    <div class="accordion-item" x-data="{opened:false}">
+                        <div :id="action.id+'_Header'" class="mt-1 mb-1 pe-2 btn accordion-header accordion-button p-0 align-items-center" :class="{'collapsed': !opened}">
                             <div class="d-flex flex-grow-1 align-items-center py-3 ps-3 pe-2" role="button" @click="opened = !opened"
                                  data-bs-toggle="collapse" :data-bs-target="'#'+action.id+'_Content'" :aria-controls="action.id+'_Content'">
                                 <!-- Condition -->
@@ -62,6 +54,10 @@
                                         <span x-text="getActionConditionLabel(action)">
                                     </span>
                                 </template>
+                                <!-- Automatic badge -->
+                                <template x-if="action.is_automatic">
+                                    <span class="badge rounded-pill bg-info text-dark me-2" x-text="utils.translate('LBL_ACTION_AUTOMATIC')"></span>
+                                </template>
                                 <!-- Action Text -->
                                 <div class="fw-bold text-truncate">
                                     <span :id="`actionTextEdit-${action.id}`" data-model="action.text" x-init="sticControls.editableText($el);"></span>
@@ -70,16 +66,11 @@
                                 <div class="text-muted small text-truncate px-2" style="flex: 1; text-align: end;">
                                     <span x-text="action.title"></span>
                                 </div> 
-                                <!-- Description -->
-                                <!--
-                                <div class="text-muted small text-truncate px-2" style="flex: 1; text-align: center;">
-                                    <span x-text="action.description"></span>
-                                </div> 
-                                -->
                             </div>
                             <!-- Buttons -->
-                            <template x-if="showAllActions">
-                                <div class="d-flex align-items-center pe-3">
+                            <div class="d-flex align-items-center pe-3">
+                                <!-- Reorder buttons: only for manual, non-terminal actions -->
+                                <template x-if="!action.is_automatic && !action.is_terminal">
                                     <div class="d-inline-flex input-group" role="group">
                                         <button type="button" class="btn" :title="utils.translate('LBL_BUTTON_MOVE_UP')"
                                                 :disabled="!canMoveUpAction(action);" @click="moveUpAction(action);">
@@ -90,8 +81,8 @@
                                             <span class="suitepicon suitepicon-action-move-down"></span>
                                         </button>
                                     </div> 
-                                </div>
-                            </template>
+                                </template>
+                            </div>
                         </div>
                         <div :id="action.id+'_Content'" class="accordion-collapse collapse" :aria-labelledby="action.id+'_Header'">
                             <div :id="action.id+'_Body'" class="accordion-body"> 
@@ -135,7 +126,7 @@
                                                         <template x-for="param in action.parameters" :key="param.name">
                                                             <tr>
                                                                 <th class="w-25" x-text="param.text"></th>
-                                                                <td x-text="param.value_text!=''?param.value_text:param.value"></td>
+                                                                <td x-text="param.value_text!=''?param.value_text:param.value" style="white-space: pre-line;"></td>
                                                             </tr>
                                                         </template>
                                                     </tbody>

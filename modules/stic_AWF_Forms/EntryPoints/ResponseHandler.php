@@ -25,6 +25,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 require_once "modules/stic_AWF_Forms/core/includes.php";
+require_once "modules/stic_AWF_Forms/Utils.php";
 
 /**
  * EntryPoint: stic_AWF_responseHandler
@@ -167,18 +168,8 @@ class ResponseHandler
         $formConfig = FormConfig::fromJsonArray($configData);
 
         // CRM form type: detect form_type for legacy forms
-        if (empty($formBean->form_type)) {
-            $hasCheckSession = false;
-            $mainFlowActions = $configData['flows']['0']['actions'] ?? [];
-            if (!empty($mainFlowActions)) {
-                // Gets the first element and evaluates if its name matches CheckSessionAction to determine if it's a CRM form
-                $firstAction = reset($mainFlowActions);
-                $hasCheckSession = ($firstAction['name'] ?? '') === 'CheckSessionAction';
-            }
-            $formBean->form_type = $hasCheckSession ? 'crm' : 'web';
-            $formBean->save();
-        }
-
+        stic_AWF_FormsUtils::detectAndSaveFormType($formBean, $configData);
+        
         // If CRM form type and there is a real session user, use that user instead of admin
         if ($formBean->form_type === 'crm' && $realUserId) {
             $current_user = BeanFactory::getBean('Users', $realUserId);

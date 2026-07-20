@@ -56,6 +56,20 @@ class ServerActionFlowExecutor {
             foreach ($actions as $actionConfig) {
                 $lastActionConfig = $actionConfig;
 
+                // Check that all requisite_actions have been executed successfully
+                foreach ($actionConfig->requisite_actions as $reqActionId) {
+                    $reqResult = $this->context->getActionResultById($reqActionId);
+                    if ($reqResult === null) {
+                        throw new \RuntimeException("Action '{$actionConfig->name}' (id: {$actionConfig->id}) requires action with id '{$reqActionId}' but it was not executed. Possible topological sort issue.");
+                    }
+                    if ($reqResult->isError()) {
+                        $GLOBALS['log']->warning('Line '.__LINE__.': '.__METHOD__.': '."Advanced Web Forms: Action '{$actionConfig->name}' skipped because requisite action '{$reqActionId}' failed.");
+                        $skippedResult = new ActionResult(ResultStatus::SKIPPED, $actionConfig, "Requisite action failed.");
+                        $this->context->addActionResult($skippedResult);
+                        continue 2;
+                    }
+                }
+
                 // Check the Conditions (if any)
                 if(!stic_AWFUtils::evaluateConditions($actionConfig->conditions, $this->context->formData)) {
                     $GLOBALS['log']->info('Line '.__LINE__.': '.__METHOD__.': '. "Advanced Web Forms: Skipping action '{$actionConfig->text}' because condition failed.");

@@ -222,8 +222,9 @@ $mod_strings = array (
   'LBL_RELATIONSHIP_NEW' => 'Nueva relación entre bloques de datos',  
   'LBL_RELATIONSHIP_NO_MODULE_RELATED' => 'Sin módulo relacionado',
   'LBL_RELATIONSHIP_NEW_DATABLOCK' => 'Nuevo bloque de datos',
-  'LBL_RELATIONSHIP_DATABLOCK_ORIG' => 'Bloque de datos origen',
-  'LBL_RELATIONSHIP_DATABLOCK_DEST' => 'Bloque de datos destino',
+  'LBL_RELATIONSHIP_TYPE' => 'Tipo',
+  'LBL_RELATIONSHIP_INVOLVED_BLOCKS' => 'Bloques de datos involucrados',
+  'LBL_AWF_FIELD_SUFFIX' => 'campo',
 
   // Flows
   'LBL_FLOWS' => 'Flujos de acciones',
@@ -248,8 +249,7 @@ $mod_strings = array (
   'LBL_ACTION_CATEGORY' => 'Categoría',
   'LBL_ACTION_PARAMETERS' => 'Parámetros',
   'LBL_ACTION_ACTIONS' => 'Acciones',
-  'LBL_ACTIONS_SHOW_ALL' => 'Mostrar todas las acciones',
-  'LBL_ACTIONS_SHOW_ALL_DESC' => 'Muestra todas las acciones definidas en el formulario, incluyendo las acciones creadas de forma automática.',
+  'LBL_ACTION_AUTOMATIC' => 'Automática',
   'LBL_ACTION_NO_PARAMS' => 'Sin parámetros',
   'LBL_ACTION_PARAM_SELECT_NO_OPTION' => '-- Seleccionar --',
   'LBL_ACTION_PARAM_CRM_RECORD_MODULE' => 'Módulo',
@@ -408,6 +408,7 @@ $mod_strings = array (
   'LBL_SAVE_RECORD_ACTION_TITLE' => 'Guardar registro',
   'LBL_SAVE_RECORD_ACTION_DESC' => 'Guarda o actualiza un registro a partir de los datos del formulario',
   'LBL_SAVE_RECORD_ACTION_DUPLICATE_RULE_MATCHED_TEXT' => 'Coincidencia por campos',
+  'LBL_SAVE_RECORD_ACTION_RELATION_CONFIGS_TEXT' => 'Campos de relación',
 
   // RelateRecordsAction
   'LBL_RELATE_RECORDS_ACTION_TITLE' => 'Crear relación',
@@ -418,6 +419,7 @@ $mod_strings = array (
   'LBL_RELATE_RECORDS_ACTION_OPTION_VALUE_TEXT' => 'ID del registro destino',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_TEXT' => 'Relación a actualizar',
   'LBL_RELATE_RECORDS_ACTION_RELATIONSHIP_DESC' => 'El nombre interno de la relación que enlaza con el bloque de datos destino',
+  'LBL_RELATE_RECORDS_ACTION_RELATION_ID_NAME_TEXT' => 'Campo relacionado',
 
   // AddToTargetListAction
   'LBL_ADD_TO_TARGET_LIST_ACTION_TITLE' => 'Añadir a Lista de Público Objetivo',

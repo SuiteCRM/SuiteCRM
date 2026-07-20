@@ -39,6 +39,7 @@ class stic_AwfDataBlock {
       module: "",               // Module name
       required: false,          // Indicates if it is required (internal, cannot be deleted)
       fields: [],               // Fields of the Data Block
+      relationships: [],        // Block-to-block relationships [{ name, related_datablock_id }]
       duplicate_detections: [], // Duplicate detection definition
       save_action_id: "",       // ID of the data block save action
     });
@@ -283,6 +284,21 @@ class stic_AwfDataBlock {
       text = `${module.textSingular} ${index}`;
     }
     return text;
+  }
+
+  addRelationship(relName, relatedBlockId, relationshipType = 'many-to-many') {
+    // Prevent exact duplicates (same name + same block)
+    if (this.relationships.some(r => r.name === relName && r.related_datablock_id === relatedBlockId)) return false;
+    this.relationships.push({ name: relName, related_datablock_id: relatedBlockId });
+    return true;
+  }
+
+  removeRelationship(relName, relatedBlockId = null) {
+    if (relatedBlockId) {
+      this.relationships = this.relationships.filter(r => !(r.name === relName && r.related_datablock_id === relatedBlockId));
+    } else {
+      this.relationships = this.relationships.filter(r => r.name !== relName);
+    }
   }
 }
 
@@ -1573,12 +1589,36 @@ class stic_AwfConfiguration {
    * @param {stic_AwfDataBlock} dataBlock 
    */
   deleteDataBlock(dataBlock) {
-    // Reset all fields pointing to this DataBlock
+    // Remove fields that reference this DataBlock (prevents "Fixed field without assigned value" errors)
     this.data_blocks.forEach(d => {
-      d.fields.filter(f => f.value_type == 'dataBlock' && f.value == dataBlock.id).forEach(f => {
-        f.value = '';
-        f.value_text = '';
+      let fieldsToRemove = d.fields.filter(f => f.value_type == 'dataBlock' && f.value == dataBlock.id);
+      fieldsToRemove.forEach(f => {
+        let moduleInfo = d.getModuleInformation();
+        let relName = moduleInfo?.fields[f.name]?.options || '';
+        if (!relName) {
+          let relEntry = d.relationships.find(r => r.related_datablock_id === f.value);
+          relName = relEntry?.name || '';
+        }
+        if (f.required) {
+          // Field is required: keep it but convert to fixed (block no longer exists)
+          f.value = '';
+          f.value_text = '';
+          f.value_type = 'fixed';
+        } else {
+          d.deleteField(f.name);
+        }
+        if (relName) {
+          let targetBlock = this.data_blocks.find(tb => tb.id === f.value);
+          if (targetBlock) {
+            targetBlock.removeRelationship(relName, d.id);
+          }
+        }
       });
+    });
+
+    // Remove relationships pointing to this DataBlock
+    this.data_blocks.forEach(d => {
+      d.relationships = d.relationships.filter(r => r.related_datablock_id !== dataBlock.id);
     });
 
     // Remove DataBlock
@@ -1590,7 +1630,6 @@ class stic_AwfConfiguration {
 
     if (field.type == 'relate' && field.value_type == 'dataBlock') {
       // Remove Relationship Action
-      // TODO: Review Remove Relationship Action: Parameters: data_block_id, target_object, relationship_name
       const relateAction = this.flows.flatMap(f => f.actions).find(a => {
         if (a.name == 'RelateRecordsAction') {
           return a.parameters.find(p => p.name == 'data_block_id' && p.value == dataBlock.id) &&
@@ -1603,6 +1642,21 @@ class stic_AwfConfiguration {
         this.flows.forEach(flow => {
           flow.actions = flow.actions.filter(a => a.id != relateAction.id);
         });
+      }
+
+      // Remove the relationship from this block (N side)
+      let moduleInfo = dataBlock.getModuleInformation();
+      let relName = moduleInfo?.fields[field.name]?.options || '';
+      if (!relName) {
+        let relEntry = dataBlock.relationships.find(r => r.related_datablock_id === field.value);
+        relName = relEntry?.name || '';
+      }
+      if (relName) {
+        dataBlock.removeRelationship(relName, field.value);
+        let targetBlock = this.data_blocks.find(d => d.id == field.value);
+        if (targetBlock) {
+          targetBlock.removeRelationship(relName, dataBlock.id);
+        }
       }
     }
 
@@ -1678,55 +1732,168 @@ class stic_AwfConfiguration {
    * @returns 
    */
   addDataBlockRelationship(datablockId, relationshipName, relatedDatablockId, newDataBlockText) {
-    // DataBlockRelationship: { name, text, module_orig, field_orig, relationship, module_dest, datablock, module, textExtended, datablock_orig, datablock_dest }
 
     // Find Relationship
     let rel = this.getAllDataBlockRelationships()[datablockId].find(r => r.name == relationshipName);
-    if (!rel) {
-      return null;
-    }
+    if (!rel) return null;
 
     // Find Datablock
     let dataBlock = this.data_blocks.find(d => d.id == datablockId);
-    if (!dataBlock) {
-      return null;
-    }
+    if (!dataBlock) return null;
 
     // Find related Datablock
     let relDatablock = null;
     if (relatedDatablockId != -1) {
-      // Use existant related Datablock
       relDatablock = this.data_blocks.find(d => d.id == relatedDatablockId);
     } else {
-      // Create new related Datablock
       relDatablock = this.addDataBlockModule(rel.module, true, newDataBlockText);
     }
-    if (!relDatablock) {
-      return null;
+    if (!relDatablock) return null;
+
+    let relationshipType = utils.getModuleInformation(dataBlock.module).relationships[relationshipName]?.relationship_type || 'many-to-many';
+    let moduleInfo = utils.getModuleInformation(dataBlock.module);
+    let targetModuleInfo = utils.getModuleInformation(relDatablock.module);
+    let hasRelateField = moduleInfo && Object.values(moduleInfo.fields).some(f => f.type === 'relate' && f.options === relationshipName);
+    let targetHasRelateField = targetModuleInfo && Object.values(targetModuleInfo.fields).some(f => f.type === 'relate' && f.options === relationshipName);
+    // Fallback: check relationship metadata for virtual 1-N relationships
+    if (!hasRelateField && !targetHasRelateField) {
+      let relData = (moduleInfo?.relationships?.[relationshipName]) || (targetModuleInfo?.relationships?.[relationshipName]);
+      if (relData?.type === '1-N' || relData?.relationship_type === 'one-to-many') {
+        if (relData.module_orig === dataBlock.module) hasRelateField = true;
+        if (relData.module_orig === relDatablock.module) targetHasRelateField = true;
+      }
+    }
+    let bothHaveRelate = hasRelateField && targetHasRelateField;
+
+    // If the initiating block has the relate field and already has an initiator relationship
+    // with this name, block it (a block can only be the N side once per relationship).
+    // Entries with role 'target' are inverse (1 side) and don't block.
+    if (hasRelateField && dataBlock.relationships.some(r => r.name === relationshipName && r.role !== 'target')) return dataBlock;
+
+    // Determine the actual N-side (the block that has the relate field with FK).
+    // initiator_id must point to the N-side regardless of which block initiated the UI action,
+    // otherwise direction logic (requisites, arrows) fails.
+    let nSideId;
+    if (hasRelateField) {
+      nSideId = dataBlock.id;
+    } else if (targetHasRelateField) {
+      nSideId = relDatablock.id;
+    } else {
+      nSideId = dataBlock.id;
     }
 
-    // Set field value in origin
-    let dataBlock_orig = dataBlock;
-    let dataBlock_dest = relDatablock;
-    if (dataBlock_orig.module != rel.module_orig) {
-      dataBlock_orig = relDatablock;
-      dataBlock_dest = dataBlock;
+    // Store relationship on both blocks, tagging each with the initiator's id so downstream
+    // direction logic (arrows, labels) can tell N side from 1 side.
+    // When origin and destination are the same block, only store once to avoid duplicates.
+    dataBlock.relationships.push({
+      name: relationshipName,
+      related_datablock_id: relDatablock.id,
+      initiator_id: nSideId,
+    });
+    if (dataBlock.id !== relDatablock.id) {
+      if (bothHaveRelate) {
+        relDatablock.relationships.push({
+          name: relationshipName,
+          related_datablock_id: dataBlock.id,
+          role: 'target',
+          initiator_id: nSideId,
+        });
+      } else {
+        relDatablock.relationships.push({
+          name: relationshipName,
+          related_datablock_id: dataBlock.id,
+          initiator_id: nSideId,
+        });
+      }
     }
-    let module_orig = utils.getModuleInformation(rel.module_orig);
 
-    /**
-     * Field: { 
-     *    name, label, required, required_in_form, type, in_form, 
-     *    type_in_form, value_type, value_options: [{value, text}], value, value_text 
-     *  }
-     */
-    let dataField_orig = dataBlock_orig.addFieldFromModuleField(module_orig.fields[rel.field_orig]);
-    dataField_orig.type_field = 'fixed';
-    dataField_orig.in_form = false;
-    dataField_orig.value_type = "dataBlock";
-    dataField_orig.value = dataBlock_dest.id;
+    // For 1-N relationships with relate fields: add server field on the block that owns
+    // the relate field (the "N" side), pointing to the other block (the "1" side).
+    // For self-referencing (both have relate), only the initiating block gets the server field.
+    [{block: dataBlock, target: relDatablock}, {block: relDatablock, target: dataBlock}].forEach(({block, target}) => {
+      if (bothHaveRelate && block.id !== datablockId) return;
+      let blockModuleInfo = utils.getModuleInformation(block.module);
+      if (!blockModuleInfo) return;
+      let relateFields = Object.values(blockModuleInfo.fields).filter(
+        f => f.type === 'relate' && f.options === relationshipName
+      );
+      relateFields.forEach(fieldInfo => {
+        let fieldIndex = block.fields.findIndex(f => f.name === fieldInfo.name);
+        let existingField;
+        if (fieldIndex >= 0) {
+          existingField = block.fields[fieldIndex];
+        } else {
+          existingField = block.addFieldFromModuleField(fieldInfo);
+          fieldIndex = block.fields.findIndex(f => f.name === fieldInfo.name);
+        }
+        existingField.type_field = 'fixed';
+        existingField.in_form = false;
+        existingField.value_type = 'dataBlock';
+        existingField.value = target.id;
+        existingField.value_text = target.text;
+        if (fieldIndex >= 0) {
+          block.fields.splice(fieldIndex, 1, existingField);
+        }
+      });
+    });
 
     return dataBlock;
+  }
+
+  /**
+   * Deletes a relationship between two DataBlocks, removing any auto-created relate field
+   * and the associated RelateRecordsAction.
+   * @param {string} datablockId One of the DataBlock ids in the relationship
+   * @param {string} relName The relationship name
+   * @param {string} relatedDatablockId The other DataBlock id in the relationship
+   */
+  deleteRelationship(datablockId, relName, relatedDatablockId) {
+    let dataBlock = this.data_blocks.find(d => d.id == datablockId);
+    if (!dataBlock) return;
+    let relDatablock = this.data_blocks.find(d => d.id == relatedDatablockId);
+
+    // Find the auto-created relate field (if any) on either block
+    let relateField = null;
+    let relateFieldBlock = null;
+    [dataBlock, relDatablock].forEach(block => {
+      if (!block || relateField) return;
+      let moduleInfo = block.getModuleInformation();
+      let relateFieldNames = Object.values(moduleInfo?.fields || {}).filter(
+        f => f.type === 'relate' && f.options === relName
+      ).map(f => f.name);
+      relateField = block.fields.find(f =>
+        relateFieldNames.includes(f.name) && f.value_type == 'dataBlock' &&
+        (f.value == datablockId || f.value == relatedDatablockId)
+      );
+      if (relateField) relateFieldBlock = block;
+    });
+
+    if (relateField && !relateField.required) {
+      // Field is not required: delete field + relationship + action
+      this.deleteDataBlockField(relateFieldBlock, relateField);
+    } else {
+      // No relate field (N-M), or field is required (keep field, convert to fixed, remove relationship + action)
+      if (relateField) {
+        relateField.value = '';
+        relateField.value_text = '';
+        relateField.value_type = 'fixed';
+      }
+      dataBlock.removeRelationship(relName, relatedDatablockId);
+      if (relDatablock) {
+        relDatablock.removeRelationship(relName, datablockId);
+      }
+      // Remove RelateRecordsAction for this relationship
+      this.flows.forEach(flow => {
+        flow.actions = flow.actions.filter(a => {
+          if (a.name == 'RelateRecordsAction') {
+            let p1 = a.parameters.find(p => p.name == 'data_block_id' && (p.value == datablockId || p.value == relatedDatablockId));
+            let p2 = a.parameters.find(p => p.name == 'relationship_name' && p.value == relName);
+            return !(p1 && p2);
+          }
+          return true;
+        });
+      });
+    }
   }
 
   /**
@@ -1735,55 +1902,51 @@ class stic_AwfConfiguration {
    * DataBlockRelationship: { name, text, module_orig, field_orig, relationship, module_dest, datablock, module, textExtended, datablock_orig, datablock_dest }
    */
   getAllDataBlockRelationships() {
-    // Relationship: {name, text, module_orig, field_orig, relationship, module_dest}
-    // DataBlockRelationship: {name, text, module_orig, field_orig, relationship, module_dest, datablock, module, textExtended, datablock_orig, datablock_dest}
     let allRelationships = {};
-    let relsToReview = [];
 
     this.data_blocks.forEach(d => {
-      if (d.module) {
-        allRelationships[d.id] = [];
-        Object.values(utils.getModuleInformation(d.module).relationships).forEach(r => {
-          let rel = {...r}; // Copy relationship object
+      if (!d.module) return;
+      allRelationships[d.id] = [];
+      let moduleInfo = utils.getModuleInformation(d.module);
 
-          // Fill all available relationships for every DataBlock
-          rel.datablock = d.id;
-          rel.module = rel.module_orig == d.module ? rel.module_dest : rel.module_orig;
-          rel.textExtended = `${rel.text} (${STIC.enabledModules[rel.module].text})`;
-          rel.datablock_orig = "";
-          rel.datablock_dest = "";
+      // Base list: ALL module relationships (used + unused), deduplicated by name
+      let seenNames = new Set();
+      Object.values(moduleInfo.relationships).forEach(r => {
+        if (seenNames.has(r.name)) return;
+        seenNames.add(r.name);
+        let rel = {...r};
+        rel.datablock = d.id;
+        rel.module = rel.module_orig == d.module ? rel.module_dest : rel.module_orig;
+        rel.textExtended = `${rel.text} (${STIC.enabledModules[rel.module]?.text || rel.module})`;
+        rel.datablock_orig = "";
+        rel.datablock_dest = "";
+        allRelationships[d.id].push(rel);
+      });
 
-          allRelationships[d.id].push(rel);
-        });
+      // Sort alphabetically
+      allRelationships[d.id].sort((a, b) => a.textExtended.localeCompare(b.textExtended));
 
-        // Sort relationships
-        allRelationships[d.id].sort((a, b) => {
-          return a.textExtended.localeCompare(b.textExtended);
-        });
-
-        // Find and fill defined relationships in datablock fields
-        d.fields.filter(f => f.value_type == "dataBlock").forEach(f => {
-          let rel = allRelationships[d.id].find(r => r.module_orig == d.module && r.field_orig == f.name);
-          if (rel) {
-            // Fill Orig -> Dest info
-            rel.datablock_orig = d.id;
-            rel.datablock_dest = f.value;
-
-            // Mark to review to fill Dest <- Orig info
-            relsToReview.push(rel);
-          }
-        });
-      }
-    });
-
-    // Review and fill Dest <- Orig info
-    relsToReview.forEach(r => {
-      let rel = allRelationships[r.datablock_dest].find(v => v.name == r.name);
-      if (rel) {
-        // Fill Dest <- Orig info
-        rel.datablock_orig = r.datablock_orig;
-        rel.datablock_dest = r.datablock_dest;
-      }
+      // Mark used relationships from block.relationships[]
+      d.relationships.forEach(dbrel => {
+        let rel = allRelationships[d.id].find(r => r.name === dbrel.name && !r.datablock_orig);
+        if (rel) {
+          // First usage: mark the base entry
+          rel.datablock_orig = d.id;
+          rel.datablock_dest = dbrel.related_datablock_id;
+          if (dbrel.initiator_id) rel.initiator_id = dbrel.initiator_id;
+        } else {
+          // Subsequent usage (N-M reuse): clone a fresh entry
+          let baseRel = allRelationships[d.id].find(r => r.name === dbrel.name);
+          if (!baseRel) return;
+          let newRel = {
+            ...baseRel,
+            datablock_orig: d.id,
+            datablock_dest: dbrel.related_datablock_id,
+          };
+          if (dbrel.initiator_id) newRel.initiator_id = dbrel.initiator_id;
+          allRelationships[d.id].push(newRel);
+        }
+      });
     });
 
     return allRelationships;
@@ -1808,14 +1971,23 @@ class stic_AwfConfiguration {
    */
   getAvailableDataBlocksForRelationship(datablockId, relationshipName) {
     let module = this.getRelationshipModule(datablockId, relationshipName);
-    if (!module) {
-      return [];
+    if (!module) return [];
+
+    // Exclude blocks already related via this relationship
+    let block = this.data_blocks.find(d => d.id == datablockId);
+    let alreadyRelatedIds = new Set();
+    if (block) {
+      block.relationships
+        .filter(r => r.name === relationshipName)
+        .forEach(r => alreadyRelatedIds.add(r.related_datablock_id));
     }
 
     let dataBlocks = [];
-    this.data_blocks.filter(d => d.module == module).forEach(db => {
-      dataBlocks.push({id: db.id, text: db.text});
-    });
+    this.data_blocks
+      .filter(d => d.module == module && !alreadyRelatedIds.has(d.id))
+      .forEach(db => {
+        dataBlocks.push({id: db.id, text: db.text});
+      });
     dataBlocks.push({ id: -1, text: utils.translate('LBL_DATABLOCK_NEW') });
 
     return dataBlocks;
@@ -1829,11 +2001,12 @@ class stic_AwfConfiguration {
     const mainFlow = this.flows.find(f => f.id == '0');
     if (!mainFlow) return;
 
-    // Clean: Remove only SaveRecord and RelateRecords automatic actions (managed by this method).
-    // Other automatic actions (e.g., CheckSessionAction) are managed separately and must be preserved.
+    // Clean: Remove automatic SaveRecord and RelateRecords actions
+    // (they will be regenerated below). Other automatic actions (e.g., CheckSessionAction)
+    // are managed separately and must be preserved.
+    const regeneratedActionNames = ['SaveRecordAction', 'RelateRecordsAction'];
     mainFlow.actions = mainFlow.actions.filter(a => 
-      !a.is_automatic || 
-      (a.name !== 'SaveRecordAction' && a.name !== 'RelateRecordsAction')
+      !a.is_automatic || !regeneratedActionNames.includes(a.name)
     );
     
     // Reset saved action IDs on blocks before regenerating
@@ -1843,82 +2016,146 @@ class stic_AwfConfiguration {
     // Using -1 ensures they will be inserted before default manual actions (0)
     const AUTO_ACTION_ORDER = -1;
 
-    // Generate SAVE actions for each DataBlock
+    // Relationships handled by SaveRecordAction (FK pre-injected before save).
+    // These are skipped when generating RelateRecordsAction later.
+    const handledRelationshipNames = new Set();
+
+    // Generate SAVE actions for each DataBlock.
+    // Uses SaveRecordAction when the block has outgoing 1-N relationships,
+    // so that FK values are injected before the first save.
     this.data_blocks.forEach(block => {
       if (!block.module) return;
-      
+
+      const allRels = this.getAllDataBlockRelationships();
+      const blockRels = allRels[block.id] || [];
+      const activeRels = blockRels.filter(r => r.datablock_orig && r.datablock_dest);
+      const moduleInfo = utils.getModuleInformation(block.module);
+
+      // Find outgoing 1-N relationships by the presence of a relate field with id_name,
+      // which represents the FK column. Relate fields carry the resolved relationship name
+      // in their 'options' property (populated by getModuleInformation() in Utils.php).
+      const outgoing1n = activeRels.filter(r => {
+        if (r.datablock_orig !== block.id) return false;
+        if (!r.name) return false;
+        // Only the initiator (N-side) should inject FKs
+        if (r.initiator_id && r.initiator_id !== block.id) return false;
+        // Self-referencing: cannot inject FK before save (target not yet saved)
+        if (r.datablock_orig === r.datablock_dest) return false;
+        const relateField = moduleInfo && Object.values(moduleInfo.fields).find(
+          f => f.type === 'relate' && f.options === r.name
+        );
+        return relateField && relateField.id_name;
+      }).map(r => {
+        const relateField = Object.values(moduleInfo.fields).find(
+          f => f.type === 'relate' && f.options === r.name
+        );
+        return { ...r, id_name: relateField.id_name };
+      });
+
       const originalDef = utils.getDefinedAction('SaveRecordAction');
       if (originalDef) {
-        // Prepare definition override
-        const actionDef = { 
-          ...originalDef, 
-          isAutomatic: true, 
-          order: AUTO_ACTION_ORDER 
-        };
+        const actionDef = { ...originalDef, isAutomatic: true, order: AUTO_ACTION_ORDER };
 
+        // Base parameters
         const params = {
           'data_block_id': { value: block.id, valueText: block.text, selectedOption: '' }
         };
-        
+        // Inject relationship configurations ONLY if they exist
+        if (outgoing1n.length > 0) {
+          params['relation_configs'] = {
+            value: JSON.stringify(outgoing1n.map(r => ({
+              id_name: r.id_name,
+              target_block_id: r.datablock_dest,
+              relationship_name: r.name
+            }))),
+            valueText: outgoing1n.map(r => {
+              const targetBlock = this.data_blocks.find(b => b.id === r.datablock_dest);
+              const relText = r.text || r.name;
+              return `${relText} (${r.name}): ${targetBlock ? targetBlock.text : r.datablock_dest}`;
+            }).join('\n'),
+            selectedOption: ''
+          };
+        }
         const newAction = this.addAction(actionDef, params, '0');
         if (newAction) {
-            // Store the ID so subsequent Relate actions can depend on it
-            block.save_action_id = newAction.id;
-            
-            // Override text for clarity
-            newAction.text = `${utils.translate('LBL_SAVE_RECORD_ACTION_TITLE')}: ${block.text}`;
+          block.save_action_id = newAction.id;
+          newAction.text = `${utils.translate('LBL_SAVE_RECORD_ACTION_TITLE')}: ${block.text}`;
+          outgoing1n.forEach(r => handledRelationshipNames.add(r.name));
         }
       }
     });
 
-    // Generate RELATE actions for FiXED fields
+    // Add requisites ensuring the 1-side is saved before the N-side (FK injection target).
+    // Only the N-side (initiator) adds a requisite on the 1-side (target).
     this.data_blocks.forEach(block => {
-      const moduleInfo = block.getModuleInformation(); 
-        
-      block.fields.forEach(field => {
-        if (field.type === 'relate' && field.value_type === 'fixed' && field.value) {
-          let relationshipName = '';
-          const moduleFieldInfo = moduleInfo.fields[field.name];
-          
-          // Use 'options' property which contains the link name
-          if (moduleFieldInfo && moduleFieldInfo.type === 'relate' && moduleFieldInfo.options) {
-            relationshipName = moduleFieldInfo.options;
-          }
-          
-          if (relationshipName) {
-            const originalDef = utils.getDefinedAction('RelateRecordsAction');
-            if (originalDef) {
-              const actionDef = { 
-                ...originalDef, 
-                isAutomatic: true, 
-                order: AUTO_ACTION_ORDER 
-              };
-              
-              const params = {
-                'data_block_id': { value: block.id, valueText: block.text, selectedOption: '' },
-                'target_object': { value: field.value, valueText: field.value_text || field.value, selectedOption: 'value' }, // target_object is a fixed ID value
-                'relationship_name': { value: relationshipName, valueText: relationshipName, selectedOption: '' }
-              };
-              
-              const newAction = this.addAction(actionDef, params, '0');
-              if (newAction) {
-                newAction.text = `${utils.translate('LBL_RELATE_RECORDS_ACTION_TITLE')}: ${block.text}.${field.text_original || field.name} = ${field.value_text || field.value}`;
+      // Add requisites for FK-injected relationships (1-N): the N-side (initiator)
+      // must execute after the 1-side (target) save.
+      if (block.save_action_id) {
+        const allRels = this.getAllDataBlockRelationships();
+        (allRels[block.id] || [])
+          .filter(r => r.datablock_orig && r.datablock_dest && handledRelationshipNames.has(r.name) && r.initiator_id === block.id)
+          .forEach(r => {
+            const targetBlock = this.data_blocks.find(b => b.id === r.datablock_dest);
+            if (targetBlock && targetBlock.save_action_id && targetBlock.save_action_id !== block.save_action_id) {
+              const saveAction = mainFlow.actions.find(a => a.id === block.save_action_id);
+              if (saveAction && !saveAction.requisite_actions.includes(targetBlock.save_action_id)) {
+                saveAction.requisite_actions.push(targetBlock.save_action_id);
+              }
+            }
+          });
+      }
+
+      // Generate RelateRecordsActions for relate fields with fixed values.
+      const moduleInfo = block.getModuleInformation();
+      if (moduleInfo) {
+        block.fields.forEach(field => {
+          if (field.type === 'relate' && field.value_type === 'fixed' && field.value) {
+            let relationshipName = '';
+            const moduleFieldInfo = moduleInfo.fields[field.name];
+            if (moduleFieldInfo && moduleFieldInfo.type === 'relate' && moduleFieldInfo.options) {
+              relationshipName = moduleFieldInfo.options;
+            }
+            if (relationshipName) {
+              const originalDef = utils.getDefinedAction('RelateRecordsAction');
+              if (originalDef) {
+                const actionDef = {
+                  ...originalDef,
+                  isAutomatic: true,
+                  order: AUTO_ACTION_ORDER
+                };
+                const params = {
+                  'data_block_id': { value: block.id, valueText: block.text, selectedOption: '' },
+                  'target_object': { value: field.value, valueText: field.value_text || field.value, selectedOption: 'value' },
+                  'relationship_name': { value: relationshipName, valueText: relationshipName, selectedOption: '' }
+                };
+                const newAction = this.addAction(actionDef, params, '0');
+                if (newAction) {
+                  newAction.text = `${utils.translate('LBL_RELATE_RECORDS_ACTION_TITLE')}: ${block.text}.${field.text_original || field.name} = ${field.value_text || field.value}`;
+                }
               }
             }
           }
-        }
-      });
+        });
+      }
     });
 
-    // Generate RELATE actions for Block-to-Block relationships
+    // Generate RELATE actions for Block-to-Block relationships.
+    // Skip those already handled by SaveRecordAction.
     const allRels = this.getAllDataBlockRelationships();
     Object.keys(allRels).forEach(blockId => {
       const blockRels = allRels[blockId];
       const activeRels = blockRels.filter(r => r.datablock_orig && r.datablock_dest);
       
+      // Skip relationships already handled by SaveRecordAction.
+      // Both directions are skipped since the initiator's FK injection is sufficient.
       activeRels.forEach(rel => {
         if (rel.datablock_orig === blockId) {
-          const originalDef = utils.getDefinedActions().find(a => a.name == 'RelateRecordsAction');
+          if (handledRelationshipNames.has(rel.name)) return;
+          // Skip non-initiator: N-M is bidirectional (one action suffices),
+          // 1-N fallback FK injection is done on the initiator side.
+          if (rel.initiator_id && rel.initiator_id !== blockId) return;
+          
+          const originalDef = utils.getDefinedAction('RelateRecordsAction');
           if (originalDef) {
             const blockOrig = this.data_blocks.find(b => b.id == rel.datablock_orig);
             const blockDest = this.data_blocks.find(b => b.id == rel.datablock_dest);
@@ -1933,18 +2170,152 @@ class stic_AwfConfiguration {
               const params = {
                 'data_block_id': { value: blockOrig.id, valueText: blockOrig.text, selectedOption: '' },
                 'target_object': { value: blockDest.id, valueText: blockDest.text, selectedOption: 'datablock' },
-                'relationship_name': { value: rel.name, valueText: rel.text, selectedOption: '' }
+                'relationship_name': { value: rel.link_name || rel.name, valueText: rel.text, selectedOption: '' }
               };
               
+              // Determine if this is 1-N (has a relate field) or N-M (no relate field)
+              const moduleOrigInfo = utils.getModuleInformation(blockOrig.module);
+              let isOneToMany = false;
+              if (moduleOrigInfo) {
+                const relateField = Object.values(moduleOrigInfo.fields).find(
+                  f => f.type === 'relate' && f.options === rel.name
+                );
+                if (relateField && relateField.id_name) {
+                  isOneToMany = true;
+                  if (!rel.initiator_id || rel.initiator_id === blockOrig.id) {
+                    params['relation_id_name'] = { value: relateField.id_name, valueText: relateField.id_name, selectedOption: '' };
+                  }
+                }
+              }
+              
+              const arrow = isOneToMany ? '\u27f6' : '\u27f7';
               const newAction = this.addAction(actionDef, params, '0');
               if (newAction) {
-                newAction.text = `${utils.translate('LBL_RELATE_RECORDS_ACTION_TITLE')}: ${blockOrig.text} ⟶ ${blockDest.text}`;
+                newAction.text = `${utils.translate('LBL_RELATE_RECORDS_ACTION_TITLE')}: ${blockOrig.text} ${arrow} ${blockDest.text}`;
               }
             }
           }
         }
       });
     });
+
+    // Sort actions topologically based on requisite_actions dependencies
+    this.sortFlowTopologically(mainFlow);
+  }
+
+  /**
+   * Sorts the actions of a flow topologically using Kahn's algorithm based on requisite_actions.
+   * Detects cycles and marks the closing edge as deferred (removes it from requisites) so the
+   * topological sort can complete. Deferred edges are returned so the caller knows which
+   * RelateRecordsAction dependencies were broken.
+   * @param {stic_AwfFlow} flow The flow to sort
+   * @returns {Array} List of deferred edges: { from: actionId, to: actionId }
+   */
+  sortFlowTopologically(flow) {
+    if (!flow || !flow.actions || flow.actions.length === 0) return [];
+
+    // Build action map for name resolution
+    let actionMap = new Map();
+    flow.actions.forEach(a => actionMap.set(a.id, a));
+
+    // Build adjacency list and in-degree count from requisite_actions
+    // Edge: requisite -> action (action depends on requisite)
+    let inDegree = new Map();
+    let dependents = new Map(); // actionId -> [actionIds that depend on it]
+    flow.actions.forEach(a => {
+      inDegree.set(a.id, 0);
+      dependents.set(a.id, []);
+    });
+
+    flow.actions.forEach(a => {
+      (a.requisite_actions || []).forEach(reqId => {
+        if (actionMap.has(reqId)) {
+          dependents.get(reqId).push(a.id);
+          inDegree.set(a.id, inDegree.get(a.id) + 1);
+        }
+      });
+    });
+
+    // Kahn's algorithm (BFS)
+    let sorted = [];
+    let queue = [];
+    inDegree.forEach((deg, id) => { if (deg === 0) queue.push(id); });
+
+    while (queue.length > 0) {
+      let currentId = queue.shift();
+      sorted.push(currentId);
+      dependents.get(currentId).forEach(depId => {
+        inDegree.set(depId, inDegree.get(depId) - 1);
+        if (inDegree.get(depId) === 0) queue.push(depId);
+      });
+    }
+
+    // Cycle detection: if sorted < total, there is a cycle
+    let deferred = [];
+    if (sorted.length < flow.actions.length) {
+      // Find actions in the cycle (those not yet sorted)
+      let remaining = new Set(flow.actions.filter(a => !sorted.includes(a.id)).map(a => a.id));
+
+      // For each remaining action, find a requisite that is also remaining (the cycle edge)
+      remaining.forEach(actionId => {
+        let action = actionMap.get(actionId);
+        let cycleReq = (action.requisite_actions || []).find(r => remaining.has(r));
+        if (cycleReq) {
+          deferred.push({ from: cycleReq, to: actionId });
+          // Remove the deferred edge so the sort can proceed
+          action.requisite_actions = action.requisite_actions.filter(r => r !== cycleReq);
+          inDegree.set(actionId, inDegree.get(actionId) - 1);
+          if (inDegree.get(actionId) === 0) queue.push(actionId);
+        }
+      });
+
+      // Continue BFS after breaking cycles
+      while (queue.length > 0) {
+        let currentId = queue.shift();
+        sorted.push(currentId);
+        dependents.get(currentId).forEach(depId => {
+          inDegree.set(depId, inDegree.get(depId) - 1);
+          if (inDegree.get(depId) === 0) queue.push(depId);
+        });
+      }
+
+      // If there are still unsorted actions, force them at the end (resilience against multi-edge cycles)
+      let forced = [];
+      flow.actions.forEach(a => {
+        if (!sorted.includes(a.id)) {
+          sorted.push(a.id);
+          forced.push(a.id);
+        }
+      });
+    }
+
+    // Reorder flow.actions according to topological order
+    let sortedMap = new Map();
+    sorted.forEach((id, index) => sortedMap.set(id, index));
+    flow.actions.sort((a, b) => (sortedMap.get(a.id) ?? 0) - (sortedMap.get(b.id) ?? 0));
+
+    // Group actions: pre-auto (order < -1) → auto (is_automatic) → manual → terminal.
+    // Preserves topological order within each group but prevents actions
+    // from being interleaved across groups.
+    const preAutoActions = flow.actions.filter(a => !a.is_automatic && !a.is_terminal && a.order < -1);
+    const autoActions = flow.actions.filter(a => a.is_automatic);
+    const manualActions = flow.actions.filter(a => !a.is_automatic && !a.is_terminal && a.order >= -1);
+    const terminalActions = flow.actions.filter(a => a.is_terminal);
+    flow.actions = [...preAutoActions, ...autoActions, ...manualActions, ...terminalActions];
+
+    // Reassign order property.
+    // Pre-auto actions keep their original negative order (fixed, before saves).
+    // Automatic actions keep order -1 (before default manual actions).
+    // Manual actions stay at order 0 so is_fixed_order remains false (reorderable).
+    // Terminal actions keep their order (999).
+    flow.actions.forEach((a) => {
+      if (a.is_automatic) a.order = -1;
+      else if (a.is_terminal) { /* keep 999 */ }
+      else if (a.order < -1) { /* keep pre-auto negative order */ }
+      else a.order = 0;
+    });
+
+    return deferred;
   }
 
   /**

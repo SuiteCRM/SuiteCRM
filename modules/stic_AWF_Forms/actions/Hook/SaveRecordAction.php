@@ -42,6 +42,16 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
         $this->baseLabel = 'LBL_SAVE_RECORD_ACTION';
     }
 
+    protected function getCustomParameters(): array {
+        $paramConfigs = new ActionParameterDefinition();
+        $paramConfigs->name = 'relation_configs';
+        $paramConfigs->text = $this->translate('RELATION_CONFIGS_TEXT');
+        $paramConfigs->type = ActionParameterType::VALUE;
+        $paramConfigs->dataType = ActionDataType::TEXT;
+        $paramConfigs->required = false;
+        return [$paramConfigs];
+    }
+
     /**
      * Executes the action, receiving the resolved and validated main data block.
      *
@@ -208,6 +218,9 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
             if (property_exists($bean, 'fromAWF')) {
                 $bean->fromAWF = true;
             }
+            // Inject FK values for outgoing 1-N relationships before save
+            $injectedFks = $this->injectRelationFks($context, $actionConfig, $bean, $block);
+
             // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
             $bean->save(false); 
             
@@ -228,6 +241,9 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                     if (property_exists($bean, 'fromAWF')) {
                         $bean->fromAWF = true;
                     }
+                    // Inject FK values for outgoing 1-N relationships before save
+                    $injectedFks = $this->injectRelationFks($context, $actionConfig, $bean, $block);
+
                     // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
                     $bean->save(false); 
                     break;
@@ -240,6 +256,9 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                     if (property_exists($bean, 'fromAWF')) {
                         $bean->fromAWF = true;
                     }
+                    // Inject FK values for outgoing 1-N relationships before save
+                    $injectedFks = $this->injectRelationFks($context, $actionConfig, $bean, $block, true);
+
                     // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
                     $bean->save(false); 
                     break;
@@ -249,6 +268,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                     // Do nothing, the bean remains as it was
                     $modifications = $this->skipBean($bean, $block);
                     $modificationType = BeanModificationType::SKIPPED;
+                    $injectedFks = false;
                     break;
             }
         }
@@ -265,6 +285,11 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
             $modificationType = BeanModificationType::UNCHANGED;
         }
 
+        // If FKs were injected and this is a new bean, recalculate the name field
+        if (!empty($injectedFks) && $modificationType === BeanModificationType::CREATED) {
+            stic_AWF_FormsUtils::recalculateNameIfNeeded($bean, $block, $context);
+        }
+
         // Logging and Return
         $actionResult = new ActionResult(ResultStatus::OK, $actionConfig);
         
@@ -277,6 +302,29 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
                 ['key' => 'duplicate_rule_matched', 'label' => $this->translate('DUPLICATE_RULE_MATCHED_TEXT'), 'value' => $matchedRuleFields],
             ];
             $actionResult->registerActionMetadata($bean, $dataToLog);
+        }
+
+        // Log injected FK relationships
+        if (!empty($injectedFks)) {
+            $metadata = [];
+            $configsJson = $actionConfig->getResolvedParameter('relation_configs', '');
+            if (!empty($configsJson)) {
+                $configs = json_decode($configsJson, true);
+                if (is_array($configs)) {
+                    foreach ($configs as $cfg) {
+                        $relName = $cfg['relationship_name'] ?? '';
+                        $idName = $cfg['id_name'] ?? '';
+                        $targetBlockId = $cfg['target_block_id'] ?? '';
+                        $targetBlock = $context->formConfig->data_blocks[$targetBlockId] ?? null;
+                        $targetBeanRef = $targetBlock?->getBeanReference();
+                        $targetId = $targetBeanRef?->beanId ?? '';
+                        $metadata[] = ['key' => 'injected_fk', 'label' => $idName, 'value' => "{$relName} → {$targetId}"];
+                    }
+                }
+            }
+            if (!empty($metadata)) {
+                $actionResult->registerActionMetadata($bean, $metadata);
+            }
         }
 
         return $actionResult;
@@ -397,4 +445,61 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
         }
         return $modifications;
     }
+
+    /**
+     * Injects FK values for 1-N relationships before the first save.
+     * @return bool True if any FK was injected.
+     */
+    private function injectRelationFks(ExecutionContext $context, FormAction $actionConfig, SugarBean $bean, DataBlockResolved $block, bool $isEnrichMode = false): bool
+    {
+        $configsJson = $actionConfig->getResolvedParameter('relation_configs', '');
+        if (empty($configsJson)) {
+            return false;
+        }
+
+        $configs = json_decode($configsJson, true);
+        if (!is_array($configs) || empty($configs)) {
+            return false;
+        }
+
+        $isExistingRecord = !empty($bean->id) && !$bean->new_with_id;
+
+        $injectedAny = false;
+        foreach ($configs as $config) {
+            $idName = $config['id_name'] ?? '';
+            $targetBlockId = $config['target_block_id'] ?? '';
+            $relationName = $config['relationship_name'] ?? '';
+
+            if (empty($idName) || empty($targetBlockId)) {
+                continue;
+            }
+
+            $targetBlock = $context->formConfig->data_blocks[$targetBlockId] ?? null;
+            if (!$targetBlock) {
+                $GLOBALS['log']->warn("SaveRecordAction: Target block '{$targetBlockId}' not found for relationship '{$relationName}'.");
+                continue;
+            }
+
+            $targetBeanRef = $targetBlock->getBeanReference();
+            if (!$targetBeanRef || empty($targetBeanRef->beanId)) {
+                $GLOBALS['log']->warn("SaveRecordAction: Target block '{$targetBlock->name}' has no bean ID. Check action order.");
+                continue;
+            }
+
+            // In enrich mode, protect existing FK values for existing records
+            if ($isEnrichMode && $isExistingRecord && !empty($bean->{$idName})) {
+                $GLOBALS['log']->debug("SaveRecordAction: Enrich mode — protected existing FK '{$idName}' = '{$bean->{$idName}}'.");
+                continue;
+            }
+
+            $bean->{$idName} = $targetBeanRef->beanId;
+            // Finds and populates the display relate field (e.g. account_name) associated with a physical FK field (e.g. account_id)
+            stic_AWF_FormsUtils::populateRelateDisplayField($bean, $idName, $targetBeanRef->beanId);
+
+            $injectedAny = true;
+        }
+
+        return $injectedAny;
+    }
+
 }
