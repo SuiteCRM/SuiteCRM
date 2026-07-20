@@ -779,8 +779,14 @@ class DynamicField
                     $to_save[$property] =
                         is_string($field->ext3) ? htmlspecialchars_decode($field->ext3, ENT_QUOTES) : $field->ext3;
                 } else {
+                    // STIC-Custom 20260604 ART - Prevent warnings when $field->$property is not defined (null) and avoid saving empty values as default ones in the _override file
+                    // https://github.com/SinergiaTIC/SinergiaCRM/pull/1217
+                    // $to_save[$property] =
+                    //     is_string($field->$property) ? htmlspecialchars_decode($field->$property, ENT_QUOTES) : $field->$property;
+                    $propertyValue = $field->$property ?? null;
                     $to_save[$property] =
-                        is_string($field->$property) ? htmlspecialchars_decode($field->$property, ENT_QUOTES) : $field->$property;
+                        is_string($propertyValue) ? htmlspecialchars_decode($propertyValue, ENT_QUOTES) : $propertyValue;
+                    // END STIC-Custom
                 }
 
                 // The property duplicate_merge is dependent of the property duplicate_merge_dom_value.
@@ -820,8 +826,13 @@ class DynamicField
                 // In that case we set the same value as the default property
                 // STIC#679
                 // STIC#949
-                if ($property == 'display_default' && is_null($field->display_default)) {
-                    $to_save['display_default'] = $field->default;
+                // STIC-Custom 20260604 ART - Prevent warnings when $field->$property is not defined (null) and avoid saving empty values as default ones in the _override file
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/1217
+                // if ($property == 'display_default' && is_null($field->display_default)) {
+                //     $to_save['display_default'] = $field->default;
+                if ($property == 'display_default' && is_null($field->display_default ?? null)) {
+                    $to_save['display_default'] = $field->default ?? null;
+                // END STIC-Custom
                 }
             }
             // STIC-custom PCS 20230509 - Adding code for avoid not saving HTML fields.

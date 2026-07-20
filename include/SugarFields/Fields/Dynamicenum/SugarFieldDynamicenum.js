@@ -54,6 +54,10 @@ function addLoadEvent(func) {
 
 function loadDynamicEnum(field, subfield) {
     if (field != '') {
+        // STIC-Custom 20260604 ART - DynamicEnum in quickcreateviews
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1217
+        var el = null;
+        // END STIC-Custom
 
         // STIC-Custom - JCH - 2022-09-26 - Add specific method for retrieving parent list value in view list.
         // STIC#865
@@ -72,30 +76,74 @@ function loadDynamicEnum(field, subfield) {
                 var moduleName = module_sugar_grp1;
         //END STIC-Custom
                 var dynamicFieldName = $('form#EditView select').attr('id');
-                var el = $('<input></input>',{
+        // STIC-Custom 20260604 ART - DynamicEnum in quickcreateviews
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1217
+        //         var el = $('<input></input>',{
+        //         id:recordId+dynamicFieldName,
+        //         type: 'hidden',
+        //         value: getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName)
+        //     }).appendTo($('#'+subfield).parent());
+        //     updateDynamicEnum(recordId+dynamicFieldName, subfield)
+        // } else {
+        //     var el = document.getElementById(field);
+        // }      
+        // // END STIC-Custom
+
+        // if (el) {
+        //     if (el.addEventListener) {
+        //         el.addEventListener("change", function () {
+        //             updateDynamicEnum(field, subfield)
+        //         }, false);
+        //         updateDynamicEnum(field, subfield)
+        //     } else if (el.attachEvent) {
+        //         el.attachEvent("onchange", function () {
+        //             updateDynamicEnum(field, subfield)
+        //         });
+        //         updateDynamicEnum(field, subfield)
+        //     }
+        // }
+                el = $('<input></input>',{
                 id:recordId+dynamicFieldName,
                 type: 'hidden',
                 value: getParentValueFromDynamicEnum(moduleName, recordId, dynamicFieldName)
             }).appendTo($('#'+subfield).parent());
             updateDynamicEnum(recordId+dynamicFieldName, subfield)
         } else {
-            var el = document.getElementById(field);
-        }      
-        // END STIC-Custom
+            
+            // In subpanel quickcreate forms there can be duplicated IDs in the page
+            // (same technical field name in parent module and subpanel module)
+            // Resolve the parent field from the same form as the dynamic child first
+            var subfieldElement = document.getElementById(subfield);
+            if (subfieldElement) {
+                var parentForm = subfieldElement.form || $(subfieldElement).closest('form')[0];
+                if (parentForm && parentForm.elements && parentForm.elements[field]) {
+                    el = parentForm.elements[field];
+                    if (el && el.length && !el.tagName) {
+                        el = el[0];
+                    }
+                }
+            }
+
+            // Backward compatible fallback
+            if (!el) {
+                el = document.getElementById(field);
+            }
+        }
 
         if (el) {
             if (el.addEventListener) {
                 el.addEventListener("change", function () {
-                    updateDynamicEnum(field, subfield)
+                    updateDynamicEnum(el, subfield)
                 }, false);
-                updateDynamicEnum(field, subfield)
+                updateDynamicEnum(el, subfield)
             } else if (el.attachEvent) {
                 el.attachEvent("onchange", function () {
-                    updateDynamicEnum(field, subfield)
+                    updateDynamicEnum(el, subfield)
                 });
-                updateDynamicEnum(field, subfield)
+                updateDynamicEnum(el, subfield)
             }
         }
+        // END STIC-Custom
     }
 }
 
@@ -104,7 +152,18 @@ function updateDynamicEnum(field, subfield) {
 
     if (document.getElementById(subfield) != null) {
         var selector = document.getElementById(subfield);
-        var de_key = document.getElementById(field).value;
+        // STIC-Custom 20260604 ART - DynamicEnum in quickcreateviews
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1217
+        // var de_key = document.getElementById(field).value;
+        // Get the value of the parent field to filter the dynamicenum values
+        var parentField = (typeof field === 'string') ? document.getElementById(field) : field;
+
+        if (!parentField) {
+            return;
+        }
+
+        var de_key = parentField.value;
+        // END STIC-Custom
 
         var current = [];
         for (var i = 0; i < selector.length; i++) {
