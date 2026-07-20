@@ -89,4 +89,8 @@ $mod_strings = array(
 
     // Many to Many filter fields
     'LBL_STIC_RESOURCES_STIC_BOOKINGS_NAME' => 'Booking',
+    'LBL_FILTER_RESOURCES' => 'Resources filter',
+    'LBL_NUMBER_OF_PLACES' => 'Number of places',
+    'LBL_CENTERS_BUTTON' => 'Load centers',
+    'LBL_CENTERS_FILTER' => 'Center',
 );

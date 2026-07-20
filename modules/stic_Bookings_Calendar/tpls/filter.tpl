@@ -20,7 +20,7 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  *}
 <div class="filter-container">
-    <label for="filter-resources-label">{$MOD.LBL_FILTER_RESOURCES}</label>
+    <label for="filter-resources-label">{$RESOURCES_MOD.LBL_FILTER_RESOURCES}</label>
     <select name="filter-resources" id="filter-resources" class="filter-resources" multiple>
         <option value=""></option>
         {foreach from=$RESOURCESGROUP item=RESOURCES key=GROUP}

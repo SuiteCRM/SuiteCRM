@@ -803,5 +803,30 @@ class stic_BookingsUtils
         return " AND (" . implode(" OR ", $filters) . ")";
     }
 
+    public static function getConfigResourceFields()
+    {
+        $mod_strings = return_module_language($GLOBALS['current_language'], 'stic_Resources');
+        return [
+            'name' => $mod_strings['LBL_NAME'],
+            'code' => $mod_strings['LBL_CODE'],
+            'color' => $mod_strings['LBL_COLOR'],
+            'type' => $mod_strings['LBL_TYPE'],
+            'hourly_rate' => $mod_strings['LBL_HOURLY_RATE'],
+            'daily_rate' => $mod_strings['LBL_DAILY_RATE'],
+        ];
+    }
 
+    public static function getConfigPlaceFields()
+    {
+        $mod_strings = return_module_language($GLOBALS['current_language'], 'stic_Resources');
+        return [
+            'name' => $mod_strings['LBL_NAME'],
+            'code' => $mod_strings['LBL_CODE'],
+            'user_type' => $mod_strings['LBL_USER_TYPE'],
+            'place_type' => $mod_strings['LBL_PLACE_TYPE'],
+            'gender' => $mod_strings['LBL_GENDER'],
+            'amount_day_occupied' => $mod_strings['LBL_AMOUNT_DAY_OCCUPIED'],
+            'amount_copayment' => $mod_strings['LBL_AMOUNT_COPAYMENT'],
+        ];
+    }
 }

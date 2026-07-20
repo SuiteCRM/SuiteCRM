@@ -535,8 +535,8 @@ function insertResourceLine() {
         field +
         "'>" +
         SUGAR.language.get(
-          "stic_Bookings",
-          "LBL_RESOURCES_" + field.toUpperCase()
+          "stic_Resources",
+          "LBL_" + field.toUpperCase()
         ) +
         "</th>";
     });
@@ -680,8 +680,8 @@ function updateResourceFields() {
       field +
       "'>" +
       SUGAR.language.get(
-        "stic_Bookings",
-        "LBL_RESOURCES_" + field.toUpperCase()
+        "stic_Resources",
+        "LBL_" + field.toUpperCase()
       ) +
       "</th>";
   });

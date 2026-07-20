@@ -89,4 +89,8 @@ $mod_strings = array(
 
     // Camps de filtre en relacions molts a molts
     'LBL_STIC_RESOURCES_STIC_BOOKINGS_NAME' => 'Reserva',
+    'LBL_FILTER_RESOURCES' => 'Filtre de recursos',
+    'LBL_NUMBER_OF_PLACES' => 'Nombre de places',
+    'LBL_CENTERS_BUTTON' => 'Carrega els centres',
+    'LBL_CENTERS_FILTER' => 'Centre',
 );

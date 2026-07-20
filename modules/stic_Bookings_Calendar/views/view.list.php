@@ -90,6 +90,8 @@ class stic_Bookings_CalendarViewList extends ViewList
         $resources = stic_Bookings_CalendarUtils::getAllResources();
         $this->ss->assign('MOD', $mod_strings);
         $this->ss->assign('APP', $app_strings);
+        global $current_language;
+        $this->ss->assign('RESOURCES_MOD', return_module_language($current_language, 'stic_Resources'));
         $this->ss->assign('RESOURCESGROUP', $resources['resourcesArrayByGroup']);
 
         $resourcesArrayJson = json_encode($resources['resourcesArrayNoPlaces']);

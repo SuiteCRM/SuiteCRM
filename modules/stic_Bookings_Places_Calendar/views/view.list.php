@@ -93,6 +93,7 @@ class stic_Bookings_Places_CalendarViewList extends ViewList
         $sticPlacesType = $savedFilters['stic_resources_places_type_list']?? '';
         $sticPlacesGender = $savedFilters['stic_resources_places_gender_list']?? '';
 
+        $this->ss->assign('RESOURCES_MOD', return_module_language($current_language, 'stic_Resources'));
         $this->ss->assign('stic_center_id', $sticCenterId);
         $this->ss->assign('stic_center_name', $sticCenterName);
         $this->ss->assign('stic_resources_places_users_list', get_select_options_with_id($app_list_strings['stic_resources_places_users_list'], $sticPlacesUser ?? []));

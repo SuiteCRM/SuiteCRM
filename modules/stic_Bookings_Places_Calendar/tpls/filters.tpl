@@ -23,7 +23,7 @@
     <div class="filters-container">
         <div class="filter-row">
             <div class="filter-group">
-                <label for="stic_center_name">{$MOD.LBL_FILTERS_STIC_CENTER}</label>
+                <label for="stic_center_name">{$RESOURCES_MOD.LBL_CENTERS_FILTER}</label>
                 <div class="input-group">
                     <input type='text' class='form-control sqsEnabled' name='stic_center_name'
                         id='stic_center_name' autocomplete='off'
@@ -48,7 +48,7 @@
 
         <div class="filter-row">
             <div class="filter-group">
-                <label for="stic_resources_places_gender_list">{$MOD.LBL_FILTERS_STIC_PLACE_GENDER}</label>
+                <label for="stic_resources_places_gender_list">{$RESOURCES_MOD.LBL_GENDER}</label>
                 <select multiple id="stic_resources_places_gender_list" 
                         name="stic_resources_places_gender_list[]" 
                         tabindex="102">
@@ -59,7 +59,7 @@
 
         <div class="filter-row">
             <div class="filter-group">
-                <label for="stic_resources_places_type_list">{$MOD.LBL_FILTERS_STIC_PLACE_TYPE}</label>
+                <label for="stic_resources_places_type_list">{$RESOURCES_MOD.LBL_PLACE_TYPE}</label>
                 <select multiple id="stic_resources_places_type_list" 
                         name="stic_resources_places_type_list[]" 
                         tabindex="102">
@@ -70,7 +70,7 @@
 
         <div class="filter-row">
             <div class="filter-group">
-                <label for="stic_resources_places_users_list">{$MOD.LBL_FILTERS_STIC_PLACE_USER_TYPE}</label>
+                <label for="stic_resources_places_users_list">{$RESOURCES_MOD.LBL_USER_TYPE}</label>
                 <select multiple id="stic_resources_places_users_list" 
                         name="stic_resources_places_users_list[]" 
                         tabindex="102">

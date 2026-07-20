@@ -153,11 +153,27 @@ class stic_BookingsViewEdit extends ViewEdit
     {
         require_once 'SticInclude/Utils.php';
 
+        // Load JS language file for Resources to get field labels in the editview
+        $moduleName = 'stic_Resources';
+        if (!is_file("cache/jsLanguage/{$moduleName}/{$GLOBALS['current_language']}.js")) {
+            require_once 'include/language/jsLanguage.php';
+            jsLanguage::createModuleStringsCache($moduleName, $GLOBALS['current_language']);
+        }
+        echo getVersionedScript("cache/jsLanguage/{$moduleName}/{$GLOBALS['current_language']}.js", $GLOBALS['sugar_config']['js_lang_version']);
+        $moduleName = 'stic_Bookings';
+        if (!is_file("cache/jsLanguage/{$moduleName}/{$GLOBALS['current_language']}.js")) {
+            require_once 'include/language/jsLanguage.php';
+            jsLanguage::createModuleStringsCache($moduleName, $GLOBALS['current_language']);
+        }
+        echo getVersionedScript("cache/jsLanguage/{$moduleName}/{$GLOBALS['current_language']}.js", $GLOBALS['sugar_config']['js_lang_version']);
+
         global $mod_strings, $app_strings;
         SticViews::display($this);
         
-        $config_resource_fields = require 'modules/stic_Bookings/configResourceFields.php';
-        $config_place_fields = require 'modules/stic_Bookings/configPlaceFields.php';
+
+        require_once 'modules/stic_Bookings/Utils.php';
+        $config_resource_fields = stic_BookingsUtils::getConfigResourceFields();
+        $config_place_fields = stic_BookingsUtils::getConfigPlaceFields();
     
 
         global $sugar_config, $current_language, $app_list_strings, $current_user;
@@ -220,6 +236,7 @@ class stic_BookingsViewEdit extends ViewEdit
         $config_place_fields_json = json_encode(array_keys($config_place_fields)); 
         $this->ss->assign('MOD', $mod_strings);
         $this->ss->assign('APP', $app_strings);
+        $this->ss->assign('RESOURCES_MOD', return_module_language($current_language, 'stic_Resources'));
 
         echo "<script>
             var config_resource_fields = $config_resource_fields_json;
@@ -387,7 +404,7 @@ SCRIPT;
     {
         global $app_list_strings;
 
-        $config_resource_fields = require 'modules/stic_Bookings/configResourceFields.php';
+        $config_resource_fields = stic_BookingsUtils::getConfigResourceFields();
 
         $parsedResources = array();
         foreach ($resourcesBeanArray as $resourceBean) {
