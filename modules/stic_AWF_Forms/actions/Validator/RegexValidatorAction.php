@@ -70,6 +70,17 @@ class RegexValidatorAction extends ValidatorActionDefinition {
     public function validateBackend(mixed $value, array $params): bool {
         if (empty($value)) return true;
         if (empty($params['pattern'])) return true;
-        return preg_match($params['pattern'], (string)$value) === 1;
+
+        $pattern = trim($params['pattern']);
+
+        // Check if the pattern already has valid delimiters (e.g., starts and ends with '/')
+        // If not, automatically add them for compatibility with PHP PCRE
+        if (!preg_match('/^\/.*\/[a-z]*$/i', $pattern)) {
+            $pattern = '/' . str_replace('/', '\/', $pattern) . '/';
+        }
+
+        // Use the @ operator to suppress warnings from preg_match
+        $matchResult = @preg_match($pattern, (string)$value);
+        return $matchResult === 1;
     }
 }
