@@ -174,11 +174,6 @@ class stic_SignaturesUtils
             if ($module == 'Leads') {
                 continue;
             }
-            
-            // Exclude Users module except for assigned_user_id field when main module is also Users
-            if ($moduleName != 'Users' && $module == 'Users' && $moduleField != 'assigned_user_id') {
-                continue;
-            }
            
             $app_list_strings['stic_signatures_signer_path_list'][$key] = $value;
         }
