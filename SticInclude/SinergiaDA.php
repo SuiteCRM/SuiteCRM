@@ -352,9 +352,11 @@ class ExternalReporting
 
                 $fieldPrefix = ($fieldV['source'] ?? null) == 'custom_fields' ? 'c' : 'm';
 
-                // If the field is excluded, skip it
+                // If the field is excluded, skip it unless it belongs to a self-referencing relationship (auto-relationship)
                 if (in_array($fieldV['name'], $this->evenExcludedFields)) {
-                    continue;
+                    if (($fieldV['module'] ?? null) != $moduleName) {
+                        continue;
+                    }
                 }
 
                 // Conditionally controls the visibility of fields in the detail view:
@@ -468,6 +470,12 @@ class ExternalReporting
                                     $fieldV['rLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE', $fieldV['module']);
                                     $fieldV['lLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_L_TITLE', $fieldV['module']);
                                     $fieldV['autoRelJoinModuleRelLabel'] = 'LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE';
+                                    // Resolve the actual relationship name from the link field definition
+                                    // (needed when the link field name differs from the relationship name, e.g. member_of vs member_accounts)
+                                    $linkFieldDef = $moduleBean->getFieldDefinitions()[$fieldV['link']] ?? null;
+                                    if ($linkFieldDef && !empty($linkFieldDef['relationship'])) {
+                                        $fieldV['rel_name'] = $linkFieldDef['relationship'];
+                                    }
                                     $autoRelationships[$fieldV['link']] = $fieldV;
                                     $this->autoRelationshipsRegistered[$fieldV['link']] = $fieldV['table'];
                                 }
@@ -508,7 +516,11 @@ class ExternalReporting
                                 $indexesToCreate[] = $fieldV['alias'];
 
                                 if (!empty($fieldSrc)) {
-                                    $fieldList['related'][$fieldK] = $fieldSrc . " AS {$fieldV['alias']}";
+                                    // Skip adding to related field list for auto-relationships,
+                                    // the auto-relationship view already adds the column via parentIdfieldSrc
+                                    if (empty($fieldV['isAutoRelationship'])) {
+                                        $fieldList['related'][$fieldK] = $fieldSrc . " AS {$fieldV['alias']}";
+                                    }
                                 } else {
                                     $fieldList['failedRelations'][$fieldK] = $fieldSrc . " AS {$fieldV['alias']}";
                                 }
@@ -579,8 +591,8 @@ class ExternalReporting
                                         'column' => $fieldV['name'],
                                         'type' => 'text',
                                         'aggregations' => 'count,count_distinct,none',
-                                        'label' => $fieldV['label'],
-                                        'description' => addslashes($fieldV['label']),
+                                        'label' => "{$fieldV['label']} ({$relatedModuleName})",
+                                        'description' => addslashes("{$fieldV['label']} ({$relatedModuleName})"),
                                         'sda_hidden' => 0,
                                         'stic_type' => $fieldV['type'] . '-name',
                                     ]
@@ -596,7 +608,7 @@ class ExternalReporting
                                         'target_table' => "{$this->viewPrefix}_{$fieldV['targetModule']}",
                                         'target_column' => 'id',
                                         'info' => 'relate',
-                                        'label' => "{$fieldV['label']}|{$txModuleName}",
+                                        'label' => "{$fieldV['label']} ({$relatedModuleName})|{$txModuleName} ({$fieldV['label']})",
                                     ]
                                 );
                             }
@@ -635,9 +647,33 @@ class ExternalReporting
                             ]
                         );
                         break;
+                    case 'bool':
+
+                        $fieldV['alias'] = $fieldV['name'];
+
+                        // Create listViewName for use in metadata & view creation
+                        $listViewName = substr(join('_', [$tableName, $fieldV['name'], 'stic_boolean_list']), 0, 58);
+
+                        $fieldSrc = " IFNULL({$fieldPrefix}.{$fieldV['name']} ,'') AS {$fieldName}";
+
+                        // For boolean fields, always create the enum view with fixed '1'/'0' codes
+                        // regardless of the actual keys in stic_boolean_list
+                        $this->createFixedBooleanEnumView($listViewName);
+
+                        $this->addMetadataRecord(
+                            'sda_def_enumerations',
+                            [
+                                'source_table' => "{$this->viewPrefix}_{$tableName}",
+                                'source_column' => $fieldV['name'],
+                                'master_table' => "{$this->listViewPrefix}_{$listViewName}",
+                                'info' => 'enum_list',
+                                'stic_type' => $fieldV['type'],
+                            ]
+                        );
+                        break;
+
                     case 'enum':
                     case 'dynamicenum':
-                    case 'bool':
                     case 'radioenum':
 
                         $fieldV['alias'] = $fieldV['name'];
@@ -651,9 +687,8 @@ class ExternalReporting
 
                         $createdListView = $this->createEnumView($listName, $listViewName);
 
-                        // If there is a valid drop-down list or if it corresponds to that of a boolean field
-                        // we continue, otherwise we move on to the next column
-                        if (!empty($createdListView) || $listName == 'stic_boolean_list') {
+                        // If there is a valid drop-down list we continue, otherwise we move on to the next column
+                        if (!empty($createdListView)) {
                             $listNames[] = $createdListView;
                         } else {
                             continue 2;
@@ -901,7 +936,7 @@ class ExternalReporting
             unset($qualifiedLabel);
             if (!empty($autoRelationships)) {
                 foreach ($autoRelationships as $key => $value) {
-                    if ($txModuleName != $value['rLabel']) {
+                    if ($txModuleName != $value['rLabel'] && strpos($value['rLabel'], 'LBL_') !== 0) {
                         $qualifiedLabel = "{$txModuleName} ({$value['rLabel']})";
                     } else {
                         $qualifiedLabel = "{$txModuleName} ({$value['label']})";
@@ -1275,7 +1310,9 @@ class ExternalReporting
 
         $tableLabel = empty($tableLabel) ? '-' : $tableLabel;
         // **Retrieve relationship information:**
-        $rel = $db->fetchOne("select * from relationships where relationship_name='{$field['link']}'");
+        // Use the resolved relationship name if available (for cases where link field name differs from relationship name)
+        $relName = $field['rel_name'] ?? $field['link'];
+        $rel = $db->fetchOne("select * from relationships where relationship_name='{$relName}'");
 
         // **Check if necessary information is present for standard join:**
         if (!empty($rel['join_table']) && !empty($rel['join_key_lhs']) && !empty($rel['join_key_rhs'])) {
@@ -1362,21 +1399,26 @@ class ExternalReporting
         } else {
             // **Handle cases where no join table is used:**
 
-            // Check for one-to-many relationship with the current table
-            $sql = "SELECT * FROM relationships WHERE (lhs_table='{$tableName}' OR rhs_table='{$tableName}') AND (lhs_table='{$field['table']}' OR rhs_table='{$field['table']}') AND relationship_type='one-to-many'";
-            $rel = $db->fetchOne($sql);
-
-            if ($rel) {
+            // Use the relationship data already retrieved from the first query (by relationship_name).
+            // The first query already found the correct relationship; we just need to verify
+            // it is one-to-many. Avoid re-querying by table names, which is ambiguous for
+            // self-referencing relationships where both sides use the same table.
+            if ($rel && !empty($rel['relationship_type']) && $rel['relationship_type'] == 'one-to-many') {
                 // One-to-many relationship - use direct join
                 $res['field'] = "m.{$field['id_name']}";
                 $res['leftJoin'] = " LEFT JOIN {$field['table']} ON {$field['table']}.id=m.{$field['id_name']} AND {$field['table']}.deleted=0 ";
 
                 // Add metadata record
+                // For auto-relationships, source_table points to the N-side view (e.g. sda_accounts_member_of)
+                // since the parent_id column resides there, not in the main view.
+                $relSourceTable = $isAutoRelationship
+                    ? $this->truncateStringMiddle("{$this->viewPrefix}_{$tableName}_{$field['link']}", 64)
+                    : "{$this->viewPrefix}_{$tableName}";
                 $this->addMetadataRecord(
                     'sda_def_relationships',
                     [
                         'id' => $field['link'],
-                        'source_table' => "{$this->viewPrefix}_{$tableName}",
+                        'source_table' => $relSourceTable,
                         'source_column' => $field['id_name'],
                         'target_table' => "{$this->viewPrefix}_{$field['table']}",
                         'target_column' => 'id',
@@ -1384,6 +1426,11 @@ class ExternalReporting
                         'label' => "{$field['label']}|{$tableLabel}",
                     ]
                 );
+
+                // For one-to-many auto-relationships without join table, set the N-side view data
+                if ($isAutoRelationship) {
+                    $res['fieldForAutoRelationshipsNSide'] = "m.{$rel['rhs_key']}";
+                }
 
                 return $res;
 
@@ -1778,6 +1825,30 @@ class ExternalReporting
         } else {
             return $listViewName;
         };
+    }
+
+    /**
+     * Creates a MariaDB view for boolean fields with fixed '1'/'0' codes,
+     * independent of the actual keys in stic_boolean_list.
+     * This ensures that the enum view always matches the raw DB values ('1'/'0')
+     * regardless of any modifications to the dropdown list.
+     */
+    private function createFixedBooleanEnumView($listViewName)
+    {
+        global $app_strings;
+
+        $db = DBManagerFactory::getInstance();
+        $yesLabel = $db->quote($app_strings['LBL_YES']);
+        $noLabel = $db->quote($app_strings['LBL_NO']);
+        $viewName = "{$this->listViewPrefix}_{$listViewName}";
+
+        $sqlCommand = "CREATE OR REPLACE VIEW {$viewName} AS
+            SELECT '1' as 'code', '{$yesLabel}' as 'value'
+            UNION SELECT '0', '{$noLabel}'";
+
+        if (!$db->query($sqlCommand)) {
+            $GLOBALS['log']->error('Line ' . __LINE__ . ': ' . __METHOD__ . ': ' . "Error has occurred: [{$db->last_error}] running Query: [{$sqlCommand}]");
+        }
     }
 
     /**
@@ -2213,7 +2284,7 @@ class ExternalReporting
         if ($result !== false) {
             if ($result->num_rows > 0) {
                 while ($row = $db->fetchByassoc($result)) {
-                    $queryDelete = "DELETE FROM {$row['sda_def_columns']} WHERE `{$columnName}` = '{$row['table']}';";
+                    $queryDelete = "DELETE FROM {$row['sda_def_columns']} WHERE `{$row['column_name']}` = '{$row['table']}';";
 
                     $deleteResult = $db->query($queryDelete);
 
