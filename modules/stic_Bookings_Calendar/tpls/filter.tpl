@@ -51,7 +51,7 @@
             border: 0 solid rgba(0, 0, 0, 0);
         }
         
-        .option-optgroup {
+        .selectize-control .selectize-dropdown-content .option-optgroup {
             position: relative;
             font-weight: bold;
             background-color: #353535 !important;
