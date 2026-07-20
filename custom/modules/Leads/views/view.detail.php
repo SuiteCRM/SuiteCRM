@@ -46,6 +46,7 @@ class CustomLeadsViewDetail extends LeadsViewDetail
 
         SticViews::display($this);
         echo getVersionedScript("custom/modules/Leads/SticUtils.js");
+        echo getVersionedScript("modules/stic_Messages/include/ConversationView/ConversationView.js");
         require_once('modules/stic_Messages/Utils.php');
         stic_MessagesUtils::echoIsMessagesModuleActive();
 

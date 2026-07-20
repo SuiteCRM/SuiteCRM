@@ -34,6 +34,93 @@ function show_edit_template_link(field, ln) {
     }
 }
 
+function filterTemplatesByType(lineNum) {
+    var typeSelect = document.getElementById('aow_actions_param_type_' + lineNum);
+    var templateSelect = document.getElementById('aow_actions_param_email_template' + lineNum);
+    
+    if (!typeSelect || !templateSelect) {
+        return;
+    }
+    
+    var selectedType = typeSelect.value;
+    
+    // Get template arrays from hidden fields
+    var smsTemplates = {};
+    var whatsappTemplates = {};
+    
+    try {
+        var smsField = document.getElementById('aow_sms_templates');
+        var waField = document.getElementById('aow_whatsapp_templates');
+        
+        if (smsField && smsField.value) smsTemplates = JSON.parse(smsField.value);
+        if (waField && waField.value) whatsappTemplates = JSON.parse(waField.value);
+    } catch(e) {
+        return;
+    }
+    
+    // Determine which templates to show based on type (only 2 generic types: SMS and WhatsApp)
+    var templatesToShow = {};
+    var typeLower = selectedType.toLowerCase();
+    
+    if (typeLower.indexOf('whatsapp') !== -1) {
+        templatesToShow = whatsappTemplates;
+    } else {
+        templatesToShow = smsTemplates;
+    }
+    
+    // Store current selection before clearing
+    var currentValue = templateSelect.value;
+    
+    // Clear all options
+    templateSelect.innerHTML = '';
+    
+    // Add "None" option first
+    var noneOpt = document.createElement('option');
+    noneOpt.value = 'None';
+    var noneLabelField = document.getElementById('aow_none_label');
+    noneOpt.text = noneLabelField ? noneLabelField.value : '--None--';
+    templateSelect.add(noneOpt);
+    
+    // Add filtered options (skip empty keys from PHP templates)
+    for (var id in templatesToShow) {
+        if (templatesToShow.hasOwnProperty(id) && id !== '' && templatesToShow[id] !== '') {
+            var opt = document.createElement('option');
+            opt.value = id;
+            opt.text = templatesToShow[id];
+            templateSelect.add(opt);
+        }
+    }
+    
+    // Try to restore previous selection if still valid
+    if (currentValue && templatesToShow.hasOwnProperty(currentValue)) {
+        templateSelect.value = currentValue;
+    }
+    
+    // Update edit link visibility
+    show_edit_template_link(templateSelect, lineNum);
+
+    // Auto-populate sender with workflow assigned user when type is WhatsApp
+    var senderField = document.getElementById('aow_actions_param[' + lineNum + '][sender_name]');
+    var assignedUser = document.getElementById('assigned_user_name');
+    if (senderField && assignedUser && typeLower.indexOf('whatsapp') !== -1) {
+        senderField.value = assignedUser.value;
+    }
+}
+
+function initTemplateFilter(lineNum) {
+    var typeSelect = document.getElementById('aow_actions_param_type_' + lineNum);
+    
+    if (typeSelect) {
+        typeSelect.addEventListener('change', function() {
+            filterTemplatesByType(lineNum);
+        });
+        // Run on page load with delay to ensure hidden fields are rendered
+        setTimeout(function() {
+            filterTemplatesByType(lineNum);
+        }, 500);
+    }
+}
+
 function refresh_email_template_list(template_id, template_name) {
     refresh_template_list(template_id, template_name,currentln);
 }
@@ -117,7 +204,7 @@ function show_PhoneField(ln, cln, value){
 
         var aow_field_name = "aow_actions_param["+ln+"][phone]["+cln+"]";
 
-        YAHOO.util.Connect.asyncRequest ("GET", "index.php?module=stic_Messages&action=getPhoneField&aow_module="+flow_module+"&aow_newfieldname="+aow_field_name+"&aow_type="+aow_phonetype+"&aow_value="+value,callback);
+        YAHOO.util.Connect.asyncRequest ("GET", "index.php?module=stic_Messages&action=getPhoneField&aow_module="+flow_module+"&aow_newfieldname="+aow_field_name+"&aow_type="+aow_phonetype+"&aow_value="+encodeURIComponent(value),callback);
     }
     else {
         document.getElementById('phoneLine'+ln+'_field'+cln).innerHTML = '';

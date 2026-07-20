@@ -61,7 +61,7 @@ switch (viewType()) {
       (function removeWhatsappOption() {
         var $type = $("#type");
         if ($type.length) {
-          $type.find('option[value="WhatsAppWeb"]').remove();
+          $type.find('option[value="whatsapp_web"]').remove();
         }
       })();
     });

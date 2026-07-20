@@ -1,0 +1,150 @@
+<!--
+/**
+ * This file is part of SinergiaCRM.
+ * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
+ * Copyright (C) 2013 - 2023 SinergiaTIC Association
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
+ */
+/**
+
+ */
+-->
+<!-- BEGIN: main -->
+<!--
+/** BEGIN SECURITY GROUPS */
+-->
+<!--
+/**
+<form action="index.php" method="post" name="form" id="form">
+ */
+ -->
+<form action="index.php" method="post" name="DetailView" id="form">
+<!--
+/** END SECURITY GROUPS */
+-->
+		<table cellpadding="0" cellspacing="0" border="0" width='100%'>
+			<input type="hidden" name="module" value="EmailTemplates">
+			<input type="hidden" name="record" value="{ID}">
+			<input type="hidden" name="isDuplicate" value=false>
+			<input type="hidden" name="action">
+			<input type="hidden" name="return_module">
+			<input type="hidden" name="return_action">
+			<input type="hidden" name="return_id">
+			{PORTAL_ON}
+		<tr>
+		<td>
+            {ACTION_BUTTON}
+        </td>
+		<td align='right'>{ADMIN_EDIT}</td>
+		</tr></table>
+
+	</form>
+
+<div class="detail view">
+<table width="100%" border="0" cellspacing="{GRIDLINE}" cellpadding="0">
+{PAGINATION}
+    <tr>
+    <td scope="row" width='15%'><span>{MOD.LBL_TYPE}</span></td>
+    <td colspan="3"><span>{TYPE}</span></td>
+    </tr>
+	<tr>
+	<td scope="row" width='15%'><span>{MOD.LBL_NAME}</span></td>
+	<td><span>{NAME}&nbsp;</span></td>
+	<td scope="row"><span>{APP.LBL_DATE_MODIFIED}</span></td>
+	<td><span>{DATE_MODIFIED} {APP.LBL_BY} {MODIFIED_BY}&nbsp;</span></td>
+	<!--
+	<td><span>{MOD.LBL_PUBLISH}</span></td>
+	<td><span><input type="checkbox" name="published" disabled {PUBLISHED}></span></td>
+	-->
+	</tr>
+	<tr>
+	<td scope="row" width='15%'><span>{MOD.LBL_DESCRIPTION}</span></td>
+	<td><span>{DESCRIPTION}&nbsp;</span></td>
+	<td scope="row"><span>{APP.LBL_DATE_ENTERED}</span></td>
+	<td><span>{DATE_ENTERED} {APP.LBL_BY} {CREATED_BY}&nbsp;</span></td>
+	</tr>
+<!--
+	<tr>
+	<td scope="row" valign="top"><span></span></td>
+	<td><span></span></td>
+	</tr>
+-->
+	<tr>
+	<td scope="row" valign="top"><span>{MOD.LBL_SUBJECT}</span></td>
+	<td><span>{SUBJECT}&nbsp;</span></td>
+	<td scope="row" valign="top">
+	</td>
+	<td><span>{TEAM}&nbsp;</span></td>
+	</tr>
+
+	<tr>	
+	<td scope="row" width='15%'><span>{MOD.LBL_STIC_WHATSAPP_STATUS}:</span></td>
+	<td><span>{STIC_WHATSAPP_STATUS_LABEL}&nbsp;</span></td>
+	
+	</tr>
+
+	<tr>
+	<td scope="row" width='15%'><span>{MOD.LBL_STIC_WHATSAPP_CATEGORY}:</span></td>
+	<td><span>{STIC_WHATSAPP_CATEGORY_LABEL}&nbsp;</span></td>
+	
+	<td scope="row" width='15%'><span>{MOD.LBL_STIC_WHATSAPP_TWILIO_ID}:</span></td>
+	<td><span>{STIC_WHATSAPP_TWILIO_ID}&nbsp;</span></td>
+	
+	</tr>
+
+
+
+    <tr>
+	<td scope="row" width='15%'><span>{MOD.LBL_SEND_AS_TEXT}</span></td>
+	<td><span><input id='text_only' type="checkbox" disabled="disabled" {TEXT_ONLY_CHECKED} /></span></td>
+	
+	<td scope="row" width='15%'><span>{APP.LBL_ASSIGNED_TO}</span></td>
+	<td><span>{ASSIGNED_USER_NAME}</span></td>
+	
+	</tr>
+	<tr>
+	<td scope="row" valign="top"><span>{MOD.LBL_BODY}</span></td>
+        <td colspan="3"  style="background-color: #ffffff;" ><span><div id="html_div" style="background-color: #ffffff;padding: 5px"><iframe id="html_frame" src="" style="width:100%; height:500px"></iframe></div>
+<input id='toggle_textarea_elem' onclick="toggle_textarea(this);" type="button" name="toggle_html" value="{MOD.LBL_SHOW_ALT_TEXT}"/><br>
+<div id="text_div" style="display: none;background-color: #ffffff;padding: 5px"><pre>{BODY}</pre></div></span>
+<script>
+function toggle_textarea(obj)
+{
+ if(document.getElementById('text_div').style.display == 'none')
+ {
+        document.getElementById('text_div').style.display = 'block';
+        document.getElementById('toggle_textarea_elem').value = '{MOD.LBL_HIDE_ALT_TEXT}'
+ } else
+ {
+        document.getElementById('text_div').style.display = 'none';
+        document.getElementById('toggle_textarea_elem').value = '{MOD.LBL_SHOW_ALT_TEXT}'
+ }
+}
+document.getElementById("html_frame").contentWindow.document.write({BODY_HTML});
+document.getElementById("html_frame").contentWindow.document.close();
+</script>
+
+	</tr>
+	<tr>
+		<td scope="row" valign="top"><span>{MOD.LBL_ATTACHMENTS}</td>
+		<td colspan="3"><span>{ATTACHMENTS}&nbsp;</span></td>
+	</tr>
+
+</table>
+</div>
+<!-- END: main -->

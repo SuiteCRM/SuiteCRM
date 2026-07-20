@@ -49,9 +49,47 @@ class actionSendMessage extends actionBase
         $defaultDirection = $messagesBean->field_defs['direction']['default'] ?? '';
         $defaultStatus = $messagesBean->field_defs['status']['default'] ?? '';
 
-        // Get the email templates of type SMS
+        // Get all email templates for SMS and WhatsApp types
         global $app_list_strings;
-        $email_templates_arr = get_bean_select_array(true, 'EmailTemplate', 'name', "type = 'sms'", 'name');
+        
+        // Query templates directly to get type info (avoiding cache issues)
+        require_once 'modules/EmailTemplates/EmailTemplate.php';
+        $emailTemplateBean = new EmailTemplate();
+        
+        $db = DBManagerFactory::getInstance();
+        $sql = "SELECT {$emailTemplateBean->table_name}.id, {$emailTemplateBean->table_name}.name, {$emailTemplateBean->table_name}.type ";
+        $sql .= "FROM {$emailTemplateBean->table_name} ";
+        $sql .= "WHERE deleted = 0 AND (type = 'sms' OR type = 'whatsapp') ";
+        
+        $accessWhere = $emailTemplateBean->buildAccessWhere('list');
+        if (!empty($accessWhere)) {
+            $sql .= ' AND ' . $accessWhere;
+        }
+        
+        $sql .= " ORDER BY name";
+        
+        $GLOBALS['log']->debug('actionSendMessage: email templates query: ' . $sql);
+        $result = $db->query($sql, true);
+        
+        $smsTemplates = array();
+        $whatsappTemplates = array();
+        
+        while ($row = $db->fetchByAssoc($result)) {
+            if ($row['type'] === 'sms') {
+                $smsTemplates[$row['id']] = $row['name'];
+            } elseif ($row['type'] === 'whatsapp') {
+                $whatsappTemplates[$row['id']] = $row['name'];
+            }
+        }
+        
+        // Merge all templates for the select dropdown
+        $email_templates_arr = array_merge($smsTemplates, $whatsappTemplates);
+        unset($email_templates_arr['']);
+        asort($email_templates_arr);
+        
+        // Pass templates by type to JavaScript for dynamic filtering
+        $smsTemplatesJson = json_encode($smsTemplates);
+        $whatsappTemplatesJson = json_encode($whatsappTemplates);
 
         // If the bean has no phone record, the option is removed from list
         if (!in_array($bean->module_dir, stic_MessagesUtils::getMessageableModules())) {
@@ -64,14 +102,19 @@ class actionSendMessage extends actionBase
         }
 
         // Ensure AOW action does not allow WhatsAppWeb selection: remove from stic_messages_type_list
-        if (isset($app_list_strings['stic_messages_type_list']['WhatsAppWeb'])) {
-            unset($app_list_strings['stic_messages_type_list']['WhatsAppWeb']);
+        if (isset($app_list_strings['stic_messages_type_list']['whatsapp_web'])) {
+            unset($app_list_strings['stic_messages_type_list']['whatsapp_web']);
         }
 
         // Error status not allowed on message creation
         unset($app_list_strings['stic_messages_status_list']['error']);
 
         $html = '<input type="hidden" name="aow_message_type_list" id="aow_message_type_list" value="'.get_select_options_with_id($app_list_strings['aow_message_type_list'], '').'">';
+        
+        // Hidden fields with templates by type for JavaScript filtering
+        $html .= '<input type="hidden" id="aow_sms_templates" value="'.htmlspecialchars($smsTemplatesJson, ENT_QUOTES, 'UTF-8').'">';
+        $html .= '<input type="hidden" id="aow_whatsapp_templates" value="'.htmlspecialchars($whatsappTemplatesJson, ENT_QUOTES, 'UTF-8').'">';
+        $html .= '<input type="hidden" id="aow_none_label" value="'.htmlspecialchars(translate('LBL_NONE', 'app_strings'), ENT_QUOTES, 'UTF-8').'">';
 
         $html .= "<table border='0' cellpadding='0' cellspacing='0' width='100%' data-workflow-action='send-message'>";
         $html .= "<tr>";
@@ -123,7 +166,8 @@ class actionSendMessage extends actionBase
         $html .= '</td>';
 
         $html .= "<td valign='top' style='width:20%; margin-bottom:20px;'>";
-        $html .= "<select name='aow_actions_param[".$line."][type]' id='aow_actions_param[".$line."][type]' >" . get_select_options_with_id($app_list_strings['stic_messages_type_list'], $defaultType) . "</select>";
+        $selectedType = $params['type'] ?? $defaultType;
+        $html .= "<select name='aow_actions_param[".$line."][type]' id='aow_actions_param_type_".$line."' >" . get_select_options_with_id($app_list_strings['stic_messages_type_list'], $selectedType) . "</select>";
         $html .= '</td>';
 
         // Direction field hidden until other type of messages included
@@ -180,6 +224,8 @@ class actionSendMessage extends actionBase
                 $html .= "load_phoneline('".$line."','".$params['phone_target_type'][$key]."','".$params['phone'][$key]."');";
             }
         }
+        // Initialize template filter for this line
+        $html .= "initTemplateFilter(".$line.");";
         $html .= "</script>";
 
         return $html;
@@ -347,7 +393,7 @@ class actionSendMessage extends actionBase
         $recipients = $this->getPhonesFromParams($bean, $params);
 
         $messageBean->sender = $params['sender_name'];
-        $messageBean->template_id_c = $params['email_template'];
+        $messageBean->template_id = $params['email_template'];
         $messageBean->status = $params['status'];
         $messageBean->type = $params['type'];
 
@@ -362,7 +408,7 @@ class actionSendMessage extends actionBase
             $messageBean = BeanFactory::newBean('stic_Messages');
 
             $messageBean->sender = $params['sender_name'];
-            $messageBean->template_id_c = $params['email_template'];
+            $messageBean->template_id = $params['email_template'];
             $messageBean->status = $params['status'];
             $messageBean->type = $params['type'];
             // Direction field not used until new types added

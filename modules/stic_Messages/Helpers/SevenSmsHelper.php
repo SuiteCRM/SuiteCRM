@@ -21,89 +21,82 @@
  * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
  */
 
-
 // SMS Helper class to send SMS messages through Seven provider.
 // Info about API can be found at: https://docs.seven.io/en/rest-api/endpoints/sms
 
-require_once('modules/stic_Settings/Utils.php');
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
+
 require_once('modules/stic_Messages/Helpers/stic_MessagesHelper.php');
 
-class SevenSMSHelper implements stic_MessagesHelper {
+class SevenSMSHelper extends stic_MessagesHelper {
 
-    protected bool $active = false;
     protected ?string $apiKey = null;
-    protected ?string $sender;
+    protected ?string $sender = null;
 
+    /**
+     * Returns the provider name identifier.
+     */
+    protected function getProviderName(): string {
+        return 'sms';
+    }
+
+    /**
+     * Returns the helper type matching the channel.
+     */
+    public function getHelperType(): string {
+        return 'sms';
+    }
+
+    /**
+     * Returns the list of required setting keys.
+     */
+    protected function getRequiredSettings(): array {
+        return ['seven_active', 'seven_api_key', 'messages_sender'];
+    }
+
+    /**
+     * Constructor - loads configuration and initializes provider.
+     */
     public function __construct() {
-        $active = stic_SettingsUtils::getSetting('seven_active');
-        $this->setActive($active);
+        $this->loadConfig();
         
-        $apiKey = stic_SettingsUtils::getSetting('seven_api_key');
-        $this->setApiKey($apiKey);
-        
-        $sender = stic_SettingsUtils::getSetting('messages_sender');
-        $this->setSender($sender);
+        $this->active = ('1' === ($this->config['seven_active'] ?? '0'));
+        $this->apiKey = $this->config['seven_api_key'] ?? null;
+        $this->sender = $this->config['messages_sender'] ?? null;
     }
 
-    protected function getActive(): bool {
-        return $this->active;
-    }
+    /**
+     * Performs the API call to Seven.io to send SMS.
+     * 
+     * @param array $params Must contain 'from', 'text', 'to'
+     * @return array Result with 'code' and 'message'
+     */
+    protected function performApiCall(array $params): array {
+        $from = $params['from'] ?? null;
+        $text = $params['text'] ?? '';
+        $to = $params['to'] ?? '';
 
-    protected function setActive(string $active): self {
-        $this->active = '1' === $active;
-        return $this;
-    }
+        // Remove non-numeric values from phone
+        $to = preg_replace('~[^\d,]~', '', $to);
 
-    protected function getApiKey(): ?string {
-        return $this->apiKey;
-    }
-
-    protected function setApiKey(string $apiKey): self {
-        $this->apiKey = $apiKey;
-        return $this;
-    }
-
-    protected function getSender(): ?string {
-        return $this->sender;
-    }
-
-    protected function setSender($sender): self {
-        $this->sender = $sender;
-        return $this;
-    }
-
-    public function sendMessage(?string $from, string $text, string $to): array {
-        $to = preg_replace('~[^\d,]~', '', $to); // remove non numeric values
-
-        $result = $this->apiCall($from, $text, $to);
-        
-        $resultArray = json_decode($result, true);
-        if ($resultArray['success'] != 100) {
-            return array('code' => stic_Messages::ERROR_NOT_SENT, 'message' => $result);
+        if (!$this->isActive()) {
+            return $this->buildError('Module not active');
         }
-        if ($resultArray['messages'][0]['success']) {
-            return array('code' => stic_Messages::OK, 'message' => 'Message sent');
-        }
-        else {
-            return array('code' => stic_Messages::ERROR_NOT_SENT, 'message' => $result);
-        }
-    }
-
-    protected function apiCall(?string $from, string $text, string $to): string {
-        // if (!$this->getActive()) return [null, null];
-        if (!$this->getActive()) return '{"success": "500", "message":"module not active"}';
 
         $curlOpts = [
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
                 'Content-type: application/json',
                 'SentWith: SuiteCRM',
-                'X-Api-Key: ' . $this->getApiKey(),
+                'X-Api-Key: ' . $this->apiKey,
             ],
             CURLOPT_POSTFIELDS => json_encode(compact('from', 'text', 'to')),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 7500,
         ];
+
         $curl = curl_init('https://gateway.seven.io/api/sms');
         curl_setopt_array($curl, $curlOpts);
         $response = curl_exec($curl);
@@ -111,13 +104,31 @@ class SevenSMSHelper implements stic_MessagesHelper {
         if ($response === false) {
             $errorNumber = curl_errno($curl);
             $errorMessage = curl_error($curl);
-            $GLOBALS['log']->fatal('Error sending SMS' . __METHOD__ . __LINE__ , $errorNumber, $errorMessage);
-            $errorMsg = $errorNumber . '-' . $errorMessage;
-            $response = "{'success': 0, 'message': '$errorMsg'}";
+            $this->logFatal('Error sending SMS ' . __METHOD__ . ' ' . __LINE__ . ' - ' . $errorNumber . ' - ' . $errorMessage);
+            curl_close($curl);
+            return $this->buildError($errorNumber . '-' . $errorMessage);
         }
 
         curl_close($curl);
 
-        return $response;
+        $resultArray = json_decode($response, true);
+
+        if (!isset($resultArray['success']) || $resultArray['success'] != 100) {
+            return $this->buildError($response);
+        }
+
+        if (isset($resultArray['messages'][0]['success']) && $resultArray['messages'][0]['success']) {
+            $this->logInfo('SMS message sent successfully');
+            return $this->buildSuccess('Message sent');
+        }
+
+        return $this->buildError($response);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getSpecificUIConfig(): array {
+        return [];
     }
 }

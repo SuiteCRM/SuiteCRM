@@ -64,18 +64,23 @@ class stic_MessagesController extends SugarController
             }, $idsArray, $phonesArray);
         }
         else {
+            $this->pre_save();
             $this->applyConversationSubpanelDefaults();
             $this->prepareConversationDataForMessage();
-            // Subpanel conversations to validate
             if (!$this->validateConversationRequiredFields($this->bean)) {
                 echo json_encode(array('success' => false, 'number_found' => false));
                 exit;
             }
             $this->bean->save(!empty($this->bean->notify_on_save));
-            // header('Content-Type: application/json');
-            // $this->bean->response
-            // echo "{'status': 200, 'message': 'ok'}";
-            echo json_encode(array('success' => true, 'number_found' => true));
+
+            $saveSuccess = ($this->bean->status === 'sent' || $this->bean->status === 'redirected');
+            echo json_encode(array(
+                'success' => $saveSuccess,
+                'number_found' => true,
+                'message_status' => $this->bean->status ?? '',
+                'response' => $this->bean->response ?? '',
+            ));
+            exit;
         }
     }
 
@@ -91,6 +96,10 @@ class stic_MessagesController extends SugarController
             $idsArray = explode(';', $_REQUEST['mass_ids']);
             $phonesArray = explode(',', $_REQUEST['phone']);
 
+            // Load helper once for mass save response
+            $type = $_REQUEST['type'] ?? '';
+            $messageHelper = stic_MessagesUtils::instantiateHelperByType($type);
+
             array_map(function($id, $phone) use ($mod_strings) {
                 $newBean = BeanFactory::newBean('stic_Messages');
                 $this->bean = $newBean;
@@ -104,41 +113,33 @@ class stic_MessagesController extends SugarController
                 }
                 $this->bean->save(!empty($this->bean->notify_on_save));
             }, $idsArray, $phonesArray);
-            // If mass send and type is WhatsAppWeb, return an open_url built from the phones/message
-            if (isset($_REQUEST['type']) && $_REQUEST['type'] === 'WhatsAppWeb') {
+
+            // Check if helper has custom mass save response (e.g., WhatsAppWeb redirect)
+            if ($messageHelper !== null) {
                 $phonesRaw = isset($_REQUEST['phone']) ? $_REQUEST['phone'] : '';
                 $phonesList = $phonesRaw !== '' ? explode(',', $phonesRaw) : array();
                 $text = isset($_REQUEST['message']) ? $_REQUEST['message'] : '';
-                $openData = array();
-                foreach ($phonesList as $index => $p) {
-                    $p = trim($p);
-                    if ($p === '') continue;
-                    $phoneClean = preg_replace('/\D+/', '', $p);
-                    if ($phoneClean === '') continue;
-                    
-                    $processedText = $text;
-                    if (isset($idsArray[$index]) && !empty($idsArray[$index])) {
-                        $parentBean = BeanFactory::getBean($_REQUEST['return_module'], $idsArray[$index]);
-                        $processedText = stic_Messages::replaceTemplateVariables($text, $parentBean);
-                    }
-                    
-                    $openData[] = array('phone' => $phoneClean, 'text' => $processedText);
-                }
+                $customResponse = $messageHelper->getMassSaveResponseData($phonesList, $text, $idsArray);
 
-                // Clear accidental output and return JSON
-                while (ob_get_level()) { ob_end_clean(); }
-                header('Content-Type: application/json');
-                echo json_encode(array('success' => true, 'type' => 'WhatsAppWeb', 'open_data' => $openData, 'title' => $app_strings['LBL_EMAIL_SUCCESS'], 'detail' => $mod_strings['LBL_WHATSAPP_WEB_SENT']));
-                exit;                
+                if (!empty($customResponse)) {
+                    while (ob_get_level()) { ob_end_clean(); }
+                    header('Content-Type: application/json');
+                    echo json_encode(array_merge(
+                        ['success' => true, 'title' => $app_strings['LBL_EMAIL_SUCCESS'], 'detail' => $mod_strings['LBL_WHATSAPP_WEB_SENT']],
+                        $customResponse
+                    ));
+                    exit;
+                }
             }
 
             // Clear any accidental output (warnings, HTML, etc.) so the response is pure JSON
             while (ob_get_level()) { ob_end_clean(); }
             header('Content-Type: application/json');
-            echo json_encode(array('success' =>  true, 'type' => 'sms', 'title' => $app_strings['LBL_EMAIL_SUCCESS'], 'detail' => $mod_strings['LBL_CHECK_STATUS']));
+            echo json_encode(array('success' => true, 'type' => 'sms', 'title' => $app_strings['LBL_EMAIL_SUCCESS'], 'detail' => $mod_strings['LBL_CHECK_STATUS']));
             exit;
         }
         else {
+            $this->pre_save();
             $oldStatus = $this->bean->fetched_row['status']??'';
 
             // Subpanel conversations to validate
@@ -154,20 +155,16 @@ class stic_MessagesController extends SugarController
 
             $id = $this->bean->save(!empty($this->bean->notify_on_save));
 
-            if (isset($this->bean->type) && $this->bean->type === 'WhatsAppWeb') {
-                $phone = isset($this->bean->phone) ? preg_replace('/\D+/', '', $this->bean->phone) : '';
-                $text = isset($this->bean->message) ? $this->bean->message : '';
-                
-                if (!empty($this->bean->parent_type) && !empty($this->bean->parent_id)) {
-                    $parentBean = BeanFactory::getBean($this->bean->parent_type, $this->bean->parent_id);
-                    $text = stic_Messages::replaceTemplateVariables($text, $parentBean);
+            // Check if helper has custom save response (e.g., WhatsAppWeb redirect)
+            $messageHelper = stic_MessagesUtils::instantiateHelperByType($this->bean->type ?? '');
+            if ($messageHelper !== null) {
+                $customResponse = $messageHelper->getSaveResponseData($this->bean);
+                if (!empty($customResponse)) {
+                    while (ob_get_level()) { ob_end_clean(); }
+                    header('Content-Type: application/json');
+                    echo json_encode(array_merge(['success' => true], $customResponse));
+                    exit;
                 }
-                
-                // Clear output buffer before returning JSON to avoid malformed responses
-                while (ob_get_level()) { ob_end_clean(); }
-                header('Content-Type: application/json');
-                echo json_encode(array('success' => true, 'type' => 'WhatsAppWeb', 'phone' => $phone, 'text' => $text, 'id' => $id));
-                exit;
             }
 
             // Ensure response is clean JSON
@@ -187,6 +184,14 @@ class stic_MessagesController extends SugarController
                 case 'error':
                     $title = $mod_strings['LBL_ERROR'];
                     $detail = $mod_strings['LBL_MESSAGE_NOT_SENT'];
+                    if (!empty($this->bean->response)) {
+                        $responseData = json_decode($this->bean->response, true);
+                        if ($responseData && !empty($responseData['message'])) {
+                            $detail .= ': ' . $responseData['message'];
+                        } else {
+                            $detail .= ': ' . $this->bean->response;
+                        }
+                    }
                     break;
                 case 'draft':
                     $title = $app_strings['LBL_EMAIL_SUCCESS'];
@@ -208,8 +213,17 @@ class stic_MessagesController extends SugarController
         $id = $_REQUEST['recordId'];
         $bean = BeanFactory::getBean('stic_Messages', $id);
         
-        // WhatsAppWeb messages cannot be retried
-        if ($bean->type === 'WhatsAppWeb') {
+        // Check ACL edit permission
+        if ($bean->bean_implements('ACL')) {
+            if (!ACLController::checkAccess($bean->module_dir, 'edit', true)) {
+                ACLController::displayNoAccess();
+                sugar_die('');
+            }
+        }
+        
+        // Check if this message type can be retried
+        $messageHelper = stic_MessagesUtils::instantiateHelperByType($bean->type ?? '');
+        if ($messageHelper !== null && !$messageHelper->isRetryable()) {
             echo json_encode(array(
                 'success' => false, 
                 'title' => $mod_strings['LBL_ERROR'], 
@@ -229,47 +243,49 @@ class stic_MessagesController extends SugarController
     }
     public function action_Retry(){
 
+        $db = DBManagerFactory::getInstance();
         $where = '';
 
-        $db = DBManagerFactory::getInstance();
+        $focus = BeanFactory::newBean('stic_Messages');
+        if ($focus->bean_implements('ACL')) {
+            if (!ACLController::checkAccess($focus->module_dir, 'edit', true)) {
+                ACLController::displayNoAccess();
+                sugar_die('');
+            }
+        }
+
         // only messages not sent and with direction outbound can be retried
-        // WhatsAppWeb messages are excluded from retry
-        $sql = "SELECT id,name,`type`,direction,phone,sender,message,status  FROM stic_messages WHERE deleted = 0 and status <> 'sent' and direction = 'outbound' and `type` <> 'WhatsAppWeb'";
+        // Non-retryable types are excluded dynamically
+        $nonRetryableTypes = stic_MessagesUtils::getNonRetryableTypes();
+        $typeExclusion = '';
+        if (!empty($nonRetryableTypes)) {
+            $escapedTypes = array_map(function($t) use ($db) {
+                return "'" . $db->quote($t) . "'";
+            }, $nonRetryableTypes);
+            $typeExclusion = " AND stic_messages.type NOT IN (" . implode(',', $escapedTypes) . ")";
+        }
+        $baseWhere = "stic_messages.deleted = 0 AND stic_messages.status <> 'sent' AND stic_messages.direction = 'outbound'" . $typeExclusion;
+
         if (isset($_REQUEST['select_entire_list']) && $_REQUEST['select_entire_list'] == '1' && isset($_REQUEST['current_query_by_page'])) {
             require_once 'include/export_utils.php';
             $retArray = generateSearchWhere('stic_Messages', $_REQUEST['current_query_by_page']);
             if (!empty($retArray['where'])) {
-                $where = " AND " . $retArray['where'];
+                $where = $baseWhere . " AND " . $retArray['where'];
+            } else {
+                $where = $baseWhere;
             }
         } else {
             $ids = explode(',', $_REQUEST['uid']);
             $idList = implode("','", $ids);
-            $where = " AND id in ('{$idList}')";
+            $where = $baseWhere . " AND stic_messages.id in ('{$idList}')";
         }
 
-        $focus = BeanFactory::newBean('stic_Messages');
-        if ($focus->bean_implements('ACL')) {
-            if (!ACLController::checkAccess($focus->module_dir, 'export', true)) {
-                ACLController::displayNoAccess();
-                sugar_die('');
-            }
+        $orderBy = 'stic_messages.date_entered DESC';
+        $beans = $focus->get_full_list($orderBy, $where);
 
-            $accessWhere = $focus->buildAccessWhere('export');
-            if (!empty($accessWhere)) {
-                $where .= empty($where) ? $accessWhere : ' AND ' . $accessWhere;
-            }
-        }
-
-        $sql .= $where;
-        $result = $db->query($sql);
-
-        while ($row = $db->fetchByAssoc($result)) {
-            $bean = BeanFactory::getBean('stic_Messages', $row['id']);
-            // Double check to prevent WhatsAppWeb retry
-            if ($bean->type !== 'WhatsAppWeb') {
-                $bean->status = 'sent';
-                $bean->save();
-            }
+        foreach ($beans as $bean) {
+            $bean->status = 'sent';
+            $bean->save();
         }
 
         SugarApplication::redirect("index.php?module=stic_Messages&action=index");
@@ -405,6 +421,69 @@ class stic_MessagesController extends SugarController
         die;
     }
 
+    public function action_FillDynamicListMessageTemplate() {
+        $typeParam = $_REQUEST['type'] ?? '';
+
+        // Try to get template type from helper if type is a helper class name
+        $helperType = null;
+        if (!empty($typeParam)) {
+            $file = $typeParam;
+            if (file_exists('custom/modules/stic_Messages/Helpers/' . $file . '.php')) {
+                require_once('custom/modules/stic_Messages/Helpers/' . $file . '.php');
+                $helper = new $file;
+                $helperType = $helper->getTemplateType();
+            } elseif (file_exists('modules/stic_Messages/Helpers/' . $file . '.php')) {
+                require_once('modules/stic_Messages/Helpers/' . $file . '.php');
+                $helper = new $file;
+                $helperType = $helper->getTemplateType();
+            }
+        }
+
+        // Fallback: infer from type string if helper not found
+        if ($helperType === null) {
+            $typeLower = strtolower($typeParam);
+            if (strpos($typeLower, 'whatsapp') !== false) {
+                $helperType = 'whatsapp';
+            } elseif (strpos($typeLower, 'sms') !== false || strpos($typeLower, 'seven') !== false) {
+                $helperType = 'sms';
+            } else {
+                $helperType = 'sms';
+            }
+        }
+
+        require_once 'modules/stic_Messages/Utils.php';
+        stic_MessagesUtils::fillDynamicListMessageTemplate($helperType);
+
+        $list = $GLOBALS['app_list_strings']['dynamic_message_template_list'] ?? array();
+
+        // Convert associative array to list of {id,name}
+        $out = array();
+        foreach ($list as $id => $name) {
+            // skip empty key used for 'None'
+            if ($id === '') continue;
+            $out[] = array('id' => $id, 'name' => $name);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(array('success' => true, 'data' => $out));
+        exit;
+    }
+
+    public function action_checkWhatsAppWindow() {
+        $parentId = $_REQUEST['parent_id']   ?? '';
+        $parentType = $_REQUEST['parent_type'] ?? '';
+
+        require_once 'modules/stic_Messages/Utils.php';
+        $windowState = stic_MessagesUtils::getWhatsAppWindowState($parentId, $parentType);
+
+        echo json_encode(array(
+            'success' => true,
+            'windowOpen' => $windowState['windowOpen'],
+            'hoursLeft' => $windowState['hoursLeft'],
+            'minutesLeft' => $windowState['minutesLeft']
+        ));
+        exit;
+    }
 
     /**
      * Create and return a conversation id for the current message
@@ -559,6 +638,177 @@ class stic_MessagesController extends SugarController
         exit;
     }
 
+    public function action_conversation() {
+        global $current_language;
+        $mod_strings = return_module_language($current_language, 'stic_Messages');
+
+        $parentId = $_REQUEST['parent_id']   ?? '';
+        $parentType = $_REQUEST['parent_type'] ?? 'Contacts';
+
+        if (empty($parentId)) die('Missing parent_id');
+
+        $db = DBManagerFactory::getInstance();
+        $parentIdSafe = $db->quote($parentId);
+
+        require_once('modules/stic_Messages/Utils.php');
+        $contactPhone = '';
+        $parentName = '';
+        $contactBean = BeanFactory::getBean($parentType, $parentId);
+        if ($contactBean) {
+            $contactPhone = stic_MessagesUtils::getPhoneForMessage($contactBean);
+            $parentName = $contactBean->name ?? $contactBean->full_name ?? '';
+        }
+        $sql = "SELECT id, message, type, status, date_entered, sender, phone, direction,
+                    template_id
+                FROM stic_messages
+                WHERE parent_id = '{$parentIdSafe}'
+                AND deleted = 0
+                AND type IN ('whatsapp', 'whatsapp_web')
+                ORDER BY date_entered ASC";
+
+        $result = $db->query($sql);
+        $messages = [];
+        while ($row = $db->fetchByAssoc($result)) {
+            $messages[] = $row;
+        }
+
+        // Calculate 24h window using shared utility function
+        $windowState = stic_MessagesUtils::getWhatsAppWindowState($parentId, $parentType);
+        $windowOpen = $windowState['windowOpen'];
+
+        if ($windowOpen) {
+            $windowMessage = sprintf(
+                $mod_strings['LBL_CONVERSATION_WINDOW_OPEN'],
+                $windowState['hoursLeft'],
+                $windowState['minutesLeft']
+            );
+        } elseif (!empty($messages)) {
+            // Find the last event date for closed message
+            $lastEvent = null;
+            foreach (array_reverse($messages) as $msg) {
+                if ($msg['type'] === 'whatsapp' || $msg['type'] === 'whatsapp_web') {
+                    if (!empty($msg['template_id'])) {
+                        $templateBean = BeanFactory::getBean('EmailTemplates', $msg['template_id']);
+                        if ($templateBean && !empty($templateBean->stic_whatsapp_twilio_id_c)) {
+                            $lastEvent = $msg['date_entered'];
+                            break;
+                        }
+                    } else {
+                        // Free-text message sent within the 24h window also counts as event
+                        $lastEvent = $msg['date_entered'];
+                        break;
+                    }
+                }
+            }
+            if ($lastEvent) {
+                $lastEventFormatted = $GLOBALS['timedate']->to_display_date_time($lastEvent);
+                $windowMessage = sprintf(
+                    $mod_strings['LBL_CONVERSATION_WINDOW_CLOSED'],
+                    $lastEventFormatted
+                );
+            } else {
+                $windowMessage = $mod_strings['LBL_CONVERSATION_NO_HISTORY'];
+            }
+        } else {
+            $windowMessage = $mod_strings['LBL_CONVERSATION_NO_HISTORY'];
+        }
+
+        // Build URL to create a new stic_Messages record pre-linked to the parent
+        $newMessageUrl = 'index.php?module=stic_Messages&action=EditView'
+            . '&return_module=' . urlencode($parentType)
+            . '&return_id='     . urlencode($parentId)
+            . '&parent_type='   . urlencode($parentType)
+            . '&parent_id='     . urlencode($parentId)
+            . '&parent_name='   . urlencode($parentName)
+            . '&phone='         . urlencode($contactPhone)
+            . '&type='          . urlencode('whatsapp');
+
+        require_once('modules/stic_Messages/views/view.conversation.php');
+        $view = new stic_MessagesViewConversation();
+        $view->messages = $messages;
+        $view->parentName = $parentName;
+        $view->parentId = $parentId;
+        $view->parentType = $parentType;
+        $view->contactPhone = $contactPhone;
+        $view->windowOpen = $windowOpen;
+        $view->windowMessage = $windowMessage;
+        $view->newMessageUrl = $newMessageUrl;
+        $view->modStrings = $mod_strings;
+        $view->display();
+        sugar_cleanup();
+        exit();
+    }
+
+    public function action_uploadConversationMedia() {
+        header('Content-Type: application/json');
+
+        $allowedMimes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+            'video/mp4', 'video/3gpp',
+            'audio/ogg', 'audio/mpeg', 'audio/mp4', 'audio/amr',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'text/csv',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        ];
+
+        if (empty($_FILES['media']) || $_FILES['media']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'error' => $this->sticMessagesGetString('LBL_ERROR_NO_FILE_RECEIVED')]);
+            exit();
+        }
+
+        $file = $_FILES['media'];
+        $mimeType = mime_content_type($file['tmp_name']);
+
+        if (!in_array($mimeType, $allowedMimes)) {
+            echo json_encode(['success' => false, 'error' => $this->sticMessagesGetString('LBL_ERROR_UNSUPPORTED_FILE_TYPE') . ': ' . $mimeType]);
+            exit();
+        }
+
+        $sizeLimit = (strpos($mimeType, 'image/') === 0) ? 5 * 1024 * 1024 : 16 * 1024 * 1024;
+        if ($file['size'] > $sizeLimit) {
+            $limitMb = $sizeLimit / 1024 / 1024;
+            echo json_encode(['success' => false, 'error' => $this->sticMessagesGetString('LBL_ERROR_FILE_SIZE_EXCEEDED') . " {$limitMb}MB"]);
+            exit();
+        }
+
+        $note = BeanFactory::newBean('Notes');
+        $note->parent_type = 'stic_Messages';
+        $note->parent_id = '';
+        $note->name = $file['name'];
+        $note->filename = $file['name'];
+        $note->file_mime_type = $mimeType;
+        $note->deleted = 0;
+        $noteId = $note->save();
+
+        if (empty($noteId)) {
+            echo json_encode(['success' => false, 'error' => $this->sticMessagesGetString('LBL_ERROR_CREATING_NOTE')]);
+            exit();
+        }
+
+        $destPath = rtrim(getcwd(), '/') . '/upload/' . $noteId;
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            $note->deleted = 1;
+            $note->save();
+            echo json_encode(['success' => false, 'error' => $this->sticMessagesGetString('LBL_ERROR_SAVING_FILE')]);
+            exit();
+        }
+
+        $GLOBALS['log']->info('stic_Messages: attachment uploaded. note_id=' . $noteId . ' file=' . $file['name']);
+
+        echo json_encode([
+            'success' => true,
+            'media_note_id' => $noteId,
+            'name' => $file['name'],
+            'mime' => $mimeType,
+        ]);
+        exit();
+    }
     /**
      * Return JSON validation error for required conversation fields
      */
@@ -709,4 +959,9 @@ class stic_MessagesController extends SugarController
         exit;
     }
 
+    private function sticMessagesGetString($key)
+    {
+        global $mod_strings;
+        return $mod_strings[$key] ?? $key;
+    }
 }

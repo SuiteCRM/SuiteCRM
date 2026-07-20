@@ -228,10 +228,62 @@ class stic_MessagesUtils {
         echo getVersionedScript("modules/stic_Messages/stic_Messages.js");
     }
 
-    public static function fillDynamicListMessageTemplate()
+    public static function getWhatsAppWindowState(string $parentId, string $parentType): array
+    {
+        if (empty($parentId) || empty($parentType)) {
+            return array('windowOpen' => false, 'hoursLeft' => 0, 'minutesLeft' => 0);
+        }
+
+        $db = DBManagerFactory::getInstance();
+        $parentIdSafe = $db->quote($parentId);
+
+        $sql = "SELECT sent_date
+                FROM stic_messages
+                WHERE parent_id = '{$parentIdSafe}'
+                AND deleted = 0
+                AND type = 'whatsapp'
+                AND (
+                    (direction = 'inbound' AND status = 'received')
+                    OR (direction = 'outbound' AND template_id IS NOT NULL AND template_id != '' AND status = 'sent')
+                )
+                ORDER BY sent_date DESC
+                LIMIT 1";
+
+        $result = $db->query($sql);
+        $lastMessage = $db->fetchByAssoc($result);
+
+        $windowOpen = false;
+        $hoursLeft = 0;
+        $minutesLeft = 0;
+
+        if ($lastMessage && !empty($lastMessage['sent_date'])) {
+            $eventTs = (new DateTime($lastMessage['sent_date'], new DateTimeZone('UTC')))->getTimestamp();
+            $nowTs = (new DateTime('now', new DateTimeZone('UTC')))->getTimestamp();
+            $diffSeconds = $nowTs - $eventTs;
+            $diffH = $diffSeconds / 3600;
+
+            if ($diffH < 24) {
+                $windowOpen = true;
+                $secondsLeft = (24 * 3600) - $diffSeconds;
+                $hoursLeft = floor($secondsLeft / 3600);
+                $minutesLeft = floor(($secondsLeft % 3600) / 60);
+            }
+        }
+
+        return array('windowOpen' => $windowOpen, 'hoursLeft' => $hoursLeft, 'minutesLeft' => $minutesLeft);
+    }
+
+    public static function fillDynamicListMessageTemplate($type = null)
     {
         $emailTemplatesFocus = BeanFactory::newBean('EmailTemplates');
-        $emailTemplates = $emailTemplatesFocus->get_list("name", "email_templates.type='sms'", 0, -99, -99);
+
+        if ($type === null) {
+            $typeRequest = $_REQUEST['type'] ?? 'sms';
+        } else {
+            $typeRequest = strtolower($type);
+        }
+        $type = $typeRequest;
+        $emailTemplates = $emailTemplatesFocus->get_list("name", "email_templates.type='$type'", 0, -99, -99);
 
         $dynamic_email_template_list = array("" => translate("LBL_NONE", "app_strings"));
 
@@ -240,5 +292,149 @@ class stic_MessagesUtils {
         }
 
         $GLOBALS['app_list_strings']['dynamic_message_template_list'] = $dynamic_email_template_list;
+    }
+
+    /**
+     * Returns UI configuration for all registered message helpers.
+     * Used by JavaScript to determine field locking and behavior.
+     * 
+     * @return array Associative array keyed by helper class name
+     */
+    public static function getHelpersUIConfig(): array {
+        $helpers = self::getAvailableHelpers();
+        $config = [];
+
+        foreach ($helpers as $className) {
+            $helper = self::instantiateHelper($className);
+            if ($helper !== null) {
+                $config[$helper->getHelperType()] = $helper->getUIConfig();
+            }
+        }
+
+        return $config;
+    }
+
+    /**
+     * Returns list of available helper class names.
+     * 
+     * @return array
+     */
+    public static function getAvailableHelpers(): array {
+        $helpers = [];
+        $paths = [
+            'custom/modules/stic_Messages/Helpers/',
+            'modules/stic_Messages/Helpers/',
+        ];
+
+        foreach ($paths as $path) {
+            if (!is_dir($path)) {
+                continue;
+            }
+            $files = glob($path . '*Helper.php');
+            foreach ($files as $file) {
+                $className = basename($file, '.php');
+                // Skip the abstract base class
+                if ($className === 'stic_MessagesHelper') {
+                    continue;
+                }
+                if (!in_array($className, $helpers)) {
+                    $helpers[] = $className;
+                }
+            }
+        }
+
+        return $helpers;
+    }
+
+    /**
+     * Instantiates a helper class by name.
+     * 
+     * @param string $className
+     * @return stic_MessagesHelper|null
+     */
+    public static function instantiateHelper(string $className): ?stic_MessagesHelper {
+        $paths = [
+            'custom/modules/stic_Messages/Helpers/',
+            'modules/stic_Messages/Helpers/',
+        ];
+
+        foreach ($paths as $path) {
+            $file = $path . $className . '.php';
+            if (file_exists($file)) {
+                require_once($file);
+                if (class_exists($className)) {
+                    $instance = new $className();
+                    if ($instance instanceof stic_MessagesHelper) {
+                        return $instance;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns list of message types that cannot be retried.
+     * Used by controller to build SQL WHERE clause.
+     * 
+     * @return array List of type names that are not retryable
+     */
+    public static function getNonRetryableTypes(): array {
+        $helpers = self::getAvailableHelpers();
+        $nonRetryable = [];
+
+        foreach ($helpers as $className) {
+            $helper = self::instantiateHelper($className);
+            if ($helper !== null && !$helper->isRetryable()) {
+                $nonRetryable[] = $helper->getHelperType();
+            }
+        }
+
+        return $nonRetryable;
+    }
+
+    /**
+     * Finds the helper class name for a given channel type.
+     * Uses direct class name mapping from config, overridable in config_override.php.
+     * 
+     * @param string $type The channel type (e.g., 'whatsapp', 'sms', 'whatsapp_web', 'private_area')
+     * @return string|null The helper class name or null if not found
+     */
+    public static function getHelperClassForType(string $type): ?string {
+        global $sugar_config;
+
+        $defaultProviders = [
+            'whatsapp' => 'TwilioWhatsAppHelper',
+            'sms' => 'SevenSmsHelper',
+            'whatsapp_web' => 'WhatsAppWebHelper',
+            'private_area' => 'PrivateAreaHelper',
+        ];
+        $providers = array_merge(
+            $defaultProviders,
+            $sugar_config['stic_message_providers'] ?? []
+        );
+        $className = $providers[$type] ?? null;
+
+        if ($className !== null && self::instantiateHelper($className) !== null) {
+            return $className;
+        }
+
+        return null;
+    }
+
+    /**
+     * Instantiates a helper by its channel type.
+     * Convenience method that combines getHelperClassForType() + instantiateHelper().
+     * 
+     * @param string $type The channel type (e.g., 'whatsapp', 'sms', 'whatsapp_web', 'private_area')
+     * @return stic_MessagesHelper|null
+     */
+    public static function instantiateHelperByType(string $type): ?stic_MessagesHelper {
+        $className = self::getHelperClassForType($type);
+        if ($className === null) {
+            return null;
+        }
+        return self::instantiateHelper($className);
     }
 }

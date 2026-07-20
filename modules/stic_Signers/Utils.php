@@ -316,7 +316,7 @@ class stic_SignersUtils
         $messageBean->message = $messageText;
         $messageBean->sender = $sender;
         $messageBean->status = 'sent'; // Assuming 'sent' is set upon creation/attempt
-        $messageBean->type = 'SevenSmsHelper'; // Specific SMS gateway type
+        $messageBean->type = 'sms';
         $messageBean->save();
 
         // Check if the message record was successfully created/sent

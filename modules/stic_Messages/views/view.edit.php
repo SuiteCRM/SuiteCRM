@@ -57,9 +57,18 @@ class stic_MessagesViewEdit extends ViewEdit
 
         $this->ev->ss->assign('IS_MODAL', isset($_REQUEST['in_popup']) ? $_REQUEST['in_popup'] : false);
 
-        $this->bean->parent_type = !empty($this->bean->parent_type) ? $this->bean->parent_type : ($_REQUEST['relatedModule']??'');
-	    $this->bean->parent_id = !empty($this->bean->parent_id)? $this->bean->parent_id : ($_REQUEST['relatedId'] ?? null);
+        // Support both URL parameter names: relatedModule/relatedId (from subpanel) and parent_type/parent_id (from conversation view)
+        $this->bean->parent_type = !empty($this->bean->parent_type) ? $this->bean->parent_type : ($_REQUEST['parent_type'] ?? $_REQUEST['relatedModule'] ?? '');
+        $this->bean->parent_id = !empty($this->bean->parent_id) ? $this->bean->parent_id : ($_REQUEST['parent_id'] ?? $_REQUEST['relatedId'] ?? null);
         $this->bean->fill_in_additional_parent_fields();
+
+        // Pre-fill phone and type from URL parameters (e.g. from conversation view)
+        if (empty($this->bean->phone) && !empty($_REQUEST['phone'])) {
+            $this->bean->phone = $_REQUEST['phone'];
+        }
+        if (empty($this->bean->type) && !empty($_REQUEST['type'])) {
+            $this->bean->type = $_REQUEST['type'];
+        }
 
         $this->bean->sender = stic_SettingsUtils::getSetting('messages_sender') ?? '';
 
@@ -75,14 +84,48 @@ class stic_MessagesViewEdit extends ViewEdit
     {
         global $mod_strings;
         $this->bean->info = "<p class='msg-warning'><span style='font-style: italic;'>⚠️{$mod_strings['LBL_INFO_TXT']}.</span></p>";
+
+        // Inject attachment widget HTML into the attachment_widget field placeholder
+        $this->bean->attachment_widget = $this->_buildAttachmentWidget($mod_strings);
+
         parent::display();
 
         SticViews::display($this);
 
+        // Inject helpers UI configuration for JavaScript
+        $helpersConfig = stic_MessagesUtils::getHelpersUIConfig();
+        echo "<script>var STIC_HELPERS_CONFIG = " . json_encode($helpersConfig) . ";</script>";
+
         echo getVersionedScript("modules/stic_Messages/include/ComposeView/stic_MessagesComposeView.js");
         echo getVersionedScript("modules/stic_Messages/Utils.js");
 
-        // Write here you custom code
+        // Attachment widget JS
+        echo $this->_buildAttachmentScript($mod_strings);
 
+        // WhatsApp window check JS
+        $parentId = $this->bean->parent_id ?? '';
+        $parentType = $this->bean->parent_type ?? '';
+        echo "<script>var sticMessagesParentId = '" . addslashes($parentId) . "'; var sticMessagesParentType = '" . addslashes($parentType) . "';</script>";
+        echo getVersionedScript("modules/stic_Messages/include/EditView/stic_MessagesEditView.js");
+    }
+
+    /**
+     * Builds the HTML for the attachment widget.
+     * Now uses external HTML file.
+     */
+    private function _buildAttachmentWidget(array $mod_strings): string
+    {
+        ob_start();
+        include 'modules/stic_Messages/include/Attachment/stic_MessagesAttachment.tpl';
+        return ob_get_clean();
+    }
+
+    /**
+     * Builds the inline JS for the attachment widget.
+     * Now loads external CSS and JS files instead of inline code.
+     */
+    private function _buildAttachmentScript(array $mod_strings): string
+    {
+        return getVersionedScript('modules/stic_Messages/include/Attachment/stic_MessagesAttachment.js');
     }
 }

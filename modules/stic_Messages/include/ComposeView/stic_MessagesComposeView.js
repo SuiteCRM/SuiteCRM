@@ -594,8 +594,8 @@ $(function () {
               return;
             }
             
-            // Check if this is a WhatsAppWeb message using explicit type field
-            if (res.type === 'WhatsAppWeb') {
+            // Check if this is a whatsapp_web message using explicit type field
+            if (res.type === 'whatsapp_web') {
               // Single message
               if (res.phone && res.text) {
                 var cleanText = decodeHTML(res.text);
@@ -633,11 +633,11 @@ $(function () {
               window.location.href = newUrl;
             }
             else {
-              var isWhatsAppWeb = res.type === 'WhatsAppWeb';
-              var title = isWhatsAppWeb ? 
+              var iswhatsapp_web = res.type === 'whatsapp_web';
+              var title = iswhatsapp_web ? 
                 (res.title || SUGAR.language.get('app_strings', 'LBL_EMAIL_SUCCESS')) : 
                 res.title;
-              var detail = isWhatsAppWeb ? 
+              var detail = iswhatsapp_web ? 
                 SUGAR.language.get('stic_Messages', 'LBL_WHATSAPP_WEB_SENT') : 
                 res.detail;
               

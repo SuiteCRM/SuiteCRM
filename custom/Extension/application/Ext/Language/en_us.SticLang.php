@@ -31,6 +31,7 @@ $app_strings['LBL_STIC_SINGULAR_VALIDATE_FIELDS_NOT_VISIBLE'] = "The field valid
 $app_strings['LBL_ADD_TO_PROSPECT_LIST_BUTTON_LABEL_ACCOUNTS_CONTACTS'] = 'Add Accounts and Contacts to Target List';
 $app_strings['LBL_INCORPORA_BUTTON_TITTLE'] = 'Incorpora synchronization';
 $app_strings['LBL_EMAIL_PDF_ACTION_BUTTON'] = 'Send PDF by email';
+$app_strings['LBL_WHATSAPP_CONVERSATION_BUTTON'] = 'View WhatsApp conversation';
 $app_strings['LBL_ADD_TO_SIGNATURE_PROCESS'] = 'Add to signature process';
 $app_strings['LBL_SELECT_SIGNATURE'] = 'Select a signature process';
 $app_strings['LBL_SHOW_RELATED_SIGNATURES'] = 'Show related signatures';
@@ -38,7 +39,6 @@ $app_strings['LBL_SHOW_RELATED_SIGNATURES_TITLE'] = 'Related signatures';
 $app_strings['LBL_SHOW_RELATED_SIGNATURES_INFO'] = 'Signatures related to this module record are shown';
 $app_strings['LBL_NO_SIGNATURES_FOUND'] = 'No related signatures found';
 $app_strings['LBL_IMPORT_VALIDATION'] = 'Validate import';
-$app_strings['LBL_PRINT_AS_PDF'] = 'Generate PDF document'; 
 $app_strings['LBL_ADDITIONAL_DETAILS_ERROR_GENERAL_TITLE'] = 'An error has occurred';
 $app_strings['LBL_LIST_VIEW_SUBPANEL_BUTTON_TITLE'] = 'Show in list view';
 $app_strings['LBL_SINERGIACRM_NONPROFITIZED'] = 'Nonprofitized by SinergiaCRM';
@@ -219,10 +219,12 @@ $app_list_strings['moduleListSingular']['stic_Resources'] = 'Resource';
 $app_list_strings['moduleListSingular']['stic_Medication_Log'] = 'Medication Log';
 $app_list_strings['moduleListSingular']['stic_Medication'] = 'Medicine';
 $app_list_strings['moduleListSingular']['stic_Prescription'] = 'Prescription';
-$app_list_strings['moduleListSingular']['stic_Journal'] = 'Journal';
 $app_list_strings['moduleListSingular']['stic_Security_Groups_Rules'] = 'Security Groups Module Rule';
+$app_list_strings['moduleListSingular']['stic_Grants'] = 'Grant';
+$app_list_strings['moduleListSingular']['stic_Centers'] = 'Center';
 $app_list_strings['moduleListSingular']['stic_Time_Tracker'] = 'Time tracker';
 $app_list_strings['moduleListSingular']['stic_Work_Calendar'] = 'Work calendar';
+$app_list_strings['moduleListSingular']['stic_Journal'] = 'Journal';
 $app_list_strings['moduleListSingular']['stic_Training'] = 'Training';
 $app_list_strings['moduleListSingular']['stic_Work_Experience'] = 'Work experience';
 $app_list_strings['moduleListSingular']['stic_Skills'] = 'Skill';
@@ -660,7 +662,27 @@ $app_list_strings['stic_professional_sectors_list']['marketing'] = 'Marketing an
 $app_list_strings['stic_professional_sectors_list']['public_service'] = 'Public service';
 $app_list_strings['stic_professional_sectors_list']['other'] = 'Other';
 
-// Accounts: categories
+// Colors
+$app_list_strings['stic_colors_list'][''] = '';
+$app_list_strings['stic_colors_list']['000000'] = 'Black';
+$app_list_strings['stic_colors_list']['FFFFFF'] = 'White';
+$app_list_strings['stic_colors_list']['C0C0C0'] = 'Silver';
+$app_list_strings['stic_colors_list']['808080'] = 'Gray';
+$app_list_strings['stic_colors_list']['800000'] = 'Maroon';
+$app_list_strings['stic_colors_list']['FF0000'] = 'Red';
+$app_list_strings['stic_colors_list']['800080'] = 'Purple';
+$app_list_strings['stic_colors_list']['FF00FF'] = 'Fuchsia';
+$app_list_strings['stic_colors_list']['008000'] = 'Green';
+$app_list_strings['stic_colors_list']['00FF00'] = 'Lime';
+$app_list_strings['stic_colors_list']['808000'] = 'Olive';
+$app_list_strings['stic_colors_list']['FFFF00'] = 'Yellow';
+$app_list_strings['stic_colors_list']['000080'] = 'Navy';
+$app_list_strings['stic_colors_list']['0000FF'] = 'Blue';
+$app_list_strings['stic_colors_list']['0080FF'] = 'Teal';
+$app_list_strings['stic_colors_list']['7FFFD4'] = 'Aqua';
+$app_list_strings['stic_colors_list']['00FFFF'] = 'Cyan';
+
+// Accounts: Categories
 $app_list_strings['stic_accounts_categories_list'][''] = '';
 $app_list_strings['stic_accounts_categories_list']['administration'] = 'Public administration';
 $app_list_strings['stic_accounts_categories_list']['company'] = 'Company';
@@ -669,7 +691,7 @@ $app_list_strings['stic_accounts_categories_list']['media'] = 'Media';
 $app_list_strings['stic_accounts_categories_list']['npo'] = 'NPO';
 $app_list_strings['stic_accounts_categories_list']['university'] = 'University';
 
-// Accounts: subcategories
+// Accounts: Subcategories
 $app_list_strings['stic_accounts_subcategories_list'][''] = '';
 $app_list_strings['stic_accounts_subcategories_list']['administration_city'] = 'City council';
 $app_list_strings['stic_accounts_subcategories_list']['administration_consortium'] = 'Consortium';
@@ -1216,26 +1238,6 @@ $app_list_strings['stic_professional_profile_list'][''] = '';
 $app_list_strings['stic_professional_profile_list']['catering'] = 'Catering';
 $app_list_strings['stic_professional_profile_list']['cleaning'] = 'Cleaning';
 $app_list_strings['stic_professional_profile_list']['public_attention'] = 'Public attention';
-
-// Colors
-$app_list_strings['stic_colors_list'][''] = '';
-$app_list_strings['stic_colors_list']['000000'] = 'Black';
-$app_list_strings['stic_colors_list']['FFFFFF'] = 'White';
-$app_list_strings['stic_colors_list']['C0C0C0'] = 'Silver';
-$app_list_strings['stic_colors_list']['808080'] = 'Gray';
-$app_list_strings['stic_colors_list']['800000'] = 'Maroon';
-$app_list_strings['stic_colors_list']['FF0000'] = 'Red';
-$app_list_strings['stic_colors_list']['800080'] = 'Purple';
-$app_list_strings['stic_colors_list']['FF00FF'] = 'Fuchsia';
-$app_list_strings['stic_colors_list']['008000'] = 'Green';
-$app_list_strings['stic_colors_list']['00FF00'] = 'Lime';
-$app_list_strings['stic_colors_list']['808000'] = 'Olive';
-$app_list_strings['stic_colors_list']['FFFF00'] = 'Yellow';
-$app_list_strings['stic_colors_list']['000080'] = 'Navy';
-$app_list_strings['stic_colors_list']['0000FF'] = 'Blue';
-$app_list_strings['stic_colors_list']['0080FF'] = 'Teal';
-$app_list_strings['stic_colors_list']['7FFFD4'] = 'Aqua';
-$app_list_strings['stic_colors_list']['00FFFF'] = 'Cyan';
 
 // Labour insertion: SEPE boolean values
 $app_list_strings['stic_sepe_yesno_list'][''] = '';
@@ -3670,8 +3672,9 @@ $app_list_strings['stic_skills_evaluation_stages_list']['intermediate'] = 'Inter
 $app_list_strings['stic_skills_evaluation_stages_list']['final'] = 'Final';
 
 // Messages: Type
-$app_list_strings['stic_messages_type_list']['SevenSmsHelper'] = 'SMS';
-$app_list_strings['stic_messages_type_list']['WhatsAppWeb'] = 'WhatsApp Web';
+$app_list_strings['stic_messages_type_list']['sms'] = 'SMS';
+$app_list_strings['stic_messages_type_list']['whatsapp_web'] = 'WhatsApp Web';
+$app_list_strings['stic_messages_type_list']['whatsapp'] = 'WhatsApp';
 $app_list_strings['stic_messages_type_list']['private_area'] = 'Private area';
 
 // Messages: Direction
@@ -3681,7 +3684,9 @@ $app_list_strings['stic_messages_direction_list']['outbound'] = 'Outbound';
 // Messages: Status
 $app_list_strings['stic_messages_status_list']['draft'] = 'Draft';
 $app_list_strings['stic_messages_status_list']['sent'] = 'Sent';
+$app_list_strings['stic_messages_status_list']['received'] = 'Received';
 $app_list_strings['stic_messages_status_list']['error'] = 'Error';
+$app_list_strings['stic_messages_status_list']['redirected'] = 'Redirected';
 
 // Messages: Parent types
 $app_list_strings['stic_messages_parent_type_display']['Accounts'] = 'Accounts';
@@ -4137,6 +4142,24 @@ $app_list_strings['aow_message_type_list']['Related Field'] = 'Related Field';
 $app_list_strings['aow_message_type_list']['Specify User'] = 'User';
 $app_list_strings['aow_message_type_list']['Users'] = 'Users';
 
+// Mapas: listas adaptadas
+$app_list_strings['map_module_type_list']['Accounts'] = 'Accounts';
+$app_list_strings['map_module_type_list']['Contacts'] = 'Contacts';
+$app_list_strings['map_module_type_list']['Cases'] = 'Cases';
+$app_list_strings['map_module_type_list']['Leads'] = 'Leads';
+$app_list_strings['map_module_type_list']['Meetings'] = 'Meetings';
+$app_list_strings['map_module_type_list']['Opportunities'] = 'Opportunities';
+$app_list_strings['map_module_type_list']['Project'] = 'Projects';
+$app_list_strings['map_module_type_list']['Prospects'] = 'Prospects';
+$app_list_strings['map_relate_type_list']['Accounts'] = 'Accounts';
+$app_list_strings['map_relate_type_list']['Contacts'] = 'Contacts';
+$app_list_strings['map_relate_type_list']['Cases'] = 'Cases';
+$app_list_strings['map_relate_type_list']['Leads'] = 'Leads';
+$app_list_strings['map_relate_type_list']['Meetings'] = 'Meetings';
+$app_list_strings['map_relate_type_list']['Opportunities'] = 'Opportunities';
+$app_list_strings['map_relate_type_list']['Project'] = 'Projects';
+$app_list_strings['map_relate_type_list']['Prospects'] = 'Prospects';
+
 // Campaigns: Campaign types
 $app_list_strings['campaign_type_dom'][''] = '';
 $app_list_strings['campaign_type_dom']['Telesales'] = 'Telesales';
@@ -4160,6 +4183,7 @@ $app_list_strings['emailTemplates_type_list_no_workflow']['email'] = 'Email';
 $app_list_strings['emailTemplates_type_list_no_workflow']['event'] = 'Event';
 $app_list_strings['emailTemplates_type_list_no_workflow']['system'] = 'System';
 $app_list_strings['emailTemplates_type_list_no_workflow']['sms'] = 'SMS';
+$app_list_strings['emailTemplates_type_list_no_workflow']['whatsapp'] = 'WhatsApp';
 
 // Email Templates: Template types
 $app_list_strings['emailTemplates_type_list'][''] = '';
@@ -4168,6 +4192,20 @@ $app_list_strings['emailTemplates_type_list']['notification'] = 'Notification';
 $app_list_strings['emailTemplates_type_list']['email'] = 'Email';
 $app_list_strings['emailTemplates_type_list']['event'] = 'Event';
 $app_list_strings['emailTemplates_type_list']['sms'] = 'SMS';
+$app_list_strings['emailTemplates_type_list']['whatsapp'] = 'WhatsApp';
+
+// Email Templates: Whatsapp category types
+$app_list_strings['stic_whatsapp_category_list']['marketing'] = 'Marketing';
+$app_list_strings['stic_whatsapp_category_list']['utility'] = 'Utility';
+$app_list_strings['stic_whatsapp_category_list']['authentication'] = 'Authentication';
+
+// Email Templates: Whatsapp status types
+$app_list_strings['stic_whatsapp_status_list'][''] = '';
+$app_list_strings['stic_whatsapp_status_list']['draft'] = 'Draft';
+$app_list_strings['stic_whatsapp_status_list']['pending'] = 'Pending';
+$app_list_strings['stic_whatsapp_status_list']['approved'] = 'Approved';
+$app_list_strings['stic_whatsapp_status_list']['rejected'] = 'Rejected';
+$app_list_strings['stic_whatsapp_status_list']['unsubmitted'] = 'Unsubmitted';
 
 // Elements added to History panel
 $app_list_strings['collection_temp_list']['Tasks'] = 'Tasks';

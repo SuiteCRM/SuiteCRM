@@ -40,7 +40,7 @@ switch (viewType()) {
                 else {
                   selectedValue = $("[name=type]").val();
                 }
-                if (selectedValue === 'sms') {
+                if (selectedValue === 'sms' || selectedValue === 'whatsapp') {
                     // $('#myDiv').hide();
                     $("#toggle_textonly").prop("checked", true);
                     $("#toggle_textonly").attr("disabled", true);

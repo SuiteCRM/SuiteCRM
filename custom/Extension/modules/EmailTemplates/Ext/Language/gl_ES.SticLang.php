@@ -25,3 +25,7 @@ $mod_strings['ERROR_USER_INTERFACE'] = 'Aconteceu un erro e o contido non se pod
 $mod_strings['LNK_NEW_RECORD'] = 'Crear sección de plantilla';
 $mod_strings['LNK_LIST'] = 'Ver seccións de plantilla';
 $mod_strings['LNK_CAMPAIGN_LIST'] = 'Campañas';
+
+$mod_strings['LBL_STIC_WHATSAPP_STATUS'] = 'Estado de Aprobación WhatsApp';
+$mod_strings['LBL_STIC_WHATSAPP_CATEGORY'] = 'Categoría WhatsApp';
+$mod_strings['LBL_STIC_WHATSAPP_TWILIO_ID'] = 'ID de Twilio';

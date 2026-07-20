@@ -8180,6 +8180,24 @@ $dictionary["stic_assets_stic_followups"] = array(
     ),
 );
 
+$dictionary["stic_messages_notes"] = array (
+    'relationships' => array(
+        'stic_messages_notes' => array(
+            'lhs_module' => 'stic_Messages',
+            'lhs_table' => 'stic_messages',
+            'lhs_key' => 'id',
+            'rhs_module' => 'Notes',
+            'rhs_table' => 'notes',
+            'rhs_key' => 'parent_id',
+            'relationship_type' => 'one-to-many',
+            'relationship_role_column' => 'parent_type',
+            'relationship_role_column_value' => 'stic_Messages',
+        ),
+    ),
+    'fields' => '',
+    'indices' => '',
+    'table' => '',
+);
 $dictionary["stic_awf_forms_stic_awf_responses"] = array (
     'true_relationship_type' => 'one-to-many',
     'relationships' => 

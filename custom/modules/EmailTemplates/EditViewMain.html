@@ -1,0 +1,311 @@
+<!--
+/**
+ * This file is part of SinergiaCRM.
+ * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
+ * Copyright (C) 2013 - 2023 SinergiaTIC Association
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
+ */
+
+ -->
+<!-- BEGIN: main -->
+<style>
+	#subjectfield { height: 27px; }
+</style>
+{JAVASCRIPT}
+<script type="text/javascript" language="Javascript" src="modules/Emails/javascript/Email.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" language="Javascript" src="modules/EmailTemplates/EmailTemplate.js?v={VERSION_MARK}"></script>
+<script type="text/javascript" src="cache/include/javascript/sugar_grp1.js?v={VERSION_MARK}"></script>
+<script type="text/javascript">
+{FIELD_DEFS_JS}
+</script>
+{JSLANG}
+
+<form name="EditView" id="EditView" method="POST" action="index.php" enctype="multipart/form-data">
+	<input type="hidden" name="module" value="EmailTemplates">
+	<input type="hidden" name="record" value="{ID}">
+	<input type="hidden" name="action">
+	<input type="hidden" name="form">
+	<input type="hidden" name="return_module" value="{RETURN_MODULE}">
+	<input type="hidden" name="return_id" value="{RETURN_ID}">
+	<input type="hidden" name="return_action" value="{RETURN_ACTION}">
+	<input type="hidden" name="inpopupwindow" value="{INPOPUPWINDOW}">
+	<input type="hidden" name="old_id" value="{OLD_ID}">
+
+	<table width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td>
+				<input title="{APP.LBL_SAVE_BUTTON_TITLE}" accesskey="{APP.LBL_SAVE_BUTTON_KEY}" class="button primary"
+					onclick="	this.form.action.value='Save';
+<!-- BEGIN: NoInbound1 -->
+								addUploadFiles('EditView');
+								addUploadDocs('EditView');
+<!-- END: NoInbound1 -->
+								return check_form('EditView');"
+					type="submit" name="button" value="{APP.LBL_SAVE_BUTTON_LABEL}" id="SAVE">
+				<input title="{APP.LBL_CANCEL_BUTTON_TITLE}" accesskey="{APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="{CANCEL_SCRIPT}" type="submit" name="button" value="{APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL">
+			</td>
+			<td align="right" nowrap>
+				<span class="required">
+					{APP.LBL_REQUIRED_SYMBOL}
+				</span>
+				{APP.NTC_REQUIRED}
+			</td>
+			<td align='right'>
+				{ADMIN_EDIT}
+			</td>
+		</tr>
+	</table>
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" class="edit view">
+		<tr>
+			<td>
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="15%" scope="row">
+							{MOD.LBL_NAME}
+							<span class="required">
+								{APP.LBL_REQUIRED_SYMBOL}
+							</span>
+						</td>
+						<td width="30%" >
+							<input  id='name' name='name' tabindex="0" type="text" size='30' maxlength="255" value="{NAME}">
+						</td>
+                        <td width="15%" scope="row">
+                         {MOD.LBL_TYPE}
+                        </td>
+                        <td width="30%" >
+                            <select name='type' tabindex="11">{TYPEDROPDOWN}</select>
+                        </td>
+					</tr>
+					<tr>
+						<td width="15%" scope="row">
+							{MOD.LBL_DESCRIPTION}
+						</td>
+						<td colspan="1" >
+							<textarea name='description' tabindex='0' cols="90" rows="4" style="overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="description">{DESCRIPTION}</textarea>
+						</td>
+						<td width="15%" scope="row">{APP.LBL_ASSIGNED_TO}&nbsp;</td>
+						<td>
+							<input class="sqsEnabled" tabindex="0" autocomplete="off" id='assigned_user_name' name='assigned_user_name' type="text" value="{ASSIGNED_USER_NAME}">
+							<input id='assigned_user_id' name='assigned_user_id' type="hidden" value="{ASSIGNED_USER_ID}" />
+
+							<span class="id-ff multiple">
+		                      <button title="{APP.LBL_SELECT_BUTTON_TITLE}" type="button" tabindex='0' class="button firstChild" value='{APP.LBL_SELECT_BUTTON_LABEL}' name="btn_author"  id="btn_author"
+									  onclick='open_popup("Users", 600, 400, "", true, false, {encoded_assigned_users_popup_request_data});'>{assign_user_select}</button><button type="button" name="btn_clr" id="btn_clr" tabindex="0" title="{APP.LBL_CLEAR_BUTTON_TITLE}" class="button lastChild"
+																																												  onclick="this.form.assigned_user_name.value = ''; this.form.assigned_user_id.value = '';" value="{APP.LBL_CLEAR_BUTTON_LABEL}" >{assign_user_clear}</button>
+		                 </span>
+						</td>
+					</tr>
+					<tbody id="stic_whatsapp_fields" style="display:none;">
+						<tr>
+							<td width="15%" scope="row">
+								{MOD.LBL_STIC_WHATSAPP_STATUS}
+							</td>
+							<td width="30%">
+								<select name="stic_whatsapp_status_c">
+									{STIC_WHATSAPP_STATUS_OPTIONS}
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<td width="15%" scope="row">
+								{MOD.LBL_STIC_WHATSAPP_CATEGORY}
+							</td>
+							<td width="30%">
+								<select name="stic_whatsapp_category_c">
+									{STIC_WHATSAPP_CATEGORY_OPTIONS}
+								</select>
+							</td>
+							<td width="15%" scope="row">
+								{MOD.LBL_STIC_WHATSAPP_TWILIO_ID}
+							</td>
+
+							<td width="30%">
+								<input
+									type="text"
+									name="stic_whatsapp_twilio_id_c"
+									id="stic_whatsapp_twilio_id_c"
+									value="{STIC_WHATSAPP_TWILIO_ID}">
+							</td>
+						</tr>
+					</tbody>
+<!-- BEGIN: NoInbound -->
+					<tr>
+						<td width="15%" scope="row" align='left'>
+							{MOD.LBL_INSERT_VARIABLE}&nbsp;
+						</td>
+						<td width="30%"  colspan="3">
+							<select name='variable_module' tabindex="0" onchange="addVariables(document.EditView.variable_name,this.options[this.selectedIndex].value);">
+  							  {DROPDOWN}
+ 							</select>
+							<select name='variable_name' tabindex="0" onchange="showVariable();">
+							</select>
+							<span scope="row">
+								{MOD.LBL_USE}:
+							</span>
+							<input type="text" size="30" tabindex="0" name="variable_text" />
+<!-- BEGIN: variable_button -->
+							<input id="insert_variable_to_body_btn" type='button' tabindex="0" onclick='{INSERT_VARIABLE_ONCLICK}' class='button' value='{MOD.LBL_INSERT}' style="display: none;">
+							<input id="insert_variable_to_subject_btn" type='button' tabindex="0" onclick='insert_variable(document.EditView.variable_text.value, "subjectfield", true)' class='button' value='{MOD.LBL_INSERT}'>
+<!-- END: variable_button -->
+						</td>
+					</tr>
+<!-- BEGIN: tracker_url -->
+					<tr>
+						<td width="15%" scope="row" align='left'>
+							{MOD.LBL_INSERT_TRACKER_URL}&nbsp;
+						</td>
+						<td width="85%" colspan="3" valign="top" >
+							<select tabindex='0' name='tracker_url' onchange='this.form.url_text.value=this.value'>
+								{TRACKER_KEY_OPTIONS}
+							</select>
+							<input type="text" size="30" id="url_text" name="url_text" value="{DEFAULT_URL_TEXT}" />
+							<input type='button' tabindex="0" onclick='{INSERT_URL_ONCLICK}' class='button' value='{MOD.LBL_INSERT_URL_REF}'>
+						</td>
+					</tr>
+<!-- END: tracker_url -->
+<!-- END: NoInbound -->
+					<tr>
+						<td width="15%" scope="row">
+							{MOD.LBL_SUBJECT}
+						</td>
+						<td colspan='4' >
+							<input onclick="onClickTemplateSubject(this);" onblur="remember_place(this);" name='subject' tabindex='0' style="width: 80%; overflow-y:auto; font-family:sans-serif,monospace; font-size:inherit;" id="subjectfield" value="{SUBJECT}">
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan='4'>
+						<input  name="toggle_textonly"  id="toggle_textonly" onclick="toggle_text_only();" type="checkbox" {TEXTONLY_CHECKED}/>
+						<input  name="text_only"  id="text_only"  type="hidden" value='{TEXTONLY_VALUE}'/>
+							&nbsp;{MOD.LBL_SEND_AS_TEXT}
+						</td>
+					</tr>
+					<tr {width_style}>
+						<td width="15%" scope="row">
+							{MOD.LBL_WIDTH}
+						</td>
+						<td>
+							<div class="panel-toolbar">
+								<div class="template-container">
+									<input type="number" class="form-control input-sm" id="mozaik_width_set" onkeyup="mozaik.setWidth(parseInt(this.value)+'px');" onmouseup="mozaik.setWidth(parseInt(this.value)+'px'); "value="{template_width}" >
+								</div>
+							</div>
+						</td>
+					<tr>
+					<tr>
+						<td valign="top" scope="row">
+							{MOD.LBL_BODY}
+						</td>
+
+<!-- BEGIN: textarea -->
+						<td colspan="4" >
+							<div id='body_text_div'>
+							{BODY_EDITOR}
+							<textarea id='body_text' tabindex='0' name='body_html' cols="100" rows="25" style="display: none;">{BODY_HTML}</textarea>
+							</div>
+							<div id='toggle_textarea_option'>
+                                <input id='toggle_textarea_elem' onclick="toggle_textarea_edit(this);" type="button" name="toggle_html" value="{MOD.LBL_EDIT_ALT_TEXT}"/>
+                            </div>
+                            <div id="text_div" style="display: none">
+                                <textarea id='body_text_plain'  tabindex='0' name='body' cols="100" rows="25" style="width:100%" >{BODY}</textarea>
+                            </div>
+						</td>
+<!-- END: textarea -->
+					</tr>
+<!-- BEGIN: NoInbound2 -->
+					<tr>
+						<td valign="top" scope="row">
+							{MOD.LBL_ATTACHMENTS}:
+						</td>
+						<td colspan="2" nowrap>
+							{ATTACHMENTS_JAVASCRIPT} {ATTACHMENTS}
+						</td>
+					</tr>
+<!-- END: NoInbound2 -->
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<!-- BEGIN: NoInbound3 -->
+<form id="upload_form" name="upload_form" method="POST" action='AttachFiles.php' enctype="multipart/form-data">
+	<div id="upload_div">
+		<input type="button" name="add_doc" id="add_doc" onclick="selectDoc();" value='{MOD.LBL_SUITE_DOCUMENT}' class="button" />
+		<label class="button">
+			<input type="file" id="my_file" name="file_1" size="40" style="display: none" />
+			{MOD.LBL_UPLOAD_FILE}
+		</label>
+		<input type="hidden" id="documentName" name="uploaddoc" onchange="docUpload(); form_reset_doc();" size="1" />
+		<input type="hidden" id="documentId" name="seldoc" tabindex="0" />
+		<input type="hidden" id="docRevId" name="seldoc" tabindex="0" />
+		<input type="hidden" id="documentType" name="seldoc" tabindex="0" />
+	</div>
+	<div id="attachments_div">
+	</div>
+</form>
+<!-- END: NoInbound3 -->
+
+<script type="text/javascript" language="javascript">
+<!-- BEGIN: NoInbound4 -->
+toggle_textarea_elem_values = ['{MOD.LBL_EDIT_ALT_TEXT}', '{MOD.LBL_HIDE_ALT_TEXT}'];
+var multi_selector = new multiFiles(document.getElementById('upload_div'));
+multi_selector.addElement( document.getElementById('my_file'));
+<!-- END: NoInbound4 -->
+//call the function on load, this will hide the tinyMCE editor if needed
+toggle_text_only(true);
+
+function toggle_portal_flag() {
+	{TOGGLE_JS}
+}
+<!-- BEGIN: NoInbound5 -->
+addVariables(document.EditView.variable_name,'{DEFAULT_MODULE}');
+<!-- END: NoInbound5 -->
+// show/hide whatsapp fields when changing type
+function toggleSticWhatsappFields() {
+	var form = document.EditView;
+	if (!form) return;
+	var typeEl = form.type || document.getElementsByName('type')[0];
+	var row = document.getElementById('stic_whatsapp_fields');
+	if (!row) return;
+	var val = '';
+	if (typeEl) val = typeEl.value;
+	if (val === 'whatsapp' || val === 'whatsappweb') {
+		row.style.display = '';
+	} else {
+		row.style.display = 'none';
+	}
+}
+if (document && document.EditView) {
+	var t = document.EditView.type || document.getElementsByName('type')[0];
+	if (t) {
+		if (t.addEventListener) t.addEventListener('change', toggleSticWhatsappFields, false);
+		else if (t.attachEvent) t.attachEvent('onchange', toggleSticWhatsappFields);
+	}
+	if (window.addEventListener) window.addEventListener('load', toggleSticWhatsappFields, false);
+	else if (window.attachEvent) window.attachEvent('onload', toggleSticWhatsappFields);
+}
+
+focus_obj = document.EditView.body;
+toggle_portal_flag();
+update_textarea_button();
+</script>
+
+
+
+<!-- END: main -->

@@ -88,6 +88,12 @@ array(
                 ),
                 5 => array(
                     0 => array(
+                        'name' => 'attachment_widget',
+                        'label' => 'LBL_ATTACHMENT',
+                    ),
+                ),
+                6 => array(
+                    0 => array(
                         'name' => 'type',
                         'studio' => 'visible',
                         'label' => 'LBL_TYPE',
@@ -98,7 +104,7 @@ array(
                         'label' => 'LBL_STATUS',
                     ),
                 ),
-                6 => array(
+                7 => array(
                     0 => array(
                         'name' => 'new_conversation',
                         'label' => 'LBL_NEW_CONVERSATION',
@@ -107,7 +113,7 @@ array(
                         'name' => 'stic_conversations_stic_messages_name',
                     ),
                 ),
-                7 => array(
+                8 => array(
                     0 => array(
                         'name' => 'stic_conversation_subject',
                     ),

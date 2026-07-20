@@ -49,6 +49,7 @@ class CustomContactsViewDetail extends ContactsViewDetail
 
         SticViews::display($this);
         echo getVersionedScript("custom/modules/Contacts/SticUtils.js");
+        echo getVersionedScript("modules/stic_Messages/include/ConversationView/ConversationView.js");
 
         require_once('modules/stic_Messages/Utils.php');
         stic_MessagesUtils::echoIsMessagesModuleActive();

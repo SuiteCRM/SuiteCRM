@@ -55,6 +55,9 @@ INSERT INTO `stic_settings` (`id`, `date_entered`, `date_modified`, `modified_us
 ('c8d720bd-2c7b-47a6-98ce-9664529559ca', NOW(), NOW(), '1', '1', 0, '1', 'MESSAGES', 'MESSAGES_SENDER', '', 'Nombre que aparecerá como remitente en los mensajes enviados.'),
 ('64b1554a-cf95-423b-ae78-7f75951f3976', NOW(), NOW(), '1', '1', 0, '1', 'MESSAGES', 'MESSAGES_LIMIT', '100', 'Número máximo de mensajes permitidos en un envío masivo.'),
 ('e5a26eec-b326-11f0-b8b0-f2de65fe24cb', NOW(), NOW(), '1', '1', 0, '1', 'SEVEN', 'SEVEN_MESSAGES_BULK', '5000', 'Mensajes por hora en campañas SMS.'),
+('000001dd-d75d-9e30-8d08-6968da6fad64', NOW(), NOW(), '1', '1', 0, '1', 'TWILIO', 'TWILIO_SID', '', 'Identificador SID de Twilio.'),
+('00000d23-7940-12ed-1930-6968da3c515e', NOW(), NOW(), '1', '1', 0, '1', 'TWILIO', 'TWILIO_TOKEN', '', 'Token de Twilio.'),
+('00000bbe-f4c0-5f12-6241-6968db6f394d', NOW(), NOW(), '1', '1', 0, '1', 'TWILIO', 'TWILIO_NUMBER', '', 'Número de teléfono de Twilio.'),
 ('f8b4a3a2-9f40-4c2e-9f8d-5e76a20f5d11', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_SEND_CREDENTIALS_ON_ENABLE', '0', 'Indica si se enviarán automáticamente las credenciales del Área Privada al marcar el campo "Activar Área Privada" de los módulos Personas y Organizaciones (0 = No (valor por defecto), 1 = Sí).'),
 ('4ef9497d-6511-4a87-9467-01ca8ac99f20', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_CREDENTIALS_TEMPLATE_CONTACTS', '6e6f5a91-2cb9-4f42-bf26-0a13b2f1c101', 'ID de la plantilla de correo de tipo Notificación para el envío de credenciales del Área Privada en Personas'),
 ('8a2014ed-569d-44ad-b03a-f39420aa7ef6', NOW(), NOW(), '1', '1', 0, '1', 'PRIVATEAREA', 'PRIVATEAREA_CREDENTIALS_TEMPLATE_ACCOUNTS', '6e6f5a91-2cb9-4f42-bf26-0a13b2f1c102', 'ID de la plantilla de correo de tipo Notificación para el envío de credenciales del Área Privada en Organizaciones');

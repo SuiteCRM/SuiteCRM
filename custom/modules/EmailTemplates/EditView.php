@@ -47,7 +47,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-global $current_user;
+global $current_user, $mod_strings, $app_list_strings;
 require_once('modules/Campaigns/utils.php');
 
 //if campaign_id is passed then we assume this is being invoked from the campaign module and in a popup.
@@ -278,6 +278,27 @@ $xtpl->assign("DESCRIPTION", $focus->description);
 $xtpl->assign("TYPE_OPTIONS", get_select_options_with_id($app_list_strings['record_type_display'], $focus->parent_type));
 //$xtpl->assign("DEFAULT_MODULE","Accounts");
 
+// Prepare WhatsApp select options and current values
+$approval_selected = isset($focus->stic_whatsapp_status_c)   ? $focus->stic_whatsapp_status_c   : '';
+$category_selected = isset($focus->stic_whatsapp_category_c)  ? $focus->stic_whatsapp_category_c  : '';
+$twilio_id = isset($focus->stic_whatsapp_twilio_id_c) ? $focus->stic_whatsapp_twilio_id_c : '';
+
+// Status
+if (!empty($app_list_strings['stic_whatsapp_status_list'])) {
+    $xtpl->assign('STIC_WHATSAPP_STATUS_OPTIONS', get_select_options_with_id($app_list_strings['stic_whatsapp_status_list'], $approval_selected));
+} else {
+    $xtpl->assign('STIC_WHATSAPP_STATUS_OPTIONS', '');
+}
+
+// Category
+if (!empty($app_list_strings['stic_whatsapp_category_list'])) {
+    $xtpl->assign('STIC_WHATSAPP_CATEGORY_OPTIONS', get_select_options_with_id($app_list_strings['stic_whatsapp_category_list'], $category_selected));
+} else {
+    $xtpl->assign('STIC_WHATSAPP_CATEGORY_OPTIONS', '');
+}
+
+// Twilio ID (campo de texto, readonly)
+$xtpl->assign('STIC_WHATSAPP_TWILIO_ID', htmlspecialchars($twilio_id, ENT_QUOTES));
 if (isset($focus->body)) {
     $xtpl->assign("BODY", $focus->body);
 } else {
@@ -508,8 +529,10 @@ if (!$inboundEmail) {
 }
 $xtpl->parse("main.NoInbound4");
 $xtpl->parse("main.NoInbound5");
-$xtpl->parse("main");
 
+$xtpl->parse("main.stic_whatsapp_fields");
+
+$xtpl->parse("main");
 $xtpl->out("main");
 
 $javascript = new javascript();

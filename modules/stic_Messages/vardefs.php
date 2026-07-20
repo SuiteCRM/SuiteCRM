@@ -126,7 +126,7 @@ $dictionary['stic_Messages'] = array(
             'name' => 'message',
             'vname' => 'LBL_MESSAGE',
             'type' => 'text',
-            'required' => true,
+            'required' => false,
             'comment' => 'Full text of the message',
             'rows' => 6,
             'cols' => 80,
@@ -278,6 +278,47 @@ $dictionary['stic_Messages'] = array(
             'enable_range_search' => 1,
             'inline_edit' => 0,
         ),
+        'notes' => array(
+            'name' => 'notes',
+            'vname' => 'LBL_STIC_MESSAGES_NOTES_REL',
+            'type' => 'link',
+            'relationship' => 'stic_messages_notes',
+            'module' => 'Notes',
+            'bean_name' => 'Note',
+            'source' => 'non-db',
+        ),
+        'attachment_widget' => array(
+            'name' => 'attachment_widget',
+            'vname' => 'LBL_ATTACHMENT',
+            'type' => 'html',
+            'required' => false,
+            'massupdate' => 0,
+            'default' => '',
+            'importable' => 0,
+            'audited' => 0,
+            'inline_edit' => 0,
+            'reportable' => 0,
+            'unified_search' => 0,
+            'source' => 'non-db',
+        ),
+        // Transient field: holds the Note UUID created during file upload.
+        // Follows the same pattern as SuiteCRM Emails for attachment handling.
+        // Not stored in DB — used only during save() to link the Note and build
+        // the signed Twilio media URL.
+        'media_note_id' => array(
+            'name' => 'media_note_id',
+            'vname' => 'LBL_MEDIA_NOTE_ID',
+            'type' => 'varchar',
+            'len' => 36,
+            'required' => false,
+            'massupdate' => 0,
+            'importable' => 0,
+            'audited' => 0,
+            'inline_edit' => 0,
+            'reportable' => 0,
+            'unified_search' => 0,
+            'source' => 'non-db',
+        ),
         'new_conversation' => array (
             'required' => false,
             'name' => 'new_conversation',
@@ -377,7 +418,8 @@ $dictionary['stic_Messages'] = array(
         array(
             'name' => 'idx_messages_phone',
             'type' => 'index',
-            'fields' => array('phone')),
+            'fields' => array('phone'),
+        ),
     ),
     'relationships' => array(
     ),
