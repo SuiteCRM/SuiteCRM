@@ -50,107 +50,127 @@ include 'suitecrm_version.php';
 global $sugar_config, $mod_strings;
 
 ?>
-<div class="about" id="about_header">
-    <p><b>SinergiaCRM: <?php echo $mod_strings['LBL_VERSION'] . ' ' . $sugar_config['sinergiacrm_version']; ?></b></p>
-    <p>SuiteCRM: <?php echo $mod_strings['LBL_VERSION'] . ' ' . $suitecrm_version;
-    if (is_file('custom_version.php')) {
-        include 'custom_version.php';
-        echo '&nbsp;&nbsp;&nbsp;' . $custom_version;
-    } ?>
-    </p>
-    <p>SugarCRM: <?php echo $mod_strings['LBL_VERSION'] . ' ' . $sugar_version . ' (' . $mod_strings['LBL_BUILD'] . ' ' . $sugar_build . ')'; ?></p>
-    <br>
-    
-    <h1><img src="SticInclude/images/SinergiaCRMLogo.png" alt="SinergiaCRM"></h1>
-    <h1><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_TITLE']; ?></h1>
-    <table id="about_table" class="contentBox">
-        <tr>
-            <td valign="top" style="padding: 15px 10px 15px 10px;">
-                <div class="about_suite">
-                    <h3><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_1']; ?></li>
-                        <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_2']; ?></li>
-                    </ul>
-                </div>
-                <div class="about_suite">
-                    <h3><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_CONTRIBUTORS']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_KREPORTER']; ?> (<a href="mailto:info@kreporter.com">info@kreporter.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_MAIL_MERGE']; ?> (<a href="mailto:info@izertis.com">info@izertis.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_OTHER']; ?> 
-                        </li>
-                    </ul>
-                </div>
-        </tr>
-    </table>
 
-    <h1><img src="include/images/suite_logo.png" alt="SuiteCRM"></h1>
-    <h1><?php echo $mod_strings['LBL_CONTRIBUTOR_SUITECRM']; ?></h1>
-    <table id="about_table" class="contentBox">
-        <tr>
-            <td valign="top" style="padding: 15px 10px 15px 10px;">
-                <div class="about_suite">
-                    <br>
-                    <h3><?php echo $mod_strings['LBL_ABOUT_SUITE']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_ABOUT_SUITE_2']; ?></li>
-                        <li><?php echo $mod_strings['LBL_ABOUT_SUITE_4']; ?></li>
-                        <li><?php echo $mod_strings['LBL_ABOUT_SUITE_5']; ?></li>
-                    </ul>
-                </div>
-                <div class="about_suite">
-                    <br>
-                    <h3><?php echo $mod_strings['LBL_CONTRIBUTORS']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_FEATURING']; ?>(<a href="http://www.salesagility.com"
-                                                                            target="_blank">http://www.salesagility.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_CONTRIBUTOR_SECURITY_SUITE']; ?> (<a
-                                    href="http://www.sugaroutfitters.com"
-                                    target="_blank">http://www.sugaroutfitters.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_CONTRIBUTOR_JJW_GMAPS']; ?> (<a href="http://www.jjwdesign.com"
-                                                                                         target="_blank">http://www.jjwdesign.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_CONTRIBUTOR_CONSCIOUS']; ?> (<a
-                                    href="http://www.conscious.co.uk" target="_blank">http://www.conscious.co.uk</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_CONTRIBUTOR_RESPONSETAP']; ?> (<a
-                                    href="https://www.responsetap.com">https://www.responsetap.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_SOURCE_SUGAR']; ?> (<a href="http://www.sugarcrm.com"
-                                                                                target="_blank">http://www.sugarcrm.com</a>)
-                        </li>
-                        <li><?php echo $mod_strings['LBL_CONTRIBUTOR_GMBH']; ?> (<a href="http://www.dtbc.eu/"
-                                                                                    target="_blank">http://www.dtbc.eu/</a>)
-                        </li>
-                    </ul>
-                </div>
+<link rel="stylesheet" type="text/css" href="./custom/modules/Home/css/style.css">
 
-               <div class="about_suite">
-                    <br>
-                    <h3><?php echo $mod_strings['LBL_LANGUAGE_ABOUT']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_LANGUAGE_COMMUNITY_ABOUT']; ?>
-                        </li>
-                        <li><?php echo $mod_strings['LBL_LANGUAGE_COMMUNITY_PACKS']; ?> (<a
-                                href="https://crowdin.com/project/suitecrmtranslations" target="_blank">https://crowdin.com/project/suitecrmtranslations</a>)
-                        </li>
-                    </ul>
-                </div>
+<main id="stic-about-main" class="stic-about-main">
+    <header class="stic-header">
+        <div class="stic-title-wrapper moduleTitle">
+            <h1 class="stic-page-title module-title-text"><?php echo $mod_strings['LBL_ABOUT_PAGE_TITLE']; ?></h1>
+        </div>
+        <div class="stic-software-version-card">
+            <div class="stic-software-version">SinergiaCRM:
+                <?php echo $mod_strings['LBL_VERSION'] . ' ' . $sugar_config['sinergiacrm_version']; ?>
+            </div>
+            <div class="stic-software-version">SuiteCRM:
+                <?php echo $mod_strings['LBL_VERSION'] . ' ' . $suitecrm_version;
+                    if (is_file('custom_version.php')) {
+                        include 'custom_version.php';
+                        echo '&nbsp;&nbsp;&nbsp;' . $custom_version;
+                    } ?>
 
-                <div class="about_suite">
-                    <br>
-                    <h3><?php echo $mod_strings['LBL_PARTNERS']; ?></h3>
-                    <ul id="about_menu">
-                        <li><?php echo $mod_strings['LBL_SUITE_PARTNERS']; ?> (<a
-                                    href="https://suitecrm.com/about/about-us/partners">http://suitecrm.com</a>)
-                        </li>
-                    </ul>
-                </div>
-        </tr>
-    </table>
-</div>
+            </div>
+            <div class="stic-software-version">SugarCRM:
+                <?php echo $mod_strings['LBL_VERSION'] . ' ' . $sugar_version . ' (' . $mod_strings['LBL_BUILD'] . ' ' . $sugar_build . ')'; ?>
+
+            </div>
+        </div>
+    </header>
+    <section class="stic-sinergiacrm-section">
+        <img src="SticInclude/images/SinergiaCRMLogo.png" alt="SinergiaCRM" alt="">
+        <h2><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_TITLE']; ?></h2>
+        <div class="stic-about-inner">
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_1']; ?></li>
+                    <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_2']; ?></li>
+                </ul>
+            </div>
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_CONTRIBUTORS']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_KREPORTER']; ?> (<a
+                            href="mailto:info@kreporter.com">info@kreporter.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_MAIL_MERGE']; ?> (<a
+                            href="mailto:info@izertis.com">info@izertis.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_OTHER']; ?>
+                    </li>
+                </ul>
+            </div>
+            <div class="stic-about-content stic-about-financial">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_FINANCIAL']; ?></h3>
+                <p><?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_FINANCIAL_SUPPORT']; ?></p>
+                <img class="stic-about-financial-image" src="SticInclude/images/about-financial-support.png"
+                    alt="<?php echo $mod_strings['LBL_ABOUT_SINERGIACRM_FINANCIAL_ALT']; ?>" />
+            </div>
+    </section>
+
+    <div class="stic-about-divider" aria-hidden="true"></div>
+
+
+    <section>
+        <img src="include/images/suite_logo.png" alt="">
+        <h2><?php echo $mod_strings['LBL_CONTRIBUTOR_SUITECRM']; ?></h2>
+        <div class="stic-about-inner">
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_ABOUT_SUITE']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_ABOUT_SUITE_2']; ?></li>
+                    <li><?php echo $mod_strings['LBL_ABOUT_SUITE_4']; ?></li>
+                    <li><?php echo $mod_strings['LBL_ABOUT_SUITE_5']; ?></li>
+                </ul>
+            </div>
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_CONTRIBUTORS']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_FEATURING']; ?>(<a href="http://www.salesagility.com"
+                            target="_blank">http://www.salesagility.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_CONTRIBUTOR_SECURITY_SUITE']; ?> (<a
+                            href="http://www.sugaroutfitters.com" target="_blank">http://www.sugaroutfitters.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_CONTRIBUTOR_JJW_GMAPS']; ?> (<a href="http://www.jjwdesign.com"
+                            target="_blank">http://www.jjwdesign.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_CONTRIBUTOR_CONSCIOUS']; ?> (<a href="http://www.conscious.co.uk"
+                            target="_blank">http://www.conscious.co.uk</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_CONTRIBUTOR_RESPONSETAP']; ?> (<a
+                            href="https://www.responsetap.com" target="_blank">https://www.responsetap.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_SOURCE_SUGAR']; ?> (<a href="http://www.sugarcrm.com"
+                            target="_blank">http://www.sugarcrm.com</a>)
+                    </li>
+                    <li><?php echo $mod_strings['LBL_CONTRIBUTOR_GMBH']; ?> (<a href="http://www.dtbc.eu/"
+                            target="_blank">http://www.dtbc.eu/</a>)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_LANGUAGE_ABOUT']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_LANGUAGE_COMMUNITY_ABOUT']; ?>
+                    </li>
+                    <li><?php echo $mod_strings['LBL_LANGUAGE_COMMUNITY_PACKS']; ?> (<a
+                            href="https://crowdin.com/project/suitecrmtranslations"
+                            target="_blank">https://crowdin.com/project/suitecrmtranslations</a>)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="stic-about-content">
+                <h3 class="stic-about-title"><?php echo $mod_strings['LBL_PARTNERS']; ?></h3>
+                <ul class="stic-about-list">
+                    <li><?php echo $mod_strings['LBL_SUITE_PARTNERS']; ?> (<a
+                            href="https://suitecrm.com/about/about-us/partners"
+                            target="_blank">https://suitecrm.com</a>)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>

@@ -1,0 +1,120 @@
+/**
+ * This file is part of SinergiaCRM.
+ * SinergiaCRM is a work developed by SinergiaTIC Association, based on SuiteCRM.
+ * Copyright (C) 2013 - 2023 SinergiaTIC Association
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ *
+ * You can contact SinergiaTIC Association at email address info@sinergiacrm.org.
+ */
+
+.stic-about-main {
+  font-size: 1.4rem;
+}
+
+.stic-header {
+  margin-block-end: 2rem;
+  gap: 2rem;
+}
+
+.stic-software-version-card {
+  border: 1px solid var(--lt-color-gray-300);
+  padding: 2rem 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 300;
+  color: var(--lt-color-gray-600);
+
+  & .stic-software-version:first-child {
+    font-weight: 600;
+    color: var(--lt-color-gray-600);
+  }
+}
+
+.stic-page-title {
+  font-size: 2.6rem;
+  font-weight: 300;
+  color: #353535; /* Text color in other modules is hardcoded */
+  margin-block-end: 0.5rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.stic-sinergiacrm-section {
+  margin-block-end: 1.5rem;
+}
+
+.stic-about-divider {
+  border-top: 1px solid var(--lt-color-gray-300);
+  margin-block: 4rem;
+}
+
+.stic-about-title {
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-block-end: 1rem;
+}
+
+.stic-about-list {
+  font-size: 1.4rem;
+  color: var(--lt-color-gray-600);
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+  margin-block-start: 0;
+  margin-block-end: 1rem;
+  & li {
+    margin-block-end: 0.8rem;
+  }
+}
+
+.stic-about-financial-image {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
+
+@media (width > 960px) {
+  .stic-header {
+    flex-direction: row;
+    position: relative;
+  }
+
+  .stic-software-version-card {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 0;
+    block-size: fit-content;
+  }
+
+  .stic-about-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .stic-about-content {
+    flex: 1;
+    min-width: 400px;
+  }
+
+  .stic-about-financial {
+    flex-basis: 100%;
+  }
+
+  .stic-about-financial-image {
+    max-width: 60%;
+  }
+}
+
+/* END STIC */
