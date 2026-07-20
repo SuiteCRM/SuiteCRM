@@ -214,7 +214,7 @@
                                         <!-- Action -->
                                         <div>
                                             <label for="ModalAction-action" class="form-label" x-text="utils.translateForFieldLabel('LBL_ACTION')"></label>
-                                            <select id="ModalAction-action" class="form-select" size="5" x-model="$store.actionEditor.selectedActionDefName" 
+                                            <select id="ModalAction-action" class="form-select overflow-auto" size="5" x-model="$store.actionEditor.selectedActionDefName" 
                                                     @change="$store.actionEditor.onActionChange()">
                                                 <template x-for="def in $store.actionEditor.filteredActions" :key="def.name">
                                                     <option :value="def.name" x-text="def.title"></option>
