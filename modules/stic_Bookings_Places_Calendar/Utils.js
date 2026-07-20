@@ -170,6 +170,9 @@ function initializeCalendar() {
           }
         }
       }
+      if (body.trim() === "") {
+        return;
+      }
       $(info.el).qtip({
         content: {
           title: title,
