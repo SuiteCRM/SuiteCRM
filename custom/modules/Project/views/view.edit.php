@@ -41,24 +41,33 @@ class CustomProjectViewEdit extends ProjectViewEdit {
 
         // Write here you custom code
 
-        $cancelCustomCode = '{if !empty($smarty.request.return_action) && $smarty.request.return_action == "ProjectTemplatesDetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="this.form.action.value=\'ProjectTemplatesDetailView\'; this.form.module.value=\'{$smarty.request.return_module}\'; if (this.form.return_id && this.form.return_id.value) this.form.record.value=this.form.return_id.value;" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {elseif !empty($smarty.request.return_action) && $smarty.request.return_action == "DetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="this.form.action.value=\'DetailView\'; this.form.module.value=\'{$smarty.request.return_module}\'; if (this.form.return_id && this.form.return_id.value) this.form.record.value=this.form.return_id.value;" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {elseif $is_template}<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="this.form.action.value=\'ProjectTemplatesListView\'; this.form.module.value=\'{$smarty.request.return_module}\'; if (this.form.return_id && this.form.return_id.value) this.form.record.value=this.form.return_id.value;" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {else}<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="this.form.action.value=\'index\'; this.form.module.value=\'{$smarty.request.return_module}\'; if (this.form.return_id && this.form.return_id.value) this.form.record.value=this.form.return_id.value;" type="submit" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {/if}';
+        $cancelCustomCode = '{if !empty($smarty.request.return_action) && $smarty.request.return_action == "ProjectTemplatesDetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="SUGAR.ajaxUI.loadContent(\'index.php?action=ProjectTemplatesDetailView&module={$smarty.request.return_module|default:\'Project\'|escape:\'url\'}&record={$smarty.request.return_id|default:$fields.id.value|escape:\'url\'}\'); return false;" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {elseif !empty($smarty.request.return_action) && $smarty.request.return_action == "DetailView" && (!empty($fields.id.value) || !empty($smarty.request.return_id)) }<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="SUGAR.ajaxUI.loadContent(\'index.php?action=DetailView&module={$smarty.request.return_module|default:\'Project\'|escape:\'url\'}&record={$smarty.request.return_id|default:$fields.id.value|escape:\'url\'}\'); return false;" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {elseif $is_template}<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="SUGAR.ajaxUI.loadContent(\'index.php?action=ProjectTemplatesListView&module={$smarty.request.return_module|default:\'Project\'|escape:\'url\'}\'); return false;" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {elseif !empty($fields.id.value) || !empty($smarty.request.return_id) || !empty($smarty.request.record)}<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="SUGAR.ajaxUI.loadContent(\'index.php?action=DetailView&module=Project&record={$smarty.request.return_id|default:$smarty.request.record|default:$fields.id.value|escape:\'url\'}\'); return false;" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {else}<input title="{$APP.LBL_CANCEL_BUTTON_TITLE}" accessKey="{$APP.LBL_CANCEL_BUTTON_KEY}" class="button" onclick="SUGAR.ajaxUI.loadContent(\'index.php?action=index&module=Project\'); return false;" type="button" name="button" value="{$APP.LBL_CANCEL_BUTTON_LABEL}" id="CANCEL{$place}"> {/if}';
 
+        // Replace the Cancel button definition in the form buttons array
         $buttons = $this->ev->defs['templateMeta']['form']['buttons'] ?? null;
-        $button1 = is_array($buttons) ? ($buttons[1] ?? null) : null;
-        $isCancelButton = false;
+        if (is_array($buttons)) {
+            foreach ($buttons as $index => $button) {
+                // Detect Cancel button by id or label
+                $isCancelButton = false;
+                if ($button === 'CANCEL') {
+                    $isCancelButton = true;
+                } elseif (is_array($button)) {
+                    if (!empty($button['customCode']) && strpos($button['customCode'], 'LBL_CANCEL_BUTTON_LABEL') !== false) {
+                        $isCancelButton = true;
+                    } elseif (!empty($button['value']) && $button['value'] === 'Cancel') {
+                        $isCancelButton = true;
+                    }
+                }
 
-        if (is_array($button1)) {
-            if (!empty($button1['customCode']) && strpos($button1['customCode'], 'LBL_CANCEL_BUTTON_LABEL') !== false) {
-                $isCancelButton = true;
-            } elseif (!empty($button1['value']) && $button1['value'] === 'Cancel') {
-                $isCancelButton = true;
+                if ($isCancelButton) {
+                    // Override Cancel rendering with custom ajaxUI navigation
+                    $this->ev->defs['templateMeta']['form']['buttons'][$index] = array(
+                        'customCode' => $cancelCustomCode,
+                    );
+                    break;
+                }
             }
         }
-
-        if ($isCancelButton) {
-            $this->ev->defs['templateMeta']['form']['buttons'][1]['customCode'] = $cancelCustomCode;
-        }
-
     }
 
     public function display() {
@@ -70,34 +79,5 @@ class CustomProjectViewEdit extends ProjectViewEdit {
         echo getVersionedScript("custom/modules/Project/SticUtils.js");
 
         // Write here you custom code
-
-        // Ensure module/record are set before save
-        $recordId = !empty($this->bean->id) ? $this->bean->id : '';
-        $recordIdJs = json_encode($recordId);
-        echo <<<SCRIPT
-            <script type="text/javascript">
-            (function() {
-                // Force module/record values in the EditView form
-                function fixModule() {
-                    if (!document.EditView) { return; }
-                    if (document.EditView.module) { document.EditView.module.value = "Project"; }
-                    if (document.EditView.record && $recordIdJs) { document.EditView.record.value = $recordIdJs; }
-                }
-
-                // Run once on load
-                fixModule();
-                window.addEventListener("pageshow", fixModule);
-
-                // Re-run just before the standard save submit
-                if (typeof window.formSubmitCheck === "function") {
-                    var originalFormSubmitCheck = window.formSubmitCheck;
-                    window.formSubmitCheck = function() {
-                        fixModule();
-                        return originalFormSubmitCheck.apply(this, arguments);
-                    };
-                }
-            })();
-            </script>
-            SCRIPT;
     }
 }
