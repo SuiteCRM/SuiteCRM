@@ -256,4 +256,4 @@ $mod_strings['LBL_STIC_PA_ENABLE_HELP'] = 'Al activar esta opción, se habilitar
 $mod_strings['LBL_STIC_PA_PASSWORD_HELP'] = 'Se podrá introducir/cambiar la contraseña del Área Privada solo si la opción de "Activar Área Privada" está habilitada.';
 
 // Conversaciones
-$mod_strings['LBL_STIC_CONVERSATIONS_SUBPANEL_TITLE'] = 'Conversaciones';
+$mod_strings['LBL_STIC_CONVERSATIONS_SUBPANEL_TITLE'] = 'Conversacións';

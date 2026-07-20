@@ -107,7 +107,7 @@ $app_strings['LBL_TOO_MANY_RECORDS_SELECTED'] = 'Sobrepasouse o límite de mensa
 $app_strings['LBL_MASS_SENT_MESSAGE_BUTTON_TITTLE'] = 'Enviar mensaxe telefónica';
 $app_strings['LBL_NEW_NOTIFICATION'] = 'Nova notificación por correo electrónico';
 $app_strings['LBL_NEW_MSG_NOTIFICATION'] = 'Nova notificación por mensaxe electrónica';
-$app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'] = 'Enviar mensaje (conversación)';
+$app_strings['LBL_SUBPANEL_NEW_MESSAGE_CONVERSATION_LABEL'] = 'Enviar mensaxe (conversación)';
 
 // Envío masivo de correos
 $app_strings['LBL_EMAIL_SENDING_ALERT_CURRENT_PAGE'] = 'O envío só se aplicará aos rexistros da páxina actual. Para envíos masivos recoméndase utilizar o módulo Campañas.';
@@ -178,13 +178,13 @@ $app_list_strings['moduleList']['stic_Places'] = 'Prazas';
 $app_list_strings['moduleList']['stic_Transactions'] = 'Transaccións';
 $app_list_strings['moduleList']['stic_Financial_Products'] = 'Produtos financeiros';
 $app_list_strings['moduleList']['stic_Assets'] = 'Activos';
-$app_list_strings['moduleList']['stic_AWF_Response_Details'] = 'Detalles de respuestas a formularios';
-$app_list_strings['moduleList']['stic_AWF_Responses'] = 'Respuestas a formularios';
+$app_list_strings['moduleList']['stic_AWF_Response_Details'] = 'Detalles de respostas a formularios';
+$app_list_strings['moduleList']['stic_AWF_Responses'] = 'Respostas a formularios';
 $app_list_strings['moduleList']['stic_AWF_Links'] = 'Vínculos de formularios';
 $app_list_strings['moduleList']['stic_AWF_Forms'] = 'Formularios Web Avanzados';
 $app_list_strings['moduleList']['stic_AWF_Deferred_Tickets'] = 'Procesos en espera de formularios';
-$app_list_strings['moduleList']['stic_AWF_Incoming_Events'] = 'Notificaciones externas de formularios';
-$app_list_strings['moduleList']['stic_Conversations'] = 'Conversaciones';
+$app_list_strings['moduleList']['stic_AWF_Incoming_Events'] = 'Notificacións externas de formularios';
+$app_list_strings['moduleList']['stic_Conversations'] = 'Conversacións';
 
 $app_list_strings['moduleListSingular']['Accounts'] = 'Organización';
 $app_list_strings['moduleListSingular']['Contacts'] = 'Persoa';
@@ -243,12 +243,12 @@ $app_list_strings['moduleListSingular']['stic_Signers'] = 'Asinante';
 $app_list_strings['moduleListSingular']['stic_Transactions'] = 'Transacción';
 $app_list_strings['moduleListSingular']['stic_Financial_Products'] = 'Produtos financeiro';
 $app_list_strings['moduleListSingular']['stic_Assets'] = 'Activo';
-$app_list_strings['moduleListSingular']['stic_AWF_Response_Details'] = 'Detalle de respuesta a formulario';
-$app_list_strings['moduleListSingular']['stic_AWF_Responses'] = 'Respuesta a formulario';
+$app_list_strings['moduleListSingular']['stic_AWF_Response_Details'] = 'Detalles de resposta a formulario';
+$app_list_strings['moduleListSingular']['stic_AWF_Responses'] = 'Resposta a formulario';
 $app_list_strings['moduleListSingular']['stic_AWF_Links'] = 'Vínculo de formulario';
 $app_list_strings['moduleListSingular']['stic_AWF_Forms'] = 'Formulario Web Avanzado';
-$app_list_strings['moduleListSingular']['stic_AWF_Deferred_Tickets'] = 'Proceso en espera de formulario';
-$app_list_strings['moduleListSingular']['stic_AWF_Incoming_Events'] = 'Notificación externa de formulario';
+$app_list_strings['moduleListSingular']['stic_AWF_Deferred_Tickets'] = 'Procesos en espera de formularios';
+$app_list_strings['moduleListSingular']['stic_AWF_Incoming_Events'] = 'Notificación externas de formularios';
 $app_list_strings['moduleListSingular']['stic_Conversations'] = 'Conversación';
 
 $app_list_strings['parent_type_display']['Accounts'] = 'Organizacións';
@@ -296,7 +296,7 @@ $app_list_strings['parent_type_display']['stic_Places'] = 'Prazas';
 $app_list_strings['parent_type_display']['stic_Transactions'] = 'Transaccións';
 $app_list_strings['parent_type_display']['stic_Financial_Products'] = 'Produtos financeiros';
 $app_list_strings['parent_type_display']['stic_Assets'] = 'Activos';
-$app_list_strings['parent_type_display']['stic_Conversations'] = 'Conversaciones';
+$app_list_strings['parent_type_display']['stic_Conversations'] = 'Conversacións';
 
 $app_list_strings['record_type_display']['Accounts'] = 'Organizacións';
 $app_list_strings['record_type_display']['Contacts'] = 'Persoas';
@@ -345,7 +345,7 @@ $app_list_strings['record_type_display']['stic_Signers'] = 'Asinantes';
 $app_list_strings['record_type_display']['stic_Transactions'] = 'Transaccións';
 $app_list_strings['record_type_display']['stic_Financial_Products'] = 'Produtos financeiros';
 $app_list_strings['record_type_display']['stic_Assets'] = 'Activos';
-$app_list_strings['record_type_display']['stic_Conversations'] = 'Conversaciones';
+$app_list_strings['record_type_display']['stic_Conversations'] = 'Conversacións';
 
 $app_list_strings['record_type_display_notes']['Accounts'] = 'Organizacións';
 $app_list_strings['record_type_display_notes']['Contacts'] = 'Persoas';
@@ -394,14 +394,14 @@ $app_list_strings['record_type_display_notes']['stic_Signers'] = 'Asinantes';
 $app_list_strings['record_type_display_notes']['stic_Transactions'] = 'Transaccións';
 $app_list_strings['record_type_display_notes']['stic_Financial_Products'] = 'Produtos financeiros';
 $app_list_strings['record_type_display_notes']['stic_Assets'] = 'Activos';
-$app_list_strings['record_type_display_notes']['stic_Conversations'] = 'Conversaciones';
+$app_list_strings['record_type_display_notes']['stic_Conversations'] = 'Conversacións';
 
 $app_list_strings['parent_type_display_notifications']['Opportunities'] = 'Subvencións';
 $app_list_strings['parent_type_display_notifications']['stic_Events'] = 'Eventos';
+$app_list_strings['parent_type_display_notifications']['stic_Signatures'] = 'Sinaturas';
 $app_list_strings['parent_type_display_notifications']['stic_Job_Applications'] = 'Candidaturas';
 $app_list_strings['parent_type_display_notifications']['stic_Job_Offers'] = 'Ofertas laborais';
-$app_list_strings['parent_type_display_notifications']['stic_Conversations'] = 'Conversaciones';
-$app_list_strings['parent_type_display_notifications']['stic_Messages'] = 'Mensajes';
+$app_list_strings['parent_type_display_notifications']['stic_Conversations'] = 'Conversacións';
 
 // Categorías para la creación dinamica de Listas de público objetivo
 $app_list_strings['notification_auto_prospect_list_name_list'][''] = '';
@@ -3955,12 +3955,12 @@ $app_list_strings['stic_awf_forms_types_list']['crm'] = 'Formulario del CRM';
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['enrich'] = 'Ampliar';
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['update'] = 'Actualizar';
 $app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['skip'] = 'Ignorar';
-$app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['error'] = 'Error';
+$app_list_strings['stic_awf_forms_datablock_duplicate_action_list']['error'] = 'Erro';
 
 // Advanced Web Forms: configuration->data_block->field->type_field
-$app_list_strings['stic_awf_forms_field_type_field_list']['unlinked'] = 'No enlazado';
-$app_list_strings['stic_awf_forms_field_type_field_list']['form'] = 'Formulario';
-$app_list_strings['stic_awf_forms_field_type_field_list']['hidden'] = 'Valor fijo';
+$app_list_strings['stic_awf_forms_field_type_field_list']['unlinked'] = 'Non enlazado';
+$app_list_strings['stic_awf_forms_field_type_field_list']['form'] = 'Formulario ';
+$app_list_strings['stic_awf_forms_field_type_field_list']['hidden'] = 'Valor Fixo';
 
 // Advanced Web Forms: configuration->data_block->field->type_in_form
 // Advanced Web Forms Response Details: answer_form_type
@@ -3968,7 +3968,7 @@ $app_list_strings['stic_awf_forms_field_type_in_form_list']['text'] = '➖ Texto
 $app_list_strings['stic_awf_forms_field_type_in_form_list']['textarea'] = '☰ Texto largo';
 $app_list_strings['stic_awf_forms_field_type_in_form_list']['number'] = '#️⃣ Numérica';
 $app_list_strings['stic_awf_forms_field_type_in_form_list']['date'] = '🗓️ Temporal';
-$app_list_strings['stic_awf_forms_field_type_in_form_list']['select'] = '▼ Opciones predeterminadas';
+$app_list_strings['stic_awf_forms_field_type_in_form_list']['select'] = '▼ Opcións predeterminadas';
 $app_list_strings['stic_awf_forms_field_type_in_form_list']['rating'] = '🏅 Valoración';
 $app_list_strings['stic_awf_forms_field_type_in_form_list']['hidden'] = '🕵️ Oculta';
 
@@ -3977,86 +3977,86 @@ $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text'] = '🔤 T
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text_email'] = '✉️ Correo electrónico';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text_tel'] = '📞 Teléfono';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text_url'] = '🔗 Enlace';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text_password'] = '🔒 Contraseña';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['textarea'] = '📃 Párrafo';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['text_password'] = '🔒 Contrasinal';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['textarea'] = '📃 Parágrafo';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['number'] = '🔢 Numérico';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['date'] = '📅 Fecha';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['date'] = '📅 Data';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['date_time'] = '⏱️ Hora';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['date_datetime'] = '📅⏱️ Fecha y hora';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select'] = '🔻 Desplegable';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_multiple'] = '📑 Desplegable múltiple';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_checkbox_list'] = '☑️ Selección múltiple';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['date_datetime'] = '📅⏱️ Data e hora';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select'] = '🔻 Despregable';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_multiple'] = '📑 Despregable múltiple';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_checkbox_list'] = '☑️ Selección Múltiple';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_radio'] = '🔘 Selección de opción';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_checkbox'] = '◻️ Casilla de selección';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['select_switch'] = '🎚️ Interruptor';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_stars'] = '⭐ Estrellas';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_stars'] = '⭐ Estrelas';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_emoji'] = '🙂 Caras';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_lights'] = '🚦 Semáforo';
-$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_thumbs'] = '👍 Pulgares';
+$app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_thumbs'] = '👍 Polgares';
 $app_list_strings['stic_awf_forms_field_subtype_in_form_list']['rating_nps']   = '🔟 Escala 0-10 (NPS)';
 
 // Advanced Web Forms: configuration->data_block->field->value_type
 $app_list_strings['stic_awf_forms_field_value_type_list']['editable'] = 'Editable';
 $app_list_strings['stic_awf_forms_field_value_type_list']['selectable'] = 'Seleccionable';
-$app_list_strings['stic_awf_forms_field_value_type_list']['fixed'] = 'Valor fijo';
+$app_list_strings['stic_awf_forms_field_value_type_list']['fixed'] = 'Valor Fixo';
 $app_list_strings['stic_awf_forms_field_value_type_list']['dataBlock'] = 'Bloque de datos';
 
 // Advanced Web Forms: configuration->layout->structure->containerType
 $app_list_strings['stic_awf_forms_layout_structure_container_type_list']['panel'] = 'Panel (simple)';
-$app_list_strings['stic_awf_forms_layout_structure_container_type_list']['card'] = 'Tarjeta (con borde)';
-$app_list_strings['stic_awf_forms_layout_structure_container_type_list']['tabs'] = 'Pestañas';
+$app_list_strings['stic_awf_forms_layout_structure_container_type_list']['card'] = 'Tarxeta (con borde)';
+$app_list_strings['stic_awf_forms_layout_structure_container_type_list']['tabs'] = 'Pestanas';
 $app_list_strings['stic_awf_forms_layout_structure_container_type_list']['accordion'] = 'Acordeón';
 
 // Advanced Web Forms: configuration->layout->theme->shadow_intensity
-$app_list_strings['stic_awf_forms_layout_theme_shadow_intensity_list']['none'] = 'Sin sombreado (plano)';
+$app_list_strings['stic_awf_forms_layout_theme_shadow_intensity_list']['none'] = 'Sen sombreado (plano)';
 $app_list_strings['stic_awf_forms_layout_theme_shadow_intensity_list']['sm'] = 'Sutil';
 $app_list_strings['stic_awf_forms_layout_theme_shadow_intensity_list']['normal'] = 'Normal';
 $app_list_strings['stic_awf_forms_layout_theme_shadow_intensity_list']['lg'] = 'Elevado (flotante)';
 
 // Advanced Web Forms: configuration->layout->theme->input_style
 $app_list_strings['stic_awf_forms_layout_theme_input_style_list']['standard'] = 'Estándar (borde)';
-$app_list_strings['stic_awf_forms_layout_theme_input_style_list']['flat'] = 'Plano (solo línea)';
-$app_list_strings['stic_awf_forms_layout_theme_input_style_list']['filled'] = 'Relleno (material)';
+$app_list_strings['stic_awf_forms_layout_theme_input_style_list']['flat'] = 'Plano (só liña)';
+$app_list_strings['stic_awf_forms_layout_theme_input_style_list']['filled'] = 'Recheo (material)';
 
 // Advanced Web Forms: configuration->layout->theme->form_width
 $app_list_strings['stic_awf_forms_layout_theme_form_width_list']['100%'] = 'Completo (100%)';
-$app_list_strings['stic_awf_forms_layout_theme_form_width_list']['1200px'] = 'Muy ancho (1200px)';
+$app_list_strings['stic_awf_forms_layout_theme_form_width_list']['1200px'] = 'Moi ancho (1200px)';
 $app_list_strings['stic_awf_forms_layout_theme_form_width_list']['800px'] = 'Estándar (800px)';
-$app_list_strings['stic_awf_forms_layout_theme_form_width_list']['600px'] = 'Estrecho / Móvil (600px)';
+$app_list_strings['stic_awf_forms_layout_theme_form_width_list']['600px'] = 'Estreito / Móbil (600px)';
 
 // Advanced Web Forms: configuration->layout->theme->field_spacing
-$app_list_strings['stic_awf_forms_layout_theme_field_spacing_list']['0rem'] = 'Muy compacto';
+$app_list_strings['stic_awf_forms_layout_theme_field_spacing_list']['0rem'] = 'Moi compacto';
 $app_list_strings['stic_awf_forms_layout_theme_field_spacing_list']['0.5rem'] = 'Compacto';
 $app_list_strings['stic_awf_forms_layout_theme_field_spacing_list']['1rem'] = 'Normal';
 $app_list_strings['stic_awf_forms_layout_theme_field_spacing_list']['1.5rem'] = 'Espacioso';
 
 // Advanced Web Forms: ActionDefinition->category
-$app_list_strings['stic_awf_forms_action_definition_category_list']['security'] = '🔒 Seguridad';
+$app_list_strings['stic_awf_forms_action_definition_category_list']['security'] = '🔒 Seguridade';
 $app_list_strings['stic_awf_forms_action_definition_category_list']['data'] = '📦 Datos';
 $app_list_strings['stic_awf_forms_action_definition_category_list']['communication'] = '💬 Comunicación';
 $app_list_strings['stic_awf_forms_action_definition_category_list']['navigation'] = '➡️ Navegación';
 $app_list_strings['stic_awf_forms_action_definition_category_list']['integration'] = '🧩 Integración';
-$app_list_strings['stic_awf_forms_action_definition_category_list']['files'] = '📁 Ficheros';
+$app_list_strings['stic_awf_forms_action_definition_category_list']['files'] = '📁 Ficheiros';
 $app_list_strings['stic_awf_forms_action_definition_category_list']['validation'] = '🛡️ Validación';
 
 // Advanced Web Forms: Relative dates
-$app_list_strings['stic_awf_forms_date_relative_list']['today'] = 'Hoy (fecha actual)';
-$app_list_strings['stic_awf_forms_date_relative_list']['now'] = 'Ahora (fecha y hora actuales)';
-$app_list_strings['stic_awf_forms_date_relative_list']['+1_day'] = 'Dentro de un día';
-$app_list_strings['stic_awf_forms_date_relative_list']['+1_week'] = 'Dentro de una semana';
-$app_list_strings['stic_awf_forms_date_relative_list']['+1_month'] = 'Dentro de un mes';
-$app_list_strings['stic_awf_forms_date_relative_list']['last_day_of_this_month'] = 'Último día de este mes';
-$app_list_strings['stic_awf_forms_date_relative_list']['first_day_of_next_month'] = 'Primer día del próximo mes';
+$app_list_strings['stic_awf_forms_date_relative_list']['today'] = 'Hoxe (data actual)';
+$app_list_strings['stic_awf_forms_date_relative_list']['now'] = 'Agora (data e hora actuais)';
+$app_list_strings['stic_awf_forms_date_relative_list']['+1_day'] = 'Dentro dun día';
+$app_list_strings['stic_awf_forms_date_relative_list']['+1_week'] = 'Dentro dunha semana';
+$app_list_strings['stic_awf_forms_date_relative_list']['+1_month'] = 'Dentro dun mes';
+$app_list_strings['stic_awf_forms_date_relative_list']['last_day_of_this_month'] = 'Último día deste mes';
+$app_list_strings['stic_awf_forms_date_relative_list']['first_day_of_next_month'] = 'Primeiro día do próximo mes';
 $app_list_strings['stic_awf_forms_date_relative_list']['custom'] = 'Personalizada...';
 
 // Advanced Web Forms Responses: status
-$app_list_strings['stic_awf_responses_status_list']['pending'] = 'Pendiente';
+$app_list_strings['stic_awf_responses_status_list']['pending'] = 'Pendente';
 $app_list_strings['stic_awf_responses_status_list']['processing'] = 'Procesando';
-$app_list_strings['stic_awf_responses_status_list']['awaiting_action'] = 'En espera';
+$app_list_strings['stic_awf_responses_status_list']['awaiting_action'] = 'En Espera';
 $app_list_strings['stic_awf_responses_status_list']['processed'] = 'Procesada';
-$app_list_strings['stic_awf_responses_status_list']['rejected'] = 'Rechazada';
-$app_list_strings['stic_awf_responses_status_list']['spam'] = 'No deseada';
-$app_list_strings['stic_awf_responses_status_list']['error'] = 'Error';
+$app_list_strings['stic_awf_responses_status_list']['rejected'] = 'Rexeitada';
+$app_list_strings['stic_awf_responses_status_list']['spam'] = 'Non desexada';
+$app_list_strings['stic_awf_responses_status_list']['error'] = 'Erro';
 
 // Advanced Web Forms Links: record_action
 $app_list_strings['stic_awf_links_record_action_list']['created'] = 'Creado';
@@ -4064,16 +4064,16 @@ $app_list_strings['stic_awf_links_record_action_list']['updated'] = 'Actualizado
 $app_list_strings['stic_awf_links_record_action_list']['enriched'] = 'Ampliado';
 $app_list_strings['stic_awf_links_record_action_list']['skipped'] = 'Ignorado';
 $app_list_strings['stic_awf_links_record_action_list']['metadata'] = 'Tratado';
-$app_list_strings['stic_awf_links_record_action_list']['unchanged'] = 'Sin cambios';
+$app_list_strings['stic_awf_links_record_action_list']['unchanged'] = 'Sen cambios';
+
+// TODO:
+// Define: stic_awf_deferred_tickets_status
+// Define: stic_awf_incoming_events_status
 
 // Conversaciones: Tipos
 $app_list_strings['stic_conversations_types_list'][''] = '';
 $app_list_strings['stic_conversations_types_list']['type1'] = 'Tipo 1';
 $app_list_strings['stic_conversations_types_list']['type2'] = 'Tipo 2';
-
-// TODO:
-// Define: stic_awf_deferred_tickets_status
-// Define: stic_awf_incoming_events_status
 
 // Modificaciones del core de SuiteCRM
 
