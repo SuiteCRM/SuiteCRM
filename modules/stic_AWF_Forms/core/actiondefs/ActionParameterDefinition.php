@@ -83,5 +83,6 @@ class ActionParameterDefinition {
     public array $supportedModules = [];   // Supported modules if the destination is a CRM record
     /** @var ActionDataType[] */
     public array $supportedDataTypes = []; // List of data types of the fields pointed to, if applicable (for FIELD or FIELD_LIST)
+    public string $colSize = 'col-4';      // The size of the column in the UI (Bootstrap grid classes)
 }
 

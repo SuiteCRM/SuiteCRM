@@ -180,3 +180,23 @@ function sticSendPhoneMessages() {
 
     return stic_MessagesManUtils::sendQueuedMessages(false);
 }
+
+// Scheduled task to cancel expired AWF tickets 
+$job_strings[] = 'sticAwfCancelExpiredTickets';
+
+/**
+ * Cleans up AWF Deferred Tickets that have expired or are blocked (zombies).
+ */
+function sticAwfCancelExpiredTickets() {
+    require_once 'modules/stic_AWF_Forms/Utils.php';
+    
+    $GLOBALS['log']->debug('Line '.__LINE__.': '.__METHOD__.':  Running the task sticAwfCancelExpiredTickets');
+
+    try {
+        stic_AWF_FormsUtils::cancelExpiredTickets();
+        return true;
+    } catch (\Exception $e) {
+        $GLOBALS['log']->fatal('Line '.__LINE__.': '.__METHOD__.':  sticAwfCancelExpiredTickets Error: ' . $e->getMessage());
+        return false;
+    }
+}

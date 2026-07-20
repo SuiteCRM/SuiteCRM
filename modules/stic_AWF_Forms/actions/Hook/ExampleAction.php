@@ -323,7 +323,7 @@ class ExampleAction extends HookActionDefinition
         // VALUE (Field List) -> associative array ['Block.Field' => 'Resolved Value']
         $fieldsMap = $actionConfig->getResolvedParameter('fields_to_process') ?? [];
         foreach ($fieldsMap as $fieldKey => $fieldVal) {
-            $GLOBALS['log']->debug("Field List Item: $fieldKey = $fieldVal");
+            $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ": Field List Item: $fieldKey = $fieldVal");
         }
 
         // DATA_BLOCK -> DataBlockResolved object

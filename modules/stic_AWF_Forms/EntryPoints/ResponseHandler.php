@@ -27,7 +27,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 require_once "modules/stic_AWF_Forms/core/includes.php";
 
 /**
- * EntryPoint: ResponseHandler
+ * EntryPoint: stic_AWF_responseHandler
  * Entry point class responsible for handling form responses submitted by users. 
  * It processes the incoming data, performs validations, detects spam, saves the response, and executes the defined action flows based on the form configuration.
  */
@@ -364,40 +364,26 @@ class ResponseHandler
                 // Generate analytical response details
                 $this->generateResponseDetails($responseBean, $formBean, $formConfig, $cleanData);
 
-                // Update status and generate execution log
+                // Generate execution log
+                stic_AWFUtils::updateResponseExecutionLog($context);
+
+                // Update status
                 $hasErrors = false;
-                $logSummary = "[" . date('Y-m-d H:i:s') . "]\n";
                 foreach ($context->actionResults as $result) {
                     if ($result->isError()) {
                         $hasErrors = true;
-                        $icon = translate('LBL_EXECUTION_ITEM_ERROR', 'stic_AWF_Responses');
-                    } elseif ($result->isSkipped()) {
-                        $icon = translate('LBL_EXECUTION_ITEM_SKIPPED', 'stic_AWF_Responses');
-                    } else {
-                        $icon = translate('LBL_EXECUTION_ITEM_OK', 'stic_AWF_Responses');
+                        break;
                     }
-                    $actionName = $result->actionConfig->text ?? $result->actionConfig->name ?? 'Unknown Action';
-                    $logSummary .= "{$icon} {$actionName}";
-                    if (!empty($result->message)) {
-                        $logSummary .= ": " . $result->message;
-                    }
-                    $logSummary .= "\n";
                 }
-                $responseBean->execution_log = $logSummary;
-
-                // Update status
                 if ($lastResult->isError()) {
                     $responseBean->status = 'error';
+                    $hasErrors = true;
                 } elseif ($lastResult->isWait()) {
                     $responseBean->status = 'awaiting_action'; 
                 } else {
                     $responseBean->status = $hasErrors ? 'error' : 'processed';
                 }
                 $responseBean->save();
-
-                if ($lastResult->isWait()) {
-                    $this->createDeferredTicket($context, $lastResult);
-                }
 
                 // Get last action and check if is Terminal
                 $lastAction = $lastResult->getAction();
@@ -412,58 +398,17 @@ class ResponseHandler
                 // No terminal (or error runing terminal): Show generic message
                 $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ": Terminal action not found or failed in Main flow in form. ID: $formId");
                 if ($hasErrors) {
-                    $title = translate('LBL_ERROR_GENERIC_TITLE', 'stic_AWF_Responses');
-                    $msg = translate('LBL_ERROR_GENERIC_MSG', 'stic_AWF_Responses');
-                    stic_AWFUtils::renderGenericResponse($formConfig, $title, $msg);
+                    stic_AWFUtils::renderGenericResponseError($formConfig);
                 } else {
-                    $title = $formConfig->layout->processed_form_title ?? translate('LBL_THEME_PROCESSED_FORM_TITLE_VALUE', 'stic_AWF_Forms');
-                    $msg = $formConfig->layout->processed_form_text ?? translate('LBL_THEME_PROCESSED_FORM_TEXT_VALUE', 'stic_AWF_Forms');
-                    stic_AWFUtils::renderGenericResponse($formConfig, $title, $msg); 
+                    stic_AWFUtils::renderGenericResponseSuccess($formConfig); 
                 }
                 
             } else {
                 // If there is no main flow, we show generic message
                 $GLOBALS['log']->fatal('Line ' . __LINE__ . ': ' . __METHOD__ . ": Main flow not found in form. ID: $formId");
-                stic_AWFUtils::renderGenericResponse($formConfig, "Error", "Configuration Error: Main flow missing.");
+                stic_AWFUtils::renderGenericResponseError($formConfig);
             }
         }
-    }
-
-    /**
-     * Create a record in the deferred tickets table to resume the flow.
-     * @param ExecutionContext $context Execution context of the flow
-     * @param ActionResult $lastResult Result of the last action
-     */
-    private function createDeferredTicket(ExecutionContext $context, ActionResult $lastResult): void {
-        $ticket = BeanFactory::newBean('stic_AWF_Deferred_Tickets');
-        $ticket->name = "Deferred: " . $context->formId . " - " . date('Y-m-d H:i');
-        $ticket->status = 'pending';
-        $data = $lastResult->getData();
-
-        // Essential data to recover context
-        $ticket->form_id = $context->formId;
-        $ticket->response_id = $context->responseId;
-        
-        // Unique token generation (hash)
-        $token = bin2hex(random_bytes(16));
-        $ticket->token_hash = $token;
-
-        // Store the specific data of the action (ex: strategy_class, order_id)
-        $ticket->context_data = json_encode($data);
-
-        // IEPA!!
-        // TODO: Recuperar External ID de forma agnóstica
-        // // Optional: If the strategy has given us an external ID (ex: Redsys Order ID), we save it
-        // if (isset($data['external_ref_id'])) {
-        //     $ticket->external_ref_id = $data['external_ref_id'];
-        // } elseif (isset($data['redsys_order_id'])) {
-        //     $ticket->external_ref_id = $data['redsys_order_id'];
-        // }
-
-        $ticket->save();
-        
-        // Optional: Update the result with the ticket_id in case the terminal action wants to use it
-        // $data['ticket_id'] = $ticket->id;
     }
 
     /**
@@ -504,9 +449,9 @@ class ResponseHandler
         $configData = json_decode(html_entity_decode($formBean->configuration), true);
         $formConfig = $configData ? FormConfig::fromJsonArray($configData) : null;
         if ($formConfig) {
-            stic_AWFUtils::renderGenericResponse($formConfig, 
-                                             translate('LBL_DUPLICATE_RESPONSE_TITLE', 'stic_AWF_Responses'),
-                                             translate('LBL_DUPLICATE_RESPONSE_MSG', 'stic_AWF_Responses'));
+            $title = translate('LBL_DUPLICATE_RESPONSE_TITLE', 'stic_AWF_Responses');
+            $msg = translate('LBL_DUPLICATE_RESPONSE_MSG', 'stic_AWF_Responses');
+            stic_AWFUtils::renderGenericResponse($formConfig, $title, $msg);
         } else {
             $this->terminateRawError("This response has already been submitted.");
         }

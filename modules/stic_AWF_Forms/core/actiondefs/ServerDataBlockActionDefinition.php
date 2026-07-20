@@ -64,6 +64,14 @@ abstract class ServerDataBlockActionDefinition extends ServerActionDefinition {
     }
 
     /**
+     * (Optional) Override to add ADDITIONAL parameters before the data block parameter.
+     * @return ActionParameterDefinition[]
+     */
+    protected function getInitialCustomParameters(): array {
+        return [];
+    }
+
+    /**
      * (Optional) Override to add ADDITIONAL parameters besides the data block parameter.
      * @return ActionParameterDefinition[]
      */
@@ -83,9 +91,10 @@ abstract class ServerDataBlockActionDefinition extends ServerActionDefinition {
         $blockParam->required = true;
 
         // Add the custom parameters from the developer
+        $initialCustomParams = $this->getInitialCustomParameters();
         $customParams = $this->getCustomParameters();
         
-        return array_merge([$blockParam], $customParams);
+        return array_merge($initialCustomParams, [$blockParam], $customParams);
     }
 
     final public function execute(ExecutionContext $context, FormAction $actionConfig): ActionResult

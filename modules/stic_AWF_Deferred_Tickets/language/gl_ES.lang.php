@@ -67,4 +67,11 @@ $mod_strings = array (
   'LBL_HANDLER_ACTION_ID' => 'Id da acción diferida',
   'LBL_CONTEXT_DATA' => 'Datos de contexto',
   'LBL_EXPIRATION_DATE' => 'Data de expiración',
+  'LBL_RETRY_COUNT' => 'Reintentos',
+  'LBL_LAST_ERROR_MESSAGE' => 'Último error',
+
+  'LBL_ERROR_TOKEN_MSG' => 'No se ha proporcionado un token válido en la URL.',
+
+  'LBL_PROCESSING_TITLE' => 'Procesando',
+  'LBL_PROCESSING_MSG' => 'La solicitud está siendo procesada. Esto puede tardar unos instantes.',
 );

@@ -61,6 +61,7 @@ $mod_strings = array (
   'LBL_NEW_FORM_TITLE' => 'Nova Notificació externa de Formulari',
   
   'LBL_TOKEN' => 'Token',
+  'LBL_SOURCE' => 'Origen',
   'LBL_EXTERNAL_TRANSACTION_ID' => 'Id extern de transacció',
   'LBL_RAW_PAYLOAD' => "Cos de l'esdeveniment",
   'LBL_HEADERS' => "Capçaleres de l'esdeveniment",

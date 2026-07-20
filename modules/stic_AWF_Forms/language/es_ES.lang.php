@@ -231,6 +231,7 @@ $mod_strings = array (
   'LBL_FLOW_RECEIPT' => 'Respuesta automática',
   'LBL_FLOW_MAIN' => 'Principal',
   'LBL_FLOW_ONERROR' => 'Error',
+  'LBL_FLOW_DEFERRED_MAIN' => 'Finalizada',
 
   // Flow -> Action
   'LBL_ACTION' => 'Acción',
@@ -437,8 +438,7 @@ $mod_strings = array (
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_DESC' => 'Envía un correo electrónico a una dirección de correo electrónico concreta',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_EMAIL_TEXT' => 'Correo electrónico',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_TEMPLATE_TEXT' => 'Plantilla de correo electrónico',
-  
-  
+    
   // SendEmailToAssignedAction
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_TITLE' => 'Enviar correo a un usuario asignado',
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_DESC' => 'Envia un correo electrónico al usuario asignado del formulario o de un registro',
@@ -480,14 +480,39 @@ $mod_strings = array (
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Acceso denegado',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Sesión activa',
 
-
   // -- DEFERRED ACTIONS --
-  // PaymentRouterAction
-  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Realizar pago en plataforma externa',
-  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Procesa el pago correspondiente a un bloque de datos en una plataforma externa.',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Compromiso de Pago',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => 'Selecciona el bloque de datos con el Compromiso de Pago para realizar su pago en la plataforma externa.',
+  'LBL_PARAM_EXPIRATION_DAYS' => 'Días para caducidad',
+  'LBL_PARAM_EXPIRATION_DAYS_DESC' => 'Número de días después del cual caducará la acción diferida.',
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE' => 'Título para enlace ya utilizado', 
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DESC' => 'Título del aviso que se mostrará cuando se acceda al enlace si ya se ha utilizado.', 
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DEFAULT' => 'Acción ya realizada', 
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT' => 'Texto para enlace ya utilizado', 
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DESC' => 'Texto del aviso que se mostrará cuando se acceda al enlace si ya se ha utilizado.', 
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DEFAULT' => 'Esta acción ya se ha completado anteriormente de forma correcta y no es necesario repetirla.',  
+  'LBL_PARAM_EXPIRED_TITLE' => 'Título para enlace caducado',
+  'LBL_PARAM_EXPIRED_TITLE_DESC' => 'Título del aviso que se mostrará al acceder al enlace caducado.',
+  'LBL_PARAM_EXPIRED_TITLE_DEFAULT' => 'Enlace caducado',
+  'LBL_PARAM_EXPIRED_TEXT' => 'Texto del enlace caducado',
+  'LBL_PARAM_EXPIRED_TEXT_DESC' => 'Texto del aviso que se mostrará al acceder al enlace caducado.',
+  'LBL_PARAM_EXPIRED_TEXT_DEFAULT' => 'Este enlace ha caducado por motivos de seguridad.',
+  
+  // EmailConfirmationAction
+  'LBL_EMAIL_CONFIRMATION_ACTION_TITLE' => 'Confirmar correo electrónico',
+  'LBL_EMAIL_CONFIRMATION_ACTION_DESC' => 'Genera un enlace único y lo envía por correo electrónico para que el usuario pueda confirmar su dirección de correo electrónico.',
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_SUCCESS' => 'Correo confirmado',
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_TEXT' => 'Destinatario',
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_DESC' => 'Indica el bloque de datos que contiene el correo electrónico a verificar y al que se enviará el enlace de confirmación.',
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_TEXT' => 'Plantilla de correo electrónico',
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_DESC' => 'La plantilla de correo electrónico deberá tener la variable {::confirmation_url::} en el cuerpo del mensaje para que se genere el enlace de confirmación.',
 
+  // PaymentRouterAction
+  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Realizar pago',
+  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Procesa el pago correspondiente a un bloque de datos en una plataforma externa.',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_SUCCESS' => 'Pago confirmado',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Compromiso de pago',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => 'Selecciona el bloque de datos que contiene el compromiso de pago del que debe realizarse el pago en una plataforma externa.',
 
   // -- VALIDATOR ACTIONS --
   // RegexValidatorAction

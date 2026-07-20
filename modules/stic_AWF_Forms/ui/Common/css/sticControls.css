@@ -410,6 +410,22 @@ h4 {
   border-color: #e9ecef #e9ecef #dee2e6;
 }
 
+.stic-tab.tab-error label {
+  background-color: #f8d7da;
+  color: #842029;
+  border-color: #f5c2c7 #f5c2c7 #fff;
+}
+
+.stic-tab.tab-error label:hover {
+  background-color: #f5c2c7;
+}
+
+.stic-tab.tab-error input:checked + label {
+  background-color: #fff;
+  border-color: #dc3545 #dee2e6 #fff;
+  color: #dc3545;
+}
+
 .stic-tabs {
   border-bottom: 1px solid #dee2e6;
   display: flex; 

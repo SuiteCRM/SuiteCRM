@@ -38,6 +38,10 @@ function DetailsForm() {
       let jsonString = "{}";
       if (this.bean?.configuration) {
         jsonString = this.bean.configuration;
+        // Decode Html entities (&quot; -> ", &#039; -> ')
+        if (typeof jsonString === 'string' && jsonString.includes('&quot;')) {
+          jsonString = new DOMParser().parseFromString(jsonString, 'text/html').documentElement.textContent;
+        }
       }
       try {
         this.formConfig = stic_AwfConfiguration.fromJSON(jsonString);

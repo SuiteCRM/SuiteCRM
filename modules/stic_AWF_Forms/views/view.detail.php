@@ -61,6 +61,14 @@ class stic_AWF_FormsViewDetail extends ViewDetail
 
         SticViews::display($this);
 
+        $beanArray = $this->bean->toArray();
+        foreach ($beanArray as $key => $value) {
+            if (is_string($value)) {
+                $beanArray[$key] = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
+            }
+        }
+        $this->ss->assign('beanJson', json_encode($beanArray));
+        
         // DetailView: Custom Details 
         echo $this->ss->fetch('modules/stic_AWF_Forms/ui/DetailView/tpl/details.tpl');
     }

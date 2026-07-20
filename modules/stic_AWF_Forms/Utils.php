@@ -543,12 +543,50 @@ class stic_AWF_FormsUtils {
         return 'id';
     }
 
+    public static function cancelExpiredTickets() {
+        $GLOBALS['log']->debug('Line ' . __LINE__ . ': ' . __METHOD__ . ': Running cancelExpiredTickets');
+
+        $db = DBManagerFactory::getInstance();
+
+        $dateNow = $db->convert($db->quoted(date('Y-m-d H:i:s')), 'datetime');
+
+        // Release zombie tickets: reset 'processing' tickets stuck for >30 minutes back to 'pending'
+        $sqlReleaseZombies = "UPDATE stic_awf_deferred_tickets
+                SET status = 'pending', date_modified = {$dateNow}
+                WHERE status = 'processing' AND date_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) AND deleted = 0";
+        $resultZombies = $db->query($sqlReleaseZombies);
+        $zombieCount = $db->getAffectedRowCount($resultZombies);
+        if ($zombieCount > 0) {
+            $GLOBALS['log']->warn('Line ' . __LINE__ . ': ' . __METHOD__ . ': Released ' . $zombieCount . ' zombie deferred tickets (processing > 30min)');
+        }
+
+        // Cancel expired pending tickets
+        $sql = "UPDATE stic_awf_deferred_tickets
+                SET status = 'cancelled', date_modified = {$dateNow}
+                WHERE status = 'pending' AND expiration_date < {$dateNow} AND deleted = 0";
+        $result = $db->query($sql);
+
+        $affectedRows = $db->getAffectedRowCount($result);
+        if ($affectedRows > 0) {
+            $GLOBALS['log']->info('Line ' . __LINE__ . ': ' . __METHOD__ . ': Cancelled ' . $affectedRows . ' expired deferred tickets');
+
+            // Update associated responses from 'awaiting_action' to 'error'
+            $sqlUpdateResponses = "UPDATE stic_awf_responses r
+                INNER JOIN stic_awf_deferred_tickets t ON t.stic_awf_responses_id_c = r.id
+                SET r.status = 'error', r.date_modified = {$dateNow}
+                WHERE t.status = 'cancelled' AND t.deleted = 0
+                AND r.status = 'awaiting_action' AND r.deleted = 0";
+            $db->query($sqlUpdateResponses);
+        }
+
+        return true;
+    }
+
     public static function getCustomBaseColor() {
-        // From SticInclude/SticCustomScss.php
         $db = DBManagerFactory::getInstance();
         $color = $db->getOne("select value from stic_settings where name='GENERAL_CUSTOM_THEME_COLOR' and deleted=0");
 
-        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/m', $color)) {
+        if (!is_string($color) || !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/m', $color)) {
             $color = '';
         }
 

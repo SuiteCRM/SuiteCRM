@@ -52,10 +52,10 @@ $mod_strings = array (
   'LBL_MODULE_NAME' => 'Processos en espera de formularis',
   'LBL_MODULE_TITLE' => 'Processos en espera de formularis',
   'LBL_HOMEPAGE_TITLE' => 'Els meus processos en espera de formularis',
-  'LNK_NEW_RECORD' => 'Crear un procés en espera de formularis',
-  'LNK_LIST' => 'Veure processos en espera de formularis',
-  'LNK_IMPORT_STIC_AWF_DEFERRED_TICKETS' => 'Importar processos en espera de formularis',
-  'LBL_SEARCH_FORM_TITLE' => 'Cercar processos en espera de formularis',
+  'LNK_NEW_RECORD' => 'Crear un procés en espera de formulari',
+  'LNK_LIST' => 'Mostra els processos en espera de formularis',
+  'LNK_IMPORT_STIC_AWF_DEFERRED_TICKETS' => 'Importa processos en espera de formularis',
+  'LBL_SEARCH_FORM_TITLE' => 'Cerca processos en espera de formularis',
   'LBL_HISTORY_SUBPANEL_TITLE' => 'Historial',
   'LBL_ACTIVITIES_SUBPANEL_TITLE' => 'Activitats',
   'LBL_NEW_FORM_TITLE' => 'Nou procés en espera de formulari',
@@ -67,4 +67,11 @@ $mod_strings = array (
   'LBL_HANDLER_ACTION_ID' => "Id de l'acció diferida",
   'LBL_CONTEXT_DATA' => 'Dades de context',
   'LBL_EXPIRATION_DATE' => "Data d'expiració",
-);
+  'LBL_RETRY_COUNT' => 'Intents',
+  'LBL_LAST_ERROR_MESSAGE' => 'Últim error',
+
+  'LBL_ERROR_TOKEN_MSG' => "No s'ha indicat un token vàlid a la URL.",
+
+  'LBL_PROCESSING_TITLE' => 'Processant',
+  'LBL_PROCESSING_MSG' => "La sol·licitud s'està processant. Això pot trigar uns instants.",
+  );

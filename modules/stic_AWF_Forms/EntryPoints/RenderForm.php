@@ -24,6 +24,11 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+/**
+ * EntryPoint: stic_AWF_renderForm
+ * Entry point responsible for rendering an Advanced Web Form
+ */
+
 require_once 'modules/stic_AWF_Forms/core/FormRenderService.php';
 
 if (ob_get_level()) {
@@ -56,5 +61,5 @@ try {
     $GLOBALS['log']->error("Line ".__LINE__.": ".__METHOD__.": Error rendering form from EntryPoint. Error: " . $e->getMessage());
 }
 
-// Finalitzar correctament
+// Terminate the web thread cleanly
 exit;

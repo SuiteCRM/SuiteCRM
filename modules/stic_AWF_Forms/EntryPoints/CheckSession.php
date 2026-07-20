@@ -24,9 +24,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-// This entry point is called from the form when it is loaded with CheckSessionAction, 
-// to verify that the user session is still valid and has access to the modules related to the form. 
-// It returns a JSON with the result of the validation.
+/**
+ * EntryPoint: stic_AWF_checkSession
+ * This entry point is called from the form when it is loaded with CheckSessionAction, 
+ * to verify that the user session is still valid and has access to the modules related to the form. 
+ * It returns a JSON with the result of the validation.
+ */
 
 // Set CORS headers to allow requests from the form, which might be in a different domain
 $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';

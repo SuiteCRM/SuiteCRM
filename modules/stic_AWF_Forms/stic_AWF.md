@@ -256,6 +256,15 @@ Inicialmente, el sistema incluye las siguientes acciones que se pueden añadir a
 
 * **Redireccionar a página (Final)**: Redirige al usuario a una página web externa una vez procesados los datos. Esta acción permite adjuntar datos recopilados en el formulario y enviarlos a la URL de destino (utilizando los métodos estándar GET o POST).
 
+#### Acciones Diferidas (Procesos en espera de eventos externos) ####
+Más allá de las acciones inmediatas, el sistema incorpora un potente motor de **acciones diferidas** que permite pausar temporalmente el procesamiento de una respuesta y esperar a que ocurra un evento externo antes de continuar. Este mecanismo resulta esencial para escenarios que requieren interacción asíncrona con servicios o personas externas al CRM:
+
+* **Confirmación de correo electrónico**: Detiene el flujo de procesamiento y envía un correo con un enlace único al visitante. El sistema espera hasta que la persona hace clic en ese enlace para verificar su dirección de correo, momento en que se reanuda automáticamente el flujo y se continúa con el resto de acciones configuradas.
+
+* **Pasarelas de pago**: Permite integrar pagos en línea dentro del flujo del formulario. Cuando se alcanza una acción de pago, el sistema redirige al usuario a la pasarela bancaria (TPV) y se queda a la espera de la confirmación del cobro, que llega de forma asíncrona mediante un webhook. Una vez confirmado (o rechazado), el flujo se reanuda por el camino de éxito o de error configurado, permitiendo enviar correos de confirmación de pago, generar recibos o actualizar el estado del compromiso de pago. Las pasarelas soportadas incluyen: **Redsys** (TPV y Bizum), **Stripe** (Checkout), **PayPal** y **CECA**.
+
+* **Procesamiento asíncrono de respuestas**: El sistema permite configurar el modo de procesamiento entre síncrono y asíncrono. En modo asíncrono, las respuestas se guardan de forma inmediata y se procesan en segundo plano mediante la cola de trabajos del CRM, evitando sobrecargas del servidor en formularios con picos de uso muy altos.
+
 ### Paso 4: Maquetación ###
 Llega el momento de darle forma visual al formulario, separando por completo su diseño de la lógica estructural definida en los pasos anteriores. Este paso cuenta con un **editor visual con previsualización en tiempo real**, lo que permite comprobar exactamente cómo quedará el formulario final a medida que se diseña y se aplican los cambios.
 
@@ -349,7 +358,16 @@ A diferencia de sistemas anteriores, los Formularios Web Avanzados ofrecen una a
 El nuevo sistema ofrece un grado de flexibilidad adicional para perfiles técnicos y administradores, permitiendo adaptar los formularios a casos de uso muy específicos que van más allá de la configuración estándar del asistente:
 
 * **Extensibilidad mediante código**: El ecosistema de formularios no está limitado a lo preestablecido. Tanto las acciones (automatismos) como las validaciones están diseñadas con una arquitectura desacoplada que permite definirlas íntegramente por código. Esto resulta vital para entidades que requieran desarrollar reglas de negocio a medida o validaciones muy específicas y sumarlas al catálogo estándar de acciones de su CRM.
-  * *Guía para desarrolladores*: El propio código del módulo incluye una plantilla exhaustiva de ejemplo y documentación técnica para los programadores. Se puede consultar en el archivo `modules/stic_AWF_Forms/actions/Hook/ExampleAction.php`.
+  * *Guía para desarrolladores*: El propio código del módulo incluye **múltiples plantillas de ejemplo** exhaustivas con documentación técnica detallada para cada tipo de acción, clase base e interfaz del sistema. Todas ellas están ubicadas en el directorio `modules/stic_AWF_Forms/actions/` y organizadas por tipo:
+    * `Hook/ExampleAction.php` — Acción inmediata genérica (HookActionDefinition). Muestra todos los tipos de parámetros disponibles.
+    * `Deferred/ExampleDeferredAction.php` — Acción diferida genérica sin dependencia de bloque de datos (DeferredActionDefinition + IDeferredAction).
+    * `Deferred/ExampleDeferredDataBlockAction.php` — Acción diferida vinculada a un bloque de datos (DeferredDataBlockActionDefinition).
+    * `Deferred/ExampleDeferredBeanAction.php` — Acción diferida sobre un registro guardado (DeferredBeanActionDefinition).
+    * `Deferred/ExampleTerminalWebhookAction.php` — Acción diferida avanzada con interfaz de terminal y decodificación de webhooks (DeferredActionDefinition + ITerminalAction + IWebhookDecodable).
+    * `Validator/ExampleValidatorAction.php` — Validador personalizado con lógica JS y backend (ValidatorActionDefinition).
+    * `DataProvider/ExampleDataProviderAction.php` — Proveedor de datos dinámicos desde CRM (DataProviderActionDefinition).
+    * `UI/ExampleUIAction.php` — Acción de frontend que inyecta JS/CSS en el formulario (UIActionDefinition + IFrontendAction).
+    * `Group/ExampleGroupAction.php` — Grupo de acciones reutilizables (GroupActionDefinition).
 
 * **Campos ocultos (vs Campos de servidor)**: Los formularios web avanzados incorporan los campos ocultos (`<input type="hidden">`). A diferencia de los "Campos de servidor" (que se configuran y viven de forma segura exclusivamente en el servidor del CRM), los campos ocultos sí se inyectan en el código HTML del formulario.
   * *Casos de uso*: Son ideales para capturar información de contexto dinámica que no requiere intervención visual del usuario, como leer parámetros pasados por la URL (ej: `?origen=newsletter_abril`), capturar identificadores de seguimiento, o permitir que un script externo de la web rellene el campo automáticamente antes de enviar la respuesta.
@@ -358,14 +376,10 @@ El nuevo sistema ofrece un grado de flexibilidad adicional para perfiles técnic
     * *Casos de uso*: Al generar un código limpio, resulta sencillo para un *webmaster* o desarrollador leerlo y modificarlo, aportando libertad total para crear diseños web a medida, maquetaciones altamente personalizadas, o inyectar campos interactivos por JavaScript.
 
 ## Próximamente (Evolución del sistema) ##
-* **Procesamiento asíncrono**: El sistema permitirá el tratamiento asíncrono de respuestas: guardará las respuestas temporalmente para procesarlas en segundo plano, ideal para evitar sobrecargas del servidor en formularios con picos de uso muy altos.
-
-* **Procesos diferidos**: De forma totalmente independiente al procesamiento, el sistema permitirá gestionar acciones en espera de eventos externos, como la espera de confirmación de una pasarela de pago, la validación de una entrada mediante código QR o la aprobación manual de una solicitud.
-
 * **Archivos adjuntos**: Existirá la opción de que los usuarios puedan subir y adjuntar archivos o documentos digitales directamente a través del formulario.
 
 * **Grupos de bloques de datos repetibles**: Se incorporará el concepto de "Grupo", un contenedor que agrupa uno o más bloques de datos relacionados entre sí. Su característica principal es que podrá definirse como "repetible", permitiendo que el conjunto de campos que contiene aparezca múltiples veces en un mismo formulario. Esta funcionalidad será ideal para simplificar operativas complejas, como recoger los datos de varios participantes a la vez en una única inscripción grupal.
 
-* **Mayor flexibilidad en diseño y maquetación**: Se ampliarán las opciones visuales para organizar la información de forma más dinámica, permitiendo agrupar campos mediante pestañas, dividir formularios extensos en múltiples páginas y añadir otros elementos interactivos.
+* **Mayor flexibilidad en diseño y maquetación**: Se ampliarán las opciones visuales para organizar la información de forma más dinámica, permitiendo agrupar campos mediante pestañas, dividir formularios extensos en múltiples páginas y añadir otros elementos interactivos. El modelo de datos ya contempla estos contenedores, pendiente de completar su implementación en la capa de renderizado.
 
-* **Condiciones lógicas avanzadas**: Se creará el soporte para múltiples condiciones combinadas y nuevos operadores lógicos (más allá de la igualdad estricta) para dotar de mayor inteligencia a la decisión de cuándo ejecutar una acción o validación concreta.
+* **Condiciones lógicas avanzadas**: Se ampliará el soporte de condiciones lógicas con nuevos operadores (mayor que, menor que, contiene, etc.) y combinaciones múltiples, más allá de la igualdad estricta actual. La infraestructura base de evaluación condicional ya existe en el sistema, preparada para ser extendida.

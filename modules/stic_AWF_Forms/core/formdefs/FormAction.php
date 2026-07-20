@@ -65,6 +65,10 @@ class FormAction {
         $dto->description = $data['description'];
         $dto->requisite_actions = $data['requisite_actions'] ?? [];
         $dto->continue_on_error = !empty($data['continue_on_error']);
+        
+        // Deferred actions
+        $dto->flow_success_id = $data['flow_success_id'] ?? '';
+        $dto->flow_error_id = $data['flow_error_id'] ?? '';
 
         // Condition
         if (isset($data['conditions'])) {
@@ -72,10 +76,6 @@ class FormAction {
                 $dto->conditions[] = FormCondition::fromJsonArray($conditionData);
             }
         }
-
-        // Deferred actions
-        $dto->flow_success_id = $data['flow_success_id'] ?? '';
-        $dto->flow_error_id = $data['flow_error_id'] ?? '';
 
         $dto->parameters = [];
         if (isset($data['parameters'])) {

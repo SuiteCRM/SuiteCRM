@@ -45,8 +45,8 @@ class ActionParameterDefinitionDTO {
     public array $supportedModules;
     /** @var ActionDataType[] */
     public array $supportedDataTypes;
-    
-    
+    public string $colSize; // The size of the column in the UI (Bootstrap grid classes)
+        
     public function __construct(ActionParameterDefinition $def) {
         $this->name = $def->name;
         $this->text = $def->text;
@@ -55,6 +55,7 @@ class ActionParameterDefinitionDTO {
         $this->dataType = $def->dataType?->value; // Convert enum to string
         $this->required = $def->required;
         $this->defaultValue = $def->defaultValue;
+        $this->colSize = $def->colSize;
         
         $this->options = array_map(
             fn($option) => new ActionParameterOption($option->value, $option->text),

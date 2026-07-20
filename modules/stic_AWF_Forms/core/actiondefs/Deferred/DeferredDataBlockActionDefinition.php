@@ -38,4 +38,14 @@ abstract class DeferredDataBlockActionDefinition extends ServerDataBlockActionDe
     final public function getType(): ActionType {
         return ActionType::DEFERRED;
     }
+
+    /**
+     * Returns the Subflow success label
+     */
+    public function getFlowSuccessLabel(): string { return $this->translate('FLOW_SUCCESS'); }
+
+    /**
+     * Returns the Subflow error label
+     */
+    public function getFlowErrorLabel(): string { return $this->translate('FLOW_ERROR'); }
 }

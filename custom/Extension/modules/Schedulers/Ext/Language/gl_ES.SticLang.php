@@ -41,3 +41,4 @@ $mod_strings['LBL_VALIDATIONACTIONS'] = 'Accións de validación';
 $mod_strings['LBL_STIC_VALIDATION_ACTIONS_SCHEDULERS_FROM_STIC_VALIDATION_ACTIONS_TITLE'] = 'Accións de Validación';
 $mod_strings['LBL_CREATEMEDICATIONLOGS'] = 'Crear rexistros de medicación';
 $mod_strings['LBL_STICSENDPHONEMESSAGES'] = 'Envío de mensaxes a teléfono';
+$mod_strings['LBL_STICAWFCANCELEXPIREDTICKETS'] = 'Formularios Web Avanzados: Cancelar los procesos diferidos en espera caducados';

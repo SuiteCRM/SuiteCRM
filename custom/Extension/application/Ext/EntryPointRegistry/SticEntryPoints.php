@@ -58,7 +58,9 @@ $entry_point_registry['stic_AWF_checkStatus'] = array('file' => 'modules/stic_AW
 $entry_point_registry['stic_AWF_renderForm'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/RenderForm.php', 'auth' => false);
 $entry_point_registry['stic_AWF_responseHandler'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/ResponseHandler.php', 'auth' => false);
 $entry_point_registry['stic_AWF_checkSession'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/CheckSession.php', 'auth' => false);
-$entry_point_registry['stic_AWF_webhookHanlder'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/WebhookHandler.php', 'auth' => false);
+$entry_point_registry['stic_AWF_webhookHandler'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/WebhookHandler.php', 'auth' => false);
+$entry_point_registry['stic_AWF_returnHandler'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/ReturnHandler.php', 'auth' => false);
+$entry_point_registry['stic_AWF_resumeHandler'] = array('file' => 'modules/stic_AWF_Forms/EntryPoints/ResumeHandler.php', 'auth' => false);
 
 // Entry point for async ListView count
 $entry_point_registry['sticAsyncListCount'] = array('file' => 'SticInclude/AsyncListCount.php', 'auth' => true);

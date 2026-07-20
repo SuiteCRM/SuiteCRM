@@ -36,6 +36,7 @@ include_once __DIR__."/DataBlockFieldResolved.php";
 include_once __DIR__."/OptionSelectorResolved.php";
 include_once __DIR__."/FieldModification.php";
 include_once __DIR__."/ActionResult.php";
+include_once __DIR__."/DeferredContextData.php";
 include_once __DIR__."/ExecutionContext.php";
 
 include_once __DIR__."/RequiredParameterException.php";

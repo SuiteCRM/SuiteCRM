@@ -24,6 +24,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
+/**
+ * EntryPoint: stic_AWF_checkStatus
+ */
+
 if (ob_get_level()) {
     ob_end_clean();
 }

@@ -80,6 +80,7 @@ $mod_strings = array (
   'LBL_EXECUTION_ITEM_OK' => '✅ [OK]',
   'LBL_EXECUTION_ITEM_SKIPPED' => '⏭️ [SKIPPED]',
   'LBL_EXECUTION_ITEM_ERROR' => '❌ [ERROR]',
+  'LBL_EXECUTION_DEFERRED' => 'Deferred execution',
 
   // General
   'LBL_FIELD' => 'Field',

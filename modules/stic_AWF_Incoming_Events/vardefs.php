@@ -65,6 +65,27 @@ $dictionary['stic_AWF_Incoming_Events'] = array(
     'len' => '255',
     'size' => '20',
   ),
+  'source' =>
+  array (
+    'required' => false,
+    'name' => 'source',
+    'vname' => 'LBL_SOURCE',
+    'type' => 'varchar',
+    'massupdate' => 0,
+    'no_default' => false,
+    'comments' => '',
+    'help' => '',
+    'importable' => 'true',
+    'duplicate_merge' => 'disabled',
+    'duplicate_merge_dom_value' => '0',
+    'audited' => false,
+    'inline_edit' => '',
+    'reportable' => true,
+    'unified_search' => false,
+    'merge_filter' => 'disabled',
+    'len' => '255',
+    'size' => '20',
+  ),
   'external_transaction_id' => 
   array (
     'required' => false,

@@ -32,12 +32,15 @@ class ServerActionFactory {
         $actionName = $actionConfig->name;    // Ex: 'SaveRecordAction' (file and class name without extension)
         $className = $actionName;             // Ex: 'SaveRecordAction' (class name)
 
-        // Define search paths with priority
-        $basePath = 'modules/stic_AWF_Forms/actions/Hook/';
+        // Define search paths with priority: custom/Extension > custom > core
+        // For each level, search Hook before Deferred
         $searchPaths = [
-            'custom/Extension/' . $basePath . $actionName . '.php',
-            'custom/' . $basePath . $actionName . '.php',
-            $basePath . $actionName . '.php',
+            'custom/Extension/modules/stic_AWF_Forms/actions/Hook/' . $actionName . '.php',
+            'custom/Extension/modules/stic_AWF_Forms/actions/Deferred/' . $actionName . '.php',
+            'custom/modules/stic_AWF_Forms/actions/Hook/' . $actionName . '.php',
+            'custom/modules/stic_AWF_Forms/actions/Deferred/' . $actionName . '.php',
+            'modules/stic_AWF_Forms/actions/Hook/' . $actionName . '.php',
+            'modules/stic_AWF_Forms/actions/Deferred/' . $actionName . '.php',
         ];
 
         $filePath = null;

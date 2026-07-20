@@ -231,6 +231,7 @@ $mod_strings = array (
   'LBL_FLOW_RECEIPT' => 'Resposta automàtica',
   'LBL_FLOW_MAIN' => 'Principal',
   'LBL_FLOW_ONERROR' => 'Error',
+  'LBL_FLOW_DEFERRED_MAIN' => 'Finalitzada',
 
   // Flow -> Action
   'LBL_ACTION' => 'Acció',
@@ -438,7 +439,6 @@ $mod_strings = array (
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_EMAIL_TEXT' => 'Correu electrònic',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_TEMPLATE_TEXT' => 'Plantilla de correu electrònic',
   
-  
   // SendEmailToAssignedAction
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_TITLE' => 'Envia un correu a un usuari assignat',
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_DESC' => "Envia un correu electrònic a l'usuari assignat del formulari o d'un registre",
@@ -480,14 +480,39 @@ $mod_strings = array (
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Accés denegat',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Sessió activa',
 
-
   // -- DEFERRED ACTIONS --
-  // PaymentRouterAction
-  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Realitza un pagament en una plataforma externa',
-  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Processa el pagament corresponent a un bloc de dades en una plataforma externa.',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Compromís de Pagament',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => 'Selecciona el bloc de dades amb el Compromís de Pagament per realitzar el seu pagament a la plataforma externa.',
+  'LBL_PARAM_EXPIRATION_DAYS' => 'Dies per a la caducitat',
+  'LBL_PARAM_EXPIRATION_DAYS_DESC' => "Nombre de dies després del qual caducarà l'acció diferida.",
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE' => 'Títol per a enllaç ja utilitzat',
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DESC' => "Títol de l'avís que es mostrarà quan s'accedeixi a l'enllaç si ja s'ha utilitzat.",
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DEFAULT' => 'Acció ja realitzada',
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT' => "Text per a enllaç ja utilitzat",
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DESC' => "Text de l'avís que es mostrarà quan s'accedeixi a l'enllaç si ja s'ha utilitzat.",
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DEFAULT' => "Aquesta acció ja s'ha completat anteriorment de manera correcta i no és necessari repetir-la.",
+  'LBL_PARAM_EXPIRED_TITLE' => 'Títol per a enllaç caducat',
+  'LBL_PARAM_EXPIRED_TITLE_DESC' => "Títol de l'avís que es mostrarà quan s'accedeixi a l'enllaç caducat.",
+  'LBL_PARAM_EXPIRED_TITLE_DEFAULT' => 'Enllaç caducat',
+  'LBL_PARAM_EXPIRED_TEXT' => "Text per a enllaç caducat",
+  'LBL_PARAM_EXPIRED_TEXT_DESC' => "Text de l'avís que es mostrarà quan s'accedeixi a l'enllaç caducat.",
+  'LBL_PARAM_EXPIRED_TEXT_DEFAULT' => 'Aquest enllaç ha caducat per motius de seguretat.',
 
+  // EmailConfirmationAction 
+  'LBL_EMAIL_CONFIRMATION_ACTION_TITLE' => 'Confirma el correu electrònic', 
+  'LBL_EMAIL_CONFIRMATION_ACTION_DESC' => "Genera un enllaç únic i l'envia per correu electrònic perquè l'usuari pugui confirmar la seva adreça de correu electrònic.", 
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_SUCCESS' => 'Correu confirmat',
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_TEXT' => 'Destinatari', 
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_DESC' => "Indica el bloc de dades que conté el correu electrònic a verificar i al qual s'enviarà l'enllaç de confirmació.", 
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_TEXT' => 'Plantilla de correu electrònic', 
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_DESC' => "La plantilla de correu electrònic ha de tenir la variable {::confirmation_url::} al cos del missatge perquè es generi l'enllaç de confirmació.", 
+
+  // PaymentRouterAction
+  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Fes un pagament',
+  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Processa en una plataforma externa el pagament corresponent a un bloc de dades.',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_SUCCESS' => 'Pagament confirmat',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Compromís de pagament',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => "Selecciona el bloc de dades que conté el compromís de pagament del qual s'haurà de fer el pagament en una plataforma externa.",
 
   // -- VALIDATOR ACTIONS --
   // RegexValidatorAction

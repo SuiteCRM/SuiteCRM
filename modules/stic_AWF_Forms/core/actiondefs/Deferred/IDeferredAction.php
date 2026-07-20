@@ -29,7 +29,12 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * Interface for all actions that can wait for an external event.
  * Examples: Payments, SMS Validation, Digital Signature, Manual Approval...
  */
-interface IDeferredAction {
+interface IDeferredAction extends IServerAction {
+
+    /**
+     * Declares who will resume this deferred process and how.
+     */
+    public function getResumptionContext(): DeferredResumptionContext;
 
     /**
      * Processes an incoming request (webhook) from an external service.
@@ -40,4 +45,14 @@ interface IDeferredAction {
      * @return ActionResult Result of the execution of the action.
      */
     public function processWebhook(ExecutionContext $context, array $requestData): ActionResult;
+
+    /**
+     * Returns the Subflow success label
+     */
+    public function getFlowSuccessLabel(): string;
+
+    /**
+     * Returns the Subflow error label
+     */
+    public function getFlowErrorLabel(): string;
 }

@@ -231,6 +231,7 @@ $mod_strings = array (
   'LBL_FLOW_RECEIPT' => 'Automatic response',
   'LBL_FLOW_MAIN' => 'Main',
   'LBL_FLOW_ONERROR' => 'Error',
+  'LBL_FLOW_DEFERRED_MAIN' => 'Finished',
 
   // Flow -> Action
   'LBL_ACTION' => 'Action',
@@ -438,7 +439,6 @@ $mod_strings = array (
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_EMAIL_TEXT' => 'Email',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_TEMPLATE_TEXT' => 'Email template',
   
-  
   // SendEmailToAssignedAction
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_TITLE' => 'Send email to assigned user',
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_DESC' => 'Sends an email to the assigned user of the form or a record',
@@ -480,14 +480,39 @@ $mod_strings = array (
   'LBL_CHECK_SESSION_ACTION_DENIED_TITLE' => '🚫 Access denied',
   'LBL_CHECK_SESSION_ACTION_ACTIVE_SESSION' => 'Active session',
 
-
   // -- DEFERRED ACTIONS --
-  // PaymentRouterAction
-  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Make payment on external platform',
-  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Processes the payment corresponding to a data block on an external platform.',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Payment Commitment',
-  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => 'Selects the data block with the Payment Commitment to make its payment on the external platform.',
+  'LBL_PARAM_EXPIRATION_DAYS' => 'Expiration days',
+  'LBL_PARAM_EXPIRATION_DAYS_DESC' => 'Number of days after which the deferred action will expire.',
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE' => 'Title for link already used',
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DESC' => 'Warning title that will be displayed when accessing the link if it has already been used.',
+  'LBL_PARAM_ALREADY_PROCESSED_TITLE_DEFAULT' => 'Action already performed',
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT' => 'Text for link already used',
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DESC' => 'Warning text that will be displayed when the link is accessed if it has already been used.',
+  'LBL_PARAM_ALREADY_PROCESSED_TEXT_DEFAULT' => 'This action has already been completed successfully before and does not need to be repeated.',
+  'LBL_PARAM_EXPIRED_TITLE' => 'Title for expired link',
+  'LBL_PARAM_EXPIRED_TITLE_DESC' => 'Warning title that will be displayed when accessing the expired link.',
+  'LBL_PARAM_EXPIRED_TITLE_DEFAULT' => 'Expired link',
+  'LBL_PARAM_EXPIRED_TEXT' => 'Text for expired link',
+  'LBL_PARAM_EXPIRED_TEXT_DESC' => 'Warning text that will be displayed when accessing the expired link.',
+  'LBL_PARAM_EXPIRED_TEXT_DEFAULT' => 'This link has expired for security reasons.',
 
+  // EmailConfirmationAction
+  'LBL_EMAIL_CONFIRMATION_ACTION_TITLE' => 'Confirm email',
+  'LBL_EMAIL_CONFIRMATION_ACTION_DESC' => 'Generates a unique link and sends it via email so the user can confirm the email address.',
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_SUCCESS' => 'Email confirmed',
+  'LBL_EMAIL_CONFIRMATION_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_TEXT' => 'Recipient',
+  'LBL_EMAIL_CONFIRMATION_ACTION_RECIPIENT_BLOCK_DESC' => 'Specifies the data block containing the email to be verified and to which the confirmation link will be sent.',
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_TEXT' => 'Email template',
+  'LBL_EMAIL_CONFIRMATION_ACTION_TEMPLATE_DESC' => 'The email template must contain the variable {::confirmation_url::} in the message body to generate the confirmation link.',
+
+  // PaymentRouterAction
+  'LBL_PAYMENT_ROUTER_ACTION_TITLE' => 'Make payment',
+  'LBL_PAYMENT_ROUTER_ACTION_DESC' => 'Processes the payment corresponding to a data block on an external platform.',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_SUCCESS' => 'Confirmed payment',
+  'LBL_PAYMENT_ROUTER_ACTION_FLOW_ERROR' => 'Error',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_TEXT' => 'Payment Commitment',
+  'LBL_PAYMENT_ROUTER_ACTION_PAYMENT_COMMITMENT_DESC' => 'Selects the data block that contains the payment commitment for which payment must be made on an external platform.',
 
   // -- VALIDATOR ACTIONS --
   // RegexValidatorAction
