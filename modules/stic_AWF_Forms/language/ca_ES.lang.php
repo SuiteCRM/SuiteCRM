@@ -71,7 +71,7 @@ $mod_strings = array (
   'LBL_PROCESSING_MODE' => 'Mode de processament',
   'LBL_PROCESSING_MODE_DESC' => "Defineix com es gestionen les respostes rebudes. En mode síncron les respostes s'emmagatzemen i es processen en rebre's. En mode asíncron les respostes s'emmagatzemen en rebre's i es processen posteriorment mitjançant un procés en segon pla, la qual cosa pot ser d'interès per optimitzar el rendiment del sistema en casos de gran afluència.",
   'LBL_FORM_TYPE' => 'Tipus de formulari',
-  'LBL_FORM_TYPE_DESC' => "Defineix el tipus de formulari. Els formularis web són accessibles sense restriccions, mentre que els formularis del CRM només podran ser omplerts per usuaris del sistema.",
+  'LBL_FORM_TYPE_DESC' => "Defineix el públic destinatari del formulari. Els formularis web són accessibles per a qualsevol persona mentre que els formularis del CRM només poden ser emplenats per usuaris autenticats.",
   'LBL_CONFIGURATION' => 'Configuració',
   'LBL_ANALYTICS_VIEWS' => 'Visites totals',
   'LBL_ANALYTICS_BLOCKED' => 'Visites bloquejades (no públic)',
@@ -466,6 +466,15 @@ $mod_strings = array (
   'LBL_REDIRECT_ACTION_FIELDS_DESC' => "Indica els camps a enviar a la URL de redirecció. Si no cal enviar dades deixeu-lo en blanc.",
   'LBL_REDIRECT_ACTION_REDIRECTING' => 'Redireccionant...',
   'LBL_REDIRECT_ACTION_SUBMIT_BUTTON' => 'Premeu aquí per continuar',
+
+  // RedirectToRecordAction
+  'LBL_REDIRECT_TO_RECORD_ACTION_TITLE' => "Ves a un registre",
+  'LBL_REDIRECT_TO_RECORD_ACTION_DESC' => "Redirecciona el navegador de l'usuari final a la pàgina d'un registre concret del CRM",
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_TEXT' => 'Bloc de dades del registre',
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_DESC' => "Indica el bloc de dades que conté el registre al qual es redirigirà l'usuari final.",
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_TEXT' => 'Vista del CRM',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_DETAILVIEW_TEXT' => 'Vista de detall',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_EDITVIEW_TEXT' => "Vista d'edició",
 
   // RedirectSummaryPageAction
   'LBL_REDIRECT_SUMMARY_PAGE_ACTION_TITLE' => 'Mostra el resum de dades',

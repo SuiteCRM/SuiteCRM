@@ -71,7 +71,7 @@ $mod_strings = array (
   'LBL_PROCESSING_MODE' => 'Modo de procesamento',
   'LBL_PROCESSING_MODE_DESC' => 'Define como se xestionan as respostas recibidas. En modo síncrono as respostas almacénanse e procésanse ao recibirse. En modo asíncrono as respostas almacénanse ao recibirse e procésanse posteriormente mediante un proceso en segundo plano, o que pode ser de interese para optimizar o rendemento do sistema en casos de gran afluencia.',
   'LBL_FORM_TYPE' => 'Tipo de formulario',
-  'LBL_FORM_TYPE_DESC' => 'Define el tipo de formulario. Los formularios web son accesibles sin restricciones, mientras que los formularios del CRM solo podrán ser rellenados por usuarios del sistema.',
+  'LBL_FORM_TYPE_DESC' => 'Define al público destinatario del formulario. Los formularios web son accesibles para cualquier persona mientras que los formularios del CRM sólo pueden ser rellenados por usuarios autenticados.',
   'LBL_CONFIGURATION' => 'Configuración',
   'LBL_ANALYTICS_VIEWS' => 'Visitas totais',
   'LBL_ANALYTICS_BLOCKED' => 'Visitas bloqueadas (non público)',
@@ -441,7 +441,7 @@ $mod_strings = array (
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_DESC' => 'Envía un correo electrónico a un enderezo de correo electrónico concreto',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_EMAIL_TEXT' => 'Correo electrónico',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_TEMPLATE_TEXT' => 'Plantilla de correo electrónico',
-    
+
   // SendEmailToAssignedAction
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_TITLE' => 'Enviar correo a un usuario asignado',
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_DESC' => 'Envía un correo electrónico ao usuario asignado do formulario ou dun rexistro',
@@ -468,6 +468,15 @@ $mod_strings = array (
   'LBL_REDIRECT_ACTION_REDIRECTING' => 'Redireccionando...',
   'LBL_REDIRECT_ACTION_SUBMIT_BUTTON' => 'Pulse aquí para continuar',
 
+  // RedirectToRecordAction
+  'LBL_REDIRECT_TO_RECORD_ACTION_TITLE' => 'Ir a un registro',
+  'LBL_REDIRECT_TO_RECORD_ACTION_DESC' => 'Redirecciona el navegador del usuario final a la página de un registro concreto del CRM',
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_TEXT' => 'Bloque de datos del registro',
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_DESC' => 'Indica el bloque de datos que contiene el registro al que redirigir al usuario final.',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_TEXT' => 'Vista del CRM',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_DETAILVIEW_TEXT' => 'Vista de detalle',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_EDITVIEW_TEXT' => 'Vista de edición',
+  
   // RedirectSummaryPageAction
   'LBL_REDIRECT_SUMMARY_PAGE_ACTION_TITLE' => 'Mostrar resumo de datos',
   'LBL_REDIRECT_SUMMARY_PAGE_ACTION_DESC' => 'Redirecciona o navegador do usuario final a unha páxina na que se mostran os datos facilitados',

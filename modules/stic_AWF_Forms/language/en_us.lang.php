@@ -71,7 +71,7 @@ $mod_strings = array (
   'LBL_PROCESSING_MODE' => 'Processing mode',
   'LBL_PROCESSING_MODE_DESC' => 'Defines how received responses are managed. In synchronous mode, responses are stored and processed upon receipt. In asynchronous mode, responses are stored upon receipt and processed later through a background process, which may be of interest to optimize system performance in case of large response influx.',
   'LBL_FORM_TYPE' => 'Form type',
-  'LBL_FORM_TYPE_DESC' => 'Defines the type of form. Web forms are accessible without restrictions, while internal CRM forms can only be filled out by system users.',
+  'LBL_FORM_TYPE_DESC' => 'Defines the target audience for the form. Web forms are accessible to anyone, while CRM forms can only be filled out by authenticated users.',
   'LBL_CONFIGURATION' => 'Configuration',
   'LBL_ANALYTICS_VIEWS' => 'Total views',
   'LBL_ANALYTICS_BLOCKED' => 'Blocked views (not public)',
@@ -440,7 +440,7 @@ $mod_strings = array (
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_DESC' => 'Sends an email to a specific email address',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_EMAIL_TEXT' => 'Email',
   'LBL_SEND_EMAIL_TO_ADDRESS_ACTION_TEMPLATE_TEXT' => 'Email template',
-  
+    
   // SendEmailToAssignedAction
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_TITLE' => 'Send email to assigned user',
   'LBL_SEND_EMAIL_TO_ASSIGNED_ACTION_DESC' => 'Sends an email to the assigned user of the form or a record',
@@ -466,6 +466,15 @@ $mod_strings = array (
   'LBL_REDIRECT_ACTION_FIELDS_DESC' => 'Indicates the fields to send to the redirect URL. Leave blank if there is no data to send.',
   'LBL_REDIRECT_ACTION_REDIRECTING' => 'Redirecting...',
   'LBL_REDIRECT_ACTION_SUBMIT_BUTTON' => 'Click here to continue',
+
+  // RedirectToRecordAction
+  'LBL_REDIRECT_TO_RECORD_ACTION_TITLE' => 'Go to a record',
+  'LBL_REDIRECT_TO_RECORD_ACTION_DESC' => "Redirects the end user's browser to a specific record's page",
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_TEXT' => 'Record data block',
+  'LBL_REDIRECT_TO_RECORD_ACTION_TARGET_DATA_BLOCK_DESC' => 'Indicates the data block containing the record to which the end user will be redirected.',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_TEXT' => 'CRM view',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_DETAILVIEW_TEXT' => 'Detail view',
+  'LBL_REDIRECT_TO_RECORD_ACTION_CRM_VIEW_EDITVIEW_TEXT' => 'Edit view',
 
   // RedirectSummaryPageAction
   'LBL_REDIRECT_SUMMARY_PAGE_ACTION_TITLE' => 'Show data summary',
