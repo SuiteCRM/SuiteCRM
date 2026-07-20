@@ -55,17 +55,20 @@ class stic_Job_ApplicationsUtils
         }
 
         $accountOfferId = '';
-        if (isset($offerBean)) {
-            $accountOfferId = SticUtils::getRelatedBeanObject($offerBean, 'stic_job_offers_accounts')->id;
+        // Check if $offerBean is valid to prevent
+        if (!empty($offerBean) && !empty($offerBean->id)) {
+            $relatedAccountBean = SticUtils::getRelatedBeanObject($offerBean, 'stic_job_offers_accounts');
+            $accountOfferId = !empty($relatedAccountBean) ? $relatedAccountBean->id : '';
         }
 
         $contactApplicationId = '';
         if(!empty($jobApplicationBean->stic_job_applications_contactscontacts_ida)) {
             if ($jobApplicationBean->stic_job_applications_contactscontacts_ida instanceof Link2) {
-                $contactApplicationId = SticUtils::getRelatedBeanObject($jobApplicationBean, 'stic_job_applications_contacts');
-                $contactApplicationId = $contactApplicationId->id;
+                $relatedContactBean = SticUtils::getRelatedBeanObject($jobApplicationBean, 'stic_job_applications_contacts');
+                // Validate $relatedContactBean is an object before accessing its ID property
+                $contactApplicationId = (!empty($relatedContactBean) && is_object($relatedContactBean)) ? $relatedContactBean->id : '';
             } else {
-                $contactApplicationId= $jobApplicationBean->stic_job_applications_contactscontacts_ida;
+                $contactApplicationId = $jobApplicationBean->stic_job_applications_contactscontacts_ida;
             }
         }
 
@@ -74,12 +77,23 @@ class stic_Job_ApplicationsUtils
         $workBean->stic_work_experience_accountsaccounts_ida = $accountOfferId;
         $workBean->stic_work_experience_contactscontacts_ida = $contactApplicationId;
         $workBean->stic_work_9fefcations_idb = $applicationId;
-        $workBean->sector = $offerBean->sector;
-        $workBean->subsector = $offerBean->subsector;
-        $workBean->position_type = $offerBean->position_type;
-        $workBean->workday_type = $offerBean->workday_type;
-        $workBean->contract_type = $offerBean->contract_type;
-        $workBean->achieved=true;
+        
+        // Safely map properties ensuring $offerBean is loaded correctly
+        $workBean->sector = '';
+        $workBean->subsector = '';
+        $workBean->position_type = '';
+        $workBean->workday_type = '';
+        $workBean->contract_type = '';
+
+        if (!empty($offerBean) && !empty($offerBean->id)) {
+            $workBean->sector = $offerBean->sector;
+            $workBean->subsector = $offerBean->subsector;
+            $workBean->position_type = $offerBean->position_type;
+            $workBean->workday_type = $offerBean->workday_type;
+            $workBean->contract_type = $offerBean->contract_type;
+        }
+        $workBean->achieved = true;
+        
         $workBean->save();
     }
 
