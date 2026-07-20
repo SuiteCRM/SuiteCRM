@@ -27,23 +27,17 @@ require_once('include/Dashlets/Dashlet.php');
 class SticNewsDashlet extends Dashlet { 
     public $displayTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/display.tpl';
     public $configureTpl = 'custom/modules/Home/Dashlets/SticNewsDashlet/configure.tpl';
-    public $defaultURL = 'https://sinergiacrm.org/develop/es/sinergiacrm-news/'; // En suiteCRM esto podría estar en sugar_config
+    public $defaultURL;
     public $url;
 
     function __construct($id, $options = null) {
+        global $sugar_config, $current_language;
         parent::__construct($id);
 
-        $language = $GLOBALS['current_language'];
-        switch($language) {
-            case 'ca_ES':
-                $this->defaultURL = 'https://www.sinergiatic.org/actualitat-sinergiacrm-news/';
-                break;
-            case 'es_ES':
-            case 'en_us':
-            default:
-                $this->defaultURL = 'https://www.sinergiatic.org/es/actualidad-sinergiacrm-news/';
-                break;
-        }
+        // Gets default user language and defaults to English if not found
+        $stic_news_dashlet_url = $sugar_config['stic_news_dashlet_url'];
+        $this->defaultURL = !empty($current_language) ? $stic_news_dashlet_url[$current_language] : $stic_news_dashlet_url['en_us'];
+        
         $this->isConfigurable = false; // Dashlet won't be configurable
         
         if(empty($options['title'])) { 
@@ -112,6 +106,15 @@ class SticNewsDashlet extends Dashlet {
     }
 
     function display(){
-        return parent::display() . "<iframe class='teamNoticeBox' title='{$this->title}' src='{$this->url}' height='{$this->height}px'></iframe>";
+
+        $timestamp = time();
+
+        return parent::display() . "
+        <iframe 
+            class='teamNoticeBox'
+            title='{$this->title}'
+            src='{$this->url}?{$timestamp}'
+            height='{$this->height}px'>
+        </iframe>";
     }
 }

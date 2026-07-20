@@ -675,6 +675,13 @@ $sugar_config = array(
                 'scopes' => '',
             ),
     ),
+    // STIC-Custom XJO 20260707 - Update news dashlet URL
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/1305
+    'stic_news_dashlet_url' => array(
+        'es_ES' => 'https://www.sinergiatic.org/es/sinergiatic-news/',
+        'ca_ES' => 'https://www.sinergiatic.org/sinergiatic-news/',
+        'en_us' => 'https://www.sinergiatic.org/sinergiatic-news/',
+    ),
     // END STIC-Custom
 
     // STIC-Custom 20260427 JBL - Config for redirection method in web forms (Lead or Person capture) (POST or GET)
