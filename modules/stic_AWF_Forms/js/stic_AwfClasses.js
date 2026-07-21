@@ -2009,6 +2009,12 @@ class stic_AwfConfiguration {
       !a.is_automatic || !regeneratedActionNames.includes(a.name)
     );
     
+    // Preserve old save_action_ids so manual actions' requisite_actions stay valid
+    const oldSaveActionIds = {};
+    this.data_blocks.forEach(b => {
+        if (b.save_action_id) oldSaveActionIds[b.id] = b.save_action_id;
+    });
+
     // Reset saved action IDs on blocks before regenerating
     this.data_blocks.forEach(b => b.save_action_id = "");
 
@@ -2076,7 +2082,7 @@ class stic_AwfConfiguration {
             selectedOption: ''
           };
         }
-        const newAction = this.addAction(actionDef, params, '0');
+        const newAction = this.addAction(actionDef, params, '0', oldSaveActionIds[block.id]);
         if (newAction) {
           block.save_action_id = newAction.id;
           newAction.text = `${utils.translate('LBL_SAVE_RECORD_ACTION_TITLE')}: ${block.text}`;
@@ -2326,7 +2332,7 @@ class stic_AwfConfiguration {
    * @param {string} flowId Id of the flow where action will be added (ex: '0' for main flow)
    * @returns {stic_AwfAction} The new action
    */
-  addAction(actionDef, params = {}, flowId = '0') {
+  addAction(actionDef, params = {}, flowId = '0', existingId = null) {
     const flow = this.flows.find(f => f.id == flowId);
     if (!flow) {
       console.error(`Flow with ID ${flowId} not found.`);
@@ -2337,6 +2343,7 @@ class stic_AwfConfiguration {
     const defaultOrder = actionDef.isTerminal ? 999 : (actionDef.order ?? 0);
 
     const newAction = new stic_AwfAction({
+      ...(existingId ? { id: existingId } : {}),
       name: actionDef.name,
       title: actionDef.title, 
       text: actionDef.title,
