@@ -169,6 +169,7 @@ class stic_BookingsController extends SugarController
 
     public function action_loadExistingResources()
     {
+        require_once 'modules/stic_Bookings/Utils.php';
         $bookingId = $_REQUEST['bookingId'] ?? null;
         
         if (empty($bookingId)) {
