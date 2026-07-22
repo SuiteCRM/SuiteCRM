@@ -6368,14 +6368,13 @@ class InboundEmail extends SugarBean
     public function getMessagesFromDate(string $date, bool $unSeenOnly = false): array
     {
         $targetTimestamp = strtotime($date);
-        $targetDay = date('Y-m-d', $targetTimestamp);
 
         // IMAP's ON/SINCE date criteria are day-granularity and evaluated against the mail
         // server's own clock, with no timezone in the grammar - so a message whose sender
         // Date: header falls on $date can have an INTERNALDATE the server considers a
         // different calendar day (delivery near midnight, sender in a different timezone).
-        // Widen the server-side query by a day on each side, then filter precisely by
-        // parsing each candidate's actual Date: header against the requested day.
+        // Widen the server-side query by a day on each side to ensure no messages are missed.
+        // Deduplication is handled downstream by checking UIDs against the emails table.
         $rangeStart = date('d-M-Y', strtotime('-1 day', $targetTimestamp));
         $rangeEnd = date('d-M-Y', strtotime('+2 day', $targetTimestamp)); // BEFORE is exclusive
 
@@ -6395,18 +6394,7 @@ class InboundEmail extends SugarBean
             return [];
         }
 
-        $filtered = [];
-        foreach ($ret as $msgNo) {
-            $header = $this->getImap()->getHeaderInfo($msgNo);
-            $senderTimestamp = isset($header->date) ? strtotime($header->date) : false;
-
-            // Keep the message if its Date: header can't be parsed, rather than dropping it.
-            if ($senderTimestamp === false || date('Y-m-d', $senderTimestamp) === $targetDay) {
-                $filtered[] = $msgNo;
-            }
-        }
-
-        return $filtered;
+        return $ret;
     }
 
     /**
