@@ -4,3 +4,4 @@ SticUpdates/Languages/en/20250302_feature_whatsapp.sql
 SticUpdates/Languages/es/20250302_feature_whatsapp.sql
 SticUpdates/Languages/gl/20250302_feature_whatsapp.sql
 SticUpdates/Languages/eu/20250302_feature_whatsapp.sql
+SticUpdates/Scripts/AddSticNewsDashletToAllUsers.php
