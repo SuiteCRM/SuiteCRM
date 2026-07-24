@@ -79,6 +79,11 @@ class ModuleService
             $params->getId()
         );
 
+        $this->assertSelfOrAdmin($params->getModuleName(), $bean->id);
+        if ($params->getModuleName() === 'Employees' && !isTrue($bean->show_on_employees)) {
+            throw new AccessDeniedException();
+        }
+
         if (!$bean->ACLAccess('view')) {
             throw new AccessDeniedException();
         }
@@ -100,9 +105,10 @@ class ModuleService
     public function getRecords(GetModulesParams $params, Request $request)
     {
         $beanResult = [];
-        global $db;
+        global $db, $current_user;
         // this whole method should split into separated classes later
         $module = $params->getModuleName();
+
         $orderBy = $params->getSort();
         $where = $params->getFilter();
         $fields = $params->getFields();
@@ -116,6 +122,16 @@ class ModuleService
 
         if (!$bean->ACLAccess('view')) {
             throw new AccessDeniedException();
+        }
+
+        if ($module === 'Users' && !$current_user->isAdmin()) {
+            $selfClause = $bean->table_name . '.id = ' . $db->quoted($current_user->id);
+            $where = $where !== '' ? "($where) AND $selfClause" : $selfClause;
+        }
+
+        if ($module === 'Employees') {
+            $visibleClause = $bean->table_name . '.show_on_employees = 1';
+            $where = $where !== '' ? "($where) AND $visibleClause" : $visibleClause;
         }
 
         // negative numbers are validated in params
@@ -248,6 +264,8 @@ class ModuleService
         $module = $params->getData()->getType();
         $id = $params->getData()->getId();
         $attributes = $params->getData()->getAttributes();
+
+        $this->assertAdmin($module);
 
         if ($id !== null && $this->beanManager->getBean($module, $id, [], false) instanceof SugarBean) {
             throw new InvalidArgumentException(
@@ -426,7 +444,21 @@ class ModuleService
         $module = $params->getData()->getType();
         $id = $params->getData()->getId();
         $attributes = $params->getData()->getAttributes();
+        unset(
+            $attributes['id'],
+            $attributes['created_by'],
+            $attributes['created_by_name'],
+            $attributes['date_entered'],
+            $attributes['date_modified'],
+            $attributes['modified_user_id'],
+            $attributes['modified_by_name']
+        );
         $bean = $this->beanManager->getBeanSafe($module, $id);
+
+        $this->assertSelfOrAdmin($module, $bean->id);
+        if ($module === 'Employees') {
+            $this->assertAdmin($module);
+        }
 
         if (!$bean->ACLAccess('save')) {
             throw new AccessDeniedException();
@@ -508,10 +540,14 @@ class ModuleService
      */
     public function deleteRecord(DeleteModuleParams $params)
     {
+        $this->assertAdmin($params->getModuleName());
+
         $bean = $this->beanManager->getBeanSafe(
             $params->getModuleName(),
             $params->getId()
         );
+
+        $this->assertNotSelf($params->getModuleName(), $bean->id);
 
         if (!$bean->ACLAccess('delete')) {
             throw new AccessDeniedException();
@@ -539,8 +575,51 @@ class ModuleService
         // this will be split into separated classed later
         $dataResponse = new DataResponse($bean->getObjectName(), $bean->id);
         $dataResponse->setAttributes($this->attributeHelper->getAttributes($bean, $fields));
-        $dataResponse->setRelationships($this->relationshipHelper->getRelationships($bean, $path));
+        if ($bean->module_dir !== 'Employees') {
+            $dataResponse->setRelationships($this->relationshipHelper->getRelationships($bean, $path));
+        }
 
         return $dataResponse;
+    }
+
+    /**
+     * @param string $module
+     * @param string $id
+     * @throws AccessDeniedException
+     */
+    private function assertSelfOrAdmin(string $module, string $id): void
+    {
+        global $current_user;
+
+        if ($module === 'Users' && !$current_user->isAdmin() && $id !== $current_user->id) {
+            throw new AccessDeniedException();
+        }
+    }
+
+    /**
+     * @param string $module
+     * @throws AccessDeniedException
+     */
+    private function assertAdmin(string $module): void
+    {
+        global $current_user;
+
+        if (in_array($module, ['Users', 'Employees'], true) && !$current_user->isAdmin()) {
+            throw new AccessDeniedException();
+        }
+    }
+
+    /**
+     * @param string $module
+     * @param string $id
+     * @throws AccessDeniedException
+     */
+    private function assertNotSelf(string $module, string $id): void
+    {
+        global $current_user;
+
+        if (in_array($module, ['Users', 'Employees'], true) && $id === $current_user->id) {
+            throw new AccessDeniedException();
+        }
     }
 }

@@ -7,7 +7,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[\AllowDynamicProperties]
-class CreateRelationshipParams extends BaseParam
+class CreateRelationshipParams extends BaseParam implements ModuleAwareParamInterface
 {
     /**
      * @return string

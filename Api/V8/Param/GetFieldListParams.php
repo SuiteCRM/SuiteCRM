@@ -52,13 +52,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * @package Api\V8\Param
  */
 #[\AllowDynamicProperties]
-class GetFieldListParams extends BaseParam
+class GetFieldListParams extends BaseParam implements ModuleAwareParamInterface
 {
-    
+
     /**
      * @return string
      */
-    public function getModule()
+    public function getModuleName()
     {
         return $this->parameters['moduleName'];
     }

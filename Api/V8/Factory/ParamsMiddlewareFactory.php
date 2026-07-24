@@ -1,6 +1,7 @@
 <?php
 namespace Api\V8\Factory;
 
+use Api\V8\Helper\ModuleAccessChecker;
 use Api\V8\Middleware\ParamsMiddleware;
 use Psr\Container\ContainerInterface as Container;
 use Slim\Http\Request;
@@ -33,7 +34,11 @@ class ParamsMiddlewareFactory
         $container = $this->container;
 
         return function (Request $request, Response $response, callable $next) use ($containerId, $container) {
-            $paramMiddleware = new ParamsMiddleware($container->get($containerId), $container->get(BeanManager::class));
+            $paramMiddleware = new ParamsMiddleware(
+                $container->get($containerId),
+                $container->get(BeanManager::class),
+                $container->get(ModuleAccessChecker::class)
+            );
 
             return $paramMiddleware($request, $response, $next);
         };

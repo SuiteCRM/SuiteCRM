@@ -1,6 +1,7 @@
 <?php
 
 use Api\V8\BeanDecorator\BeanManager;
+use Api\V8\Helper\ModuleAccessChecker;
 use Api\V8\Helper\ModuleListProvider;
 use Api\V8\JsonApi\Helper\AttributeObjectHelper;
 use Api\V8\JsonApi\Helper\PaginationObjectHelper;
@@ -58,7 +59,8 @@ return CustomLoader::mergeCustomArray([
         return new Service\RelationshipService(
             $container->get(BeanManager::class),
             $container->get(AttributeObjectHelper::class),
-            $container->get(PaginationObjectHelper::class)
+            $container->get(PaginationObjectHelper::class),
+            $container->get(ModuleAccessChecker::class)
         );
     },
 ], basename(__FILE__));

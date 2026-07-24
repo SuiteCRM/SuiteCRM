@@ -53,7 +53,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * @author gyula
  */
 #[\AllowDynamicProperties]
-class ListViewSearchParams extends BaseParam
+class ListViewSearchParams extends BaseParam implements ModuleAwareParamInterface
 {
     
     /**

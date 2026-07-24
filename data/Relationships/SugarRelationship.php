@@ -234,10 +234,11 @@ abstract class SugarRelationship
         }
 
         $values = array();
+        $db = DBManagerFactory::getInstance();
         foreach ($this->getFields() as $def) {
             $field = $def['name'];
             if (isset($row[$field])) {
-                $values[$field] = "'{$row[$field]}'";
+                $values[$field] = "'" . $db->quote($row[$field]) . "'";
             }
         }
         $columns = implode(',', array_keys($values));
@@ -259,17 +260,18 @@ abstract class SugarRelationship
     protected function updateRow($id, $values)
     {
         $newVals = array();
+        $db = DBManagerFactory::getInstance();
         //Unset the ID since we are using it to update the row
         if (isset($values['id'])) {
             unset($values['id']);
         }
         foreach ($values as $field => $val) {
-            $newVals[] = "$field='$val'";
+            $newVals[] = "$field='" . $db->quote($val) . "'";
         }
 
         $newVals = implode(',', $newVals);
 
-        $query = "UPDATE {$this->getRelationshipTable()} set $newVals WHERE id='$id'";
+        $query = "UPDATE {$this->getRelationshipTable()} set $newVals WHERE id='" . $db->quote($id) . "'";
 
         return DBManagerFactory::getInstance()->query($query);
     }

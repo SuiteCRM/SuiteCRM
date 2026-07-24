@@ -55,7 +55,7 @@ $sugarbean = populateFromPost('', $sugarbean);
 
 $projectTasks = array();
 if (isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true") {
-    $base_project_id = $_REQUEST['duplicateId'];
+    $base_project_id = DBManagerFactory::getInstance()->quote($_REQUEST['duplicateId']);
 } else {
     $base_project_id = $sugarbean->id;
 }

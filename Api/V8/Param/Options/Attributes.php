@@ -45,6 +45,17 @@ class Attributes extends BaseOption
                             $bean->getObjectName()
                         ));
                     }
+
+                    $fieldDef = $bean->field_defs[$attribute] ?? [];
+                    $isSensitive = isTrue($fieldDef['sensitive'] ?? false);
+                    $notApiVisible = isFalse($fieldDef['api-visible'] ?? true);
+                    if ($isSensitive || $notApiVisible) {
+                        throw new OutOfBoundsException(sprintf(
+                            'Property %s in %s module is invalid',
+                            $attribute,
+                            $bean->getObjectName()
+                        ));
+                    }
                 }
 
                 return $values;
