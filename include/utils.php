@@ -5432,7 +5432,8 @@ function verify_image_file($path, $jpeg = false)
             return false;
         }
     } else {
-        return true;
+        // GD image functions not available — reject upload as unsafe
+        return false;
     }
 
 
