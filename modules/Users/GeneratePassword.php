@@ -144,7 +144,7 @@ if ($isLink) {
     $q = "INSERT INTO users_password_link (id, keyhash, username, date_generated, user_id) VALUES('" .
         $guid . "','" .
         $hashedKey . "','" .
-        $username . "','" .
+        $db->quote($username) . "','" .
         $time_now . "','" .
         $userID . "') ";
     $usr->db->query($q);
