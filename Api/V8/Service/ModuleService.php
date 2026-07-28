@@ -338,9 +338,8 @@ class ModuleService
             $fileExtension = substr((string) $attributes['filename'], $extPos + 1);
 
             if ($extPos === false || empty($fileExtension) || in_array(
-                    $fileExtension,
-                    $sugar_config['upload_badext'],
-                    true
+                    strtolower($fileExtension),
+                    $sugar_config['upload_badext']
                 )) {
                 throw new Exception('File upload failed: File extension is not included or is not valid.');
             }
@@ -386,9 +385,8 @@ class ModuleService
             $fileExtension = substr((string) $attributes['filename'], $extPos + 1);
 
             if ($extPos === false || empty($fileExtension) || in_array(
-                    $fileExtension,
-                    $sugar_config['upload_badext'],
-                    true
+                    strtolower($fileExtension),
+                    $sugar_config['upload_badext']
                 )) {
                 throw new Exception('File upload failed: File extension is not included or is not valid.');
             }
