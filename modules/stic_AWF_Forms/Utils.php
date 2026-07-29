@@ -225,6 +225,12 @@ class stic_AWF_FormsUtils {
                     $vname = $def['vname'] ?? '';
                     $linkFieldName = '';
                     $relType = $def['relationship_type'] ?? 'many-to-many';
+
+                    // Ignore parent_type relationships
+                    if (($def['relationship_role_column'] ?? '') === 'parent_type') {
+                        $processed[$relName] = true;
+                        continue;
+                    }
                 } else {
                     $relName = $def['relationship'];
                     $lhs = $moduleName;
@@ -447,20 +453,6 @@ class stic_AWF_FormsUtils {
             }
         }
 
-        // Deduplicate by target module: if multiple relationships point to the same module_dest,
-        // keep only the first non-virtual one (avoids duplicate Notes/Tasks entries in module selectors).
-        // Virtual relationships (is_virtual_relate = true) are always kept, since they represent
-        // distinct standalone relate fields that coexist with canonical relationships to the same module.
-        $seenDest = [];
-        foreach ($result as $relName => $relData) {
-            $dest = $relData['module_dest'];
-            $isVirtual = $relData['is_virtual_relate'] ?? false;
-            if (isset($seenDest[$dest]) && !$isVirtual) {
-                unset($result[$relName]);
-            } else {
-                $seenDest[$dest] = true;
-            }
-        }
 
         return self::$relationshipsCache[$cacheKey] = $result;
     }
