@@ -57,10 +57,14 @@ class ServerActionFlowExecutor {
                 $lastActionConfig = $actionConfig;
 
                 // Check that all requisite_actions have been executed successfully
+                // Backward compatibility: if a requisite action hasn't been executed (null),
+                // log a warning but let the action proceed. This preserves the pre-update
+                // behavior where no topological sort was performed server-side.
                 foreach ($actionConfig->requisite_actions as $reqActionId) {
                     $reqResult = $this->context->getActionResultById($reqActionId);
                     if ($reqResult === null) {
-                        throw new \RuntimeException("Action '{$actionConfig->name}' (id: {$actionConfig->id}) requires action with id '{$reqActionId}' but it was not executed. Possible topological sort issue.");
+                        $GLOBALS['log']->warn('Line '.__LINE__.': '.__METHOD__.': '."Advanced Web Forms: Action '{$actionConfig->name}' (id: {$actionConfig->id}) requires action with id '{$reqActionId}' but it was not executed. Continuing anyway for backward compatibility.");
+                        continue;
                     }
                     if ($reqResult->isError()) {
                         $GLOBALS['log']->warning('Line '.__LINE__.': '.__METHOD__.': '."Advanced Web Forms: Action '{$actionConfig->name}' skipped because requisite action '{$reqActionId}' failed.");
