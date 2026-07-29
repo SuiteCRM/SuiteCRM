@@ -670,7 +670,7 @@ class ResponseHandler
                     case 'boolean':
                     case 'select_checkbox':
                     case 'select_switch':
-                        if (!filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE)) {
+                        if (filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) === null) {
                             $errors['errorDescriptions'][$inputKeyInForm] = translate('LBL_FIELD', 'stic_AWF_Responses') ." '{$label}': ". 
                                                                             translate('LBL_ERROR_BOOL_FIELD', 'stic_AWF_Responses');
                             $errors['errors'][$inputKeyInForm] = translate('LBL_ERROR_BOOL_FIELD', 'stic_AWF_Responses');
