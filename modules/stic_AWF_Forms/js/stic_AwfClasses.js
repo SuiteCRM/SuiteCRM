@@ -1266,6 +1266,11 @@ class stic_AwfConfiguration {
     this._ensureDefaultDataBlocks();
     this._ensureDefaultFlows();
     this._ensureDefaultLayout();
+
+    // 5. Backward compatibility: migrate relationships stored in the pre-2.11.0
+    // format (relate fields with value_type = 'dataBlock') into the new
+    // data_blocks[].relationships array.
+    this._migrateLegacyRelationships();
   }
   static fromJSON(jsonString){
     const config = new stic_AwfConfiguration(JSON.parse(jsonString));
@@ -1344,6 +1349,75 @@ class stic_AwfConfiguration {
   }
   _ensureDefaultLayout() {
     // No default Layout!!
+  }
+
+  /**
+   * Backward compatibility migration.
+   * Before SinergiaCRM 2.11.0, block-to-block relationships were stored implicitly
+   * by adding a relate field with value_type = 'dataBlock' to the origin data block.
+   * From 2.11.0 onwards, relationships are stored explicitly in
+   * data_blocks[].relationships and are used by getAllDataBlockRelationships() and
+   * regenerateAutomaticActions().
+   *
+   * This method detects the old-style relate fields and recreates the relationship
+   * entries in the new format, so pre-2.11.0 forms keep working when edited.
+   */
+  _migrateLegacyRelationships() {
+    if (!this.data_blocks || this.data_blocks.length === 0) {
+      return;
+    }
+
+    this.data_blocks.forEach(block => {
+      if (!block.module || !block.fields) {
+        return;
+      }
+
+      const moduleInfo = block.getModuleInformation();
+      if (!moduleInfo || !moduleInfo.fields) {
+        return;
+      }
+
+      block.fields.forEach(field => {
+        // Only old-style relationship fields point to another data block
+        if (field.type !== 'relate' || field.value_type !== 'dataBlock' || !field.value) {
+          return;
+        }
+
+        const relatedBlockId = field.value;
+        const relatedBlock = this.data_blocks.find(b => b.id === relatedBlockId);
+        if (!relatedBlock) {
+          return;
+        }
+
+        // Resolve the relationship name from the module metadata
+        const fieldInfo = moduleInfo.fields[field.name];
+        const relName = fieldInfo?.options;
+        if (!relName) {
+          return;
+        }
+
+        // Skip if the relationship has already been migrated in either direction
+        const alreadyExists =
+          block.relationships.some(
+            r => r.name === relName && r.related_datablock_id === relatedBlockId
+          ) ||
+          relatedBlock.relationships.some(
+            r => r.name === relName && r.related_datablock_id === block.id
+          );
+        if (alreadyExists) {
+          return;
+        }
+
+        // Ensure the field has a readable text value
+        if (!field.value_text) {
+          field.value_text = relatedBlock.text;
+        }
+
+        // Use the existing relationship creation logic to add entries on both sides,
+        // set initiator_id / role and create/update the relate field consistently.
+        this.addDataBlockRelationship(block.id, relName, relatedBlockId, '');
+      });
+    });
   }
 
  /**
