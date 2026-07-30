@@ -611,8 +611,8 @@ $sugar_config = array(
     
     // STIC Custom 20231124 JBL - SemVer in SinergiaCRM
     // STIC#1319
-    'sinergiacrm_version' => '2.11.1', 
-    'js_custom_version' => 40,
+    'sinergiacrm_version' => '2.11.2', 
+    'js_custom_version' => 41,
     'stic_show_update_alert' => 0,
     // END STIC
 
