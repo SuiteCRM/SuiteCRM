@@ -96,6 +96,11 @@ class ProjectController extends SugarController
             //Set height of gantt wrapping divs to make sure it shows
             $('#project').css('height', size+'px');
             $('.splitter-bar').css('height', size+'px');
+            $('.project_table_headings').resizable({
+                resize: function(event, ui) {
+                    ui.size.height = ui.originalSize.height;
+                }
+            });
 
         </script>
         <div id="project">

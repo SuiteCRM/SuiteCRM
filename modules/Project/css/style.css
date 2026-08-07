@@ -117,7 +117,35 @@
     background-color: #FFFFFF;
     border: 1px solid #DDDDDD;
     height: 23px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
+
+.tooltip-gantt-wrap {
+    position: relative;
+    color: #F08377;
+}
+
+.tooltip-gantt-wrap .tooltip-gantt-content {
+    display: none;
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    right: 5%;
+    background-color: #fff;
+    color: #000000;
+    padding: .5em;
+    min-width: 10rem;
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px 2px lightgray;
+    border: 1px solid lightgray;
+    text-align:center;
+}
+
+.tooltip-gantt-wrap:hover .tooltip-gantt-content {
+    display: block;
+}
+
 .main_table {
     border: 1px solid #DDDDDD;
     border-collapse: collapse;

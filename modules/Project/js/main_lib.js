@@ -608,10 +608,16 @@ VLine = function(height, top, left) {
  * width and height into a structure.
  */
 function buildRect(item) {
-    var rect = item.position();
-    rect.width = item.width();
-    rect.height = item.height();
-
+    var rect;
+    if(item.position.width !== undefined && item.position.length !== undefined) {
+        rect = item.position();
+        rect.width = item.width();
+        rect.height = item.height();
+    }
+    else
+    {
+        rect = {};
+    }
     return rect;
 }
 
