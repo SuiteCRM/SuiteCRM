@@ -555,6 +555,27 @@ eoq;
         return $ret;
     }
 
+    /**
+     * @see PHPMailer::addOrEnqueueAnAddress
+     * Convert back legal characters that we currently clean in include/utils.php::securexss()
+     */
+    protected function addOrEnqueueAnAddress($kind, $address, $name)
+    {
+        $legal_characters = [
+            '&quot;' => '"',
+            '&#039;' => "'",
+            '&lt;' => '<',
+            '&gt;' => '>',
+            '&#96;' => '`',
+        ];
+
+        foreach ($legal_characters as $key => $value) {
+            $address = str_replace($key, $value, $address);
+        }
+
+        return parent::addOrEnqueueAnAddress($kind, $address, $name);
+    }
+
     public function setSecureProtocol($smtpSsl): void
     {
         $this->protocol = ($smtpSsl) ? "ssl://" : "tcp://";
