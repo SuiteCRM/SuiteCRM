@@ -5473,6 +5473,16 @@ function verify_image_file($path, $jpeg = false)
             if (file_put_contents($path, $image)) {
                 return true;
             }
+        // STIC-Custom OC - 20260818 - Allow GIF image uploads (re-encode with GD)
+        } elseif ($filetype == 'image/gif') {
+            // else if the filetype is gif, create gif
+            ob_start();
+            imagegif($img);
+            $image = ob_get_clean();
+            if (file_put_contents($path, $image)) {
+                return true;
+            }
+        // END STIC-Custom OC
         } else {
             return false;
         }
