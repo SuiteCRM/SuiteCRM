@@ -89,6 +89,21 @@ class AOR_Scheduled_Reports extends basic
         return parent::save($check_notify);
     }
 
+    public static function isValidSchedule($schedule): bool
+    {
+        if (!is_string($schedule) || trim($schedule) === '') {
+            return false;
+        }
+
+        try {
+            Cron\CronExpression::factory($schedule);
+        } catch (Throwable $e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function get_email_recipients()
     {
         $params = unserialize(base64_decode($this->email_recipients),['allowed_classes' => false]);
