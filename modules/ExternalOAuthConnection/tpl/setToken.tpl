@@ -41,11 +41,14 @@
 *}
 <body>
 <script>
-  {if !empty($token)}
-      {foreach from=$token key=k item=v}
-        window.opener.externalOAuthConnectionFields.setValue('{$k}', '{$v}');
-      {/foreach}
-  {/if}
-  window.close();
+    var data;
+    const channel = new BroadcastChannel('auth');
+    {if !empty($token)}
+        {foreach from=$token key=k item=v}
+            data = ['{$k}', '{$v}'];
+            channel.postMessage(data);
+        {/foreach}
+    {/if}
+    window.close();
 </script>
 </body>

@@ -89,4 +89,14 @@ class SuiteTCPDF extends TCPDF
         $this->writeHTMLCell(0, 0, '', '', $this->getHtmlFooter());
     }
 
+    public function Image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array())
+    {
+
+        if (validate_external_host($file) === false) {
+            return false;
+        }
+
+        return parent::Image($file, $x, $y, $w, $h, $type, $link, $align, $resize, $dpi, $palign, $ismask, $imgmask, $border, $fitbox, $hidden, $fitonpage, $alt, $altimgs);
+    }
+
 }

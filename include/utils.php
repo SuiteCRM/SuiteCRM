@@ -153,6 +153,7 @@ function make_sugar_config(&$sugar_config)
         'default_user_name' => empty($default_user_name) ? '' : $default_user_name,
         'disable_export' => empty($disable_export) ? false : $disable_export,
         'disable_persistent_connections' => empty($disable_persistent_connections) ? false : $disable_persistent_connections,
+        'disable_v4_api_query_where' => true,
         'display_email_template_variable_chooser' => empty($display_email_template_variable_chooser) ? false : $display_email_template_variable_chooser,
         'display_inbound_email_buttons' => empty($display_inbound_email_buttons) ? false : $display_inbound_email_buttons,
         'google_auth_json' => empty($google_auth_json) ? '' : $google_auth_json,
@@ -286,6 +287,7 @@ function make_sugar_config(&$sugar_config)
         ],
         'web_to_lead_allowed_redirect_hosts' => [],
         'trusted_hosts' => [],
+        'external_trusted_hosts' => [],
         'oauth_token_delete_threshold' => '-7 days',
         'oauth_code_delete_threshold' => '-7 days',
         'email_import_per_run_threshold' => 25,
@@ -387,6 +389,7 @@ function get_sugar_config_defaults(): array
         'default_user_name' => '',
         'disable_export' => false,
         'disable_persistent_connections' => return_session_value_or_default('disable_persistent_connections', false),
+        'disable_v4_api_query_where' => true,
         'default_module_favicon' => false,
         'dashlet_auto_refresh_min' => 30,
         'stack_trace_errors' => false,
@@ -588,6 +591,7 @@ function get_sugar_config_defaults(): array
         ],
         'web_to_lead_allowed_redirect_hosts' => [],
         'trusted_hosts' => [],
+        'external_trusted_hosts' => [],
         'oauth_token_delete_threshold' => '-7 days',
         'oauth_code_delete_threshold' => '-7 days',
         'email_import_per_run_threshold' => 25,
@@ -2565,7 +2569,9 @@ function clean_incoming_data()
     if (isset($_REQUEST['stamp'])) {
         clean_string($_REQUEST['stamp']);
     }
-
+    if (isset($_REQUEST['return_id'])) {
+        $_REQUEST['return_id'] = purifyId($_REQUEST['return_id']);
+    }
     if (isset($_REQUEST['lvso'])) {
         set_superglobals('lvso', (strtolower($_REQUEST['lvso']) === 'desc') ? 'desc' : 'asc');
     }
@@ -5941,6 +5947,23 @@ function isValidId($id)
     return $result;
 }
 
+/**
+ * Purify id by validating it and returning empty string if invalid. This is useful for cleaning up data that is going to be used in a query or as part of a file path.
+ * @param string $id
+ * @return string
+ */
+function purifyId(string $id): string
+{
+    $isValidator = new \SuiteCRM\Utility\SuiteValidator();
+    $result = $isValidator->isValidId($id);
+
+    if (!$result) {
+        return '';
+    }
+
+    return $id;
+}
+
 function isValidEmailAddress($email, $message = 'Invalid email address given', $orEmpty = true, $logInvalid = 'error')
 {
     if ($orEmpty && !$email) {
@@ -6183,21 +6206,42 @@ function isAllowedModuleName(string $value): bool {
 }
 
 /**
+ * Check if a string is an allowed action name
+ * @param string $value
+ * @return bool
+ */
+function isAllowedActionName(string $value): bool {
+    return (bool) preg_match("/^[a-zA-Z_]\w*$/", $value);
+}
+
+/**
  * @param $endpoint
  * @return bool
  */
 function isSelfRequest($endpoint) : bool {
-    $domain = 'localhost';
-    if (isset($_SERVER["HTTP_HOST"])) {
-        $domain = $_SERVER["HTTP_HOST"];
+    $parsed = parse_url((string) $endpoint);
+    $host = $parsed['host'] ?? '';
+    if (empty($host)) {
+        return false;
     }
 
-    $siteUrl = SugarConfig::getInstance()->get('site_url');
-    if (empty($siteUrl)){
-        $siteUrl = '';
+    $host = strtolower(trim($host));
+
+    $serverHost = strtolower($_SERVER["HTTP_HOST"] ?? 'localhost');
+    $serverHost = preg_replace('/:\d+$/', '', trim($serverHost));
+    if ($host === $serverHost) {
+        return true;
     }
 
-    return stripos((string) $endpoint, (string) $domain) !== false || stripos((string) $endpoint, (string) $siteUrl) !== false;
+    $siteUrl = SugarConfig::getInstance()->get('site_url', '');
+    if (!empty($siteUrl)) {
+        $siteHost = parse_url($siteUrl, PHP_URL_HOST);
+        if ($siteHost && strtolower($siteHost) === $host) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -6254,6 +6298,103 @@ function check_trusted_hosts(): void {
 
         throw new BadMethodCallException(sprintf('Untrusted Host "%s".', $host));
     }
+}
+
+/**
+ * Get currently configured external trusted hosts, if none configured return empty
+ * @return array
+ */
+function get_external_trusted_hosts(): array {
+
+    $trustedHosts = SugarConfig::getInstance()->get('external_trusted_hosts', []);
+
+    if (!empty($trustedHosts) && is_array($trustedHosts)){
+        return $trustedHosts;
+    }
+
+    return [];
+}
+
+/**
+ * Validate external host
+ */
+function validate_external_host(string $url): bool {
+
+    global $log;
+
+    // Allow self-referential URLs (site_url and HTTP_HOST)
+    if (isSelfRequest($url)) {
+        return true;
+    }
+
+    // Allow tmp urls for file uploads for internal tcpdf use
+    if (str_starts_with($url, '/tmp') || str_starts_with($url, 'tmp/')) {
+        return true;
+    }
+
+    $urlparse = parse_url($url);
+    if ($urlparse === false || empty($urlparse['scheme']) || empty($urlparse['host'])) {
+        $log->security("Invalid external host URL: $url");
+        return false;
+    }
+
+    if ($urlparse['scheme'] !== 'http' && $urlparse['scheme'] !== 'https') {
+        $log->security("Invalid external host URL scheme: $url");
+        return false;
+    }
+
+    $host = strtolower($urlparse['host']);
+
+    // Resolve hostname to IP and validate
+    $ips = @gethostbynamel($host) ?: [filter_var($host, FILTER_VALIDATE_IP)];
+
+    foreach ($ips as $ip) {
+        if ($ip === false) {
+            continue;
+        }
+
+        // Validate IPv4 and IPv6 addresses
+        $isValidIPv4 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+        $isValidIPv6 = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 | FILTER_FLAG_NO_RES_RANGE);
+
+        // Additional IPv6 private range checks (as FILTER_FLAG_NO_PRIV_RANGE doesn't cover all)
+        if ($isValidIPv6 !== false) {
+            $isValidIPv6 = !preg_match('/^(::1|fe80:|fc00:|fd00:)/i', $ip);
+        }
+
+        if ($isValidIPv4 === false && $isValidIPv6 === false) {
+            $log->security("Invalid external host IP address (private/reserved): $url resolves to $ip");
+            return false;
+        }
+    }
+
+    $externalTrustedHostPatterns = get_external_trusted_hosts();
+
+    if (empty($externalTrustedHostPatterns)) {
+        return true;
+    }
+
+    // Add site_url and HTTP_HOST to trusted patterns
+    $siteUrl = SugarConfig::getInstance()->get('site_url', '');
+    $parsedSiteUrl = parse_url($siteUrl);
+
+    if (!empty($parsedSiteUrl['host'])) {
+        $externalTrustedHostPatterns[] = preg_quote($parsedSiteUrl['host'], '/');
+    }
+
+    if (!empty($_SERVER["HTTP_HOST"])) {
+        $externalTrustedHostPatterns[] = preg_quote($_SERVER["HTTP_HOST"], '/');
+    }
+
+    foreach ($externalTrustedHostPatterns as $pattern) {
+        // Match pattern against the host only, not the entire URL
+        if (preg_match('/^' . $pattern . '$/i', $host)) {
+            return true;
+        }
+    }
+
+    $log->security("Untrusted external Host: $url (host: $host)");
+    return false;
 }
 
 /**
@@ -6341,5 +6482,21 @@ function formatDecimalInConfigSettings($decimalValue, $userSetting = false) {
     }
     $dec_sep = empty($user_dec_sep) ? $sugar_config['default_decimal_seperator'] : $user_dec_sep;
     return str_replace('.', $dec_sep, $decimalValue);
+}
+
+/**
+ * Checks whether a string is a valid PHP label key (safe for use in
+ * generated PHP code such as language files and array keys).
+ *
+ * Rejects characters that could enable PHP code injection when written
+ * into language files: single/double quotes, semicolons, dollar signs,
+ * backticks, backslashes, and newlines.
+ *
+ * @param string $key The key to validate.
+ * @return bool True if the key contains only safe characters.
+ */
+function is_safe_label_key(string $key): bool
+{
+    return !empty($key) && !preg_match('/[\'";$`\\\\\\r\\n]/', $key);
 }
 

@@ -139,11 +139,19 @@ $(document).ready(function () {
 
     for (let i = 0; i < (responses.length); i++) {
       if (responses[i].id === query.folders_id) {
-        jQueryBtnEmailsCurrentFolder.text(responses[(i)].text);
+        let folderText = $('<span>').html(responses[(i)].text).text();
+        jQueryBtnEmailsCurrentFolder.text(folderText);
       } else if (responses[i].id === query.inbound_email_record) {
         let regExp = /\(([^)]+)\)/;
-        let match = regExp.exec(responses[(i)].text);
-        jQueryBtnEmailsCurrentFolder.text(query.folder + ' ' + match[0]);
+        let decodedText = $('<span>').html(responses[(i)].text).text();
+        let match = regExp.exec(decodedText);
+        let folderEscaped = $('<span>').text(query.folder)[0].innerHTML;
+        let matchEscaped = match ? $('<span>').text(match[0])[0].innerHTML : '';
+        if (matchEscaped) {
+          jQueryBtnEmailsCurrentFolder.html(folderEscaped + ' ' + matchEscaped);
+        } else {
+          jQueryBtnEmailsCurrentFolder.html(folderEscaped);
+        }
       }
     }
   });

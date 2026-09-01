@@ -95,6 +95,12 @@ class LegacyGoogleSyncMigrationService
         $GLOBALS['current_user']->retrieve(1);
     }
 
+    public function migrateLegacySchedulers(): UserMigrationStatus
+    {
+        $this->migrateSchedulerOrFail(false);
+        return $this->migrationStats;
+    }
+
     /**
      * Execute complete migration process
      *
@@ -107,10 +113,6 @@ class LegacyGoogleSyncMigrationService
 
         $externalOauthProviderId = $this->getProviderOrFail($dryRun);
         if ($externalOauthProviderId === null) {
-            return $this->migrationStats;
-        }
-
-        if (!$this->migrateSchedulerOrFail($dryRun)) {
             return $this->migrationStats;
         }
 

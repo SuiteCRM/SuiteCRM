@@ -250,6 +250,9 @@ class CalendarAccountController extends SugarController
             $calendarAccount->password = $request['password'];
         }
         if (!empty($request['server_url'])) {
+            if (!validate_external_host($request['server_url'])) {
+                throw new InvalidArgumentException('The provided server URL is not allowed.');
+            }
             $calendarAccount->server_url = $request['server_url'];
         }
 
@@ -257,6 +260,9 @@ class CalendarAccountController extends SugarController
             $calendarAccount->api_key = $request['api_key'];
         }
         if (!empty($request['api_endpoint'])) {
+            if (!validate_external_host($request['api_endpoint'])) {
+                throw new InvalidArgumentException('The provided API endpoint URL is not allowed.');
+            }
             $calendarAccount->api_endpoint = $request['api_endpoint'];
         }
 

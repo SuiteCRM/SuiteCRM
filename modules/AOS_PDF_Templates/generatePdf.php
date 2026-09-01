@@ -57,6 +57,10 @@ if (!$bean) {
     sugar_die("Invalid Record");
 }
 
+if (!$bean->ACLAccess('view')) {
+    sugar_die('Error retrieving record. This record may be deleted or you may not be authorized to view it.');
+}
+
 $task = $_REQUEST['task'];
 $variableName = strtolower($bean->module_dir);
 $lineItemsGroups = array();

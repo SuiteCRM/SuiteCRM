@@ -2,6 +2,7 @@
 namespace Api\V8\Service;
 
 use Api\V8\BeanDecorator\BeanManager;
+use Api\V8\Helper\ModuleAccessChecker;
 use Api\V8\JsonApi\Helper\AttributeObjectHelper;
 use Api\V8\JsonApi\Helper\PaginationObjectHelper;
 use Api\V8\JsonApi\Response\DataResponse;
@@ -16,6 +17,8 @@ use Api\V8\Param\GetRelationshipParams;
 use Slim\Http\Request;
 use \SugarBean;
 use \DomainException;
+use SuiteCRM\Exception\AccessDeniedException;
+use SuiteCRM\Exception\NotAllowedException;
 
 #[\AllowDynamicProperties]
 class RelationshipService
@@ -36,15 +39,26 @@ class RelationshipService
     protected $paginationHelper;
 
     /**
+     * @var ModuleAccessChecker
+     */
+    protected $moduleAccessChecker;
+
+    /**
      * @param BeanManager $beanManager
      * @param AttributeObjectHelper $attributeHelper
      * @param PaginationObjectHelper $paginationHelper
+     * @param ModuleAccessChecker $moduleAccessChecker
      */
-    public function __construct(BeanManager $beanManager, AttributeObjectHelper $attributeHelper, PaginationObjectHelper $paginationHelper)
-    {
+    public function __construct(
+        BeanManager $beanManager,
+        AttributeObjectHelper $attributeHelper,
+        PaginationObjectHelper $paginationHelper,
+        ModuleAccessChecker $moduleAccessChecker
+    ) {
         $this->beanManager = $beanManager;
         $this->attributeHelper = $attributeHelper;
         $this->paginationHelper = $paginationHelper;
+        $this->moduleAccessChecker = $moduleAccessChecker;
     }
 
     /**
@@ -56,6 +70,14 @@ class RelationshipService
     {
         $response = new DocumentResponse();
         $sourceBean = $params->getSourceBean();
+        $this->assertSelfOrAdmin($sourceBean->module_dir, $sourceBean->id);
+        if ($sourceBean->module_dir === 'Employees') {
+            $this->assertAdmin($sourceBean->module_dir);
+        }
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
 
         $linkFieldName = $params->getLinkedFieldName();
 
@@ -85,6 +107,25 @@ class RelationshipService
             $data = [];
             /** @var SugarBean $relatedBean */
             foreach ($relatedBeans as $relatedBean) {
+
+                try {
+                    $this->moduleAccessChecker->checkAccess($relatedBean->module_dir);
+                } catch (NotAllowedException $exception) {
+                    continue;
+                }
+
+                if ($relatedBean->module_dir === 'Employees') {
+                    try {
+                        $this->assertAdmin($relatedBean->module_dir);
+                    } catch (AccessDeniedException $exception) {
+                        continue;
+                    }
+                }
+
+                if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+                    continue;
+                }
+
                 $linkResponse = new LinksResponse();
                 $linkResponse->setSelf(sprintf('V8/module/%s/%s', $relatedBean->getObjectName(), $relatedBean->id));
 
@@ -122,7 +163,20 @@ class RelationshipService
     public function createRelationship(CreateRelationshipParams $params)
     {
         $sourceBean = $params->getSourceBean();
+        $this->assertAdmin($sourceBean->module_dir);
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('edit') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $relatedBean = $params->getRelatedBean();
+        $this->moduleAccessChecker->checkAccess($relatedBean->module_dir);
+        $this->assertAdmin($relatedBean->module_dir);
+
+        if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $linkFieldName = $this->beanManager->getLinkedFieldName($sourceBean, $relatedBean);
 
         $this->beanManager->createRelationshipSafe($sourceBean, $relatedBean, $linkFieldName);
@@ -151,8 +205,19 @@ class RelationshipService
     public function createRelationshipByLink(CreateRelationshipByLinkParams $params)
     {
         $sourceBean = $params->getSourceBean();
+        $this->assertAdmin($sourceBean->module_dir);
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('edit') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
 
         $relatedBean = $params->getRelatedBean();
+        $this->moduleAccessChecker->checkAccess($relatedBean->module_dir);
+        $this->assertAdmin($relatedBean->module_dir);
+
+        if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
 
         $sourceLabel = translate($sourceBean->module_dir);
 
@@ -198,6 +263,12 @@ class RelationshipService
     public function deleteRelationship(DeleteRelationshipParams $params)
     {
         $sourceBean = $params->getSourceBean();
+        $this->assertAdmin($sourceBean->module_dir);
+
+        if (!$sourceBean->ACLAccess('view') || !$sourceBean->ACLAccess('edit') || !$sourceBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $linkFieldName = $params->getLinkedFieldName();
         $relatedBeans = $sourceBean->get_linked_beans($linkFieldName);
         $relatedBeanId = $params->getRelatedBeanId();
@@ -217,6 +288,13 @@ class RelationshipService
         }
 
         $relatedBean = array_shift($relatedBean);
+        $this->moduleAccessChecker->checkAccess($relatedBean->module_dir);
+        $this->assertAdmin($relatedBean->module_dir);
+
+        if (!$relatedBean->ACLAccess('view') || !$relatedBean->ACLAccess('list')) {
+            throw new AccessDeniedException();
+        }
+
         $this->beanManager->deleteRelationshipSafe($sourceBean, $relatedBean, $linkFieldName);
 
         $response = new DocumentResponse();
@@ -233,5 +311,32 @@ class RelationshipService
         ));
 
         return $response;
+    }
+
+    /**
+     * @param string $module
+     * @throws AccessDeniedException
+     */
+    private function assertAdmin(string $module): void
+    {
+        global $current_user;
+
+        if (in_array($module, ['Users', 'Employees'], true) && !$current_user->isAdmin()) {
+            throw new AccessDeniedException();
+        }
+    }
+
+    /**
+     * @param string $module
+     * @param string $id
+     * @throws AccessDeniedException
+     */
+    private function assertSelfOrAdmin(string $module, string $id): void
+    {
+        global $current_user;
+
+        if ($module === 'Users' && !$current_user->isAdmin() && $id !== $current_user->id) {
+            throw new AccessDeniedException();
+        }
     }
 }

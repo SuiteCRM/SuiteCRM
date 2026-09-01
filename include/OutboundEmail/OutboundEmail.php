@@ -444,7 +444,8 @@ class OutboundEmail
     public function retrieve($id)
     {
         require_once('include/utils/encryption_utils.php');
-        $q = "SELECT * FROM outbound_email WHERE id = '{$id}'";
+        $quotedId =  $this->db->quote($id);
+        $q = "SELECT * FROM outbound_email WHERE id = '{$quotedId}'";
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r);
 

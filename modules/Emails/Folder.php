@@ -97,8 +97,17 @@ class Folder
     {
         $isValidator = new SuiteValidator();
         if ($isValidator->isValidId($folderId)) {
-            $result = $this->db->query("SELECT * FROM folders WHERE id='" . $folderId . "'");
+            $result = $this->db->query(
+                "SELECT f.*, ie.primary_folder, ie.mailbox AS ie_mailbox" .
+                " FROM folders f" .
+                " LEFT JOIN inbound_email ie ON ie.id = f.id AND ie.deleted = 0" .
+                " WHERE f.id='" . $folderId . "'"
+            );
             $row = $this->db->fetchByAssoc($result);
+
+            if (empty($row)) {
+                return null;
+            }
 
             // get the root of the tree
             // is the id of the root node is the same as the inbound email id
@@ -106,12 +115,18 @@ class Folder
                 // root node (inbound)
                 $this->id = $row['id'];
                 $this->type = $row['folder_type'];
-                $this->mailbox = 'INBOX'; // Top level IMAP folder
+
+                if (!empty($row['primary_folder'])) {
+                    $this->mailbox = html_entity_decode($row['primary_folder'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                } else {
+                    $mailboxes = array_filter(array_map('trim', explode(',', $row['ie_mailbox'] ?? '')));
+                    $this->mailbox = !empty($mailboxes) ? html_entity_decode(reset($mailboxes), ENT_QUOTES | ENT_HTML5, 'UTF-8') : 'INBOX';
+                }
             } else {
                 // child node
                 $this->id = $row['parent_folder'];
                 $this->type = $row['folder_type'];
-                $this->mailbox = $row['name'];
+                $this->mailbox = html_entity_decode($row['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             }
         } else {
             throw new SuiteException("Invalid or empty Email Folder ID");

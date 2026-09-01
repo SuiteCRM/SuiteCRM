@@ -53,7 +53,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * @author gyula
  */
 #[\AllowDynamicProperties]
-class ListViewColumnsParams extends BaseParam
+class ListViewColumnsParams extends BaseParam implements ModuleAwareParamInterface
 {
     
     /**

@@ -103,13 +103,13 @@ foreach ((array)$lvars as $k => $v) {
 if (isset($_SESSION['login_user_name'])) {
     $_SESSION['login_user_name'] = purify_html($_SESSION['login_user_name']);
     if (isset($_REQUEST['default_user_name'])) {
-        $login_user_name = $_REQUEST['default_user_name'];
+        $login_user_name = purify_html($_REQUEST['default_user_name']);
     } else {
         $login_user_name = $_SESSION['login_user_name'];
     }
 } else {
     if (isset($_REQUEST['default_user_name'])) {
-        $login_user_name = $_REQUEST['default_user_name'];
+        $login_user_name = purify_html($_REQUEST['default_user_name']);
     } elseif (isset($_REQUEST['ck_login_id_20'])) {
         $login_user_name = get_user_name($_REQUEST['ck_login_id_20']);
     } else {

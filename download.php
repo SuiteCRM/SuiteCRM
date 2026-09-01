@@ -80,20 +80,34 @@ if ((!isset($_REQUEST['isProfile']) && empty($_REQUEST['id'])) || empty($_REQUES
             die($app_strings['ERROR_TYPE_NOT_VALID']);
         }
 
+        // Downloads must go through the parent module, not DocumentRevisions directly
+        if ($module === 'DocumentRevisions') {
+            die($app_strings['ERROR_TYPE_NOT_VALID']);
+        }
+
         $focus = BeanFactory::newBean($module);
         $focus->retrieve($_REQUEST['id']);
-        if (!$focus->ACLAccess('view')) {
+        $isDocument = isset($focus->object_name) && $focus->object_name == 'Document';
+
+        if (empty($focus->id) && $isDocument) {
+            $focusRevision = BeanFactory::newBean('DocumentRevisions');
+            $focusRevision->retrieve($_REQUEST['id']);
+            if (!empty($focusRevision->id) && !empty($focusRevision->document_id)) {
+                $focus->retrieve($focusRevision->document_id);
+                $_REQUEST['id'] = $focusRevision->id;
+            }
+        }
+
+        if (empty($focus->id) || !$focus->ACLAccess('view')) {
             die($mod_strings['LBL_NO_ACCESS']);
-        } // if
-        // Pull up the document revision, if it's of type Document
-        if (isset($focus->object_name) && $focus->object_name == 'Document') {
-            // It's a document, get the revision that really stores this file
+        }
+
+        if ($isDocument && empty($focusRevision)) {
             $focusRevision = BeanFactory::newBean('DocumentRevisions');
             $focusRevision->retrieve($_REQUEST['id']);
 
             if (empty($focusRevision->id)) {
-                // This wasn't a document revision id, it's probably actually a document id,
-                // we need to grab the latest revision and use that
+                // ID was a document id, not a revision — grab the latest revision
                 $focusRevision->retrieve($focus->document_revision_id);
 
                 if (!empty($focusRevision->id)) {

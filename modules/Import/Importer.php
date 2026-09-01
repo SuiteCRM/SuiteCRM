@@ -388,6 +388,21 @@ class Importer
         }
 
         if ($do_save) {
+            if(!empty($focus->emailAddress->addresses) && !empty($focus->email1)) {
+                if (is_array($focus->emailAddress->addresses))
+                {
+                    foreach ($focus->emailAddress->addresses as $k => $v) {
+                        if (!empty($v['primary_address']) && $v['primary_address'] === '1') {
+                            $beanEmail = strtolower(trim($focus->emailAddress->addresses[$k]['email_address']));
+                            $importedEmail = strtolower(trim($focus->email1));
+                            if ($beanEmail !== $importedEmail) {
+                                unset($focus->emailAddress->addresses[$k]);
+                                $focus->emailAddress->addAddress($importedEmail, true, false, $focus->invalid_email, $focus->email_opt_out);
+                            }
+                        }
+                    }
+                }
+            }
             $this->saveImportBean($focus, $newRecord);
             // Update the created/updated counter
             $this->importSource->markRowAsImported($newRecord);
@@ -448,10 +463,10 @@ class Importer
             default:
                 $returnValue = $this->ifs->$fieldtype($rowValue, $fieldDef, $focus);
                 // try the default value on fail
-                if (!$returnValue && !empty($defaultRowValue)) {
+                if ($returnValue === false && !empty($defaultRowValue)) {
                     $returnValue = $this->ifs->$fieldtype($defaultRowValue, $fieldDef, $focus);
                 }
-                if (!$returnValue) {
+                if ($returnValue === false) {
                     $this->importSource->writeError($mod_strings['LBL_ERROR_INVALID_'.strtoupper($fieldtype)], $fieldTranslated, $rowValue, $focus);
                     return false;
                 }

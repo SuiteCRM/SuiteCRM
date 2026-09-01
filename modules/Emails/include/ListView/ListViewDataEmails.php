@@ -776,6 +776,13 @@ class ListViewDataEmails extends ListViewData
                         $offset
                     );
 
+                    // Inject folder info into $_REQUEST so MassUpdate::displayMassUpdate()
+                    // encodes it into the current_query_by_page hidden field, which
+                    // ListViewHeader.js reads to display the current folder name.
+                    $_REQUEST['folder'] = $folderObj->getMailbox() ?: $folder;
+                    $_REQUEST['folder_type'] = $folderObj->getType();
+                    $_REQUEST['inbound_email_record'] = $inboundEmail->id;
+
                     break;
 
                 case 'imap':

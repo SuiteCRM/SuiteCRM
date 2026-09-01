@@ -484,7 +484,7 @@ class GoogleCalendarProvider extends AbstractCalendarProvider
             $this->initializeGoogleServices();
 
             $googleEvent = $this->convertToGoogleEvent($targetEvent);
-            $this->calendarService->events->update($this->suitecrmCalendarId, $eventId, $googleEvent);
+            $this->calendarService->events->patch($this->suitecrmCalendarId, $eventId, $googleEvent);
 
             $log->info('GoogleCalendarProvider: Successfully updated event with ID: ' . $eventId);
 

@@ -3129,14 +3129,14 @@ class InboundEmail extends SugarBean
      * @param int $id
      * @return int
      */
-    private function createFolder($name, $type, $focusUser, $id = 0)
+    public function createFolder($name, $type, $focusUser, $id = 0)
     {
         $folder = new SugarFolder();
         $folder->name = $name;
         $folder->folder_type = $type;
         $folder->has_child = $id ? 1 : 0;
         $folder->is_dynamic = 1;
-        $folder->dynamic_query = $this->generateDynamicFolderQuery("sent", $focusUser->id);
+        $folder->dynamic_query = $this->generateDynamicFolderQuery($type, $focusUser->id);
         $folder->created_by = $focusUser->id;
         $folder->modified_by = $focusUser->id;
 
@@ -3153,12 +3153,24 @@ class InboundEmail extends SugarBean
     }
 
     /**
-     * @param $folderName
+     * @param string $folderName
+     * @param string|null $trashFolder Explicit trash folder name; falls back to $_REQUEST['trashFolder']
+     * @param string|null $sentFolder  Explicit sent folder name;  falls back to $_REQUEST['sentFolder']
      * @return bool
      */
-    private function folderIsRequestTrashOrSent($folderName)
+    public function folderIsRequestTrashOrSent($folderName, $trashFolder = null, $sentFolder = null)
     {
-        return $folderName == $_REQUEST['trashFolder'] || $folderName == $_REQUEST['sentFolder'];
+        $trashFolder = $trashFolder ?? ($_REQUEST['trashFolder'] ?? '');
+        $sentFolder  = $sentFolder  ?? ($_REQUEST['sentFolder']  ?? '');
+
+        if (!empty($trashFolder) && $folderName === $trashFolder) {
+            return true;
+        }
+        if (!empty($sentFolder) && $folderName === $sentFolder) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -4135,34 +4147,29 @@ class InboundEmail extends SugarBean
      *
      * @param $uid
      * @param string $type the type of text processed, either 'PLAIN' or 'HTML'
-     * @param null $structure
-     * @param null $fullHeader
      * @param bool $clean_email
-     * @param string $bcOffset
      * @return string UTF-8 encoded version of the requested message text
      */
     public function getMessageTextWithUid(
         $uid,
         $type = null,
-        $structure = null,
-        $fullHeader = null,
-        $clean_email = true,
-        $bcOffset = ''
-    ) {
+        $clean_email = true
+    ): ?string
+    {
         $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
 
         if (!empty($type) && strtolower($type) === 'text/plain') {
             $emailMessage = $this->mailParser->parse($emailBody, false)->getTextContent();
             $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
             $emailMessage = $this->customGetMessageText($emailMessage);
-            return html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, false)));
+            return $emailMessage ? html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, $clean_email))): $emailMessage;
         }
 
         $emailMessage = $this->mailParser->parse($emailBody, false)->getHtmlContent();
         $emailMessage = $this->handleInlineImages($emailBody, $emailMessage);
         $emailMessage = $this->customGetMessageText($emailMessage) ?? '';
 
-        return html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, $clean_email)));
+        return $emailMessage ? html_entity_decode(purify_html(SugarCleaner::cleanHtml($emailMessage, $clean_email))): $emailMessage;
     }
 
     /**
@@ -5547,24 +5554,14 @@ class InboundEmail extends SugarBean
                 $this->imagePrefix = 'cid:';
             }
 
-            $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
-            $contentType = $this->mailParser->parse($emailBody, false)->getHeaderValue('Content-Type');
-
-            if (!empty($contentType) && strtolower($contentType) === 'text/plain') {
-                $email->description = $this->getMessageTextWithUid(
-                    $uid,
-                    $contentType,
-                    $structure = null,
-                    $fullHeader = null,
-                    true
-                );
-            }
+            $email->description = $this->getMessageTextWithUid(
+                $uid,
+                'text/plain'
+            );
 
             $email->description_html = $this->getMessageTextWithUid(
                 $uid,
-                $structure->subtype,
-                $structure,
-                $fullHeader,
+                null,
                 $clean_email
             );
 
@@ -5820,25 +5817,13 @@ class InboundEmail extends SugarBean
 
                 $oldPrefix = $this->imagePrefix;
 
-                $emailBody = $this->imap->fetchBody($uid, '', FT_UID);
-                $contentType = $this->mailParser->parse($emailBody, false)->getHeaderValue('Content-Type');
-
-                if (!empty($contentType) && strtolower($contentType) === 'text/plain') {
-                    $email->description = $this->getMessageTextWithUid(
-                        $uid,
-                        $contentType,
-                        $structure = null,
-                        $fullHeader = null,
-                        true
-                    );
-                }
+                $email->description = $this->getMessageTextWithUid(
+                    $uid,
+                    'text/plain'
+                );
 
                 $email->description_html = $this->getMessageTextWithUid(
-                    $uid,
-                    $contentType,
-                    $structure = null,
-                    $fullHeader = null,
-                    true
+                    $uid
                 );
             } else {
                 $log->warn('Missing viewdefs in request');
@@ -6339,12 +6324,17 @@ class InboundEmail extends SugarBean
 
         //TODO figure out if the since date is UDT
         if (!is_bool($storedOptions) && $storedOptions['only_since']) {// POP3 does not support Unseen flags
-            if (!isset($storedOptions['only_since_last']) && !empty($storedOptions['only_since_last'])) {
+            if (!isset($storedOptions['only_since_last']) || empty($storedOptions['only_since_last'])) {
                 $q = "SELECT last_run FROM schedulers WHERE job = '{$this->job_name}'";
                 $r = $this->db->query($q, true);
                 $a = $this->db->fetchByAssoc($r);
 
-                $date = date('r', strtotime($a['last_run']));
+                // Pad the cutoff back by a day: IMAP's SINCE date is evaluated against the mail
+                // server's own clock/timezone, which can disagree with PHP's day boundary near
+                // midnight. UNSEEN already prevents re-processing already-handled mail, so
+                // widening this window costs a slightly larger search rather than silently
+                // skipping messages received close to a day boundary.
+                $date = date('r', strtotime($a['last_run']) - 86400);
                 LoggerManager::getLogger()->debug("-----> getNewMessageIds() executed query: {$q}");
             } else {
                 $date = $storedOptions['only_since_last'];
@@ -6377,9 +6367,18 @@ class InboundEmail extends SugarBean
      */
     public function getMessagesFromDate(string $date, bool $unSeenOnly = false): array
     {
-        $startFormatedDate = date('d-M-Y', strtotime($date));
+        $targetTimestamp = strtotime($date);
 
-        $criteria = 'ON "' . $startFormatedDate . '" UNDELETED';
+        // IMAP's ON/SINCE date criteria are day-granularity and evaluated against the mail
+        // server's own clock, with no timezone in the grammar - so a message whose sender
+        // Date: header falls on $date can have an INTERNALDATE the server considers a
+        // different calendar day (delivery near midnight, sender in a different timezone).
+        // Widen the server-side query by a day on each side to ensure no messages are missed.
+        // Deduplication is handled downstream by checking UIDs against the emails table.
+        $rangeStart = date('d-M-Y', strtotime('-1 day', $targetTimestamp));
+        $rangeEnd = date('d-M-Y', strtotime('+2 day', $targetTimestamp)); // BEFORE is exclusive
+
+        $criteria = 'SINCE "' . $rangeStart . '" BEFORE "' . $rangeEnd . '" UNDELETED';
         if ($unSeenOnly) {
             $criteria .= ' UNSEEN';
         }
@@ -6392,7 +6391,7 @@ class InboundEmail extends SugarBean
         }
 
         if (empty($ret)) {
-            $ret = [];
+            return [];
         }
 
         return $ret;
@@ -6503,7 +6502,7 @@ class InboundEmail extends SugarBean
 
         if ($requestFolder === 'inbound') {
             if (!empty($_REQUEST['folder_name'])) {
-                $this->mailbox = $_REQUEST['folder_name'];
+                $this->mailbox = html_entity_decode($_REQUEST['folder_name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
             } elseif ($this->mailboxarray && (is_countable($this->mailboxarray) ? count($this->mailboxarray) : 0)) {
                 $this->mailbox = $this->mailboxarray[0];
             } else {
@@ -6511,7 +6510,11 @@ class InboundEmail extends SugarBean
             }
         }
 
-        $connectString = $this->getConnectString($service, $this->mailbox);
+        $encodedMailbox = $this->mailbox;
+        if (function_exists('mb_convert_encoding') && in_array('UTF7-IMAP', mb_list_encodings())) {
+            $encodedMailbox = mb_convert_encoding($this->mailbox, 'UTF7-IMAP', 'UTF-8') ?: $this->mailbox;
+        }
+        $connectString = $this->getConnectString($service, $encodedMailbox);
 
         /*
          * Try to recycle the current connection to reduce response times
@@ -7052,7 +7055,9 @@ class InboundEmail extends SugarBean
         $this->filter_domain = $storedOptions['filter_domain'] ?? '';
         $this->trashFolder =  $storedOptions['trashFolder'] ?? '';
         $this->sentFolder = $storedOptions['sentFolder'] ?? '';
-        $this->mailbox = $storedOptions['mailbox'] ?? '';
+        if (!empty($storedOptions['mailbox'])) {
+            $this->mailbox = $storedOptions['mailbox'];
+        }
 
         $this->leave_messages_on_mail_server = isTrue($storedOptions['leaveMessagesOnMailServer'] ?? false);
         $this->move_messages_to_trash_after_import = !isTrue($storedOptions['leaveMessagesOnMailServer'] ?? true);

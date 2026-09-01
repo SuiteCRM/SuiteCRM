@@ -60,3 +60,44 @@ $dictionary['Employee']['fields']['email_addresses_primary']['required']=false;
 // bugs 47553 & 49716
 $dictionary['Employee']['fields']['status']['studio']=false;
 $dictionary['Employee']['fields']['status']['required']=false;
+
+// Employees is a directory view open to every authenticated user - hide internal/
+// bookkeeping and relationship-metadata fields that don't belong in that view.
+$dictionary['Employee']['fields']['UserType']['api-visible']=false;
+$dictionary['Employee']['fields']['receive_notifications']['api-visible']=false;
+$dictionary['Employee']['fields']['date_entered']['api-visible']=false;
+$dictionary['Employee']['fields']['date_modified']['api-visible']=false;
+$dictionary['Employee']['fields']['modified_user_id']['api-visible']=false;
+$dictionary['Employee']['fields']['modified_by_name']['api-visible']=false;
+$dictionary['Employee']['fields']['created_by']['api-visible']=false;
+$dictionary['Employee']['fields']['created_by_name']['api-visible']=false;
+$dictionary['Employee']['fields']['deleted']['api-visible']=false;
+$dictionary['Employee']['fields']['portal_only']['api-visible']=false;
+$dictionary['Employee']['fields']['show_on_employees']['api-visible']=false;
+$dictionary['Employee']['fields']['is_group']['api-visible']=false;
+$dictionary['Employee']['fields']['c_accept_status_fields']['api-visible']=false;
+$dictionary['Employee']['fields']['m_accept_status_fields']['api-visible']=false;
+$dictionary['Employee']['fields']['accept_status_id']['api-visible']=false;
+$dictionary['Employee']['fields']['accept_status_name']['api-visible']=false;
+$dictionary['Employee']['fields']['prospect_lists']['api-visible']=false;
+$dictionary['Employee']['fields']['eapm']['api-visible']=false;
+$dictionary['Employee']['fields']['oauth_tokens']['api-visible']=false;
+$dictionary['Employee']['fields']['project_resource']['api-visible']=false;
+$dictionary['Employee']['fields']['project_users_1']['api-visible']=false;
+$dictionary['Employee']['fields']['am_projecttemplates_resources']['api-visible']=false;
+$dictionary['Employee']['fields']['am_projecttemplates_users_1']['api-visible']=false;
+$dictionary['Employee']['fields']['SecurityGroups']['api-visible']=false;
+$dictionary['Employee']['fields']['securitygroup_noninher_fields']['api-visible']=false;
+$dictionary['Employee']['fields']['securitygroup_noninherit_id']['api-visible']=false;
+$dictionary['Employee']['fields']['securitygroup_noninheritable']['api-visible']=false;
+$dictionary['Employee']['fields']['securitygroup_primary_group']['api-visible']=false;
+$dictionary['Employee']['fields']['factor_auth']['api-visible']=false;
+$dictionary['Employee']['fields']['factor_auth_interface']['api-visible']=false;
+$dictionary['Employee']['fields']['calls']['api-visible']=false;
+$dictionary['Employee']['fields']['meetings']['api-visible']=false;
+$dictionary['Employee']['fields']['email_link_type']['api-visible']=false;
+$dictionary['Employee']['fields']['editor_type']['api-visible']=false;
+$dictionary['Employee']['fields']['reportees']['api-visible']=false;
+$dictionary['Employee']['fields']['aclroles']['api-visible']=false;
+$dictionary['Employee']['fields']['calendar_accounts']['api-visible']=false;
+$dictionary['Employee']['fields']['contacts_sync']['api-visible']=false;

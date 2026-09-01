@@ -38,6 +38,14 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+/**
+ * Redis database number
+ * Can be overridden in config_override.php:
+ * $sugar_config['external_cache']['redis']['host'] = 'localhost';
+ * $sugar_config['external_cache']['redis']['port'] = 6379;
+ * $sugar_config['external_cache']['redis']['password'] = 'Your-Password';
+ * $sugar_config['external_cache']['redis']['database'] = 0;
+ */
 
 require_once('include/SugarCache/SugarCacheAbstract.php');
 
@@ -56,6 +64,16 @@ class SugarCacheRedis extends SugarCacheAbstract
      */
     protected $_port = 6379;
     
+    /**
+     * @var Redis password string
+     */
+    protected $_password = '';
+    
+    /**
+     * @var Redis database number int
+     */
+    protected $_database = 0;
+
     /**
      * @var Redis object
      */
@@ -102,8 +120,16 @@ class SugarCacheRedis extends SugarCacheAbstract
                 $this->_redis = new Redis();
                 $this->_host = SugarConfig::getInstance()->get('external_cache.redis.host', $this->_host);
                 $this->_port = SugarConfig::getInstance()->get('external_cache.redis.port', $this->_port);
+                $this->_password = SugarConfig::getInstance()->get('external_cache.redis.password', $this->_password);
+                $this->_database = SugarConfig::getInstance()->get('external_cache.redis.database', $this->_database);
                 if (!$this->_redis->connect($this->_host, $this->_port)) {
                     return false;
+                }
+                if (!empty($this->_password)) {
+                    $this->_redis->auth($this->_password);
+                }
+                if ($this->_database > 0) {
+                    $this->_redis->select($this->_database);
                 }
             }
         } catch (RedisException $e) {

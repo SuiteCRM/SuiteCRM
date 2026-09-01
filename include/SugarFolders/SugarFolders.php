@@ -884,7 +884,7 @@ class SugarFolder
                 }
 
                 if ($a['has_child'] == 1) {
-                    $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']);
+                    $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
                     $rGetChildren = $this->db->query($qGetChildren);
 
                     while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
@@ -968,7 +968,7 @@ class SugarFolder
 
         if ($a['has_child'] == 1) {
             $this->_depth++;
-            $qGetChildren = $this->core . $this->coreWhere . " AND parent_folder = " . $this->db->quoted($a['id']);
+            $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
             $rGetChildren = $this->db->query($qGetChildren);
 
             while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
@@ -1060,7 +1060,7 @@ class SugarFolder
             $folderNode->set_property('children', array());
 
             if (in_array($a['id'], $subscriptions) && $a['has_child'] == 1) {
-                $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']);
+                $qGetChildren = $this->core . $this->coreWhere . "AND parent_folder = " . $this->db->quoted($a['id']) . $this->coreOrderBy;
                 $rGetChildren = $this->db->query($qGetChildren);
 
                 while ($aGetChildren = $this->db->fetchByAssoc($rGetChildren)) {
@@ -1541,10 +1541,41 @@ class SugarFolder
             if (isFalse($isSelected)) {
                 continue;
             }
-            $id = $folder['id'] ?? '';
 
-            if ($id === $folderId) {
+            if (($folder['id'] ?? '') === $folderId) {
                 return true;
+            }
+
+            if ($folder['has_child'] == 1) {
+                $children = $folder['children'] ?? [];
+                if (!empty($children) && $this->folderExistsInSubtree($children, $folderId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Recursively search for a folder ID within a subtree without applying
+     * the 'selected' filter — child folders don't carry that property.
+     *
+     * @param array $folders
+     * @param string $folderId
+     * @return bool
+     */
+    private function folderExistsInSubtree(array $folders, string $folderId): bool
+    {
+        foreach ($folders as $folder) {
+            if (($folder['id'] ?? '') === $folderId) {
+                return true;
+            }
+            if ($folder['has_child'] == 1) {
+                $children = $folder['children'] ?? [];
+                if (!empty($children) && $this->folderExistsInSubtree($children, $folderId)) {
+                    return true;
+                }
             }
         }
 

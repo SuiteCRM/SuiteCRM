@@ -42,12 +42,18 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-/**
- * Returns the display labels for a module path and field.
- * @param $modulePath
- * @param $field
- * @return array
- */
+function getAorAllowedFieldFunctions(): array
+{
+    $list_strings = return_app_list_strings_language('en_us');
+    return array_filter(array_keys($list_strings['aor_function_list']), 'strlen');
+}
+
+function getAorAllowedSortDirections(): array
+{
+    $list_strings = return_app_list_strings_language('en_us');
+    return array_filter(array_keys($list_strings['aor_sort_operator']), 'strlen');
+}
+
 function getDisplayForField($modulePath, $field, $reportModule)
 {
     global $app_list_strings;

@@ -99,7 +99,7 @@ function printCSV($csv, $name) {
  * @param array records an array of records if coming directly from a query
  * @return string delimited string for export
  */
-function export($type, $records = null, $members = false, $sample=false)
+function export($type, $records = null, $members = false, $sample=false, $displayHeaders=true)
 {
     global $locale;
     global $beanList;
@@ -229,7 +229,9 @@ function export($type, $records = null, $members = false, $sample=false)
     $content = '';
 
     // setup the "header" line with proper delimiters
-    $content .= "\"".implode("\"".getDelimiter()."\"", array_values($field_labels))."\"\r\n";
+    if ($displayHeaders) {
+        $content .= "\"" . implode("\"" . getDelimiter() . "\"", array_values($field_labels)) . "\"\r\n";
+    }
     $pre_id = '';
 
     if ($populate) {

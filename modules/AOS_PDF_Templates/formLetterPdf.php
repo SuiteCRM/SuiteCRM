@@ -102,6 +102,13 @@ $count = 0;
 foreach ($recordIds as $recordId) {
     $bean->retrieve($recordId);
 
+    if (!$bean->ACLAccess('view')) {
+        LoggerManager::getLogger()->security(
+            'formLetterPdf: ACL denied view for ' . $_REQUEST['module'] . '/' . $recordId
+        );
+        continue;
+    }
+
     try {
         $pdfHistory = PDFWrapper::getPDFEngine();
         $pdfHistory->configurePDF($pdfConfig);

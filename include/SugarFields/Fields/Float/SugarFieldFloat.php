@@ -84,7 +84,7 @@ class SugarFieldFloat extends SugarFieldInt
         if (!is_numeric($value)) {
             return false;
         }
-        
-        return $value;
+
+        return (float)$value;
     }
 }

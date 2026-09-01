@@ -290,8 +290,15 @@ class ModuleBuilderController extends SugarController
 
     public function action_SaveModule()
     {
+        global $log;
         $mb = new ModuleBuilder() ;
         $load = (! empty($_REQUEST [ 'original_name' ])) ? $_REQUEST [ 'original_name' ] : $_REQUEST [ 'name' ] ;
+
+        if (!isAllowedModuleName($_REQUEST[ 'name' ])) {
+            $log->security(  'Attempt to use invalid module name '. $_REQUEST[ 'name' ] );
+            throw new InvalidArgumentException('Invalid name');
+        }
+
         if (! empty($load)) {
             $mb->getPackage($_REQUEST [ 'package' ]) ;
             $mb->packages [ $_REQUEST [ 'package' ] ]->getModule($load) ;

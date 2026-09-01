@@ -49,6 +49,7 @@ class CalendarProviderRegistry
 {
 
     protected const EXTENSION_BASE_PATH = 'include/CalendarSync/Extension/CalendarProviders';
+    protected const LANGUAGE_EXTENSION_PATH = 'custom/Extension/application/Ext/Language';
     /** @var array<string, CalendarProviderType>|null */
     protected static array|null $cachedProviders = null;
     /** @var array<string, CalendarProviderType> */
@@ -164,37 +165,110 @@ class CalendarProviderRegistry
     }
 
     /**
-     * Writes calendar source types to language extension files for custom application configuration.
-     * Ensures directories exist and properly writes override labels for calendar source types.
+     * Writes calendar source types to the dedicated language extension file and triggers
+     * a language rebuild so the consolidated file is updated safely.
+     * Only writes when the source types have actually changed (new providers, modifications, or removals).
      *
      * @return void
      */
-    protected function writeCalendarSourceTypesToExtension(): void
-    {
+    protected function writeCalendarSourceTypesToExtension(): void {
         require_once 'include/utils.php';
         require_once 'include/utils/file_utils.php';
 
         $language = get_current_language();
-        $calendar_source_types = $this->getCalendarSourceTypes();
+        $calendarSourceTypes = $this->getCalendarSourceTypes();
 
-        if (empty($calendar_source_types)) {
+        if (empty($calendarSourceTypes)) {
             return;
         }
 
+        if ($this->languageExtensionMatchesSourceTypes($language, $calendarSourceTypes)) {
+            return;
+        }
+
+        $this->writeLanguageExtension($language, $calendarSourceTypes);
+        $this->rebuildLanguageCache($language);
+    }
+
+    /**
+     * Returns the path to the dedicated language extension file for the calendar registry.
+     *
+     * @param string $language The language code (e.g. 'en_us')
+     *
+     * @return string
+     */
+    protected function getLanguageExtensionPath(string $language): string {
+        return self::LANGUAGE_EXTENSION_PATH . "/$language.registry_calendar.php";
+    }
+
+    /**
+     * Checks whether the existing language extension file already contains the given source types.
+     *
+     * @param string                $language            The language code
+     * @param array<string, string> $calendarSourceTypes The current source types from the registry
+     *
+     * @return bool
+     */
+    protected function languageExtensionMatchesSourceTypes(string $language, array $calendarSourceTypes): bool {
+        $path = $this->getLanguageExtensionPath($language);
+
+        if (!file_exists($path)) {
+            return false;
+        }
+
+        $app_list_strings = [];
+        include $path;
+
+        $existingTypes = $app_list_strings['calendar_source_types'] ?? [];
+
+        ksort($existingTypes);
+        ksort($calendarSourceTypes);
+
+        return $existingTypes === $calendarSourceTypes;
+    }
+
+    /**
+     * Writes calendar source types to the dedicated language extension file.
+     *
+     * @param string                $language            The language code
+     * @param array<string, string> $calendarSourceTypes The source types to write
+     *
+     * @return void
+     */
+    protected function writeLanguageExtension(string $language, array $calendarSourceTypes): void {
+        global $log;
+        $path = $this->getLanguageExtensionPath($language);
+
+        if (!is_dir(dirname($path))
+            && !mkdir($concurrentDirectory = dirname($path), 0755, true)
+            && !is_dir($concurrentDirectory)) {
+            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+        }
+
         $theName = "app_list_strings['calendar_source_types']";
+        write_override_label_to_file($theName, $calendarSourceTypes, $path);
 
-        $registryLanguageExtensionPath = "custom/Extension/application/Ext/Language/$language.registry_calendar.php";
-        $languageExtensionPath = "custom/application/Ext/Language/$language.lang.ext.php";
+        $log->debug("[CalendarProviderRegistry][writeLanguageExtension] Updated language extension for $language");
+    }
 
-        if (!is_dir(dirname($registryLanguageExtensionPath)) && !mkdir($concurrentDirectory = dirname($registryLanguageExtensionPath), 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
-        if (!is_dir(dirname($languageExtensionPath)) && !mkdir($concurrentDirectory = dirname($languageExtensionPath), 0755, true) && !is_dir($concurrentDirectory)) {
-            throw new RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
-        }
+    /**
+     * Rebuilds the consolidated language file and clears the cache.
+     *
+     * @param string $language The language code to rebuild
+     *
+     * @return void
+     */
+    protected function rebuildLanguageCache(string $language): void {
+        global $log;
+        require_once 'ModuleInstall/ModuleInstaller.php';
 
-        write_override_label_to_file($theName, $calendar_source_types, $registryLanguageExtensionPath);
-        write_override_label_to_file($theName, $calendar_source_types, $languageExtensionPath, 'a');
+        $mi = new ModuleInstaller();
+        $mi->silent = true;
+        $mi->rebuild_languages([$language => $language]);
+
+        sugar_cache_clear('app_list_strings.' . $language);
+
+        $log->debug("[CalendarProviderRegistry][rebuildLanguageCache] Rebuilt language cache for $language");
     }
 
     /**

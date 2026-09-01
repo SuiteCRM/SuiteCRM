@@ -378,6 +378,18 @@ class SoapHelperWebServices
 
     public function checkQuery($errorObject, $query, $order_by = '')
     {
+        global $sugar_config;
+
+        if (!isset($sugar_config['disable_v4_api_query_where']) || $sugar_config['disable_v4_api_query_where'] === true) {
+            if (!empty($query)) {
+                $GLOBALS['log']->security("SoapHelperWebServices->checkQuery - query parameter blocked by disable_v4_api_query_where: $query");
+                $errorObject->set_error('no_access');
+                $this->setFaultObject($errorObject);
+
+                return false;
+            }
+        }
+
         require_once 'include/SugarSQLValidate.php';
         $valid = new SugarSQLValidate();
         if (!$valid->validateQueryClauses($query, $order_by)) {

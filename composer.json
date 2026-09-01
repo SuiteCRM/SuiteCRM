@@ -53,6 +53,7 @@
     "league/oauth2-server": "^8.5",
     "monolog/monolog": "^3",
     "nesbot/carbon": "^3",
+    "nikic/php-parser": "^5.7",
     "onelogin/php-saml": "^4",
     "phpmailer/phpmailer": "^6.0",
     "psr/container": "^1.0",

@@ -49,7 +49,7 @@ class CasesController extends SugarController
     {
         global $mod_strings;
         global $app_list_strings;
-        $search = trim($_POST['search']);
+        $search = DBManagerFactory::getInstance()->quote(trim($_POST['search']));
 
         $relevanceCalculation = "CASE WHEN name LIKE '$search' THEN 10 
                                 ELSE 0 END + CASE WHEN name LIKE '%$search%' THEN 5 

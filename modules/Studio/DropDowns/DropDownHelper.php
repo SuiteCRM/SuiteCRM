@@ -113,6 +113,11 @@ class DropDownHelper
         $count = 0;
         $dropdown = array();
         $dropdown_name = $params['dropdown_name'];
+
+        if (!is_safe_label_key($dropdown_name)) {
+            $GLOBALS['log']->security("DropDownHelper: invalid dropdown_name rejected");
+            throw new RuntimeException('Invalid dropdown name.');
+        }
         $selected_lang = (!empty($params['dropdown_lang'])?$params['dropdown_lang']:$_SESSION['authenticated_user_language']);
         $my_list_strings = return_app_list_strings_language($selected_lang);
         while (isset($params['slot_' . $count])) {
@@ -125,6 +130,11 @@ class DropDownHelper
             $key = trim($key);
             $value = trim($value);
             if (empty($params['delete_' . $index])) {
+                if ($key !== '' && !is_safe_label_key($key)) {
+                    $GLOBALS['log']->security("DropDownHelper: invalid dropdown item key rejected");
+                    $count++;
+                    continue;
+                }
                 $dropdown[$key] = $value;
             }
             $count++;
@@ -152,7 +162,7 @@ class DropDownHelper
                     $contents = preg_replace(self::getPatternMatchGlobal($dropdown_name), "\n", (string) $contents);
                     $contents = preg_replace(self::getPatternMatch($dropdown_name), "\n", $contents);
                     //add the new ones
-                    $contents .= "\n\$app_list_strings['$dropdown_name']['$key']=" . var_export_helper($value) . ";";
+                    $contents .= "\n\$app_list_strings['$dropdown_name'][" . var_export((string)$key, true) . "]=" . var_export_helper($value) . ";";
                 }
             }
         } else {
