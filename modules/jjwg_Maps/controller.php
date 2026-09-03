@@ -686,7 +686,7 @@ class jjwg_MapsController extends SugarController
                     $map_parent_type = $_REQUEST['relate_module'];
                     $map_parent_id = $_REQUEST['relate_id'];
                     $map_module_type = (!empty($_REQUEST['display_module'])) ? $_REQUEST['display_module'] : $_REQUEST['relate_module'];
-                    $map_distance = (!empty($_REQUEST['distance'])) ? (float)$_REQUEST['distance'] : $this->settings['map_default_distance'];
+                    $map_distance = (!empty($_REQUEST['distance'])) ? $_REQUEST['distance'] : $this->settings['map_default_distance'];
                     $map_unit_type = (!empty($_REQUEST['unit_type'])) ? $_REQUEST['unit_type'] : $this->settings['map_default_unit_type'];
                 }
                 // Else if a 'quick_address' use it as the Center Point (Lng/Lat)
@@ -696,7 +696,7 @@ class jjwg_MapsController extends SugarController
                         $map_parent_type = null;
                         $map_parent_id = null;
                         $map_module_type = (!empty($_REQUEST['display_module'])) ? $_REQUEST['display_module'] : $_REQUEST['relate_module'];
-                        $map_distance = (!empty($_REQUEST['distance'])) ? (float)$_REQUEST['distance'] : $this->settings['map_default_distance'];
+                        $map_distance = (!empty($_REQUEST['distance'])) ? $_REQUEST['distance'] : $this->settings['map_default_distance'];
                         $map_unit_type = (!empty($_REQUEST['unit_type'])) ? $_REQUEST['unit_type'] : $this->settings['map_default_unit_type'];
                     }
                 }
@@ -946,6 +946,18 @@ class jjwg_MapsController extends SugarController
                     "" . $this->display_object->table_name . "_cstm.jjwg_maps_lng_c != 0) " .
                     " AND " .
                     "(" . $this->display_object->table_name . "_cstm.jjwg_maps_geocode_status_c = 'OK')";
+            // FIX: Scope the query itself to the requested records (uid list, or the ids resolved
+            // from an advanced search) BEFORE the LIMIT below is applied. Previously $records was
+            // only checked in PHP after fetching, so on installs with more geocoded records than
+            // 'map_markers_limit' the requested records were frequently outside that arbitrary,
+            // unordered first page and were silently dropped.
+            if (!empty($records)) {
+                $quoted_ids = array();
+                foreach ($records as $record_id) {
+                    $quoted_ids[] = "'" . $this->bean->db->quote($record_id) . "'";
+                }
+                $where_conds .= " AND " . $this->display_object->table_name . ".id IN (" . implode(',', $quoted_ids) . ")";
+            }
             $query = $this->display_object->create_new_list_query('', $where_conds, array(), array(), 0, '', false, $this->display_object, false);
             if ($display_module == 'Contacts') { // Contacts - Account Name
                 $query = str_replace(' FROM contacts ', ' ,accounts.name AS account_name, accounts.id AS account_id  FROM contacts  ', (string) $query);
@@ -959,16 +971,30 @@ class jjwg_MapsController extends SugarController
             $display_result = $this->bean->db->limitQuery($query, 0, $this->settings['map_markers_limit']);
             $this->bean->map_markers = array();
             while ($display = $this->bean->db->fetchByAssoc($display_result)) {
+                // FIX: getMarkerData() returns false when a record's lat/lng fails range validation
+                // (is_valid_lat/is_valid_lng), which can happen even after the SQL geocode filter
+                // above, e.g. corrupted/out-of-range coordinates. The unguarded push below used to
+                // put that `false` straight into map_markers[], which the view's DataTable then
+                // chokes on ("Requested unknown parameter 'id'...") since it's not a row object.
                 if (!empty($search_array['where'])) { // Select all records (advanced search) with where clause
                     if (in_array($display['id'], $records)) {
-                        $this->bean->map_markers[] = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                        $marker_data = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                        if (!empty($marker_data)) {
+                            $this->bean->map_markers[] = $marker_data;
+                        }
                     }
                 } elseif (!empty($_REQUEST['uid'])) { // Several records selected or this page selected
                     if (in_array($display['id'], $records)) {
-                        $this->bean->map_markers[] = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                        $marker_data = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                        if (!empty($marker_data)) {
+                            $this->bean->map_markers[] = $marker_data;
+                        }
                     }
                 } else { // All
-                    $this->bean->map_markers[] = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                    $marker_data = $this->getMarkerData($display_module, $display, false, $mod_strings_display);
+                    if (!empty($marker_data)) {
+                        $this->bean->map_markers[] = $marker_data;
+                    }
                 }
             }
         }
