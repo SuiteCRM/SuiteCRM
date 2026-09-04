@@ -290,29 +290,6 @@ function display_single_update(AOP_Case_Updates $update)
 }
 
 /**
- * Displays case attachments.
- *
- * @param $case
- *
- * @return string - html link
- */
-function display_case_attachments($case)
-{
-    $html = '';
-    if(empty($case->id)){
-        return '';
-    }
-    $notes = $case->get_linked_beans('notes', 'Notes');
-    if ($notes) {
-        foreach ($notes as $note) {
-            $html .= "<a href='index.php?module=Notes&action=DetailView&record={$note->id}'>{$note->filename}</a>&nbsp;";
-        }
-    }
-
-    return $html;
-}
-
-/**
  * The Quick edit for case updates which appears under update stream
  * Also includes the javascript for AJAX update.
  *
