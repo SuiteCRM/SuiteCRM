@@ -106,11 +106,13 @@ class AOW_Condition extends Basic
                 $this->mark_deleted($post_data[$key . 'id'][$i] ?? '');
             } else {
                 $condition = BeanFactory::newBean('AOW_Conditions');
+                $condition_relation = '';
                 foreach ($this->field_defs as $field_def) {
                     $field_name = $field_def['name'];
                     if (isset($post_data[$key . $field_name][$i])) {
                         if (is_array($post_data[$key . $field_name][$i])) {
                             if ($field_name == 'module_path') {
+                                $condition_relation = $post_data[$key . $field_name][$i][0];
                                 $post_data[$key . $field_name][$i] = base64_encode(serialize($post_data[$key . $field_name][$i]));
                             } else {
                                 switch ($condition->value_type) {
@@ -123,7 +125,18 @@ class AOW_Condition extends Basic
                             }
                         } else {
                             if ($field_name === 'value' && $post_data[$key . 'value_type'][$i] === 'Value') {
-                                $post_data[$key . $field_name][$i] = fixUpFormatting($_REQUEST['flow_module'], $condition->field, $post_data[$key . $field_name][$i]);
+                                $condition_module = $_REQUEST['flow_module'] ?? '';
+                                if ($condition_relation !== $condition_module && !empty($condition_module)) {
+                                    $flow_bean = BeanFactory::newBean($condition_module);
+                                    if (!empty($flow_bean)) {
+                                        $flow_bean->load_relationship($condition_relation);
+                                        $rel_module = $flow_bean->$condition_relation->relationship->lhsLinkDef['module'];
+                                        if (!empty($rel_module) &&  $condition_module !== $rel_modules) {
+                                            $condition_module = $rel_module;
+                                        }
+                                    }
+                                }
+                                $post_data[$key . $field_name][$i] = fixUpFormatting($condition_module, $condition->field, $post_data[$key . $field_name][$i]);
                             }
                         }
                         $condition->$field_name = $post_data[$key . $field_name][$i];
