@@ -72,10 +72,28 @@ function sugar_mkdir($pathname, $mode = null, $recursive = false, $context = nul
     if (empty($mode)) {
         $mode = 0777;
     }
+
     if (empty($context)) {
-        $result = @mkdir($pathname, $mode, $recursive);
-    } else {
-        $result = @mkdir($pathname, $mode, $recursive, $context);
+        $context = null;
+    }
+
+    $result = false;
+    try {
+        $result = mkdir($pathname, $mode, $recursive, $context);
+    } catch(Throwable $e) {
+        // for hardened PHP-FPM installs without CAP_FSETID, retry the mkdir
+        // but drop the special bits from the mode (e.g. 02775 is retried as 0775)
+        if (strpos($e->getMessage(), 'not permitted') !== false) {
+            $result = @mkdir($pathname, $mode & 0777, $recursive, $context);
+        }
+    }
+    // mkdir() also emits E_WARNING on failure (not always catchable as exception),
+    // so check error_get_last() as a fallback for the same condition
+    if (!$result) {
+        $error = error_get_last();
+        if ($error !== null && strpos($error['message'], 'not permitted') !== false) {
+            $result = @mkdir($pathname, $mode & 0777, $recursive, $context);
+        }
     }
 
     if ($result) {
@@ -95,9 +113,9 @@ function sugar_mkdir($pathname, $mode = null, $recursive = false, $context = nul
     } else {
         $errorMessage = "Cannot create directory $pathname cannot be touched";
         if (is_null($GLOBALS['log'])) {
-            throw new Exception("Error occurred but the system doesn't have logger. Error message: \"$errorMessage\"");
+            throw new Exception("Error occurred in sugar_mkdir but the system doesn't have logger. Error message: \"$errorMessage\"");
         }
-        $GLOBALS['log']->error($errorMessage);
+        $GLOBALS['log']->fatal($errorMessage);
     }
 
     return $result;
@@ -297,7 +315,7 @@ function sugar_touch($filename, $time = null, $atime = null)
     // We need to check if is a local file, it can be a stream wrapper (ex: upload://myfile.txt)
     // touch is only available in local files
     $result = false;
-    if (is_string($filename) && !empty($filename) && 
+    if (is_string($filename) && !empty($filename) &&
         stream_is_local($filename)) {
         if (!empty($atime) && !empty($time)) {
             $result = @touch($filename, $time, $atime);
