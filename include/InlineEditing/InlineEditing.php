@@ -444,7 +444,17 @@ function formatDisplayValue($bean, $value, $vardef, $method = "save")
     $vardef['fields']['ID'] = $bean->id;
     $vardef['fields'][strtoupper($vardef['name'])] = $value;
     $vardef['ext2'] = '';
-
+    //If vardef has a display function that returns HTML (e.g., email_recipients), render it for DetailView
+    if (!empty($vardef['function']['returns']) && $vardef['function']['returns'] === 'html') {
+        $function = $vardef['function']['name'] ?? null;
+        if ($function) {
+            if (!empty($vardef['function']['include']) && is_file($vardef['function']['include'])) {
+                require_once($vardef['function']['include']);
+            }
+            // Pass current stored value to the renderer in DetailView context
+            return $function($bean, $vardef['name'], $value, 'DetailView');
+        }
+    }
     // If field is of type email.
     if ($vardef['name'] == "email1" && $vardef['group'] == "email1") {
         require_once("include/generic/SugarWidgets/SugarWidgetSubPanelEmailLink.php");
