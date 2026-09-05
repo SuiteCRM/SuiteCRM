@@ -42,6 +42,8 @@ if (!defined('sugarEntry')) {
     define('sugarEntry', true);
 }
 
+define ('PORTABLE_UTF8__DISABLE_AUTO_FILTER', false );
+
 include 'include/MVC/preDispatch.php';
 $startTime = microtime(true);
 require_once 'include/entryPoint.php';
