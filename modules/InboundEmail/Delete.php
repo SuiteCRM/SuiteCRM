@@ -55,4 +55,21 @@ if (empty($_REQUEST['record'])) {
     $focus->retrieve($_REQUEST['record']);
     $focus->mark_deleted($_REQUEST['record']);
     header("Location: index.php?module=".$_REQUEST['return_module']."&action=".$_REQUEST['return_action']."&record=".$_REQUEST['return_id']);
+    //delete related folders by calling delete() in SugarFolders.php
+    // Retrieve the ID of the inbound email account being deleted
+    // Create an instance of the SugarFolders class to call the delete() function
+    require_once('include/SugarFolders/SugarFolders.php');
+    $inboundEmailId = $focus->id;
+    $sugarFolder = new SugarFolder();
+    if (!empty($inboundEmailId)) {
+        if ($sugarFolder->retrieve($inboundEmailId)) {
+            $sugarFolder->delete();
+        } else {
+            // Write a fatal error to the log indicating retrieval failure
+            error_log('Failed to retrieve the sugar folder for inbound email ID: ' . $inboundEmailId);
+        }
+    } else {
+        // Write a fatal error to the log indicating null inbound email ID
+        error_log('Inbound email ID is null. Cannot proceed.');
+    }
 }
