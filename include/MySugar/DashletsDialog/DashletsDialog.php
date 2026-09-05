@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
  */
 
 
-
+require_once 'modules/ModuleBuilder/Module/IconRepository.php';
 
 class DashletsDialog
 {
@@ -168,7 +168,7 @@ class DashletsDialog
                     $cell = array( 'title' => $title,
                         'description' => $description,
                         'onclick' => 'return SUGAR.mySugar.addDashlet(\'' . $className . '\', \'' . $type . '\', \''.(!empty($dashletMeta[$files['class']]['module']) ? $dashletMeta[$files['class']]['module'] : '') .'\');',
-                        'icon' => $icon,
+                        'icon' => IconRepository::getIconName($dashletMeta[$files['class']]['module']),
                         'id' => $files['class'] . '_select',
                         'module_name'=> array_key_exists('module', $dashletsFiles[$className]) ? $dashletsFiles[$className]['module']:""
                     );
