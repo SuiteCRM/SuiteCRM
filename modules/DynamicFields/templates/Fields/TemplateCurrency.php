@@ -82,6 +82,14 @@ class TemplateCurrency extends TemplateRange
     {
         $def = parent::get_field_def();
         $def['precision'] = (!empty($this->precision)) ? $this->precision : 6;
+
+        // Len attribute correction, now sends the length with precision back for the comparison
+        $newlen = (string) $def['len'];
+        if(preg_match('/^[0-9]+$/', $newlen))
+        {
+            $def['len'] = $newlen.','.$this->precision;
+        }
+
         return $def;
     }
 
