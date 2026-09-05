@@ -1535,6 +1535,7 @@ option:checked {
 
 select[multiple] {
   background-image: none !important;
+  max-width: 215px;
   overflow: auto !important;
   vertical-align: text-top;
 }
