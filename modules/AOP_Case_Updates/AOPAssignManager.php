@@ -199,7 +199,7 @@ class AOPAssignManager
         if ($idIn) {
             $idIn = "'".$idIn."'";
         }
-        $res = $db->query("SELECT assigned_user_id, COUNT(*) AS c FROM cases WHERE assigned_user_id IN ({$idIn}) AND deleted = 0 GROUP BY assigned_user_id ORDER BY COUNT(*)");
+        $res = $db->query("SELECT u.id AS assigned_user_id, COUNT(c.id) AS c FROM users u LEFT JOIN cases c ON c.assigned_user_id = u.id AND c.deleted = 0 WHERE u.id IN ({$idIn}) GROUP BY u.id ORDER BY c ASC");
         $this->leastBusyUsers = array();
         while ($row = $db->fetchByAssoc($res)) {
             $this->leastBusyUsers[$row['assigned_user_id']] = $row['c'];
