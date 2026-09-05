@@ -226,13 +226,15 @@ class chart
         echo '</select><br /><br />';
         echo '</td>';
 
-            
+
         echo '<td scope="row_label" nowrap="nowrap" >
                   <label for="field_chart">'.$mod_strings["LBL_DATE_START"].'</label>
               </td>
               <td scope="row_val" nowrap="nowrap" >
-                  <input id="date_start" type="text" name="date_start" value="'.$start_date.'" size=8 readonly/>
-                  <span id="date_start_trigger" class="suitepicon suitepicon-module-calendar"></span>
+                  <input id="date_start" type="text" name="date_start" value="'.$start_date.'" size=10 readonly/>
+                  <button type="button" id="start_date_trigger" class="btn btn-danger" onclick="return false;">
+                        <span class="suitepicon suitepicon-module-calendar"></span>
+                  </button>
               </td>
               <td scope="row_label" nowrap="nowrap" >
                   <label for="field_chart">&nbsp;</label>
@@ -248,7 +250,7 @@ class chart
                   inputField : "date_start",
                     ifFormat : cal_date_format,
                     daFormat : "%m/%d/%Y %I:%M%P",
-                    button : "date_start_trigger",
+                    button : "start_date_trigger",
                     singleClick : true,
                     step : 1,
                     weekNumbers: false,
@@ -259,7 +261,7 @@ class chart
         echo '</tr>
               <tr>
                   <td style="padding:5px;">                             
-                      &nbsp;<a class="utilsLink" href="#" id="create_link">'.$mod_strings['LBL_RESOURCE_CHART_SEARCH_BUTTON'].'</a>
+                      &nbsp;<button class="button primary" id="create_link">'.$mod_strings['LBL_RESOURCE_CHART_SEARCH_BUTTON'].'</button>
                   </td>
               </tr>
           </table>';
@@ -295,7 +297,7 @@ class chart
             echo '</tr><tr><td rowspan="3" class="main_table day">'.$mod_strings['LBL_RESOURCE_CHART_DAY'].'</td>';
             foreach ($time_span as $year => $months) {
                 foreach ($months as $month => $days) {//count the number of days in each month
-                    
+
                     $daycount=0;
                     foreach ($days as $day) {
                         $daycount++;
@@ -475,7 +477,7 @@ class chart
             echo '<td class="main_table week">'.$mod_strings['LBL_RESOURCE_CHART_QUARTER'].'</td>';
             foreach ($time_span as $year => $quarters) {
                 foreach ($quarters as $quarter => $months) {//count the number of days in each month
-                    
+
                     echo '<td class="main_table weeks" colspan="' . (is_countable($months) ? count($months) : 0) . '">'.$quarter .'</td>';
                 }
             }
@@ -484,7 +486,7 @@ class chart
             foreach ($time_span as $year => $quarters) {
                 $qcount= 0;
                 foreach ($quarters as $quarter => $months) {//count the number of months in each quarter
-                
+
                     $qcount+= is_countable($months) ? count($months) : 0;
                 }
                 $width = $qcount * 26; //used to set width on years row. width needed for css text clipping
@@ -579,7 +581,7 @@ class chart
             $y = $dt->format('Y');
             $c = ceil($dt->format('m')/3);
             $m = mb_substr($GLOBALS['app_list_strings']['dom_cal_month_short'][$dt->format('n')], 0, 3);
-            
+
             $aResult[$y][$c][$count] = $m;
         }
 
@@ -606,7 +608,7 @@ class chart
 
             $aResult[$y][$m][] = $w;
         }
-        
+
         return array($aResult, $count);
     }
 
@@ -620,7 +622,7 @@ class chart
         $interval = new DateInterval('P1D'); // 1 month interval
         $period = new DatePeriod($begin, $interval, $end);
         $aResult = array();
-    
+
         foreach ($period as $dt) {
             $y = $dt->format('Y');
             $m = mb_substr($GLOBALS['app_list_strings']['dom_cal_month_short'][$dt->format('n')], 0, 3);
@@ -641,7 +643,7 @@ class chart
         $interval = new DateInterval('P1W'); // 1 week interval
         $period = new DatePeriod($begin, $interval, $end);
         $aResult = array();
-    
+
         foreach ($period as $dt) {
             $aResult[] = $dt->format('W');
         }
