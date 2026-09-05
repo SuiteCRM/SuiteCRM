@@ -3056,7 +3056,7 @@ abstract class DBManager
 
             foreach ($field_defs as $field => $properties) {
                 $before_value = from_html($fetched_row[$field] ?? '') ?? '';
-                $after_value = $bean->$field;
+                $after_value = from_html($bean->$field);
                 if (isset($properties['type'])) {
                     $field_type = $properties['type'];
                 } else {
