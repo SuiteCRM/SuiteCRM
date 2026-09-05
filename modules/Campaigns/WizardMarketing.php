@@ -93,6 +93,7 @@ if (isset($_REQUEST['return_id'])) {
 }
 // handle Create $module then Cancel
 $ss->assign('CAMPAIGN_ID', $campaign_focus->id);
+$ss->assign('CAMPAIGN_STATUS', $campaign_focus->status);
 
 $seps = get_number_separators();
 $ss->assign("NUM_GRP_SEP", $seps[0]);
