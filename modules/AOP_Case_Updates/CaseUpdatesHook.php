@@ -439,15 +439,21 @@ class CaseUpdatesHook
         if ($arguments['module'] !== 'Cases' || $arguments['related_module'] !== 'Contacts') {
             return;
         }
-        if (!$bean->fetched_row) {
-            return;
-        }
-        if (!empty($arguments['related_bean'])) {
-            $contact = $arguments['related_bean'];
-        } else {
-            $contact = BeanFactory::getBean('Contacts', $arguments['related_id']);
-        }
-        $this->sendCreationEmail($bean, $contact);
+
+        require_once 'include/SugarQueue/SugarJobQueue.php';
+        $scheduledJob = new SchedulersJob();
+        $scheduledJob->name = "Case Creation Email job for {$bean->id}";
+        $scheduledJob->assigned_user_id = '1';
+        $scheduledJob->data = json_encode(array(
+                'case_id' => $bean->id,
+                'contact_id' => $arguments['related_id'],
+                'type' => 'creation'
+            )
+        );
+        $scheduledJob->target = "class::CaseEmailSchedulerJob";
+
+        $queue = new SugarJobQueue();
+        $queue->submitJob($scheduledJob);
     }
 
     /**
@@ -513,7 +519,7 @@ class CaseUpdatesHook
      *
      * @return bool
      */
-    private function sendCreationEmail(aCase $bean, $contact)
+    public function sendCreationEmail(aCase $bean, $contact)
     {
         if (!isAOPEnabled()) {
             return true;
