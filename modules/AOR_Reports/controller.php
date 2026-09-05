@@ -46,7 +46,7 @@ class AOR_ReportsController extends SugarController
                 $module = $_REQUEST['aor_module'];
             }
             $val = !empty($_REQUEST['aor_value']) ? $_REQUEST['aor_value'] : '';
-            echo getModuleFields($module, $_REQUEST['view'], $val);
+            echo getModuleFields($module, $_REQUEST['view'], $val, [], [], true);
         }
         die;
     }
@@ -606,10 +606,20 @@ class AOR_ReportsController extends SugarController
                     echo "<select type='text' style='width:178px;' name='$aor_field' id='$aor_field' title='' tabindex='116'>" . getModuleFields(
                             $module,
                             $view,
-                            $value
+                            $value,
+                            [],
+                            [],
+                            true
                         ) . "</select>";
                 } else {
-                    echo getModuleFields($module, $view, $value);
+                    echo getModuleFields(
+                        $module,
+                        $view,
+                        $value,
+                        [],
+                        [],
+                        true
+                    );
                 }
                 break;
             case 'Date':
@@ -666,10 +676,20 @@ class AOR_ReportsController extends SugarController
                     echo "<select type='text' style='width:178px;' name='$aor_field' id='$aor_field' title='' tabindex='116'>" . getModuleFields(
                             $module,
                             $view,
-                            $value
+                            $value,
+                            [],
+                            [],
+                            true
                         ) . "</select>";
                 } else {
-                    echo getModuleFields($module, $view, $value);
+                    echo getModuleFields(
+                        $module,
+                        $view,
+                        $value,
+                        [],
+                        [],
+                        true
+                    );
                 }
                 break;
             case 'Date':
@@ -742,10 +762,20 @@ class AOR_ReportsController extends SugarController
                     echo "<select type='text' style='width:178px;' name='$aor_field' id='$aor_field' title='' tabindex='116'>" . getModuleFields(
                             $module,
                             $view,
-                            $value
+                            $value,
+                            [],
+                            [],
+                            true
                         ) . "</select>";
                 } else {
-                    echo getModuleFields($module, $view, $value);
+                    echo getModuleFields(
+                        $module,
+                        $view,
+                        $value,
+                        [],
+                        [],
+                        true
+                    );
                 }
                 break;
             case 'Value':
