@@ -367,11 +367,32 @@ installStatus($mod_strings['STAT_CREATE_DEFAULT_SETTINGS']);
     installerHook('pre_createDefaultSchedulers');
     $scheduler->rebuildDefaultSchedulers();
     installerHook('post_createDefaultSchedulers');
-
-
     echo $mod_strings['LBL_PERFORM_DONE'];
 
+    // default business hours
+    echo $line_entry_format.$mod_strings['LBL_PERFORM_DEFAULT_BUSINESS_HOURS'].$line_exit_format;
+    installLog($mod_strings['LBL_PERFORM_DEFAULT_BUSINESS_HOURS']);
 
+    $defaultBusinessHours = [
+        'Monday' => true,
+        'Tuesday' => true,
+        'Wednesday' => true,
+        'Thursday' => true,
+        'Friday' => true,
+        'Saturday' => false,
+        'Sunday' => false,
+    ];
+
+    foreach ($defaultBusinessHours as $day => $isOpen) {
+        $businessHours = BeanFactory::newBean('AOBH_BusinessHours');
+        $businessHours->day = $day;
+        $businessHours->open_status = $isOpen;
+        $businessHours->opening_hours = 9;
+        $businessHours->closing_hours = 17;
+        $businessHours->save();
+    }
+
+    echo $mod_strings['LBL_PERFORM_DONE'];
 
 // Enable Sugar Feeds and add all feeds by default
 installLog("Enable SugarFeeds");
