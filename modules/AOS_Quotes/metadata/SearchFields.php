@@ -1,7 +1,5 @@
 <?php
- if (!defined('sugarEntry') || !sugarEntry) {
-     die('Not A Valid Entry Point');
- }
+
 /**
  * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
  * Copyright (C) 2011 - 2025 SuiteCRM Ltd.
@@ -27,6 +25,11 @@
  * feasible for technical reasons, the Appropriate Legal Notices must display
  * the words "Supercharged by SuiteCRM".
  */
+
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
+
 $searchFields['AOS_Quotes'] =
     array(
         'name' => array( 'query_type'=>'default'),

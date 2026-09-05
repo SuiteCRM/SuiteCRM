@@ -339,6 +339,9 @@ $dictionary['AOS_Quotes'] = array(
                 'audited' => false,
                 'reportable' => false,
                 'inline_edit' => false,
+                'studio' => array(
+                    'searchview' => false,
+                    ),
                 'function' =>
                     array(
                         'name' => 'display_lines',
