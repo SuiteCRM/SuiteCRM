@@ -165,7 +165,7 @@
 
         {foreach from=$remindersData item=reminder}
 
-            <ul class="reminder_item" data-reminder-id="{$reminder.id}">
+            <ul class="reminder_item" data-reminder-id="{$reminder.id}" data-reminder-idx="{$reminder.idx}">
 
                 <span class="error-msg"></span>
 
