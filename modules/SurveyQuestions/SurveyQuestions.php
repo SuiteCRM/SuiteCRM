@@ -80,4 +80,13 @@ class SurveyQuestions extends Basic
 
         return false;
     }
+
+    public function mark_deleted($id)
+    {
+        $optionQuestionBeans = $this->get_linked_beans('surveyquestions_surveyquestionoptions');
+        foreach ($optionQuestionBeans as $optionQuestionBean) {
+            $optionQuestionBean->mark_deleted($optionQuestionBean->id);
+        }
+        parent::mark_deleted($id);
+    }
 }

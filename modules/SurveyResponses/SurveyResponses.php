@@ -229,4 +229,14 @@ class SurveyResponses extends Basic
         $emailObj->status = 'sent';
         $emailObj->save();
     }
+
+    public function mark_deleted($id)
+    {
+        $questionResponsesBeans = $this->get_linked_beans('surveyresponses_surveyquestionresponses');
+        foreach ($questionResponsesBeans as $questionResponsesBean) {
+            $questionResponsesBean->mark_deleted($questionResponsesBean->id);
+        }
+
+        parent::mark_deleted($id);
+    }
 }
