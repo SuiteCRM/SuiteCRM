@@ -44,8 +44,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
 $searchFields['EmailMan'] =
     array(
         'campaign_name' => array( 'query_type'=>'default','db_field'=>array('campaigns.name')),
-        'to_name'=> array('query_type'=>'default','db_field'=>array('contacts.first_name','contacts.last_name','leads.first_name','leads.last_name','prospects.first_name','prospects.last_name')),
-        'to_email'=> array('query_type'=>'default','db_field'=>array('contacts.email1','leads.email1','prospects.email1')),
+        'to_name'=> array('query_type'=>'default','db_field'=>array('contacts.first_name','contacts.last_name','accounts.name','leads.first_name','leads.last_name','prospects.first_name','prospects.last_name', 'users.user_name')),
+        'to_email'=> array('query_type'=>'default','operator' => 'subquery','subquery' => 'SELECT eabr.bean_id FROM email_addr_bean_rel eabr JOIN email_addresses ea ON (ea.id = eabr.email_address_id) WHERE eabr.deleted=0 AND eabr.primary_address = 1 AND eabr.deleted=0 AND ea.email_address LIKE','db_field'=>array(0 => 'related_id',),),
         'current_user_only'=> array('query_type'=>'default','db_field'=>array('assigned_user_id'),'my_items'=>true, 'vname' => 'LBL_CURRENT_USER_FILTER', 'type' => 'bool'),
         'message_name' => array( 'query_type'=>'default','db_field'=>array('email_marketing.name')),
         'send_attempts' => array( 'query_type'=>'default','db_field'=>array('emailman.send_attempts')),
