@@ -306,7 +306,19 @@ if (!defined('sugarEntry') || !sugarEntry) {
                         $aItem->parent_name_mod = $parent_data[$aItem->id]['parent_name_mod'];
                     }
                 }
+
                 $fields = $aItem->get_list_view_data();
+                $fieldDefs = $aItem->getFieldDefinitions();
+
+                foreach ($fields as $field => $value) {
+                    if (base64_decode($value, true)) {
+                        $field = strtolower($field);
+                        if ($fieldDefs[$field]['function'] && $fieldDefs[$field]['function']['returns'] === 'html') {
+                            $fields[strtoupper($field)] = call_user_func($fieldDefs[$field]['function']['name'], $aItem, $field, $value, $_REQUEST['action']);
+                        }
+                    }
+                }
+
                 if (isset($processed_ids[$aItem->id])) {
                     continue;
                 } else {
