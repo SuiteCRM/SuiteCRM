@@ -49,7 +49,7 @@
     {assign var=idname value='{{$displayParams.idName}}'}
 {{/if}}
 
-{if isset({{sugarvar key='value' string=true}}) && {{sugarvar key='value' string=true}} != ''}
+{if isset({{sugarvar key='value' string=true}})}
 	{html_radios id="$idname" {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}   name="$idname" title="{{$vardef.help}}" options={{sugarvar key='options' string=true}} selected={{sugarvar key='value' string=true}} separator="{{$vardef.separator}}"}
 {else}
 	{html_radios id="$idname" {{if !empty($displayParams.accesskey)}} accesskey='{{$displayParams.accesskey}}' {{/if}}  name="$idname" title="{{$vardef.help}}" options={{sugarvar key='options' string=true}} selected={{sugarvar key='default' string=true}} separator="{{$vardef.separator}}"}
