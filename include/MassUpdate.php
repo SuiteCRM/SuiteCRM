@@ -217,8 +217,8 @@ eoq;
                 }
 
                 if (($this->sugarbean->field_defs[$post]['type'] == 'radioenum' && isset($_POST[$post]) && strlen($value) == 0)
-                    || ($this->sugarbean->field_defs[$post]['type'] == 'enum' && $value == '__SugarMassUpdateClearField__') // Set to '' if it's an explicit clear
-                ) {
+                    || ($this->sugarbean->field_defs[$post]['type'] == 'enum'|| $this->sugarbean->field_defs[$post]['type'] == 'dynamicenum') && $value == '__SugarMassUpdateClearField__')
+                {
                     $_POST[$post] = '';
                 }
                 if ($this->sugarbean->field_defs[$post]['type'] == 'bool') {
@@ -387,8 +387,7 @@ eoq;
                         // Fix for issue 1549: mass update the cases, and change the state value from open to close,
                         // Status value can still display New, Assigned, Pending Input (even though it should not)
                         foreach ($newbean->field_name_map as $field_name) {
-                            if (isset($field_name['type']) && $field_name['type'] == 'dynamicenum') {
-                                if (isset($field_name['parentenum']) && $field_name['parentenum'] != '') {
+                            if (isset($field_name['type']) && $field_name['type'] == 'dynamicenum'&& $this->sugarbean->module_name== "Cases") {                                if (isset($field_name['parentenum']) && $field_name['parentenum'] != '') {
                                     $parentenum_name = $field_name['parentenum'];
                                     // Updated parent field value.
                                     $parentenum_value = $newbean->$parentenum_name;
@@ -579,7 +578,8 @@ eoq;
                                 $newhtml .= $this->addStatus(
                                     $displayname,
                                     $field["name"],
-                                    translate($field["options"])
+                                    translate($field["options"]),
+                                    $field["parentenum"] ?? null
                                 );
                                 break;
                             }
@@ -1164,7 +1164,7 @@ EOQ;
      * @param varname name of the variable
      * @param options array of options for status
      */
-    public function addStatus($displayname, $varname, $options)
+    public function addStatus($displayname, $varname, $options, $parentname=Null)
     {
         global $app_strings, $app_list_strings;
 
@@ -1185,8 +1185,39 @@ EOQ;
                 '__SugarMassUpdateClearField__',
                 true
             );
-            $html .= '<select id="mass_' . $varname . '" name="' . $varname . '">' . $options . '</select>';
-        } else {
+            if (isset($parentname)) {
+
+                if($this->sugarbean->field_defs[$parentname]['massupdate'] != 0){
+
+                    $parentname = 'mass_'.$parentname;
+                    $dtscript = getVersionedScript('include/SugarFields/Fields/Dynamicenum/SugarFieldDynamicenum.js');
+                    $html .= <<<EOQ
+                        {$dtscript}
+EOQ;
+                    $html .= '<select id="mass_' . $varname . '" name="' . $varname . '">' . $options . '</select>';
+                    $html .= <<<EOQ
+                    <script type="text/javascript">
+                    if (typeof de_entries == 'undefined') {
+                        var de_entries = [];
+                    }
+                    var el = document.getElementById('{$parentname}');
+                    addLoadEvent(function() {
+                        loadDynamicEnum('$parentname', 'mass_$varname');
+                    });
+                    if (SUGAR.ajaxUI && SUGAR.ajaxUI.hist_loaded) {
+                        loadDynamicEnum('$parentname', 'mass_$varname');
+                    }
+                    var childEnum = 'mass_$varname';
+                    </script>
+EOQ;
+                } else {
+                    $options = array();
+                    $options['0'] = '';      
+                    $html .= '<select id="mass_' . $varname . '" name="' . $varname . '">' . $options . '</select>';
+                }
+            } else {
+                $html .= '<select id="mass_' . $varname . '" name="' . $varname . '">' . $options . '</select>';
+            }                } else {
             $html .= $options;
         }
         $html .= '</td>';

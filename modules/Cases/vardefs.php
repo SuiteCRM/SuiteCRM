@@ -117,7 +117,6 @@ $dictionary['Case'] = array(
             'audited' => true,
             'comment' => 'The state of the case (i.e. open/closed)',
             'default' => 'Open',
-            'parentenum' => 'status',
             'merge_filter' => 'disabled',
         ),
         'status' => array(
