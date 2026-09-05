@@ -281,7 +281,11 @@ class SecurityGroup extends SecurityGroup_sugar
                 } elseif ($focus->db->dbType == 'mssql') {
                     $query .= ' lower(newid()) ';
                 }
-                $currentUserId = isset($current_user->id) ? $focus->db->quote($current_user->id) : null;
+                if (isset($focus->created_by) && $focus->created_by!= '') {
+                    $currentUserId = $focus->db->quote($focus->created_by);
+                } else {
+                    $currentUserId = isset($current_user->id) ? $focus->db->quote($current_user->id) : null;
+                }    
                 $recordId =  $focus->db->quote($focus->id);
                 $query .= ",u.securitygroup_id,'$recordId','$focus->module_dir',"
                     . $focus->db->convert('', 'today') . ',0 '
