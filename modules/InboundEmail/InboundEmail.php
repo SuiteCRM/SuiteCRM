@@ -2919,7 +2919,7 @@ class InboundEmail extends SugarBean
         if (!empty($_REQUEST['email_password'])) {
             $this->email_password = html_entity_decode((string) $_REQUEST['email_password'], ENT_QUOTES);
         }
-        $this->port = trim(isset($_REQUEST['port']) ? $_REQUEST['port'] : '');
+        $this->port = (int) unformat_number(trim(isset($_REQUEST['port'])) ? $_REQUEST['port'] : '');
         $this->protocol = isset($_REQUEST['protocol']) ? $_REQUEST['protocol'] : null;
         if ($this->protocol == "pop3") {
             $_REQUEST['mailbox'] = "INBOX";
