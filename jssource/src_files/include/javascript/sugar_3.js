@@ -799,22 +799,24 @@ function add_error_style(formname, input, txt, flash) {
           window.setTimeout('fade_error_style(style, ' + wp * 10 + ')', 1000 + (wp * 50));
         }
       }
-      if (typeof (window[formname + "_tabs"]) != "undefined") {
-        var tabView = window[formname + "_tabs"];
-        var parentDiv = YAHOO.util.Dom.getAncestorByTagName(inputHandle, "div");
-        if (tabView.get) {
-          var tabs = tabView.get("tabs");
-          for (var i in tabs) {
-            if (tabs[i].get("contentEl") == parentDiv
-              || YAHOO.util.Dom.isAncestor(tabs[i].get("contentEl"), inputHandle)) {
-              tabs[i].get("labelEl").style.color = "red";
-              if (inputsWithErrors.length == 1)
-                tabView.selectTab(i);
+      if (typeof window[formname + "_tabs"] != "undefined") {
+        if ($(".validation-message")) {
+          // Reset tab error styles
+          $("#EditView_tabs li a").removeAttr("style");
+          counter = 0;
+          $(".validation-message").each(function () {
+            // Get error validation tabs ids
+            var currentValidationTabId = $(this).closest(".tab-pane-NOBOOTSTRAPTOGGLER").attr("id").split('-').slice(-1);
+            // Get tabs
+            var $currentValidationTabA = $("#EditView_tabs a#tab" + currentValidationTabId);
+            // Apply error tab style
+            $currentValidationTabA.attr("style", "background-color:red;").closest("li");
+            if (counter == 0) {
+              $currentValidationTabA.click();
+              $currentValidationTabA.addClass("active");
             }
-          }
-          if (typeof selectTabOnErrorInputHandle == 'function') {
-            selectTabOnErrorInputHandle(inputHandle);
-          }
+            counter++;
+          });
         }
       }
       window.setTimeout("inputsWithErrors[" + (inputsWithErrors.length - 1) + "].style.backgroundColor = '';", 2000);
