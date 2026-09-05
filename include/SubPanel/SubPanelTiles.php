@@ -308,6 +308,10 @@ class SubPanelTiles
                 $div_display = $div_cookies[$cookie_name] === 'false' ? 'none' : '';
             }
 
+            if ($_REQUEST['action'] == "TrackDetailView") {
+                $div_display = 'inline';
+            }
+
             if ($div_display == 'none') {
                 $opp_display = 'inline';
                 $tabs_properties[$t]['expanded_subpanels'] = false;
