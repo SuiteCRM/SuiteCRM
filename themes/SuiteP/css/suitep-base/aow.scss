@@ -96,7 +96,11 @@
 
 #aow_conditionLines td:first-of-type button {
   margin-top: 6px;
-  line-height: 30px;
+  line-height: 1px;
+  margin-right: 18px;
+  padding: 0;
+  width: 32px;
+  height: 32px;
 }
 
 #aow_conditionLines input {
