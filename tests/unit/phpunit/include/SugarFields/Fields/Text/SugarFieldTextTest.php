@@ -47,7 +47,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 use SugarFieldText;
 use SugarTinyMCE;
 
-require_once __DIR__ . '/../../../../../../../../include/SugarFields/Fields/Text/SugarFieldText.php';
+require_once __DIR__ . '/../../../../../../../include/SugarFields/Fields/Text/SugarFieldText.php';
 
 /**
  * Class SugarFieldTextTest
@@ -102,6 +102,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error', 'info', 'debug', 'fatal', 'warn'])
             ->getMock();
 
         $mockLog->expects($this->once())
@@ -319,6 +320,7 @@ class SugarFieldTextTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error', 'info', 'debug', 'fatal', 'warn'])
             ->getMock();
 
         $mockLog->expects($this->atLeastOnce())
