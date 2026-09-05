@@ -44,7 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 require_once 'include/SugarPHPMailer.php';
 
-global $sugar_config;
+global $sugar_config, $log;
 
 $configurator = new Configurator();
 $confirmOptInEnabled = $configurator->isConfirmOptInEnabled();

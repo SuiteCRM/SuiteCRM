@@ -511,7 +511,8 @@ class EmailMan extends SugarBean
      * this function will create an email if one does not exist. also the function will load these relationships leads, accounts, contacts
      * users and targets
      *
-     * @param varchar marketing_id message id
+     * @function create_ref_email
+     * @param string $marketing_id message id
      * @param string $subject email subject
      * @param string $body_text Email Body Text
      * @param string $body_html Email Body HTML
@@ -701,7 +702,7 @@ class EmailMan extends SugarBean
      */
     public function create_indiv_email($module, $mail)
     {
-        global $locale, $timedate;
+        global $locale, $timedate, $mod_strings;
         $email = BeanFactory::newBean('Emails');
         $email->to_addrs = $module->name . '&lt;' . $module->email1 . '&gt;';
         $email->to_addrs_ids = $module->id . ';';
@@ -865,10 +866,25 @@ class EmailMan extends SugarBean
             if (isset($admin->settings['massemailer_tracking_entities_location_type']) && $admin->settings['massemailer_tracking_entities_location_type'] == '2' && isset($admin->settings['massemailer_tracking_entities_location'])) {
                 $this->tracking_url = $admin->settings['massemailer_tracking_entities_location'];
             } else {
-                $this->tracking_url = $sugar_config['site_url'];
+                $this->tracking_url = $sugar_config['site_url'];    // Can be empty!
+            }
+            if (empty($this->tracking_url)) {
+                $this->tracking_url = $_SERVER['APP_URL'] . $_SERVER['REQUEST_URI'];
+                // remove from index.php to the end (parameters and ajax).
+                $pos = strpos($this->tracking_url, 'index.php');
+                $this->tracking_url = $pos;
             }
         }
 
+        // RFC8085: Make sure the tracking_url starts with https://
+        // Remove http:// if it starts with it
+        if (strtolower(substr($this->tracking_url, 0, 7)) == 'http://') {
+            $this->tracking_url = substr($this->tracking_url, 7);
+        }
+        // Add https:// if it doesn't start with it
+        if (strtolower(substr($this->tracking_url, 0, 8)) != 'https://') {
+            $this->tracking_url = 'https://' . $this->tracking_url;
+        }
         //make sure tracking url ends with '/' character
         $strLen = strlen((string) $this->tracking_url);
         if ($this->tracking_url[$strLen - 1] != '/') {
@@ -1044,6 +1060,13 @@ class EmailMan extends SugarBean
 
             $mail->ClearCustomHeaders();
             $mail->AddCustomHeader('X-CampTrackID:' . $this->getTargetId());
+
+            // @chris001 - bug #10282 - Add RFC8058 one click unsubscribe headers to the campaign and newsletter emails.
+            // https://datatracker.ietf.org/doc/html/rfc8058
+            $unsubscribeURL = $this->tracking_url . 'index.php?entryPoint=removeme&identifier=' . $this->getTargetId();
+            $mail->AddCustomHeader('List-Unsubscribe-Post: List-Unsubscribe=One-Click');
+            $mail->AddCustomHeader('List-Unsubscribe: <' . $unsubscribeURL . '>');
+
             //CL - Bug 25256 Check if we have a reply_to_name/reply_to_addr value from the email marketing table.  If so use email marketing entry; otherwise current mailbox (inbound email) entry
             $replyToName = empty($this->current_emailmarketing->reply_to_name) ? $this->current_mailbox->get_stored_options('reply_to_name', $mail->FromName, null) : $this->current_emailmarketing->reply_to_name;
             $replyToAddr = empty($this->current_emailmarketing->reply_to_addr) ? $this->current_mailbox->get_stored_options('reply_to_addr', $mail->From, null) : $this->current_emailmarketing->reply_to_addr;
