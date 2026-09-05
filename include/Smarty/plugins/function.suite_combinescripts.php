@@ -61,7 +61,8 @@ function smarty_function_suite_combinescripts($params, &$smarty)
         $smarty->trigger_error($GLOBALS['app_strings']['ERR_MISSING_REQUIRED_FIELDS'] . 'file');
     }
 
-    $replacedFiles = str_replace("\n", '', $params['files']);
+    $replacedFiles = str_replace("\r\n", '', $params['files']);
+    $replacedFiles = str_replace("\n", '', $replacedFiles);
     $trimmedFiles = str_replace(" ", '', $replacedFiles);
 
     if (strpos($trimmedFiles, ',') !== false) {
