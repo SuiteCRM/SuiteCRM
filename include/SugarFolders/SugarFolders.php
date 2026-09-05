@@ -1293,7 +1293,23 @@ class SugarFolder
     public function save($addSubscriptions = true)
     {
         $this->dynamic_query = $this->db->quote($this->dynamic_query);
+        //Fix to mark group folders with is_group =1
+        //retreive value of is_personal for the current folder
+        //check current folder is a parent folder
+        if (!empty($this->parent_folder)) {
+            $query2 = "SELECT is_personal FROM inbound_email WHERE id = " . $this->db->quoted($this->parent_folder);
+        } else {
+            $query2 = "SELECT is_personal FROM inbound_email WHERE id = " . $this->db->quoted($this->id);
+        }
 
+        $r2 = $this->db->query($query2);
+        $is_personal = $this->db->fetchByAssoc($r2)['is_personal'];
+        // Set the value of `is_group` based on the value of `is_personal`
+        if ($is_personal == 1) {
+            $is_group = 0;
+        } else {
+            $is_group = 1;
+        }
         if ((!empty($this->id) && $this->new_with_id == false) || (empty($this->id) && $this->new_with_id == true)) {
             if (empty($this->id) && $this->new_with_id == true) {
                 $guid = create_guid();
@@ -1307,7 +1323,7 @@ class SugarFolder
                     $this->db->quoted($this->folder_type) . ", " .
                     $this->db->quoted($this->parent_folder) . ", " .
                     $this->db->quoted($this->has_child) . ", " .
-                    $this->db->quoted($this->is_group) . ", " .
+                    $this->db->quoted($is_group) . ", " . // set the value of is_group here
                     $this->db->quoted($this->is_dynamic) . ", " .
                     $this->db->quoted($this->dynamic_query) . ", " .
                     $this->db->quoted($this->assign_to_id) . ", " .
@@ -1330,7 +1346,8 @@ class SugarFolder
                 "parent_folder = " . $this->db->quoted($this->parent_folder) . ", " .
                 "dynamic_query = " . $this->db->quoted($this->dynamic_query) . ", " .
                 "assign_to_id = " . $this->db->quoted($this->assign_to_id) . ", " .
-                "modified_by = " . $this->db->quoted($this->currentUser->id) . " " .
+                "modified_by = " . $this->db->quoted($this->currentUser->id) . "," .
+                "is_group = " . $is_group . " " .
                 "WHERE id = " . $this->db->quoted($this->id);
         }
 
