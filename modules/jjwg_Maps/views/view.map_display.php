@@ -19,7 +19,7 @@ class Jjwg_MapsViewMap_Display extends SugarView
     {
         // Limit URI query string parameters. Used to avoid URL length errors.
         $valid_names = array('action', 'module', 'entryPoint', 'submit', 'cron', 'geocoding_process', 'process_trigger', 'distance', 'unit_type', 'record', 'related_id', 'related_module', 'quick_address', 'display_module', 'list_id', 'uid', 'current_post');
-        $url = $GLOBALS['sugar_config']['site_url'] . '/index.php?module=' . $GLOBALS['currentModule'] . '&action=map_markers';
+        $url = 'index.php?module=' . $GLOBALS['currentModule'] . '&action=map_markers';
         foreach (array_keys($_REQUEST) as $key) {
             if (in_array($key, $valid_names) && !in_array($key, array('action', 'module', 'entryPoint'))) {
                 $url .= '&'.$key.'='.urlencode((string)$_REQUEST[$key]);
