@@ -62,6 +62,9 @@ class BeanManager
      */
     public function getBean($module, $id = null, array $params = [], $deleted = true)
     {
+        global $disable_date_format;
+        $disable_date_format = true;
+
         return \BeanFactory::getBean($module, $id, $params, $deleted);
     }
 
