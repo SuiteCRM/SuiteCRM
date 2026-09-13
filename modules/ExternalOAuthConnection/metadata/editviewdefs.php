@@ -71,10 +71,11 @@ $viewdefs['ExternalOAuthConnection'] = [
                 ],
             ],
             'javascript' => '
-                <script type="text/javascript">
+                 <script type="text/javascript">
                     {suite_combinescripts
                         files="modules/ExternalOAuthConnection/js/fields.js,
-                               modules/ExternalOAuthConnection/js/authenticate.js
+                               modules/ExternalOAuthConnection/js/authenticate.js,
+                               modules/ExternalOAuthConnection/js/broadcast.js
                               "}
                 </script>
             '

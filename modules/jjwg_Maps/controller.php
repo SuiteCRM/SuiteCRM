@@ -686,7 +686,7 @@ class jjwg_MapsController extends SugarController
                     $map_parent_type = $_REQUEST['relate_module'];
                     $map_parent_id = $_REQUEST['relate_id'];
                     $map_module_type = (!empty($_REQUEST['display_module'])) ? $_REQUEST['display_module'] : $_REQUEST['relate_module'];
-                    $map_distance = (!empty($_REQUEST['distance'])) ? $_REQUEST['distance'] : $this->settings['map_default_distance'];
+                    $map_distance = (!empty($_REQUEST['distance'])) ? (float)$_REQUEST['distance'] : $this->settings['map_default_distance'];
                     $map_unit_type = (!empty($_REQUEST['unit_type'])) ? $_REQUEST['unit_type'] : $this->settings['map_default_unit_type'];
                 }
                 // Else if a 'quick_address' use it as the Center Point (Lng/Lat)
@@ -696,7 +696,7 @@ class jjwg_MapsController extends SugarController
                         $map_parent_type = null;
                         $map_parent_id = null;
                         $map_module_type = (!empty($_REQUEST['display_module'])) ? $_REQUEST['display_module'] : $_REQUEST['relate_module'];
-                        $map_distance = (!empty($_REQUEST['distance'])) ? $_REQUEST['distance'] : $this->settings['map_default_distance'];
+                        $map_distance = (!empty($_REQUEST['distance'])) ? (float)$_REQUEST['distance'] : $this->settings['map_default_distance'];
                         $map_unit_type = (!empty($_REQUEST['unit_type'])) ? $_REQUEST['unit_type'] : $this->settings['map_default_unit_type'];
                     }
                 }

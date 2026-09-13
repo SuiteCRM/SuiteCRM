@@ -89,7 +89,6 @@ $listViewDefs[$module_name] = [
     'assigned_user_name' => [
         'label' => 'LBL_USER',
         'module' => 'Users',
-        'id' => 'USER_ID',
         'default' => true,
         'sortable' => true,
     ],

@@ -226,7 +226,7 @@ do {
                     $mail->Host = $outboundEmailAccount->mail_smtpserver;
                     $mail->Port = $outboundEmailAccount->mail_smtpport;
 
-                    $mail->setSecureProtocol($ssltls ?? false);
+                    $mail->setSecureProtocol($outboundEmailAccount->mail_smtpssl ?? false);
                     $mail->initSMTPAuth(
                         $outboundEmailAccount->auth_type ?? '',
                         $outboundEmailAccount->external_oauth_connection_id ?? '',

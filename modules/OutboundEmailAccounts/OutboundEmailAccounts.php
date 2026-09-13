@@ -121,6 +121,7 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
                 $this->mail_smtppass = $bean->mail_smtppass;
             }
         }
+
         $this->mail_smtppass = $this->mail_smtppass ? blowfishEncode(blowfishGetKey('OutBoundEmail'), $this->mail_smtppass) : null;
 
         if ($this->auth_type === 'basic') {
@@ -390,6 +391,11 @@ class OutboundEmailAccounts extends OutboundEmailAccounts_sugar
 
         foreach ($this->field_defs as $field => $field_def) {
             if (empty($field_def['display']) || $field_def['display'] !== 'writeonly') {
+                continue;
+            }
+
+            // Skip mail_smtppass field as it is handled separately handled in save() and retrieve() methods
+            if (($field_def['name'] ?? '') === 'mail_smtppass') {
                 continue;
             }
 

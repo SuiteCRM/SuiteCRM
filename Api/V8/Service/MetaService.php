@@ -123,7 +123,7 @@ class MetaService
      */
     public function getFieldList(Request $request, GetFieldListParams $fieldListParams)
     {
-        $fieldList = $this->buildFieldList($fieldListParams->getModule());
+        $fieldList = $this->buildFieldList($fieldListParams->getModuleName());
 
         $dataResponse = new DataResponse('fields', '');
         $attributeResponse = new AttributeResponse($fieldList);
@@ -136,34 +136,22 @@ class MetaService
     }
 
     /**
-     * @param string $module
-     * @throws NotAllowedException
-     */
-    private function checkIfUserHasModuleAccess($module)
-    {
-        global $current_user;
-
-        $modules = query_module_access_list($current_user);
-        \ACLController::filterModuleList($modules, false);
-
-        if (!in_array($module, $modules, true)) {
-            throw new NotAllowedException('The API user does not have access to this module.');
-        }
-    }
-
-    /**
      * Build the list of fields for a given module.
      *
      * @param string $module
      * @return array
-     * @throws NotAllowedException
      */
     private function buildFieldList($module)
     {
-        $this->checkIfUserHasModuleAccess($module);
         $bean = $this->beanManager->newBeanSafe($module);
         $fieldList = [];
         foreach ($bean->field_defs as $fieldName => $fieldDef) {
+            $isSensitive = isTrue($fieldDef['sensitive'] ?? false);
+            $notApiVisible = isFalse($fieldDef['api-visible'] ?? true);
+            if ($isSensitive || $notApiVisible) {
+                continue;
+            }
+
             $fieldList[$fieldName] = $this->pruneVardef($fieldDef);
         }
 

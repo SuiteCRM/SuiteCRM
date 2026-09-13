@@ -169,6 +169,14 @@ if ($install_type != "module") {
     } else {
         $zip_to_dir     = $_REQUEST['zip_to_dir'];
     }
+
+    // Reject path traversal sequences in directory parameters
+    foreach (['zip_from_dir' => $zip_from_dir, 'zip_to_dir' => $zip_to_dir] as $param_name => $param_value) {
+        if (!validate_safe_path($param_value)) {
+            $GLOBALS['log']->security("UpgradeWizard_commit: path traversal blocked in $param_name: $param_value");
+            throw new RuntimeException('Security violation: directory path traversal detected.');
+        }
+    }
 }
 $remove_tables = 'true';
 if (isset($_REQUEST['remove_tables'])) {
@@ -244,6 +252,13 @@ if ($install_type == 'patch' || $install_type == 'module') {
 for ($iii = 0; $iii < $_REQUEST['copy_count']; $iii++) {
     if (isset($_REQUEST["copy_" . $iii]) && ($_REQUEST["copy_" . $iii] != "")) {
         $file_to_copy = $_REQUEST["copy_" . $iii];
+
+        // Reject path traversal sequences in filenames
+        if (!validate_safe_path($file_to_copy)) {
+            $GLOBALS['log']->security("UpgradeWizard_commit: path traversal blocked in copy_$iii: $file_to_copy");
+            throw new RuntimeException('Security violation: filename path traversal detected.');
+        }
+
         $src_file   = clean_path("$unzip_dir/$zip_from_dir/$file_to_copy");
 
         $sugar_home_dir = getCwd();
@@ -254,10 +269,21 @@ for ($iii = 0; $iii < $_REQUEST['copy_count']; $iii++) {
             $rest_file  = clean_path("$rest_dir/$file_to_copy");
         }
 
+        // Verify source path stays within unzip_dir
+        if (!is_path_within_dir($src_file, $unzip_dir)) {
+            $GLOBALS['log']->security("UpgradeWizard_commit: source path escapes unzip_dir: $src_file");
+            throw new RuntimeException('Security violation: source path traversal detected.');
+        }
+
+        // Ensure destination directory exists, then verify it stays within main dir
+        mkdir_recursive(dirname((string) $dest_file));
+        if (!is_path_within_dir($dest_file, $sugar_home_dir)) {
+            $GLOBALS['log']->security("UpgradeWizard_commit: dest path escapes sugar_home_dir: $dest_file");
+            throw new RuntimeException('Security violation: destination path traversal detected.');
+        }
+
         switch ($mode) {
             case "Install":
-                mkdir_recursive(dirname((string) $dest_file));
-
                 if ($install_type=="patch" && is_file($dest_file)) {
                     if (!is_dir(dirname((string) $rest_file))) {
                         mkdir_recursive(dirname((string) $rest_file));

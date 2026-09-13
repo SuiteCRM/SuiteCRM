@@ -27,4 +27,7 @@ return CustomLoader::mergeCustomArray([
     Helper\ModuleListProvider::class => function (Container $container) {
         return new Helper\ModuleListProvider();
     },
+    Helper\ModuleAccessChecker::class => function (Container $container) {
+        return new Helper\ModuleAccessChecker();
+    },
 ], basename(__FILE__));

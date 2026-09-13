@@ -81,12 +81,12 @@ class AOR_ReportsController extends SugarController
 
     protected function action_changeReportPage()
     {
+        $this->requireReportViewAccess();
+
         $offset = !empty($_REQUEST['offset']) ? $_REQUEST['offset'] : 0;
         $group = !empty($_REQUEST['group']) ? $_REQUEST['group'] : '';
-        if (!empty($this->bean->id)) {
-            $this->bean->user_parameters = requestToUserParameters();
-            echo $this->bean->build_group_report($offset, true, array(), $group);
-        }
+        $this->bean->user_parameters = requestToUserParameters();
+        echo $this->bean->build_group_report($offset, true, array(), $group);
 
         die();
     }
@@ -99,12 +99,12 @@ class AOR_ReportsController extends SugarController
             return;
         }
         $report = BeanFactory::getBean('AOR_Reports', $_REQUEST['record']);
-        if (!$report) {
+        if (!$report || empty($report->id)) {
             echo json_encode(array());
 
             return;
         }
-        if (empty($report->id)) {
+        if (!$report->ACLAccess('view')) {
             echo json_encode(array());
 
             return;
@@ -121,7 +121,13 @@ class AOR_ReportsController extends SugarController
             return;
         }
         $report = BeanFactory::getBean('AOR_Reports', $_REQUEST['record']);
-        if (!$report) {
+        if (!$report || empty($report->id)) {
+            echo json_encode(array());
+
+            return;
+        }
+
+        if (!$report->ACLAccess('view')) {
             echo json_encode(array());
 
             return;
@@ -135,6 +141,8 @@ class AOR_ReportsController extends SugarController
 
     protected function action_addToProspectList()
     {
+        $this->requireReportViewAccess();
+
         global $beanList;
 
         require_once('modules/Relationships/Relationship.php');
@@ -170,6 +178,8 @@ class AOR_ReportsController extends SugarController
 
     protected function action_chartReport()
     {
+        $this->requireReportViewAccess();
+
         $this->bean->build_report_chart(null, AOR_Report::CHART_TYPE_CHARTJS);
 
         die;
@@ -796,5 +806,17 @@ class AOR_ReportsController extends SugarController
             echo $app_list_strings['aor_rel_action_type_list'][$value];
         }
         die;
+    }
+
+    /**
+     * Ensure the current user has view access to the loaded report bean.
+     * Terminates the request if access is denied.
+     */
+    protected function requireReportViewAccess(): void
+    {
+        if (empty($this->bean->id) || !$this->bean->ACLAccess('view')) {
+            ACLController::displayNoAccess(true);
+            sugar_cleanup(true);
+        }
     }
 }

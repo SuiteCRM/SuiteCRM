@@ -1,22 +1,28 @@
 <?php
 /**
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
+ * Copyright (C) 2014 - 2026 SuiteCRM Ltd.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUITECRM, SUITECRM DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
- * You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation,Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301  USA
- * @Package Project templates
- * @copyright Andrew Mclaughlan 2014
- * @author Andrew Mclaughlan <andrew@mclaughlan.info>
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Supercharged by SuiteCRM" logo. If the display of the logos is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Supercharged by SuiteCRM".
  */
 
 if (!defined('sugarEntry') || !sugarEntry) {
@@ -30,6 +36,12 @@ class AM_ProjectTemplatesController extends SugarController
     //Loads the gantt view
     public function action_view_GanttChart()
     {
+        global $current_user;
+        if (!$current_user->hasActionAccess($this->module, 'view')) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            return;
+        }
         $this->view = 'GanttChart';
     }
 
@@ -38,11 +50,27 @@ class AM_ProjectTemplatesController extends SugarController
     {
         global $current_user, $db, $mod_strings;
 
+        if (!(ACLController::checkAccess('Project', 'edit'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
+        
         $project_name = $_POST['p_name'];
         $template_id = $db->quote($_POST['template_id']);
         $project_start = $_POST['start_date'];
         $copy_all = isset($_POST['copy_all_tasks']) ? 1 : 0;
+        
+        //Get the project template
+        $template = BeanFactory::newBean('AM_ProjectTemplates');
+        $template->retrieve($template_id);
 
+        if (!($template->ACLAccess('edit'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
+        
         $copy_tasks = array();
 
         if (isset($_POST['tasks']) && is_array($_POST['tasks'])) {
@@ -57,11 +85,7 @@ class AM_ProjectTemplatesController extends SugarController
         }
 
         $duration_unit = 'Days';
-
-
-        //Get the project template
-        $template = BeanFactory::newBean('AM_ProjectTemplates');
-        $template->retrieve($template_id);
+        
 
         $override_business_hours = (int)$template->override_business_hours;
 
@@ -78,7 +102,7 @@ class AM_ProjectTemplatesController extends SugarController
 
             if ($bh) {
                 $bh = $bh[0];
-                if ($bh->open) {
+                if ($bh->open_status) {
                     $open_h = $bh ? $bh->opening_hours : 9;
                     $close_h = $bh ? $bh->closing_hours : 17;
 
@@ -190,54 +214,39 @@ class AM_ProjectTemplatesController extends SugarController
             //
             //code block to calculate end date based on user's business hours
             //
-            
+
             if (isset($startdate)) {
                 $duration = $project_task->duration;
-                $enddate = $startdate;
-
+                $enddate = clone $startdate;
                 $d = 0;
 
                 while ($duration > $d) {
-                    $day = $enddate->format('l');
-
-                    if ($bhours[$day] != 0) {
+                    if ($bhours[$enddate->format('l')] != 0) {
                         $d += 1;
                     }
                     $enddate = $enddate->modify('+1 Days');
                 }
                 $enddate = $enddate->modify('-1 Days');//readjust it back to remove 1 additional day added
+                $end = $enddate->format('Y-m-d');
 
-                //----------------------------------
+                $project_task->date_start = $start;
+                $project_task->date_finish = $end;
 
-                if ($count == '1') {
-                    $project_task->date_start = $start;
-                    $end = $enddate->format('Y-m-d');
-                    $project_task->date_finish = $end;
-
-                    //add one day to let the next task start on next day of it's finish.
-                    $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d');
-                } else {
-                    $start_date = $count - 1;
-                    $startdate = DateTime::createFromFormat('Y-m-d', $enddate_array[$start_date]);
-                    $start = $startdate->format('Y-m-d');
-                    $project_task->date_start = $start;
-                    $end = $enddate->format('Y-m-d');
-                    $project_task->date_finish = $end;
-
-                    $startdate = $enddate;
-                    //add one day to let the next task start on next day of it's finish.
-                    $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d'); //$end;
-                    $enddate = $end;
-                }
+                //add one day to let the next task start on next day of its finish
+                $enddate_array[$count] = date('Y-m-d', strtotime($end . ' +1 day'));
+                $start     = $enddate_array[$count];
+                $startdate = new DateTime($start);
             }
 
             $project_task->save();
             //link tasks to the newly created project
             $project_task->load_relationship('projects');
             $project_task->projects->add($project->id);
-            //Add assinged users from each task to the project resourses subpanel
-            $project->load_relationship('project_users_1');
-            $project->project_users_1->add($row['assigned_user_id']);
+            //Add assigned users from each task to the project resources subpanel
+            if (!empty($row['assigned_user_id'])) {
+                $project->load_relationship('project_users_1');
+                $project->project_users_1->add($row['assigned_user_id']);
+            }
             $count++;
         }
 
@@ -270,9 +279,19 @@ class AM_ProjectTemplatesController extends SugarController
         include_once('modules/AM_ProjectTemplates/gantt.php');
         include_once('modules/AM_ProjectTemplates/project_table.php');
 
-        $project_template = BeanFactory::newBean('AM_ProjectTemplates');
-        $pid = $db->quote($_POST["pid"]);
-        $project_template->retrieve($pid);
+        $project_template = BeanFactory::getBean('AM_ProjectTemplates', $_POST["pid"]);
+
+        if (empty($project_template) || empty($project_template->id)) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
+
+        if (!($project_template->ACLAccess('view'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
 
         //Get project tasks
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
@@ -286,7 +305,7 @@ class AM_ProjectTemplatesController extends SugarController
 
         $start_date =  Date('Y-m-d');
 
-        $query = "select max(duration) +1 from am_tasktemplates inner join am_tasktemplates_am_projecttemplates_c on am_tasktemplates_am_projecttemplatesam_tasktemplates_idb = am_tasktemplates.id and am_tasktemplates_am_projecttemplatesam_projecttemplates_ida = '{$pid}'";
+        $query = "select max(duration) +1 from am_tasktemplates inner join am_tasktemplates_am_projecttemplates_c on am_tasktemplates_am_projecttemplatesam_tasktemplates_idb = am_tasktemplates.id and am_tasktemplates_am_projecttemplatesam_projecttemplates_ida = '{$project_template->id}'";
 
         $duration = $db->getOne($query);
 
@@ -329,11 +348,18 @@ class AM_ProjectTemplatesController extends SugarController
     //Create new project task
     public function action_update_GanttChart()
     {
-
-        global $current_user, $db;
-
+        global $current_user;
         $task_name = $_POST['task_name'];
         $project_id = $_POST['project_id'];
+
+        $project_template = BeanFactory::getBean('AM_ProjectTemplates', $project_id);
+
+        if (empty($project_template) || !($project_template->ACLAccess('edit'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
+
         $override_business_hours = (int)$_POST['override_business_hours'];
         $task_id = $_POST['task_id'] ?? '';
         $predecessor = $_POST['predecessor'];
@@ -353,13 +379,9 @@ class AM_ProjectTemplatesController extends SugarController
             }
         }
 
-        $project_template = BeanFactory::newBean('AM_ProjectTemplates');
-        $project_template->retrieve($project_id);
-
-
         $dateformat = $current_user->getPreference('datef');
 
-        $startdate = DateTime::createFromFormat("d/m/Y", "01/01/2016");
+        $startdate = empty($_POST['start']) ? new DateTime() : DateTime::createFromFormat($dateformat, $_POST['start']);
         $start = $startdate->format('Y-m-d');
 
         //Take 1 off duration so that task displays in correct number of table cells in gantt chart.
@@ -406,24 +428,39 @@ class AM_ProjectTemplatesController extends SugarController
     public function action_delete_task()
     {
         $id = $_POST['task_id'];
-        $task = BeanFactory::newBean('AM_TaskTemplates');
-        $task->retrieve($id);
-        $task->deleted = '1';
-        $task->save();
+        $task = BeanFactory::getBean('AM_TaskTemplates', $id);
+
+        if (empty($task->id)) {
+            die();
+        }
+
+        if (!($task->ACLAccess('delete'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
+
+        $task->mark_deleted($id);
     }
 
     //Returns new task start date including any lag via ajax call
     public function action_get_end_date()
     {
-        global $timeDate;
+        global $timeDate, $current_user;
         $db = DBManagerFactory::getInstance();
 
-        $timeDate = new TimeDate();
-        $id = $_POST['task_id'];
-        $lag = $_POST['lag'];
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
 
-        //Get the end date of the projectTask in raw database format
-        $query = "SELECT date_finish FROM project_task WHERE id = '{$id}'";
+        $timeDate = new TimeDate();
+        $id = $db->quote($_POST['task_id']);
+        $lag = (int) $_POST['lag'];
+
+        //Get the end date of the task template in raw database format
+        $query = "SELECT date_finish FROM am_tasktemplates WHERE id = '{$id}'";
         $end_date = $db->getOne($query);
         //Add 1 day onto end date for first day of new task
         $start_date = date('Y-m-d', strtotime($end_date. ' + 1 days'));
@@ -438,12 +475,17 @@ class AM_ProjectTemplatesController extends SugarController
     //updates the order of the tasks
     public function action_update_order()
     {
-
+        global $current_user;
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
        //convert quotes in json string back to normal
         $jArray = htmlspecialchars_decode((string) $_POST['orderArray']);
 
         //create object/array from json data
-        $orderArray = json_decode($jArray);
+        $orderArray = json_decode($jArray, true);
 
         foreach ($orderArray as $id => $order_number) {
             $task = BeanFactory::newBean('AM_TaskTemplates');
@@ -456,15 +498,25 @@ class AM_ProjectTemplatesController extends SugarController
     public function action_get_predecessors()
     {
         global $mod_strings;
-        $project_template = BeanFactory::newBean('AM_ProjectTemplates');
-        $project_template->retrieve($_REQUEST["project_id"]);
+        
+        $project_template = BeanFactory::getBean('AM_ProjectTemplates', $_REQUEST["project_id"]);
+
+        if (empty($project_template->id)) {
+            die();
+        }
+
+        if (!($project_template->ACLAccess('edit'))) {
+            SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
+            SugarApplication::redirect('index.php');
+            die();
+        }
 
         //Get tasks
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
         $tasks = $project_template->get_linked_beans('am_tasktemplates_am_projecttemplates', 'AM_TaskTemplates');
         echo '<option rel="0" value="0">'.$mod_strings["LBL_NONE"].'</option>';
         foreach ($tasks as $task) {
-            echo '<option rel="'.$task->task_number.'" value="'.$task->task_number.'">'.$task->name.'</opion>';
+            echo '<option rel="'.$task->task_number.'" value="'.$task->task_number.'">'.$task->name.'</option>';
         }
         die();
     }
@@ -489,13 +541,13 @@ class AM_ProjectTemplatesController extends SugarController
         $task->description = $description;
         //$task->actual_duration = $actual_duration;
         $task->order_number = $order_number;
-        $task_id = $task->save();
+        $task->save();
 
         $project_template = BeanFactory::newBean('AM_ProjectTemplates');
         $project_template->retrieve($project_id);
         $project_template->load_relationship('am_tasktemplates_am_projecttemplates');
         $project_template->get_linked_beans('am_tasktemplates_am_projecttemplates', 'AM_TaskTemplates');
-        $project_template->am_tasktemplates_am_projecttemplates->add($task_id);
+        $project_template->am_tasktemplates_am_projecttemplates->add($task->id);
     }
 
     public function update_task($id, $name, $start, $end, $project_id, $milestone_flag, $status, $predecessors, $rel_type, $duration, $duration_unit, $resource, $percent_complete, $description, $actual_duration)

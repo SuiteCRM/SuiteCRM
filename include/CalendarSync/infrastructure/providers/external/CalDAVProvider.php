@@ -73,7 +73,8 @@ class CalDAVProvider extends AbstractCalendarProvider
             );
 
             if ($response['httpCode'] < 200 || $response['httpCode'] >= 300) {
-                throw new RuntimeException("CalDAV server error: HTTP {$response['httpCode']}. Message: {$response['body']}");
+                $log->error("CalDAVProvider: CalDAV server error: HTTP {$response['httpCode']}. Body: {$response['body']}");
+                throw new RuntimeException("CalDAV server error: HTTP {$response['httpCode']}");
             }
 
             $log->info('CalDAVProvider: Successfully connected to CalDAV server');
@@ -162,6 +163,8 @@ class CalDAVProvider extends AbstractCalendarProvider
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($curl, CURLOPT_TIMEOUT, 30);
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+            curl_setopt($curl, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
+            curl_setopt($curl, CURLOPT_REDIR_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
             curl_setopt($curl, CURLOPT_HEADERFUNCTION, function ($_curl, $header) use (&$responseHeaders) {
                 $length = strlen($header);
                 $parts = explode(':', $header, 2);

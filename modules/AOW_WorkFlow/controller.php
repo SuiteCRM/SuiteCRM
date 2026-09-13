@@ -529,7 +529,12 @@ class AOW_WorkFlowController extends SugarController
 
     protected function action_getAction()
     {
-        global $beanList, $beanFiles;
+        global $mod_strings, $beanList, $beanFiles;
+
+        if (!isAllowedActionName($_REQUEST['aow_action'])) {
+            echo $mod_strings['LBL_ACTION_NAME_NOT_ALLOWED'];
+            die;
+        }
 
         $action_name = 'action'.$_REQUEST['aow_action'];
         $line = $_REQUEST['line'];

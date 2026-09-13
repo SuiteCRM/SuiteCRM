@@ -2687,4 +2687,67 @@ class InboundEmailTest extends SuitePHPUnitFrameworkTestCase
         self::assertIsArray($overview->fieldDefs);
         self::assertIsArray($overview->indices);
     }
+
+    // ---------------------------------------------------------------
+    // ----- getMessagesFromDate() timezone-aware search tests -------
+    // ---------------------------------------------------------------
+
+    /**
+     * Helper to build an ImapHandlerFake for getMessagesFromDate tests.
+     *
+     * @param string $expectedCriteria The IMAP search criteria string expected
+     * @param array $searchResults Message numbers returned by IMAP search
+     * @return ImapHandlerFake
+     */
+    private function buildGetMessagesFromDateFake(string $expectedCriteria, array $searchResults): ImapHandlerFake
+    {
+        $fake = new ImapHandlerFakeData();
+        $fake->add('search', [$expectedCriteria, SE_FREE, null], [$searchResults]);
+        $fake->add('check', [], [(object)['Nmsgs' => count($searchResults)]]);
+        $fake->add('getErrors', null, [false]);
+
+        return new ImapHandlerFake($fake);
+    }
+
+    public function testGetMessagesFromDateWidensSearchAndReturnsAllResults(): void
+    {
+        // All messages returned by IMAP search should be included — no post-filtering.
+        // Deduplication is handled downstream by getUnimportedMessages().
+        $expectedCriteria = 'SINCE "13-Jul-2026" BEFORE "16-Jul-2026" UNDELETED';
+
+        $imap = $this->buildGetMessagesFromDateFake($expectedCriteria, [1, 2, 3]);
+
+        $ie = new InboundEmail($imap);
+        $result = $ie->getMessagesFromDate('2026-07-14');
+
+        self::assertEquals([1, 2, 3], $result);
+    }
+
+    public function testGetMessagesFromDateAppendsUnseenFlag(): void
+    {
+        $expectedCriteria = 'SINCE "13-Jul-2026" BEFORE "16-Jul-2026" UNDELETED UNSEEN';
+
+        $imap = $this->buildGetMessagesFromDateFake($expectedCriteria, [1]);
+
+        $ie = new InboundEmail($imap);
+        $result = $ie->getMessagesFromDate('2026-07-14', true);
+
+        self::assertEquals([1], $result);
+    }
+
+    public function testGetMessagesFromDateReturnsEmptyWhenSearchReturnsFalse(): void
+    {
+        $expectedCriteria = 'SINCE "13-Jul-2026" BEFORE "16-Jul-2026" UNDELETED';
+
+        $fake = new ImapHandlerFakeData();
+        $fake->add('search', [$expectedCriteria, SE_FREE, null], [false]);
+        $fake->add('check', [], [(object)['Nmsgs' => 0]]);
+        $fake->add('getErrors', null, ['IMAP search error']);
+
+        $imap = new ImapHandlerFake($fake);
+        $ie = new InboundEmail($imap);
+        $result = $ie->getMessagesFromDate('2026-07-14');
+
+        self::assertEquals([], $result);
+    }
 }

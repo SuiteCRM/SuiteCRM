@@ -96,5 +96,16 @@ $dictionary["fp_events_prospects_1"] = array(
         1 => 'fp_events_prospects_1prospects_idb',
       ),
     ),
+    2 =>
+    array(
+      'name' => 'idx_events_prospects_prospect_id',
+      'type' => 'index',
+      'fields' =>
+      array(
+        0 => 'fp_events_prospects_1prospects_idb',
+        1 => 'deleted',
+        2 => 'fp_events_prospects_1fp_events_ida',
+      ),
+    ),
   ),
 );

@@ -62,6 +62,13 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
          $type = $_REQUEST['view_package'];
          $dir = '';
          $dropdown_name = $params['dropdown_name'];
+
+         // Validate dropdown name to prevent PHP code injection (written into language files as PHP code)
+         if (!is_safe_label_key($dropdown_name)) {
+             $GLOBALS['log']->security("ParserDropDown: invalid dropdown_name rejected");
+             throw new RuntimeException('Invalid dropdown name.');
+         }
+
          $json = getJSONobj();
 
          $list_value = str_replace('&quot;&quot;:&quot;&quot;', '&quot;__empty__&quot;:&quot;&quot;', (string) $params['list_value']);
@@ -76,6 +83,10 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
              foreach ($temp as $item) {
                  $keytemp = SugarCleaner::stripTags(from_html($item [ 0 ]), false);
                  $valuetemp = SugarCleaner::stripTags(from_html($item [ 1 ]), false);
+                 if ($keytemp !== '' && !is_safe_label_key($keytemp)) {
+                     $GLOBALS['log']->security("ParserDropDown: invalid dropdown item key rejected");
+                     continue;
+                 }
                  $dropdown[ $keytemp ] =  $valuetemp;
              }
          }
@@ -116,10 +127,10 @@ require_once('modules/ModuleBuilder/parsers/ModuleBuilderParser.php');
                      //only if the value has changed or does not exist do we want to add it this way
                      if (!isset($my_list_strings[$dropdown_name][$key]) || strcmp($my_list_strings[$dropdown_name][$key], $value) != 0) {
                          //clear out the old value
-                         $pattern_match = '/\s*\$app_list_strings\s*\[\s*\''.$dropdown_name.'\'\s*\]\[\s*\''.$key.'\'\s*\]\s*=\s*[\'\"]{1}.*?[\'\"]{1};\s*/ism';
+                         $pattern_match = '/\s*\$app_list_strings\s*\[\s*\''.$dropdown_name.'\'\s*\]\[\s*\''.preg_quote($key, '/').'\'\s*\]\s*=\s*[\'\"]{1}.*?[\'\"]{1};\s*/ism';
                          $contents = preg_replace($pattern_match, "\n", (string) $contents);
                          //add the new ones
-                         $contents .= "\n\$app_list_strings['$dropdown_name']['$key']=" . var_export_helper($value) . ";";
+                         $contents .= "\n\$app_list_strings['$dropdown_name'][" . var_export((string)$key, true) . "]=" . var_export_helper($value) . ";";
                      }
                  }
              } else {

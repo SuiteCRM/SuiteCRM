@@ -50,7 +50,8 @@ if (!empty($_REQUEST['record'])) {
     $document = BeanFactory::newBean('Documents');
     $document->retrieve($_REQUEST['record']);
     if (!empty($document->document_revision_id) && !empty($_REQUEST['get_latest_for_id'])) {
-        $query="update linked_documents set document_revision_id='{$document->document_revision_id}', date_modified='".TimeDate::getInstance()->nowDb()."' where id ='{$_REQUEST['get_latest_for_id']}' ";
+        $safe_id = $document->db->quote($_REQUEST['get_latest_for_id']);
+        $query="update linked_documents set document_revision_id='{$document->document_revision_id}', date_modified='".TimeDate::getInstance()->nowDb()."' where id ='{$safe_id}' ";
         $document->db->query($query);
     }
 }

@@ -6,7 +6,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[\AllowDynamicProperties]
-class CreateModuleParams extends BaseParam
+class CreateModuleParams extends BaseParam implements ModuleAwareParamInterface
 {
     /**
      * @return CreateModuleDataParams
@@ -14,6 +14,14 @@ class CreateModuleParams extends BaseParam
     public function getData()
     {
         return $this->parameters['data'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getModuleName()
+    {
+        return $this->getData()->getType();
     }
 
     /**

@@ -98,6 +98,12 @@ class ListViewSearchService
     protected function getDataTranslated($trans, $data, $part, $valueKey, $displayColumns)
     {
         foreach ($data[$part] as $key => $value) {
+            // some layouts (e.g. Users' advanced_search) list fields as plain name strings
+            // rather than ['name' => ...] arrays
+            if (!is_array($value)) {
+                $value = ['name' => $value];
+            }
+
             $text = null;
             if (isset($value[$valueKey])) {
                 $text = $value[$valueKey];
@@ -106,9 +112,10 @@ class ListViewSearchService
             } else {
                 \LoggerManager::getLogger()->warn("Not found translation text key for search defs for selected module field: $key");
             }
-            
+
             $label = $text ? $trans->getText($text) : $text;
-            $data[$part][$key][$valueKey] = $label;
+            $value[$valueKey] = $label;
+            $data[$part][$key] = $value;
         }
         
         return $data;

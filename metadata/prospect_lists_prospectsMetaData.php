@@ -90,6 +90,8 @@ $dictionary['prospect_lists_prospects'] = array(
             'fields' => array(
                 'prospect_list_id',
                 'deleted',
+                'related_type',
+                'related_id',
             ),
         ),
         array(

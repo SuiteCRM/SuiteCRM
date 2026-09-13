@@ -702,6 +702,26 @@ class EmailsController extends SugarController
     }
 
     /**
+     * @param InboundEmail $inboundEmail
+     * @param array $request
+     */
+    private function setMailboxFromRequest(InboundEmail $inboundEmail, array $request): void
+    {
+        if (!empty($request['folders_id'])) {
+            include_once 'modules/Emails/Folder.php';
+            try {
+                $folder = new Folder();
+                $folder->retrieve($request['folders_id']);
+                $inboundEmail->mailbox = $folder->getMailbox();
+            } catch (\SuiteException $e) {
+                LoggerManager::getLogger()->warn('setMailboxFromRequest: invalid folders_id — ' . $e->getMessage());
+            }
+        } elseif (!empty($request['folder']) && !in_array($request['folder'], ['sent', 'inbound'], true)) {
+            $inboundEmail->mailbox = html_entity_decode($request['folder'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+    }
+
+    /**
      * @throws SugarControllerException
      */
     public function action_DeleteFromImap()
@@ -720,6 +740,8 @@ class EmailsController extends SugarController
         }
 
         $inboundEmail = BeanFactory::getBean('InboundEmail', $db->quote($emailID));
+
+        $this->setMailboxFromRequest($inboundEmail, $_REQUEST);
 
         if (is_array($uid)) {
             $uid = implode(',', $uid);
@@ -759,7 +781,7 @@ class EmailsController extends SugarController
         // and select the folder
 
         $ie = $this->getInboundEmail($request['inbound_email_record']);
-        $ie->mailbox = $request['folder'];
+        $this->setMailboxFromRequest($ie, $request);
         $ie->connectMailserver();
 
         // get requested UIDs and flag type

@@ -1125,7 +1125,7 @@ class Imap2Handler implements ImapHandlerInterface
 
         if ($messageSet === null && $client->getCapability('SORT') !== false) {
 
-            $result = $client->sort($this->getStream()->getMailboxName(), 'REVERSE ' . $field, "$start:$end",
+            $result = $client->sort($this->getStream()->getMailboxName(), 'REVERSE ' . $field, "UNDELETED $start:$end",
                 $returnUid, 'UTF-8');
 
             if (empty($result) || empty($result->count())) {

@@ -276,6 +276,7 @@ echo '
         } else {
             var mb = document.getElementById("mailbox");
             mb.value = selectedmbox;
+            mb.dispatchEvent(new Event("change"));
         }
         SUGAR.inboundEmail.listDlg.hide();
      }

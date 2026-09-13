@@ -85,6 +85,11 @@ $dictionary['email_marketing_prospect_lists'] = array(
                                 'prospect_list_id'
                         )
         ),
+        array(
+            'name' => 'idx_emp_prospect_list_id',
+            'type' => 'index',
+            'fields' => array('prospect_list_id', 'deleted')
+        ),
     ),
     
     'relationships' => array(

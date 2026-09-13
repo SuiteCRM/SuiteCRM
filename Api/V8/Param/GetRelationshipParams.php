@@ -6,7 +6,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 #[\AllowDynamicProperties]
-class GetRelationshipParams extends BaseParam
+class GetRelationshipParams extends BaseParam implements ModuleAwareParamInterface
 {
     /**
      * @return string

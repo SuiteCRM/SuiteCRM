@@ -113,7 +113,8 @@ $viewdefs ['InboundEmail'] = [
                                modules/InboundEmail/js/auth_type_fields_toggle.js,
                                modules/InboundEmail/js/owner_toggle.js,
                                modules/InboundEmail/js/test_configuration.js,
-                               modules/InboundEmail/js/panel_toggle.js"}
+                               modules/InboundEmail/js/panel_toggle.js,
+                               modules/InboundEmail/js/primary_folder.js"}
                 </script>
             '
         ],
@@ -148,26 +149,31 @@ $viewdefs ['InboundEmail'] = [
                     [
                         'name' => 'mailbox',
                         'vname' => 'LBL_MAILBOX',
-                        'customCode' => '<div style="display: flex; align-items:baseline;"><input id="mailbox" name="mailbox" tabindex="90" size="30" maxlength="500" type="text" value="{$fields.mailbox.value}"/> <input type="button" id="subscribeFolderButton" class="button" onclick="openMailboxPopup()" value="{$MOD.LBL_SELECT}"/></div>',
+                        'customCode' => '<div style="display: flex; align-items:baseline;"><input id="mailbox" name="mailbox" tabindex="90" size="30" maxlength="500" type="text" value="{$fields.mailbox.value}" style="cursor: default;" readonly/> <input type="button" id="subscribeFolderButton" class="button" onclick="openMailboxPopup()" value="{$MOD.LBL_SELECT}"/></div>',
                     ]
                 ],
                 [
                     'is_ssl',
+                    [
+                        'name' => 'primary_folder',
+                        'vname' => 'LBL_PRIMARY_FOLDER',
+                        'customCode' => '<select id="primary_folder" name="primary_folder" data-selected="{$fields.primary_folder.value}"></select>',
+                    ]
+                ],
+                [
+                    'connection_string',
                     [
                         'name' => 'trashFolder',
                         'customCode' => '<div style="display: flex; align-items:baseline;"><input name="trashFolder" id="trashFolder" tabindex="92" value="{$fields.trashFolder.value}" size=\'30\' maxlength=\'100\' type="text"/> <input type="button" id="trashFolderButton" class="button" onclick="openTrashMailboxPopup()" value="{$MOD.LBL_SELECT}"/></div>',
                     ]
                 ],
                 [
-                    'connection_string',
+                    'email_body_filtering',
                     [
                         'name' => 'sentFolder',
 
                         'customCode' => '<div style="display: flex; align-items:baseline;"><input id="sentFolder" name="sentFolder" tabindex="95" size="30" maxlength="100" type="text" value="{$fields.sentFolder.value}"/> <input type="button" id="sentFolderButton" class="button" onclick="openSentMailboxPopup()" value="{$MOD.LBL_SELECT}"/></div>',
                     ]
-                ],
-                [
-                    'email_body_filtering',
                 ],
             ],
             'lbl_outbound_configuration' => [

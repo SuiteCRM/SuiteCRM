@@ -442,7 +442,11 @@ class ImapHandler implements ImapHandlerInterface
     public function getHeaderInfo($msg_number, $fromLength = 0, $subjectLength = 0, $defaultHost = null)
     {
         $this->logCall(__FUNCTION__, func_get_args());
-        $ret = imap_headerinfo($this->getStream(), $msg_number, $fromLength, $subjectLength, $defaultHost);
+        // imap_headerinfo() dropped its $defaulthost (5th) parameter in PHP 8.1, which now
+        // throws ArgumentCountError if passed.
+        $ret = PHP_VERSION_ID >= 80100
+            ? imap_headerinfo($this->getStream(), $msg_number, $fromLength, $subjectLength)
+            : imap_headerinfo($this->getStream(), $msg_number, $fromLength, $subjectLength, $defaultHost);
         if (!$ret) {
             $this->log('IMAP get header info error');
         }

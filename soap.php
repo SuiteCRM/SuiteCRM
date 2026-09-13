@@ -58,18 +58,10 @@ require_once('modules/Cases/Case.php');
 
 global $HTTP_RAW_POST_DATA;
 
-$administrator = BeanFactory::newBean('Administration');
-$administrator->retrieveSettings();
-
 // Sugarcrm namespace is necessary for backwards compatibility with existing SOAP clients
 $NAMESPACE = 'http://www.sugarcrm.com/sugarcrm';
 $server = new soap_server;
 $server->configureWSDL('sugarsoap', $NAMESPACE, $sugar_config['site_url'].'/soap.php');
-
-//New API is in these files
-if (!empty($administrator->settings['portal_on'])) {
-    require_once('soap/SoapPortalUsers.php');
-}
 
 require_once('soap/SoapSugarUsers.php');
 //require_once('soap/SoapSugarUsers_version2.php');

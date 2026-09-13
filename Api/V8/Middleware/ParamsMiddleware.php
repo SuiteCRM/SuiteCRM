@@ -1,8 +1,10 @@
 <?php
 namespace Api\V8\Middleware;
 
+use Api\V8\Helper\ModuleAccessChecker;
 use Api\V8\JsonApi\Response\ErrorResponse;
 use Api\V8\Param\BaseParam;
+use Api\V8\Param\ModuleAwareParamInterface;
 use Exception;
 use LoggerManager;
 use RuntimeException;
@@ -24,14 +26,21 @@ class ParamsMiddleware
     private $beanManager;
 
     /**
+     * @var ModuleAccessChecker
+     */
+    private $moduleAccessChecker;
+
+    /**
      * ParamsMiddleware constructor.
      * @param BaseParam $params
      * @param BeanManager $beanManager
+     * @param ModuleAccessChecker $moduleAccessChecker
      */
-    public function __construct(BaseParam $params, BeanManager $beanManager)
+    public function __construct(BaseParam $params, BeanManager $beanManager, ModuleAccessChecker $moduleAccessChecker)
     {
         $this->params = $params;
         $this->beanManager = $beanManager;
+        $this->moduleAccessChecker = $moduleAccessChecker;
     }
 
     /**
@@ -47,6 +56,11 @@ class ParamsMiddleware
             $this->setCurrentUserGlobal($request);
             $parameters = $this->getParameters($request);
             $this->params->configure($parameters);
+
+            if ($this->params instanceof ModuleAwareParamInterface) {
+                $this->moduleAccessChecker->checkAccess($this->params->getModuleName());
+            }
+
             $request = $request->withAttribute('params', $this->params);
         } catch (Exception $exception) {
             $response = new ErrorResponse();

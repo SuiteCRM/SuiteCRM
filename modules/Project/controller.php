@@ -1,23 +1,29 @@
 <?php
 /**
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU AFFERO GENERAL PUBLIC LICENSE as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
+ * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
+ * Copyright (C) 2014 - 2026 SuiteCRM Ltd.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY SUITECRM, SUITECRM DISCLAIMS THE
+ * WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
- * You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE
- * along with this program; if not, see http://www.gnu.org/licenses
- * or write to the Free Software Foundation,Inc., 51 Franklin Street,
- * Fifth Floor, Boston, MA 02110-1301  USA
- * @copyright Andrew Mclaughlan 2014
- * @author Andrew Mclaughlan <andrew@mclaughlan.info>
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * In accordance with Section 7(b) of the GNU Affero General Public License
+ * version 3, these Appropriate Legal Notices must retain the display of the
+ * "Supercharged by SuiteCRM" logo. If the display of the logos is not reasonably
+ * feasible for technical reasons, the Appropriate Legal Notices must display
+ * the words "Supercharged by SuiteCRM".
  */
-
 
 if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
@@ -30,7 +36,7 @@ class ProjectController extends SugarController
     public function action_view_GanttChart()
     {
         global $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'view')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
@@ -44,7 +50,7 @@ class ProjectController extends SugarController
     public function action_generate_chart()
     {
         global $current_user, $current_language;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'view')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
@@ -112,15 +118,15 @@ class ProjectController extends SugarController
     public function action_update_GanttChart()
     {
         global $current_user;
-        $db = DBManagerFactory::getInstance();
 
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
         }
+        $db = DBManagerFactory::getInstance();
         $task_name = $_POST['task_name'];
-        $project_id = $_POST['project_id'];
+        $project_id = $db->quote($_POST['project_id']);
         $override_business_hours = (int)$_POST['override_business_hours'];
         $task_id = $_POST['task_id'] ?? '';
         $predecessor = $_POST['predecessor'];
@@ -249,17 +255,20 @@ class ProjectController extends SugarController
     //mark project task as deleted
     public function action_delete_task()
     {
-        global $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        $id = $_POST['task_id'];
+        $task = BeanFactory::getBean('ProjectTask', $id);
+
+        if (empty($task->id)) {
+            die();
+        }
+
+        if (!($task->ACLAccess('delete'))) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
-            return;
+            die();
         }
-        $id = $_POST['task_id'];
-        $task = BeanFactory::newBean('ProjectTask');
-        $task->retrieve($id);
-        $task->deleted = '1';
-        $task->save();
+
+        $task->mark_deleted($id);
     }
 
     //Returns new task start date including any lag via ajax call
@@ -268,15 +277,15 @@ class ProjectController extends SugarController
         global  $timeDate, $current_user;
         $db = DBManagerFactory::getInstance();
 
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
-            return;
+            die();
         }
 
         $timeDate = new TimeDate();
-        $id = $_POST['task_id'];
-        $lag = $_POST['lag'];
+        $id = $db->quote($_POST['task_id']);
+        $lag = (int) $_POST['lag'];
 
         //Get the end date of the projectTask in raw database format
         $query = "SELECT date_finish FROM project_task WHERE id = '{$id}'";
@@ -295,7 +304,7 @@ class ProjectController extends SugarController
     public function action_update_order()
     {
         global $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
@@ -317,20 +326,26 @@ class ProjectController extends SugarController
     public function action_get_predecessors()
     {
 
-        global $mod_strings, $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        global $mod_strings;
+
+        $projectTemplate = BeanFactory::getBean('Project', $_REQUEST["project_id"]);
+
+        if (empty($projectTemplate->id)) {
+            die();
+        }
+
+        if (!($projectTemplate->ACLAccess('edit'))) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
-            return;
+            die();
         }
-        $project = BeanFactory::newBean('Project');
-        $project->retrieve($_REQUEST["project_id"]);
+
         //Get project tasks
         $Task = BeanFactory::getBean('ProjectTask');
-        $tasks = $Task->get_full_list("order_number", "project_task.project_id = '".$project->id."'");
+        $tasks = $Task->get_full_list("order_number", "project_task.project_id = '".$projectTemplate->id."'");
         echo '<option rel="0" value="0">'.$mod_strings['LBL_PROJECT_PREDECESSOR_NONE'].'</option>';
         foreach ($tasks as $task) {
-            echo '<option rel="'.$task->id.'" value="'.$task->project_task_id.'">'.$task->name.'</opion>';
+            echo '<option rel="'.$task->id.'" value="'.$task->project_task_id.'">'.$task->name.'</option>';
         }
         die();
     }
@@ -387,7 +402,7 @@ class ProjectController extends SugarController
     public function action_ResourceList()
     {
         global $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'view')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
@@ -399,7 +414,7 @@ class ProjectController extends SugarController
     public function action_update_chart()
     {
         global $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'edit')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;
@@ -548,7 +563,7 @@ class ProjectController extends SugarController
     public function action_Tooltips()
     {
         global $mod_strings, $current_user;
-        if (!$current_user->hasActionAccess($this->module, $this->action)) {
+        if (!$current_user->hasActionAccess($this->module, 'view')) {
             SugarApplication::appendErrorMessage(translate('LBL_NO_ACCESS', 'ACL'));
             SugarApplication::redirect('index.php');
             return;

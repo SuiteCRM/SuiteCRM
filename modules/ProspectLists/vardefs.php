@@ -227,7 +227,7 @@ $dictionary['ProspectList'] = array(
         array(
             'name' => 'idx_prospect_list_name',
             'type' => 'index',
-            'fields' => array('name')
+            'fields' => array('name', 'deleted')
         ),
     ),
     'relationships' => array(

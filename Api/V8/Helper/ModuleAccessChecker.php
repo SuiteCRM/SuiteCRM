@@ -1,6 +1,7 @@
+<?php
 /**
  * SuiteCRM is a customer relationship management program developed by SuiteCRM Ltd.
- * Copyright (C) 2014 - 2026 SuiteCRM Ltd.
+ * Copyright (C) 2026 SuiteCRM Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -24,15 +25,45 @@
  * the words "Supercharged by SuiteCRM".
  */
 
-function project_delete(){
-    var msg = SUGAR.language.get('Project', 'LBL_PROJECT_DELETE_MSG');
-    var form = document.getElementById('formDetailView');
+namespace Api\V8\Helper;
 
-    if(confirm(msg)){
-        form.return_module.value='Project';
-        form.return_action.value='ListView';
-        form.action.value='Delete';
-        form.submit();
+use ACLController;
+use SuiteCRM\Exception\NotAllowedException;
+
+/**
+ * Class ModuleAccessChecker
+ * @package Api\V8\Helper
+ */
+#[\AllowDynamicProperties]
+class ModuleAccessChecker
+{
+    /**
+     * @param string $module
+     * @throws NotAllowedException
+     */
+    public function checkAccess(string $module): void
+    {
+        global $current_user, $adminOnlyList;
+
+        // not in $moduleList, so the tab check below would reject it for everyone; row/field-level
+        // enforcement happens in ModuleService instead
+        if ($module === 'Users' || $module === 'Employees') {
+            return;
+        }
+
+        if (!empty($adminOnlyList[$module])) {
+            if (!$current_user->isAdmin()) {
+                throw new NotAllowedException('The API user does not have access to this module.');
+            }
+
+            return;
+        }
+
+        $modules = query_module_access_list($current_user);
+        ACLController::filterModuleList($modules, false);
+
+        if (!in_array($module, $modules, true)) {
+            throw new NotAllowedException('The API user does not have access to this module.');
+        }
     }
 }
-

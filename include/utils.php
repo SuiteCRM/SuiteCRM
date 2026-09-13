@@ -153,6 +153,7 @@ function make_sugar_config(&$sugar_config)
         'default_user_name' => empty($default_user_name) ? '' : $default_user_name,
         'disable_export' => empty($disable_export) ? false : $disable_export,
         'disable_persistent_connections' => empty($disable_persistent_connections) ? false : $disable_persistent_connections,
+        'disable_v4_api_query_where' => true,
         'display_email_template_variable_chooser' => empty($display_email_template_variable_chooser) ? false : $display_email_template_variable_chooser,
         'display_inbound_email_buttons' => empty($display_inbound_email_buttons) ? false : $display_inbound_email_buttons,
         'google_auth_json' => empty($google_auth_json) ? '' : $google_auth_json,
@@ -388,6 +389,7 @@ function get_sugar_config_defaults(): array
         'default_user_name' => '',
         'disable_export' => false,
         'disable_persistent_connections' => return_session_value_or_default('disable_persistent_connections', false),
+        'disable_v4_api_query_where' => true,
         'default_module_favicon' => false,
         'dashlet_auto_refresh_min' => 30,
         'stack_trace_errors' => false,
@@ -6204,21 +6206,42 @@ function isAllowedModuleName(string $value): bool {
 }
 
 /**
+ * Check if a string is an allowed action name
+ * @param string $value
+ * @return bool
+ */
+function isAllowedActionName(string $value): bool {
+    return (bool) preg_match("/^[a-zA-Z_]\w*$/", $value);
+}
+
+/**
  * @param $endpoint
  * @return bool
  */
 function isSelfRequest($endpoint) : bool {
-    $domain = 'localhost';
-    if (isset($_SERVER["HTTP_HOST"])) {
-        $domain = $_SERVER["HTTP_HOST"];
+    $parsed = parse_url((string) $endpoint);
+    $host = $parsed['host'] ?? '';
+    if (empty($host)) {
+        return false;
     }
 
-    $siteUrl = SugarConfig::getInstance()->get('site_url');
-    if (empty($siteUrl)){
-        $siteUrl = '';
+    $host = strtolower(trim($host));
+
+    $serverHost = strtolower($_SERVER["HTTP_HOST"] ?? 'localhost');
+    $serverHost = preg_replace('/:\d+$/', '', trim($serverHost));
+    if ($host === $serverHost) {
+        return true;
     }
 
-    return stripos((string) $endpoint, (string) $domain) !== false || stripos((string) $endpoint, (string) $siteUrl) !== false;
+    $siteUrl = SugarConfig::getInstance()->get('site_url', '');
+    if (!empty($siteUrl)) {
+        $siteHost = parse_url($siteUrl, PHP_URL_HOST);
+        if ($siteHost && strtolower($siteHost) === $host) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -6459,5 +6482,21 @@ function formatDecimalInConfigSettings($decimalValue, $userSetting = false) {
     }
     $dec_sep = empty($user_dec_sep) ? $sugar_config['default_decimal_seperator'] : $user_dec_sep;
     return str_replace('.', $dec_sep, $decimalValue);
+}
+
+/**
+ * Checks whether a string is a valid PHP label key (safe for use in
+ * generated PHP code such as language files and array keys).
+ *
+ * Rejects characters that could enable PHP code injection when written
+ * into language files: single/double quotes, semicolons, dollar signs,
+ * backticks, backslashes, and newlines.
+ *
+ * @param string $key The key to validate.
+ * @return bool True if the key contains only safe characters.
+ */
+function is_safe_label_key(string $key): bool
+{
+    return !empty($key) && !preg_match('/[\'";$`\\\\\\r\\n]/', $key);
 }
 

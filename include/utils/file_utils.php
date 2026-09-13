@@ -64,6 +64,44 @@ function clean_path($path)
     return($appendpath.$path);
 }
 
+/**
+ * Check if a path is safe from traversal sequences, stream wrappers, and absolute references.
+ *
+ * @param string $path The path to validate (directory or filename)
+ * @return bool true if the path is safe, false otherwise
+ */
+function validate_safe_path(string $path): bool
+{
+    if (preg_match('#(^|[/\\\\])\.\.([/\\\\]|$)#', $path) ||
+        strpos($path, '://') !== false ||
+        (strlen($path) > 0 && ($path[0] === '/' || $path[0] === '\\'))
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Check whether a resolved path is within an allowed base directory.
+ *
+ * @param string $path      The path to check (its parent directory must exist)
+ * @param string $base_dir  The allowed base directory
+ * @return bool true if $path is inside $base_dir, false otherwise
+ */
+function is_path_within_dir(string $path, string $base_dir): bool
+{
+    $resolved_path = realpath(dirname($path));
+    $resolved_base = realpath($base_dir);
+
+    if ($resolved_path === false || $resolved_base === false) {
+        return false;
+    }
+
+    return $resolved_path === $resolved_base
+        || strpos($resolved_path, $resolved_base . '/') === 0;
+}
+
 function create_cache_directory($file)
 {
     $paths = explode('/', $file);

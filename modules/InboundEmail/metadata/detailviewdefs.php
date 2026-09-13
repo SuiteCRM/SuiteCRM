@@ -146,14 +146,15 @@ $viewdefs ['InboundEmail'] = [
                 ],
                 [
                     'is_ssl',
-                    'trashFolder',
+                    'primary_folder',
                 ],
                 [
                     'connection_string',
-                    'sentFolder'
+                    'trashFolder',
                 ],
                 [
                     'email_body_filtering',
+                    'sentFolder'
                 ],
             ],
             'lbl_outbound_configuration' => [
