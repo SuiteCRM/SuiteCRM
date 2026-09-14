@@ -285,6 +285,7 @@ ProcessImport = new function()
 		}),
 		{
 			height: "300px",
+			width: "235px",
 			group: ["enabled_div", "disabled_div"]
 		}
 	);
@@ -300,6 +301,7 @@ ProcessImport = new function()
 		}),
 		{
 			height: "300px",
+			width: "235px",
 		 	group: ["enabled_div", "disabled_div"]
 		 }
 	);
