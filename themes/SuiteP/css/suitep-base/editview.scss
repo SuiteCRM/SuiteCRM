@@ -130,6 +130,10 @@ div#searchResults {
   border-color: $scheduler-free-border-color;
 }
 
+#job_interval_advanced input {
+  width:95%;
+}
+
 #create-invitees {
   background-color: $panel-bg;
   color: $main-font-color;
