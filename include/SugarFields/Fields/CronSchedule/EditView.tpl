@@ -125,6 +125,12 @@
         updateCRONDisplay(id);
         updateCRONType(id);
         updateCRONFields(id);
+        var cronFormName = $('#'+id).closest('form').attr('name');
+        if(cronFormName && typeof addToValidateCallback === 'function'){
+            addToValidateCallback(cronFormName, id, 'function', false, SUGAR.language.get('app_strings', 'ERR_CRON_INVALID_SCHEDULE'), function(){
+                return isValidCRONValue(id);
+            });
+        }
     });
     {/literal}
 </script>

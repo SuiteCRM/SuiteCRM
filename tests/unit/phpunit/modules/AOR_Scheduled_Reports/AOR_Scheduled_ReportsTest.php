@@ -99,4 +99,16 @@ class AOR_Scheduled_ReportsTest extends SuitePHPUnitFrameworkTestCase
         $aorScheduledReports->last_run = new DateTime();
         self::assertFalse($aorScheduledReports->shouldRun(new DateTime()));
     }
+
+    public function testIsValidSchedule(): void
+    {
+        self::assertTrue(AOR_Scheduled_Reports::isValidSchedule('0 0 * * *'));
+        self::assertTrue(AOR_Scheduled_Reports::isValidSchedule('00 07 19 04 *'));
+
+        self::assertFalse(AOR_Scheduled_Reports::isValidSchedule('00 07 19 04 '));
+        self::assertFalse(AOR_Scheduled_Reports::isValidSchedule('0 0 * * '));
+        self::assertFalse(AOR_Scheduled_Reports::isValidSchedule('0 0 * * 9'));
+        self::assertFalse(AOR_Scheduled_Reports::isValidSchedule(''));
+        self::assertFalse(AOR_Scheduled_Reports::isValidSchedule(null));
+    }
 }

@@ -3117,6 +3117,7 @@ $app_strings['LBL_CRON_DOW'] = 'DOW';
 $app_strings['LBL_CRON_DAILY'] = 'Daily';
 $app_strings['LBL_CRON_WEEKLY'] = 'Weekly';
 $app_strings['LBL_CRON_MONTHLY'] = 'Monthly';
+$app_strings['ERR_CRON_INVALID_SCHEDULE'] = 'The schedule is not valid. Please provide a value for each of the five schedule fields (Min, Hour, Day, Month and DOW), for example: 0 23 * * *';
 
 //aos
 $app_list_strings['moduleList']['AOS_Contracts'] = 'Contracts';
