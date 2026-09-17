@@ -46,9 +46,13 @@ class updateDependencies
 {
     public function update_dependency(&$bean, $event, $arguments)
     {
+        if($_REQUEST['module'] === 'AM_ProjectTemplates' || empty($bean->project_id))
+        {
+            return;
+        }
         //Get all tasks that are dependant on the current task being saved.
         $Task = BeanFactory::getBean('ProjectTask');
-        $tasks = $Task->get_full_list("", "project_task.project_id = '".$bean->project_id."' AND project_task.predecessors = '".$bean->project_task_id."'");
+        $tasks = $Task->get_full_list("", "project_task.project_id = '".$bean->project_id."' AND project_task.predecessors = '".$bean->project_task_id."' AND project_task.deleted = '0'");
 
         // Make sure the fetched row exists.
         if ($bean->fetched_row === false) {

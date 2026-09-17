@@ -472,7 +472,7 @@ class Project extends SugarBean
         if ($current_template_id != $new_template_id) {
             $project_start = $focus->estimated_start_date;
             //Get project start date
-            if ($project_start!='') {
+            if ($project_start != '') {
                 $dateformat = $current_user->getPreference('datef');
                 $startdate = DateTime::createFromFormat($dateformat, $project_start);
                 if ($startdate == false) {
@@ -495,7 +495,7 @@ class Project extends SugarBean
 
             $dateformat = $current_user->getPreference('datef');
 
-            $days = array("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday");
+            $days = array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
             $businessHours = BeanFactory::getBean("AOBH_BusinessHours");
             $bhours = array();
             foreach ($days as $day) {
@@ -509,14 +509,14 @@ class Project extends SugarBean
 
                         $start_time = DateTime::createFromFormat('Y-m-d', $start);
 
-                        $start_time = $start_time->modify('+'.$open_h.' Hours');
+                        $start_time = $start_time->modify('+' . $open_h . ' Hours');
 
                         $end_time = DateTime::createFromFormat('Y-m-d', $start);
-                        $end_time = $end_time->modify('+'.$close_h.' Hours');
+                        $end_time = $end_time->modify('+' . $close_h . ' Hours');
 
-                        $hours = ($end_time->getTimestamp() - $start_time->getTimestamp())/(60*60);
+                        $hours = ($end_time->getTimestamp() - $start_time->getTimestamp()) / (60 * 60);
                         if ($hours < 0) {
-                            $hours = 0 - $hours ;
+                            $hours = 0 - $hours;
                         }
 
                         $bhours[$day] = $hours;
@@ -530,7 +530,7 @@ class Project extends SugarBean
 
             //default business hours array
             if ($override_business_hours != 1 || empty($bhours)) {
-                $bhours = array('Monday' => 8,'Tuesday' => 8,'Wednesday' => 8, 'Thursday' => 8, 'Friday' => 8, 'Saturday' => 0, 'Sunday' => 0);
+                $bhours = array('Monday' => 8, 'Tuesday' => 8, 'Wednesday' => 8, 'Thursday' => 8, 'Friday' => 8, 'Saturday' => 0, 'Sunday' => 0);
             }
             //---------------------------
 
@@ -550,100 +550,101 @@ class Project extends SugarBean
                 $focus->project_contacts_1->add($contact->id);
             }
 
-
-            //Get related project template tasks. Using sql query so that the results can be ordered.
-            $get_tasks_sql = "SELECT * FROM am_tasktemplates
+            if (!isset($_REQUEST['duplicateSave']) || $_REQUEST['duplicateSave'] !== 'true') {
+                //Get related project template tasks. Using sql query so that the results can be ordered.
+                $get_tasks_sql = "SELECT * FROM am_tasktemplates
 							WHERE id
 							IN (
 								SELECT am_tasktemplates_am_projecttemplatesam_tasktemplates_idb
 								FROM am_tasktemplates_am_projecttemplates_c
-								WHERE am_tasktemplates_am_projecttemplatesam_projecttemplates_ida = '".$new_template_id."'
+								WHERE am_tasktemplates_am_projecttemplatesam_projecttemplates_ida = '" . $new_template_id . "'
 								AND deleted =0
 							)
 							AND deleted =0
 							ORDER BY am_tasktemplates.order_number ASC";
-            $tasks = $db->query($get_tasks_sql);
+                $tasks = $db->query($get_tasks_sql);
 
-            //Create new project tasks from the template tasks
-            $count=1;
-            while ($row = $db->fetchByAssoc($tasks)) {
-                $project_task = BeanFactory::newBean('ProjectTask');
-                $project_task->name = $row['name'];
-                $project_task->status = $row['status'];
-                $project_task->priority = strtolower($row['priority']);
-                $project_task->percent_complete = $row['percent_complete'];
-                $project_task->predecessors = $row['predecessors'];
-                $project_task->milestone_flag = $row['milestone_flag'];
-                $project_task->relationship_type = $row['relationship_type'];
-                $project_task->task_number = $row['task_number'];
-                $project_task->order_number = $row['order_number'];
-                $project_task->estimated_effort = $row['estimated_effort'];
-                $project_task->utilization = $row['utilization'];
-                $project_task->assigned_user_id = $row['assigned_user_id'];
-                $project_task->description = $row['description'];
-                $project_task->duration = $row['duration'];
-                $project_task->duration_unit = $duration_unit;
-                $project_task->project_task_id = $count;
+                //Create new project tasks from the template tasks
+                $count = 1;
+                while ($row = $db->fetchByAssoc($tasks)) {
+                    $project_task = BeanFactory::newBean('ProjectTask');
+                    $project_task->name = $row['name'];
+                    $project_task->status = $row['status'];
+                    $project_task->priority = strtolower($row['priority']);
+                    $project_task->percent_complete = $row['percent_complete'];
+                    $project_task->predecessors = $row['predecessors'];
+                    $project_task->milestone_flag = $row['milestone_flag'];
+                    $project_task->relationship_type = $row['relationship_type'];
+                    $project_task->task_number = $row['task_number'];
+                    $project_task->order_number = $row['order_number'];
+                    $project_task->estimated_effort = $row['estimated_effort'];
+                    $project_task->utilization = $row['utilization'];
+                    $project_task->assigned_user_id = $row['assigned_user_id'];
+                    $project_task->description = $row['description'];
+                    $project_task->duration = $row['duration'];
+                    $project_task->duration_unit = $duration_unit;
+                    $project_task->project_task_id = $count;
 
-                //Flag to prevent after save logichook running when project_tasks are created (see custom/modules/ProjectTask/updateProject.php)
-                $project_task->set_project_end_date = 0;
+                    //Flag to prevent after save logichook running when project_tasks are created (see custom/modules/ProjectTask/updateProject.php)
+                    $project_task->set_project_end_date = 0;
 
-                //
-                //code block to calculate end date based on user's business hours
-                //
+                    //
+                    //code block to calculate end date based on user's business hours
+                    //
 
-                $duration = $project_task->duration;
-                $enddate = $startdate;
+                    $duration = $project_task->duration;
+                    $enddate = $startdate;
 
-                $d = 0;
+                    $d = 0;
 
-                while ($duration > $d) {
-                    $day = $enddate->format('l');
+                    while ($duration > $d) {
+                        $day = $enddate->format('l');
 
-                    if ($bhours[$day] != 0) {
-                        $d += 1;
+                        if ($bhours[$day] != 0) {
+                            $d += 1;
+                        }
+
+                        $enddate = $enddate->modify('+1 Days');
+                    }
+                    $enddate = $enddate->modify('-1 Days');//readjust it back to remove 1 additional day added
+
+
+                    //----------------------------------
+
+
+                    if ($count == '1') {
+                        $project_task->date_start = $start;
+                        $end = $enddate->format('Y-m-d');
+                        $project_task->date_finish = $end;
+
+                        //add one day to let the next task start on next day of it's finish.
+                        $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d');
+                    } else {
+                        $start_date = $count - 1;
+                        $startdate = DateTime::createFromFormat('Y-m-d', $enddate_array[$start_date]);
+                        $start = $startdate->format('Y-m-d');
+                        $project_task->date_start = $start;
+                        $end = $enddate->format('Y-m-d');
+                        $project_task->date_finish = $end;
+
+                        $startdate = $enddate;
+                        //add one day to let the next task start on next day of it's finish.
+                        $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d');
+
+                        $enddate = $end;
                     }
 
-                    $enddate = $enddate->modify('+1 Days');
+                    $project_task->save();
+
+                    //link tasks to the newly created project
+                    $project_task->load_relationship('projects');
+                    $project_task->projects->add($focus->id);
+
+                    //Add assinged users from each task to the project resourses subpanel
+                    $focus->load_relationship('project_users_1');
+                    $focus->project_users_1->add($row['assigned_user_id']);
+                    $count++;
                 }
-                $enddate = $enddate->modify('-1 Days');//readjust it back to remove 1 additional day added
-
-
-                //----------------------------------
-
-
-                if ($count == '1') {
-                    $project_task->date_start = $start;
-                    $end = $enddate->format('Y-m-d');
-                    $project_task->date_finish = $end;
-
-                    //add one day to let the next task start on next day of it's finish.
-                    $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d');
-                } else {
-                    $start_date = $count - 1;
-                    $startdate = DateTime::createFromFormat('Y-m-d', $enddate_array[$start_date]);
-                    $start = $startdate->format('Y-m-d');
-                    $project_task->date_start = $start;
-                    $end = $enddate->format('Y-m-d');
-                    $project_task->date_finish = $end;
-
-                    $startdate = $enddate;
-                    //add one day to let the next task start on next day of it's finish.
-                    $enddate_array[$count] = $enddate->modify('+1 Days')->format('Y-m-d');
-
-                    $enddate = $end;
-                }
-
-                $project_task->save();
-
-                //link tasks to the newly created project
-                $project_task->load_relationship('projects');
-                $project_task->projects->add($focus->id);
-
-                //Add assinged users from each task to the project resourses subpanel
-                $focus->load_relationship('project_users_1');
-                $focus->project_users_1->add($row['assigned_user_id']);
-                $count++;
             }
         }
         /// End Template Selection handling
