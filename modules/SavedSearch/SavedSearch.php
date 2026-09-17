@@ -492,7 +492,7 @@ class SavedSearch extends SugarBean
 
     public function retrieveSavedSearch($id)
     {
-        parent::retrieve($id);
+        parent::retrieve($id, false);
         $this->contents = unserialize(base64_decode($this->contents), ['allowed_classes' => false]);
     }
 
