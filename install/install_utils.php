@@ -728,10 +728,12 @@ function installLog($entry)
     }
 
 
-
-    if (@fwrite($fp, $nl.$entry) === false) {
-        $GLOBALS['log']->fatal('could not write to install.log: '.$entry);
+    if(is_resource($fp)){
+        if (@fwrite($fp, $nl.$entry) === false) {
+            $GLOBALS['log']->fatal('could not write to install.log: '.$entry);
+        }
     }
+    
 
     if (is_resource($fp)) {
         fclose($fp);
