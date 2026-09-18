@@ -1,0 +1,24 @@
+app = "suitecrm-db"
+
+[build]
+  image = "mysql:8.0"
+
+[vm]
+  memory = "512mb"
+
+[env]
+  MYSQL_ROOT_PASSWORD = "root"
+  MYSQL_DATABASE = "suitecrm"
+  MYSQL_USER = "suitecrm"
+  MYSQL_PASSWORD = "suitecrm"
+
+[[services]]
+  internal_port = 3306
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 3306
+
+[[mounts]]
+  source = "mysql_data"
+  destination = "/var/lib/mysql"

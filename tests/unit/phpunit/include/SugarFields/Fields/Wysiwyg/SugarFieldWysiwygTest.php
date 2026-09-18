@@ -47,7 +47,7 @@ use SuiteCRM\Test\SuitePHPUnitFrameworkTestCase;
 use SugarFieldWysiwyg;
 use SugarTinyMCE;
 
-require_once __DIR__ . '/../../../../../../../../include/SugarFields/Fields/Wysiwyg/SugarFieldWysiwyg.php';
+require_once __DIR__ . '/../../../../../../../include/SugarFields/Fields/Wysiwyg/SugarFieldWysiwyg.php';
 
 /**
  * Class SugarFieldWysiwygTest
@@ -91,6 +91,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['error'])
             ->getMock();
 
         $mockLog->expects($this->once())
@@ -244,6 +245,7 @@ class SugarFieldWysiwygTest extends SuitePHPUnitFrameworkTestCase
 
         $mockLog = $this->getMockBuilder(\LoggerManager::class)
             ->disableOriginalConstructor()
+            ->addMethods(['info'])
             ->getMock();
 
         $mockLog->expects($this->atLeastOnce())
