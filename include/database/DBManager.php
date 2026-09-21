@@ -868,6 +868,19 @@ abstract class DBManager
                 }
             }
 
+            if($compareFieldDefs[$name]['type'] === 'decimal') {
+
+                // Format floats in both existing and new defs to match DB before comparison to stop mismatch notifications on R & R
+                if(!empty($compareFieldDefs[$name]['default']) && !empty($compareFieldDefs[$name]['len']))
+                {
+                    $compareFieldDefs[$name]['default'] = $this->formatFloat($compareFieldDefs[$name]['default'],$compareFieldDefs[$name]['len']);
+                }
+                if(!empty($value['default']) && !empty($value['len']))
+                {
+                    $value['default'] = $this->formatFloat($value['default'],$value['len']);
+                }
+            }
+
             if (!isset($compareFieldDefs[$name])) {
                 // ok we need this field lets create it
                 $sql .= "/*MISSING IN DATABASE - $name -  ROW*/\n";
@@ -1021,6 +1034,30 @@ abstract class DBManager
         }
 
         return ($take_action === true) ? $sql : '';
+    }
+
+    /**
+     * Format floats to avoid mismatch problems in the database
+     * Studio can write default values for currencies with a shorter precision
+     *
+     * @param $dbfloat  string or float change the precision for
+     * @param $len      string db length of the float
+     * @return string   with precision matched by db field
+     */
+    private function formatFloat($dbFloat, $len)
+    {
+        $newFloat = $dbFloat;
+        $lenObj = explode(',', $len);
+        if(!empty($lenObj[1]))
+        {
+            $precision = trim($lenObj[1]);
+            if(preg_match('/^[0-9]+$/', $precision)) {
+                $precision = (int)$precision;
+                $newFloat = (float)$newFloat;
+                $newFloat = $newFloat <= 0 ? 'NULL' : (string) number_format($newFloat, $precision);
+            }
+        }
+        return $newFloat;
     }
 
     /**
