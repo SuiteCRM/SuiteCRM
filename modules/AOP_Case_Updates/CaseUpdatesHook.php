@@ -109,7 +109,7 @@ class CaseUpdatesHook
             return;
         }
         //Grab the update field and create a new update with it.
-        $text = $case->update_text;
+        $text = urldecode($case->update_text);
         if (!$text && empty($_FILES['case_update_file'])) {
             //No text or files, so nothing really to save.
             return;
@@ -125,9 +125,10 @@ class CaseUpdatesHook
         }
         $case_update->description = nl2br($text);
         $case_update->case_id = $case->id;
-        $case_update->save();
 
         $fileCount = $this->arrangeFilesArray();
+        $files = array();
+        $attachNotes = array();
 
         for ($x = 0; $x < $fileCount; ++$x) {
             if ($_FILES['case_update_file']['error'][$x] === UPLOAD_ERR_NO_FILE) {
@@ -142,7 +143,13 @@ class CaseUpdatesHook
             $note->file_mime_type = $uploadFile->mime_type;
             $note->filename = $uploadFile->get_stored_file_name();
             $note->save();
-            $uploadFile->final_move($note->id);
+            $attachNotes[] = $note;
+            $uploaded = $uploadFile->final_move($note->id);
+            if($uploaded === true)
+            {
+                $fileNameOrigin = $_FILES['case_update_file' . $x]['name'];
+                $files[] = array('upload/'.$note->id, $fileNameOrigin);
+            }
         }
         $postPrefix = 'case_update_id_';
         foreach ($_POST as $key => $val) {
@@ -159,9 +166,23 @@ class CaseUpdatesHook
             $note->file_mime_type = $doc->last_rev_mime_type;
             $note->filename = $doc->filename;
             $note->save();
-            $srcFile = "upload://{$doc->document_revision_id}";
-            $destFile = "upload://{$note->id}";
+            $attachNotes[] = $note;
+            $srcFile = "upload/{$doc->document_revision_id}";
+            $destFile = "upload/{$note->id}";
+
             copy($srcFile, $destFile);
+            if(isset($_REQUEST['return_action'])) {
+                if ($_REQUEST['return_action'] === 'DetailView') {
+                    $files[] = array($destFile, $doc->filename);
+                }
+            }
+        }
+        $case_update->save(false, $files);
+
+        foreach ($attachNotes as $atNote)
+        {
+            $atNote->parent_id = $case_update->id;
+            $atNote->save();
         }
     }
 
