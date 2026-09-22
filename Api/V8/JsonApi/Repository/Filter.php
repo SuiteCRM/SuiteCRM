@@ -13,6 +13,9 @@ class Filter
     public const OP_LTE = '<=';
     public const OP_LIKE = 'LIKE';
 
+    public const OP_IN = 'IN';
+    public const OP_NOT_IN = 'NOT IN';
+
     public const OP_AND = 'AND';
     public const OP_OR = 'OR';
 
@@ -73,13 +76,58 @@ class Filter
 
             foreach ($expr as $op => $value) {
                 $this->checkOperator($op);
-                $where[] = sprintf(
-                    '%s.%s %s %s',
-                    $tableName,
-                    $field,
-                    constant(sprintf('%s::OP_%s', self::class, strtoupper($op))),
-                    $this->db->quoted($value)
-                );
+                $sqlOperator = constant(sprintf('%s::OP_%s', self::class, strtoupper($op)));
+                if (in_array($sqlOperator, [self::OP_IN, self::OP_NOT_IN])) {
+                    if (!is_string($value)) {
+                        // If it's not a string, throw an exception.
+                        throw new \InvalidArgumentException(sprintf(
+                            'Value for %s operator on field %s must be a comma-separated string',
+                            $sqlOperator,
+                            $field
+                        ));
+                    }
+                    $items = array_map('trim', explode(',', $value));
+                    if (empty($items)) {
+                        // For empty IN lists, return a condition that is always false to prevent
+                        // querying all records (e.g., SELECT * FROM table WHERE 1=0)
+                        $where[] = '1=0';
+                    } else {
+                        // Quote each value in the array and then implode them for the SQL string
+                        $quotedValues = array_map(function ($item) {
+                            if (is_numeric($item) && !is_string($item)) {
+                                return $item; // Return raw number
+                            }
+                            if (is_bool($item)) {
+                                return (int)$item; // Convert true/false to 1/0
+                            }
+                            return $this->db->quoted($item); // Quote strings
+                        }, $items);
+
+                        $where[] = sprintf(
+                            '%s.%s %s (%s)',
+                            $tableName,
+                            $field,
+                            $sqlOperator,
+                            implode(', ', $quotedValues)
+                        );
+                    }
+                } else {
+                    if (is_numeric($value) && !is_string($value)) {
+                        $formattedValue = $value; // Return raw number
+                    } elseif (is_bool($value)) {
+                        $formattedValue = (int)$value; // Convert true/false to 1/0
+                    } else {
+                        $formattedValue = $this->db->quoted($value); // Quote strings
+                    }
+                    
+                    $where[] = sprintf(
+                        '%s.%s %s %s',
+                        $tableName,
+                        $field,
+                        $sqlOperator,
+                        $formattedValue
+                    );
+                }
             }
         }
 
