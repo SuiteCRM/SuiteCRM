@@ -136,7 +136,7 @@ class ModuleService
 
         // negative numbers are validated in params
         $offset = $number !== 0 ? ($number - 1) * $size : $number;
-        $realRowCount = $this->beanManager->countRecords($module, $where);
+        $realRowCount = $this->beanManager->countRecords($module, $where, $bean);
         $limit = $size === BeanManager::DEFAULT_ALL_RECORDS ? BeanManager::DEFAULT_LIMIT : $size;
         $deleted = $params->getDeleted();
 

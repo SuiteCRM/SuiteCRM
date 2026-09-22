@@ -244,28 +244,16 @@ class BeanManager
      *
      * @return integer
      */
-    public function countRecords($module, $where)
+    public function countRecords($module, $where, $bean = null)
     {
-        $table_name = $this->newBeanSafe($module)->getTableName();
-        $table_name_cstm = $this->newBeanSafe($module)->get_custom_table_name();
+        [$entire_query, $_] = $bean->create_new_list_query_with_aliases("", $where,  singleSelect: true);
 
-        $join = '';
-        if ($this->db->tableExists($table_name_cstm)) {
-            $join = sprintf(
-                'LEFT JOIN %s on (%s.id = %s.id_c)',
-                $table_name_cstm,
-                $table_name,
-                $table_name_cstm,
-            );
-        }
-
+        $count_query_split = substr($entire_query, strpos($entire_query, " FROM "));
+        $count_query = "SELECT COUNT(*) AS cnt" . $count_query_split;
         $rowCount = $this->db->fetchRow(
             $this->db->query(
                 sprintf(
-                    "SELECT COUNT(*) AS cnt FROM %s %s %s",
-                    $table_name,
-                    $join,
-                    $where === '' ? '' : 'WHERE ' .  $where
+                    $count_query
                 )
             )
         )["cnt"];

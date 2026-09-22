@@ -71,8 +71,26 @@ class Filter
             $isCustom = isset($bean->field_defs[$field]['source']) && ($bean->field_defs[$field]['source'] == 'custom_fields');
             $tableName = $isCustom ? $bean->get_custom_table_name() : $bean->getTableName();
 
+            [$_, $tableAliases] = $bean->create_new_list_query_with_aliases("", "");
             foreach ($expr as $op => $value) {
                 $this->checkOperator($op);
+                if($bean->field_defs[$field]['type'] === 'relate'){
+                    $field_of_related_bean = $bean->field_defs[$field]['rname'];
+                    $relateTable = $bean->field_defs[$field]['table'];
+
+                    $aliases = array_keys($tableAliases, $relateTable, true);
+                    foreach($aliases as $alias){
+                        $where[] = sprintf(
+                            '%s.%s %s %s',
+                            $alias,
+                            $field_of_related_bean,
+                            constant(sprintf('%s::OP_%s', self::class, strtoupper($op))),
+                            $this->db->quoted($value)
+                        );
+                    }
+                    continue;
+                }
+
                 $where[] = sprintf(
                     '%s.%s %s %s',
                     $tableName,
