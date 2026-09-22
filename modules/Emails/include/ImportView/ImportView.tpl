@@ -183,3 +183,42 @@
     {/literal}
     {/if}
 </form>
+{literal}
+<script type="text/javascript">
+function parentQS(field) {
+window.sqs_objects['EditView_parent_name'] = {{$qsName}};
+registerSingleSmartInputListener(document.getElementById('parent_name'));
+{/literal}
+addToValidateBinaryDependency('EditView', 'parent_name', 'alpha', false, '{$app_strings['ERR_SQS_NO_MATCH_FIELD']} {$app_strings['LBL_ASSIGNED_TO']}','parent_id');
+{literal}
+field = YAHOO.util.Dom.get(field);
+            var form = field.form;
+            var sqsId = form.id + "_" + field.id;
+            var typeField =  form.elements["parent_type"];
+            var new_module = typeField.value;
+            if(typeof(disabledModules[new_module]) != 'undefined') {
+                window.sqs_objects[sqsId]["disable"] = true;
+                field.readOnly = true;
+            } else {
+                window.sqs_objects[sqsId]["disable"] = false;
+                field.readOnly = false;
+            }
+            //Update the SQS globals to reflect the new module choice
+            window.sqs_objects[sqsId]["modules"] = new Array(new_module);
+            if (typeof(window.QSFieldsArray[sqsId]) != 'undefined')
+            {
+                window.QSFieldsArray[sqsId].sqs.modules = new Array(new_module);
+            }
+            if(typeof window.QSProcessedFieldsArray != 'undefined')
+            {
+                window.QSProcessedFieldsArray[sqsId] = false;
+            }
+            window.enableQS(false);
+}
+YAHOO.util.Event.onContentReady('parent_name', function() {
+    parentQS('parent_name');
+});
+var disabledModules='{$disabled_parent_types}';
+</script>
+
+{/literal}
