@@ -255,6 +255,10 @@ class Task extends SugarBean
                 $taskClass = 'todaysTask';
             }
         }
+        
+        // Correct date start of Tasks on subpanel
+        $date_due = $timedate->to_display_date_time($dbtime);
+
         $task_fields['DATE_DUE']= "<font class='$taskClass'>$date_due</font>";
         if ($override_date_for_subpanel) {
             $task_fields['DATE_START']= "<font class='$taskClass'>$date_due</font>";
