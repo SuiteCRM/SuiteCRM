@@ -191,7 +191,7 @@ class ModuleService
                 $query .= ' ORDER BY ' . $order_by;
             }
 
-            $result = $bean->process_list_query($query, $offset, $limit, -1, $where);
+            $result = $bean->process_list_query($query, $offset, $limit, $size, $where);
             $beanResult['row_count'] = $result['row_count'];
             $beanList = [];
 
