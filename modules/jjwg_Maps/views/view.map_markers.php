@@ -84,7 +84,11 @@ class Jjwg_MapsViewMap_Markers extends SugarView
   </style>
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/datatables/1.9.4/css/jquery.dataTables.min.css" />
   <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/datatables-tabletools/2.1.5/css/TableTools.min.css" />
-  <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=<?= $GLOBALS['jjwg_config']['google_maps_api_key']; ?>&sensor=false&libraries=drawing,geometry"></script>
+  <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=<?= $GLOBALS['jjwg_config']['google_maps_api_key']; ?>&sensor=false&libraries=geometry"></script>
+  <!-- google.maps.drawing.DrawingManager was removed in Maps JavaScript API v3.65; Terra Draw is Google's
+       recommended replacement drawing engine (https://developers.google.com/maps/documentation/javascript/examples/map-drawing-terradraw) -->
+  <script type="text/javascript" src="//unpkg.com/terra-draw@1.32.3/dist/terra-draw.umd.js"></script>
+  <script type="text/javascript" src="//unpkg.com/terra-draw-google-maps-adapter@1.6.1/dist/terra-draw-google-maps-adapter.umd.js"></script>
   <script src="include/javascript/jquery/jquery-min.js"></script>
   <script type="text/javascript" src="modules/jjwg_Maps/javascript/jquery.iframe-auto-height.plugin.1.9.3.min.js"></script>
   <script type="text/javascript" src="modules/jjwg_Maps/javascript/markerclusterer_packed.js"></script>
@@ -193,8 +197,10 @@ var clusterControlDiv = null;
 // Clusterer Images - Protocol Independent
 MarkerClusterer.IMAGE_PATH = "//raw.githubusercontent.com/googlemaps/js-marker-clusterer/gh-pages/images/m";
 
-// Drawing Controls
-var drawingManager = null;
+// Drawing Controls (Terra Draw replaces the deprecated google.maps.drawing.DrawingManager)
+var terraDrawInstance = null;
+var terraDrawReady = false;
+var terraDrawActiveMode = null;
 var selectedShape = null;
 var selectedShapeMarkerById = null;
 
@@ -391,30 +397,133 @@ function setClusterControl() {
 function setDrawingControls() {
 
     // Drawing Controls
+    // Terra Draw (https://terradraw.io) replaces the deprecated google.maps.drawing.DrawingManager,
+    // which was removed from the Maps JavaScript API in v3.65. Terra Draw is only used to drive the
+    // interactive drawing of a new shape; as soon as a shape is finished it is converted into a real
+    // google.maps.Rectangle/Circle/Polygon overlay (see finishTerraDrawShape below) so that everything
+    // downstream (selection, editing, deletion, marker containment, DataTable filtering) keeps working
+    // against native Google Maps overlay objects exactly as it did before.
     var overlayOptions = { strokeColor: "#000099", strokeOpacity: 0.8, strokeWeight: 1, fillColor: "#000099", fillOpacity: 0.20, clickable: true, draggable: true, editable: true, zIndex: 5 };
-    drawingManager = new google.maps.drawing.DrawingManager({
-        drawingMode: null,
-        drawingControl: true,
-        drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_CENTER,
-            drawingModes: [
-                google.maps.drawing.OverlayType.RECTANGLE,
-                google.maps.drawing.OverlayType.CIRCLE,
-                google.maps.drawing.OverlayType.POLYGON
-            ]
-        },
-        rectangleOptions: overlayOptions,
-        circleOptions: overlayOptions,
-        polygonOptions: overlayOptions
-    });
-    drawingManager.setMap(map);
 
-    google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-        // Switch back to non-drawing mode after drawing a shape
-        drawingManager.setDrawingMode(null);
-        // Add an event listeners
-        var newShape = e.overlay;
-        newShape.type = e.type;
+    function startTerraDraw() {
+        terraDrawInstance = new terraDraw.TerraDraw({
+            adapter: new terraDrawGoogleMapsAdapter.TerraDrawGoogleMapsAdapter({
+                lib: google.maps,
+                map: map,
+                coordinatePrecision: 9
+            }),
+            modes: [
+                new terraDraw.TerraDrawRectangleMode(),
+                new terraDraw.TerraDrawCircleMode(),
+                new terraDraw.TerraDrawPolygonMode()
+            ]
+        });
+
+        // The Google Maps adapter creates a google.maps.OverlayView which can only be positioned
+        // asynchronously, so drawing modes must not be enabled until the 'ready' event fires.
+        terraDrawInstance.on('ready', function() {
+            terraDrawReady = true;
+        });
+
+        terraDrawInstance.on('finish', function(id, context) {
+            if (context.action === 'draw') {
+                finishTerraDrawShape(id);
+            }
+        });
+
+        terraDrawInstance.start();
+    }
+
+    // The adapter needs the map's projection to be available; it is already available by this point
+    // in initialize() in the vast majority of cases, but fall back to waiting for the event just in case.
+    if (map.getProjection()) {
+        startTerraDraw();
+    } else {
+        google.maps.event.addListenerOnce(map, 'projection_changed', startTerraDraw);
+    }
+
+    function setActiveDrawingMode(mode) {
+        if (!terraDrawReady) {
+            return;
+        }
+        // Clear the current selection when the drawing mode is changed (previously handled by
+        // the DrawingManager's 'drawingmode_changed' event).
+        clearSelection();
+        terraDrawActiveMode = mode;
+        terraDrawInstance.setMode(mode ? mode : 'static');
+        for (var m in modeButtons) {
+            if (modeButtons.hasOwnProperty(m)) {
+                modeButtons[m].style.backgroundColor = (m === mode) ? '#e0e0e0' : '#ffffff';
+            }
+        }
+    }
+
+    function finishTerraDrawShape(id) {
+        var feature = terraDrawInstance.getSnapshotFeature(id);
+        // Remove the Terra Draw feature - it is replaced by a native overlay below.
+        terraDrawInstance.removeFeatures([id]);
+        // Switch back to non-drawing (pan) mode after drawing a shape
+        setActiveDrawingMode(null);
+
+        if (!feature) {
+            return;
+        }
+
+        var newShape = null;
+        var mode = feature.properties.mode;
+
+        if (mode == 'rectangle') {
+            var rRing = feature.geometry.coordinates[0];
+            var minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+            for (var i = 0, rLen = rRing.length; i < rLen; i++) {
+                var rLng = rRing[i][0], rLat = rRing[i][1];
+                if (rLat < minLat) minLat = rLat;
+                if (rLat > maxLat) maxLat = rLat;
+                if (rLng < minLng) minLng = rLng;
+                if (rLng > maxLng) maxLng = rLng;
+            }
+            newShape = new google.maps.Rectangle(Object.assign({
+                map: map,
+                bounds: new google.maps.LatLngBounds(
+                    new google.maps.LatLng(minLat, minLng),
+                    new google.maps.LatLng(maxLat, maxLng)
+                )
+            }, overlayOptions));
+        } else if (mode == 'circle') {
+            var cRing = feature.geometry.coordinates[0];
+            var cMinLat = Infinity, cMaxLat = -Infinity, cMinLng = Infinity, cMaxLng = -Infinity;
+            for (var j = 0, cLen = cRing.length; j < cLen; j++) {
+                var cLng = cRing[j][0], cLat = cRing[j][1];
+                if (cLat < cMinLat) cMinLat = cLat;
+                if (cLat > cMaxLat) cMaxLat = cLat;
+                if (cLng < cMinLng) cMinLng = cLng;
+                if (cLng > cMaxLng) cMaxLng = cLng;
+            }
+            newShape = new google.maps.Circle(Object.assign({
+                map: map,
+                center: new google.maps.LatLng((cMinLat + cMaxLat) / 2, (cMinLng + cMaxLng) / 2),
+                radius: (feature.properties.radiusKilometers || 0) * 1000
+            }, overlayOptions));
+        } else if (mode == 'polygon') {
+            var pRing = feature.geometry.coordinates[0];
+            var path = [];
+            // Drop the closing coordinate (GeoJSON repeats the first point); google.maps.Polygon
+            // closes its own path automatically.
+            for (var k = 0, pLen = pRing.length - 1; k < pLen; k++) {
+                path.push(new google.maps.LatLng(pRing[k][1], pRing[k][0]));
+            }
+            newShape = new google.maps.Polygon(Object.assign({
+                map: map,
+                paths: path
+            }, overlayOptions));
+        }
+
+        if (!newShape) {
+            return;
+        }
+
+        // Add event listeners - identical to the original DrawingManager 'overlaycomplete' handler.
+        newShape.type = mode;
         google.maps.event.addListener(newShape, 'click', function() {
             setSelection(newShape);
         });
@@ -430,10 +539,53 @@ function setDrawingControls() {
             });
         }
         setSelection(newShape);
+    }
+
+    // Drawing Mode Buttons - replicate the old DrawingManager toolbar (TOP_CENTER)
+    var modeButtons = {};
+    var modeDefs = [
+        { mode: 'rectangle', label: 'Rectangle' },
+        { mode: 'circle', label: 'Circle' },
+        { mode: 'polygon', label: 'Polygon' }
+    ];
+
+    var drawingControlDiv = document.createElement('div');
+    drawingControlDiv.style.padding = '6px';
+    drawingControlDiv.style.display = 'flex';
+
+    modeDefs.forEach(function(def) {
+        var controlUI = document.createElement('div');
+        controlUI.style.backgroundColor = '#ffffff';
+        controlUI.style.borderStyle = 'solid';
+        controlUI.style.borderColor = '#a9a9a9';
+        controlUI.style.borderWidth = '1px';
+        controlUI.style.cursor = 'pointer';
+        controlUI.style.textAlign = 'center';
+        controlUI.style.marginRight = '4px';
+        controlUI.title = 'Click to Draw a ' + def.label;
+
+        var controlText = document.createElement('div');
+        controlText.style.fontFamily = 'Arial,Verdana,Helvetica,sans-serif';
+        controlText.style.fontSize = '12px';
+        controlText.style.paddingLeft = '4px';
+        controlText.style.paddingRight = '4px';
+        controlText.style.paddingTop = '4px';
+        controlText.style.paddingBottom = '4px';
+        controlText.innerHTML = def.label;
+        controlUI.appendChild(controlText);
+
+        drawingControlDiv.appendChild(controlUI);
+        modeButtons[def.mode] = controlUI;
+
+        google.maps.event.addDomListener(controlUI, 'click', function() {
+            setActiveDrawingMode(terraDrawActiveMode === def.mode ? null : def.mode);
+        });
     });
 
-    // Clear the current selection when the drawing mode is changed, or when the map is clicked.
-    google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
+    drawingControlDiv.index = 1;
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(drawingControlDiv);
+
+    // Clear the current selection when the map is clicked.
     google.maps.event.addListener(map, 'click', clearSelection);
 
 
