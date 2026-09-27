@@ -762,6 +762,7 @@ class AOW_WorkFlow extends Basic
             $value = $condition->value;
 
             $dateFields = array('date','datetime', 'datetimecombo');
+            $textFields = array('name','varchar', 'text');
             if ($this->isSQLOperator($condition->operator)) {
                 $data = $condition_bean->field_defs[$field];
 
@@ -802,6 +803,10 @@ class AOW_WorkFlow extends Basic
                         }
                         if (in_array($data['type'], $dateFields)) {
                             $value = strtotime($value);
+                        }
+                        if (in_array($data['type'], $textFields)) {
+                            $value = html_entity_decode((string) $value);
+                            $field = html_entity_decode((string) $field);
                         }
                         switch ($condition->operator) {
                             case 'Not_Equal_To':
