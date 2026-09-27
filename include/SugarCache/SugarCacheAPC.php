@@ -57,7 +57,7 @@ class SugarCacheAPC extends SugarCacheAbstract
             return false;
         }
 
-        if (function_exists("apc_store")
+        if (function_exists("apcu_store")
                 && empty($GLOBALS['sugar_config']['external_cache_disabled_apc'])) {
             return true;
         }
@@ -70,7 +70,7 @@ class SugarCacheAPC extends SugarCacheAbstract
      */
     protected function _setExternal($key, $value)
     {
-        apc_store($key, $value, $this->_expireTimeout);
+        apcu_store($key, $value, $this->_expireTimeout);
     }
 
     /**
@@ -78,7 +78,7 @@ class SugarCacheAPC extends SugarCacheAbstract
      */
     protected function _getExternal($key)
     {
-        $res = apc_fetch($key);
+        $res = apcu_fetch($key);
         if ($res === false) {
             return null;
         }
@@ -91,7 +91,7 @@ class SugarCacheAPC extends SugarCacheAbstract
      */
     protected function _clearExternal($key)
     {
-        apc_delete($key);
+        apcu_delete($key);
     }
 
     /**
@@ -99,6 +99,6 @@ class SugarCacheAPC extends SugarCacheAbstract
      */
     protected function _resetExternal()
     {
-        apc_clear_cache('user');
+        apcu_clear_cache();
     }
 }
