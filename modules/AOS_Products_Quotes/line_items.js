@@ -305,6 +305,19 @@ function formatListPrice(ln){
   }
 
   calculateLine(ln,"product_");
+
+  var productIdField = document.getElementById('product_product_id' + ln);
+
+  if (productIdField && productIdField.value && productIdField.parentNode) {
+    $(productIdField.parentNode).find('.validation-message').remove();
+
+    for (var i = inputsWithErrors.length - 1; i >= 0; i--) {
+      if (inputsWithErrors[i] === productIdField) {
+        inputsWithErrors[i].splice(i, 1);
+        break;
+      }
+    }
+  }
 }
 
 
