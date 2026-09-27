@@ -398,17 +398,17 @@ function getInputValue(field, type) {
                 if ($("#" + field + "_date").val().length > 0) {
                     var date = $("#" + field + "_date").val();
                 } else {
-                    var date = 00;
+                    var date = "";
                 }
                 if ($("#" + field + "_hours :selected").text().length > 0) {
                     var hours = $("#" + field + "_hours :selected").text();
                 } else {
-                    var hours = 00;
+                    var hours = "00";
                 }
                 if ($("#" + field + "_minutes :selected").text().length > 0) {
                     var minutes = $("#" + field + "_minutes :selected").text();
                 } else {
-                    var minutes = 00;
+                    var minutes = "00";
                 }
                 if ($("#" + field + "_meridiem :selected").text().length > 0) {
                     var meridiem = $("#" + field + "_meridiem :selected").text();
@@ -472,6 +472,14 @@ function handleSave(field, id, module, type) {
     if (type == "parent") {
         parent_type = $("#parent_type").val();
     }
+
+    // Special-case: AOR Scheduled Reports email recipients require full form POST so backend can read $_POST['email_recipients']
+    if (module === "AOR_Scheduled_Reports" && field === "email_recipients") {
+        var output_value = saveFieldHTMLForm(field, module, id, parent_type);
+        setValueClose(output_value);
+        return;
+    }
+
     var output_value = saveFieldHTML(field, module, id, value, parent_type);
     // If the field type is email, we don't want to handle linebreaks in the output.
     if (field === "email1") {
@@ -535,6 +543,32 @@ function saveFieldHTML(field, module, id, value, parent_type) {
     });
     $.ajaxSetup({ async: true });
     return result.responseText;
+}
+
+// New: Save by POSTing the full EditView form (for complex composite fields like email_recipients)
+function saveFieldHTMLForm(field, module, id, parent_type) {
+    var payload = $("#EditView").serialize();
+    // Ensure required routing params are present and correct
+    payload += "&module=Home&action=saveHTMLField&to_pdf=true";
+    payload += "&field=" + encodeURIComponent(field);
+    payload += "&current_module=" + encodeURIComponent(module);
+    payload += "&id=" + encodeURIComponent(id);
+    payload += "&view=" + encodeURIComponent(view);
+    if (parent_type) {
+        payload += "&parent_type=" + encodeURIComponent(parent_type);
+    }
+
+    var responseText = "";
+    $.ajax({
+        url: "index.php",
+        type: "POST",
+        data: payload,
+        async: false,
+        success: function(data) {
+            responseText = data;
+        }
+    });
+    return responseText;
 }
 
 /**
