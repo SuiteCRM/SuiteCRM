@@ -264,7 +264,7 @@ class SugarWebServiceImplv3_1 extends SugarWebServiceImplv3
         require_once($beanFiles[$class_name]);
         $seed = new $class_name();
 
-        $valid = $this->validateFields($name_value_list, $module_name);
+        $valid = self::$helperObject->validateFields($name_value_list, $module_name);
         if ($valid === false) {
             $GLOBALS['log']->info('End: SugarWebServiceImpl->set_entry');
             return;
