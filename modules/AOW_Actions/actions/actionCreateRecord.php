@@ -326,13 +326,13 @@ class actionCreateRecord extends actionBase
                     case 'Round_Robin':
                     case 'Least_Busy':
                     case 'Random':
+                    $users = array();
                         switch ($params['value'][$key][0]) {
                             case 'security_group':
                                 require_once 'modules/SecurityGroups/SecurityGroup.php';
                                 $security_group = BeanFactory::newBean('SecurityGroups');
                                 $security_group->retrieve($params['value'][$key][1]);
                                 $group_users = $security_group->get_linked_beans('users', 'User');
-                                $users = array();
                                 $r_users = array();
                                 if ($params['value'][$key][2] != '') {
                                     require_once 'modules/ACLRoles/ACLRole.php';
@@ -340,6 +340,10 @@ class actionCreateRecord extends actionBase
                                     $role->retrieve($params['value'][$key][2]);
                                     $role_users = $role->get_linked_beans('users', 'User');
                                     foreach ($role_users as $role_user) {
+                                        if (checkUserStatus($role_user) || checkUserEmployeeStatus($role_user)) {
+                                            continue;
+                                        }
+
                                         $r_users[$role_user->id] = $role_user->name;
                                     }
                                 }
@@ -347,6 +351,11 @@ class actionCreateRecord extends actionBase
                                     if ($params['value'][$key][2] != '' && !isset($r_users[$group_user->id])) {
                                         continue;
                                     }
+
+                                    if (checkUserStatus($group_user) || checkUserEmployeeStatus($group_user)) {
+                                        continue;
+                                    }
+
                                     $users[$group_user->id] = $group_user->name;
                                 }
                                 break;
@@ -355,14 +364,24 @@ class actionCreateRecord extends actionBase
                                 $role = BeanFactory::newBean('ACLRoles');
                                 $role->retrieve($params['value'][$key][2]);
                                 $role_users = $role->get_linked_beans('users', 'User');
-                                $users = array();
                                 foreach ($role_users as $role_user) {
+                                    if (checkUserStatus($role_user) || checkUserEmployeeStatus($role_user)) {
+                                        continue;
+                                    }
+
                                     $users[$role_user->id] = $role_user->name;
                                 }
                                 break;
                             case 'all':
                             default:
-                                $users = get_user_array(false);
+                                $temporaryUsers = get_user_array(false);
+                                foreach ($temporaryUsers as $user) {
+                                    if (checkUserEmployeeStatus($user)) {
+                                    continue;
+                                    }
+
+                                    $users[$user->id] = $user->name;
+                                }
                                 break;
                         }
 
