@@ -52,10 +52,10 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn button purple btn-default"
-                            data-dismiss="modal">{$APP.LBL_CLOSE_BUTTON_TITLE}</button>
-                    <button type="button" onclick="columnsFilter.onSaveClick();" type="button"
-                            class="button red">{$APP.LBL_SAVE_CHANGES_BUTTON_TITLE}</button>
+                    <input title="{$APP.LBL_CLOSE_BUTTON_TITLE}" type="button" class="button"
+                           data-dismiss="modal" value="{$APP.LBL_CLOSE_BUTTON_TITLE}">
+                    <input title="{$APP.LBL_SAVE_CHANGES_BUTTON_TITLE}" type="submit" onclick="columnsFilter.onSaveClick();"
+                           class="button primary" value="{$APP.LBL_SAVE_CHANGES_BUTTON_TITLE}">
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
