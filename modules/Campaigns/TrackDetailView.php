@@ -95,8 +95,6 @@ if (isset($focus->campaign_type) && $focus->campaign_type == "NewsLetter") {
     $smarty->assign("STATUS", $app_list_strings['campaign_status_dom'][$focus->status]);
     $smarty->assign("NAME", $focus->name);
     $smarty->assign("TYPE", $app_list_strings['campaign_type_dom'][$focus->campaign_type]);
-    $smarty->assign("START_DATE", $focus->start_date);
-    $smarty->assign("END_DATE", $focus->end_date);
 
     $smarty->assign("BUDGET", $focus->budget);
     $smarty->assign("ACTUAL_COST", $focus->actual_cost);
