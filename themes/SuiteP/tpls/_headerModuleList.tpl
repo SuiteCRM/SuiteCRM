@@ -563,10 +563,10 @@
                             <li role="presentation">
                                 <a id="{$gcl_key}_link"
                                    href="{$GCL.URL}"
-                                   {if !empty($GCL.ONCLICK)} 
+                                   {if !empty($GCL.ONCLICK)}
                                    onclick="{$GCL.ONCLICK}"
                                    {/if}
-                                   {if !empty($GCL.TARGET)} 
+                                   {if !empty($GCL.TARGET)}
                                    target="{$GCL.TARGET}"
                                    {/if}
                                    >{$GCL.LABEL}</a>
@@ -653,10 +653,10 @@
                             <li role="presentation">
                                 <a id="{$gcl_key}_link"
                                    href="{$GCL.URL}"
-                                   {if !empty($GCL.ONCLICK)} 
+                                   {if !empty($GCL.ONCLICK)}
                                    onclick="{$GCL.ONCLICK}"
                                    {/if}
-                                   {if !empty($GCL.TARGET)} 
+                                   {if !empty($GCL.TARGET)}
                                    target="{$GCL.TARGET}"
                                    {/if}
                                    >{$GCL.LABEL}</a>
@@ -676,11 +676,14 @@
                     </a>
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="index.php?module=Accounts&action=EditView&return_module=Accounts&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Accounts" label="LBL_MODULE_NAME"}</a></li>
-                        <li><a href="index.php?module=Contacts&action=EditView&return_module=Contacts&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Contacts" label="LBL_MODULE_NAME"}</a></li>
-                        <li><a href="index.php?module=Opportunities&action=EditView&return_module=Opportunities&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Opportunities" label="LBL_MODULE_NAME"}</a></li>
-                        <li><a href="index.php?module=Leads&action=EditView&return_module=Leads&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Leads" label="LBL_MODULE_NAME"}</a></li>
-                        <li><a href="index.php?module=Documents&action=EditView&return_module=Documents&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Documents" label="LBL_MODULE_NAME"}</a></li>
                         <li><a href="index.php?module=Calls&action=EditView&return_module=Calls&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Calls" label="LBL_MODULE_NAME"}</a></li>
+                        <li><a href="index.php?module=Contacts&action=EditView&return_module=Contacts&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Contacts" label="LBL_MODULE_NAME"}</a></li>
+                        <li><a href="index.php?module=Documents&action=EditView&return_module=Documents&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Documents" label="LBL_MODULE_NAME"}</a></li>
+                        {if $IS_CURRENT_USER_ADMIN}
+                            <li><a href="index.php?module=Employees&action=EditView&return_module=Employees&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Employees" label="LBL_MODULE_NAME"}</a></li>
+                        {/if}
+                        <li><a href="index.php?module=Leads&action=EditView&return_module=Leads&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Leads" label="LBL_MODULE_NAME"}</a></li>
+                        <li><a href="index.php?module=Opportunities&action=EditView&return_module=Opportunities&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Opportunities" label="LBL_MODULE_NAME"}</a></li>
                         <li><a href="index.php?module=Tasks&action=EditView&return_module=Tasks&return_action=DetailView">{$APP.LBL_QUICK_CREATE}{sugar_translate module="Tasks" label="LBL_MODULE_NAME"}</a></li>
                     </ul>
                 </li>
@@ -743,7 +746,7 @@
                             <li role="presentation">
                                 <a id="{$gcl_key}_link"
                                    href="{$GCL.URL}"
-                                   {if !empty($GCL.ONCLICK)} 
+                                   {if !empty($GCL.ONCLICK)}
                                    onclick="{$GCL.ONCLICK}"
                                    {/if}
                                    {if !empty($GCL.TARGET)}
