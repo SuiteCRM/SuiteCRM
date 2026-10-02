@@ -91,7 +91,7 @@
     {/if}
 
     {foreach from=$resultsAsBean item=beans key=module}
-    <h3>{$moduleLabel[$module]}({$results->getModuleTotal($module)})</h3>
+    <h3>{$moduleLabel[$module]} ({$pagination.from +1} - {$pagination.from + $beans|@count} {$APP.LBL_LIST_OF} {$results->getModuleTotal($module)})</h3>
     <table class="list view">
         <thead>
             <tr>
