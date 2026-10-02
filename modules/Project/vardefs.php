@@ -447,7 +447,7 @@ $dictionary['Project'] = array(
             'type' => 'bool',
             'required' => false,
             'reportable' => false,
-            'default' => '0',
+            'default' => '1',
             'comment' => ''
         ),
     ),
