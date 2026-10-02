@@ -415,6 +415,9 @@ $dictionary['AOS_Contracts'] = array(
                 'duplicate_merge_dom_value' => 0,
                 'audited' => false,
                 'reportable' => false,
+                'studio' => array(
+                    'searchview' => false,
+                ),
                 'function' =>
                     array(
                         'name' => 'display_lines',
@@ -681,7 +684,7 @@ $dictionary['AOS_Contracts'] = array(
                 ),
                 'len' => '26,6',
             ),
-        
+
         'accounts' =>
             array(
                 'name' => 'accounts',
