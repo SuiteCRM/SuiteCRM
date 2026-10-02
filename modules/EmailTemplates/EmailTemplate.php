@@ -463,6 +463,8 @@ class EmailTemplate extends SugarBean
                 } else {
                     if (isset($focus->{$field_name})) {
                         $value = $focus->{$field_name};
+                        $type = $focus->field_defs[$field_name]['type'];
+                        $value =  self::_convertToType($type, $value);                        
                     } else {
                         $value = null;
                         $GLOBALS['log']->warn("Undefined field name in email template: $field_name");
