@@ -321,7 +321,8 @@ function getModuleField(
     $value = '',
     $alt_type = '',
     $currency_id = '',
-    $params= array()
+    $params= array(),
+    $usedInTotal = false
 ) {
     global $current_language;
     global $app_strings;
@@ -389,6 +390,10 @@ function getModuleField(
         }
 
         //$vardef['precision'] = $locale->getPrecedentPreference('default_currency_significant_digits', $current_user);
+
+        if ($vardef['type'] == 'enum' && $usedInTotal) {
+            $vardef['type'] = 'text';
+        }
 
         if ($vardef['type'] == 'datetime') {
             $vardef['type'] = 'datetimecombo';
