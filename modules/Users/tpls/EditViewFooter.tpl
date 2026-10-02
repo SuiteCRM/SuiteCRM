@@ -5,7 +5,7 @@
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2023 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -249,23 +249,14 @@
                     <slot><select tabindex='12' name="default_export_charset">{$EXPORT_CHARSET}</select></slot>
                 </td>
                 <td scope="row" valign="top">
-                    <slot>{$MOD.LBL_REMINDER}:</slot>&nbsp;{sugar_help text=$MOD.LBL_REMINDER_TEXT }
-                </td>
-                <td valign="top" nowrap>
-                    <!--
-                                <slot>{include file="modules/Meetings/tpls/reminders.tpl"}</slot>
-								-->
-                    <slot>{include file="modules/Reminders/tpls/remindersDefaults.tpl"}</slot>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
                     <button type="button" class="btn btn-primary btn-sm" onClick="Alerts.prototype.enable()">
                         {$MOD.LBL_ENABLE_NOTIFICATIONS}
                     </button>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" nowrap>
+                    <slot>{include file="modules/Users/tpls/remindersUsers.tpl"}</slot>
                 </td>
             </tr>
             <tr>
