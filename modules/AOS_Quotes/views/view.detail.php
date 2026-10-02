@@ -72,7 +72,7 @@ class AOS_QuotesViewDetail extends ViewDetail
     {
         global $app_list_strings;
 
-        $sql = "SELECT id, name FROM aos_pdf_templates WHERE deleted=0 AND type='AOS_Quotes' AND active = 1";
+        $sql = "SELECT id, name FROM aos_pdf_templates WHERE deleted=0 AND type='AOS_Quotes' AND active = 1 order by name";
 
         $res = $this->bean->db->query($sql);
 
