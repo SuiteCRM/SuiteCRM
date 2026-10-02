@@ -167,10 +167,9 @@ var plgBackground = {
          */
         var tinyMCESettings = {
             plugins: [
-                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-                'searchreplace wordcount visualblocks visualchars code fullscreen',
-                'insertdatetime media nonbreaking save table contextmenu directionality',
-                'emoticons template paste textcolor colorpicker textpattern imagetools'
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 'pagebreak',
+                'searchreplace', 'wordcount', 'visualblocks', 'visualchars', 'code', 'fullscreen',
+                'insertdatetime', 'media', 'nonbreaking', 'save', 'table', 'directionality', 'emoticons'
             ],
             toolbar1: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent',
             toolbar2: 'print preview media | forecolor backcolor | image | emoticons | table | link | fontsizeselect',
@@ -396,6 +395,8 @@ var plgBackground = {
                     var config = settings.tinyMCE;
                     config.selector = sels;
                     config.inline = true;
+                    config.license_key = 'gpl';
+                    config.license_policy = 'gpl';
                     tinymce.init(config);
                 });
 
