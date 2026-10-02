@@ -6,6 +6,7 @@ use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\OAuth2\Entity\AccessTokenEntity;
 use BeanFactory;
 use DateTime;
+use DateTimeZone;
 use InvalidArgumentException;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
@@ -29,6 +30,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
     /**
      * @param AccessTokenEntity $accessTokenEntity
      * @param BeanManager $beanManager
+     *
      */
     public function __construct(AccessTokenEntity $accessTokenEntity, BeanManager $beanManager)
     {
@@ -91,7 +93,7 @@ class AccessTokenRepository implements AccessTokenRepositoryInterface
 
         $token->access_token = $accessTokenEntity->getIdentifier();
 
-        $token->access_token_expires = $accessTokenEntity->getExpiryDateTime()->format('Y-m-d H:i:s');
+        $token->access_token_expires = $accessTokenEntity->getExpiryDateTime()->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
 
         $token->client = $clientId;
 
