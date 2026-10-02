@@ -47,7 +47,8 @@ function getModuleFields(
     $view = 'EditView',
     $value = '',
     $valid = array(),
-    $override = array()
+    $override = array(),
+    $params = array()
 ) {
     global $app_strings, $beanList, $current_user;
 
@@ -103,6 +104,12 @@ function getModuleFields(
                         }
                         if ($arr['type'] === 'relate' && isset($arr['id_name']) && $arr['id_name'] !== '') {
                             $unset[] = $arr['id_name'];
+                        }
+                    }
+
+                    if($params['calledFromReports']) {
+                        if ($arr['reportable'] === false) {
+                            $unset[] = $name;
                         }
                     }
                 }
