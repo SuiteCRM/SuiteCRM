@@ -62,6 +62,11 @@ $layout_defs['Contacts'] = array(
                 array('widget_class' => 'SubPanelTopComposeEmailButton'),
             ),
             'collection_list' => array(
+		'meetings' => array(
+                    'module' => 'Meetings',
+                    'subpanel_name' => 'ForActivities',
+                    'get_subpanel_data' => 'meetings',
+                ),
                 'tasks' => array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForActivities',
@@ -71,11 +76,6 @@ $layout_defs['Contacts'] = array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForActivities',
                     'get_subpanel_data' => 'tasks_parent',
-                ),
-                'meetings' => array(
-                    'module' => 'Meetings',
-                    'subpanel_name' => 'ForActivities',
-                    'get_subpanel_data' => 'meetings',
                 ),
                 'calls' => array(
                     'module' => 'Calls',
@@ -102,6 +102,11 @@ $layout_defs['Contacts'] = array(
             ),
 
             'collection_list' => array(
+		'meetings' => array(
+                    'module' => 'Meetings',
+                    'subpanel_name' => 'ForHistory',
+                    'get_subpanel_data' => 'meetings',
+                ),
                 'tasks' => array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForHistory',
@@ -111,11 +116,6 @@ $layout_defs['Contacts'] = array(
                     'module' => 'Tasks',
                     'subpanel_name' => 'ForHistory',
                     'get_subpanel_data' => 'tasks_parent',
-                ),
-                'meetings' => array(
-                    'module' => 'Meetings',
-                    'subpanel_name' => 'ForHistory',
-                    'get_subpanel_data' => 'meetings',
                 ),
                 'calls' => array(
                     'module' => 'Calls',
