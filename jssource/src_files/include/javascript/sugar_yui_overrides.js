@@ -44,7 +44,7 @@
 YAHOO.widget.Panel.prototype.configClose = function (type, args, obj) {
     var val = args[0],
         oClose = this.close,
-        strings = this.cfg.getProperty("strings"),
+        labelClose = SUGAR.language.get('app_strings', 'LBL_CLOSE_DASHLETS'),
         fc;
 
     if (val) {
@@ -70,7 +70,7 @@ YAHOO.widget.Panel.prototype.configClose = function (type, args, obj) {
                 this.innerElement.appendChild(oClose);
             }
 
-            oClose.innerHTML = (strings && strings.close) ? strings.close : "&#160;";
+            oClose.innerHTML = labelClose ? labelClose : "&#160;";
 
             YAHOO.util.Event.on(oClose, "click", this._doClose, this, true);
 
