@@ -37,7 +37,7 @@
  *}
 
 <div class="moduleTitle">
-    <h2 class="module-title-text">{$APP.LBL_SEARCH_TITLE}</h2>
+    <h2 class="module-title-text">{ translate('LBL_SEARCH_TITLE', 'global') }</h2>
 </div>
 <div style="clear:both;">
     <form id="search-wrapper-form">
@@ -48,12 +48,12 @@
             <tbody>
             <tr style="padding-bottom: 10px">
                 <td class="submitButtons" colspan="8" nowrap="">
-                    <label for="searchFieldMain" class="text-muted hide">{$APP.LBL_SEARCH_QUERY}</label>
-                    <input id="searchFieldMain" title="{$APP.LBL_SEARCH_TEXT_FIELD_TITLE_ATTR}" class="searchField"
+                    <label for="searchFieldMain" class="text-muted hide">{ translate('LBL_SEARCH_QUERY', 'global') }</label>
+                    <input id="searchFieldMain" title="{ translate('LBL_SEARCH_TEXT_FIELD_TITLE_ATTR', 'global') }" class="searchField"
                            type="text" size="80" name="search-query-string" value="{$searchQueryString}" autofocus>
                     <input type="submit" onclick="searchForm.onSubmitClick(this);"
-                           title="{$APP.LBL_SEARCH_SUBMIT_FIELD_TITLE_ATTR}" class="button primary"
-                           value="{$APP.LBL_SEARCH_SUBMIT_FIELD_VALUE}">&nbsp;
+                           title="{ translate('LBL_SEARCH_SUBMIT_FIELD_TITLE_ATTR', 'global') }" class="button primary"
+                           value="{ translate('LBL_SEARCH_SUBMIT_FIELD_VALUE', 'global') }">&nbsp;
                 </td>
             <tr>
             <tr style="padding-top: 10px;">
