@@ -160,9 +160,8 @@ else{inputHandle.parentNode.appendChild(errorTextNode);}
 if(flash)
 inputHandle.style.backgroundColor="#FF0000";inputsWithErrors.push(inputHandle);}
 if(flash){if(inputsWithErrors.length==1){for(var wp=1;wp<=10;wp++){window.setTimeout('fade_error_style(style, '+wp*10+')',1000+(wp*50));}}
-if(typeof(window[formname+"_tabs"])!="undefined"){var tabView=window[formname+"_tabs"];var parentDiv=YAHOO.util.Dom.getAncestorByTagName(inputHandle,"div");if(tabView.get){var tabs=tabView.get("tabs");for(var i in tabs){if(tabs[i].get("contentEl")==parentDiv||YAHOO.util.Dom.isAncestor(tabs[i].get("contentEl"),inputHandle)){tabs[i].get("labelEl").style.color="red";if(inputsWithErrors.length==1)
-tabView.selectTab(i);}}
-if(typeof selectTabOnErrorInputHandle=='function'){selectTabOnErrorInputHandle(inputHandle);}}}
+if(typeof window[formname+"_tabs"]!="undefined"){if($(".validation-message")){$("#EditView_tabs li a").removeAttr("style");counter=0;$(".validation-message").each(function(){var currentValidationTabId=$(this).closest(".tab-pane-NOBOOTSTRAPTOGGLER").attr("id").split('-').slice(-1);var $currentValidationTabA=$("#EditView_tabs a#tab"+currentValidationTabId);$currentValidationTabA.attr("style","background-color:red;").closest("li");if(counter==0){$currentValidationTabA.click();$currentValidationTabA.addClass("active");}
+counter++;});}}
 window.setTimeout("inputsWithErrors["+(inputsWithErrors.length-1)+"].style.backgroundColor = '';",2000);}}catch(e){}}
 function clear_all_errors(){for(var wp=0;wp<inputsWithErrors.length;wp++){if(typeof(inputsWithErrors[wp])!='undefined'&&typeof inputsWithErrors[wp].parentNode!='undefined'&&inputsWithErrors[wp].parentNode!=null){if(inputsWithErrors[wp].parentNode.className.indexOf('x-form-field-wrap')!=-1){inputsWithErrors[wp].parentNode.parentNode.removeChild(inputsWithErrors[wp].parentNode.parentNode.lastChild);}
 else{inputsWithErrors[wp].parentNode.removeChild(inputsWithErrors[wp].parentNode.lastChild);}}}
