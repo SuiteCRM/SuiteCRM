@@ -101,4 +101,6 @@ $mod_strings = array(
     'LBL_TYPE' => 'Type',
     'LBL_WIDTH' => 'Width Default',
     'LNK_IMPORT_CAMPAIGNS' => 'Import Campaign',
+    'LBL_ASCENDING' => 'Ascending',
+    'LBL_DESCENDING' => 'Descending',
 );
