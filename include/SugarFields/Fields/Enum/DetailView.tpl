@@ -46,7 +46,11 @@ lists can work. *}
 { {{sugarvar key='options' string=true}} }
 {else}
 <input type="hidden" class="sugar_field" id="{{sugarvar key='name'}}" value="{ {{sugarvar key='value' string=true}} }">
-{ {{sugarvar key='options' string=true}}[{{sugarvar key='value' string=true}}]}
+{if !empty({{sugarvar key='options' string=true}}[{{sugarvar key='value' string=true}}])}
+    { {{sugarvar key='options' string=true}}[{{sugarvar key='value' string=true}}] }
+{else}  
+    { {{sugarvar key='value' string=true}} }
+{/if}
 {/if}
 {{if !empty($displayParams.enableConnectors)}}
 {{sugarvar_connector view='DetailView'}}
