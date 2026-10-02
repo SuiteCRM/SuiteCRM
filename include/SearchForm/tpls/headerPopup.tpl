@@ -38,7 +38,7 @@
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 *}
-<div id="searchDialog" class="modal fade modal-search" tabindex="-1" role="dialog">
+<div id="searchDialog" class="modal fade modal-search" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
