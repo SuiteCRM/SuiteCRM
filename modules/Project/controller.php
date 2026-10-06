@@ -150,8 +150,7 @@ class ProjectController extends SugarController
         $startdate = DateTime::createFromFormat($dateformat, $_POST['start']);
         $start = $startdate->format('Y-m-d');
 
-        //Take 1 off duration so that task displays in correct number of table cells in gantt chart.
-        $duration = $_POST['duration'] -1;
+        $duration = $_POST['duration'];
 
         $duration_unit = $_POST['unit'];
 
@@ -215,20 +214,28 @@ class ProjectController extends SugarController
                 $day = $enddate->format('l');
 
                 $h += $bhours[$day];
-                $enddate = $enddate->modify('+1 Days');
+
+                if ($duration > $h) {
+                    $enddate = $enddate->modify('+1 Days');
+                }
             }
 
             $enddate = $enddate->format('Y-m-d');
         } else {
-            while ($duration >= $d) {
+            while ($duration > $d) {
                 $day = $enddate->format('l');
 
                 if ($bhours[$day] != 0) {
                     $d += 1;
                 }
-                $enddate = $enddate->modify('+1 Days');
+
+                if ($d < $duration) {
+                    $enddate->modify('+1 day');
+                } else {
+                    break;
+                }
             }
-            $enddate = $enddate->modify('-1 Days');//readjust it back to remove 1 additional day added
+
             $enddate = $enddate->format('Y-m-d');
         }
 
@@ -363,7 +370,7 @@ class ProjectController extends SugarController
         $task->project_task_id = $project_task_id;
         $task->predecessors = $predecessors;
         $task->relationship_type = $rel_type;
-        $task->duration = $duration + 1; //+1 to make duration appear correct in project table
+        $task->duration = $duration;
         $task->duration_unit = $duration_unit;
         $task->assigned_user_id = $resource;
         $task->percent_complete = $percent_complete;
@@ -386,7 +393,7 @@ class ProjectController extends SugarController
         // $task->parent_task_id = $parent_task_id;
         $task->predecessors = $predecessors;
         $task->relationship_type = $rel_type;
-        $task->duration = $duration + 1; //+1 to make duration appear correct in project table
+        $task->duration = $duration;
         $task->duration_unit = $duration_unit;
         $task->assigned_user_id = $resource;
         $task->percent_complete = $percent_complete;
