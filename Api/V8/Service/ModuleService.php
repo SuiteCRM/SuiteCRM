@@ -295,6 +295,9 @@ class ModuleService
         if ($fileUpload && $bean->module_dir === 'Notes') {
             $this->addFileToNote($bean->id, $attributes);
         }
+        if ($fileUpload && $bean->module_dir === 'DocumentRevisions') {
+            $this->addFileToDocumentRevision($bean->id, $attributes);
+        }
         if ($fileUpload && $bean->module_dir === 'Documents') {
             $this->addFileToDocument($bean, $attributes);
         }
@@ -385,7 +388,53 @@ class ModuleService
      * @param $attributes
      * @throws Exception
      */
-    protected function addFileToNote($beanId, $attributes)
+    protected function addFileToDocumentRevision($beanId, $attributes)
+    {
+        global $sugar_config, $log;
+
+        $module = 'DocumentRevision';
+        if (!empty($attributes['moduleName'])) {
+            $module = $attributes['moduleName'];
+            unset($attributes['moduleName']);
+     }
+        BeanFactory::unregisterBean($module, $beanId);
+        $bean = $this->beanManager->getBeanSafe($module, $beanId);
+
+        // Write file to upload dir
+        try {
+            // Checking file extension
+            $extPos = strrpos((string) $attributes['filename'], '.');
+            $fileExtension = substr((string) $attributes['filename'], $extPos + 1);
+
+            if ($extPos === false || empty($fileExtension) || in_array(
+                    $fileExtension,
+                    $sugar_config['upload_badext'],
+                    true
+                )) {
+                throw new Exception('File upload failed: File extension is not included or is not valid.');
+            }
+
+            $fileName = $bean->id;
+            $fileContents = $attributes['filecontents'];
+            $targetPath = 'upload/' . $fileName;
+            $content = base64_decode($fileContents);
+
+            $file = fopen($targetPath, 'wb');
+            fwrite($file, $content);
+            fclose($file);
+        } catch (Exception $e) {
+            $log->error('addFileToNote: ' . $e->getMessage());
+            throw new Exception($e->getMessage());
+        }
+
+        // Fill in file details for use with upload checks
+        $mimeType = mime_content_type($targetPath);
+        $bean->filename = $attributes['filename'];
+        $bean->file_mime_type = $mimeType;
+        $bean->save();
+    }
+    
+     protected function addFileToNote($beanId, $attributes)
     {
         global $sugar_config, $log;
 
