@@ -210,15 +210,8 @@ class ProjectController extends SugarController
 
         $h = 0;
         $d = 0;
-        if ($duration_unit == 'Hours') {
-            while ($duration > $h) {
-                $day = $enddate->format('l');
-
-                $h += $bhours[$day];
-                $enddate = $enddate->modify('+1 Days');
-            }
-
-            $enddate = $enddate->format('Y-m-d');
+        if ($duration_unit === 'Hours') {
+            $enddate = $this->computeEndDateTaskInHours($start, (int) $_POST['duration'], $bhours);
         } else {
             while ($duration >= $d) {
                 $day = $enddate->format('l');
@@ -616,5 +609,34 @@ class ProjectController extends SugarController
     public function IsNullOrEmptyString($question)
     {
         return (!isset($question) || trim($question)==='');
+    }
+
+    /**
+     * Computes the end date of the task, where duration was set in hours.
+     *
+     * @param string $startDate 'Y-m-d' formatted start task date
+     * @param int $duration task duration hours
+     * @param array<string, int> $businessHours working hours per day
+     * @return string 'Y-m-d' formatted date string
+     * @throws Exception if `$startDate` is not a valid date
+     */
+    private function computeEndDateTaskInHours(string $startDate, int $duration, array $businessHours): string
+    {
+        $endDate = new DateTime($startDate);
+        $endDateFormat = 'Y-m-d';
+        $businessHoursKeyDateFormat = 'l';
+        $endDateModifier = '+1 Days';
+
+        if (0 >= array_sum($businessHours)) {
+            return $endDate->format($endDateFormat);
+        }
+
+        $countedHours = $businessHours[$endDate->format($businessHoursKeyDateFormat)] ?? 0;
+        while ($countedHours <= $duration) {
+            $endDate->modify($endDateModifier);
+            $countedHours += $businessHours[$endDate->format($businessHoursKeyDateFormat)] ?? 0;
+        }
+
+        return $endDate->format($endDateFormat);
     }
 }
