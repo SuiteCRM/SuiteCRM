@@ -34,14 +34,26 @@ class BeanManager
     /**
      * @param string $module
      *
+     * @return string
+     */
+    public function resolveModuleName($module)
+    {
+        if (!\BeanFactory::getObjectName($module) && array_key_exists($module, $this->beanAliases)) {
+            return $this->beanAliases[$module];
+        }
+
+        return $module;
+    }
+
+    /**
+     * @param string $module
+     *
      * @return \SugarBean
      * @throws \InvalidArgumentException When the module is invalid.
      */
     public function newBeanSafe($module)
     {
-        if (array_key_exists($module, $this->beanAliases)) {
-            $module = $this->beanAliases[$module];
-        }
+        $module = $this->resolveModuleName($module);
 
         $bean = \BeanFactory::newBean($module);
 
@@ -85,11 +97,8 @@ class BeanManager
             throw new \DomainException('Module id is empty when trying to get ' . $module);
         }
 
+        $module = $this->resolveModuleName($module);
         $objectName = \BeanFactory::getObjectName($module);
-        if (!$objectName && array_key_exists($module, $this->beanAliases)) {
-            $objectName = \BeanFactory::getObjectName($this->beanAliases[$module]);
-            $module = $this->beanAliases[$module];
-        }
 
         if (!$objectName) {
             throw new \DomainException(sprintf('Module with name %s is not found', $module));
