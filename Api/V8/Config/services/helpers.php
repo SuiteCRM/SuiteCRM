@@ -28,6 +28,8 @@ return CustomLoader::mergeCustomArray([
         return new Helper\ModuleListProvider();
     },
     Helper\ModuleAccessChecker::class => function (Container $container) {
-        return new Helper\ModuleAccessChecker();
+        return new Helper\ModuleAccessChecker(
+            $container->get(BeanManager::class)
+        );
     },
 ], basename(__FILE__));
