@@ -77,6 +77,20 @@ function updateCRONFields(id){
     }
 }
 
+function isValidCRONValue(id){
+    updateCRONValue(id);
+    var parts = $('#'+id).val().trim().split(/\s+/);
+    if(parts.length !== 5){
+        return false;
+    }
+    for(var i = 0; i < parts.length; i++){
+        if(!/^[0-9A-Za-z*,\-\/?#]+$/.test(parts[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
 function updateCRONValue(id){
     //If advanced mode, do nothing
     if($('#'+id+'_raw').is(':checked')){
