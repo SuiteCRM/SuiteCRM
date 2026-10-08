@@ -40,6 +40,14 @@
  *}
 {*<!-- tab_panel_content.tpl START -->*}
 
+{{if isset($maxColumns) && $maxColumns > 0}}
+    {{assign var="panelMaxColumns" value=$maxColumns}}
+{{else}}
+    {{assign var="panelMaxColumns" value=2}}
+{{/if}}
+{{math assign="panelColumnWidth" equation="max(1, floor(12 / $panelMaxColumns))"}}
+{{math assign="panelFullWidthColspan" equation="2 * $panelMaxColumns - 1"}}
+
 {*<!-- tab panel main div -->*}
 
 {{foreach name=rowIteration from=$panel key=row item=rowData}}
@@ -57,9 +65,9 @@
 
         {*<!-- COLUMN -->*}
 
-        {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
+        {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != $panelFullWidthColspan}}
             {*<!-- DIV column - colspan != 3 -->*}
-            <div class="col-xs-12 col-sm-6 detail-view-row-item" data-field="{{$colData.field.name}}">
+            <div class="col-xs-12 col-sm-{{$panelColumnWidth}} detail-view-row-item" data-field="{{$colData.field.name}}">
         {{else}}
             {*<!-- DIV column - colspan = 3 -->*}
             <div class="col-xs-12 col-sm-12 detail-view-row-item" data-field="{{$colData.field.name}}">
@@ -75,7 +83,7 @@
 
                 {{if $fieldCount < $smarty.foreach.colIteration.total && !empty($colData.field.name)}}
 
-                    {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
+                    {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != $panelFullWidthColspan}}
                         {*<!-- DIV inside - colspan != 3 -->*}
 
                     {{if $smarty.foreach.colIteration.index == 0}}
@@ -119,7 +127,7 @@
                     </div>
                     {*<!-- /DIV inside  -->*}
 
-                    {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
+                    {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != $panelFullWidthColspan}}
                         {*<!-- phone (version 1) -->*}
                         <div class="col-xs-12 col-sm-8 detail-view-field{{if $inline_edit && !empty($colData.field.name) && ($fields[$colData.field.name].inline_edit == 1 || !isset($fields[$colData.field.name].inline_edit))}} inlineEdit{{/if}}{{if isset($fields[$colData.field.name].type) && $fields[$colData.field.name].type == 'phone'}} phone{{/if}}" type="{{$fields[$colData.field.name].type}}" field="{{$fields[$colData.field.name].name}}" {{if $colData.colspan}}colspan='{{$colData.colspan}}'{{/if}}>
                     {{else}}
