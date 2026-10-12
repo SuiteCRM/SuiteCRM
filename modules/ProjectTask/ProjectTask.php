@@ -121,7 +121,7 @@ class ProjectTask extends SugarBean
     {
         //Bug 46012.  When saving new Project Tasks instance in a workflow, make sure we set a project_task_id value
         //associated with the Project if there is no project_task_id specified.
-        if ($this->in_workflow && empty($this->id) && empty($this->project_task_id) && !empty($this->project_id)) {
+        if (empty($this->id) && empty($this->project_task_id) && !empty($this->project_id)) {
             $this->project_task_id = $this->getNumberOfTasksInProject($this->project_id) + 1;
         }
 
