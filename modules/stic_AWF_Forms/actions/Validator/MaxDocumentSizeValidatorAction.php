@@ -38,6 +38,7 @@ class MaxDocumentSizeValidatorAction extends ValidatorActionDefinition {
     public function __construct() {
         $this->isActive = true;
         $this->baseLabel = 'LBL_MAX_DOCUMENT_SIZE_VALIDATOR_ACTION';
+        $this->supportedDataTypes = [ActionDataType::FILE];
     }
 
     public function getParameters(): array {
