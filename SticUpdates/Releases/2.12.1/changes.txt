@@ -1,0 +1,14 @@
+custom/modules/Administration/controller.php
+custom/modules/Administration/views/view.sticmanagesdaintegration.php
+include/language/ca_ES.lang.php
+include/language/en_us.lang.php
+include/language/es_ES.lang.php
+include/language/eu_ES.lang.php
+include/language/gl_ES.lang.php
+include/SearchForm/SearchForm2.php
+modules/stic_AWF_Forms/actions/Validator/MaxDocumentSizeValidatorAction.php
+modules/stic_AWF_Forms/core/stic_AWFUtils.php
+modules/stic_Custom_Views/processor/stic_Custom_Views_Processor.php
+modules/stic_Signatures/sticGenerateSignedPdf.php
+modules/stic_Signatures/Utils.php
+SticInclude/SinergiaDA.php
