@@ -37,6 +37,27 @@ class stic_SignaturesUtils
     const SIGNATURE_TOKEN = '@@SIGNATURE_IMAGE@@';
 
     /**
+     * Normalizes any signature placeholder <img> to SIGNATURE_TOKEN before the HTML
+     * cleaning pipeline. Tolerant to attributes, order and quoting (TinyMCE variants).
+     *
+     * @param string $html Raw or parsed template HTML.
+     * @return string HTML with placeholders replaced by the token.
+     */
+    public static function normalizeSignatureMarkers($html)
+    {
+        $html = (string) $html;
+        if (strpos($html, 'SignaturePlaceholder.png') === false) {
+            return $html;
+        }
+        $html = preg_replace('/<img\b[^>]*SignaturePlaceholder\.png[^>]*\/?>/i', self::SIGNATURE_TOKEN, $html);
+        // Encoded variant: stay within a single &lt;...&gt; tag (never cross &gt; or &lt;),
+        // otherwise one match could span from an earlier <img> (e.g. a logo) to the
+        // signature marker, wiping all content in between.
+        $html = preg_replace('/&lt;\s*img\b(?:(?!&(lt|gt);).)*?SignaturePlaceholder\.png(?:(?!&(lt|gt);).)*?&gt;/is', self::SIGNATURE_TOKEN, $html);
+        return $html;
+    }
+
+    /**
      * Retrieves the relationships and fields for a given SuiteCRM module.
      * This function fetches a module's own reportable fields and also
      * identifies and lists reportable fields from related modules.
@@ -97,12 +118,14 @@ class stic_SignaturesUtils
 
                     $options = $options_array;
 
-                    // Build module path and label if not 'LBL_DELETED'
-                    if ($module_arr['vname'] !== 'LBL_DELETED') {
-                        $options_array['$' . $module->table_name . ':' . $name] = translate($module_arr['vname'], $module->module_dir);
-                        $module_path = $module_arr['module'] . ':' . ($module_arr['id_name'] ?? $module_arr['link']);
-                        $fmod_options_array[$module_path] = translate($relate_module->module_dir) . ' : ' . translate($module_arr['vname'], $module->module_dir);
+                    // Skip relate fields without label key to avoid warnings
+                    if (!isset($module_arr['vname']) || $module_arr['vname'] === 'LBL_DELETED') {
+                        continue;
                     }
+                    // Build module path and label
+                    $options_array['$' . $module->table_name . ':' . $name] = translate($module_arr['vname'], $module->module_dir);
+                    $module_path = $module_arr['module'] . ':' . ($module_arr['id_name'] ?? $module_arr['link']);
+                    $fmod_options_array[$module_path] = translate($relate_module->module_dir) . ' : ' . translate($module_arr['vname'], $module->module_dir);
                 }
             }
         }
@@ -397,14 +420,9 @@ class stic_SignaturesUtils
         // plain-text token BEFORE the HTML cleaning pipeline. This way the marker
         // survives the tag-stripping regexes even when it is placed inside a table,
         // and can be replaced by the real signature image after the template is parsed.
-        $signatureToken = self::SIGNATURE_TOKEN;
-        $signatureMarkers = [
-            '&lt;img class=&quot;signature&quot; src=&quot;themes/SuiteP/images/SignaturePlaceholder.png&quot; alt=&quot;&quot; width=&quot;200&quot; /&gt;',
-            '<img class="signature" src="themes/SuiteP/images/SignaturePlaceholder.png" alt="" width="200" />',
-        ];
-        $templateBean->pdfheader = str_replace($signatureMarkers, $signatureToken, (string) $templateBean->pdfheader);
-        $templateBean->pdffooter = str_replace($signatureMarkers, $signatureToken, (string) $templateBean->pdffooter);
-        $templateBean->description = str_replace($signatureMarkers, $signatureToken, (string) $templateBean->description);
+        $templateBean->pdfheader = self::normalizeSignatureMarkers($templateBean->pdfheader);
+        $templateBean->pdffooter = self::normalizeSignatureMarkers($templateBean->pdffooter);
+        $templateBean->description = self::normalizeSignatureMarkers($templateBean->description);
 
         // Clean the template content (header, footer, description)
         $header = preg_replace($search, $replace, $templateBean->pdfheader);

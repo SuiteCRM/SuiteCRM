@@ -219,11 +219,11 @@ class sticGenerateSignedPdf
         $header = $parsedText['header'];
         $footer = $parsedText['footer'];
 
-        // Replace the plain-text signature token with the actual signature
-        // image/acceptance image. The token survived the HTML cleaning pipeline,
-        // so this replacement works regardless of whether the marker was inside
-        // a table or not.
-        $converted = str_replace(stic_SignaturesUtils::SIGNATURE_TOKEN, $replaceWith, (string) $converted);
+        // Replace the token with the real image. Re-normalize first as a fallback
+        // for residual placeholders introduced after getParsedTemplate().
+        $converted = str_replace(stic_SignaturesUtils::SIGNATURE_TOKEN, $replaceWith, stic_SignaturesUtils::normalizeSignatureMarkers($converted));
+        $header = str_replace(stic_SignaturesUtils::SIGNATURE_TOKEN, $replaceWith, stic_SignaturesUtils::normalizeSignatureMarkers($header));
+        $footer = str_replace(stic_SignaturesUtils::SIGNATURE_TOKEN, $replaceWith, stic_SignaturesUtils::normalizeSignatureMarkers($footer));
 
         // Replace newlines with HTML line breaks for PDF generation
         $printable = str_replace("\n", "<br />", (string) $converted);
