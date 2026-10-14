@@ -243,7 +243,7 @@ class stic_Custom_Views_Processor
      */
     private function value_to_display($value, $value_type)
     {
-        global $timedate, $current_user, $sugar_config;
+        global $current_user, $sugar_config;
 
         switch ($value_type) {
             case "currency":
@@ -257,12 +257,38 @@ class stic_Custom_Views_Processor
                 return str_replace('.', $dec_sep, $value);
 
             case "date":
-                return $timedate->asUser($timedate->fromDbFormat($value, TimeDate::DB_DATE_FORMAT), $current_user);
+                return $this->date_value_to_display($value, TimeDate::DB_DATE_FORMAT);
+
             case "datetime":
             case "datetimecombo":
-                return $timedate->asUser($timedate->fromDbFormat($value, TimeDate::DB_DATETIME_FORMAT), $current_user);
+                return $this->date_value_to_display($value, TimeDate::DB_DATETIME_FORMAT);
         }
+
         return $value;
+    }
+
+    /**
+     * Converts the given value to a displayable format based on the specified date format.
+     *
+     * @param mixed $value The value to be converted.
+     * @param string $format The date format to convert the value to.
+     * @return mixed The converted value.
+     */
+    private function date_value_to_display($value, $format)
+    {
+        global $timedate, $current_user;
+
+        if ($value === null || trim((string) $value) === '') {
+            return ''; 
+        }
+
+        $date = $timedate->fromDbFormat($value, $format);
+        if (!$date instanceof DateTime) {
+            $GLOBALS['log']->error('stic_Custom_Views: Can not convert "' . $value . '" with format ' . $format);
+            return $value;
+        }
+
+        return $timedate->asUser($date, $current_user);
     }
 
     /**
