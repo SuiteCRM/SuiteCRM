@@ -102,7 +102,11 @@ class ExternalReporting
         $this->hostName = $sugar_config['host_name'];
         $this->baseHostname = explode('.', $this->hostName)[0];
 
-        $this->sdaSettings['publishAsTable'] = $sugar_config['stic_sinergiada']['publish_as_table'] ?? [];
+        // The setting can be an array of module names or an empty/false/missing value
+        // (when no module is selected to be published as a table). It is normalized to
+        // an array here so that every later consumer can safely use in_array().
+        $publishAsTable = $sugar_config['stic_sinergiada']['publish_as_table'] ?? [];
+        $this->sdaSettings['publishAsTable'] = is_array($publishAsTable) ? array_values($publishAsTable) : [];
 
         // If a specific language is not provided, the language defined for the instance will be used.
         if (!empty($_REQUEST['lang'])) {
@@ -166,8 +170,10 @@ class ExternalReporting
 
         // Check number of non-admin users enabled
         // Get configured limit for non-admin user processing
-        if (is_numeric($sugar_config['stic_sinergiada']['max_users_processed'] ?? null)) {
-            $maxNonAdminUsers = $sugar_config['stic_sinergiada']['max_users_processed'];
+        // An empty value or 0 means "no limit", as stated in the setting help text
+        $maxUsersProcessed = $sugar_config['stic_sinergiada']['max_users_processed'] ?? null;
+        if (is_numeric($maxUsersProcessed) && (int) $maxUsersProcessed > 0) {
+            $maxNonAdminUsers = (int) $maxUsersProcessed;
             $normalUsersEnabled = $db->query("SELECT
                                                     distinct u.id
                                                 FROM users u
@@ -274,17 +280,13 @@ class ExternalReporting
             // The module is processed or omitted, depending on the received parameter
             switch ($rebuildFilter) {
                 case 'tables':
-                    if (!in_array($moduleName, $this->sdaSettings['publishAsTable'])
-                        && $this->sdaSettings['publishAsTable'][0] != '0'
-                    ) {
+                    if (!in_array($moduleName, $this->sdaSettings['publishAsTable'])) {
                         $this->info .= '<div class="sda-module omitted">' . $moduleName . ' (Omitted)</div>';
                         continue 2;
                     }
                     break;
                 case 'views':
-                    if (in_array($moduleName, $this->sdaSettings['publishAsTable'])
-                        || $this->sdaSettings['publishAsTable'][0] == '1'
-                    ) {
+                    if (in_array($moduleName, $this->sdaSettings['publishAsTable'])) {
                         $this->info .= '<div class="sda-module omitted">' . $moduleName . ' (Omitted)</div>';
                         continue 2;
                     }
@@ -955,11 +957,8 @@ class ExternalReporting
                 }
             }
 
-            // Sql Header. Depending on the value of the SDA_MODE_MODE setting we create tables or views mysql
-            if (
-                in_array($moduleName, $this->sdaSettings['publishAsTable'])
-                || (!empty($this->sdaSettings['publishAsTable'][0]) && $this->sdaSettings['publishAsTable'][0] == '1')
-            ) {
+            // Sql Header. Depending on the module setting we create MySQL tables or views
+            if (in_array($moduleName, $this->sdaSettings['publishAsTable'])) {
                 $tableMode = 'table';
                 $createViewQueryHeader = " CREATE OR REPLACE TABLE {$viewName} ENGINE=MYISAM AS SELECT ";
             } else {
@@ -1037,10 +1036,7 @@ class ExternalReporting
             if (!empty($autoRelationships)) {
                 foreach ($autoRelationships as $key => $value) {
                     // Set mode for autorelationships (table or view) according to the module settings
-                    if (
-                        in_array($moduleName, $this->sdaSettings['publishAsTable'])
-                        || (!empty($this->sdaSettings['publishAsTable'][0]) && $this->sdaSettings['publishAsTable'][0] == '1')
-                    ) {
+                    if (in_array($moduleName, $this->sdaSettings['publishAsTable'])) {
                         $mode = 'TABLE';
                     } else {
                         $mode = 'VIEW';
@@ -1711,7 +1707,7 @@ class ExternalReporting
         $tmpConfigValues['last_rebuild'] = date('Y-m-d H:i:s');
 
         // Iterate over 'stic_sinergiada' settings and add them to the config values
-        foreach ($sugar_config['stic_sinergiada'] as $key => $value) {
+        foreach (($sugar_config['stic_sinergiada'] ?? []) as $key => $value) {
             if (is_array($value)) {
                 // If the setting is an array, add each sub-element with a composite key
                 foreach ($value as $key2 => $value2) {
@@ -1959,7 +1955,7 @@ class ExternalReporting
 
         // Preload user groups if group permissions are enabled for better performance
         $userGroups = [];
-        if ($sugar_config['stic_sinergiada']['group_permissions_enabled']) {
+        if ($sugar_config['stic_sinergiada']['group_permissions_enabled'] ?? false) {
             $groupsQuery = "SELECT user_name, name as 'group'
                        FROM sda_def_user_groups WHERE `name` != 'EDA_ADMIN' AND `name` != 'EDA_RO'";
             $groupsResult = $db->query($groupsQuery);

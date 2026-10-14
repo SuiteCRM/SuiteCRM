@@ -63,6 +63,11 @@ class ViewSticManageSdaIntegration extends SugarView
         $this->ss->assign('title', $this->getModuleTitle(false));
         $this->ss->assign('CURRENT_USER_ID', $current_user->id);
         $sdaConfig = $sugar_config['stic_sinergiada'] ?? [];
+        // publish_as_table may be absent when no module is selected as a table, so it is
+        // normalized to an array to avoid "Undefined array key" notices in the template
+        if (!is_array($sdaConfig['publish_as_table'] ?? null)) {
+            $sdaConfig['publish_as_table'] = [];
+        }
         $knownCacheKeys = ['cache_enabled', 'cache_units', 'cache_quantity', 'cache_hours', 'cache_minutes'];
         $defaultCache = [
             'cache_enabled' => false,
