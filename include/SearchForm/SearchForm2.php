@@ -1449,6 +1449,12 @@ class SearchForm
                                 $field_value = $db->quoteType($type, $field_value);
                                 $where .= "$db_field <= $field_value";
                                 break;
+                            // STIC Custom 20260825 PCS - Add today, yesterday and tomorrow to date range search options
+                            // https://github.com/SinergiaTIC/SinergiaCRM/pull/1395
+                            case 'today':
+                            case 'yesterday':
+                            case 'tomorrow':
+                            // END STIC Custom
                             case 'next_7_days':
                             case 'last_7_days':
                             case 'last_month':

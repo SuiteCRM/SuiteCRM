@@ -1099,6 +1099,12 @@ $app_list_strings = array(
         'not_equal' => 'Diferent de',
         'greater_than' => 'Després de',
         'less_than' => 'Abans de',
+        // STIC Custom 20260825 PCS - Add today, yesterday and tomorrow to date range search options
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1395
+        'today' => 'Avui',
+        'yesterday' => 'Ahir',
+        'tomorrow' => 'Demà',
+        // END STIC Custom
         'last_7_days' => 'Els darrers 7 dies',
         'next_7_days' => 'Els propers 7 dies',
         'last_30_days' => 'Els darrers 30 dies',
