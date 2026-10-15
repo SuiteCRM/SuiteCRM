@@ -1,4 +1,11 @@
     <!-- tab_panel_content.tpl -->
+    {{if isset($maxColumns) && $maxColumns > 0}}
+        {{assign var="panelMaxColumns" value=$maxColumns}}
+    {{else}}
+        {{assign var="panelMaxColumns" value=2}}
+    {{/if}}
+    {{math assign="panelColumnWidth" equation="max(1, floor(12 / $panelMaxColumns))"}}
+    {{math assign="panelFullWidthColspan" equation="2 * $panelMaxColumns - 1"}}
     <div class="row edit-view-row">
         {{foreach name=rowIteration from=$panel key=row item=rowData}}
             {*row*}
@@ -6,8 +13,8 @@
             {{foreach name=colIteration from=$rowData key=col item=colData}}
                 {*column*}
                 {*<!-- COLUMN -->*}
-                {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
-                    <div class="col-xs-12 col-sm-6 edit-view-row-item" data-field="{{$colData.field.name}}">
+                {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != $panelFullWidthColspan}}
+                    <div class="col-xs-12 col-sm-{{$panelColumnWidth}} edit-view-row-item" data-field="{{$colData.field.name}}">
                 {{else}}
                     <div class="col-xs-12 col-sm-12 edit-view-row-item" data-field="{{$colData.field.name}}">
                 {{/if}}
@@ -25,7 +32,7 @@
                         {{else}}
 
                         {*<!-- LABEL -->*}
-                        {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != 3}}
+                        {{if $smarty.foreach.colIteration.total > 1 && $colData.colspan != $panelFullWidthColspan}}
                             <div class="col-xs-12 col-sm-4 label" data-label="{{$fields[$colData.field.name].vname|default:''}}">
                         {{else}}
                              <div class="col-xs-12 col-sm-2 label" data-label="{{$fields[$colData.field.name].vname|default:''}}">
@@ -65,7 +72,7 @@
                         {{/if}}
 
                         {*<!-- VALUE -->*}
-                        {{if !empty($colData.field.hideLabel) && $colData.field.hideLabel == true && $colData.colspan != 3}}
+                        {{if !empty($colData.field.hideLabel) && $colData.field.hideLabel == true && $colData.colspan != $panelFullWidthColspan}}
                             {{assign var="fieldClasses" value="col-xs-12 col-sm-12"}}
                         {{else}}
                             {{assign var="fieldClasses" value="col-xs-12 col-sm-8"}}
@@ -137,7 +144,7 @@
                     {{counter name="fieldCount" print=false}}
                 {{/foreach}}
                 </div>
-                {{if intval($col)%2==1}}
+                {{if intval($col) % $panelMaxColumns == $panelMaxColumns - 1}}
                 <div class="clear"></div>
                 {{/if}}
             {{/foreach}}
