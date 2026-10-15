@@ -1,0 +1,40 @@
+app = "suitecrm"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DATABASE_HOST = "suitecrm-db.internal"
+  DATABASE_NAME = "suitecrm"
+  DATABASE_USER = "suitecrm"
+  DATABASE_PASSWORD = "suitecrm"
+  DATABASE_ROOT_PASSWORD = "root"
+  SITE_URL = "https://suitecrm.fly.dev"
+  ADMIN_USER = "admin"
+  ADMIN_PASSWORD = "admin1"
+
+[[services]]
+  internal_port = 80
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+    force_https = true
+
+[[mounts]]
+  source = "suitecrm_data"
+  destination = "/var/www/html/upload"
+
+[[mounts]]
+  source = "suitecrm_cache"
+  destination = "/var/www/html/cache"
+
+[[mounts]]
+  source = "suitecrm_custom"  
+  destination = "/var/www/html/custom"

@@ -3,7 +3,7 @@
   "description": "SuiteCRM",
   "homepage": "https://suitecrm.com",
   "type": "project",
-  "license": "GPL-3.0",
+  "license": "GPL-3.0-only",
   "authors": [
     {
       "name": "SuiteCRM Ltd"

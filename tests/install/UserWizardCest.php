@@ -56,6 +56,7 @@ class UserWizardCest
         // Navigate to email configuration and save settings
         $I2->loginAsAdmin();
         $I2->createEmailSettings();
-        $I2->dontSee('Note: To send record assignment notifications, an SMTP server must be configured in Email Settings.');
+        // SMTP configuration now handled via OutboundEmailAccounts module
+        // $I2->dontSee('Note: To send record assignment notifications, an SMTP server must be configured in Email Settings.');
     }
 }
