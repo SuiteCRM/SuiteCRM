@@ -3660,7 +3660,38 @@ class SugarBean
         $parentbean = null,
         $singleSelect = false,
         $ifListForExport = false
+    )
+    {
+        [$query, $_] = $this->create_new_list_query_with_aliases(
+            $order_by,
+            $where,
+            $filter,
+            $params,
+            $show_deleted,
+            $join_type,
+            $return_array,
+            $parentbean,
+            $singleSelect,
+            $ifListForExport,
+        );
+
+        return $query;
+    }
+
+
+    public function create_new_list_query_with_aliases(
+        $order_by,
+        $where,
+        $filter = array(),
+        $params = array(),
+        $show_deleted = 0,
+        $join_type = '',
+        $return_array = false,
+        $parentbean = null,
+        $singleSelect = false,
+        $ifListForExport = false
     ) {
+        $tableAliases = [];
         $selectedFields = array();
         $secondarySelectedFields = array();
         $ret_array = array();
@@ -4066,6 +4097,7 @@ class SugarBean
                         }
 
                         if (!$buildWhere) {
+                            $tableAliases[$params['join_table_alias']] = $data['table'];
                             $db_field = $this->db->concat($params['join_table_alias'], $data['db_concat_fields']);
                             $where = preg_replace('/' . $data['name'] . '/', $db_field, $where);
 
@@ -4078,6 +4110,7 @@ class SugarBean
                             }
                         }
                     } else {
+                        $tableAliases[$params['join_table_alias']] = $data['table'];
                         $where = preg_replace(
                             '/(^|[\s(])' . $data['name'] . '/',
                             '${1}' . $params['join_table_alias'] . '.' . $data['rname'],
@@ -4149,10 +4182,16 @@ class SugarBean
         }
 
         if ($return_array) {
-            return $ret_array;
+            return [
+                $ret_array,
+                $tableAliases,
+            ];
         }
 
-        return $ret_array['select'] . $ret_array['from'] . $ret_array['where'] . $ret_array['order_by'];
+        return [
+            $ret_array['select'] . $ret_array['from'] . $ret_array['where'] . $ret_array['order_by'],
+            $tableAliases,
+        ];
     }
 
     /**
