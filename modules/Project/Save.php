@@ -112,13 +112,11 @@ if (isset($GLOBALS['check_notify'])) {
 $sugarbean->save($check_notify);
 $return_id = $sugarbean->id;
 
-if (isset($_REQUEST['save_type']) || isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true") {
+if (isset($_REQUEST['save_type']) || (isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true")) {
     $projectTasksCount = count($projectTasks);
     for ($i = 0; $i < $projectTasksCount; $i++) {
-        if (isset($_REQUEST['save_type']) || (isset($_REQUEST['duplicateSave']) && $_REQUEST['duplicateSave'] === "true")) {
-            $projectTasks[$i]->id = '';
-            $projectTasks[$i]->project_id = $sugarbean->id;
-        }
+        $projectTasks[$i]->id = '';
+        $projectTasks[$i]->project_id = $sugarbean->id;
         if ($sugarbean->is_template) {
             $projectTasks[$i]->assigned_user_id = '';
         }
