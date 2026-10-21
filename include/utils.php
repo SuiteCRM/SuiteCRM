@@ -5430,6 +5430,13 @@ function verify_image_file($path, $jpeg = false)
             if (file_put_contents($path, $image)) {
                 return true;
             }
+        } elseif ($filetype == 'image/gif') {
+            ob_start();
+            imagegif($img);
+            $image = ob_get_clean();
+            if (file_put_contents($path, $image)) {
+                return true;
+            }
         } else {
             return false;
         }
@@ -5451,10 +5458,11 @@ function verify_image_file($path, $jpeg = false)
 function verify_uploaded_image($path, $jpeg_only = false)
 {
     global $sugar_config;
-    $supportedExtensions = $sugar_config['image_ext'] ?? ['image/jpeg', 'image/png', 'image/gif' , 'tmp' => 'tmp'];
+    $supportedExtensions = $sugar_config['image_ext'] ?? ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'tmp' => 'tmp'];
 
     if (!$jpeg_only) {
         $supportedExtensions['png'] = 'image/png';
+        $supportedExtensions['gif'] = 'image/gif';
     }
 
     if (!file_exists($path) || !is_file($path)) {
