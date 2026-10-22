@@ -289,6 +289,13 @@ function setProductReturn(popupReplyData){
 
 function formatListPrice(ln){
 
+  var productId = document.getElementById('product_product_id' + ln);
+  var errorIndex = inputsWithErrors.indexOf(productId);
+  if (errorIndex !== -1) {
+    productId.parentNode.removeChild(productId.parentNode.lastChild);
+    inputsWithErrors.splice(errorIndex, 1);
+  }
+
   if (typeof currencyFields !== 'undefined'){
     var product_currency_id = document.getElementById('product_currency' + ln).value;
     product_currency_id = product_currency_id ? product_currency_id : -99;//Assume base currency if no id

@@ -1194,11 +1194,21 @@ li.noBullet {
   color: $alert-info-text;
 }
 
-.product_group .required {
-  position: absolute;
+.product_group .required,
+.service_group .required {
+  position: static;
   padding: 0;
   margin: 0;
-  line-height: 32px;
+  width: 0;
+  min-width: 100%;
+  line-height: normal;
+  white-space: normal;
+}
+
+.service_group .required {
+  height: 0;
+  overflow: visible;
+  border: 0;
 }
 
 .required {
@@ -2916,6 +2926,10 @@ table#lineItems tr td table tfoot tr td span {
 
 #lineItems .product_group {
   width: $line-item-group-width;
+}
+
+#lineItems .product_group > tbody > tr:nth-of-type(1) > td {
+  vertical-align: top;
 }
 
 #lineItems .product_group > tbody > tr:nth-of-type(2) > td {
