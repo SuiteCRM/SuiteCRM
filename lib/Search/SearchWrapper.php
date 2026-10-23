@@ -211,9 +211,9 @@ class SearchWrapper
 
         if (!empty($users_modules)) {
             // Use user's previous selections
-            foreach ($users_modules as $key => $value) {
-                if (isset($unifiedSearchModuleDisplay[$key]) && !empty($unifiedSearchModuleDisplay[$key]['visible'])) {
-                    $modulesToSearch[$key] = $value;
+            foreach ($unifiedSearchModuleDisplay as $module => $data) {
+                if (isset($users_modules[$module]) && !empty($data['visible'])) {
+                    $modulesToSearch[$module] = $module;
                 }
             }
         } else {
