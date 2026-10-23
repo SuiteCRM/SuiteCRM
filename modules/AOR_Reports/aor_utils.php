@@ -116,7 +116,8 @@ function requestToUserParameters($reportBean = null)
             $condition = BeanFactory::getBean('AOR_Conditions', $_REQUEST['parameter_id'][$key]);
             $value = $_REQUEST['parameter_value'][$key];
             if ($reportBean && $condition && !array_key_exists($value, $app_list_strings['date_time_period_list'])) {
-                $value = fixUpFormatting($reportBean->report_module, $condition->field, $value);
+                $conditionModule = getRelatedModule($reportBean->report_module, implode(':', (array)unserialize(base64_decode($condition->module_path), ['allowed_classes' => false])));
+                $value = fixUpFormatting($conditionModule, $condition->field, $value);
             }
 
             $params[$parameterId] = array(

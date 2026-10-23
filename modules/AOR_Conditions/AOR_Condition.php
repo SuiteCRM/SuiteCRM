@@ -112,7 +112,8 @@ class AOR_Condition extends Basic
                             }
                         } else {
                             if ($field_name == 'value' && $post_data[$key . 'value_type'][$i] === 'Value') {
-                                $post_data[$key . $field_name][$i] = fixUpFormatting($_REQUEST['report_module'], $condition->field, $post_data[$key . $field_name][$i]);
+                                $conditionModule = getRelatedModule($_REQUEST['report_module'], implode(':', (array)unserialize(base64_decode($condition->module_path), ['allowed_classes' => false])));
+                                $post_data[$key . $field_name][$i] = fixUpFormatting($conditionModule, $condition->field, $post_data[$key . $field_name][$i]);
                             } else {
                                 if ($field_name == 'parameter') {
                                     $post_data[$key . $field_name][$i] = isset($post_data[$key . $field_name][$i]);
