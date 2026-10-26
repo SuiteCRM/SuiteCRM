@@ -52,7 +52,7 @@
             SubpanelInitTabNames({/literal}{$tab_names}{literal});
           {/literal}$('.sub-panel .table-responsive').footable();{literal}
           // collapse subpanels when device is mobile / tablet
-          if($(window).width() <= SUGAR.measurements.breakpoints.large) {
+          if(SUGAR.measurements && $(window).width() <= SUGAR.measurements.breakpoints.large) {
             $('[id^=subpanel] .panel-collapse').removeClass('in');
             $('.panel-heading-collapse a').removeClass('in');
             $('.panel-heading-collapse a').addClass('collapsed');

@@ -2915,7 +2915,7 @@ SUGAR.util = function () {
       }
     },
     evalScript: function (text) {
-      if (UA.webkit && !UA.chrome) {
+      if (YAHOO.env.ua.webkit && !YAHOO.env.ua.chrome) {
         var waitUntilLoaded = function () {
           SUGAR.evalScript_waitCount--;
           if (SUGAR.evalScript_waitCount == 0) {
