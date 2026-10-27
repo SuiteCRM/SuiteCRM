@@ -628,4 +628,19 @@ $mod_strings = array (
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_DESC' => 'Valida que el fitxer pujat tingui una extensió permesa.',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_EXTENSIONS_TEXT' => 'Extensions permeses (separades per comes)',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_ERROR_MESSAGE_TEXT' => "L'extensió del fitxer no està permesa.",
+
+  // AdvancedFormulaBuilderAction
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TITLE' => 'Calculadora i classificador de fórmules avançades',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DESC' => 'Suma en temps real els valors de múltiples camps seleccionats, bolca el resultat en un camp destí i, opcionalment, el classifica per rangs.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_TEXT' => 'Camp de resultat numèric',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_DESC' => 'Camp on es bolcarà el resultat del càlcul.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_TEXT' => 'Camps a sumar / calcular',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_DESC' => 'Selecciona els camps del formulari que sumaran el seu valor. (Mantén premut Ctrl / Cmd per seleccionar-ne diversos).',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_TEXT' => 'Decimals del resultat',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_DESC' => 'Nombre de decimals amb què s\'arrodonirà el resultat. Per defecte, 2.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_TEXT' => 'Classificació destí (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_DESC' => 'Opcional: camp on s\'escriurà l\'etiqueta de diagnòstic segons el rang obtingut.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_TEXT' => 'Definició de rangs (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_DESC' => 'Format per línies: "min-max: Etiqueta". Ex.: 0-20: Dependència total | 21-60: Severa | 100: Independent',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_EXECUTE_MESSAGE' => 'Càlcul i classificació gestionats al navegador.',
 );

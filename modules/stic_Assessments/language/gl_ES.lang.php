@@ -95,5 +95,6 @@ $mod_strings = array (
     'LBL_ASSESSMENT_DATE_ERROR' => 'A data da valoración debe ser anterior á data da próxima valoración.',
     'LBL_NEXT_DATE_ERROR' => 'A data da próxima valoración debe ser posterior á data da valoración.',
     'LBL_STIC_FAMILIES_STIC_ASSESSMENTS_FROM_STIC_FAMILIES_TITLE' => 'Unidade familiar',
+    'LBL_STIC_ASSESSMENTS_STIC_ASSESSMENTS_SCORES_FROM_STIC_ASSESSMENTS_SCORES_TITLE' => 'Puntuacións de Avaliación',
     'LBL_MUST_RELATE_TO_A_FAMILY_OR_A_CONTACT' => 'Hai que indicar unha persoa ou unha unidade familiar.',    
 );

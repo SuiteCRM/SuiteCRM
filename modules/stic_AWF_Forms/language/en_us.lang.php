@@ -628,4 +628,19 @@ $mod_strings = array (
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_DESC' => 'Validates that the uploaded file has an allowed extension.',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_EXTENSIONS_TEXT' => 'Allowed extensions (comma separated)',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_ERROR_MESSAGE_TEXT' => 'File extension is not allowed.',
+
+  // AdvancedFormulaBuilderAction
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TITLE' => 'Advanced formula calculator and classifier',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DESC' => 'Adds the values of multiple selected fields in real time, writes the result to a target field and optionally classifies it by ranges.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_TEXT' => 'Numeric result field',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_DESC' => 'Field where the calculation result will be written.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_TEXT' => 'Fields to add / calculate',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_DESC' => 'Select the form fields whose values will be added. (Hold Ctrl / Cmd to select multiple fields).',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_TEXT' => 'Result decimals',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_DESC' => 'Number of decimals used to round the result. Defaults to 2.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_TEXT' => 'Target classification (optional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_DESC' => 'Optional: field where the diagnostic label will be written according to the resulting range.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_TEXT' => 'Range definition (optional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_DESC' => 'One range per line: "min-max: Label". E.g.: 0-20: Total dependency | 21-60: Severe | 100: Independent',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_EXECUTE_MESSAGE' => 'Calculation and classification handled in the browser.',
 );

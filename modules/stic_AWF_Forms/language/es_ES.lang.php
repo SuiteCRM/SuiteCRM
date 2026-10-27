@@ -628,4 +628,19 @@ $mod_strings = array (
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_DESC' => 'Valida que el fichero subido tenga una extensión permitida.',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_EXTENSIONS_TEXT' => 'Extensiones permitidas (separadas por comas)',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_ERROR_MESSAGE_TEXT' => 'La extensión del fichero no está permitida.',
+
+  // AdvancedFormulaBuilderAction
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TITLE' => 'Calculadora y clasificador de fórmulas avanzadas',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DESC' => 'Suma en tiempo real los valores de múltiples campos seleccionados, vuelca el resultado en un campo destino y, opcionalmente, lo clasifica por rangos.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_TEXT' => 'Campo de resultado numérico',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_DESC' => 'Campo donde se volcará el resultado del cálculo.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_TEXT' => 'Campos a sumar / calcular',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_DESC' => 'Selecciona los campos del formulario que sumarán su valor. (Mantén pulsado Ctrl / Cmd para seleccionar varios).',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_TEXT' => 'Decimales del resultado',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_DESC' => 'Número de decimales con los que se redondeará el resultado. Por defecto, 2.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_TEXT' => 'Clasificación destino (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_DESC' => 'Opcional: campo donde se escribirá la etiqueta de diagnóstico según el rango obtenido.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_TEXT' => 'Definición de rangos (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_DESC' => 'Formato por líneas: "min-max: Etiqueta". Ej.: 0-20: Dependencia total | 21-60: Severa | 100: Independiente',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_EXECUTE_MESSAGE' => 'Cálculo y clasificación gestionados en el navegador.',
 );

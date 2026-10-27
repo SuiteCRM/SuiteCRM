@@ -39,6 +39,25 @@ $layout_defs["stic_Assessments"]["subpanel_setup"]['stic_goals_stic_assessments'
     ),
 );
 
+$layout_defs['stic_Assessments']['subpanel_setup']['stic_assessments_stic_assessments_scores'] = array(
+    'order' => 110,
+    'module' => 'stic_Assessments_Scores',
+    'subpanel_name' => 'default',
+    'sort_order' => 'desc',
+    'sort_by' => 'date_entered',
+    'title_key' => 'LBL_STIC_ASSESSMENTS_STIC_ASSESSMENTS_SCORES_FROM_STIC_ASSESSMENTS_SCORES_TITLE',
+    'get_subpanel_data' => 'stic_assessments_stic_assessments_scores',
+    'top_buttons' => array(
+        0 => array(
+            'widget_class' => 'SubPanelTopButtonQuickCreate',
+        ),
+        1 => array(
+            'widget_class' => 'SubPanelTopSelectButton',
+            'mode' => 'MultiSelect',
+        ),
+    ),
+);
+
 $layout_defs['stic_Assessments']['subpanel_setup']['securitygroups'] = array(
     'top_buttons' => array(array('widget_class' => 'SubPanelTopSelectButton', 'popup_module' => 'SecurityGroups', 'mode' => 'MultiSelect'),),
     'order' => 900,

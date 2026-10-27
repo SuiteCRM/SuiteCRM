@@ -626,4 +626,19 @@ $mod_strings = array (
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_DESC' => 'Valida que el fichero subido tenga una extensión permitida.',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_EXTENSIONS_TEXT' => 'Extensiones permitidas (separadas por comas)',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_ERROR_MESSAGE_TEXT' => 'La extensión del fichero no está permitida.',
+
+  // AdvancedFormulaBuilderAction
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TITLE' => 'Calculadora e clasificador de fórmulas avanzadas',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DESC' => 'Suma en tempo real os valores de varios campos seleccionados, escribe o resultado nun campo destino e, opcionalmente, clasifícao por rangos.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_TEXT' => 'Campo de resultado numérico',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_DESC' => 'Campo onde se escribirá o resultado do cálculo.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_TEXT' => 'Campos a sumar / calcular',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_DESC' => 'Selecciona os campos do formulario que sumarán o seu valor. (Mantén premido Ctrl / Cmd para seleccionar varios).',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_TEXT' => 'Decimais do resultado',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_DESC' => 'Número de decimais cos que se redondeará o resultado. Por defecto, 2.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_TEXT' => 'Clasificación destino (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_DESC' => 'Opcional: campo onde se escribirá a etiqueta de diagnóstico segundo o rango obtido.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_TEXT' => 'Definición de rangos (opcional)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_DESC' => 'Formato por liñas: "min-max: Etiqueta". Ex.: 0-20: Dependencia total | 21-60: Severa | 100: Independente',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_EXECUTE_MESSAGE' => 'Cálculo e clasificación xestionados no navegador.',
 );

@@ -624,6 +624,16 @@ $dictionary['stic_Assessments'] = array(
             'side' => 'right',
             'vname' => 'LBL_PROJECT_STIC_ASSESSMENTS_FROM_STIC_ASSESSMENTS_TITLE',
         ),
+        'stic_assessments_stic_assessments_scores' => array(
+            'name' => 'stic_assessments_stic_assessments_scores',
+            'type' => 'link',
+            'relationship' => 'stic_assessments_stic_assessments_scores',
+            'source' => 'non-db',
+            'module' => 'stic_Assessments_Scores',
+            'bean_name' => 'stic_Assessments_Scores',
+            'side' => 'right',
+            'vname' => 'LBL_STIC_ASSESSMENTS_STIC_ASSESSMENTS_SCORES_FROM_STIC_ASSESSMENTS_SCORES_TITLE',
+        ),
     ),
     'relationships' => array(
     ),

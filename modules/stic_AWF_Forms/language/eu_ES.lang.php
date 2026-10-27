@@ -628,4 +628,19 @@ $mod_strings = array (
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_DESC' => 'Valida que el fichero subido tenga una extensión permitida.',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_EXTENSIONS_TEXT' => 'Extensiones permitidas (separadas por comas)',
   'LBL_ALLOWED_EXTENSIONS_VALIDATOR_ACTION_ERROR_MESSAGE_TEXT' => 'La extensión del fichero no está permitida.',
+
+  // AdvancedFormulaBuilderAction
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TITLE' => 'Formula aurreratuen kalkulagailua eta sailkatzailea',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DESC' => 'Hautatutako eremu anitzen balioak denbora errealean batzen ditu, emaitza helburuko eremu batean idazten du eta, aukeran, tartearen arabera sailkatzen du.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_TEXT' => 'Emaitza numerikoaren eremua',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_FIELD_DESC' => 'Kalkuluaren emaitza idatziko den eremua.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_TEXT' => 'Batu / kalkulatzeko eremuak',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_SOURCE_FIELDS_DESC' => 'Hautatu balioa batuko duten formularioko eremuak. (Eutsi Ctrl / Cmd sakatuta hainbat eremu hautatzeko).',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_TEXT' => 'Emaitzaren hamartarrak',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_DECIMALS_DESC' => 'Emaitza biribiltzeko erabiliko den hamartar kopurua. Lehenetsia: 2.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_TEXT' => 'Helburuko sailkapena (aukerakoa)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_TARGET_LABEL_FIELD_DESC' => 'Aukerakoa: lortutako tartearen arabera diagnostiko-etiketa idatziko den eremua.',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_TEXT' => 'Tarteen definizioa (aukerakoa)',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_RANGES_CONFIG_DESC' => 'Lerro bakoitzeko formatua: "min-max: Etiketa". Adib.: 0-20: Menpekotasun osoa | 21-60: Larria | 100: Independentea',
+  'LBL_ADVANCED_FORMULA_BUILDER_ACTION_EXECUTE_MESSAGE' => 'Kalkulua eta sailkapena nabigatzailean kudeatzen dira.',
 );

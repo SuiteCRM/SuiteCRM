@@ -95,5 +95,6 @@ $mod_strings = array (
     'LBL_ASSESSMENT_DATE_ERROR' => 'The assessment date must be equal or prior to the next assessment date.',
     'LBL_NEXT_DATE_ERROR' => 'The next assessment date must be equal or later than the assessment date.',
     'LBL_STIC_FAMILIES_STIC_ASSESSMENTS_FROM_STIC_FAMILIES_TITLE' => 'Family',
+    'LBL_STIC_ASSESSMENTS_STIC_ASSESSMENTS_SCORES_FROM_STIC_ASSESSMENTS_SCORES_TITLE' => 'Assessment Scores',
     'LBL_MUST_RELATE_TO_A_FAMILY_OR_A_CONTACT' => 'You must indicate a person or a family.',
 );
