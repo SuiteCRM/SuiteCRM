@@ -51,7 +51,7 @@
 <td>
 <form action="index.php" method="post" name="DetailView" id="form">
 			<input type="hidden" name="module" value="CampaignLog">
-			<input type="hidden" name="subpanel_parent_module" value="Campaigns">			
+			<input type="hidden" name="subpanel_parent_module" value="Campaigns">
 			<input type="hidden" name="record" value="{$ID}">
 			<input type="hidden" name="isDuplicate" value=false>
 			<input type="hidden" name="action">
@@ -60,11 +60,11 @@
 			<input type="hidden" name="return_id" >
 			<input type="hidden" name="campaign_id" value="{$ID}">
 			<input type="hidden" name="mode" value="">
-			
+
 			{$TRACK_DELETE_BUTTON}
 	</td>
 		<td align='right'></td>
-	<td align='right'>		    
+	<td align='right'>
 		<input type="button" class="button" id="launch_wizard_button" onclick="javascript:window.location='index.php?module=Campaigns&action=WizardHome&record={$ID}';" value="{$MOD.LBL_TO_WIZARD_TITLE}" />
 		<input type="button" class="button" id="view_details_button" onclick="javascript:window.location='index.php?module=Campaigns&action=DetailView&record={$ID}';" value="{$MOD.LBL_TODETAIL_BUTTON_LABEL}" />
 		<span style="{$DISABLE_LINK}"><input type="button" class="button" id="view_roi_button" onclick="javascript:window.location='index.php?module=Campaigns&action=RoiDetailView&record={$ID}';" value="{$MOD.LBL_TRACK_ROI_BUTTON_LABEL}" /></SPAN>{$ADMIN_EDIT}
@@ -81,36 +81,27 @@
 	<td width="30%"><span>{$NAME}</span></td>
 	<td width="20%" scope="row"><span>{$MOD.LBL_ASSIGNED_TO}</span></td>
 	<td width="30%"><span>{$ASSIGNED_TO}</span></td>
-	</tr><tr>
-	<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_STATUS}</span></td>
-	<td width="30%"><span>{$STATUS}</span></td>
+	</tr>
+	<tr>
+		<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_STATUS}</span></td>
+		<td width="30%"><span>{$STATUS}</span></td>
 
-
-	<td width="20%" scope="row"><span>{$MOD.LBL_TEAM}</span></td>
-	<td width="30%"><span>{$TEAM_NAME}</span></td>
-
-
-	</tr><tr>
-	<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_START_DATE}</span></td>
-	<td width="30%"><span>{$START_DATE}</span></td>
-	<td scope="row"><span>{$APP.LBL_DATE_MODIFIED}&nbsp;</span></td>
-	<td><span>{$DATE_MODIFIED} {$APP.LBL_BY} {$MODIFIED_BY}</span></td>
-	</tr><tr>
-	<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_END_DATE}</span></td>
-	<td width="30%"><span>{$END_DATE}</span></td>
-	<td scope="row"><span>{$APP.LBL_DATE_ENTERED}&nbsp;</span></td>
-	<td><span>{$DATE_ENTERED} {$APP.LBL_BY} {$CREATED_BY}</span></td>
-	</tr><tr>
-	<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_TYPE}</span></td>
-	<td width="30%"><span>{$TYPE}</span></td>
-	<td width="20%" scope="row"><span>&nbsp;</span></td>
-	<td width="30%"><span>&nbsp;</span></td>
-	</tr><tr>
-	<td width="20%" scope="row"><span>&nbsp;</span></td>
-	<td width="30%"><span>&nbsp;</span></td>
-	<td width="20%" scope="row"><span>&nbsp;</span></td>
-	<td width="30%"><span>&nbsp;</span></td>
-	</tr><tr>
+		<td width="20%" scope="row"><span>{$MOD.LBL_CAMPAIGN_TYPE}</span></td>
+		<td width="30%"><span>{$TYPE}</span></td>
+	</tr>
+	<tr>
+		<td scope="row"><span>{$APP.LBL_DATE_MODIFIED}&nbsp;</span></td>
+		<td><span>{$DATE_MODIFIED} {$APP.LBL_BY} {$MODIFIED_BY}</span></td>
+		<td scope="row"><span>{$APP.LBL_DATE_ENTERED}&nbsp;</span></td>
+		<td><span>{$DATE_ENTERED} {$APP.LBL_BY} {$CREATED_BY}</span></td>
+	</tr>
+	<tr>
+		<td width="20%" scope="row"><span>&nbsp;</span></td>
+		<td width="30%"><span>&nbsp;</span></td>
+		<td width="20%" scope="row"><span>&nbsp;</span></td>
+		<td width="30%"><span>&nbsp;</span></td>
+	</tr>
+	<tr>
 	<td width="20%" nowrap scope="row"><span>{$MOD.LBL_CAMPAIGN_BUDGET} ({$CURRENCY})</span></td>
 	<td width="30%"><span>{$BUDGET}</span></td>
 	<td width="20%" nowrap scope="row"><span>{$MOD.LBL_CAMPAIGN_ACTUAL_COST} ({$CURRENCY})</span></td>
@@ -140,10 +131,10 @@
 		<tr>
 			<td width="10%">{$FILTER_LABEL}</td>
 			<td width="70%">{$MKT_DROP_DOWN}</td>
-			<td width="20%">&nbsp;</td>			
+			<td width="20%">&nbsp;</td>
 		</tr>
 		<tr>
-			<td colspan="3"><div class="reportChartContainer">{$MY_CHART}</div></td>				
+			<td colspan="3"><div class="reportChartContainer">{$MY_CHART}</div></td>
 		</tr>
 	</table>
 </form>
@@ -160,8 +151,8 @@ var toggle = 0;
 			toggle=1;
 			elem.style.display = '';
 		}else{
-			toggle=0;		
-			elem.style.display = 'none';			
+			toggle=0;
+			elem.style.display = 'none';
 		}
 	}
 {/literal}
