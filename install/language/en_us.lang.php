@@ -266,6 +266,7 @@ $mod_strings = array(
     'LBL_PERFORM_CREATE_DB_USER' => 'Creating the Database username and password...',
     'LBL_PERFORM_CREATE_DEFAULT' => 'Creating default SuiteCRM data',
     'LBL_PERFORM_DEFAULT_SCHEDULER' => 'Creating default scheduler jobs',
+    'LBL_PERFORM_DEFAULT_BUSINESS_HOURS' => 'Creating default business hours',
     'LBL_PERFORM_DEFAULT_USERS' => 'Creating default users',
     'LBL_PERFORM_DEMO_DATA' => 'Populating the database tables with demo data (this may take a little while)',
     'LBL_PERFORM_DONE' => 'done<br>',
