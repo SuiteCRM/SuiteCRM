@@ -43,7 +43,6 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 $entry_point_registry = array(
-    'emailImage' => array('file' => 'modules/EmailMan/EmailImage.php', 'auth' => false),
     'download' => array('file' => 'download.php', 'auth' => true),
     'export' => array('file' => 'export.php', 'auth' => true),
     'export_dataset' => array('file' => 'export_dataset.php', 'auth' => true),
