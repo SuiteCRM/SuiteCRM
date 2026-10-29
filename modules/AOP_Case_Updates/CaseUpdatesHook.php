@@ -105,7 +105,7 @@ class CaseUpdatesHook
 
             return;
         }
-        if (isset($_REQUEST['module']) && $_REQUEST['module'] === 'Import') {
+        if (isset($_REQUEST['module']) && ($_REQUEST['module'] === 'Import' || $_REQUEST['module'] === 'MergeRecords')) {
             return;
         }
         //Grab the update field and create a new update with it.
@@ -334,7 +334,7 @@ class CaseUpdatesHook
      */
     public function closureNotifyPrep($case)
     {
-        if (isset($_REQUEST['module']) && $_REQUEST['module'] === 'Import') {
+        if (isset($_REQUEST['module']) && ($_REQUEST['module'] === 'Import' || $_REQUEST['module'] === 'MergeRecords')) {
             return;
         }
         $case->send_closure_email = true;
@@ -348,7 +348,7 @@ class CaseUpdatesHook
      */
     public function closureNotify($case)
     {
-        if (isset($_REQUEST['module']) && $_REQUEST['module'] === 'Import') {
+        if (isset($_REQUEST['module']) && ($_REQUEST['module'] === 'Import' || $_REQUEST['module'] === 'MergeRecords')) {
             return;
         }
         if ($case->state !== 'Closed' || !$case->send_closure_email) {
@@ -433,7 +433,7 @@ class CaseUpdatesHook
      */
     public function creationNotify($bean, $event, $arguments)
     {
-        if (isset($_REQUEST['module']) && $_REQUEST['module'] === 'Import') {
+        if (isset($_REQUEST['module']) && ($_REQUEST['module'] === 'Import' || $_REQUEST['module'] === 'MergeRecords')) {
             return;
         }
         if ($arguments['module'] !== 'Cases' || $arguments['related_module'] !== 'Contacts') {
@@ -616,9 +616,9 @@ class CaseUpdatesHook
             LoggerManager::getLogger()->warn('Requested module is not set for case update');
         }
 
-        if ($module === 'Import') {
-            //Don't send email on import
-            LoggerManager::getLogger()->warn("Don't send email on import");
+        if ($module === 'Import' || $module === 'MergeRecords') {
+            //Don't send email on import or merge
+            LoggerManager::getLogger()->warn("Don't send email on import or merge");
 
             return;
         }
