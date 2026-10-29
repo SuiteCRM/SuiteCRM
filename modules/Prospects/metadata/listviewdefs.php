@@ -45,7 +45,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
 
 $listViewDefs['Prospects'] = array(
-    'FULL_NAME' => array(
+    'NAME' => array(
         'width' => '20',
         'label' => 'LBL_LIST_NAME',
         'link' => true,
