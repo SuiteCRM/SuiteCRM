@@ -64,7 +64,7 @@
                 sqs_objects = new Array;
             }
             sqs_objects['EditView_case_document_name_'+docCount]={
-                "form":"EditView",
+                "form":"{/literal}{$FORM}{literal}",
                 "method":"query",
                 'modules': 'Documents',
                 "field_list":["name","id"],
@@ -74,8 +74,8 @@
                 "limit":"30",
                 "no_match_text":"No Match"};
             SUGAR.util.doWhen(
-                    "typeof(sqs_objects) != 'undefined' && typeof(sqs_objects['EditView_case_document_name_"+docCount+"']) != 'undefined'",
-                    enableQS
+                "typeof(sqs_objects) != 'undefined' && typeof(sqs_objects['EditView_case_document_name_"+docCount+"']) != 'undefined'",
+                enableQS
             );
 
             $('.caseDocumentTypeSelect').change();
@@ -108,8 +108,7 @@
                                 "",
                                 true,
                                 false,
-                                {"call_back_function":"set_return","form_name":"EditView","field_to_name_array":{"id":"case_document_id","name":"case_document_name"}},
-                                "single",
+                                {"call_back_function":"set_return","form_name":"{/literal}{$FORM}{literal}","field_to_name_array":{"id":"case_document_id","name":"case_document_name"}},
                                 true
                                 );' >
                         {/literal}
