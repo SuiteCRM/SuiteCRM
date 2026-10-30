@@ -90,6 +90,43 @@ class CreateModuleCest
     }
 
     /**
+     * @param ApiTester $I
+     * @throws \Exception
+     */
+    public function shouldCreateUser(ApiTester $I)
+{
+    $endpoint = $I->getInstanceURL() . '/Api/V8/module';
+    $payload = [
+        'data' => [
+            'type' => 'Users',
+            'attributes' => [
+                'user_name'  => 'testUserApi' . uniqid(),
+                'first_name' => 'Test',
+                'last_name'  => 'testApi',
+                'email1'     => 'test' . uniqid() . '@example.com',
+                // Intentionally no user_hash to trigger password-generation flow
+            ]
+        ]
+    ];
+
+    $I->sendPOST($endpoint, $payload);
+
+    // If your CI instance always allows user creation, keep this:
+    $I->seeResponseCodeIs(201);
+
+    // Core assertion for this issue:
+    $I->seeResponseIsJson();
+
+    $response = json_decode($I->grabResponse(), true);
+    $I->assertNotNull($response);
+    $I->assertSame(JSON_ERROR_NONE, json_last_error());
+
+    if (!empty($response['data']['id'])) {
+        $I->deleteBean('users', $response['data']['id']);
+    }
+}
+
+    /**
      * @return array
      */
     protected function shouldWorkDataProvider()
