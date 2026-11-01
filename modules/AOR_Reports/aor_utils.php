@@ -312,7 +312,7 @@ function getPeriodDate($date_time_period_list_selected, $type = '')
             $datetime_period = $q[3]['start']->sub(new DateInterval('P3M'));
         } elseif ($thisMonth >= $q[4]['start'] && $thisMonth <= $q[4]['end']) {
             // quarter 4 - 3 months
-            $datetime_period = $q[3]['start']->sub(new DateInterval('P3M'));
+            $datetime_period = $q[4]['start']->sub(new DateInterval('P3M'));
         }
     } elseif ($date_time_period_list_selected == 'this_year') {
         $datetime_period = $datetime_period = $datetime_period->setDate(
@@ -488,22 +488,26 @@ function calculateQuarters($offsetMonths = 0)
         $q1start->add(new DateInterval('P' . $offsetMonths . 'M'));
     }
     $q1end = DateTime::createFromFormat(DATE_ISO8601, $q1start->format(DATE_ISO8601));
-    $q1end->add(new DateInterval('P2M'));
+    $q1end->add(new DateInterval('P3M'));
+    $q1end->sub(new DateInterval('PT1S'));
 
     $q2start = DateTime::createFromFormat(DATE_ISO8601, $q1start->format(DATE_ISO8601));
     $q2start->add(new DateInterval('P3M'));
     $q2end = DateTime::createFromFormat(DATE_ISO8601, $q2start->format(DATE_ISO8601));
-    $q2end->add(new DateInterval('P2M'));
+    $q2end->add(new DateInterval('P3M'));
+    $q2end->sub(new DateInterval('PT1S'));
 
     $q3start = DateTime::createFromFormat(DATE_ISO8601, $q2start->format(DATE_ISO8601));
     $q3start->add(new DateInterval('P3M'));
     $q3end = DateTime::createFromFormat(DATE_ISO8601, $q3start->format(DATE_ISO8601));
-    $q3end->add(new DateInterval('P2M'));
+    $q3end->add(new DateInterval('P3M'));
+    $q3end->sub(new DateInterval('PT1S'));
 
     $q4start = DateTime::createFromFormat(DATE_ISO8601, $q3start->format(DATE_ISO8601));
     $q4start->add(new DateInterval('P3M'));
     $q4end = DateTime::createFromFormat(DATE_ISO8601, $q4start->format(DATE_ISO8601));
-    $q4end->add(new DateInterval('P2M'));
+    $q4end->add(new DateInterval('P3M'));
+    $q4end->sub(new DateInterval('PT1S'));
 
     // Assign quarter boundaries
     $q['1']['start'] = $q1start;
