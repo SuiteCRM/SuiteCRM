@@ -346,10 +346,16 @@ class CalendarUtils
                     $current->modify("+{$step} Days");
                     break;
                 case "Monthly":
-                    $current->modify("+{$interval} Months");
-                    break;
                 case "Yearly":
-                    $current->modify("+{$interval} Years");
+                    // Count from the start so a day missing in a shorter month
+                    // moves to that month's last day without shifting later ones
+                    $months = $i * $interval * ($type == "Yearly" ? 12 : 1);
+                    $current->setDate((int)$start->format('Y'), (int)$start->format('n') + $months, 1);
+                    $current->setDate(
+                        (int)$current->format('Y'),
+                        (int)$current->format('n'),
+                        min((int)$start->format('j'), (int)$current->format('t'))
+                    );
                     break;
                 default:
                     return array();
