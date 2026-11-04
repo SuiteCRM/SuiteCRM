@@ -75,11 +75,15 @@ Then consider a small [donation](https://opencollective.com/SuiteCRM/contribute)
 
 View the [Roadmap](https://suitecrm.com/roadmap/) for details on our planned features and future direction.
 
+### Contributing
+
+Contributions are welcome. Please read our [contributing guide](.github/CONTRIBUTING.md) and the [contributing code documentation](https://docs.suitecrm.com/community/contributing-code/) before you start. Bug fixes can go straight to a pull request on the `hotfix` branch. For a new feature, please open a feature proposal first and wait for a reply. Voting up issues and pull requests also helps us decide what to work on: see [how voting works](https://docs.suitecrm.com/community/raising-issues/issues-voting/).
+
 ### Support ###
 
 SuiteCRM is an open-source project. If you require help with support then please use our [support forum](https://community.suitecrm.com/). By using the forums the knowledge is shared with everyone in the community. Our developer and community team members answer questions on the forum daily, but it also allows the other members of the community to contribute. If you would like customisations to specifically fit your SuiteCRM needs then please visit the [website](https://suitecrm.com/).
 
-SuiteCRM Ltd also offers a range of complimentary hosting and support services:
+SuiteCRM Ltd also offers a range of complementary hosting and support services:
 
 - [Hosting](https://suitecrm.com/suitecrmhosted/)
 - [Support Plans](https://suitecrm.com/enterprise/support-plans/)

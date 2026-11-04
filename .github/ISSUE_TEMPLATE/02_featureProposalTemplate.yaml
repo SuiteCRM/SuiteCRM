@@ -1,0 +1,62 @@
+name: Propose a Feature (you will build it)
+description: Tell us about a feature you would like to build, and agree it with us before you start.
+title: "[Feature Proposal]: "
+labels: ["Type:Feature Proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for wanting to contribute a feature. Please open a proposal and wait for a reply from the team **before you write any code**. A solution may work well and still not be the direction we want for the product, and we would rather tell you that before you spend time on it.
+
+        - If you only want to **request** a feature and will not build it yourself, please use the [Suggestion Box](https://community.suitecrm.com/c/suggestion-box/13) on the community forum.
+        - If you have found a **bug**, please use the Report a Bug form instead.
+        - Please read [Providing a Feature](https://docs.suitecrm.com/community/contributing-code/features/) first. It explains how we work with features and how to name your commits.
+        - Agreeing a proposal does not guarantee that the feature will be merged.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve, and who does it help?
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach
+      description: How would you build it? Which modules, views or areas of the code would it touch? Are there existing fields, views or extension points you would use?
+    validations:
+      required: true
+  - type: dropdown
+    id: builder
+    attributes:
+      label: Who would build it?
+      options:
+        - I will build it myself
+        - I will build it with help from the team
+        - I am not sure yet
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and size
+      description: Roughly how big is the change? We recommend a single pull request per feature. If it is too big for that, how would you split it?
+    validations:
+      required: false
+  - type: input
+    id: forum
+    attributes:
+      label: Suggestion Box thread
+      description: If there is a forum thread for this idea, please link it here.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I have searched the open issues and the Suggestion Box for the same idea.
+          required: true
+        - label: I understand I should wait for a reply from the team before starting work.
+          required: true
