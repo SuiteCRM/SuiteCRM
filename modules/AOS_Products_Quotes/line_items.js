@@ -810,7 +810,10 @@ function calculateTotal(key)
     }
 
     if (deleted != 1) {
-      tot_amt += product_total_price;
+      subtotal += product_total_price;
+      if (total_tax) {
+        subtotal -= product_vat_amt;
+      }
     }
 
     if (dis_amt !== 0 && deleted != 1) {
@@ -827,7 +830,7 @@ function calculateTotal(key)
     }
   }
 
-  subtotal = tot_amt + dis_tot;
+  tot_amt = subtotal - dis_tot;
 
   set_value(key+'total_amt',tot_amt);
   set_value(key+'subtotal_amount',subtotal);
