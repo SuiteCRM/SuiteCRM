@@ -51,6 +51,18 @@ global $app_strings, $sugar_config, $new_pwd, $current_user;
     $res=$GLOBALS['sugar_config']['passwordsetting'];
     $regexmail = "/^\w+(['\.\-\+]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,})+\$/";
 
+if (!function_exists('processGeneratePasswordOutput')) {
+    function processGeneratePasswordOutput($msg) {
+        $isDirectEndpoint = (isset($_REQUEST['entryPoint']) && $_REQUEST['entryPoint'] === 'GeneratePassword') ||
+                            (isset($_REQUEST['action']) && $_REQUEST['action'] === 'GeneratePassword');
+        if (!$isDirectEndpoint) {
+            $GLOBALS['log']->fatal("GeneratePassword: " . $msg);
+        } else {
+            echo $msg;
+        }
+    }
+}
+
 ///////////////////////////////////////////////////
 ///////  Retrieve user
 $username = '';
@@ -77,16 +89,16 @@ if (isset($_POST['Users0emailAddress0'])) {
             $usr_id=$usr->retrieve_user_id($username);
             $usr->retrieve($usr_id);
             if (!$usr->isPrimaryEmail($useremail)) {
-                echo $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+                processGeneratePasswordOutput($mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL']);
                 return;
             }
 
             if ($usr->portal_only || $usr->is_group) {
-                echo $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+                processGeneratePasswordOutput($mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL']);
                 return;
             }
         } else {
-            echo  $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+            processGeneratePasswordOutput($mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL']);
             return;
         }
     } else {
@@ -97,14 +109,14 @@ if (isset($_POST['Users0emailAddress0'])) {
                 $usr_id=$usr->retrieve_user_id($_POST['sugar_user_name']);
                 $usr->retrieve($usr_id);
             } else {
-                echo  $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+                processGeneratePasswordOutput($mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL']);
                 return;
             }
         }
 
         // Check if current_user is admin or the same user
         if (empty($current_user->id) || empty($usr->id) || ($usr->id != $current_user->id && !$current_user->is_admin)) {
-            echo  $mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL'];
+            processGeneratePasswordOutput($mod_strings['LBL_PROVIDE_USERNAME_AND_EMAIL']);
             return;
         }
     }
@@ -116,7 +128,7 @@ if (isset($_POST['Users0emailAddress0'])) {
 ///////  Check email address
 
     if (!preg_match($regexmail, (string) $usr->emailAddress->getPrimaryAddress($usr))) {
-        echo $mod_strings['ERR_EMAIL_INCORRECT'];
+        processGeneratePasswordOutput($mod_strings['ERR_EMAIL_INCORRECT']);
         return;
     }
 
@@ -128,7 +140,7 @@ if (isset($_POST['Users0emailAddress0'])) {
 
 $isPasswordGenerationActive = $res['SystemGeneratedPasswordON'] ?? false;
 if(!$isLink && empty($isPasswordGenerationActive)) {
-    echo 'Access Denied';
+    processGeneratePasswordOutput('Access Denied');
     return;
 }
 
@@ -166,22 +178,22 @@ if ($isLink) {
     }
     $result = $usr->sendEmailForPassword($emailTemp_id, $additionalData);
     if ($result['status'] == false && $result['message'] != '') {
-        echo $result['message'];
+        processGeneratePasswordOutput($result['message']);
         $new_pwd = '4';
         return;
     }
 
     if ($result['status'] == true) {
-        echo '1';
+        processGeneratePasswordOutput('1');
     } else {
         $new_pwd='4';
         if ($current_user->is_admin) {
             $email_errors=$mod_strings['ERR_EMAIL_NOT_SENT_ADMIN'];
             $email_errors.="\n-".$mod_strings['ERR_RECIPIENT_EMAIL'];
             $email_errors.="\n-".$mod_strings['ERR_SERVER_STATUS'];
-            echo $email_errors;
+            processGeneratePasswordOutput($email_errors);
         } else {
-            echo $mod_strings['LBL_EMAIL_NOT_SENT'];
+            processGeneratePasswordOutput($mod_strings['LBL_EMAIL_NOT_SENT']);
         }
     }
     return;
