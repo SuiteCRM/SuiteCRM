@@ -90,7 +90,7 @@ array(
             'label' => 'LBL_CONTACT',
             'displayParams' =>
             array(
-              'initial_filter' => '&account_name="+this.form.{$fields.contract_account.name}.value+"',
+              'initial_filter' => '&account_name="+encodeURIComponent(this.form.{$fields.contract_account.name}.value)+"',
             ),
           ),
         ),
