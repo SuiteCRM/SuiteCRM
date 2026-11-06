@@ -111,6 +111,8 @@ class ElasticSearchEngine extends SearchEngine
     private function createSearchParams(SearchQuery $query): array
     {
         $searchStr = $query->getSearchString();
+        // Escape Lucene query_string reserved characters
+        $searchStr = preg_replace('/([+\-=&|><!(){}\[\]^"~?:\\\\\/])/', '\\\\$1', $searchStr);
         $searchModules = $query->getModules();
 
         $indexes = array_map('strtolower', $searchModules);
