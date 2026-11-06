@@ -77,6 +77,7 @@ class AOP_Case_Updates extends Basic
     public $contact_id;
     public $internal;
     public $notes;
+    private $attachmentArray = array();
 
     public function __construct()
     {
@@ -104,7 +105,7 @@ class AOP_Case_Updates extends Basic
      * @param bool $check_notify
      * @return string
      */
-    public function save($check_notify = false)
+    public function save($check_notify = false, $attachments = false)
     {
         $this->name = SugarCleaner::cleanHtml($this->name);
         $this->parseDescription();
@@ -118,6 +119,10 @@ class AOP_Case_Updates extends Basic
             $hook = new CustomCaseUpdatesHook();
         } else {
             $hook = new CaseUpdatesHook();
+        }
+        if($attachments !== false)
+        {
+            $this->attachmentArray = $attachments;
         }
         $hook->sendCaseUpdate($this);
 
@@ -286,6 +291,13 @@ class AOP_Case_Updates extends Basic
         $mailer->Body = $text['body'] . $signatureHTML;
         $mailer->isHTML(true);
         $mailer->AltBody = $text['body_alt'] . $signaturePlain;
+        if(isset($this->attachmentArray))
+        {
+            foreach($this->attachmentArray as $emailAttachment)
+            {
+                $mailer->addAttachment($emailAttachment[0],$emailAttachment[1]);
+            }
+        }
         $mailer->From = $emailSettings['from_address'];
         isValidEmailAddress($mailer->From);
         $mailer->FromName = $emailSettings['from_name'];

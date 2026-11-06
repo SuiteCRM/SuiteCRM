@@ -55,14 +55,49 @@ function display_updates($focus)
     $showImage = SugarThemeRegistry::current()->getImageURL('advanced_search.gif');
 
     //Javascript for Asynchronous update
-    $html = <<<A
-<script>
+    $thisView = '';
+    $html = "<script>".PHP_EOL;
+    if(isset($_REQUEST['action']))
+    {
+        $thisView = $_REQUEST['action'];
+    }
+    $html .= <<<A
+const regex = new RegExp('case_update_id_*');
 var hideUpdateImage = '$hideImage';
 var showUpdateImage = '$showImage';
 function collapseAllUpdates(){
     $('.caseUpdateImage').attr("src",showUpdateImage);
     $('.caseUpdate').slideUp('fast');
 }
+
+function iterateChildren(childElement, formObj, theView)
+{
+    var upFiles = formObj;
+
+    if(childElement.children.length > 0)
+    {
+        for (var child of childElement.children) {
+            upFiles  = iterateChildren(child, upFiles, theView);
+        }
+    }
+    else
+    {
+        if(childElement.id === 'case_update_file[]')
+        {
+            upFiles.push(['case_update_file[]', childElement.files[0]]);
+        }
+        else if(theView === 'DetailView')
+        {
+            const isMatch = regex.test(childElement.id);
+            if(isMatch)
+            {
+                upFiles.push([childElement.id, childElement.value]);
+            }
+        }
+    }
+    return upFiles;
+}
+
 function expandAllUpdates(){
     $('.caseUpdateImage').attr("src",hideUpdateImage);
     $('.caseUpdate').slideDown('fast');
@@ -103,23 +138,41 @@ function caseUpdates(record){
 
     //Post parameters
 
-    var params =
-        "record="+record+"&module=Cases&return_module=Cases&action=Save&return_id="+record+"&return_action=DetailView&relate_to=Cases&relate_id="+record+"&offset=1&update_text="
-        + update_data + "&internal=" + internal;
+        var thisView = '$thisView';
+
+        let params = new FormData();
+        params.append('record', record);
+        params.append('module', 'Cases');
+        params.append('return_module', 'Cases');
+        params.append('action', 'Save');
+        params.append('return_id', record);
+        params.append('return_action', 'DetailView');
+        params.append('relate_to', 'Cases');
+        params.append('relate_id', record);
+        params.append('offset', '1');
+        params.append('update_text', update_data);
+        params.append('internal', internal);
+
+        let attachmentsForm = document.getElementById('case_update_form_span');
+        if(attachmentsForm != null)
+        {
+            let uploadedFiles = iterateChildren(attachmentsForm, [], thisView);
+            for(let i = 0; i < uploadedFiles.length; i++)
+            {
+                params.append(uploadedFiles[i][0],uploadedFiles[i][1]);
+            }
+        }
+
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.open("POST", "index.php", true);
 
-
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.setRequestHeader("Content-length", params.length);
     xmlhttp.setRequestHeader("Connection", "close");
 
     //When button is clicked
     xmlhttp.onreadystatechange = function() {
 
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-
 
             showSubPanel('history', null, true);
             //Reload the case updates stream and history panels
@@ -145,21 +198,23 @@ function caseUpdates(record){
 }
 
         xmlhttp.send(params);
-
-
+attElements = document.getElementsByClassName('caseDocumentWrapper');
+Array.from(attElements).forEach((attElement) => {
+    attElement.remove();
+});
 
 }
 </script>
 A;
 
-    $updates = $focus->get_linked_beans('aop_case_updates', 'AOP_Case_Updates');
-    if (!$updates || is_null($focus->id)) {
-        $html .= quick_edit_case_updates($focus);
+$updates = $focus->get_linked_beans('aop_case_updates', 'AOP_Case_Updates');
+if (!$updates || is_null($focus->id)) {
+    $html .= quick_edit_case_updates($focus);
 
-        return $html;
-    }
+    return $html;
+}
 
-    $html .= <<<EOD
+$html .= <<<EOD
 <script>
 $(document).ready(function(){
     collapseAllUpdates();
@@ -174,28 +229,28 @@ $(document).ready(function(){
 <div>
 EOD;
 
-    usort(
-        $updates,
-        function ($a, $b) {
-            $aDate = $a->fetched_row['date_entered'];
-            $bDate = $b->fetched_row['date_entered'];
-            if ($aDate < $bDate) {
-                return -1;
-            } elseif ($aDate > $bDate) {
-                return 1;
-            }
-
-            return 0;
+usort(
+    $updates,
+    function ($a, $b) {
+        $aDate = $a->fetched_row['date_entered'];
+        $bDate = $b->fetched_row['date_entered'];
+        if ($aDate < $bDate) {
+            return -1;
+        } elseif ($aDate > $bDate) {
+            return 1;
         }
-    );
 
-    foreach ($updates as $update) {
-        $html .= display_single_update($update, $hideImage);
+        return 0;
     }
-    $html .= '</div>';
-    $html .= quick_edit_case_updates($focus);
+);
 
-    return $html;
+foreach ($updates as $update) {
+    $html .= display_single_update($update, $hideImage);
+}
+$html .= '</div>';
+$html .= quick_edit_case_updates($focus);
+
+return $html;
 }
 
 /**
@@ -204,11 +259,27 @@ EOD;
 function display_update_form()
 {
     global $mod_strings, $app_strings;
+
+    // Change TPL based on which view it sits on
+    $formStart = '';
+    $formEnd = '';
+    $formName = 'EditView';
+    if(isset($_REQUEST['action']))
+    {
+        if($_REQUEST['action'] === 'DetailView')
+        {
+            $formStart = '<form id="DetailViewAttachments">';
+            $formEnd = '</form>';
+            $formName = 'DetailViewAttachments';
+        }
+    }
+
     $sugar_smarty = new Sugar_Smarty();
     $sugar_smarty->assign('MOD', $mod_strings);
     $sugar_smarty->assign('APP', $app_strings);
+    $sugar_smarty->assign('FORM', $formName);
 
-    return $sugar_smarty->fetch('modules/AOP_Case_Updates/tpl/caseUpdateForm.tpl');
+    return $formStart.$sugar_smarty->fetch('modules/AOP_Case_Updates/tpl/caseUpdateForm.tpl').$formEnd;
 }
 
 /**
@@ -228,17 +299,17 @@ function getUpdateDisplayHead(SugarBean $update)
     }
     $html = "<a href='' onclick='toggleCaseUpdate(\"" . $update->id . "\");return false;'>";
     $html .= "<img  id='caseUpdate" .
-             $update->id .
-             "Image' class='caseUpdateImage' src='" .
-             SugarThemeRegistry::current()->getImageURL('basic_search.gif') .
-             "'>";
+        $update->id .
+        "Image' class='caseUpdateImage' src='" .
+        SugarThemeRegistry::current()->getImageURL('basic_search.gif') .
+        "'>";
     $html .= '</a>';
     $html .= '<span>' .
-             ($update->internal ? '<strong>' . $mod_strings['LBL_INTERNAL'] . '</strong> ' : '') .
-             $name .
-             ' ' .
-             $update->date_entered .
-             '</span><br>';
+        ($update->internal ? '<strong>' . $mod_strings['LBL_INTERNAL'] . '</strong> ' : '') .
+        $name .
+        ' ' .
+        $update->date_entered .
+        '</span><br>';
     $notes = $update->get_linked_beans('notes', 'Notes');
     if ($notes) {
         $html .= $mod_strings['LBL_AOP_CASE_ATTACHMENTS'];
