@@ -281,7 +281,7 @@ class ElasticSearchIndexer extends AbstractIndexer
         } /** @noinspection PhpRedundantCatchClauseInspection */
         catch (Missing404Exception $ignore) {
             // Index not there, not big deal since we meant to delete it anyway.
-            $this->logger->warn('Index not found, no index has been deleted.');
+            $this->logger->warning('Index not found, no index has been deleted.');
         }
     }
 

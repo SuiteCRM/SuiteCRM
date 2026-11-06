@@ -44,6 +44,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
 }
 
 use Elasticsearch\Client;
+use Elasticsearch\Common\Exceptions\BadRequest400Exception;
 use SuiteCRM\Exception\InvalidArgumentException;
 use SuiteCRM\Search\SearchEngine;
 use SuiteCRM\Search\SearchQuery;
@@ -80,10 +81,16 @@ class ElasticSearchEngine extends SearchEngine
         $params = $this->createSearchParams($query);
         $start = microtime(true);
         
-        foreach($params as $param) {
-            $hits = $this->runElasticSearch($param);
-            $results += $this->parseHits($this->runElasticSearch($param));
-            $totalHits +=  $hits['hits']['total']['value'];
+        foreach ($params as $param) {
+            try {
+                $hits = $this->runElasticSearch($param);
+            } catch (BadRequest400Exception $exception) {
+                // Elasticsearch rejected the query syntax: retry with the search text escaped
+                $param['body']['query']['query_string']['query'] = $this->buildQueryString($query->getSearchString(), true);
+                $hits = $this->runElasticSearch($param);
+            }
+            $results += $this->parseHits($hits);
+            $totalHits += $hits['hits']['total']['value'];
         }
         
         $end = microtime(true);
@@ -110,34 +117,13 @@ class ElasticSearchEngine extends SearchEngine
      */
     private function createSearchParams(SearchQuery $query): array
     {
-        $searchStr = $query->getSearchString();
+        $searchStr = $this->buildQueryString($query->getSearchString(), false);
         $searchModules = $query->getModules();
 
         $indexes = array_map('strtolower', $searchModules);
         $results = [];
 
-        foreach($indexes as $index) {
-            // Wildcard character required for Elasticsearch
-            $wildcardBe = "*";
-
-            // Override frontend wildcard character
-            if (isset($GLOBALS['sugar_config']['search_wildcard_char'])) {
-                $wildcardFe = $GLOBALS['sugar_config']['search_wildcard_char'];
-                if ($wildcardFe !== $wildcardBe && strlen((string)$wildcardFe) === 1) {
-                    $searchStr = str_replace($wildcardFe, $wildcardBe, $searchStr);
-                }
-            }
-
-            // Add wildcard at the beginning of the search string
-            if (isset($GLOBALS['sugar_config']['search_wildcard_infront']) &&
-                $GLOBALS['sugar_config']['search_wildcard_infront'] === true && $searchStr[0] !== $wildcardBe) {
-                $searchStr = $wildcardBe . $searchStr;
-            }
-
-            // Add wildcard at the end of search string
-            if ((substr_compare($searchStr, $wildcardBe, -strlen($wildcardBe))) !== 0) {
-                $searchStr .= $wildcardBe;
-            }
+        foreach ($indexes as $index) {
             $results[] = [
                 'index' => $index,
                 'body' => [
@@ -157,6 +143,54 @@ class ElasticSearchEngine extends SearchEngine
             ];
         }
         return $results;
+    }
+
+    /**
+     * Builds the query_string text sent to Elasticsearch.
+     *
+     * The configured frontend wildcard becomes '*' first. A '*' is added at the end (and at the start
+     * when search_wildcard_infront is set), but never next to a double quote, where it would turn a
+     * phrase into a match-all.
+     *
+     * With $escape (used only to retry a query Elasticsearch rejected), quotes are replaced with spaces,
+     * '<' and '>' are removed (query_string cannot escape them), and the other reserved characters are
+     * escaped with a backslash.
+     *
+     * @param string $searchStr
+     * @param bool   $escape
+     *
+     * @return string
+     */
+    private function buildQueryString(string $searchStr, bool $escape): string
+    {
+        $wildcard = '*';
+
+        $frontendWildcard = $GLOBALS['sugar_config']['search_wildcard_char'] ?? null;
+        if ($frontendWildcard !== $wildcard && strlen((string)$frontendWildcard) === 1) {
+            $searchStr = str_replace($frontendWildcard, $wildcard, $searchStr);
+        }
+
+        if ($escape) {
+            $searchStr = trim(str_replace('"', ' ', $searchStr));
+            $searchStr = str_replace(['<', '>'], '', $searchStr);
+            $searchStr = preg_replace('/([+\-=&|!(){}\[\]^~?:\\\\\/])/', '\\\\$1', $searchStr);
+        }
+
+        if ($searchStr === '') {
+            return $searchStr;
+        }
+
+        if (($GLOBALS['sugar_config']['search_wildcard_infront'] ?? false) === true
+            && $searchStr[0] !== $wildcard && $searchStr[0] !== '"') {
+            $searchStr = $wildcard . $searchStr;
+        }
+
+        $last = substr($searchStr, -1);
+        if ($last !== $wildcard && $last !== '"') {
+            $searchStr .= $wildcard;
+        }
+
+        return $searchStr;
     }
 
     /**
