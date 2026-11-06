@@ -114,7 +114,6 @@ class SearchResultsController extends Controller
             if ($size) {
                 $from = $this->query->getFrom();
                 $queryString = $_REQUEST['query_string'] ?? '';
-                $string = !empty($_REQUEST['search-query-string']) ? $_REQUEST['search-query-string'] : $queryString;
 
                 $page = (int)($from / $size) + 1;
                 $prev = $page > 1;
@@ -129,7 +128,6 @@ class SearchResultsController extends Controller
                     'size' => $size,
                     'from' => $from,
                     'total' => $total,
-                    'string' => $string,
                 ]);
             } else {
                 throw new SearchException('Search Size can not be Zero.', SearchException::ZERO_SIZE);
