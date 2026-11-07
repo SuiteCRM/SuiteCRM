@@ -277,7 +277,7 @@ class UpgradeHistory extends SugarBean
      * Given an array of id_names and versions, check if the dependencies are installed
      *
      * @param dependencies	an array of id_name, version to check if these dependencies are installed
-     * 						on the system
+     * 						on the system, version being the minimum version required
      *
      * @return not_found	an array of id_names that were not found to be installed on the system
      */
@@ -290,7 +290,7 @@ class UpgradeHistory extends SugarBean
             $matches = $this->getList($query);
             if (0 != (is_countable($matches) ? count($matches) : 0)) {
                 foreach ($matches as $match) {
-                    if ($this->is_right_version_greater(explode('.', $match->version), explode('.', $dependent['version']))) {
+                    if (version_compare($match->version, $dependent['version'], '>=')) {
                         $found = true;
                         break;
                     }//fi
