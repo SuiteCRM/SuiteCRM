@@ -378,7 +378,7 @@ foreach ($temp_field_array as $field_array) {
                     }
                 }
             }
-            $encoded_json_data = $json->encode($json_data);
+            $encoded_json_data = encode_merge_value($json->encode($json_data));
             $xtpl->assign('ENCODED_JSON_DATA', $encoded_json_data);
             $xtpl->parse($field_name);
         }
@@ -438,17 +438,25 @@ $xtpl->parse("main");
 $xtpl->out("main");
 
 /*
+ * function encodes a value for the merge templates. Bean values are usually already encoded when
+ * retrieved, but some are not (Cases decode their description), so existing entities are kept as they are.
+ */
+function encode_merge_value($value)
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false);
+}
+/*
  * function truncates values to max_data_legth and adds the complete value as hover text.
  */
 function display_field_value($value)
 {
     global $xtpl, $max_data_length, $mod_strings;
     if (strlen((string) $value)-$max_data_length > 3) {
-        $xtpl->assign("FIELD_VALUE", substr((string) $value, 0, $max_data_length).'...');
+        $xtpl->assign("FIELD_VALUE", encode_merge_value(substr((string) $value, 0, $max_data_length)).'...');
     } else {
-        $xtpl->assign("FIELD_VALUE", $value);
+        $xtpl->assign("FIELD_VALUE", encode_merge_value($value));
     }
-    $xtpl->assign("HOVER_TEXT", $mod_strings['LBL_MERGE_VALUE_OVER'] .': ' . $value);
+    $xtpl->assign("HOVER_TEXT", $mod_strings['LBL_MERGE_VALUE_OVER'] .': ' . encode_merge_value($value));
 }
 /*
  * implements the rules that decide which fields will participate in a merge.
