@@ -885,10 +885,22 @@ Studio2 = {
 		var Dom = YAHOO.util.Dom;
 		var availablefields = Dom.get('availablefields');
 		var fields = Dom.getElementsByClassName('field_name', '', 'availablefields');
+
+		var includedInCompositeField = { 'last_name': 'full_name', 'first_name': 'full_name' };
+		var panelFields = Dom.getElementsByClassName('field_name', 'span', 'panels');
+		var panelFieldNames = [];
+		for (var k = 0; k < panelFields.length; k++) {
+		    panelFieldNames.push(panelFields[k].innerHTML.trim());
+		}
+
 		var missing = [ ];
 		for(field in fields){
-		    if (Studio2.requiredFields.indexOf(fields[field].innerHTML) != -1) {
-				missing[missing.length] = fields[field].innerHTML;
+		    var fieldName = (fields[field].innerHTML || '').trim();
+		    if (Studio2.requiredFields.indexOf(fieldName) !== -1) {
+		        if (includedInCompositeField[fieldName] && panelFieldNames.indexOf(includedInCompositeField[fieldName]) !== -1) {
+		            continue;
+		        }
+				missing[missing.length] = fieldName;
 			}
 		}
 		if (missing.length > 0)	
