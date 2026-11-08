@@ -2142,6 +2142,6 @@ EOQ;
      */
     protected function removeIndexLimit($fields)
     {
-        return preg_replace('/(\s?\(\d+\))/', '', (string) $fields);
+        return preg_replace('/(\s?\(\d+\))/', '', $fields);
     }
 }
