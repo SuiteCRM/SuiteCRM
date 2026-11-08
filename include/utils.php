@@ -5451,7 +5451,12 @@ function verify_image_file($path, $jpeg = false)
 function verify_uploaded_image($path, $jpeg_only = false)
 {
     global $sugar_config;
-    $supportedExtensions = $sugar_config['image_ext'] ?? ['image/jpeg', 'image/png', 'image/gif' , 'tmp' => 'tmp'];
+    $supportedExtensions = $sugar_config['image_ext'] ?? [
+        'jpg' => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'gif' => 'image/gif',
+        'tmp' => 'tmp'
+    ];
 
     if (!$jpeg_only) {
         $supportedExtensions['png'] = 'image/png';
