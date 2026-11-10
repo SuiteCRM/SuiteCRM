@@ -79,6 +79,13 @@ class ModuleAccessChecker
             return;
         }
 
+        if($module === 'AOS_Products_Quotes'){
+            if (ACLAction::getUserAccessLevel($current_user->id, 'AOS_Quotes', 'access') < ACL_ALLOW_ENABLED || ACLAction::getUserAccessLevel($current_user->id, 'AOS_Products', 'access') < ACL_ALLOW_ENABLED) {
+                throw new NotAllowedException('The API user does not have access to this module.');
+            }
+            return;
+        }
+
         if (ACLAction::getUserAccessLevel($current_user->id, $module, 'access') < ACL_ALLOW_ENABLED) {
             throw new NotAllowedException('The API user does not have access to this module.');
         }
