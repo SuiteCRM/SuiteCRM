@@ -1298,7 +1298,8 @@ class stic_AwfConfiguration {
   }
   static fromJSON(jsonString){
     const config = new stic_AwfConfiguration(JSON.parse(jsonString));
-    config._lastDataBlocksHash = config._computeDataBlocksHash();
+    config._lastDataBlocksHash = config._migratedLegacy ? '' : config._computeDataBlocksHash();
+    delete config._migratedLegacy;
     
     return config;
   }
@@ -1401,6 +1402,7 @@ class stic_AwfConfiguration {
         return;
       }
 
+      const orphanFieldsToRemove = [];
       block.fields.forEach(field => {
         // Only old-style relationship fields point to another data block
         if (field.type !== 'relate' || field.value_type !== 'dataBlock' || !field.value) {
@@ -1414,10 +1416,20 @@ class stic_AwfConfiguration {
         }
 
         // Resolve the relationship name from the module metadata
+        // For M-N relate fields with non-db id_name (e.g. Calls.contact_name),
+        // fieldInfo.options is empty, so fall back to resolving via fieldInfo.link_name.
         const fieldInfo = moduleInfo.fields[field.name];
-        const relName = fieldInfo?.options;
+        let relName = fieldInfo?.options;
+        const isNonDbRelate = !relName && !!fieldInfo?.link_name;
+        if (!relName && fieldInfo?.link_name && moduleInfo.relationships) {
+          const matchedRel = Object.values(moduleInfo.relationships).find(r => r.link_name === fieldInfo.link_name);
+          relName = matchedRel?.name || '';
+        }
         if (!relName) {
           return;
+        }
+        if (isNonDbRelate) {
+          orphanFieldsToRemove.push(field);
         }
 
         // Skip if the relationship has already been migrated in either direction
@@ -1440,6 +1452,18 @@ class stic_AwfConfiguration {
         // Use the existing relationship creation logic to add entries on both sides,
         // set initiator_id / role and create/update the relate field consistently.
         this.addDataBlockRelationship(block.id, relName, relatedBlockId, '');
+        this._migratedLegacy = true;
+      });
+
+      orphanFieldsToRemove.forEach(orphanField => {
+        if (orphanField.required) {
+          orphanField.value = '';
+          orphanField.value_text = '';
+          orphanField.value_type = 'fixed';
+        } else {
+          block.deleteField(orphanField.name);
+        }
+        this._migratedLegacy = true;
       });
     });
   }
@@ -1802,12 +1826,28 @@ class stic_AwfConfiguration {
     dataBlock.deleteField(field.name);
 
     if (field.type == 'relate' && field.value_type == 'dataBlock') {
+      let moduleInfo = dataBlock.getModuleInformation();
+      let fieldInfo = moduleInfo?.fields?.[field.name];
+      let relName = fieldInfo?.options || '';
+      if (!relName && fieldInfo?.link_name && moduleInfo?.relationships) {
+        let matchedRel = Object.values(moduleInfo.relationships).find(r => r.link_name === fieldInfo.link_name);
+        relName = matchedRel?.name || '';
+      }
+      if (!relName) {
+        let relEntry = dataBlock.relationships.find(r => r.related_datablock_id === field.value);
+        relName = relEntry?.name || '';
+      }
+      const validRelNames = new Set([relName, fieldInfo?.link_name].filter(Boolean));
+      const relInfo = relName ? moduleInfo?.relationships?.[relName] : null;
+      if (relInfo?.link_name) validRelNames.add(relInfo.link_name);
+
       // Remove Relationship Action
       const relateAction = this.flows.flatMap(f => f.actions).find(a => {
         if (a.name == 'RelateRecordsAction') {
-          return a.parameters.find(p => p.name == 'data_block_id' && p.value == dataBlock.id) &&
-                 a.parameters.find(p => p.name == 'target_object' && p.value == field.value) &&
-                 a.parameters.find(p => p.name == 'field_to_update' && p.value == `${dataBlock.name}.${field.name}`);
+          return a.parameters.find(p => p.name == 'data_block_id' && (p.value == dataBlock.id || p.value == field.value)) &&
+                 a.parameters.find(p => p.name == 'target_object' && p.selected_option != 'value' && (p.value == field.value || p.value == dataBlock.id)) &&
+                 (a.parameters.find(p => p.name == 'field_to_update' && p.value == `${dataBlock.name}.${field.name}`) ||
+                  a.parameters.find(p => p.name == 'relationship_name' && validRelNames.has(p.value)));
         }
         return false;
       });
@@ -1818,12 +1858,6 @@ class stic_AwfConfiguration {
       }
 
       // Remove the relationship from this block (N side)
-      let moduleInfo = dataBlock.getModuleInformation();
-      let relName = moduleInfo?.fields[field.name]?.options || '';
-      if (!relName) {
-        let relEntry = dataBlock.relationships.find(r => r.related_datablock_id === field.value);
-        relName = relEntry?.name || '';
-      }
       if (relName) {
         dataBlock.removeRelationship(relName, field.value);
         let targetBlock = this.data_blocks.find(d => d.id == field.value);
@@ -2025,14 +2059,22 @@ class stic_AwfConfiguration {
     if (!dataBlock) return;
     let relDatablock = this.data_blocks.find(d => d.id == relatedDatablockId);
 
+    // Collect both canonical relationship name and link field names on either block
+    const validRelNames = new Set([relName]);
+    const origRelInfo = dataBlock.getModuleInformation()?.relationships?.[relName];
+    if (origRelInfo?.link_name) validRelNames.add(origRelInfo.link_name);
+    const destRelInfo = relDatablock?.getModuleInformation()?.relationships?.[relName];
+    if (destRelInfo?.link_name) validRelNames.add(destRelInfo.link_name);
+
     // Find the auto-created relate field (if any) on either block
     let relateField = null;
     let relateFieldBlock = null;
     [dataBlock, relDatablock].forEach(block => {
       if (!block || relateField) return;
       let moduleInfo = block.getModuleInformation();
+      let blockRelLinkName = moduleInfo?.relationships?.[relName]?.link_name;
       let relateFieldNames = Object.values(moduleInfo?.fields || {}).filter(
-        f => f.type === 'relate' && f.options === relName
+        f => f.type === 'relate' && (f.options === relName || (blockRelLinkName && f.link_name === blockRelLinkName))
       ).map(f => f.name);
       relateField = block.fields.find(f =>
         relateFieldNames.includes(f.name) && f.value_type == 'dataBlock' &&
@@ -2060,8 +2102,9 @@ class stic_AwfConfiguration {
         flow.actions = flow.actions.filter(a => {
           if (a.name == 'RelateRecordsAction') {
             let p1 = a.parameters.find(p => p.name == 'data_block_id' && (p.value == datablockId || p.value == relatedDatablockId));
-            let p2 = a.parameters.find(p => p.name == 'relationship_name' && p.value == relName);
-            return !(p1 && p2);
+            let pTarget = a.parameters.find(p => p.name == 'target_object' && p.selected_option != 'value' && (p.value == datablockId || p.value == relatedDatablockId));
+            let p2 = a.parameters.find(p => p.name == 'relationship_name' && validRelNames.has(p.value));
+            return !(p1 && pTarget && p2);
           }
           return true;
         });
@@ -2132,7 +2175,8 @@ class stic_AwfConfiguration {
    * @returns {string} The module name
    */
   getRelationshipModule(datablockId, relationshipName) {
-    return this.getAllDataBlockRelationships()[datablockId].find(r => r.name==relationshipName)?.module;
+    if (!relationshipName) return undefined;
+    return this.getAllDataBlockRelationships()[datablockId]?.find(r => r.name==relationshipName || r.link_name == relationshipName)?.module;
   }
 
   /**
@@ -2310,8 +2354,8 @@ class stic_AwfConfiguration {
           if (field.type === 'relate' && field.value_type === 'fixed' && field.value) {
             let relationshipName = '';
             const moduleFieldInfo = moduleInfo.fields[field.name];
-            if (moduleFieldInfo && moduleFieldInfo.type === 'relate' && moduleFieldInfo.options) {
-              relationshipName = moduleFieldInfo.options;
+            if (moduleFieldInfo && moduleFieldInfo.type === 'relate') {
+              relationshipName = moduleFieldInfo.options || moduleFieldInfo.link_name || '';
             }
             if (relationshipName) {
               const originalDef = utils.getDefinedAction('RelateRecordsAction');
@@ -2326,6 +2370,9 @@ class stic_AwfConfiguration {
                   'target_object': { value: field.value, valueText: field.value_text || field.value, selectedOption: 'value' },
                   'relationship_name': { value: relationshipName, valueText: relationshipName, selectedOption: '' }
                 };
+                if (moduleFieldInfo.options && moduleFieldInfo.id_name) {
+                  params['relation_id_name'] = { value: moduleFieldInfo.id_name, valueText: moduleFieldInfo.id_name, selectedOption: '' };
+                }
                 const newAction = this.addAction(actionDef, params, '0');
                 if (newAction) {
                   newAction.text = `${utils.translate('LBL_RELATE_RECORDS_ACTION_TITLE')}: ${block.text}.${field.text_original || field.name} = ${field.value_text || field.value}`;

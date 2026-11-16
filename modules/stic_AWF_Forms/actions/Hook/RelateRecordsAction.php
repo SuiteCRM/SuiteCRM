@@ -170,9 +170,12 @@ class RelateRecordsAction extends HookBeanActionDefinition {
         }
 
         // Determine whether this is a FK-based (1-N) or link-based (N-M) relationship
+        // Only use FK injection when relation_id_name is a real db-backed column on the bean.
         $relationIdName = $actionConfig->getResolvedParameter('relation_id_name', '');
+        $idFieldDef = (!empty($relationIdName) && isset($bean->field_defs[$relationIdName])) ? $bean->field_defs[$relationIdName] : null;
+        $isDbBackedFk = $idFieldDef && (($idFieldDef['source'] ?? 'db') !== 'non-db');
 
-        if (!empty($relationIdName)) {
+        if (!empty($relationIdName) && $isDbBackedFk) {
             // 1-N relationship: inject FK directly and re-save the bean
             $GLOBALS['log']->debug("RelateRecordsAction: Using FK injection for '{$linkName}' — setting '{$relationIdName}' = '{$targetBeanId}' on bean '{$bean->id}'.");
 

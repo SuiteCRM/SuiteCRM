@@ -1557,7 +1557,8 @@ class WizardStep2 {
 
       get relatedModule() {
         if (this.field && this.field.type == 'relate') {
-          return this.formConfig.getRelationshipModule(this.dataBlock.id, this.selectedFieldInfo?.options)
+          const relOrLink = this.selectedFieldInfo?.options || this.selectedFieldInfo?.link_name;
+          return this.formConfig.getRelationshipModule(this.dataBlock.id, relOrLink)
                  || this.selectedFieldInfo?.module || '';
         }
         return '';

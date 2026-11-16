@@ -223,6 +223,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
 
             // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
             $bean->save(false); 
+            $this->persistNonDbRelations($context, $actionConfig, $bean, $block, $modifications);
             
             $modificationType = BeanModificationType::CREATED;
 
@@ -246,6 +247,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
 
                     // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
                     $bean->save(false); 
+                    $this->persistNonDbRelations($context, $actionConfig, $bean, $block, $modifications);
                     break;
 
                 case OnDuplicateAction::ENRICH:
@@ -261,6 +263,7 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
 
                     // Save without running logic hooks to avoid unwanted side effects in the creation of the record.
                     $bean->save(false); 
+                    $this->persistNonDbRelations($context, $actionConfig, $bean, $block, $modifications);
                     break;
                 
                 case OnDuplicateAction::SKIP:
@@ -462,4 +465,90 @@ class SaveRecordAction extends HookDataBlockActionDefinition {
         return $injectedAny;
     }
 
+    /**
+     * Persists link-based relationships after save when the underlying id_name is non-db:
+     * 1) Backward compatibility for legacy relation_configs saved before non-db id_name filtering.
+     * 2) Selectable form relate fields whose id_name is non-db and excluded by SugarBean::save_relationship_changes
+     *    (e.g. Calls.contact_name / Meetings.contact_name). Fixed relate fields are handled by RelateRecordsAction.
+     */
+    private function persistNonDbRelations(ExecutionContext $context, FormAction $actionConfig, SugarBean $bean, DataBlockResolved $block, array $modifications): void
+    {
+        // 1. Legacy relation_configs with non-db id_name
+        $configsJson = $actionConfig->getResolvedParameter('relation_configs', '');
+        if (!empty($configsJson)) {
+            $configs = json_decode($configsJson, true);
+            if (is_array($configs)) {
+                foreach ($configs as $config) {
+                    $idName = $config['id_name'] ?? '';
+                    $targetBlockId = $config['target_block_id'] ?? '';
+                    $relationName = $config['relationship_name'] ?? '';
+                    if (empty($idName) || empty($targetBlockId)) {
+                        continue;
+                    }
+                    $idFieldDef = $bean->field_defs[$idName] ?? null;
+                    $isNonDb = !$idFieldDef || (($idFieldDef['source'] ?? 'db') === 'non-db');
+                    if (!$isNonDb) {
+                        continue;
+                    }
+                    $targetBlock = $context->formConfig->data_blocks[$targetBlockId] ?? null;
+                    $targetBeanRef = $targetBlock?->getBeanReference();
+                    if (!$targetBeanRef || empty($targetBeanRef->beanId)) {
+                        continue;
+                    }
+                    $linkField = $this->resolveLinkFieldForNonDbRelate($bean, $idName, $relationName);
+                    if ($linkField && $bean->load_relationship($linkField) && ($bean->$linkField instanceof Link2)) {
+                        $bean->$linkField->add($targetBeanRef->beanId);
+                    }
+                }
+            }
+        }
+
+        // 2. Non-fixed form relate fields with non-db id_name
+        foreach ($block->formData as $fieldName => $fieldResolved) {
+            if ($fieldResolved === null || empty($fieldResolved->value)) {
+                continue;
+            }
+            if ($fieldResolved->definition && $fieldResolved->definition->value_type === DataBlockFieldValueType::FIXED) {
+                continue;
+            }
+            $fieldDef = $bean->field_defs[$fieldName] ?? null;
+            if (!$fieldDef || ($fieldDef['type'] ?? '') !== 'relate' || empty($fieldDef['id_name']) || empty($fieldDef['link'])) {
+                continue;
+            }
+            $idName = $fieldDef['id_name'];
+            $idFieldDef = $bean->field_defs[$idName] ?? null;
+            $isNonDb = !$idFieldDef || (($idFieldDef['source'] ?? 'db') === 'non-db');
+            if (!$isNonDb) {
+                continue;
+            }
+            if (!isset($modifications[$idName]) || $modifications[$idName]->status !== FieldModificationStatus::APPLIED) {
+                continue;
+            }
+            $linkField = $fieldDef['link'];
+            if ($bean->load_relationship($linkField) && ($bean->$linkField instanceof Link2)) {
+                $bean->$linkField->add($fieldResolved->value);
+            }
+        }
+    }
+
+    /**
+     * Resolves the link field name on $bean for a non-db id_name or relationship name.
+     */
+    private function resolveLinkFieldForNonDbRelate(SugarBean $bean, string $idName, string $relationName): string
+    {
+        if (!empty($relationName) && isset($bean->field_defs[$relationName]) && ($bean->field_defs[$relationName]['type'] ?? '') === 'link') {
+            return $relationName;
+        }
+        foreach ($bean->field_defs as $fieldName => $def) {
+            if (($def['type'] ?? '') === 'link' && !empty($relationName) && ($def['relationship'] ?? '') === $relationName) {
+                return $fieldName;
+            }
+        }
+        foreach ($bean->field_defs as $fieldName => $def) {
+            if (($def['type'] ?? '') === 'relate' && ($def['id_name'] ?? '') === $idName && !empty($def['link'])) {
+                return $def['link'];
+            }
+        }
+        return '';
+    }
 }
