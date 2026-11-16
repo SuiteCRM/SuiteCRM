@@ -840,6 +840,7 @@ class stic_AwfValueOption{
       is_visible: true,   // Indicates if it will be shown
       text_original: '',  // Original option text
       text: '',           // Option text
+      score: null,        // Option score
     });
 
     // 2. Overwrite with provided data

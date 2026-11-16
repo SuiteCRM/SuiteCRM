@@ -635,9 +635,14 @@ class FormHtmlGeneratorService {
                                 $optId = "f_{$inputName}_" . preg_replace('/[^a-zA-Z0-9]/', '', $val); 
                                 $req = ($requiredAttr && !$isMulti) ? 'required' : '';  // Note: 'required' in checkboxes groups is complex in pure HTML5. 
 
+                                $scoreAttr = '';
+                                if ($opt->score !== null && $opt->score !== '') {
+                                    $scoreAttr = ' data-score="' . htmlspecialchars((string)$opt->score, ENT_QUOTES, 'UTF-8') . '"';
+                                }
+
                                 $controlHtml .= "<div class='form-check'>" .$this->newLine('+');
                                 {
-                                    $controlHtml .= "<input {$validationsAttr} type='{$inputType}' name='{$finalName}' id='{$optId}' value='{$val}' class='form-check-input' {$req}>" .$this->newLine();
+                                    $controlHtml .= "<input {$validationsAttr} type='{$inputType}' name='{$finalName}' id='{$optId}' value='{$val}' class='form-check-input' {$req}{$scoreAttr}>" .$this->newLine();
                                     $controlHtml .= "<label class='form-check-label' for='{$optId}'>{$txt}</label>" .$this->newLine();
                                 }
                                 $controlHtml .= "</div>" .$this->newLine('-');
@@ -664,7 +669,13 @@ class FormHtmlGeneratorService {
                             if ($opt->is_visible) {
                                 $val = htmlspecialchars($opt->value);
                                 $txt = htmlspecialchars($opt->text);
-                                $controlHtml .= "<option value='{$val}'>{$txt}</option>" .$this->newLine();
+
+                                $scoreAttr = '';
+                                if ($opt->score !== null && $opt->score !== '') {
+                                    $scoreAttr = ' data-score="' . htmlspecialchars((string)$opt->score, ENT_QUOTES, 'UTF-8') . '"';
+                                }
+
+                                $controlHtml .= "<option value='{$val}'{$scoreAttr}>{$txt}</option>" .$this->newLine();
                             }
                         }
                     }

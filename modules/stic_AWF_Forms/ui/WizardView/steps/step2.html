@@ -150,7 +150,7 @@
                           <th x-text="utils.translate('LBL_FIELD_VALUE_TYPE')" x-show="canShowFieldColumn('value_type')"></th>
                           <th x-text="utils.translate('LBL_FIELD_VALUE')" x-show="canShowFieldColumn('value_text')"></th>
                           <th x-text="utils.translate('LBL_FIELD_REQUIRED_IN_FORM')" x-show="canShowFieldColumn('required_in_form')"></th>
-                          <th x-text="utils.translate('LBL_FIELD_ACTIONS')" style="min-width: 160px;"></th>
+                          <th x-text="utils.translate('LBL_FIELD_ACTIONS')" style="min-width: 196px;"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -666,6 +666,12 @@
                                             <span x-text="utils.translate('LBL_FIELD_VALUE_OPTION_NAME')"></span>
                                             <i :class="getSortIconClass('value')"></i>
                                           </th>
+                                          
+                                          <!-- Score (optional) -->
+                                          <th x-show="showInternalValues" class="cursor-pointer" @click="toggleSort('score')" style="cursor: pointer; min-width: 140px;">
+                                            <span x-text="utils.translate('LBL_FIELD_VALUE_OPTION_SCORE')"></span>
+                                            <i :class="getSortIconClass('score')"></i>
+                                          </th>
 
                                           <!-- CRM label -->
                                           <template x-if="!field.isSelectCustomOptions()">
@@ -717,6 +723,11 @@
                                                 <input class="form-control form-control-sm font-monospace" type="text" x-model="row.option.value" :id="`modalField_ValueOptionsValue${row.realIndex}`" :placeholder="row.option.text"/>
                                               </td>
                                             </template>
+
+                                            <!-- Score -->
+                                            <td x-show="showInternalValues">
+                                              <input class="form-control form-control-sm font-monospace" type="number" step="any" x-model="row.option.score" :id="`modalField_ValueOptionsScore${row.realIndex}`"/>
+                                            </td>
 
                                             <!-- Original label -->
                                             <template x-if="!field.isSelectCustomOptions()">

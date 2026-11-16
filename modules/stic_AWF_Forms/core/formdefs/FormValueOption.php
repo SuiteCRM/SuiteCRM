@@ -30,6 +30,7 @@ class FormValueOption {
     public bool $is_visible;
     public string $text_original;
     public string $text;
+    public ?float $score = null;
 
     public static function fromJsonArray(array $data): self {
         $dto = new self();
@@ -37,6 +38,7 @@ class FormValueOption {
         $dto->is_visible = $data['is_visible'];
         $dto->text_original = $data['text_original'];
         $dto->text = $data['text'];
+        $dto->score = isset($data['score']) ? (float)$data['score'] : null;
         return $dto;
     }
 }

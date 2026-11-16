@@ -197,6 +197,7 @@ $mod_strings = array (
   'LBL_FIELD_VALUE_OPTIONS' => 'Possible values',
   'LBL_FIELD_VALUE_OPTION_SHOW_NAME' => 'Show internal values',
   'LBL_FIELD_VALUE_OPTION_NAME' => 'Internal value',
+  'LBL_FIELD_VALUE_OPTION_SCORE' => 'Score',
   'LBL_FIELD_VALUE_OPTION_ORIGINAL_LABEL' => 'Original text',
   'LBL_FIELD_VALUE_OPTION_LABEL' => 'Text',
   'LBL_FIELD_VALUE_OPTION_SHOW' => 'Show',
