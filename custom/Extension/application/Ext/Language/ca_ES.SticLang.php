@@ -99,9 +99,10 @@ $app_strings['LBL_SUBTHEME_OPTIONS_STIC'] = 'Stic';
 $app_strings['LBL_SUBTHEME_OPTIONS_STIC_CUSTOM'] = 'SticCustom';
 
 // Enllaços globals de SinergiaCRM
-$app_strings['LBL_STIC_FORUMS_LINK'] = 'Fòrums de SinergiaCRM';
-$app_strings['LBL_STIC_WIKI_LINK'] = 'Wiki de SinergiaCRM';
-$app_strings['LBL_STIC_VIDEOS_LINK'] = 'Vídeos de SinergiaCRM';
+$app_strings['LBL_STIC_FORUMS_LINK'] = 'Fòrums';
+$app_strings['LBL_STIC_GUIA_LINK'] = 'GuIA';
+$app_strings['LBL_STIC_WIKI_LINK'] = 'Wiki';
+$app_strings['LBL_STIC_VIDEOS_LINK'] = 'Vídeos';
 $app_strings['LBL_STIC_SINERGIADA'] = 'SinergiaDA';
 
 // Missatges: accions en mòduls de destinataris
