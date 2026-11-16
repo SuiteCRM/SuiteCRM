@@ -78,6 +78,7 @@ class MetaService
         'precision',
         'comment',
         'required',
+        'options',
         'vname'
     ];
 
@@ -153,6 +154,10 @@ class MetaService
             }
 
             $fieldList[$fieldName] = $this->pruneVardef($fieldDef);
+
+            if ($this->checkIfFieldHasEnumType($fieldList[$fieldName])) {
+                $this->setDropdownData($fieldList[$fieldName]);
+            }
         }
 
         return $fieldList;
@@ -207,5 +212,34 @@ class MetaService
         }
 
         return json_decode($swaggerFile, true);
+    }
+
+    /**
+     * @param array $def
+     * @return bool
+     */
+    private function checkIfFieldHasEnumType(array $def): bool
+    {
+        return in_array(
+            $def['type'] ?? null,
+            ['enum', 'multienum', 'dynamicenum'],
+            true
+        );
+    }
+
+    /**
+     * @param array $def
+     */
+    private function setDropdownData(array &$def): void
+    {
+        global $app_list_strings;
+
+        $options = $def['options'] ?? null;
+
+        if (!is_string($options) || $options === '') {
+            return;
+        }
+
+        $def['option_items'] = $app_list_strings[$options] ?? [];
     }
 }
