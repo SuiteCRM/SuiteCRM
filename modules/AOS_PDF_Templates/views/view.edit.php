@@ -64,7 +64,11 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
             $mod_options_array = array();
 
             //Getting Fields
-            if (!$beanList[$moduleName]) {
+            // STIC-Custom 20260813 ART - Fix "Undefined array key" warning when a module is not in the beanList
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/1381
+            // if (!$beanList[$moduleName]) {
+            if (!isset($beanList[$moduleName])) {
+            // END STIC-Custom
                 continue;
             }
             $module = new $beanList[$moduleName]();
@@ -174,7 +178,11 @@ class AOS_PDF_TemplatesViewEdit extends ViewEdit
                 $product_quote = BeanFactory::newBean('AOS_Products');
                 foreach ($product_quote->field_defs as $line_name => $line_arr) {
                     if (!((isset($line_arr['dbType']) && strtolower($line_arr['dbType']) == 'id') || $line_arr['type'] == 'id' || $line_arr['type'] == 'link')) {
-                        if ((!isset($line_arr['reportable']) || $line_arr['reportable']) && $line_arr['vname']  != 'LBL_NAME') {
+                        // STIC-Custom 20260813 ART - Fix "Undefined array key 'vname'" warning when a field definition is not correct
+                        // https://github.com/SinergiaTIC/SinergiaCRM/pull/1381
+                        // if ((!isset($line_arr['reportable']) || $line_arr['reportable']) && $line_arr['vname']  != 'LBL_NAME') {
+                        if ((!isset($line_arr['reportable']) || $line_arr['reportable']) && isset($line_arr['vname']) && $line_arr['vname'] != 'LBL_NAME') {
+                        // END STIC-Custom
                             $options_array['$'.$product_quote->table_name.'_'.$line_name] = translate($line_arr['vname'], $product_quote->module_dir);
                         }
                     }

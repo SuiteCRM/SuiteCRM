@@ -481,7 +481,7 @@ class stic_SignaturesUtils
             $text = str_replace("\$total_amount", "\$" . $variableName . "_total_amount", $text);
 
             // Populate group lines (products/services) in the template
-            $text = populate_group_lines($text, $lineItemsGroups, $lineItems);
+            $text = stic_populate_group_lines($text, $lineItemsGroups, $lineItems);
         }
 
         // The parse_template function requires an array of beans

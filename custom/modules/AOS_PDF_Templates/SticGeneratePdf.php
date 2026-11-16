@@ -128,7 +128,7 @@ if (str_starts_with($_REQUEST['module'], "AOS_")) {
     $text = str_replace("\$shipping_amount", "\$" . $variableName . "_shipping_amount", $text);
     $text = str_replace("\$total_amount", "\$" . $variableName . "_total_amount", $text);
 
-    $text = populate_group_lines($text, $lineItemsGroups, $lineItems);
+    $text = stic_populate_group_lines($text, $lineItemsGroups, $lineItems);
 }
 
 // The parse_template function requires an array of beans
