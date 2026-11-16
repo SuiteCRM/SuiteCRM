@@ -1125,6 +1125,17 @@ document.addEventListener('alpine:init', () => {
             // Ignore our own hidden clones
             if (input.dataset.clone === 'true') return;
 
+            // Prevent disabling/hiding a required field without an assigned value
+            // (otherwise the form could become impossible to submit)
+            let isRequiredField = input.hasAttribute('required');
+            if (!isRequiredField) {
+              const group = input.closest('.awf-option-group');
+              if (group && group.dataset.required === 'true') isRequiredField = true;
+            }
+            if ((isDisabled || isHidden) && isRequiredField && (value === '' || value == null)) {
+              return;
+            }
+
             // Assign value (supporting checkboxes and radios)
             if (input.type === 'checkbox' || input.type === 'radio') {
               if (input.value === value) {
