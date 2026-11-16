@@ -257,7 +257,8 @@ class FormHtmlGeneratorService {
         $jsConfig = json_encode([
             'checkUrl' => $isPreview ? '' : $checkUrl,
             'closedFormText' => $closedFormText,
-            'isPreview' => $isPreview
+            'isPreview' => $isPreview,
+            'requiredFieldMessage' => translate('LBL_REQUIRED_FIELD_MESSAGE', 'stic_AWF_Forms')
         ]);
         $safeConfig = htmlspecialchars($jsConfig, ENT_QUOTES, 'UTF-8');
 
@@ -626,7 +627,10 @@ class FormHtmlGeneratorService {
                     $isMulti = ($inputType === 'checkbox');
                     $finalName = $inputName . ($isMulti ? '[]' : ''); // If multiple, name is array (ex: names[])
 
-                    $controlHtml .= "<div class='awf-option-group pt-1'>" .$this->newLine('+');
+                    $groupRequired = ($field->required_in_form && $isMulti) ? 'true' : 'false';
+                    $requiredMessage = ($field->required_in_form && $isMulti) ? htmlspecialchars(translate('LBL_ERROR_REQUIRED_FIELD', 'stic_AWF_Responses'), ENT_QUOTES, 'UTF-8') : '';
+
+                    $controlHtml .= "<div class='awf-option-group pt-1' data-field-name='{$inputName}' data-required='{$groupRequired}' data-required-message='{$requiredMessage}'>" .$this->newLine('+');
                     {
                         foreach ($field->value_options as $opt) {
                             if ($opt->is_visible) {
@@ -640,9 +644,10 @@ class FormHtmlGeneratorService {
                                     $scoreAttr = ' data-score="' . htmlspecialchars((string)$opt->score, ENT_QUOTES, 'UTF-8') . '"';
                                 }
 
+                                $resetAttr = ($field->required_in_form && $isMulti) ? " @change='resetError(document.getElementById(\"f_{$inputName}\"))'" : '';
                                 $controlHtml .= "<div class='form-check'>" .$this->newLine('+');
                                 {
-                                    $controlHtml .= "<input {$validationsAttr} type='{$inputType}' name='{$finalName}' id='{$optId}' value='{$val}' class='form-check-input' {$req}{$scoreAttr}>" .$this->newLine();
+                                    $controlHtml .= "<input {$validationsAttr}{$resetAttr} type='{$inputType}' name='{$finalName}' id='{$optId}' value='{$val}' class='form-check-input' {$req}{$scoreAttr}>" .$this->newLine();
                                     $controlHtml .= "<label class='form-check-label' for='{$optId}'>{$txt}</label>" .$this->newLine();
                                 }
                                 $controlHtml .= "</div>" .$this->newLine('-');
@@ -650,6 +655,9 @@ class FormHtmlGeneratorService {
                         }
                     }
                     $controlHtml .= "</div>" .$this->newLine('-');
+                    if ($field->required_in_form && $isMulti) {
+                        $controlHtml .= "<div id='f_{$inputName}' class='awf-group-anchor' style='display:none;'></div>" .$this->newLine();
+                    }
 
                 } 
                 // Select && Select muliple
@@ -1188,7 +1196,9 @@ document.addEventListener('alpine:init', () => {
 
     resetError(input) {
       if (!input) return;
-      input.setCustomValidity('');
+      if (typeof input.setCustomValidity === 'function') {
+        input.setCustomValidity('');
+      }
       input.classList.remove('is-invalid');
       const parent = input.parentElement;
       if (parent) {
@@ -1266,6 +1276,30 @@ document.addEventListener('alpine:init', () => {
       if (this.submitting) return;
       let formValid = true;
       this.serverErrors = {};
+      
+      // Validate required checkbox/radio groups (no native HTML5 support)
+      formElement.querySelectorAll('.awf-option-group[data-required="true"]').forEach(group => {
+        const name = group.dataset.fieldName;
+        const selector = `input[name="${name}[]"], input[name="${name}"]`;
+        const inputs = Array.from(formElement.querySelectorAll(selector));
+        const checked = inputs.some(i => i.checked);
+        if (!checked) {
+          formValid = false;
+          const anchor = document.getElementById('f_' + name);
+          if (anchor) {
+            anchor.classList.add('is-invalid');
+            const parent = anchor.parentElement;
+            let feedback = parent.querySelector('.invalid-feedback');
+            if (!feedback) {
+              feedback = document.createElement('div');
+              feedback.className = 'invalid-feedback';
+              parent.appendChild(feedback);
+            }
+            feedback.textContent = group.dataset.requiredMessage || config.requiredFieldMessage;
+            feedback.style.display = 'block';
+          }
+        }
+      });
       
       formElement.querySelectorAll('input, select, textarea').forEach(input => {
         if (input.willValidate && !this.validateInput(input)) formValid = false;
