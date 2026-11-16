@@ -107,13 +107,11 @@ class SticNewsDashlet extends Dashlet {
 
     function display(){
 
-        $timestamp = time();
-
         return parent::display() . "
         <iframe 
             class='teamNoticeBox'
             title='{$this->title}'
-            src='{$this->url}?{$timestamp}'
+            src='{$this->url}'
             height='{$this->height}px'>
         </iframe>";
     }
