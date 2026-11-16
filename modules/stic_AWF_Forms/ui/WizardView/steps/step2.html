@@ -707,7 +707,7 @@
                                           </tr>
                                         </template>
                                         
-                                        <template x-for="(row, index) in pagedItems" :key="row.option.value + '_' + row.realIndex">
+                                        <template x-for="(row, index) in pagedItems" :key="row.realIndex">
                                           <tr :class="{'table-primary': isSel(row.option)}">
                                             <!-- Row Checkbox -->
                                             <td class="text-center ps-3">
