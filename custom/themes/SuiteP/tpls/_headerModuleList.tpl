@@ -1057,7 +1057,14 @@
                           h2.admin_actions_title {font-size: 16px;font-weight: bold; margin: 10px 15px;}
                         </style>
                     {/literal}
-                        <div id='admin_actions' class="actionMenuSidebar adminMenuSidebar" hidden>
+                        {* 
+                            STIC-Custom - JBL - 20261109 - Keep the panel visible when a stylesheet re-defines [hidden] class
+                            Initial state is now hidden with an inline style instead of the hidden attribute
+                            https://github.com/SinergiaTIC/SinergiaCRM/pull/1520
+                        *}
+                        {* <div id='admin_actions' class="actionMenuSidebar adminMenuSidebar" hidden> *}
+                        <div id='admin_actions' class="actionMenuSidebar adminMenuSidebar" style="display:none">
+                        {* END STIC-Custom - JBL - 20261109 *}
                         <!-- END STIC-Custom -->
                         <h2 class="admin_actions_title">{sugar_translate module="Administration" label="LBL_ADMIN_ACTIONS"}</h2>
                             <ul>
