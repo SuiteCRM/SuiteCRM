@@ -176,16 +176,16 @@ function loadCalendar() {
     dayMaxEvents: true, // allow "more" link when too many events,
     // viewWillUnmount: () => code,
     selectable: true,
-    selectMirror: true,
+    selectMirror: false,
     // This is used for the click in an empty space of the calendar
     select: function (arg) {
       window.location.assign(
         "index.php?module=stic_Bookings&action=EditView&return_action=index&return_module=stic_Bookings_Calendar&start=" +
-          arg.startStr +
+          encodeURIComponent(arg.startStr) +
           "&end=" +
-          arg.endStr +
+          encodeURIComponent(arg.endStr) +
           "&allDay=" +
-          arg.allDay
+          (arg.allDay ? "true" : "false")
       );
     },
     // This loads the popup of each event/booking
