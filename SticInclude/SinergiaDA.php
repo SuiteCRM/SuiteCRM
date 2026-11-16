@@ -397,6 +397,28 @@ class ExternalReporting
                             continue 2;
                         }
                         break;
+                    case 'Contacts':
+                        // A display-only relate field (rname !== 'id') that shares its id_name with a sibling
+                        // FK relate field (rname === 'id') resolves to the same relationship/join (e.g.
+                        // account_name vs account_id -> accounts_contacts). Skip the display field so we do not
+                        // register a duplicate row in sda_def_relationships nor a duplicate LEFT JOIN.
+                        if (($fieldV['type'] ?? null) === 'relate'
+                            && ($fieldV['rname'] ?? null) !== 'id'
+                            && !empty($fieldV['id_name'])) {
+                            $hasFkSibling = false;
+                            foreach ($moduleBean->getFieldDefinitions() as $siblingField) {
+                                if (($siblingField['type'] ?? null) === 'relate'
+                                    && ($siblingField['id_name'] ?? null) === ($fieldV['id_name'] ?? null)
+                                    && ($siblingField['rname'] ?? null) === 'id') {
+                                    $hasFkSibling = true;
+                                    break;
+                                }
+                            }
+                            if ($hasFkSibling) {
+                                continue 2;
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -477,19 +499,52 @@ class ExternalReporting
                                     $fieldV['rLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE', $fieldV['module']);
                                     $fieldV['lLabel'] = translate('LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_L_TITLE', $fieldV['module']);
                                     $fieldV['autoRelJoinModuleRelLabel'] = 'LBL_' . strtoupper($fieldV['link']) . '_FROM_' . strtoupper($moduleName) . '_R_TITLE';
-                                    // Resolve the actual relationship name from the link field definition
-                                    // (needed when the link field name differs from the relationship name, e.g. member_of vs member_accounts)
-                                    $linkFieldDef = $moduleBean->getFieldDefinitions()[$fieldV['link']] ?? null;
-                                    if ($linkFieldDef && !empty($linkFieldDef['relationship'])) {
-                                        $fieldV['rel_name'] = $linkFieldDef['relationship'];
-                                    }
                                     $autoRelationships[$fieldV['link']] = $fieldV;
                                     $this->autoRelationshipsRegistered[$fieldV['link']] = $fieldV['table'];
                                 }
 
+                                
+                                // Needed for every relate field, not only auto-relationships: the link name
+                                // can differ from the relationship name (e.g. 'surveyquestion' vs
+                                // 'surveyquestions_surveyquestionresponses'), which used to skip the field.
+                                $moduleFieldDefs = $moduleBean->getFieldDefinitions();
+                                $linkFieldDef = $moduleFieldDefs[$fieldV['link']] ?? null;
+
+                                // Fallback: the relate field's link name may not exist as a field key in the module
+                                // (e.g. SurveyQuestionResponses.surveyresponse_name -> link 'survey_response', while the
+                                // link field is 'surveyresponse'). It is only used when the link name is not a valid
+                                // relationship name either, so existing links keep their previous resolution.
+                                if (!$linkFieldDef && !empty($fieldV['id_name'])) {
+                                    $linkIsRelationship = !empty($db->fetchOne("select relationship_name from relationships where relationship_name='" . $db->quote($fieldV['link']) . "'"));
+                                    if (!$linkIsRelationship) {
+                                        foreach ($moduleFieldDefs as $candidateDef) {
+                                            if (
+                                                ($candidateDef['type'] ?? null) == 'link'
+                                                && ($candidateDef['id_name'] ?? null) == $fieldV['id_name']
+                                                && !empty($candidateDef['relationship'])
+                                            ) {
+                                                $linkFieldDef = $candidateDef;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if ($linkFieldDef && !empty($linkFieldDef['relationship'])) {
+                                    $fieldV['rel_name'] = $linkFieldDef['relationship'];
+                                }
+                                
+
                                 $res = $this->createRelateLeftJoin($fieldV, $tableName, $joinLabel, ($fieldV['isAutoRelationship'] ?? null));
 
                                 if (empty($res)) {
+                                    continue 2;
+                                }
+
+                                // Two relate fields (e.g. Contacts account_name/account_id) may resolve to the same
+                                // relationship (accounts_contacts). A second LEFT JOIN with the same table/alias fails
+                                // with "Not unique table/alias", so skip this field keeping the first occurrence.
+                                if (!empty($res['leftJoin']) && strpos($leftJoins, $res['leftJoin']) !== false) {
                                     continue 2;
                                 }
 
