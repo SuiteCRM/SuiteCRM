@@ -112,7 +112,13 @@ class MassUpdate
         unset($_REQUEST['current_query_by_page']);
         unset($_REQUEST[session_name()]);
         unset($_REQUEST['PHPSESSID']);
-        $query = json_encode($_REQUEST);
+
+        // STIC-Custom 20260223 EPS - Fixing quotes in query_by_page
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
+        // $query = json_encode($_REQUEST);
+        require_once 'SticInclude/Utils.php';
+        $query = SticUtils::encodeCurrentQueryByPage();
+        // END STIC-Custom
 
         if (!isset($_REQUEST['module'])) {
             LoggerManager::getLogger()->warn('Undefined index: module');
@@ -1643,7 +1649,19 @@ EOQ;
         }
         /* bug 31271: using false to not add all bean fields since some beans - like SavedReports
            can have fields named 'module' etc. which may break the query */
+        // STIC-Custom 20261027 EPS - Preventing uncontrolled mass update when current_query_by_page is broken
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
         $query = json_decode(html_entity_decode($query), true);
+        if ($query === null) {
+            // A broken payload would produce an empty WHERE clause, which makes any subsequent
+            // "select entire list" mass update / target list / export cover ALL records instead
+            // of the filtered ones. Stop with a never matching clause and log a fatal error.
+            $GLOBALS['log']->fatal("Line ".__LINE__.": ".__METHOD__.": current_query_by_page could not be decoded (invalid JSON). An empty WHERE clause would have updated/selected all records: aborting.");
+            $this->where_clauses = '1=0';
+
+            return;
+        }
+        // END STIC-Custom
         $searchForm->populateFromArray($query, null, true);
         $this->searchFields = $searchForm->searchFields;
         $where_clauses = $searchForm->generateSearchWhere(true, $module);

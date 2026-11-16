@@ -240,8 +240,12 @@ class stic_AWF_FormsController extends SugarController
         if (empty($popupdefsFile)) {
             $GLOBALS['log']->warn("Line ".__LINE__.": ".__METHOD__.": No popupdefs found for module {$module}, falling back to MassUpdate");
             require_once('include/MassUpdate.php');
+            require_once 'SticInclude/Utils.php';
             $mass = new MassUpdate();
-            $mass->generateSearchWhere($module, htmlentities(json_encode($current_query_by_page_array)));
+            // STIC-Custom 20260223 EPS - Fixing quotes in query_by_page
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
+            $mass->generateSearchWhere($module, htmlentities(SticUtils::encodeCurrentQueryByPage($current_query_by_page_array)));
+            // END STIC-Custom
             return $mass->where_clauses ?? '';
         }
 
@@ -250,8 +254,12 @@ class stic_AWF_FormsController extends SugarController
         if (empty($popupMeta) || empty($popupMeta['searchdefs'])) {
             $GLOBALS['log']->warn("Line ".__LINE__.": ".__METHOD__.": popupdefs for {$module} has no searchdefs, falling back to MassUpdate");
             require_once('include/MassUpdate.php');
+            require_once 'SticInclude/Utils.php';
             $mass = new MassUpdate();
-            $mass->generateSearchWhere($module, htmlentities(json_encode($current_query_by_page_array)));
+            // STIC-Custom 20260223 EPS - Fixing quotes in query_by_page
+            // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
+            $mass->generateSearchWhere($module, htmlentities(SticUtils::encodeCurrentQueryByPage($current_query_by_page_array)));
+            // END STIC-Custom
             return $mass->where_clauses ?? '';
         }
 

@@ -17,7 +17,12 @@ class AccountsListViewSmarty extends ListViewSmarty
         global $app_strings;
         unset($_REQUEST[session_name()]);
         unset($_REQUEST['PHPSESSID']);
-        $current_query_by_page = htmlentities(json_encode($_REQUEST));
+        // STIC-Custom 20260223 EPS - Fixing quotes in query_by_page
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
+        // $current_query_by_page = htmlentities(json_encode($_REQUEST));
+        require_once 'SticInclude/Utils.php';
+        $current_query_by_page = htmlentities(SticUtils::encodeCurrentQueryByPage());
+        // END STIC-Custom
 
         $js = <<<EOF
              if(sugarListView.get_checks_count() < 1) {

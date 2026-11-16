@@ -893,6 +893,41 @@ EOQ;
     }
 
     /**
+     * Encodes an array (normally the current $_REQUEST) to be used as the value of the hidden
+     * field "current_query_by_page" (mass updates, target lists, popups, bulk document
+     * generation, ...).
+     *
+     * Before JSON-encoding the data, any HTML entities in string values are decoded, and double
+     * quotes, single quotes, ampersands and tags are escaped as \u0022, \u0027, \u0026 and \u003C/\u003E
+     * (JSON_HEX_* flags). This way the JSON structure always remains valid after any
+     * html_entity_decode() / browser decoding round trip, which prevents broken payloads from
+     * generating an empty WHERE clause and triggering fully uncontrolled mass updates when any
+     * filter contains quotes or other special characters.
+     *
+     * The returned JSON string still needs to be transport encoded by the caller, depending on
+     * where it will be placed: htmlentities() for HTML attributes (hidden inputs and hidden
+     * fields built through JS templates) or base64_encode() when the consumer decodes it itself.
+     *
+     * @param array $requestArray Array to encode. Defaults to the current $_REQUEST.
+     * @return string JSON string with special characters escaped as \u0022, \u0027, \u0026, \u003C/\u003E.
+     */
+    public static function encodeCurrentQueryByPage($requestArray = null)
+    {
+        if ($requestArray === null) {
+            $requestArray = $_REQUEST;
+        }
+
+        $decodedArray = $requestArray;
+        array_walk_recursive($decodedArray, function (&$value) {
+            if (is_string($value)) {
+                $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            }
+        });
+
+        return json_encode($decodedArray, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG);
+    }
+
+    /**
      * Output a JSON response with proper HTTP headers and buffer cleanup.
      *
      * Ensures clean output by ending and clearing any existing output buffers

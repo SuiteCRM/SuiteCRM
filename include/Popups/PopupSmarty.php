@@ -265,7 +265,12 @@ class PopupSmarty extends ListViewSmarty
             $this->_popupMeta['create']['createButton'] = translate($this->_popupMeta['create']['createButton']);
         }
         $this->th->ss->assign('popupMeta', $this->_popupMeta);
-        $this->th->ss->assign('current_query', htmlentities(json_encode(($_REQUEST))));
+        // STIC-Custom 20260223 EPS - Fixing quotes in query_by_page
+        // https://github.com/SinergiaTIC/SinergiaCRM/pull/999
+        // $this->th->ss->assign('current_query', htmlentities(json_encode(($_REQUEST))));
+        require_once 'SticInclude/Utils.php';
+        $this->th->ss->assign('current_query', htmlentities(SticUtils::encodeCurrentQueryByPage()));
+        // END STIC-Custom
         $this->th->ss->assign('customFields', $this->customFieldDefs);
         $this->th->ss->assign('numCols', NUM_COLS);
         $this->th->ss->assign('massUpdateData', $this->massUpdateData);
