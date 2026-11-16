@@ -37,6 +37,13 @@ class ImpersonateLogicHooks
     {
         global $current_user;
         
+        // STIC 2026-05-19 - Skip injection during AJAX requests (to_pdf=true)
+        // to_pdf=true is used by KReports and other modules for AJAX calls,
+        // and injecting HTML script tags would corrupt the JSON response
+        if (!empty($_REQUEST['to_pdf']) || !empty($_REQUEST['sugar_body_only'])) {
+            return;
+        }
+        
         // Only inject UI elements if user is logged in
         if (empty($current_user) || empty($current_user->id)) {
             return;
