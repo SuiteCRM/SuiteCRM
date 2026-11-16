@@ -104,13 +104,13 @@ $dictionary['KReport'] = array('table' => 'kreports',
         ),
         'whereconditions' => array(
             'name' => 'whereconditions',
-            'type' => 'text',
+            'type' => 'mediumtext',
             'vname' => 'LBL_WHERECONDITION',
             'default' => '[]',
         ),
         'listfields' => array(
             'name' => 'listfields',
-            'type' => 'text',
+            'type' => 'mediumtext',
             'vname' => 'LBL_LISTFIELDS'
         ),
         'unionlistfields' => array(
