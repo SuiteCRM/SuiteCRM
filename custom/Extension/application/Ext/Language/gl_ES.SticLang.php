@@ -3707,6 +3707,11 @@ $app_list_strings['stic_messages_parent_type_display']['Contacts'] = 'Persoas';
 $app_list_strings['stic_messages_parent_type_display']['Leads'] = 'Interesados';
 $app_list_strings['stic_messages_parent_type_display']['Employees'] = 'Empregados';
 
+// Conversaciones: Tipos
+$app_list_strings['stic_conversations_types_list'][''] = '';
+$app_list_strings['stic_conversations_types_list']['type1'] = 'Tipo 1';
+$app_list_strings['stic_conversations_types_list']['type2'] = 'Tipo 2';
+
 // Vistas personalizadas: Tipos de usuario
 $app_list_strings['stic_custom_views_user_type_list']['regular_user'] = 'Usuario normal';
 $app_list_strings['stic_custom_views_user_type_list']['administrator'] = 'Administrador';
@@ -4101,10 +4106,17 @@ $app_list_strings['stic_awf_incoming_events_status']['processed'] = 'Procesado';
 $app_list_strings['stic_awf_incoming_events_status']['error'] = 'Errado';
 $app_list_strings['stic_awf_incoming_events_status']['ignored'] = 'Ignorado';
 
-// Conversaciones: Tipos
-$app_list_strings['stic_conversations_types_list'][''] = '';
-$app_list_strings['stic_conversations_types_list']['type1'] = 'Tipo 1';
-$app_list_strings['stic_conversations_types_list']['type2'] = 'Tipo 2';
+// Motivos de no restauración de relaciones de la papelera
+$app_list_strings['stic_recycle_skip_reason_list'][''] = '';
+$app_list_strings['stic_recycle_skip_reason_list']['related_deleted'] = 'Registro relacionado eliminado';
+$app_list_strings['stic_recycle_skip_reason_list']['reassigned'] = 'Registro relacionado reasignado';
+
+// Procedencia de la eliminación en la papelera
+$app_list_strings['stic_recycle_deletion_source_list'][''] = '';
+$app_list_strings['stic_recycle_deletion_source_list']['detail'] = 'Vista de detalle';
+$app_list_strings['stic_recycle_deletion_source_list']['mass'] = 'Acción masiva';
+$app_list_strings['stic_recycle_deletion_source_list']['merge'] = 'Combinación de registros';
+$app_list_strings['stic_recycle_deletion_source_list']['other'] = 'Acción externa';
 
 // Modificaciones del core de SuiteCRM
 
@@ -4244,18 +4256,6 @@ $app_list_strings['collection_temp_list']['Calls'] = 'Chamadas';
 $app_list_strings['collection_temp_list']['Notes'] = 'Notas';
 $app_list_strings['collection_temp_list']['Emails'] = 'Correos';
 $app_list_strings['collection_temp_list']['stic_Messages'] = 'Mensaxes';
-
-// Motivos de no restauración de relaciones de la papelera
-$app_list_strings['stic_recycle_skip_reason_list'][''] = '';
-$app_list_strings['stic_recycle_skip_reason_list']['related_deleted'] = 'Registro relacionado eliminado';
-$app_list_strings['stic_recycle_skip_reason_list']['reassigned'] = 'Registro relacionado reasignado';
-
-// Procedencia de la eliminación en la papelera
-$app_list_strings['stic_recycle_deletion_source_list'][''] = '';
-$app_list_strings['stic_recycle_deletion_source_list']['detail'] = 'Vista de detalle';
-$app_list_strings['stic_recycle_deletion_source_list']['mass'] = 'Acción masiva';
-$app_list_strings['stic_recycle_deletion_source_list']['merge'] = 'Combinación de registros';
-$app_list_strings['stic_recycle_deletion_source_list']['other'] = 'Acción externa';
 
 // Lista dinámica
 include 'modules/stic_Message_Marketing/dynamicLPOs.php';
