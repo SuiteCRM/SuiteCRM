@@ -1774,6 +1774,11 @@ class ModuleInstaller
                 $this->modulesInPackage = $installed_modules;
                 $this->uninstall_beans($installed_modules);
                 $this->uninstall_customizations($installed_modules);
+                // STIC-Custom 20261014 ART - Uninstall module labels and images for renamed modules 
+                // https://github.com/SinergiaTIC/SinergiaCRM/pull/1453
+                $this->uninstall_renamed_module_labels($installed_modules);
+                $this->uninstall_module_images($installed_modules);
+                // END STIC-Custom
                 if (!$this->silent) {
                     $current_step++;
                     update_progress_bar('install', $total_steps, $total_steps);
@@ -2106,6 +2111,154 @@ class ModuleInstaller
             }
         }
     }
+
+    // STIC-Custom 20261014 ART - Uninstall module labels and images for renamed modules 
+    // https://github.com/SinergiaTIC/SinergiaCRM/pull/1453
+    /**
+     * Remove moduleList and moduleListSingular entries from custom/include/language/<lang>.lang.php
+     * that were added when a module was renamed via "Rename Tabs"
+     */
+    public function uninstall_renamed_module_labels($beans)
+    {
+        global $sugar_config;
+        if (!isset($sugar_config['languages']) || !is_array($sugar_config['languages'])) {
+            return;
+        }
+
+        foreach (array_keys($sugar_config['languages']) as $language) {
+            $filename = "custom/include/language/$language.lang.php";
+            if (!file_exists($filename)) {
+                continue;
+            }
+
+            $contents = file_get_contents($filename);
+            $lines = explode("\n", $contents);
+            $modified = false;
+            $cleanedLines = array();
+
+            foreach ($lines as $line) {
+                $keep = true;
+                foreach ($beans as $bean) {
+                    $quotedBean = preg_quote($bean, '/');
+                    if (preg_match('/^\s*\$app_list_strings\s*\[\s*[\'"]moduleList[\'"]\s*\]\s*\[\s*[\'"]' . $quotedBean . '[\'"]\s*\]/', $line)) {
+                        $keep = false;
+                        $modified = true;
+                        break;
+                    }
+                    if (preg_match('/^\s*\$app_list_strings\s*\[\s*[\'"]moduleListSingular[\'"]\s*\]\s*\[\s*[\'"]' . $quotedBean . '[\'"]\s*\]/', $line)) {
+                        $keep = false;
+                        $modified = true;
+                        break;
+                    }
+                }
+                if ($keep) {
+                    $cleanedLines[] = $line;
+                }
+            }
+
+            if ($modified) {
+                $newContents = implode("\n", $cleanedLines);
+                $newContents = trim($newContents);
+
+                $stripped = str_replace(array('<?php', "\n", "\r", ' ', "\t"), '', $newContents);
+                if ($newContents === '<?php' || $newContents === '<?php' . "\n" || empty($stripped)) {
+                    unlink($filename);
+                    $this->log(translate('LBL_MI_UN_BEAN') . " Removed empty language file: $filename");
+                } else {
+                    sugar_file_put_contents($filename, $newContents);
+                    SugarCache::cleanFile($filename);
+                }
+            }
+        }
+    }
+
+    /**
+     * Remove theme icon files associated with uninstalled modules
+     * from custom/themes/default/images/
+     */
+    public function uninstall_module_images($beans)
+    {
+        $themeDirs = array('custom/themes/default/images/');
+        if (is_dir('custom/themes/SuiteP/images/')) {
+            $themeDirs[] = 'custom/themes/SuiteP/images/';
+        }
+
+        $patterns = array(
+            'Create%s.gif',
+            'Create%s.svg',
+            'icon_%s_32.gif',
+            'icon_%s_32.svg',
+            'icon_%s.gif',
+            'icon_%s.svg',
+            '%s.gif',
+            '%s.svg',
+        );
+
+        foreach ($themeDirs as $themeDir) {
+            foreach ($beans as $bean) {
+                $beanLower = strtolower($bean);
+                $beanUcfirst = ucfirst($bean);
+
+                foreach ($patterns as $pattern) {
+                    $fileName = sprintf($pattern, $bean);
+                    $filePath = $themeDir . $fileName;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                    $fileNameLower = sprintf($pattern, $beanLower);
+                    $filePathLower = $themeDir . $fileNameLower;
+                    if ($fileNameLower !== $fileName && file_exists($filePathLower)) {
+                        unlink($filePathLower);
+                    }
+                    $fileNameUcfirst = sprintf($pattern, $beanUcfirst);
+                    $filePathUcfirst = $themeDir . $fileNameUcfirst;
+                    if ($fileNameUcfirst !== $fileName && $fileNameUcfirst !== $fileNameLower && file_exists($filePathUcfirst)) {
+                        unlink($filePathUcfirst);
+                    }
+                }
+
+                $sidebarFile = $themeDir . 'sidebar/modules/' . $bean . '.svg';
+                if (file_exists($sidebarFile)) {
+                    unlink($sidebarFile);
+                }
+                $sidebarFileLower = $themeDir . 'sidebar/modules/' . $beanLower . '.svg';
+                if ($sidebarFileLower !== $sidebarFile && file_exists($sidebarFileLower)) {
+                    unlink($sidebarFileLower);
+                }
+                $sidebarFileUcfirst = $themeDir . 'sidebar/modules/' . $beanUcfirst . '.svg';
+                if ($sidebarFileUcfirst !== $sidebarFile && $sidebarFileUcfirst !== $sidebarFileLower && file_exists($sidebarFileUcfirst)) {
+                    unlink($sidebarFileUcfirst);
+                }
+
+                $subpanelFile = $themeDir . 'sub_panel/modules/' . $bean . '.svg';
+                if (file_exists($subpanelFile)) {
+                    unlink($subpanelFile);
+                }
+                $subpanelFileLower = $themeDir . 'sub_panel/modules/' . $beanLower . '.svg';
+                if ($subpanelFileLower !== $subpanelFile && file_exists($subpanelFileLower)) {
+                    unlink($subpanelFileLower);
+                }
+                $subpanelFileUcfirst = $themeDir . 'sub_panel/modules/' . $beanUcfirst . '.svg';
+                if ($subpanelFileUcfirst !== $subpanelFile && $subpanelFileUcfirst !== $subpanelFileLower && file_exists($subpanelFileUcfirst)) {
+                    unlink($subpanelFileUcfirst);
+                }
+
+                $subpanelFile2 = $themeDir . 'sub_panel/' . $bean . '.svg';
+                if (file_exists($subpanelFile2)) {
+                    unlink($subpanelFile2);
+                }
+                $subpanelFile2Lower = $themeDir . 'sub_panel/' . $beanLower . '.svg';
+                if ($subpanelFile2Lower !== $subpanelFile2 && file_exists($subpanelFile2Lower)) {
+                    unlink($subpanelFile2Lower);
+                }
+                $subpanelFile2Ucfirst = $themeDir . 'sub_panel/' . $beanUcfirst . '.svg';
+                if ($subpanelFile2Ucfirst !== $subpanelFile2 && $subpanelFile2Ucfirst !== $subpanelFile2Lower && file_exists($subpanelFile2Ucfirst)) {
+                    unlink($subpanelFile2Ucfirst);
+                }
+            }
+        }
+    }
+    // END STIC-Custom
 
     public function log($str)
     {
