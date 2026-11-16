@@ -277,7 +277,7 @@ class UpgradeHistory extends SugarBean
      * Given an array of id_names and versions, check if the dependencies are installed
      *
      * @param dependencies	an array of id_name, version to check if these dependencies are installed
-     * 						on the system
+     * 						on the system, version being the minimum version required
      *
      * @return not_found	an array of id_names that were not found to be installed on the system
      */
@@ -290,7 +290,8 @@ class UpgradeHistory extends SugarBean
             $matches = $this->getList($query);
             if (0 != (is_countable($matches) ? count($matches) : 0)) {
                 foreach ($matches as $match) {
-                    if ($this->is_right_version_greater(explode('.', $match->version), explode('.', $dependent['version']))) {
+                    [$installedVersion, $requiredVersion] = $this->padVersions($match->version, $dependent['version']);
+                    if (version_compare($installedVersion, $requiredVersion, '>=')) {
                         $found = true;
                         break;
                     }//fi
@@ -302,6 +303,34 @@ class UpgradeHistory extends SugarBean
         }//rof
         return $not_found;
     }
+
+    /**
+     * Pad two purely numeric dotted versions with '.0' so both have the same number of parts
+     * (e.g. 1.2 and 1.2.0 become 1.2.0 and 1.2.0). Other formats are returned unchanged.
+     *
+     * @param string $first
+     * @param string $second
+     * @return string[] the two versions, in the order given
+     */
+    protected function padVersions($first, $second)
+    {
+        $first = (string)$first;
+        $second = (string)$second;
+        $numeric = '/^\d+(\.\d+)*$/';
+        if (!preg_match($numeric, $first) || !preg_match($numeric, $second)) {
+            return array($first, $second);
+        }
+
+        $firstParts = explode('.', $first);
+        $secondParts = explode('.', $second);
+        $length = max(count($firstParts), count($secondParts));
+
+        return array(
+            implode('.', array_pad($firstParts, $length, '0')),
+            implode('.', array_pad($secondParts, $length, '0')),
+        );
+    }
+
     public function retrieve($id = -1, $encode=true, $deleted=true)
     {
         return parent::retrieve($id, $encode, false);  //ignore the deleted filter. the table does not have the deleted column in it.
