@@ -70,7 +70,7 @@
     "tinymce/tinymce": "^8",
     "voku/anti-xss": "^4.0",
     "wikimedia/composer-merge-plugin": "^2.0",
-    "zbateson/mail-mime-parser": "^2.4",
+    "zbateson/mail-mime-parser": "4.0.9 as 2.99.0",
     "zf1s/zend-oauth": "^1.15",
     "zf1s/zend-search-lucene": "^1.15"
   },
