@@ -94,13 +94,7 @@ function Datetimecombo (datetime, field, timeformat, tabindex, showCheckbox, che
     YAHOO.util.Selector.query('input#' + this.fieldname + '_date')[0].value = this.datetime;
 
     //A safety scan to make sure hrs and minutes are formatted correctly
-	if (this.mins > 0 && this.mins < 15) {
-		this.mins = 15;
-	} else if (this.mins > 15 && this.mins < 30) {
-		this.mins = 30;
-	} else if (this.mins > 30 && this.mins < 45) {
-		this.mins = 45;
-	} else if (this.mins > 45) {
+    if (this.mins > 59) {
 		this.hrs += 1;
 		this.mins = 0;
 		if(this.hasMeridiem && this.hrs == 12) {
@@ -185,10 +179,66 @@ Datetimecombo.prototype.html = function(callback) {
 	if(this.allowEmptyHM){
 		text += '\n<option></option>';
 	}
-	text += '\n<option value="00" ' + (this.mins == 0 ? "SELECTED" : "") + '>00</option>';
-	text += '\n<option value="15" ' + (this.mins == 15 ? "SELECTED" : "") + '>15</option>';
-	text += '\n<option value="30" ' + (this.mins == 30 ? "SELECTED" : "") + '>30</option>';
-	text += '\n<option value="45" ' + (this.mins == 45 ? "SELECTED" : "") + '>45</option>';
+        text += '\n<option value="00" ' + (this.mins ===  0 ? "SELECTED" : "") + '>00</option>';
+        text += '\n<option value="01" ' + (this.mins ===  1 ? "SELECTED" : "") + '>01</option>';
+        text += '\n<option value="02" ' + (this.mins ===  2 ? "SELECTED" : "") + '>02</option>';
+        text += '\n<option value="03" ' + (this.mins ===  3 ? "SELECTED" : "") + '>03</option>';
+        text += '\n<option value="04" ' + (this.mins ===  4 ? "SELECTED" : "") + '>04</option>';
+        text += '\n<option value="05" ' + (this.mins ===  5 ? "SELECTED" : "") + '>05</option>';
+        text += '\n<option value="06" ' + (this.mins ===  6 ? "SELECTED" : "") + '>06</option>';
+        text += '\n<option value="07" ' + (this.mins ===  7 ? "SELECTED" : "") + '>07</option>';
+        text += '\n<option value="08" ' + (this.mins ===  8 ? "SELECTED" : "") + '>08</option>';
+        text += '\n<option value="09" ' + (this.mins ===  9 ? "SELECTED" : "") + '>09</option>';
+        text += '\n<option value="10" ' + (this.mins === 10 ? "SELECTED" : "") + '>10</option>';
+        text += '\n<option value="11" ' + (this.mins === 11 ? "SELECTED" : "") + '>11</option>';
+        text += '\n<option value="12" ' + (this.mins === 12 ? "SELECTED" : "") + '>12</option>';
+        text += '\n<option value="13" ' + (this.mins === 13 ? "SELECTED" : "") + '>13</option>';
+        text += '\n<option value="14" ' + (this.mins === 14 ? "SELECTED" : "") + '>14</option>';
+        text += '\n<option value="15" ' + (this.mins === 15 ? "SELECTED" : "") + '>15</option>';
+        text += '\n<option value="16" ' + (this.mins === 16 ? "SELECTED" : "") + '>16</option>';
+        text += '\n<option value="17" ' + (this.mins === 17 ? "SELECTED" : "") + '>17</option>';
+        text += '\n<option value="18" ' + (this.mins === 18 ? "SELECTED" : "") + '>18</option>';
+        text += '\n<option value="19" ' + (this.mins === 19 ? "SELECTED" : "") + '>19</option>';
+        text += '\n<option value="20" ' + (this.mins === 20 ? "SELECTED" : "") + '>20</option>';
+	text += '\n<option value="21" ' + (this.mins === 21 ? "SELECTED" : "") + '>21</option>';
+        text += '\n<option value="22" ' + (this.mins === 22 ? "SELECTED" : "") + '>22</option>';
+        text += '\n<option value="23" ' + (this.mins === 23 ? "SELECTED" : "") + '>23</option>';
+        text += '\n<option value="24" ' + (this.mins === 24 ? "SELECTED" : "") + '>24</option>';
+        text += '\n<option value="25" ' + (this.mins === 25 ? "SELECTED" : "") + '>25</option>';
+        text += '\n<option value="26" ' + (this.mins === 26 ? "SELECTED" : "") + '>26</option>';
+        text += '\n<option value="27" ' + (this.mins === 27 ? "SELECTED" : "") + '>27</option>';
+        text += '\n<option value="28" ' + (this.mins === 28 ? "SELECTED" : "") + '>28</option>';
+        text += '\n<option value="29" ' + (this.mins === 29 ? "SELECTED" : "") + '>29</option>';
+        text += '\n<option value="30" ' + (this.mins === 30 ? "SELECTED" : "") + '>30</option>';
+        text += '\n<option value="31" ' + (this.mins === 31 ? "SELECTED" : "") + '>31</option>';
+        text += '\n<option value="32" ' + (this.mins === 32 ? "SELECTED" : "") + '>32</option>';
+        text += '\n<option value="33" ' + (this.mins === 33 ? "SELECTED" : "") + '>33</option>';
+        text += '\n<option value="34" ' + (this.mins === 34 ? "SELECTED" : "") + '>34</option>';
+        text += '\n<option value="35" ' + (this.mins === 35 ? "SELECTED" : "") + '>35</option>';
+	text += '\n<option value="36" ' + (this.mins === 36 ? "SELECTED" : "") + '>36</option>';
+        text += '\n<option value="37" ' + (this.mins === 37 ? "SELECTED" : "") + '>37</option>';
+        text += '\n<option value="38" ' + (this.mins === 38 ? "SELECTED" : "") + '>38</option>';
+        text += '\n<option value="39" ' + (this.mins === 39 ? "SELECTED" : "") + '>39</option>';
+        text += '\n<option value="40" ' + (this.mins === 40 ? "SELECTED" : "") + '>40</option>';
+        text += '\n<option value="41" ' + (this.mins === 41 ? "SELECTED" : "") + '>41</option>';
+        text += '\n<option value="42" ' + (this.mins === 42 ? "SELECTED" : "") + '>42</option>';
+        text += '\n<option value="43" ' + (this.mins === 43 ? "SELECTED" : "") + '>43</option>';
+        text += '\n<option value="44" ' + (this.mins === 44 ? "SELECTED" : "") + '>44</option>';
+        text += '\n<option value="45" ' + (this.mins === 45 ? "SELECTED" : "") + '>45</option>';
+        text += '\n<option value="46" ' + (this.mins === 46 ? "SELECTED" : "") + '>46</option>';
+        text += '\n<option value="47" ' + (this.mins === 47 ? "SELECTED" : "") + '>47</option>';
+        text += '\n<option value="48" ' + (this.mins === 48 ? "SELECTED" : "") + '>48</option>';
+        text += '\n<option value="49" ' + (this.mins === 49 ? "SELECTED" : "") + '>49</option>';
+        text += '\n<option value="50" ' + (this.mins === 50 ? "SELECTED" : "") + '>50</option>';
+        text += '\n<option value="51" ' + (this.mins === 51 ? "SELECTED" : "") + '>51</option>';
+        text += '\n<option value="52" ' + (this.mins === 52 ? "SELECTED" : "") + '>52</option>';
+        text += '\n<option value="53" ' + (this.mins === 53 ? "SELECTED" : "") + '>53</option>';
+        text += '\n<option value="54" ' + (this.mins === 54 ? "SELECTED" : "") + '>54</option>';
+        text += '\n<option value="55" ' + (this.mins === 55 ? "SELECTED" : "") + '>55</option>';
+	text += '\n<option value="56" ' + (this.mins === 56 ? "SELECTED" : "") + '>56</option>';
+        text += '\n<option value="57" ' + (this.mins === 57 ? "SELECTED" : "") + '>57</option>';
+        text += '\n<option value="58" ' + (this.mins === 58 ? "SELECTED" : "") + '>58</option>';
+        text += '\n<option value="59" ' + (this.mins === 59 ? "SELECTED" : "") + '>59</option>';
 	text += '\n</select>';
 	
 	if(this.hasMeridiem) {
