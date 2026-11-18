@@ -1349,18 +1349,22 @@
 		</div>
 		<div class="template-panel-container panel-toolbar ">
 			<div class="template-container-full">
-				<div class="button-group">
-					<input type="hidden" name="wiz_home_next_step" value="1" />
+				{if $CAMPAIGN_STATUS != 'Inactive'}	
+					<div class="button-group">
+						<input type="hidden" name="wiz_home_next_step" value="1" />
 
-					<a class="btn {if $PL_DISABLED}btn-default{else}btn-primary{/if} btn-sm" style="border-radius: 0px;" {if $PL_DISABLED} {else}href="javascript:;" onclick="onScheduleClick(this, '{$CAMPAIGN_ID}', $('#marketing_select').val());"{/if}>
-						<span class="suitepicon suitepicon-action-schedule"></span> {$MOD.LBL_SEND_EMAIL}
-					</a>
+						<a class="btn {if $PL_DISABLED}btn-default{else}btn-primary{/if} btn-sm" style="border-radius: 0px;" {if $PL_DISABLED} {else}href="javascript:;" onclick="onScheduleClick(this, '{$CAMPAIGN_ID}', $('#marketing_select').val());"{/if}>
+							<span class="suitepicon suitepicon-action-schedule"></span> {$MOD.LBL_SEND_EMAIL}
+						</a>
 
-					<a class="btn {if $PL_DISABLED_TEST}btn-default{else}btn-primary{/if} btn-sm" style="border-radius: 0px;" {if $PL_DISABLED_TEST} {else}href="javascript:;"  onclick="onSendAsTestClick(this, '{$CAMPAIGN_ID}', $('#marketing_select').val());"{/if}>
-					<span class="suitepicon suitepicon-module-emails"></span> {$MOD.LBL_SEND_AS_TEST}
-					</a>
-				</div>
-				<div class="button-group-separator"></div>
+						<a class="btn {if $PL_DISABLED_TEST}btn-default{else}btn-primary{/if} btn-sm" style="border-radius: 0px;" {if $PL_DISABLED_TEST} {else}href="javascript:;"  onclick="onSendAsTestClick(this, '{$CAMPAIGN_ID}', $('#marketing_select').val());"{/if}>
+						<span class="suitepicon suitepicon-module-emails"></span> {$MOD.LBL_SEND_AS_TEST}
+						</a>
+					</div>
+					<div class="button-group-separator"></div>
+				{else}
+					<div  class="button-group"> {$MOD.LBL_CAMPAIGN_INACTIVE_WIZARD} </div>
+				{/if}					
 				<div class="button-group">
 					<a class="btn btn-primary btn-sm" href="index.php?module=Campaigns&action=DetailView&record={$CAMPAIGN_ID}" style="border-radius: 0px;">{$MOD.LBL_TODETAIL_BUTTON_TITLE}</a>
 				</div>
