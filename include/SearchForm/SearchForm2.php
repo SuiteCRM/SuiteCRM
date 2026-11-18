@@ -1030,7 +1030,7 @@ class SearchForm
                                 if (!empty($field_value)) {
                                     $field_value .= ',';
                                 }
-                                if ($operator == 'subquery') {
+                                if ($operator == 'subquery' && $parms['type'] !== 'enum') {
                                     $field_value .= $val;
                                 } else {
                                     $field_value .= $db->quoteType($type, $val);
@@ -1297,7 +1297,13 @@ class SearchForm
                                     if (!empty($parms['subquery'])) {
                                         $selectCol = $this->getSelectCol($parms['subquery']);
                                     }
-                                    $where .= "{$db_field} $in (select $selectCol from ({$parms['subquery']} " . $this->seed->db->quoted($field_value . '%') . ") {$field}_derived)";
+                                    if ($operator == 'subquery' && $parms['type'] !== 'enum') {
+                                        $where .= "{$db_field} $in (select $selectCol from ({$parms['subquery']} " . $this->seed->db->quoted($field_value . '%') . ") {$field}_derived)";
+                                    }else{
+                                        $parms['subquery'] = str_replace('LIKE', 'IN', $parms['subquery']);
+                                        $where .= "{$db_field} $in (select $selectCol from ({$parms['subquery']} " . '(' . $field_value . ')' . ") {$field}_derived)";
+
+                                    }
                                 }
 
                                 break;
