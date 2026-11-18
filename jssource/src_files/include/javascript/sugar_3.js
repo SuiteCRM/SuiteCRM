@@ -1105,7 +1105,7 @@ function validate_form(formname, startsWith) {
                   var result = validate[formname][i][callbackIndex](formname, validate[formname][i][nameIndex]);
                   if (result == false) {
                     isError = true;
-                    add_error_style(formname, validate[formname][i][nameIndex], invalidTxt + " " + validate[formname][i][msgIndex]);
+                    add_error_style(formname, validate[formname][i][nameIndex], validate[formname][i][msgIndex]);
                   }
                 }
                 break;
