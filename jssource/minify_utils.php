@@ -166,6 +166,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
 
                     //make sure we have handles to both source and target file
                     if ($trgt_handle) {
+                        // Acquire exclusive lock on the target file.
+                        flock($trgt_handle, LOCK_EX);
+
                         if ($already_minified || isset($excludedFiles[dirname((string) $loc)])) {
                             $buffer = file_get_contents($loc);
                         } else {
@@ -179,6 +182,8 @@ if (!defined('sugarEntry') || !sugarEntry) {
                             //log error, file did not get appended
                             echo "Error while concatenating file $loc to target file $trgt \n";
                         }
+                        // Release the lock on the target file.
+                        flock($trgt_handle, LOCK_UN);
                         //close file opened.
                         fclose($trgt_handle);
                     }
