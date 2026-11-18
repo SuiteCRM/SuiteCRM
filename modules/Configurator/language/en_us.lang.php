@@ -81,6 +81,7 @@ $mod_strings = array(
     'LBL_MAILMERGE' => 'Mail Merge',
     'LBL_MIN_AUTO_REFRESH_INTERVAL' => 'Minimum Dashlet Auto-Refresh Interval',
     'LBL_MIN_AUTO_REFRESH_INTERVAL_HELP' => 'This is the minimum value one can choose to have dashlets auto-refresh. Setting to \'Never\' disables auto-refreshing of dashlets entirely.',
+    'LBL_DISPLAY_MODULE_TITLE' => 'Display module name and icon in title',
     'LBL_MODULE_FAVICON' => 'Display module icon as favicon',
     'LBL_MODULE_FAVICON_HELP' => 'If you are in a module with an icon, use the module\'s icon as the favicon, instead of the theme\'s favicon, in the browser tab.',
     'LBL_MODULE_NAME' => 'System Settings',
