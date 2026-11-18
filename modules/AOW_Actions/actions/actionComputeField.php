@@ -610,7 +610,7 @@ class actionComputeField extends actionBase
         $oneRelations = array();
 
         foreach ($linkedFields as $key => $value) {
-            if (!isset($value['link_type']) || $value['link_type'] != "one") {
+            if ((!isset($value['link_type']) || $value['link_type'] != "one") && $key != 'email_addresses') {
                 continue;
             }
 
