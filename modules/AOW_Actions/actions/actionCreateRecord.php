@@ -237,14 +237,22 @@ class actionCreateRecord extends actionBase
                             case 'int':
                                 $value = format_number($bean->$fieldName);
                                 break;
-                case 'relate':
-                    if (isset($data['id_name']) && $record_vardefs[$field]['type'] === 'relate') {
-                        $idName = $data['id_name'];
-                        $value = $bean->$idName;
-                    } else {
-                        $value = $bean->$fieldName;
-                    }
-                break;
+                            case 'relate':
+                                if (isset($data['id_name']) && $record_vardefs[$field]['type'] === 'relate') {
+                                    $idName = $data['id_name'];
+                                    $value = $bean->$idName;
+                                } else {
+                                    $value = $bean->$fieldName;
+                                }
+                                break;
+                            case 'enum':
+                                if ($record->field_defs[$field]["type"] === 'enum') {
+                                    //when setting enum field to another use key rather than label value
+                                    $value = $bean->$fieldName;
+                                } else {
+                                    $value = $app_list_strings[$data["options"]][$bean->$fieldName];
+                                }
+                                break;
                             default:
                                 $value = $bean->$fieldName;
                                 break;
@@ -267,7 +275,7 @@ class actionCreateRecord extends actionBase
                                 $type = $bean->field_defs[$dateToUse]['type'] ?? 'datetime';
 
                                 if ($sign !== 'plus') {
-                                    $amount = 0-$amount;
+                                    $amount = 0 - $amount;
                                 }
                                 if ($dateToUse === 'now') {
                                     $value = $businessHours->addBusinessHours($amount);
@@ -316,7 +324,7 @@ class actionCreateRecord extends actionBase
                                 }
 
                                 if ($params['value'][$key][1] !== 'now') {
-                                    $value = date($dformat, strtotime($date . ' '.$app_list_strings['aow_date_operator'][$params['value'][$key][1]].$params['value'][$key][2].' '.$params['value'][$key][3]));
+                                    $value = date($dformat, strtotime($date . ' ' . $app_list_strings['aow_date_operator'][$params['value'][$key][1]] . $params['value'][$key][2] . ' ' . $params['value'][$key][3]));
                                 } else {
                                     $value = date($dformat, strtotime($date));
                                 }
@@ -420,7 +428,7 @@ class actionCreateRecord extends actionBase
             $check_notify = $record->assigned_user_id != $assignedUserId;
         }
 
-        $record->process_save_dates =false;
+        $record->process_save_dates = false;
         $record->new_with_id = false;
 
         /* Since we only work on non-deleted records this means the delete field
