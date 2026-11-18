@@ -469,14 +469,15 @@ class StudioModule
 
             //  bug47452 - adding a unique number to the $nodes[ key ] so if you have 2+ panels
             //  with the same subname they will not cancel each other out
-            $nodes [$subname . $ct++] = array(
+            $uniqueNodeId = $subname . $ct++;
+            $nodes [$uniqueNodeId] = array(
                 'name' => $name,
                 'label' => $subname,
                 'action' => $action,
-                'imageTitle' => $subname,
-                'imageName' => 'icon_' . ucfirst($name) . '_32',
-                'altImageName' => 'Subpanels',
-                'size' => '48'
+                'size' => '48',
+                'linkId' => 'studiolink_' . $uniqueNodeId,
+                'icon' => IconRepository::ICON_SUBPANELS,
+                'isSubpanelButton' => true,
             );
         }
 
