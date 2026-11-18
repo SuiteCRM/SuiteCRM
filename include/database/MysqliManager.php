@@ -442,6 +442,28 @@ class MysqliManager extends MysqlManager
         return function_exists("mysqli_connect") && empty($GLOBALS['sugar_config']['mysqli_disabled']);
     }
 
+
+    /**
+     * begin database transaction
+     */
+    public function beginTransaction() {
+        mysqli_begin_transaction($this->database);
+    }
+
+    /**
+     * Commit a transaction
+     */
+    public function commit() {
+        mysqli_commit($this->database);
+    }
+
+    /**
+     * rollback database transaction
+     */
+    public function rollback() {
+        mysqli_rollback($this->database);
+    }
+
     public function compareVarDefs($fielddef1, $fielddef2, $ignoreName = false)
     {
         /**
