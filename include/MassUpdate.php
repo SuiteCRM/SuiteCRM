@@ -42,7 +42,7 @@ if (!defined('sugarEntry') || !sugarEntry) {
     die('Not A Valid Entry Point');
 }
 
-require_once('include/EditView/EditView2.php');
+require_once 'include/EditView/EditView2.php';
 
 /**
  * MassUpdate class for updating multiple records at once
@@ -77,7 +77,7 @@ class MassUpdate
      */
     public function getDisplayMassUpdateForm($bool, $multi_select_popup = false)
     {
-        require_once('include/formbase.php');
+        require_once 'include/formbase.php';
 
         if (!$multi_select_popup) {
             $form = '<form action="index.php" method="post" name="displayMassUpdate" id="displayMassUpdate">' . "\n";
@@ -177,8 +177,8 @@ eoq;
      */
     public function handleMassUpdate()
     {
-        require_once('include/formbase.php');
-        global $current_user, $db, $disable_date_format, $timedate, $app_list_strings;
+        require_once 'include/formbase.php';
+        global $current_user, $db, $timedate, $app_list_strings;
 
         foreach ($_POST as $post => $value) {
             if (is_array($value)) {
@@ -235,13 +235,6 @@ eoq;
                 }
             }
         }
-
-        //We need to disable_date_format so that date values for the beans remain in database format
-        //notice we make this call after the above section since the calls to TimeDate class there could wind up
-        //making it's way to the UserPreferences objects in which case we want to enable the global date formatting
-        //to correctly retrieve the user's date format preferences
-        $old_value = $disable_date_format;
-        $disable_date_format = true;
 
         if (!empty($_REQUEST['uid'])) {
             $_POST['mass'] = explode(',', $_REQUEST['uid']);
@@ -435,7 +428,6 @@ eoq;
                 }
             }
         }
-        $disable_date_format = $old_value;
     }
 
     /**
