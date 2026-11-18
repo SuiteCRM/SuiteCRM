@@ -164,7 +164,19 @@ class actionComputeField extends actionBase
                     }
                 }
             } else {
-                $resolvedParameters[$i] = ($bean->{$parameters[$i]} == null) ? "" : $bean->{$parameters[$i]};
+                $type = '';
+                if (isset($bean->field_name_map[$parameters[$i]]['type'])) {
+                    $type = $bean->field_name_map[$parameters[$i]]['type'];
+                }
+                if (isset($bean->field_name_map[$parameters[$i]]['dbType'])) {
+                    $type .= $bean->field_name_map[$parameters[$i]]['dbType'];
+                }                
+                if ($type == 'datetimecombodatetime') {
+                    global $timedate;
+                    $resolvedParameters[$i] = $timedate->to_display_date_time($bean->{$parameters[$i]});
+                } else {
+                    $resolvedParameters[$i] = ($bean->{$parameters[$i]} == null) ? "" : $bean->{$parameters[$i]};
+                }
             }
         }
 
