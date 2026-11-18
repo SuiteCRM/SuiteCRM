@@ -1,6 +1,7 @@
 <?php
 namespace Api\V8\OAuth2\Repository;
 
+use DateTimeZone;
 use Api\V8\BeanDecorator\BeanManager;
 use Api\V8\OAuth2\Entity\RefreshTokenEntity;
 use League\OAuth2\Server\Entities\RefreshTokenEntityInterface;
@@ -48,7 +49,7 @@ class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
 
         $token->refresh_token = $refreshTokenEntity->getIdentifier();
-        $token->refresh_token_expires = $refreshTokenEntity->getExpiryDateTime()->format('Y-m-d H:i:s');
+        $token->refresh_token_expires = $refreshTokenEntity->getExpiryDateTime()->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d H:i:s');
         $token->save();
     }
 
