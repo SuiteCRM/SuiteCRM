@@ -1046,7 +1046,7 @@ class WizardStep2 {
             newDataBlockText: '',
             get isNewDataBlock() { return this.relatedDataBlockId == -1; },
 
-            get isValid() { return this.relatedDataBlockId != null && (!this.isNewDataBlock || this.newDataBlockText != ''); },
+            get isValid() { return this.selectedRelName != '' && this.relatedDataBlockId != null && (!this.isNewDataBlock || this.newDataBlockText != ''); },
 
             
             get title() { return utils.translate('LBL_RELATIONSHIP_NEW'); },
@@ -1060,7 +1060,10 @@ class WizardStep2 {
               this.dataBlock = dataBlock;
               this.relationships.resetDataBlockRelationships(); // Force reload relationships
               this.availableRels = this.relationships.unusedDatablockRelationships(dataBlock.id);
-              this.selectedRelName = this.availableRels[0]?.name ?? '';
+              this.selectedRelName = '';
+              this.availableDataBlocks = [];
+              this.relatedDataBlockId = null;
+              this.newDataBlockText = '';
               this.isOpen = true;
             },
 
@@ -1082,29 +1085,38 @@ class WizardStep2 {
             init() {
               let selectedRelName_old = this.selectedRelName;
               let relatedDataBlockId_old = this.relatedDataBlockId;
+              const relCreatorSelf = this;
 
               // In Stores, we do change observation with effect (low level, not bound to DOM element)
-              Alpine.effect(() => {
+              // The effect is created outside the current component scope (deferred via setTimeout) so it
+              // never gets disposed along with the component that happened to register the store.
+              window.setTimeout(() => { Alpine.effect(() => {
                 // Changes in selectedRelName
-                if (this.selectedRelName != selectedRelName_old && this.dataBlock) {
+                if (relCreatorSelf.selectedRelName != selectedRelName_old && relCreatorSelf.dataBlock) {
                   relatedDataBlockId_old = null; // To force changes in relatedDataBlockId
-                  this.availableDataBlocks = this.relationships.getAvailableDataBlocksForRelationship(this.dataBlock.id, this.selectedRelName);
-                  this.relatedDataBlockId = this.availableDataBlocks[0]?.id ?? -1;
+                  relCreatorSelf.availableDataBlocks = relCreatorSelf.relationships.getAvailableDataBlocksForRelationship(relCreatorSelf.dataBlock.id, relCreatorSelf.selectedRelName);
+                  relCreatorSelf.relatedDataBlockId = relCreatorSelf.availableDataBlocks[0]?.id ?? null; // null: no relationship selected yet
                 }
 
                 // Changes in relatedDataBlockId
-                if (this.relatedDataBlockId != relatedDataBlockId_old) {
-                  if (this.relatedDataBlockId == -1 && this.dataBlock) {
-                    this.newDataBlockText = this.relationships.suggestNewDestDataBlockText(this.dataBlock.id, this.selectedRelName);
+                if (relCreatorSelf.relatedDataBlockId != relatedDataBlockId_old) {
+                  if (relCreatorSelf.relatedDataBlockId == -1 && relCreatorSelf.dataBlock) {
+                    relCreatorSelf.newDataBlockText = relCreatorSelf.relationships.suggestNewDestDataBlockText(relCreatorSelf.dataBlock.id, relCreatorSelf.selectedRelName);
                   } else {
-                    this.newDataBlockText = '';
+                    relCreatorSelf.newDataBlockText = '';
                   }
                 }
 
                 // Update watched properties
-                selectedRelName_old = this.selectedRelName;
-                relatedDataBlockId_old = this.relatedDataBlockId;
-              });
+                selectedRelName_old = relCreatorSelf.selectedRelName;
+                relatedDataBlockId_old = relCreatorSelf.relatedDataBlockId;
+
+                // Belt and braces: keep the Save button in sync from the store itself.
+                // The x-bind:disabled directive effect has been observed to lose its reactivity
+                // in long-lived sessions, leaving the button stuck even with a valid state.
+                const saveBtn = document.querySelector('#dataBlockRelModalForm')?.closest('.custom-modal-content')?.querySelector('.custom-modal-footer button.btn-primary');
+                if (saveBtn) saveBtn.disabled = !relCreatorSelf.isValid;
+              }); }, 0);
             }
           });
         };
