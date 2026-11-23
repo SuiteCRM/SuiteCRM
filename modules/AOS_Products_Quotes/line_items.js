@@ -809,14 +809,14 @@ function calculateTotal(key)
       head[row[i].parentNode.id] = 0;
     }
 
-    if (deleted != 1) {
-      tot_amt += product_total_price;
-    }
-
-    if (dis_amt !== 0 && deleted != 1) {
-      dis_tot += dis_amt * qty;
-    }
-    if (product_vat_amt !== 0 && deleted != 1) {
+    if (deleted != 1 && product_total_price !== '') {
+      var line_item_vat = Number(product_vat_amt) || 0;
+      var line_item_net = total_tax ? product_total_price - line_item_vat : product_total_price;
+      var line_item_gross = unformat2Number(
+        format2Number((list !== null ? list : unit) * qty)
+      );
+      tot_amt += line_item_gross;
+      dis_tot += line_item_net - line_item_gross;
       tax += product_vat_amt;
     }
   }
