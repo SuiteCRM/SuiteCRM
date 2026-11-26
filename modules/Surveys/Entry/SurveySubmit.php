@@ -127,7 +127,6 @@ function processSurvey(Surveys $survey, $trackerId, $contactId, $request)
                 break;
             case "Textbox":
                 if ($userResponse) {
-                    $response->happiness = 0;
                     $response->happiness_text .= $question->name . " - " . $userResponse . "<br>";
                 }
                 // no break
