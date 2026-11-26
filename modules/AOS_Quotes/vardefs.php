@@ -79,6 +79,7 @@ $dictionary['AOS_Quotes'] = array(
                 'required' => false,
                 'source' => 'non-db',
                 'name' => 'billing_account',
+                'rname' => 'name',
                 'vname' => 'LBL_BILLING_ACCOUNT',
                 'type' => 'relate',
                 'massupdate' => 0,
