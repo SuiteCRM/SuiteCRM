@@ -82,7 +82,7 @@ class Administration extends SugarBean
         $smtp_error = false;
         $this->retrieveSettings();
 
-        if (!$sugar_config['email_warning_notifications']) {
+        if (empty($sugar_config['email_warning_notifications'])) {
             $displayWarning = false;
         }
 
