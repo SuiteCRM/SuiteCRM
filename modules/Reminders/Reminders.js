@@ -169,6 +169,7 @@ var Reminders = {
 
     addReminder: function(e, popup, email, timer_popup, timer_email, reminderId, invitees) {
         if(!reminderId) reminderId = '';
+        let reminderIdX = Reminders.getRemindersData().length;
         Reminders.setReminderPopupChkbox($('#reminder_template'), popup);
         Reminders.setReminderEmailChkbox($('#reminder_template'), email);
         Reminders.setPopupTimerSelectValue($('#reminder_template'), timer_popup);
@@ -179,7 +180,7 @@ var Reminders = {
         else {
             Reminders.addInvitees(e, invitees);
         }
-        $('#reminder_view').append('<li class="reminder_item" data-reminder-id="' + reminderId + '">' + $('#reminder_template').html() + '</li>');
+        $('#reminder_view').append('<li class="reminder_item" data-reminder-id="' + reminderId + '" data-reminder-idx="' + reminderIdX + '">' + $('#reminder_template').html() + '</li>');
     },
 
     onAddClick: function(e){
@@ -197,10 +198,11 @@ var Reminders = {
     onInviteeClick: function(e) {
         var parentReminderItem = $(e).closest('.reminder_item');
         var parentReminderId = parentReminderItem.attr('data-reminder-id');
+        var parentReminderIdX = parentReminderItem.attr('data-reminder-idx');
         var reminders = Reminders.getRemindersData();
         var _e = e;
         $.each(reminders, function(i, reminder) {
-            if(reminder.id == parentReminderId && reminder.invitees.length == 1) {
+            if((reminder.id != '' && reminder.id == parentReminderId || i == parentReminderIdX) && reminder.invitees.length == 1) {
                 var confirmDeletePopup = new YAHOO.widget.SimpleDialog("Confirm ", {
                     //width: "400px",
                     draggable: false,
