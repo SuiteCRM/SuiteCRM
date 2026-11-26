@@ -111,7 +111,7 @@ class OutboundEmail
      */
     public function getUsersMailerForSystemOverride($user_id)
     {
-        $query = "SELECT id FROM outbound_email WHERE user_id = '{$user_id}' AND type = 'system-override' ORDER BY name";
+        $query = "SELECT id FROM outbound_email WHERE user_id = '{$user_id}' AND type = 'system-override' AND deleted = 0 ORDER BY name";
         $rs = $this->db->query($query);
         $row = $this->db->fetchByAssoc($rs);
         if (!empty($row['id'])) {
@@ -178,7 +178,7 @@ class OutboundEmail
     {
         global $app_strings;
 
-        $q = "SELECT * FROM outbound_email WHERE user_id = '{$user->id}' AND type = 'user' ORDER BY name";
+        $q = "SELECT * FROM outbound_email WHERE user_id = '{$user->id}' AND type = 'user' AND deleted = 0 ORDER BY name";
         $r = $this->db->query($q);
 
         $ret = array();
@@ -281,7 +281,7 @@ class OutboundEmail
             }
         }
 
-        $q = "SELECT id FROM outbound_email WHERE user_id = '{$user->id}' {$mailer}";
+        $q = "SELECT id FROM outbound_email WHERE user_id = '{$user->id}' AND deleted = 0 {$mailer}";
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r);
 
@@ -353,7 +353,7 @@ class OutboundEmail
             $mailer = "type = 'system'";
         } // if
 
-        $q = "SELECT id FROM outbound_email WHERE {$mailer}";
+        $q = "SELECT id FROM outbound_email WHERE {$mailer} AND deleted = 0";
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r);
 
@@ -374,7 +374,7 @@ class OutboundEmail
         $allowAccess = false;
 
         // first check that a system default exists
-        $q = "SELECT id FROM outbound_email WHERE type = 'system'";
+        $q = "SELECT id FROM outbound_email WHERE type = 'system' AND deleted = 0";
         $r = $this->db->query($q);
         $a = $this->db->fetchByAssoc($r);
         if (!empty($a)) {
@@ -668,7 +668,7 @@ class OutboundEmail
                 return $this->getSystemMailerSettings();
             }
         }
-        $res = $this->db->query("SELECT id FROM outbound_email WHERE user_id = '{$user->id}' AND name='" . $this->db->quote($name) . "'");
+        $res = $this->db->query("SELECT id FROM outbound_email WHERE user_id = '{$user->id}' AND name='" . $this->db->quote($name) . "' AND deleted = 0");
         $a = $this->db->fetchByAssoc($res);
         if (!isset($a['id'])) {
             return false;
