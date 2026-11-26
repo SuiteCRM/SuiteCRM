@@ -69,6 +69,15 @@ class SuiteEditorSettingsForTinyMCE extends SuiteEditorSettingsForDirectHTML
         require_once 'include/SugarTinyMCE.php';
         $tiny = new SugarTinyMCE();
         $config = $tiny->getConfigArray();
-        $this->tinyMCESetup = json_encode($config);
+        $config['setup'] = "%%TINYMCE_SETUP_CALLBACK%%";
+        $jsonConfig = json_encode($config, JSON_PRETTY_PRINT);
+        $setupJs = "function(editor) { ";
+        $setupJs .= "  editor.on('focus', function(e){ onClickTemplateBody(); });";
+        if ($_REQUEST["module"] === "Campaigns") {
+            $setupJs .= "  editor.on('init', function(e){ loadtemplate(); });";
+        }
+        $setupJs .= "}";
+        $jsonConfig = str_replace('"%%TINYMCE_SETUP_CALLBACK%%"', $setupJs, $jsonConfig);
+        $this->tinyMCESetup = $jsonConfig;
     }
 }
