@@ -220,6 +220,7 @@ class ViewLayoutView extends SugarView
 
         $smarty->assign('disable_layout', $disableLayout) ;
         $smarty->assign('required_fields', $requiredFields) ;
+        $smarty->assign('composite_fields', json_encode($parser->getCompositeFields())) ;
         $smarty->assign('layout', $parser->getLayout()) ;
         $smarty->assign('field_defs', $parser->getFieldDefs()) ;
         $smarty->assign('view_module', $this->editModule) ;
