@@ -234,11 +234,6 @@ class SearchForm
                 //if this is advanced tab, use form with saved search sub form built in
                 if ($viewName == 'advanced') {
                     $this->tpl = 'SearchFormGenericAdvanced.tpl';
-                    if ($this->action == 'ListView') {
-                        $this->th->ss->assign('DISPLAY_SEARCH_HELP', true);
-                    }
-                    $this->th->ss->assign('DISPLAY_SAVED_SEARCH', $this->displaySavedSearch);
-                    $this->th->ss->assign('SAVED_SEARCH', $this->displaySavedSearch($orderBySelectOnly));
                     //this determines whether the saved search subform should be rendered open or not
                     if (isset($_REQUEST['showSSDIV']) && $_REQUEST['showSSDIV'] == 'yes') {
                         $this->th->ss->assign('SHOWSSDIV', 'yes');
@@ -248,6 +243,11 @@ class SearchForm
                         $this->th->ss->assign('DISPLAYSS', 'display:none');
                     }
                 }
+                if ($this->action == 'ListView') {
+                    $this->th->ss->assign('DISPLAY_SEARCH_HELP', true);
+                }
+                $this->th->ss->assign('DISPLAY_SAVED_SEARCH', $this->displaySavedSearch);
+                $this->th->ss->assign('SAVED_SEARCH', $this->displaySavedSearch($orderBySelectOnly));
             } else {
                 $this->tabs[$tabkey]['displayDiv'] = 'display:none';
             }
