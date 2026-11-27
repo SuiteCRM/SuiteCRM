@@ -444,7 +444,9 @@
         if (self.prependSignature === true) {
           tinymce.activeEditor.setContent('<p></p><p></p>' + signatureElement[0].outerHTML + body, {format: 'html'});
         } else {
-          tinymce.activeEditor.setContent(body + signatureElement[0].outerHTML, {format: 'html'});
+          setTimeout(function () {
+            tinymce.activeEditor.setContent(body + signatureElement[0].outerHTML, {format: 'html'});
+          }, 300);
         }
       }
     };
