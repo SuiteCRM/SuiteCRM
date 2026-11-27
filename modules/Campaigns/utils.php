@@ -1,14 +1,12 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
+
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2024 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,6 +46,10 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * All Rights Reserved.
  * Contributor(s): ______________________________________..
  ********************************************************************************/
+
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
 /*
  *returns a list of objects a message can be scoped by, the list contacts the current campaign
@@ -1201,4 +1203,58 @@ function isValidWebToPersonModule(string $module): bool
     $validModules = getValidWebToPersonModules();
 
     return in_array($module, $validModules, true);
+}
+
+/**
+ * Helper function to check request data is present;
+ * @param string $requestWizardType
+ * @return bool
+ */
+function checkRequestWizardType(string $requestWizardType): bool
+{
+    if (isset($requestWizardType) && !empty($requestWizardType)) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ *  Assigns a value of campaign type wheather recieved from $_REQUEST object
+ *  (values from WizardHomeStart.tpl) or based on the bean properties;
+ * @param SugarBean $focus
+ * @param bool $requestWizardType
+ * @return string
+ */
+function assignCampaignType(SugarBean $focus, string $wizardType, bool $requestWizardType): string
+{
+    $campaignType = '';
+
+    $campaignTypes = [
+        'NewsLetter' => 'newsletter',
+        'Email' => 'email',
+        'General' => 'general',
+        'Survey' => 'survey',
+    ];
+
+    if ($requestWizardType) {
+        switch ($wizardType) {
+            case '1':
+                $campaignType = $campaignTypes['NewsLetter'];
+                break;
+            case '2':
+                $campaignType = $campaignTypes['Email'];
+                break;
+            case '4':
+                $campaignType = $campaignTypes['Survey'];
+                break;
+            case '3':
+            default:
+                $campaignType = $campaignTypes['General'];
+        }
+    } else {
+        $campaignType = $campaignTypes[$focus->campaign_type] ?? $campaignTypes['General'];
+    }
+
+    return $campaignType;
 }
