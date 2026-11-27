@@ -95,7 +95,7 @@ array(
       'direction' =>
       array(
         'type' => 'enum',
-        'label' => 'LBL_DIRECTION',
+        'label' => 'LBL_CALL_DIRECTION',
         'width' => '10%',
         'default' => true,
         'name' => 'direction',
