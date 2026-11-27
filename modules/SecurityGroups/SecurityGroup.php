@@ -191,7 +191,7 @@ class SecurityGroup extends SecurityGroup_sugar
         global $sugar_config;
         self::assign_default_groups($focus, $isUpdate); //this must be first because it does not check for dups
 
-        self::inherit_assigned($focus);
+        self::inherit_assigned($focus,$isUpdate);
         self::inherit_parent($focus, $isUpdate);
 
         //don't do creator inheritance if popup selector method is chosen and a user is making the request...
@@ -298,10 +298,10 @@ class SecurityGroup extends SecurityGroup_sugar
     /**
      * @param SugarBean $focus
      */
-    public static function inherit_assigned($focus)
+    public static function inherit_assigned($focus, $isUpdate)
     {
         global $sugar_config;
-        if (isset($sugar_config['securitysuite_inherit_assigned']) && $sugar_config['securitysuite_inherit_assigned'] == true) {
+        if (isset($sugar_config['securitysuite_inherit_assigned']) && $sugar_config['securitysuite_inherit_assigned'] == true && $isUpdate == false) {
             if (!empty($focus->assigned_user_id)) {
                 $assigned_user_id = $focus->db->quote($focus->assigned_user_id);
                 //inherit only for those that support Security Groups
