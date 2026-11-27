@@ -77,7 +77,7 @@ class ViewShowDuplicates extends SugarView
         $leadForm = new LeadFormBase();
         $GLOBALS['check_notify'] = false;
 
-        $query = 'SELECT id, first_name, last_name, title FROM leads WHERE deleted=0 ';
+        $query = 'SELECT id, first_name, last_name, title, account_name, primary_address_city FROM leads WHERE deleted=0 ';
 
         $duplicates = $_POST['duplicate'];
         $count = is_countable($duplicates) ? count($duplicates) : 0;
