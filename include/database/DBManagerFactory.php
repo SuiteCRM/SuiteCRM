@@ -83,6 +83,9 @@ class DBManagerFactory
                         $my_db_manager = "MysqlManager";
                     }
                     break;
+                case "oracle":
+                    $my_db_manager = "OracleManager";
+                    break;
                 case "mssql":
                       if (function_exists('sqlsrv_connect')
                                 && (empty($config['db_mssql_force_driver']) || $config['db_mssql_force_driver'] == 'sqlsrv')) {
