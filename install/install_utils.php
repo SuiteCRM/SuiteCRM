@@ -1032,6 +1032,9 @@ EOQ;
     
     RewriteRule ^ep/(.*?)$ index.php?entryPoint=$1 [L,QSA]
 
+    #Fix #10345 Microsoft Azure OAuth Redirect URL cannot have query string.
+    RewriteRule "^entryPoint/setExternalOAuthToken" "index.php?entryPoint=setExternalOAuthToken" [PT,L]
+
     # --------- DEPRECATED --------
     RewriteRule ^api/(.*)$ - [env=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     RewriteRule ^api/(.*?)$ lib/API/public/index.php/$1 [L]
