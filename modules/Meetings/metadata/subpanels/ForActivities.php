@@ -83,6 +83,10 @@ $subpanel_layout = [
             'usage' => 'query_only',
             'force_exists' => true
         ],
+        'date_start' => [
+            'vname' => 'LBL_LIST_DATE',
+            'width' => '10%',
+        ],
         'date_end' => [
             'vname' => 'LBL_LIST_DUE_DATE',
             'width' => '10%',
