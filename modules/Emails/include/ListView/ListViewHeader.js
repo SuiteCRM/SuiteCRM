@@ -124,7 +124,7 @@ $(document).ready(function () {
   $.ajax({
     type: "GET",
     cache: false,
-    url: 'index.php?module=Emails&action=GetFolders'
+    url: 'index.php?module=Emails&action=GetFolders&to_pdf=1'
   }).done(function (data) {
     let query = JSON.parse($('[name=current_query_by_page]').val());
     let jQueryBtnEmailsCurrentFolder = $('.btn-emails-current-folder');

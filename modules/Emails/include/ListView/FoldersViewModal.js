@@ -63,7 +63,7 @@
       $.ajax({
         type: "GET",
         cache: false,
-        url: 'index.php?module=Emails&action=GetFolders'
+        url: 'index.php?module=Emails&action=GetFolders&to_pdf=1'
       }).done(function (data) {
         var response = JSON.parse(data);
 
