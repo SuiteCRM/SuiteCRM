@@ -4331,8 +4331,10 @@ class SugarBean
             }
         } else {
             if ((empty($limit) || $limit == -1)) {
-                $limit = $max_per_page + 1;
-                $max_per_page = $limit;
+                if ($max_per_page !== -99) {
+                    $limit = $max_per_page + 1;
+                    $max_per_page = $limit;
+                }
             }
         }
 
