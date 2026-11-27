@@ -1,5 +1,5 @@
 <div class="buttons">
-    {{if !empty($form) && !empty($form.buttons)}}
+    {{if !empty($form) && isset($form.buttons)}}
         {{foreach from=$form.buttons key=val item=button}}
         {{sugar_button module="$module" id=$button form_id="$form_id" view="$view"}}
         {{/foreach}}
