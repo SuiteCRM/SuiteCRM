@@ -221,6 +221,13 @@ $dictionary['DocumentRevision'] = array('table' => 'document_revisions'
       'len' => '255',
       'source' => 'non-db',
   ),
+  'filecontents' =>
+  array(
+       'name' => 'filecontents',
+       'vname' => 'LBL_FILE_CONTENTS',
+       'type' => 'varchar',
+       'source' => 'non-db',
+  ),
   'latest_revision' =>
   array(
       'name' => 'latest_revision',
