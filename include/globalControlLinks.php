@@ -78,6 +78,10 @@ $global_control_links['training'] = array(
 'submenu' => ''
  );
 
+$global_control_links['suitecrm_store'] = array(
+'linkinfo' => array($app_strings['LBL_SUITECRM_STORE'] => 'https://store.suitecrm.com', 'target' => '_blank'),
+'submenu' => ''
+);
 /* no longer goes in the menubar - now implemented in the bottom bar.
 $global_control_links['help'] = array(
     'linkinfo' => array($app_strings['LNK_HELP'] => ' javascript:void window.open(\'index.php?module=Administration&action=SupportPortal&view=documentation&version='.$sugar_version.'&edition='.$sugar_flavor.'&lang='.$current_language.'&help_module='.$GLOBALS['module'].'&help_action='.$action.'&key='.$server_unique_key.'\')'),
