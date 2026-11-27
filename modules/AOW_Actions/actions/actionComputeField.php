@@ -164,7 +164,23 @@ class actionComputeField extends actionBase
                     }
                 }
             } else {
-                $resolvedParameters[$i] = ($bean->{$parameters[$i]} == null) ? "" : $bean->{$parameters[$i]};
+                $type = '';
+                if (isset($bean->field_name_map[$parameters[$i]]['type'])) {
+                    $type = $bean->field_name_map[$parameters[$i]]['type'];
+                }
+                if (isset($bean->field_name_map[$parameters[$i]]['dbType'])) {
+                    $type .= $bean->field_name_map[$parameters[$i]]['dbType'];
+                }                
+                if ($bean->{$parameters[$i]} == null) {
+                    $resolvedParameters[$i] = "";
+                } elseif (
+                    (strpos($type, 'char') !== false || strpos($type, 'text') !== false || $type == 'enum') &&
+                    !empty($bean->{$parameters[$i]})
+                ) {
+                    $resolvedParameters[$i] = html_entity_decode($bean->{$parameters[$i]});
+                } else {
+                    $resolvedParameters[$i] = $bean->{$parameters[$i]};
+                }
             }
         }
 
