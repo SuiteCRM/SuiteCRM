@@ -112,6 +112,20 @@
 		</td>
 	</tr>
 	<tr>
+		<td  scope="row"> </td>
+		<td ></td>
+		<td scope="row">{$MOD.LBL_DISPLAY_MODULE_TITLE}</td>
+		{if !empty($config.set_module_name_titles)}
+			{assign var='set_module_name_titles' value='CHECKED'}
+		{else}
+			{assign var='set_module_name_titles' value=''}
+		{/if}
+		<td >
+			<input type='hidden' name='set_module_name_titles' value='false'>
+			<input name='set_module_name_titles'  type="checkbox" value="true" {$set_module_name_titles}>
+		</td>
+	</tr>
+	<tr>
 		<td  scope="row">{$MOD.DISPLAY_RESPONSE_TIME}: </td>
 		{if !empty($config.calculate_response_time )}
 			{assign var='calculate_response_time_checked' value='CHECKED'}
