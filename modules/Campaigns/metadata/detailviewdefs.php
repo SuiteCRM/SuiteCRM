@@ -186,28 +186,23 @@ array(
         0 =>
         array(
           0 => 'name',
-          1 =>
-          array(
-            'name' => 'status',
-            'label' => 'LBL_CAMPAIGN_STATUS',
-          ),
         ),
         1 =>
         array(
           0 =>
-          array(
-            'name' => 'start_date',
-            'label' => 'LBL_CAMPAIGN_START_DATE',
-          ),
+              array(
+                  'name' => 'status',
+                  'label' => 'LBL_CAMPAIGN_STATUS',
+              ),
           1 => 'campaign_type',
         ),
         2 =>
         array(
           0 =>
-          array(
-            'name' => 'end_date',
-            'label' => 'LBL_CAMPAIGN_END_DATE',
-          ),
+              array(
+                  'name' => 'assigned_user_name',
+                  'label' => 'LBL_ASSIGNED_TO',
+              ),
           1 =>
           array(
             'name' => 'frequency',
@@ -221,14 +216,6 @@ array(
           array(
             'name' => 'content',
             'label' => 'LBL_CAMPAIGN_CONTENT',
-          ),
-        ),
-        4 =>
-        array(
-          0 =>
-          array(
-            'name' => 'assigned_user_name',
-            'label' => 'LBL_ASSIGNED_TO',
           ),
         ),
       ),
