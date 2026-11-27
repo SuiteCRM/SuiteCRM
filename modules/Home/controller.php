@@ -140,4 +140,30 @@ class HomeController extends SugarController
 
         echo $quicksearch_js;
     }
+
+     /**
+     * Return the field value from the parent list of current field, attending to the values of Request moduleName, recordId and dynamicFieldname
+     * It's used for retrieving value of the parent dropdown from dynamicenum fields, in view list context.
+     *
+     * @return void
+     */
+    public function action_getParentValueFromDynamicEnum(){
+        $moduleName = $_REQUEST['moduleName'];
+        $recordId = $_REQUEST['recordId'];
+        $dynamicFieldName = $_REQUEST['dynamicFieldName'];
+
+        $focusBean = BeanFactory::getBean($_REQUEST['moduleName']);
+
+        // ensure current user has access
+        if (!$focusBean->ACLAccess('view')) {
+            return false;
+        }
+
+        // recovery parent name field
+        $parentFieldName = $focusBean->field_name_map[$dynamicFieldName]['parentenum'];
+
+        echo getFieldValueFromModule($parentFieldName, $moduleName, $recordId);
+
+        die();
+    }
 }
