@@ -50,7 +50,7 @@ use ReflectionClass;
 use SuiteCRM\Log\CliLoggerHandler;
 use SuiteCRM\Log\SugarLoggerHandler;
 use SuiteCRM\Search\Index\Documentify\AbstractDocumentifier;
-use SuiteCRM\Search\Index\Documentify\JsonSerializerDocumentifier;
+use SuiteCRM\Search\Index\Documentify\SearchDefsDocumentifier;
 use SuiteCRM\Search\SearchWrapper;
 
 /**
@@ -79,7 +79,7 @@ abstract class AbstractIndexer
 
     public function __construct()
     {
-        $this->documentifier = new JsonSerializerDocumentifier();
+        $this->documentifier = new SearchDefsDocumentifier();
         $this->modulesToIndex = SearchWrapper::getModules();
         $this->setupLogger();
     }
