@@ -1,14 +1,11 @@
 <?php
-if (!defined('sugarEntry') || !sugarEntry) {
-    die('Not A Valid Entry Point');
-}
 /**
  *
  * SugarCRM Community Edition is a customer relationship management program developed by
  * SugarCRM, Inc. Copyright (C) 2004-2013 SugarCRM Inc.
  *
  * SuiteCRM is an extension to SugarCRM Community Edition developed by SalesAgility Ltd.
- * Copyright (C) 2011 - 2018 SalesAgility Ltd.
+ * Copyright (C) 2011 - 2020 SalesAgility Ltd.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,6 +38,9 @@ if (!defined('sugarEntry') || !sugarEntry) {
  * display the words "Powered by SugarCRM" and "Supercharged by SuiteCRM".
  */
 
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
 
 #[\AllowDynamicProperties]
 class AdministrationController extends SugarController
@@ -77,7 +77,12 @@ class AdministrationController extends SugarController
 
     public function action_savelanguages()
     {
-        global $sugar_config, $current_language, $mod_strings;
+        global $sugar_config, $current_language, $mod_strings, $current_user, $app_strings;
+
+        if (!is_admin($current_user)) {
+            sugar_die($app_strings['ERR_NOT_ADMIN']);
+        }
+
         $toDecode = html_entity_decode((string) $_REQUEST['disabled_langs'], ENT_QUOTES);
         $disabled_langs = json_decode($toDecode);
         $toDecode = html_entity_decode((string) $_REQUEST['enabled_langs'], ENT_QUOTES);
@@ -146,6 +151,12 @@ class AdministrationController extends SugarController
     public function action_UpdateAjaxUI()
     {
         require_once('modules/Configurator/Configurator.php');
+        global $current_user, $app_strings;
+
+        if (!is_admin($current_user)) {
+            sugar_die($app_strings['ERR_NOT_ADMIN']);
+        }
+
         $cfg = new Configurator();
         $disabled = json_decode(html_entity_decode((string) $_REQUEST['disabled_modules'], ENT_QUOTES));
         $cfg->config['addAjaxBannedModules'] = empty($disabled) ? false : $disabled;
@@ -163,8 +174,11 @@ class AdministrationController extends SugarController
      */
     public function action_callRebuildSprites()
     {
-        global $current_user, $mod_strings;
+        global $current_user, $app_strings, $mod_strings;
 
+        if (!is_admin($current_user)) {
+            sugar_die($app_strings['ERR_NOT_ADMIN']);
+        }
         $mod_strings = $mod_strings ?? [];
 
         $this->view = 'ajax';
@@ -177,5 +191,15 @@ class AdministrationController extends SugarController
             echo $mod_strings['LBL_SPRITES_NOT_SUPPORTED'];
             $GLOBALS['log']->error($mod_strings['LBL_SPRITES_NOT_SUPPORTED']);
         }
+    }
+
+    public function action_diagnosticquickviewphpinfo() {
+        global $current_user, $app_strings;
+
+        if (!is_admin($current_user)) {
+            sugar_die($app_strings['ERR_NOT_ADMIN']);
+        }
+        phpinfo();
+        die;
     }
 }
