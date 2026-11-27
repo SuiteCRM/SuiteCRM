@@ -49,7 +49,7 @@
  * Smarty {suite_combinescripts} function plugin
  *
  * Type:     function<br>
- * Name:     uite_combinescripts<br>
+ * Name:     Suite_combinescripts<br>
  * Purpose:  Combine script files
  *
  * @param array
